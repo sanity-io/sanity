@@ -91,6 +91,7 @@ export default withPatchSubscriber(
     private patche$: Subject<EditorPatch> = new Subject()
     private usubscribe: any
     private ptFeatures: PortableTextFeatures
+    private editorSnapshot: JSX.Element
 
     handleToggleFullscreen = (): void => {
       if (!this.editor.current) {
@@ -456,17 +457,16 @@ export default withPatchSubscriber(
         </div>
       )
 
-      // TODO: could this be rendered the same way DOM-wize?
-      if (isFullscreen) {
-        return (
-          <Portal>
-            <StackedEscapeable onEscape={this.handleToggleFullscreen}>
-              <div className={styles.fullscreenWrapper}>{wrappedEditor}</div>
-            </StackedEscapeable>
-          </Portal>
-        )
-      }
-      return wrappedEditor
+      this.editorSnapshot = isFullscreen ? (
+        <Portal>
+          <StackedEscapeable onEscape={this.handleToggleFullscreen}>
+            <div className={styles.fullscreenWrapper}>{wrappedEditor}</div>
+          </StackedEscapeable>
+        </Portal>
+      ) : (
+        wrappedEditor
+      )
+      return this.editorSnapshot
     }
 
     renderEditObject = (): JSX.Element => {
@@ -530,34 +530,37 @@ export default withPatchSubscriber(
             ? 'annotations'
             : 'inlineObjects'
         ].find(t => t.name === lookForType)
-        const handleClose = (): void => {
-          const {editorPath} = objectEditStatus
-          const {onFocus} = this.props
-          onFocus([])
-          this.setState({objectEditStatus: null})
-          if (this.editor.current) {
-            PortableTextEditor.select(this.editor.current, {
-              focus: {path: editorPath, offset: 0},
-              anchor: {path: editorPath, offset: 0}
-            })
+
+        if (type) {
+          const handleClose = (): void => {
+            const {editorPath} = objectEditStatus
+            const {onFocus} = this.props
+            onFocus([])
+            this.setState({objectEditStatus: null})
+            if (this.editor.current) {
+              PortableTextEditor.select(this.editor.current, {
+                focus: {path: editorPath, offset: 0},
+                anchor: {path: editorPath, offset: 0}
+              })
+            }
           }
+          return (
+            <EditObject
+              formBuilderPath={objectEditStatus.formBuilderPath}
+              focusPath={this.props.focusPath}
+              markers={this.props.markers} // TODO: filter relevant
+              editorPath={objectEditStatus.editorPath}
+              object={object}
+              onBlur={this.handleEditObjectFormBuilderBlur}
+              onChange={this.handleFormBuilderEditObjectChange}
+              onClose={handleClose}
+              onFocus={this.handleEditObjectFormBuilderFocus}
+              readOnly={this.props.readOnly}
+              referenceElement={referenceElement}
+              type={type}
+            />
+          )
         }
-        return (
-          <EditObject
-            formBuilderPath={objectEditStatus.formBuilderPath}
-            focusPath={this.props.focusPath}
-            markers={this.props.markers} // TODO: filter relevant
-            editorPath={objectEditStatus.editorPath}
-            object={object}
-            onBlur={this.handleEditObjectFormBuilderBlur}
-            onChange={this.handleFormBuilderEditObjectChange}
-            onClose={handleClose}
-            onFocus={this.handleEditObjectFormBuilderFocus}
-            readOnly={this.props.readOnly}
-            referenceElement={referenceElement}
-            type={type}
-          />
-        )
       }
       // Clear the edit state after rendering null.
       // TODO: render this with hooks
@@ -625,7 +628,7 @@ export default withPatchSubscriber(
                 renderChild={this.renderChild}
                 renderDecorator={this.renderDecorator}
                 renderAnnotation={this.renderAnnotation}
-                renderEditor={this.renderEditor}
+                renderEditor={objectEditStatus ? () => this.editorSnapshot : this.renderEditor}
                 spellCheck={false} // TODO: from schema?
                 type={type}
                 value={value}
