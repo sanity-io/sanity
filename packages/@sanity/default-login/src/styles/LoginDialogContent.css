@@ -67,12 +67,13 @@
 }
 
 .brandLogoContainer {
-  height: 3em;
+  padding: var(--medium-padding);
 
   @nest & svg {
-    height: 4em;
+    display: block;
+    height: var(--font-size-h1);
     width: auto;
-    max-width: 70vw;
+    margin: 0 auto;
   }
 }
 
