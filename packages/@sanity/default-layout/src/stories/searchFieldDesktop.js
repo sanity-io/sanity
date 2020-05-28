@@ -3,7 +3,7 @@ import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, boolean, number} from 'part:@sanity/storybook/addons/knobs'
 import SearchField from '../navbar/search/SearchField'
 import SearchResults from '../navbar/search/SearchResults'
-import NavBarStyles from '../navbar/NavBar.css'
+import NavbarStyles from '../navbar/Navbar.css'
 import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function SearchFieldDesktopStory() {
@@ -14,8 +14,8 @@ export function SearchFieldDesktopStory() {
   return (
     <div>
       <div className={DefaultLayoutStyles.navBar}>
-        <div className={NavBarStyles.root}>
-          <div className={NavBarStyles.search}>
+        <div className={NavbarStyles.root}>
+          <div className={NavbarStyles.search}>
             <SearchField
               hotkeys={['F']}
               isFocused={boolean('isFocused', false, 'props')}

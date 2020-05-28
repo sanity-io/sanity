@@ -14,7 +14,7 @@ import SearchField from '../navbar/search/SearchField'
 import SearchResults from '../navbar/search/SearchResults'
 import ToolSwitcherItem from '../navbar/toolMenu/ToolSwitcherItem'
 
-import NavBarStyles from '../navbar/NavBar.css'
+import NavbarStyles from '../navbar/Navbar.css'
 import DefaultLayoutStyles from '../DefaultLayout.css'
 
 const noop = () => undefined
@@ -51,10 +51,10 @@ export function ExampleStory() {
   return (
     <div className={className}>
       <div className={DefaultLayoutStyles.navBar}>
-        <div className={`${NavBarStyles.root} ${NavBarStyles.withToolSwitcher}`}>
-          <div className={NavBarStyles.hamburger}>
+        <div className={`${NavbarStyles.root} ${NavbarStyles.withToolSwitcher}`}>
+          <div className={NavbarStyles.hamburger}>
             <button
-              className={NavBarStyles.hamburgerButton}
+              className={NavbarStyles.hamburgerButton}
               type="button"
               title="Menu"
               onClick={action('onClick')}
@@ -62,10 +62,10 @@ export function ExampleStory() {
               <HamburgerIcon />
             </button>
           </div>
-          <a className={NavBarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
+          <a className={NavbarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
             <Branding />
           </a>
-          <button className={NavBarStyles.createButton} onClick={noop} type="button">
+          <button className={NavbarStyles.createButton} onClick={noop} type="button">
             <Tooltip
               disabled={'ontouchstart' in document.documentElement}
               title="Create new document"
@@ -76,15 +76,15 @@ export function ExampleStory() {
               sticky
               size="small"
             >
-              <div className={NavBarStyles.createButtonInner} tabIndex={-1}>
-                <div className={NavBarStyles.createButtonIcon}>
+              <div className={NavbarStyles.createButtonInner} tabIndex={-1}>
+                <div className={NavbarStyles.createButtonIcon}>
                   <PlusIcon />
                 </div>
-                <span className={NavBarStyles.createButtonText}>New</span>
+                <span className={NavbarStyles.createButtonText}>New</span>
               </div>
             </Tooltip>
           </button>
-          <div className={NavBarStyles.search}>
+          <div className={NavbarStyles.search}>
             <SearchField
               hotkeys={['F']}
               isFocused={boolean('searchIsFocused', false, 'props')}
@@ -103,7 +103,7 @@ export function ExampleStory() {
             />
           </div>
           {/* spaceSwitcher */}
-          <div className={NavBarStyles.toolSwitcher}>
+          <div className={NavbarStyles.toolSwitcher}>
             <ToolSwitcherWidget
               onSwitchTool={action('onSwitchTool')}
               tools={[
@@ -123,7 +123,7 @@ export function ExampleStory() {
               renderItem={CustomToolSwitcherItem}
             />
           </div>
-          <div className={NavBarStyles.sanityStatus}>
+          <div className={NavbarStyles.sanityStatus}>
             <SanityStatus
               isSupported
               isUpToDate={sanityStatusIsUpToDate}
@@ -134,7 +134,7 @@ export function ExampleStory() {
               versions={sanityStatusVersions}
             />
           </div>
-          <div className={NavBarStyles.loginStatus}>
+          <div className={NavbarStyles.loginStatus}>
             <LoginStatus
               user={{
                 name: 'John Doe',
