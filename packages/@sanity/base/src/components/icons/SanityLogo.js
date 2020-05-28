@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+// part:@sanity/base/sanity-logo-icon
+
 import React from 'react'
 import IconBase from 'react-icon-base'
 

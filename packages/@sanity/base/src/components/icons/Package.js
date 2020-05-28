@@ -1,6 +1,11 @@
+// part:@sanity/base/package-icon
+
 import React from 'react'
 
-const strokeStyle = {vectorEffect: 'non-scaling-stroke'}
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2
+}
 
 const PackageIcon = () => (
   <svg
@@ -21,5 +26,7 @@ const PackageIcon = () => (
     <path d="M9 6.5L16 11" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
+
+PackageIcon.sanityIcon = true
 
 export default PackageIcon

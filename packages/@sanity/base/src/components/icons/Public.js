@@ -1,1 +1,3 @@
-export {default} from 'react-icons/lib/md/public'
+// part:@sanity/base/public-icon
+
+export {default} from './EarthAmericas'

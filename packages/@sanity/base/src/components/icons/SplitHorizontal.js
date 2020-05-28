@@ -1,8 +1,13 @@
+// part:@sanity/base/split-horizontal-icon
+
 import React from 'react'
 
-const strokeStyle = {vectorEffect: 'non-scaling-stroke'}
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2
+}
 
-const SplitHorizontalIcon = () => (
+const HSplitIcon = () => (
   <svg
     viewBox="0 0 25 25"
     fill="none"
@@ -11,9 +16,11 @@ const SplitHorizontalIcon = () => (
     width="1em"
     height="1em"
   >
-    <rect x="3.5" y="4.5" width="18" height="16" stroke="currentColor" style={strokeStyle} />
-    <line x1="12.5" y1="5" x2="12.5" y2="20" stroke="currentColor" style={strokeStyle} />
+    <rect x="5.5" y="5.5" width="14" height="14" style={strokeStyle} />
+    <path d="M12.5 5.5V19.5" style={strokeStyle} />
   </svg>
 )
 
-export default SplitHorizontalIcon
+HSplitIcon.sanityIcon = true
+
+export default HSplitIcon

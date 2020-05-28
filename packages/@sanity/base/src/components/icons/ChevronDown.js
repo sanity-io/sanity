@@ -1,12 +1,13 @@
+// part:@sanity/base/chevron-down-icon
+
 import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
-export default function ChevronDown() {
+export default function ChevronDownIcon() {
   return (
     <svg
       viewBox="0 0 25 25"
@@ -20,3 +21,5 @@ export default function ChevronDown() {
     </svg>
   )
 }
+
+ChevronDownIcon.sanityIcon = true

@@ -1,3 +1,5 @@
+// part:@sanity/base/drag-handle-icon
+
 import React from 'react'
 
 export default function DragHandle() {
@@ -19,3 +21,5 @@ export default function DragHandle() {
     </svg>
   )
 }
+
+DragHandle.sanityIcon = true

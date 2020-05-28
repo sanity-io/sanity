@@ -1,3 +1,5 @@
+// part:@sanity/base/launch-icon
+
 import React from 'react'
 
 const LaunchIcon = () => (
@@ -6,5 +8,7 @@ const LaunchIcon = () => (
     <path d="M16 3.5H21.5M21.5 3.5V9M21.5 3.5L9.5 15.5" stroke="currentColor" />
   </svg>
 )
+
+LaunchIcon.sanityIcon = true
 
 export default LaunchIcon

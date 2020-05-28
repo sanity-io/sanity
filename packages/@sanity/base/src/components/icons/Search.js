@@ -1,12 +1,13 @@
+// part:@sanity/base/search-icon
+
 import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
-export default function Search() {
+export default function SearchIcon() {
   return (
     <svg
       viewBox="0 0 25 25"
@@ -21,3 +22,5 @@ export default function Search() {
     </svg>
   )
 }
+
+SearchIcon.sanityIcon = true

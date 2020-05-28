@@ -1,12 +1,13 @@
+// part:@sanity/base/plus-icon
+
 import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
-export default function Plus() {
+export default function PlusIcon() {
   return (
     <svg
       viewBox="0 0 25 25"
@@ -16,7 +17,9 @@ export default function Plus() {
       width="1em"
       height="1em"
     >
-      <path d="M12.5 6V19M6 12.5H19" style={strokeStyle} />
+      <path d="M12.5 5V20M5 12.5H20" style={strokeStyle} />
     </svg>
   )
 }
+
+PlusIcon.sanityIcon = true
