@@ -27,7 +27,7 @@
 }
 
 .spacing + .spacing {
-  margin-left: var(--small-padding);
+  margin-left: var(--small-padding--em);
 }
 
 .borderRadius {
@@ -119,10 +119,24 @@ span.content {
 
 .icon {
   display: flex;
-  margin-right: var(--small-padding);
 
   @nest & > svg {
     display: block;
+    font-size: calc(17 / 16 * 1em); /* 17px */
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em); /* 25px */
+      margin: calc(4 / 25 * -1em); /* -4px */
+    }
+  }
+}
+
+.text {
+  /* optical alignment */
+  margin: -2px 0 -1px;
+
+  @nest .icon + & {
+    margin-left: var(--small-padding--em);
   }
 }
 
@@ -146,38 +160,22 @@ span.content {
   animation-duration: 0.2s;
 }
 
-.onlyIcon {
+.padding_large {
   @nest & .content {
-    margin: 0.6875em 0.6875em !important;
-  }
-
-  @nest & .icon {
-    margin-right: 0;
+    padding: calc(var(--medium-padding--em) - 1px);
   }
 }
 
 .padding_default {
   @nest & .content {
-    @nest :not(.onlyIcon) & {
-      margin: 0.5625em 0.8125rem;
-    }
+    padding: calc(var(--medium-padding--em) - var(--extra-small-padding--em) - 1px);
   }
 }
 
 .padding_small {
   @nest & .content {
-    @nest :not(.onlyIcon) & {
-      margin: 0.7em;
-
-      @media (--screen-medium) {
-        margin: 0.5em 0.6em;
-      }
-    }
+    padding: calc(var(--small-padding--em) - 1px);
   }
-}
-
-.padding_none.bleed.onlyIcon .content {
-  margin: 0 !important;
 }
 
 .default {
@@ -211,12 +209,6 @@ span.content {
 
   @nest & .spinner {
     background-color: var(--white);
-  }
-
-  @media (hover: hover) {
-    @nest &:not(.disabled):hover {
-      background-color: color(var(--default-button-color) a(90%));
-    }
   }
 
   @nest &:not(.disabled) {
