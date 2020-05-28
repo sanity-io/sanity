@@ -2282,7 +2282,7 @@
   }
 }
 
-[data-name='--blockquote-small-color'] {
+/* [data-name='--blockquote-small-color'] {
   @nest & .varValue {
     background: var(--blockquote-small-color);
   }
@@ -2290,7 +2290,7 @@
   @nest & .varContent::before {
     content: 'var(--blockquote-small-color)';
   }
-}
+} */
 
 [data-name='--page-header-border-color'] {
   @nest & .varValue {

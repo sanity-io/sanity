@@ -77,15 +77,21 @@ function getIntentState(intentName, params, currentState, payload) {
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
 // @todo: Move to @sanity/base
 // eslint-disable-next-line react/no-multi-comp
 function MasterDetailIcon() {
   return (
-    <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      data-sanity-icon
+      width="1em"
+      height="1em"
+      viewBox="0 0 25 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <rect x="4.5" y="5.5" width="16" height="14" style={strokeStyle} />
       <path d="M10.5 5.5V19.5" style={strokeStyle} />
       <path d="M6 8.5H9" style={strokeStyle} />

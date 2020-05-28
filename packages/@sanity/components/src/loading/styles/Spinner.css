@@ -22,7 +22,7 @@
 
 .root {
   animation-name: sanity_spinner_appear;
-  animation-duration: 0.2s;
+  animation-duration: 250ms;
   animation-timing-function: linear;
   animation-iteration-count: once;
   animation-fill-mode: forwards;
@@ -34,7 +34,7 @@
   }
 
   &.fullscreen {
-    background-color: color(var(--body-bg) a(90%));
+    background-color: color(var(--body-bg) a(50%));
     position: fixed;
     height: 100%;
     width: 100%;

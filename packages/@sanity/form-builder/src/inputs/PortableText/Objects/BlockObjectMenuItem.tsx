@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, SyntheticEvent} from 'react'
+import React, {FunctionComponent} from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
-import styles from './BlockObject.css'
+
+import styles from './BlockObjectMenuItem.css'
 
 // This component renders the dropdown button menu on the block object's preview
 
@@ -26,14 +27,13 @@ export const MenuItem: FunctionComponent<DropDownMenuItemProps> = ({
     <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
       {intent ? (
         <IntentLink intent={intent} params={params}>
-          {Icon && <Icon />}
-          {title}
+          <div className={styles.iconContainer}>{Icon && <Icon />}</div>
+          <div className={styles.title}>{title}</div>
         </IntentLink>
       ) : (
         <>
-          {Icon && <Icon />}
-          &nbsp;
-          {title}
+          <div className={styles.iconContainer}>{Icon && <Icon />}</div>
+          <div className={styles.title}>{title}</div>
         </>
       )}
     </div>

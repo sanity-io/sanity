@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 import {
   PortableTextEditor,
@@ -14,7 +15,7 @@ import {
   getPortableTextFeatures,
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
-import Button from 'part:@sanity/components/buttons/default'
+// import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import InvalidValue from './InvalidValue'
@@ -27,6 +28,7 @@ import styles from './PortableTextInput.css'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Subject} from 'rxjs'
 import Toolbar from './Toolbar/Toolbar'
+import {ExpandCollapseButton} from './expandCollapseButton'
 import {BlockObject} from './Objects/BlockObject'
 import {Path} from '../../typedefs/path'
 import {InlineObject} from './Objects/InlineObject'
@@ -35,6 +37,7 @@ import {Annotation} from './Text/Annotation'
 import Decorator from './Text/Decorator'
 import Blockquote from './Text/Blockquote'
 import Header from './Text/Header'
+import Paragraph from './Text/Paragraph'
 import BlockExtrasOverlay from './BlockExtrasOverlay'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 
@@ -308,6 +311,8 @@ export default withPatchSubscriber(
           returned = <Blockquote>{returned}</Blockquote>
         } else if (HEADER_STYLES.includes(value.style)) {
           returned = <Header style={value.style}>{returned}</Header>
+        } else {
+          returned = <Paragraph>{returned}</Paragraph>
         }
         return returned
       }
@@ -404,42 +409,50 @@ export default withPatchSubscriber(
 
     renderEditor = (editor: JSX.Element): JSX.Element => {
       const {selection, isFullscreen} = this.state
-      const {onFocus, markers, renderBlockActions, renderCustomMarkers} = this.props
+      const {onFocus, markers, readOnly, renderBlockActions, renderCustomMarkers} = this.props
       const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
       const scClassNames = [
         styles.scrollContainer,
-        ...(isFullscreen ? [styles.fullscreen] : []),
+        // ...(isFullscreen ? [styles.fullscreen] : []),
         ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
       const editorWrapperClassNames = [
-        styles.editorWrapper,
-        ...(isFullscreen ? [styles.fullscreen] : [])
+        styles.editorWrapper
+        // ...(isFullscreen ? [styles.fullscreen] : [])
       ].join(' ')
 
       const editorClassNames = [
         styles.editor,
-        ...(isFullscreen ? [styles.fullscreen] : []),
+        // ...(isFullscreen ? [styles.fullscreen] : []),
         ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
 
-      const toolbar = (
-        <Toolbar
-          editor={this.editor.current}
-          isFullscreen={isFullscreen}
-          markers={markers}
-          hotkeys={this.hotkeys}
-          onFocus={onFocus}
-          onToggleFullscreen={this.handleToggleFullscreen}
-          renderBlock={this.renderBlock}
-          selection={selection}
-          isReadOnly={!!this.props.readOnly}
-        />
-      )
       const wrappedEditor = (
-        <div>
-          {toolbar}
+        <div className={styles.editorBox}>
+          <div className={styles.header}>
+            <div className={styles.toolbarContainer}>
+              <Toolbar
+                editor={this.editor.current}
+                isFullscreen={isFullscreen}
+                markers={markers}
+                hotkeys={this.hotkeys}
+                onFocus={onFocus}
+                renderBlock={this.renderBlock}
+                selection={selection}
+                isReadOnly={readOnly}
+              />
+            </div>
+            <div className={styles.fullscreenButtonContainer}>
+              <ExpandCollapseButton
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={this.handleToggleFullscreen}
+              />
+            </div>
+          </div>
           <div className={scClassNames}>
             <div className={editorWrapperClassNames}>
+              <div className={editorClassNames}>{editor}</div>
+
               <div className={styles.blockExtras}>
                 <BlockExtrasOverlay
                   isFullscreen={isFullscreen}
@@ -452,7 +465,6 @@ export default withPatchSubscriber(
                   value={this.props.value}
                 />
               </div>
-              <div className={editorClassNames}>{editor}</div>
             </div>
           </div>
         </div>
@@ -461,7 +473,7 @@ export default withPatchSubscriber(
       this.editorSnapshot = isFullscreen ? (
         <Portal>
           <StackedEscapeable onEscape={this.handleToggleFullscreen}>
-            <div className={styles.fullscreenWrapper}>{wrappedEditor}</div>
+            <div className={styles.fullscreenPortal}>{wrappedEditor}</div>
           </StackedEscapeable>
         </Portal>
       ) : (
@@ -577,9 +589,23 @@ export default withPatchSubscriber(
       // TODO: deal with validation and loading status
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
-      const {isLoading, hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
+      const {
+        // isFullscreen,
+        isLoading,
+        hasFocus,
+        invalidValue,
+        objectEditStatus,
+        ignoreValidation
+      } = this.state
       return (
-        <div className={[styles.root, ...(hasFocus ? [styles.focus] : [])].join(' ')}>
+        <div
+          className={classNames(
+            styles.root,
+            hasFocus && styles.focus,
+            readOnly && styles.readOnly
+            // isFullscreen && styles.fullscreen
+          )}
+        >
           <FormField
             markers={markers}
             level={level}
@@ -597,27 +623,10 @@ export default withPatchSubscriber(
           )}
           {(!invalidValue || ignoreValidation) && (
             <ActivateOnFocus
+              html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
               isActive={this.state.isActive}
-              html={
-                <div className={styles.activeOnFocus}>
-                  <h3>Click to edit</h3>
-                  <div>or</div>
-                  <div>
-                    <Button onClick={this.handleToggleFullscreen} color="primary">
-                      Open in fullscreen
-                    </Button>
-                  </div>
-                  <p className={styles.keyboardShortcut}>
-                    Tip: <br />
-                    <strong>
-                      {IS_MAC ? '⌘' : 'ctrl'}
-                      &nbsp;+&nbsp;enter
-                    </strong>{' '}
-                    while editing to go in fullscreen
-                  </p>
-                </div>
-              }
               onActivate={this.handleActivate}
+              overlayClassName={styles.activateOnFocusOverlay}
             >
               <PortableTextEditor
                 hotkeys={this.hotkeys}

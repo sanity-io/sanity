@@ -3,8 +3,8 @@
 .root {
   display: flex;
   flex-wrap: nowrap;
-}
 
-.buttonWrapper + .buttonWrapper {
-  margin-left: 0.1em;
+  @nest & > div + div {
+    margin-left: calc(var(--extra-small-padding) / 2);
+  }
 }

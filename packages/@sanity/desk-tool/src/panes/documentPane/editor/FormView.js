@@ -5,10 +5,11 @@ import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
-import styles from '../Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
+
+import styles from './FormView.css'
 
 const noop = () => undefined
 

@@ -17,7 +17,8 @@ const centerStyle = {
   boxSizing: 'border-box',
   padding: '2rem',
   top: 0,
-  left: 0
+  left: 0,
+  paddingBottom: '10em'
 }
 
 const mockMarkers = length => {

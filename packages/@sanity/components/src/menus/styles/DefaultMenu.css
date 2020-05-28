@@ -4,13 +4,13 @@
   background-color: var(--component-bg);
   color: var(--text-color);
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  font-size: var(--font-size-small);
-  line-height: var(--font-size-small);
+  font-size: var(--font-size-base);
+  line-height: var(--font-size-base);
   user-select: none;
   text-align: left;
   overflow: auto;
   overflow-x: hidden;
-  padding: calc(var(--small-padding) / 2) 0;
+  padding: var(--extra-small-padding) 0;
   border-radius: var(--border-radius-medium);
 }
 
@@ -23,6 +23,7 @@
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
   position: relative;
+  line-height: 25px;
 }
 
 .isDisabled {
@@ -41,14 +42,25 @@
 .iconContainer {
   display: flex;
   align-items: center;
-  margin-right: 0.5em;
+  margin-right: var(--small-padding);
+
+  @nest & svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em); /* 17px */
+
+    @nest &[data-sanity-icon='true'] {
+      display: block;
+      font-size: calc(25 / 16 * 1em); /* 25px  */
+      margin: calc(4 / 25 * -1em); /* -4px */
+    }
+  }
 }
 
 .link {
   display: flex;
   align-items: center;
   position: relative;
-  padding: var(--medium-padding);
+  padding: var(--small-padding) calc(var(--medium-padding) - var(--extra-small-padding));
   cursor: default;
   text-decoration: none;
   color: inherit;
@@ -69,7 +81,7 @@
     position: absolute;
     width: 100%;
     left: 0;
-    top: calc(0 - calc(var(--small-padding) / 2) - 1px);
+    top: calc(0 - var(--extra-small-padding) - 1px);
     border-top: 1px solid var(--hairline-color);
   }
 }

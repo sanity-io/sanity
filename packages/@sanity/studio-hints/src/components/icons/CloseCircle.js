@@ -2,8 +2,7 @@ import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
 export default function CloseCircle() {

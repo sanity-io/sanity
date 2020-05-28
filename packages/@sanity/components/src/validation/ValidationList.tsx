@@ -1,7 +1,8 @@
 import React from 'react'
-import styles from './styles/ValidationList.css'
 import ValidationListItem from './ValidationListItem'
 import {Marker} from '../typedefs'
+
+import styles from './ValidationList.css'
 
 type Props = {
   kind?: string
@@ -68,37 +69,35 @@ export default class ValidationList extends React.PureComponent<Props> {
     }
 
     return (
-      <div className={styles.root}>
-        <ul className={styles.list} data-kind={kind}>
-          {errors.length > 0 &&
-            errors.map((error, i) => (
-              <li className={styles.item} key={i}>
-                <ValidationListItem
-                  kind={kind}
-                  truncate={truncate}
-                  path={this.resolvePathTitle(error.path)}
-                  marker={error}
-                  onClick={this.handleClick}
-                  showLink={showLink}
-                />
-              </li>
-            ))}
+      <ul className={styles.root} data-kind={kind}>
+        {errors.length > 0 &&
+          errors.map((error, i) => (
+            <li className={styles.item} key={i}>
+              <ValidationListItem
+                kind={kind}
+                truncate={truncate}
+                path={this.resolvePathTitle(error.path)}
+                marker={error}
+                onClick={this.handleClick}
+                showLink={showLink}
+              />
+            </li>
+          ))}
 
-          {warnings.length > 0 &&
-            warnings.map((warning, i) => (
-              <li className={styles.item} key={i}>
-                <ValidationListItem
-                  kind={kind}
-                  truncate={truncate}
-                  path={this.resolvePathTitle(warning.path)}
-                  marker={warning}
-                  onClick={this.handleClick}
-                  showLink={showLink}
-                />
-              </li>
-            ))}
-        </ul>
-      </div>
+        {warnings.length > 0 &&
+          warnings.map((warning, i) => (
+            <li className={styles.item} key={i}>
+              <ValidationListItem
+                kind={kind}
+                truncate={truncate}
+                path={this.resolvePathTitle(warning.path)}
+                marker={warning}
+                onClick={this.handleClick}
+                showLink={showLink}
+              />
+            </li>
+          ))}
+      </ul>
     )
   }
 }

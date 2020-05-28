@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
@@ -81,12 +82,14 @@ export default class CodeInput extends PureComponent {
         })
       )
     }).isRequired,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    readOnly: PropTypes.bool
   }
 
   static defaultProps = {
-    onChange() {},
-    value: undefined
+    onChange: () => undefined,
+    value: undefined,
+    readOnly: false
   }
 
   focus() {
@@ -232,31 +235,36 @@ export default class CodeInput extends PureComponent {
   }
 
   renderEditor = () => {
-    const {value, type} = this.props
+    // console.log('CodeInput', this.props)
+
+    const {readOnly, value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
     const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
-      <AceEditor
-        className={styles.aceEditor}
-        mode={mode}
-        theme={this.getTheme()}
-        width="100%"
-        onChange={this.handleCodeChange}
-        name={`${this._inputId}__aceEditor`}
-        value={(value && value.code) || ''}
-        markers={
-          value && value.highlightedLines ? createHighlightMarkers(value.highlightedLines) : null
-        }
-        onLoad={this.handleEditorLoad}
-        tabSize={2}
-        setOptions={ACE_SET_OPTIONS}
-        editorProps={ACE_EDITOR_PROPS}
-      />
+      <div className={classNames(styles.aceEditorContainer, readOnly && styles.readOnly)}>
+        <AceEditor
+          className={styles.aceEditor}
+          mode={mode}
+          theme={this.getTheme()}
+          width="100%"
+          onChange={this.handleCodeChange}
+          name={`${this._inputId}__aceEditor`}
+          value={(value && value.code) || ''}
+          markers={
+            value && value.highlightedLines ? createHighlightMarkers(value.highlightedLines) : null
+          }
+          onLoad={this.handleEditorLoad}
+          readOnly={readOnly}
+          tabSize={2}
+          setOptions={ACE_SET_OPTIONS}
+          editorProps={ACE_EDITOR_PROPS}
+        />
+      </div>
     )
   }
 
   render() {
-    const {value, type, level} = this.props
+    const {value, type, level, readOnly} = this.props
     const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
@@ -284,6 +292,7 @@ export default class CodeInput extends PureComponent {
             onChange={this.handleLanguageChange}
             value={selectedLanguage}
             items={languages}
+            readOnly={readOnly}
           />
         </FormField>
         {get(type, 'options.withFilename', false) && (

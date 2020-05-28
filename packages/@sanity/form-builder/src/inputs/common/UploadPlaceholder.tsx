@@ -1,14 +1,17 @@
 // eslint-disable max-len
 import React from 'react'
-import styles from './styles/UploadPlaceholder.css'
 import UploadIcon from 'part:@sanity/base/upload-icon'
+
+import styles from './UploadPlaceholder.css'
 
 type UploadPlaceholderProps = {
   hasFocus?: boolean
 }
+
 export default class UploadPlaceholder extends React.PureComponent<UploadPlaceholderProps, {}> {
   render() {
     const {hasFocus} = this.props
+
     return (
       <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
         <div className={styles.inner}>

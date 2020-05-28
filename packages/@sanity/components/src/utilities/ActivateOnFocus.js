@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/ActivateOnFocus.css'
@@ -6,6 +7,7 @@ import enhanceWithClickOutside from 'react-click-outside'
 class ActivateOnFocus extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
+    className: PropTypes.string,
     message: PropTypes.string,
     html: PropTypes.node,
     isActive: PropTypes.bool,
@@ -13,6 +15,7 @@ class ActivateOnFocus extends React.Component {
   }
 
   static defaultProps = {
+    className: undefined,
     message: 'Click to activate…',
     isActive: false
   }
@@ -42,16 +45,26 @@ class ActivateOnFocus extends React.Component {
   }
 
   render() {
-    const {message, children, isActive, html} = this.props
+    const {
+      className: classNameProp,
+      message,
+      children,
+      isActive,
+      html,
+      overlayClassName: overlayClassNameProp
+    } = this.props
     const {hasFocus} = this.state
+    const className = classNames(hasFocus ? styles.hasFocus : styles.noFocus, classNameProp)
+    const overlayClassName = classNames(styles.overlay, overlayClassNameProp)
 
     return (
-      <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
+      <div className={className}>
         {!isActive && (
           <div className={styles.eventHandler} onClick={this.handleClick}>
-            <div className={styles.overlay} />
-            {!html && <div className={styles.stringMessage}>{message}</div>}
-            {html && <div className={styles.html}>{html}</div>}
+            <div className={overlayClassName}>
+              {!html && <div className={styles.stringMessage}>{message}</div>}
+              {html && <div className={styles.html}>{html}</div>}
+            </div>
           </div>
         )}
         <div className={styles.content}>{children}</div>

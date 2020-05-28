@@ -1,12 +1,9 @@
-.root {
-  composes: functions from '../styles/DefaultPane.css';
-}
+@import 'part:@sanity/base/theme/variables-style';
 
-.button {
-  composes: functionsButton from '../styles/DefaultPane.css';
-  display: block;
+.root {
+  padding: var(--medium-padding);
 }
 
 .text {
-  composes: functionsButtonText from '../styles/DefaultPane.css';
+  margin: -2px 0 -1px;
 }

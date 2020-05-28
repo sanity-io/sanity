@@ -2,18 +2,18 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {combineLatest} from 'rxjs'
 import {map} from 'rxjs/operators'
-// eslint-disable-next-line import/no-unassigned-import
-import './JSONInspector.css'
-import styles from './InspectView.css'
 import JSONInspector from 'react-json-inspector'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import RadioButtons from 'part:@sanity/components/selects/radio'
-
+// import RadioButtons from 'part:@sanity/components/selects/radio'
+import TabList from 'part:@sanity/components/tabs/tab-list'
+import Tab from 'part:@sanity/components/tabs/tab'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
 import settings from '../../settings'
 import {withPropsStream} from 'react-props-stream'
 import DocTitle from '../../components/DocTitle'
+
+import styles from './InspectView.css'
 
 const lru = HLRU(1000)
 
@@ -90,24 +90,33 @@ function InspectView(props) {
       }
       onClose={onClose}
     >
-      <div className={styles.toolbar}>
-        <RadioButtons value={viewMode} items={VIEW_MODES} onChange={onViewModeChange} />
-      </div>
-      <div className={styles.content}>
-        {viewMode === VIEW_MODE_PARSED && (
-          <JSONInspector isExpanded={isExpanded} onClick={toggleExpanded} data={value} />
-        )}
-        {viewMode === VIEW_MODE_RAW && (
-          <pre
-            className={styles.raw}
-            tabIndex={0}
-            onKeyDown={maybeSelectAll}
-            onDoubleClick={select}
-            onFocus={select}
-          >
-            {JSON.stringify(value, null, 2)}
-          </pre>
-        )}
+      <div>
+        <div className={styles.toolbar}>
+          {/* <RadioButtons value={viewMode} items={VIEW_MODES} onChange={onViewModeChange} /> */}
+
+          <TabList>
+            <Tab label="Parsed" />
+            <Tab label="Raw JSON" />
+          </TabList>
+        </div>
+        <div className={styles.content}>
+          {viewMode === VIEW_MODE_PARSED && (
+            <div className={styles.jsonInspectorContainer}>
+              <JSONInspector isExpanded={isExpanded} onClick={toggleExpanded} data={value} />
+            </div>
+          )}
+          {viewMode === VIEW_MODE_RAW && (
+            <pre
+              className={styles.raw}
+              tabIndex={0}
+              onKeyDown={maybeSelectAll}
+              onDoubleClick={select}
+              onFocus={select}
+            >
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          )}
+        </div>
       </div>
     </FullScreenDialog>
   )

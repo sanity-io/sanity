@@ -15,7 +15,22 @@
 }
 
 .group {
-  composes: group from './Toolbar.css';
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: var(--extra-small-padding);
+
+  @nest .fullscreen & {
+    padding: var(--small-padding);
+  }
+
+  @nest &:empty {
+    display: none;
+  }
+
+  @nest .group:not(:empty) + & {
+    border-left: 1px solid var(--hairline-color);
+  }
 }
 
 .blockStyleSelect {
@@ -25,8 +40,4 @@
 
 .blockStyleGroup {
   composes: group;
-
-  @nest &:not(:empty) + .group {
-    border-left: none;
-  }
 }

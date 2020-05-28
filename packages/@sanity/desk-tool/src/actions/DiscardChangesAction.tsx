@@ -1,6 +1,6 @@
 import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import CloseIcon from 'part:@sanity/base/close-icon'
+import ResetIcon from 'part:@sanity/base/reset-icon'
 
 const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'This document has no unpublished changes',
@@ -16,7 +16,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
   }
 
   return {
-    icon: CloseIcon,
+    icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled),
     title: (discardChanges.disabled && DISABLED_REASON_TITLE[discardChanges.disabled]) || '',
     label: 'Discard changes',

@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  background: #fe0;
   opacity: 1;
   outline: none;
   z-index: 10;
@@ -17,20 +18,27 @@
   padding: var(--small-padding);
   font-size: var(--font-size-small);
 
-  @nest & .icon {
+  /* @nest & .icon {
     padding: 0 var(--small-padding) 0 0;
     font-size: var(--font-size-base);
-  }
+  } */
 }
 
 .inner {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-base);
 }
 
 .icon {
-  display: flex;
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    &[data-sanity-icon='true'] {
+      font-size: calc(26 / 16 * 1em);
+      margin: -4px;
+    }
+  }
 }
 
 .error {

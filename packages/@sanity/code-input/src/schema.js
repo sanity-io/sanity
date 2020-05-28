@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import React, {PureComponent} from 'react'
-import MdCode from 'react-icons/lib/md/code'
+import CodeBlockIcon from 'part:@sanity/base/code-block-icon'
+// import MdCode from 'react-icons/lib/md/code'
 import JsonLogo from './jsonLogo'
 
 // eslint-disable-next-line react/no-multi-comp
@@ -75,7 +76,7 @@ export default {
   type: 'object',
   title: 'Code',
   inputComponent: Input,
-  icon: MdCode,
+  icon: CodeBlockIcon,
   fields: [
     {
       title: 'Code',

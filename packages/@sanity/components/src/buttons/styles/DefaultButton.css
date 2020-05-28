@@ -25,11 +25,16 @@
   /* simple={true} */
   --color-button-simple-color: var(--color-button-bg);
   /* :focus */
-  --color-button-simple-focus-bg: color(var(--color-button-bg) a(5%));
+  --color-button-simple-focus-bg: color(var(--color-button-bg) a(10%));
+  --color-button-simple-focus-text: color(var(--color-button-bg) lightness(- 20%));
   /* :hover */
-  --color-button-simple-hover-bg: color(var(--color-button-bg) a(5%));
+  --color-button-simple-hover-bg: color(var(--color-button-bg) a(10%));
+  --color-button-simple-hover-text: color(var(--color-button-bg) lightness(- 20%));
   /* :active */
-  --color-button-simple-active-bg: color(var(--color-button-bg) a(10%));
+  --color-button-simple-active-bg: color(var(--color-button-bg) a(20%));
+  /* :selected */
+  --color-button-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
+  --color-button-simple-selected-text: var(--selected-item-color);
 
   /**
    * color="primary"
@@ -54,11 +59,18 @@
   /* simple={true} */
   --color-button-primary-simple-color: var(--color-button-primary-bg);
   /* :focus */
-  --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) a(5%));
+  --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) a(10%));
+  --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 20%));
   /* :hover */
-  --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) a(5%));
+  --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) a(10%));
+  --color-button-primary-simple-hover-text: color(var(--color-button-primary-bg) lightness(- 20%));
   /* :active */
-  --color-button-primary-simple-active-bg: color(var(--color-button-primary-bg) a(10%));
+  --color-button-primary-simple-active-bg: color(var(--color-button-primary-bg) a(20%));
+  /* :selected */
+  --color-button-primary-simple-selected-bg: color(var(--color-button-primary-bg) alpha(15%));
+  --color-button-primary-simple-selected-text: color(
+    var(--color-button-primary-bg) lightness(- 5%)
+  );
 
   /**
    * color="success"
@@ -83,11 +95,18 @@
   /* simple={true} */
   --color-button-success-simple-color: var(--color-button-success-bg);
   /* :focus */
-  --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) a(5%));
+  --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) a(10%));
+  --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 20%));
   /* :hover */
-  --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) a(5%));
+  --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) a(10%));
+  --color-button-success-simple-hover-text: color(var(--color-button-success-bg) lightness(- 20%));
   /* :active */
-  --color-button-success-simple-active-bg: color(var(--color-button-success-bg) a(10%));
+  --color-button-success-simple-active-bg: color(var(--color-button-success-bg) a(20%));
+  /* :selected */
+  --color-button-success-simple-selected-bg: color(var(--color-button-success-bg) alpha(15%));
+  --color-button-success-simple-selected-text: color(
+    var(--color-button-success-bg) lightness(- 5%)
+  );
 
   /**
    * color="warning"
@@ -112,11 +131,18 @@
   /* simple={true} */
   --color-button-warning-simple-color: var(--color-button-warning-bg);
   /* :focus */
-  --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) a(5%));
+  --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) a(10%));
+  --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 20%));
   /* :hover */
-  --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) a(5%));
+  --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) a(10%));
+  --color-button-warning-simple-hover-text: color(var(--color-button-warning-bg) lightness(- 20%));
   /* :active */
-  --color-button-warning-simple-active-bg: color(var(--color-button-warning-bg) a(10%));
+  --color-button-warning-simple-active-bg: color(var(--color-button-warning-bg) a(20%));
+  /* :selected */
+  --color-button-warning-simple-selected-bg: color(var(--color-button-warning-bg) alpha(15%));
+  --color-button-warning-simple-selected-text: color(
+    var(--color-button-warning-bg) lightness(- 5%)
+  );
 
   /**
    * color="danger"
@@ -141,11 +167,16 @@
   /* simple={true} */
   --color-button-danger-simple-color: var(--color-button-danger-bg);
   /* :focus */
-  --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) a(5%));
+  --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) a(10%));
+  --color-button-danger-simple-focus-text: color(var(--color-button-danger-bg) lightness(- 20%));
   /* :hover */
-  --color-button-danger-simple-hover-bg: color(var(--color-button-danger-bg) a(5%));
+  --color-button-danger-simple-hover-bg: color(var(--color-button-danger-bg) a(10%));
+  --color-button-danger-simple-hover-text: color(var(--color-button-danger-bg) lightness(- 20%));
   /* :active */
-  --color-button-danger-simple-active-bg: color(var(--color-button-danger-bg) a(10%));
+  --color-button-danger-simple-active-bg: color(var(--color-button-danger-bg) a(20%));
+  /* :selected */
+  --color-button-danger-simple-selected-bg: color(var(--color-button-danger-bg) alpha(15%));
+  --color-button-danger-simple-selected-text: color(var(--color-button-danger-bg) lightness(- 5%));
 
   /* COMMON */
 
@@ -154,7 +185,7 @@
   --color-button-disabled-text: var(--color-button-text);
 }
 
-.spacing {
+/* .spacing {
   display: inline-flex;
 }
 
@@ -163,15 +194,15 @@
 }
 
 .borderRadius {
-  border-radius: var(--button-border-radius);
-}
+
+} */
 
 .root {
   -webkit-font-smoothing: inherit;
   position: relative;
   appearance: none;
-  composes: spacing;
-  composes: borderRadius;
+  /* composes: spacing; */
+  /* composes: borderRadius; */
   display: inline-flex;
   vertical-align: middle;
   justify-content: stretch;
@@ -190,10 +221,13 @@
     background-color: var(--color-button-spinner-bg);
   }
 
+  @nest &:not(.bleed) {
+    border-radius: var(--button-border-radius);
+  }
+
   @nest &.bleed {
     /* padding: 0 !important; */
     display: flex;
-    border-radius: 0;
     height: 100%;
 
     /* @nest & .content {
@@ -221,23 +255,34 @@
       background-color: transparent;
       color: var(--color-button-simple-color);
 
+      @nest & .spinner {
+        background-color: var(--white);
+      }
+
       @nest &:focus {
         background-color: var(--color-button-simple-focus-bg);
+        color: var(--color-button-simple-focus-text);
       }
 
       @media (hover: hover) {
         @nest &:hover {
           background-color: var(--color-button-simple-hover-bg);
+          color: var(--color-button-simple-hover-text);
         }
       }
 
       @nest &:active {
         background-color: var(--color-button-simple-active-bg);
       }
+
+      @nest &.selected {
+        background-color: var(--color-button-simple-selected-bg);
+        color: var(--color-button-simple-selected-text);
+      }
     }
   }
 
-  @nest &.inverted:not(:disabled):not(:focus):not(:hover):not(:active) {
+  @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
     color: var(--color-button-inverted-color);
     border-color: var(--color-button-inverted-border);
     background-color: transparent;
@@ -245,15 +290,33 @@
     @nest & .spinner {
       background-color: var(--color-button-inverted-spinner-bg);
     }
+
+    @nest &.selected {
+      background-color: color(var(--default-button-color) alpha(20%));
+    }
   }
 
   @nest &.disabled {
-    background: var(--color-button-disabled-bg);
+    background-color: var(--color-button-disabled-bg);
     color: var(--color-button-disabled-text);
+
+    @nest &.simple {
+      background-color: transparent;
+      color: var(--color-button-disabled-bg);
+    }
   }
 }
 
-.groupContainer {
+.inner {
+  outline: none;
+  display: flex;
+  justify-self: stretch;
+  justify-content: stretch;
+  align-items: stretch;
+  width: stretch;
+}
+
+/* .groupContainer {
   @nest & .borderRadius:not(:last-child):not(:first-child) {
     border-radius: 0;
   }
@@ -285,23 +348,7 @@
   @nest & .borderRadius + .borderRadius {
     margin: 0;
   }
-}
-
-span.inner {
-  outline: none;
-  display: flex;
-  justify-self: stretch;
-  justify-content: stretch;
-  align-items: stretch;
-  width: stretch;
-}
-
-span.content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: stretch;
-}
+} */
 
 .icon {
   display: flex;
@@ -315,21 +362,6 @@ span.content {
       font-size: calc(25 / 16 * 1em); /* 25px */
       margin: calc(4 / 25 * -1em); /* -4px */
     }
-  }
-
-  @nest &.sanityIcon {
-    @nest & > svg {
-      font-size: calc(25 / 16 * 1em); /* 25px */
-      margin: calc(4 / 25 * -1em); /* -4px */
-    }
-  }
-}
-
-.text {
-  margin: -2px 0 -1px;
-
-  @nest .icon + & {
-    margin-left: var(--small-padding--em);
   }
 }
 
@@ -348,49 +380,22 @@ span.content {
   border-radius: var(--button-border-radius);
 }
 
-.padding_large {
-  @nest & .content {
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: stretch;
+
+  @nest .padding_large & {
     padding: calc(var(--medium-padding--em) - 1px);
   }
-}
 
-.padding_default {
-  @nest & .content {
+  @nest .padding_default & {
     padding: calc(var(--medium-padding--em) - var(--extra-small-padding--em) - 1px);
   }
-}
 
-.padding_small {
-  @nest & .content {
+  @nest .padding_small & {
     padding: calc(var(--small-padding--em) - 1px);
-  }
-}
-
-.default {
-  /* inherits from root */
-}
-
-/* @todo: Extract color vars */
-.simple {
-  composes: root;
-  border: 1px solid transparent !important;
-  background-color: transparent;
-
-  @nest & .spinner {
-    background-color: var(--white);
-  }
-
-  @nest &:not(.disabled) {
-    @media (hover: hover) {
-      @nest &:hover {
-        background-color: color(var(--default-button-color) a(5%));
-      }
-    }
-
-    @nest &:active {
-      background-color: color(var(--default-button-color) lightness(+ 10%) a(10%));
-      outline: 0;
-    }
   }
 }
 
@@ -437,16 +442,23 @@ span.content {
 
     @nest &:focus {
       background-color: var(--color-button-primary-simple-focus-bg);
+      color: var(--color-button-primary-simple-focus-text);
     }
 
     @media (hover: hover) {
       @nest &:hover {
         background-color: var(--color-button-primary-simple-hover-bg);
+        color: var(--color-button-primary-simple-hover-text);
       }
     }
 
     @nest &:active {
       background-color: var(--color-button-primary-simple-active-bg);
+    }
+
+    @nest &.selected {
+      background-color: var(--color-button-primary-simple-selected-bg);
+      color: var(--color-button-primary-simple-selected-text);
     }
   }
 }
@@ -490,16 +502,23 @@ span.content {
 
     @nest &:focus {
       background-color: var(--color-button-success-simple-focus-bg);
+      color: var(--color-button-success-simple-focus-text);
     }
 
     @media (hover: hover) {
       @nest &:hover {
         background-color: var(--color-button-success-simple-hover-bg);
+        color: var(--color-button-success-simple-hover-text);
       }
     }
 
     @nest &:active {
       background-color: var(--color-button-success-simple-active-bg);
+    }
+
+    @nest &.selected {
+      background-color: var(--color-button-success-simple-selected-bg);
+      color: var(--color-button-success-simple-selected-text);
     }
   }
 }
@@ -543,16 +562,23 @@ span.content {
 
     @nest &:focus {
       background-color: var(--color-button-warning-simple-focus-bg);
+      color: var(--color-button-warning-simple-focus-text);
     }
 
     @media (hover: hover) {
       @nest &:hover {
         background-color: var(--color-button-warning-simple-hover-bg);
+        color: var(--color-button-warning-simple-hover-text);
       }
     }
 
     @nest &:active {
       background-color: var(--color-button-warning-simple-active-bg);
+    }
+
+    @nest &.selected {
+      background-color: var(--color-button-warning-simple-selected-bg);
+      color: var(--color-button-warning-simple-selected-text);
     }
   }
 }
@@ -596,16 +622,23 @@ span.content {
 
     @nest &:focus {
       background-color: var(--color-button-danger-simple-focus-bg);
+      color: var(--color-button-danger-simple-focus-text);
     }
 
     @media (hover: hover) {
       @nest &:hover {
         background-color: var(--color-button-danger-simple-hover-bg);
+        color: var(--color-button-danger-simple-hover-text);
       }
     }
 
     @nest &:active {
       background-color: var(--color-button-danger-simple-active-bg);
+    }
+
+    @nest &.selected {
+      background-color: var(--color-button-danger-simple-selected-bg);
+      color: var(--color-button-danger-simple-selected-text);
     }
   }
 }
@@ -628,16 +661,19 @@ span.content {
 
     @nest &:focus {
       background-color: color(var(--white) lightness(- 5%));
+      color: color(var(--default-button-color) lightness(- 20%));
     }
 
     @media (hover: hover) {
       @nest &:hover {
         background-color: color(var(--white) lightness(- 5%));
+        color: color(var(--default-button-color) lightness(- 20%));
       }
     }
 
     @nest &:active {
       background-color: color(var(--white) lightness(- 10%));
+      color: color(var(--default-button-color) lightness(- 20%));
     }
 
     @nest &.inverted:not(:focus):not(:hover):not(:active) {
@@ -671,24 +707,30 @@ span.content {
       color: var(--white);
 
       @nest &:focus {
-        background-color: color(var(--white) alpha(5%));
+        background-color: color(var(--white) alpha(10%));
+        color: var(--white);
       }
 
       @media (hover: hover) {
         @nest &:hover {
-          background-color: color(var(--white) alpha(5%));
+          background-color: color(var(--white) alpha(10%));
+          color: var(--white);
         }
       }
 
       @nest &:active {
-        background-color: color(var(--white) alpha(10%));
+        background-color: color(var(--white) alpha(20%));
+        color: var(--white);
+      }
+
+      @nest &.selected {
+        background-color: color(var(--white) alpha(20%));
+        color: var(--white);
       }
     }
 
-    @nest &.inverted:not(:disabled):not(:focus):not(:hover):not(:active) {
+    @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
       border-color: color(var(--white) alpha(10%));
-
-      /* @todo */
     }
   }
 }

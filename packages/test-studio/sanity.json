@@ -117,6 +117,10 @@
         {
           "implements": "part:@sanity/base/tool",
           "path": "src/tools/css-variables/tool.js"
+        },
+        {
+          "implements": "_part:@sanity/base/theme/variables/override-style",
+          "path": "src/themes/dark.css"
         }
       ]
     }

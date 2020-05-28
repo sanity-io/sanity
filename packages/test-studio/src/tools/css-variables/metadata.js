@@ -301,7 +301,7 @@ export const files = [
       {name: '--blockquote-color', type: 'color'},
       {name: '--blockquote-font-size', type: 'fontSize'},
       {name: '--blockquote-border-color', type: 'color'},
-      {name: '--blockquote-small-color', type: 'color'},
+      // {name: '--blockquote-small-color', type: 'color'},
       {name: '--page-header-border-color', type: 'color'},
       {name: '--hr-border', type: 'color'},
       {name: '--preview-placeholder-text-color', type: 'color'},

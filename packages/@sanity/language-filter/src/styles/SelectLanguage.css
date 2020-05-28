@@ -3,23 +3,38 @@
 .target {
   display: flex;
   align-items: center;
-  color: var(--text-color);
-  opacity: 1;
-  min-width: 4rem;
-  font-size: var(--font-size-xsmall);
+  color: var(--default-button-color);
   white-space: nowrap;
-  height: 2.5rem;
   align-self: center;
-  margin-right: 1em;
+  border-radius: var(--button-border-radius);
+  padding: var(--small-padding);
 }
 
-.arrow {
-  margin-left: 0.4em;
+.targetValue {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+
+  /* Optical alignment */
+  padding: 0 0 1px;
+}
+
+.targetIcon {
+  margin-left: var(--extra-small-padding);
+
+  @nest & svg {
+    display: block;
+    font-size: 17px;
+    margin: 0;
+
+    &[data-sanity-icon='true'] {
+      font-size: 21px;
+      margin: -2px;
+    }
+  }
 }
 
 .root {
-  padding: 0.5em;
-  background-color: var(--component-bg);
+  background-color: #fe0;
   color: var(--text-color);
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   user-select: none;

@@ -9,7 +9,8 @@
 .header {
   display: flex;
   width: 100%;
-  padding: 0.5em;
+  padding: var(--small-padding);
+  box-sizing: border-box;
 }
 
 .heading {
@@ -85,4 +86,7 @@
 
 .media:empty {
   display: none;
+}
+
+.content {
 }

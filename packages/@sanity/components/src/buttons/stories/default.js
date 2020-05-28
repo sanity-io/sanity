@@ -37,9 +37,10 @@ export function DefaultStory() {
       'props'
     ),
     loading: boolean('Loading', false, 'props'),
-    icon: boolean('Icon', false, 'props') ? TrashIcon : false,
+    icon: boolean('Icon', undefined, 'props') ? TrashIcon : undefined,
     padding: select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props'),
-    bleed: boolean('Bleed', false, 'props')
+    bleed: boolean('Bleed', false, 'props'),
+    selected: boolean('Selected', false, 'props')
   }
 
   const children = text('Text', 'Touch Me!', 'props')
@@ -62,13 +63,13 @@ export function DefaultStory() {
             </Button>
           </div>
 
-          <div>
+          {/* <div>
             <h2>kind="secondary"</h2>
             <p>(will be deprecated: use inverted instead)</p>
             <Button {...buttonProps} kind="secondary">
               {children}
             </Button>
-          </div>
+          </div> */}
         </div>
       </Sanity>
     </CenteredContainer>

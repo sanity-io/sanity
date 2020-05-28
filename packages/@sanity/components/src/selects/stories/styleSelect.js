@@ -1,7 +1,7 @@
 import React from 'react'
 import {action} from 'part:@sanity/storybook'
 import StyleSelect from 'part:@sanity/components/selects/style'
-import {boolean, text} from 'part:@sanity/storybook/addons/knobs'
+import {boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const styleItems = [
@@ -68,6 +68,7 @@ export function StyleSelectStory() {
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onOpen={action('onOpen')}
+          padding={select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props')}
           renderItem={renderStyleItem}
           items={styleItems}
         />

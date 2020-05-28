@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import React, {Fragment} from 'react'
+import React from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
-import ArrowIcon from 'part:@sanity/base/angle-down-icon'
+import ChevronDownIcon from 'part:@sanity/base/angle-down-icon'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import {omit, get} from 'lodash'
 import Poppable from 'part:@sanity/components/utilities/poppable'
@@ -50,7 +50,7 @@ export default class DropDownButton extends React.PureComponent {
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
-    colored: PropTypes.bool,
+    // colored: PropTypes.bool,
     color: PropTypes.string,
     className: PropTypes.string,
     renderItem: PropTypes.func,
@@ -62,7 +62,7 @@ export default class DropDownButton extends React.PureComponent {
     children: undefined,
     className: undefined,
     color: undefined,
-    colored: false,
+    // colored: false,
     kind: undefined,
     icon: undefined,
     inverted: false,
@@ -174,8 +174,10 @@ export default class DropDownButton extends React.PureComponent {
         <div className={styles.inner}>
           {showArrow ? (
             <div className={styles.inner}>
-              {children}
-              <ArrowIcon color="inherit" className={styles.arrow} />
+              <span className={styles.label}>{children}</span>
+              <span className={styles.iconContainer}>
+                <ChevronDownIcon />
+              </span>
             </div>
           ) : (
             children
@@ -191,7 +193,7 @@ export default class DropDownButton extends React.PureComponent {
             positionFixed
           >
             {menuOpened && (
-              <Fragment>
+              <>
                 <List className={styles.list}>
                   <ArrowKeyNavigation>
                     {items.map((item, i) => {
@@ -212,7 +214,7 @@ export default class DropDownButton extends React.PureComponent {
                   </ArrowKeyNavigation>
                 </List>
                 <div tabIndex={0} onFocus={this.handleMenuBlur} />
-              </Fragment>
+              </>
             )}
           </Poppable>
         </div>

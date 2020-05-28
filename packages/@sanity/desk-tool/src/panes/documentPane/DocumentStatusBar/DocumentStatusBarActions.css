@@ -97,12 +97,18 @@
 .menuItemIcon {
   display: inline-block;
   vertical-align: top;
-  width: 1em;
+  width: 17px;
   margin: 0 0.5em 0 0;
 
   @nest & svg {
     display: block;
-    margin: 0.25em 0;
+    font-size: calc(17 / 16 * 1em);
+    margin: calc(4 / 17 * 1em) 0;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: 0 calc(4 / 25 * -1em);
+    }
   }
 }
 

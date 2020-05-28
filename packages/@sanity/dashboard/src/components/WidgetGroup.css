@@ -8,6 +8,7 @@
   grid-gap: var(--medium-padding);
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   grid-auto-flow: dense;
+  grid-auto-rows: minmax(0, min-content);
 
   @nest & > div {
     overflow: hidden;
