@@ -307,6 +307,7 @@ span.content {
   display: flex;
 
   @nest & > svg {
+    font-size: calc(17 / 16 * 1em); /* 17px */
     display: block;
     font-size: calc(17 / 16 * 1em); /* 17px */
 
@@ -314,6 +315,21 @@ span.content {
       font-size: calc(25 / 16 * 1em); /* 25px */
       margin: calc(4 / 25 * -1em); /* -4px */
     }
+  }
+
+  @nest &.sanityIcon {
+    @nest & > svg {
+      font-size: calc(25 / 16 * 1em); /* 25px */
+      margin: calc(4 / 25 * -1em); /* -4px */
+    }
+  }
+}
+
+.text {
+  margin: -2px 0 -1px;
+
+  @nest .icon + & {
+    margin-left: var(--small-padding--em);
   }
 }
 

@@ -119,7 +119,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
                 </span>
               )}
               {Icon && (
-                <div className={styles.icon}>
+                <div className={classNames(styles.icon, Icon.sanityIcon && styles.sanityIcon)}>
                   <Icon />
                 </div>
               )}
