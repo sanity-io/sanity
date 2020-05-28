@@ -1054,10 +1054,6 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "presence/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
       "path": "history/story.js"
     },
     {
