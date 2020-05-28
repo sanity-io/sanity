@@ -26,7 +26,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
-      padding: PropTypes.oneOf(['default', 'small', 'none']),
+      padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
       bleed: PropTypes.bool
     }
 
@@ -91,8 +91,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         inverted && styles.inverted,
         color && styles[`color__${color}`],
         bleed && styles.bleed,
-        disabled && styles.disabled,
-        !children && styles.onlyIcon
+        disabled && styles.disabled
       ])
 
       return (
@@ -125,7 +124,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
                   <Icon />
                 </div>
               )}
-              {children}
+              {children && <span className={styles.text}>{children}</span>}
             </span>
           </span>
         </Component>
