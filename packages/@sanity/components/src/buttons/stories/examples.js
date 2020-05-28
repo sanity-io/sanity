@@ -1,4 +1,4 @@
-import PlusIcon from 'part:@sanity/base/plus-icon'
+import ComposeIcon from 'part:@sanity/base/compose-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import Button from 'part:@sanity/components/buttons/default'
@@ -254,7 +254,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           title="Default"
           disabled={disabled}
           loading={loading}
@@ -263,7 +263,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           color="danger"
           title="Danger"
           disabled={disabled}
@@ -272,7 +272,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           inverted
           title="Inverted"
           disabled={disabled}
@@ -282,7 +282,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           inverted
           color="danger"
           title="Inverted danger"
@@ -293,7 +293,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           kind="simple"
           title="Simple"
           disabled={disabled}
@@ -303,7 +303,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           kind="simple"
           color="danger"
           title="Simple danger"
@@ -314,7 +314,7 @@ export function ExamplesStory() {
           intent="create"
           params={{type: 'book'}}
           onClick={preventDefault}
-          icon={PlusIcon}
+          icon={ComposeIcon}
           kind="simple"
           color="primary"
           title="Simple primary"
