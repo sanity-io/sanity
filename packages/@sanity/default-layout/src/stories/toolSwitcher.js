@@ -5,14 +5,14 @@ import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
 import ToolSwitcherWidget from '../navbar/toolMenu/ToolSwitcherWidget'
 import ToolSwitcherItem from '../navbar/toolMenu/ToolSwitcherItem'
 
-import NavBarStyles from '../navbar/NavBar.css'
+import NavbarStyles from '../navbar/Navbar.css'
 import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function ToolSwitcherStory() {
   return (
     <div className={DefaultLayoutStyles.navBar}>
-      <div className={NavBarStyles.root}>
-        <div className={NavBarStyles.toolSwitcher}>
+      <div className={NavbarStyles.root}>
+        <div className={NavbarStyles.toolSwitcher}>
           <ToolSwitcherWidget
             onSwitchTool={event => action('onSwitchTool')}
             tools={[
