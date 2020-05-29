@@ -1,1 +1,3 @@
-export {default} from 'react-icons/lib/md/visibility-off'
+// part:@sanity/base/visibility-off-icon
+
+export {default} from './EyeClosed'

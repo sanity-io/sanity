@@ -1,3 +1,3 @@
-import MdFullscreenExit from 'react-icons/lib/md/fullscreen-exit'
+// part:@sanity/base/fullscreen-exit-icon
 
-export default MdFullscreenExit
+export {default} from './Collapse'

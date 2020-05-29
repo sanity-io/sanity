@@ -1,1 +1,3 @@
-export {default} from 'react-icons/lib/fa/angle-up'
+// part:@sanity/base/angle-up-icon
+
+export {default} from './ChevronUp'

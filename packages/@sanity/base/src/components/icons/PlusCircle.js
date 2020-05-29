@@ -1,3 +1,3 @@
-import PlusCircle from 'react-icons/lib/md/add-circle'
+// part:@sanity/base/plus-circle-icon
 
-export default PlusCircle
+export {default} from './AddCircle'
