@@ -13,40 +13,63 @@ const actionsProps = {
 }
 
 export function DefaultStory() {
-  let testElement = null
+  let buttonElement = null
 
   function testFocus() {
-    testElement.focus()
+    if (buttonElement) buttonElement.focus()
   }
 
-  function setConfirmButton(element) {
-    testElement = element
+  function setButtonElement(element) {
+    buttonElement = element
   }
 
   button('Test focus', () => testFocus(), 'test')
 
+  const buttonProps = {
+    ...actionsProps,
+    // kind: select('Kind', ['default', 'simple', 'secondary'], 'default', 'props'),
+    disabled: boolean('Disabled', false, 'props'),
+    inverted: boolean('Inverted', false, 'props'),
+    color: select(
+      'Color',
+      [undefined, 'primary', 'success', 'warning', 'danger', 'white'],
+      undefined,
+      'props'
+    ),
+    loading: boolean('Loading', false, 'props'),
+    icon: boolean('Icon', false, 'props') ? TrashIcon : false,
+    padding: select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props'),
+    bleed: boolean('Bleed', false, 'props')
+  }
+
+  const children = text('Text', 'Touch Me!', 'props')
+
   return (
     <CenteredContainer>
       <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
-        <Button
-          {...actionsProps}
-          kind={select('Kind', ['default', 'simple', 'secondary'], 'default', 'props')}
-          disabled={boolean('Disabled', false, 'props')}
-          inverted={boolean('Inverted', false, 'props')}
-          color={select(
-            'Color',
-            [undefined, 'primary', 'success', 'warning', 'danger', 'white'],
-            undefined,
-            'props'
-          )}
-          loading={boolean('Loading', false, 'props')}
-          icon={boolean('Icon', false, 'props') ? TrashIcon : false}
-          padding={select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props')}
-          ref={setConfirmButton}
-          bleed={boolean('Bleed', false, 'props')}
-        >
-          {text('Text', 'Touch Me!', 'props')}
-        </Button>
+        <div>
+          <div>
+            <h2>kind="default"</h2>
+            <Button {...buttonProps} ref={setButtonElement}>
+              {children}
+            </Button>
+          </div>
+
+          <div>
+            <h2>kind="simple"</h2>
+            <Button {...buttonProps} kind="simple">
+              {children}
+            </Button>
+          </div>
+
+          <div>
+            <h2>kind="secondary"</h2>
+            <p>(will be deprecated: use inverted instead)</p>
+            <Button {...buttonProps} kind="secondary">
+              {children}
+            </Button>
+          </div>
+        </div>
       </Sanity>
     </CenteredContainer>
   )
