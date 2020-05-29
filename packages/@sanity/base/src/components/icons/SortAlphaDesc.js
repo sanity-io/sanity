@@ -1,3 +1,3 @@
-import FaSortAlphaDesc from 'react-icons/lib/fa/sort-alpha-desc'
+// part:@sanity/base/sort-alpha-desc-icon
 
-export default FaSortAlphaDesc
+export {default} from './ArrowUp'

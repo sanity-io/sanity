@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+// part:@sanity/base/sanity-logo
+
 import React from 'react'
 
 const SanityLogo = props => (

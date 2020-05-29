@@ -1,3 +1,3 @@
-import MdAccessTime from 'react-icons/lib/md/access-time'
+// part:@sanity/base/time-icon
 
-export default MdAccessTime
+export {default} from './Clock'

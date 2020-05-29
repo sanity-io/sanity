@@ -1,9 +1,15 @@
+// part:@sanity/base/package-icon
+
 import React from 'react'
 
-const strokeStyle = {vectorEffect: 'non-scaling-stroke'}
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2
+}
 
 const PackageIcon = () => (
   <svg
+    data-sanity-icon
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

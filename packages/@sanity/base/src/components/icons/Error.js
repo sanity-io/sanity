@@ -1,3 +1,3 @@
-import MdError from 'react-icons/lib/md/error'
+// part:@sanity/base/error-icon
 
-export default MdError
+export {default} from './ErrorOutline'

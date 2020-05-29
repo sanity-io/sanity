@@ -1,3 +1,3 @@
-import MdInfo from 'react-icons/lib/md/info'
+// part:@sanity/base/info-icon
 
-export default MdInfo
+export {default} from './InfoOutline'

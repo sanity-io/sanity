@@ -1,3 +1,3 @@
-import FaBars from 'react-icons/lib/fa/bars'
+// part:@sanity/base/bars-icon
 
-export default FaBars
+export {default} from './Menu'
