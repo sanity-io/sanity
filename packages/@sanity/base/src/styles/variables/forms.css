@@ -3,10 +3,10 @@
 
 :root {
   /* Default button */
-  --default-button-color: var(--text-color);
+  --default-button-color: var(--gray);
   --default-button-color--inverted: var(--white);
-  --default-button-color--hover: var(--text-color);
-  --default-button-color--active: var(--text-color);
+  --default-button-color--hover: var(--gray);
+  --default-button-color--active: var(--gray);
 
   /* Button */
   --button-border-radius: var(--border-radius-medium);
@@ -34,9 +34,9 @@
   --input-box-shadow-base: var(--gray-base);
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
-  --input-box-shadow--focus: 0 0 0 3px color(var(--input-border-color-focus) a(42%));
+  --input-box-shadow--focus: 0 0 0 3px color(var(--input-border-color-focus) a(50%));
   --input-box-shadow--invalid: none;
-  --input-box-shadow--invalid-focus: 0 0 0 3px color(var(--input-border-color-invalid) a(42%));
+  --input-box-shadow--invalid-focus: 0 0 0 3px color(var(--input-border-color-invalid) a(50%));
 
   /* Focus */
   --focus-color: color(var(--brand-primary) alpha(40%));
