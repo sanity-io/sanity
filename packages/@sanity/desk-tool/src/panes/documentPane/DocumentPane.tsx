@@ -821,7 +821,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     if (connectionState === 'connecting') {
       return (
         <div className={documentPaneStyles.loading}>
-          <Spinner center message={`Loading ${schemaType.title}…`} delay={600} />
+          <Spinner center delay={1000} message={`Loading ${schemaType.title}…`} />
         </div>
       )
     }
