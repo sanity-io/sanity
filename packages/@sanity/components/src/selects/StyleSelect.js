@@ -35,6 +35,7 @@ const modifiers = {
 class StyleSelect extends React.PureComponent {
   static propTypes = {
     placeholder: PropTypes.string,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
@@ -85,6 +86,9 @@ class StyleSelect extends React.PureComponent {
   }
 
   handleOpenList = () => {
+    if (this.props.disabled) {
+      return
+    }
     this.setState(
       {
         showList: true
@@ -144,7 +148,7 @@ class StyleSelect extends React.PureComponent {
   }
 
   render() {
-    const {value, items, className, placeholder, renderItem, transparent} = this.props
+    const {value, items, className, placeholder, renderItem, transparent, disabled} = this.props
     const {showList} = this.state
 
     return (
@@ -153,7 +157,9 @@ class StyleSelect extends React.PureComponent {
         onClick={this.handleButtonClick}
         onBlur={this.handleButtonBlur}
         onKeyPress={this.handleButtonKeyDown}
-        className={`${styles.root} ${className || ''} ${transparent ? styles.transparent : ''}`}
+        className={`${styles.root} ${className || ''} ${transparent ? styles.transparent : ''} ${
+          disabled ? styles.disabled : ''
+        }`}
       >
         <div className={styles.inner} ref={this.buttonElement}>
           <div className={styles.selectContainer}>
