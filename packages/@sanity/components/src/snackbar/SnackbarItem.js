@@ -190,10 +190,9 @@ export default class SnackbarItem extends React.Component {
                   // eslint-disable-next-line react/jsx-handler-names
                   onClick={() => this.handleAction()}
                   bleed
+                  color="white"
                   kind="simple"
-                  style={{lineHeight: 'inherit'}}
                   padding="none"
-                  ripple={false}
                 >
                   {action.title}
                 </Button>
@@ -205,10 +204,10 @@ export default class SnackbarItem extends React.Component {
                   aria-label="Close"
                   onClick={this.handleClose}
                   bleed
-                  kind="simple"
+                  color="white"
                   icon={CloseIcon}
+                  kind="simple"
                   padding="none"
-                  ripple={false}
                 />
               </div>
             )}
