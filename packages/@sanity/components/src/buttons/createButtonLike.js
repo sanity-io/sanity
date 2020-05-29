@@ -76,13 +76,11 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         loading,
         className,
         children,
+        disabled,
         padding,
         bleed,
         ...rest
       } = this.props
-
-      // Should not be part of the destructing, cause it should be passed to component through rest
-      const disabled = this.props.disabled
 
       const style = classNames(className, [
         styles.root,
@@ -98,6 +96,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         <Component
           {...rest}
           className={style}
+          disabled={disabled}
           ref={this.setRootElement}
           tabIndex={0}
           onBlur={this.handleBlur}
