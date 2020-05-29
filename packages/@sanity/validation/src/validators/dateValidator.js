@@ -1,4 +1,4 @@
-import moment from 'moment'
+import formatDate from 'date-fns/format'
 
 const ValidationError = require('../ValidationError')
 const genericValidator = require('./genericValidator')
@@ -12,7 +12,7 @@ const getFormattedDate = (type = '', value, options) => {
   }
   if (type === 'date') {
     // If the type is date only
-    return moment(value).format(format)
+    return formatDate(value, format)
   }
   // If the type is datetime
   if (options && options.timeFormat) {
@@ -20,7 +20,7 @@ const getFormattedDate = (type = '', value, options) => {
   } else {
     format += ' HH:mm'
   }
-  return moment(value).format(format)
+  return formatDate(value, format)
 }
 
 const type = (unused, value, message) => {
