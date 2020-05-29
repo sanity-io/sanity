@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const CalendarIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +28,5 @@ const CalendarIcon = () => (
     <path d="M17.5 8V3" style={strokeStyle} />
   </svg>
 )
-
-CalendarIcon.sanityIcon = true
 
 export default CalendarIcon

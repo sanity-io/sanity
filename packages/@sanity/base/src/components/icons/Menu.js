@@ -10,6 +10,7 @@ const strokeStyle = {
 
 const MenuIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +23,5 @@ const MenuIcon = () => (
     <path d="M5 12.5H20" style={strokeStyle} />
   </svg>
 )
-
-MenuIcon.sanityIcon = true
 
 export default MenuIcon

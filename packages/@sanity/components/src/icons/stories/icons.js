@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import {Container} from 'part:@sanity/storybook/components'
 import React from 'react'
 
@@ -282,9 +281,7 @@ const icons = [
 function IconRow({component, partId, title}) {
   return (
     <li className={styles.icon}>
-      <div className={classNames(styles.iconPreview, component.sanityIcon && styles.sanityIcon)}>
-        {React.createElement(component)}
-      </div>
+      <div className={styles.iconPreview}>{React.createElement(component)}</div>
       <div className={styles.iconText}>
         <div className={styles.iconTitle}>{title}</div>
         <pre className={styles.iconCode}>{`import ${component.name} from '${partId}'`}</pre>

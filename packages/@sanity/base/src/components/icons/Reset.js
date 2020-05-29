@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const ResetIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +26,5 @@ const ResetIcon = () => (
     <path d="M7 11L4.56189 13.5L2 11" style={strokeStyle} />
   </svg>
 )
-
-ResetIcon.sanityIcon = true
 
 export default ResetIcon

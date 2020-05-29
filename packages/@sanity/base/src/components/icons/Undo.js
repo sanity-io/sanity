@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const UndoIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +24,5 @@ const UndoIcon = () => (
     <path d="M7.5 11L4.56189 13.5L2 10.5" style={strokeStyle} />
   </svg>
 )
-
-UndoIcon.sanityIcon = true
 
 export default UndoIcon

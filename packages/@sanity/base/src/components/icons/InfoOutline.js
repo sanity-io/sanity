@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const InfoOutlineIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +22,5 @@ const InfoOutlineIcon = () => (
     <path d="M12.5 12V16" style={strokeStyle} />
   </svg>
 )
-
-InfoOutlineIcon.sanityIcon = true
 
 export default InfoOutlineIcon

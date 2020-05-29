@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const TruncateIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +22,5 @@ const TruncateIcon = () => (
     <path d="M16.5 5.5L12.5 9.5L8.5 5.5" style={strokeStyle} />
   </svg>
 )
-
-TruncateIcon.sanityIcon = true
 
 export default TruncateIcon

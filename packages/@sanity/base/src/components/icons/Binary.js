@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const BinaryDocumentIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +26,5 @@ const BinaryDocumentIcon = () => (
     <path d="M12.5 16.5V11.5H15.5V16.5H12.5Z" style={strokeStyle} />
   </svg>
 )
-
-BinaryDocumentIcon.sanityIcon = true
 
 export default BinaryDocumentIcon

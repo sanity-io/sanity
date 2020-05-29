@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const WarningOutlineIcon = () => (
   <svg
+    data-sanity-icon={true}
     preserveAspectRatio="xMidYMid"
     width="1em"
     height="1em"
@@ -21,7 +22,5 @@ const WarningOutlineIcon = () => (
     <path d="M12.5 10V14" style={strokeStyle} />
   </svg>
 )
-
-WarningOutlineIcon.sanityIcon = true
 
 export default WarningOutlineIcon

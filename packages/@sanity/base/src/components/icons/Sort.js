@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const SortIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +23,5 @@ const SortIcon = () => (
     <path d="M13 10L16.5 6.5L20 10" style={strokeStyle} />
   </svg>
 )
-
-SortIcon.sanityIcon = true
 
 export default SortIcon

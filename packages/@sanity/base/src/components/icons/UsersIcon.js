@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const UsersIcon = () => (
   <svg
+    data-sanity-icon={true}
     preserveAspectRatio="xMidYMid"
     width="1em"
     height="1em"
@@ -27,7 +28,5 @@ const UsersIcon = () => (
     />
   </svg>
 )
-
-UsersIcon.sanityIcon = true
 
 export default UsersIcon

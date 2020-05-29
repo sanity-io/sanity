@@ -28,10 +28,8 @@
     vertical-align: top !important;
     width: 1em;
     height: 1em;
-  }
 
-  @nest &.sanityIcon {
-    @nest & svg {
+    @nest &[data-sanity-icon='true'] {
       font-size: calc(25 / 16 * 1em);
       margin: calc(4 / 25 * -1em);
     }

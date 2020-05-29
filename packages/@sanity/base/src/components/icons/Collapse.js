@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const CollapseIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const CollapseIcon = () => (
     <path d="M6 14.5H10.5M10.5 14.5V19M10.5 14.5L6 19" style={strokeStyle} />
   </svg>
 )
-
-CollapseIcon.sanityIcon = true
 
 export default CollapseIcon

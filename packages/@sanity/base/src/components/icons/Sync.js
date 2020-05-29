@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const SyncIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +29,5 @@ const SyncIcon = () => (
     <path d="M14 17.5L11.5 20.4381L14.5 23" style={strokeStyle} />
   </svg>
 )
-
-SyncIcon.sanityIcon = true
 
 export default SyncIcon

@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const ComposeIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +23,5 @@ const ComposeIcon = () => (
     <path d="M17 6L19 8" style={strokeStyle} />
   </svg>
 )
-
-ComposeIcon.sanityIcon = true
 
 export default ComposeIcon

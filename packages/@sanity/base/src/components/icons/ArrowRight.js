@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const ArrowRightIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const ArrowRightIcon = () => (
     <path d="M13 7L18.5 12.5L13 18" style={strokeStyle} />
   </svg>
 )
-
-ArrowRightIcon.sanityIcon = true
 
 export default ArrowRightIcon

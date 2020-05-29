@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const PackageIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +27,5 @@ const PackageIcon = () => (
     <path d="M9 6.5L16 11" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
-
-PackageIcon.sanityIcon = true
 
 export default PackageIcon

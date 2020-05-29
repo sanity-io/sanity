@@ -7,8 +7,9 @@ const strokeStyle = {
   strokeWidth: 1.2
 }
 
-const StackIcon = () => (
+const StackCompactIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -23,6 +24,4 @@ const StackIcon = () => (
   </svg>
 )
 
-StackIcon.sanityIcon = true
-
-export default StackIcon
+export default StackCompactIcon

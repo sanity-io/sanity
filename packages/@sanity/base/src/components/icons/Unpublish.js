@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const UnpublishIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +22,5 @@ const UnpublishIcon = () => (
     <path d="M17.5 11L12.5 16L7.49998 11" style={strokeStyle} />
   </svg>
 )
-
-UnpublishIcon.sanityIcon = true
 
 export default UnpublishIcon

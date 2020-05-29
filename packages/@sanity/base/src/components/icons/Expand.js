@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const ExpandIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const ExpandIcon = () => (
     <path d="M11 18.5H6.5M6.5 18.5L6.5 14M6.5 18.5L11 14" style={strokeStyle} />
   </svg>
 )
-
-ExpandIcon.sanityIcon = true
 
 export default ExpandIcon

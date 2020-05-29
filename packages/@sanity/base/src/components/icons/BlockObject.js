@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const BlockObjectIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +22,5 @@ const BlockObjectIcon = () => (
     <rect x="6.5" y="8.5" width="12" height="8" style={strokeStyle} />
   </svg>
 )
-
-BlockObjectIcon.sanityIcon = true
 
 export default BlockObjectIcon

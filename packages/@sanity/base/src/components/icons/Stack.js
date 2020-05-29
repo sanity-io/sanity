@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const StackIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const StackIcon = () => (
     <path d="M19.5 18.5H5.5V12.5H19.5V18.5Z" style={strokeStyle} />
   </svg>
 )
-
-StackIcon.sanityIcon = true
 
 export default StackIcon

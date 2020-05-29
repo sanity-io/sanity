@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const DocumentCopyIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +23,5 @@ const DocumentCopyIcon = () => (
     <path d="M10 3.5V8H5.5" style={strokeStyle} />
   </svg>
 )
-
-DocumentCopyIcon.sanityIcon = true
 
 export default DocumentCopyIcon

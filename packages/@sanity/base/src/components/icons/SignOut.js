@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const LeaveIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const LeaveIcon = () => (
     <path d="M10 12.5H22M20 10L22.5 12.5L20 15" style={strokeStyle} />
   </svg>
 )
-
-LeaveIcon.sanityIcon = true
 
 export default LeaveIcon

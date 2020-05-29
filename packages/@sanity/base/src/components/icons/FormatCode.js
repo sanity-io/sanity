@@ -10,6 +10,7 @@ const strokeStyle = {
 export default function CodeIcon() {
   return (
     <svg
+      data-sanity-icon={true}
       viewBox="0 0 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -22,5 +23,3 @@ export default function CodeIcon() {
     </svg>
   )
 }
-
-CodeIcon.sanityIcon = true

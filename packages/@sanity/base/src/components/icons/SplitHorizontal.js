@@ -9,6 +9,7 @@ const strokeStyle = {
 
 const HSplitIcon = () => (
   <svg
+    data-sanity-icon={true}
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +21,5 @@ const HSplitIcon = () => (
     <path d="M12.5 5.5V19.5" style={strokeStyle} />
   </svg>
 )
-
-HSplitIcon.sanityIcon = true
 
 export default HSplitIcon
