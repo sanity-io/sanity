@@ -1,3 +1,3 @@
-import MdContentCopy from 'react-icons/lib/md/content-copy'
+// part:@sanity/base/content-copy-icon
 
-export default MdContentCopy
+export {default} from './DocumentCopy'

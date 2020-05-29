@@ -1,12 +1,25 @@
+// part:@sanity/base/block-object-icon
+
 import React from 'react'
 
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2
+}
+
 const BlockObjectIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clipPath="url(#clip0)">
-      <rect x="2.5" y="7.5" width="19" height="11" stroke="currentColor" />
-      <line x1="2" y1="5.5" x2="22" y2="5.5" stroke="currentColor" />
-      <line x1="2" y1="20.5" x2="22" y2="20.5" stroke="currentColor" />
-    </g>
+  <svg
+    data-sanity-icon
+    viewBox="0 0 25 25"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid"
+    width="1em"
+    height="1em"
+  >
+    <path d="M5 19.5H20" style={strokeStyle} />
+    <path d="M5 5.5H20" style={strokeStyle} />
+    <rect x="6.5" y="8.5" width="12" height="8" style={strokeStyle} />
   </svg>
 )
 

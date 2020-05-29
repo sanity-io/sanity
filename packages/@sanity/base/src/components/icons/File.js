@@ -1,3 +1,3 @@
-import FaFile from 'react-icons/lib/fa/file-o'
+// part:@sanity/base/file-icon
 
-export default FaFile
+export {default} from './Document'

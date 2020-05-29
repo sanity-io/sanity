@@ -1,3 +1,1 @@
-import FaQuestion from 'react-icons/lib/fa/question'
-
-export default FaQuestion
+export {default} from './HelpCircle'
