@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes spin {
+@keyframes sanity_spinner_rotation {
   0% {
     transform: rotate(0deg);
   }
@@ -10,7 +10,7 @@
   }
 }
 
-@keyframes appear {
+@keyframes sanity_spinner_appear {
   0% {
     opacity: 0;
   }
@@ -21,97 +21,44 @@
 }
 
 .root {
-  /* root */
-}
-
-.block {
-  composes: root;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-
-  @nest & .inner {
-    display: flex;
-    align-items: center;
-  }
-
-  @nest & .message {
-    margin-left: 0.5em;
-    display: block;
-  }
-}
-
-.inline {
-  composes: root;
-  display: inline-flex;
-
-  @nest & .inner {
-    display: inline-flex;
-  }
-
-  @nest & .icon {
-    height: 1em;
-    width: 1em;
-    display: block;
-    align-self: center;
-  }
-
-  @nest & .message {
-    margin-left: 0.5em;
-    display: block;
-  }
-}
-
-.message:empty {
-  display: none;
-}
-
-.inline.center .message {
-  margin-left: 1em;
-}
-
-.icon {
-  display: block;
-  animation-name: spin;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-  transform-origin: center center;
-  shape-rendering: geometricPrecision;
-  height: 1em;
-  width: 1em;
-
-  @nest & svg {
-    display: block;
-    padding: 0;
-    margin: 0;
-    height: inherit;
-    width: inherit;
-    shape-rendering: geometricPrecision;
-  }
-}
-
-.center {
-  background-color: color(var(--body-bg) a(50%));
-  z-index: var(--zindex-spinner);
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-  opacity: 0;
-  animation-name: appear;
+  color: var(--gray-dark);
+  animation-name: sanity_spinner_appear;
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: once;
   animation-fill-mode: forwards;
+  opacity: 0;
 
-  @media (--screen-medium) {
-    background-color: color(var(--body-bg) a(10%));
+  &.center,
+  &.fullscreen {
+    text-align: center;
   }
 
-  @nest & .inner {
+  &.fullscreen {
+    background-color: color(var(--body-bg) a(90%));
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: var(--zindex-portal);
+  }
+}
+
+.block {
+  composes: root;
+  text-align: center;
+}
+
+.inline {
+  composes: root;
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.inner {
+  @nest .root.fullscreen & {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -120,26 +67,73 @@
     align-items: center;
     flex-direction: column;
   }
+}
 
-  @nest & .icon {
-    height: 2em;
-    width: 2em;
+.iconContainer {
+  display: inline-block;
+  vertical-align: top;
+  animation-name: sanity_spinner_rotation;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  transform-origin: center center;
+  will-change: transform;
+  height: calc(17 / 16 * 1em);
+  width: calc(17 / 16 * 1em);
+  margin: -2px 0;
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    margin: -2px auto;
   }
 
-  @nest & .message {
-    text-align: center;
+  @nest & > svg {
     display: block;
-    font-weight: 300;
-    white-space: pre-wrap;
-    padding-top: 0.5em;
-    align-self: center;
+    font-size: calc(17 / 16 * 1em);
+    width: 1em;
+    width: 1em;
+    shape-rendering: geometricPrecision;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+
+    @nest .root.fullscreen & {
+      font-size: calc(21 / 16 * 1em);
+
+      @nest &[data-sanity-icon='true'] {
+        font-size: calc(29 / 16 * 1em);
+        margin: calc(4 / 29 * -1em);
+      }
+    }
+  }
+
+  @nest .root.fullscreen & {
+    height: calc(21 / 16 * 1em);
+    width: calc(21 / 16 * 1em);
+    margin: -4px;
   }
 }
 
-.fullscreen {
-  composes: center;
-  background-color: color(var(--body-bg) a(90%));
-  color: var(--body-text);
-  position: fixed;
-  z-index: var(--zindex-portal);
+.message {
+  display: inline-block;
+  vertical-align: top;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  /* Optical alignment of the text */
+  margin: -2px 0 -1px var(--small-padding);
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    /* Optical alignment of the text */
+    margin: calc(var(--small-padding) - 2px) auto -1px;
+  }
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    white-space: pre-wrap;
+    padding-top: var(--small-padding);
+    align-self: center;
+  }
 }
