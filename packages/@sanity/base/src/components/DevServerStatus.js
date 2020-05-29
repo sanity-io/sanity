@@ -1,7 +1,6 @@
 import React, {PureComponent} from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import spinnerStyles from 'part:@sanity/components/loading/spinner-style'
 
 const eventBus = window.__webpack_hot_middleware_eventbus__
 const events = eventBus ? eventBus.eventTypes : {}
@@ -98,13 +97,7 @@ class DevServerStatus extends PureComponent {
           kind="warning"
           isPersisted
           isCloseable={false}
-          title={
-            <Spinner inline>
-              <div className={spinnerStyles.message}>
-                <strong>Rebuilding bundle…</strong>
-              </div>
-            </Spinner>
-          }
+          title={<Spinner delay={0} inline message="Rebuilding bundle…" />}
           allowDuplicateSnackbarType
         />
       )

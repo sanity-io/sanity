@@ -32,12 +32,14 @@ export default class Spinner extends React.PureComponent {
       center && styles.center
     )
 
+    console.log('delay', delay)
+
     const rootStyle = {
       animationDelay: `${delay}ms`
     }
 
     const root = (
-      <div className={className} style={{rootStyle}}>
+      <div className={className} style={rootStyle}>
         <div className={styles.inner}>
           <span className={styles.iconContainer}>
             <SpinnerIcon />
