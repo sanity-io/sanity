@@ -1,3 +1,3 @@
-import MdFullscreen from 'react-icons/lib/md/fullscreen'
+// part:@sanity/base/fullscreen-icon
 
-export default MdFullscreen
+export {default} from './Expand'

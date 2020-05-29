@@ -1,3 +1,3 @@
-import FaTimesCircle from 'react-icons/lib/fa/times-circle'
+// part:@sanity/base/danger-icon
 
-export default FaTimesCircle
+export {default} from './ErrorOutline'

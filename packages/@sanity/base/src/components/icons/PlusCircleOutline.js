@@ -1,3 +1,3 @@
-import PlusCircleOutline from 'react-icons/lib/md/add-circle-outline'
+// part:@sanity/base/plus-circle-outline-icon
 
-export default PlusCircleOutline
+export {default} from './AddCircle'

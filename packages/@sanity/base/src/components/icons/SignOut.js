@@ -1,9 +1,15 @@
+// part:@sanity/base/sign-out-icon
+
 import React from 'react'
 
-const strokeStyle = {vectorEffect: 'non-scaling-stroke'}
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2
+}
 
-const SignOutIcon = () => (
+const LeaveIcon = () => (
   <svg
+    data-sanity-icon
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -11,9 +17,9 @@ const SignOutIcon = () => (
     width="1em"
     height="1em"
   >
-    <rect x="3.5" y="5.5" width="14" height="14" stroke="currentColor" style={strokeStyle} />
-    <path d="M8 12.5H23M21 10L23.5 12.5L21 15" stroke="currentColor" style={strokeStyle} />
+    <path d="M16.5 15V19.5H5.5V5.5H16.5V10" style={strokeStyle} />
+    <path d="M10 12.5H22M20 10L22.5 12.5L20 15" style={strokeStyle} />
   </svg>
 )
 
-export default SignOutIcon
+export default LeaveIcon

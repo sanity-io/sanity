@@ -944,6 +944,34 @@
       "path": "components/icons/DragHandle.js"
     },
     {
+      "implements": "part:@sanity/base/stack-icon",
+      "path": "components/icons/Stack.js"
+    },
+    {
+      "implements": "part:@sanity/base/stack-compact-icon",
+      "path": "components/icons/StackCompact.js"
+    },
+    {
+      "implements": "part:@sanity/base/compose-icon",
+      "path": "components/icons/Compose.js"
+    },
+    {
+      "implements": "part:@sanity/base/publish-icon",
+      "path": "components/icons/Publish.js"
+    },
+    {
+      "implements": "part:@sanity/base/unpublish-icon",
+      "path": "components/icons/Unpublish.js"
+    },
+    {
+      "implements": "part:@sanity/base/truncate-icon",
+      "path": "components/icons/Truncate.js"
+    },
+    {
+      "implements": "part:@sanity/base/reset-icon",
+      "path": "components/icons/Reset.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },

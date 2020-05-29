@@ -1,3 +1,3 @@
-import IosTrashOutline from 'react-icons/lib/io/ios-trash-outline'
+// part:@sanity/base/trash-outline-icon
 
-export default IosTrashOutline
+export {default} from './Trash'

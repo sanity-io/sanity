@@ -1,3 +1,3 @@
-import MdWarning from 'react-icons/lib/md/warning'
+// part:@sanity/base/warning-icon
 
-export default MdWarning
+export {default} from './WarningOutline'

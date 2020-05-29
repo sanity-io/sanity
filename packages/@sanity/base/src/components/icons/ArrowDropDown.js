@@ -1,3 +1,3 @@
-import MdArrowDropDown from 'react-icons/lib/md/arrow-drop-down'
+// part:@sanity/base/arrow-drop-down
 
-export default MdArrowDropDown
+export {default} from './ChevronDown'
