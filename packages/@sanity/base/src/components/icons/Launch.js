@@ -9,7 +9,7 @@ const strokeStyle = {
 
 const LaunchIcon = () => (
   <svg
-    data-sanity-icon={true}
+    data-sanity-icon
     width="1em"
     height="1em"
     viewBox="0 0 25 25"
