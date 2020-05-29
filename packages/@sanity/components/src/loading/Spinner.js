@@ -1,48 +1,60 @@
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
-import React from 'react'
-import styles from 'part:@sanity/components/loading/spinner-style'
 import SpinnerIcon from 'part:@sanity/base/spinner-icon'
+import styles from 'part:@sanity/components/loading/spinner-style'
+import React from 'react'
 import {Portal} from '../utilities/Portal'
 
 export default class Spinner extends React.PureComponent {
   static propTypes = {
-    inline: PropTypes.bool,
-    message: PropTypes.string,
-    fullscreen: PropTypes.bool,
     center: PropTypes.bool,
     children: PropTypes.node,
-    delay: PropTypes.number // delay in ms
+    delay: PropTypes.number, // delay in ms
+    fullscreen: PropTypes.bool,
+    inline: PropTypes.bool,
+    message: PropTypes.string
   }
 
   static defaultProps = {
+    center: false,
+    children: null,
     delay: 300,
-    children: null
+    fullscreen: false,
+    inline: false,
+    message: undefined
   }
 
-  renderSpinner() {
+  render() {
     const {inline, message, fullscreen, center, delay, children} = this.props
-    return (
-      <div
-        style={{animationDelay: `${delay}ms`}}
-        className={`
-          ${inline ? styles.inline : styles.block}
-          ${fullscreen ? styles.fullscreen : ''}
-          ${center ? styles.center : ''}
-        `}
-      >
+    const className = classNames(
+      inline ? styles.inline : styles.block,
+      fullscreen && styles.fullscreen,
+      center && styles.center
+    )
+
+    const rootStyle = {
+      animationDelay: `${delay}ms`
+    }
+
+    const root = (
+      <div className={className} style={{rootStyle}}>
         <div className={styles.inner}>
-          <span className={styles.icon}>
+          <span className={styles.iconContainer}>
             <SpinnerIcon />
           </span>
+
+          {/* @todo: Wrap in a container */}
           {children}
+
           {!children && message && <div className={styles.message}>{message}</div>}
         </div>
       </div>
     )
-  }
 
-  render() {
-    const {fullscreen} = this.props
-    return fullscreen ? <Portal>{this.renderSpinner()}</Portal> : this.renderSpinner()
+    if (fullscreen) {
+      return <Portal>{root}</Portal>
+    }
+
+    return root
   }
 }
