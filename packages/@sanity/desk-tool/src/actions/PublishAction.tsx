@@ -1,17 +1,14 @@
+import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import * as React from 'react'
 import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import TimeAgo from '../components/TimeAgo'
 import {useSyncState} from '@sanity/react-hooks'
-import Spinner from 'part:@sanity/components/loading/spinner'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
   ALREADY_PUBLISHED: 'Already published',
   NO_CHANGES: 'No unpublished changes'
 }
-
-const InlineSpinner = () => <Spinner inline />
-const Checkmark = () => '✓ '
 
 function getDisabledReason(reason, publishedAt) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
@@ -101,12 +98,7 @@ export function PublishAction(props) {
         : publishScheduled || publishState === 'publishing'
         ? 'Publishing…'
         : 'Publish',
-    icon:
-      publishState === 'published'
-        ? Checkmark
-        : publishScheduled || publishState === 'publishing'
-        ? InlineSpinner
-        : null,
+    icon: publishState === 'published' ? CheckmarkIcon : null,
     title: publishScheduled
       ? 'Waiting for tasks to finish before publishing'
       : publishState === 'published' || publishState === 'publishing'
