@@ -21,7 +21,7 @@
   display: block;
 
   @nest &:focus {
-    background-color: color(var(--focus-color) a(20%));
+    background-color: color(var(--brand-primary) a(20%));
   }
 }
 
