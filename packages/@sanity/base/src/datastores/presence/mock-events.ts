@@ -64,7 +64,7 @@ export const mock$ = defer(() => from(USERIDS)).pipe(
       locations: [
         {
           type: 'document',
-          documentId: 'presence-test',
+          documentId: Math.random() * 10 > 5 ? 'presence-test' : null,
           // documentId: 'foo-bar',
           // path: ['bestFriend']
           path: sample(PATHS)
