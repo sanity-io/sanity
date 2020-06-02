@@ -25,6 +25,14 @@
 .selected {
   composes: root;
   composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
+
+  @nest & div[class^="AvatarCircle_root"] {
+    box-shadow: 0 0 0 1px var(--selected-item-color);
+  }
+
+  @nest & div[class^="AvatarCircle_avatarInitials"] {
+    color: var(--selectable-item-color--inverted);
+  }
 }
 
 .disabled {
