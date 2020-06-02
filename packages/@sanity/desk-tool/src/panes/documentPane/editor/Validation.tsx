@@ -40,6 +40,7 @@ export function Validation(props: ValidationProps) {
       interactive
       open={showValidationTooltip}
       onRequestClose={onCloseValidationResults}
+      distance={6}
       html={
         <ValidationList
           markers={validation}
