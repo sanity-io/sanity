@@ -56,8 +56,9 @@ export function FieldPresenceInner({
         }
       : null
   ].filter(Boolean)
-
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * MAX_AVATARS
+  const minWidth =
+    -AVATAR_DISTANCE +
+    (AVATAR_SIZE + AVATAR_DISTANCE) * (avatars.length >= 3 ? MAX_AVATARS : avatars.length)
   return (
     <div className={styles.root}>
       <PopoverList
