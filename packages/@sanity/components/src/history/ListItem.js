@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-filename-extension */
 import PropTypes from 'prop-types'
 import React from 'react'
-import AvatarProvider from '../presence/UserAvatar'
+import UserAvatar from '../presence/UserAvatar'
 import PopoverList from '../presence/PopoverList'
+import {PresenceListItem} from '../presence/PresenceListItem'
 import EventIcon from './EventIcon'
 
 import styles from './styles/ListItem.modules.css'
@@ -133,17 +134,16 @@ export default class HistoryListItem extends React.PureComponent {
         )}
         {availableUsers && availableUsers.length > 0 && (
           <PopoverList
-            userList={availableUsers.map(user => ({
-              identity: user.id
-            }))}
+            items={availableUsers.map(user => ({locations: [], user}))}
             disabled={availableUsers.length < 2}
             avatarSize="small"
+            renderItem={item => <PresenceListItem status="online" user={item.user} />}
           >
             <div className={styles.users}>
               <div className={styles.userIcons}>
                 {availableUsers.slice(0, MAX_USERS).map((user, i) => (
                   <div key={user.id} className={styles.userAvatar}>
-                    <AvatarProvider userId={user.id} imageUrl={user.imageUrl} />
+                    <UserAvatar user={user} />
                   </div>
                 ))}
               </div>
