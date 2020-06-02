@@ -1,13 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.inner {
+.root {
   display: flex;
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
 }
 
-.inner[data-size='small'] {
+.root[data-size='small'] {
   font-size: var(--font-size-small);
 }
 
@@ -17,17 +17,37 @@
   padding-right: var(--small-padding);
 }
 
-.userInfo {
+.inner {
   line-height: 1.2;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-right: var(--small-padding);
+  align-items: center;
 }
 
-.name {
+.userName {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 15ch;
+  max-width: 17ch;
+}
+
+.intentLink {
+  display: flex;
+  align-items: center;
+  padding-left: var(--extra-small-padding);
+  transition: transform 0.1s linear, opacity 0.1s linear;
+  align-self: center;
+  margin-left: auto;
+  font-size: var(--font-size-huge);
+  color: var(--gray);
+
+  @nest &:hover, &:focus, &:focus-within {
+    opacity: 1;
+    transform: scale(1.1);
+    color: var(--link-color);
+
+    @nest & svg {
+      align-self: flex-end;
+      color: var(--link-color);
+    }
+  }
 }

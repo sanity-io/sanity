@@ -8,37 +8,11 @@ import {splitRight} from './utils'
 import StackCounter from './StackCounter'
 import {GlobalPresence, Size} from './types'
 import UserAvatar from './UserAvatar'
-import {IntentLink} from 'part:@sanity/base/router'
 import {PresenceListItem} from './PresenceListItem'
 
 interface Props {
   projectId: string
   presence: GlobalPresence[]
-}
-
-type GlobalPresenceListItemProps = {
-  presence: GlobalPresence
-  size?: Size
-  onClick?: () => void
-}
-
-function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
-  const {presence, onClick, size} = props
-  const locationWithDocumentId = presence.locations.find(location => location.documentId)
-  const item = (
-    <PresenceListItem user={presence.user} status={presence.status} onClick={onClick} size={size} />
-  )
-  return locationWithDocumentId ? (
-    <IntentLink
-      className={styles.intentLink}
-      intent="edit"
-      params={{id: locationWithDocumentId.documentId}}
-    >
-      {item}
-    </IntentLink>
-  ) : (
-    item
-  )
 }
 
 export function GlobalStatus({projectId, presence}: Props) {
@@ -48,7 +22,14 @@ export function GlobalStatus({projectId, presence}: Props) {
     <div className={styles.root}>
       <PopoverList
         items={presence}
-        renderItem={item => <GlobalPresenceListItem presence={item} size="medium" />}
+        renderItem={item => (
+          <PresenceListItem
+            user={item.user}
+            status={item.status}
+            locations={item.locations}
+            size="medium"
+          />
+        )}
         isGlobal
         projectId={projectId}
         trigger="click"
