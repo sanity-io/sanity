@@ -17,11 +17,10 @@ module.exports = async function listApisAction(args, context) {
   }
 
   if (endpoints && endpoints.length > 0) {
-    const {projectId} = client.config()
     output.print('Here are the GraphQL endpoints deployed for this project:')
     endpoints.forEach((endpoint, index) => {
       const {dataset, tag} = endpoint
-      const url = `https://${projectId}.api.sanity.io/v1/graphql/${dataset}/${tag}`
+      const url = client.getUrl(`graphql/${dataset}/${tag}`)
 
       output.print(`${index + 1}.  ${chalk.bold('Dataset:')}     ${dataset}`)
       output.print(`    ${chalk.bold('Tag:')}         ${tag}`)
