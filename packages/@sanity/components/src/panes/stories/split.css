@@ -2,8 +2,8 @@
 
 .root {
   padding: var(--medium-padding);
-}
 
-.text {
-  margin: -2px 0 -1px;
+  @nest & pre {
+    font-family: var(--font-family-monospace);
+  }
 }

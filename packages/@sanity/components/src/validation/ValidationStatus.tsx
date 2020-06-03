@@ -1,11 +1,14 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import React from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import {Tooltip} from 'react-tippy'
-import styles from './styles/ValidationStatus.css'
 import {Marker} from '../typedefs'
 import ValidationList from './ValidationList'
+
+import styles from './ValidationStatus.css'
 
 type Props = {
   hideTooltip?: boolean
@@ -42,11 +45,14 @@ export default class ValidationStatus extends React.PureComponent<Props> {
       warningText !== '' ? `${hasBoth ? 'and ' : ''}${warningText}` : ''
     }`
 
-    const iconStyle = errors?.length < 1 && warnings?.length > 0 ? styles.warning : styles.error
+    const iconClassName = classNames(
+      styles.icon,
+      errors?.length < 1 && warnings?.length > 0 ? styles.warning : styles.error
+    )
 
     const TooltipText = () => (
       <div className={styles.tooltipText}>
-        <div className={`${styles.icon} ${iconStyle}`}>
+        <div className={iconClassName}>
           <ErrorOutlineIcon />
         </div>
         {tooltipText}
@@ -64,7 +70,7 @@ export default class ValidationStatus extends React.PureComponent<Props> {
       >
         <div className={styles.inner}>
           {validation && validation.length > 0 && (
-            <div className={`${styles.icon} ${iconStyle}`}>
+            <div className={iconClassName}>
               <ErrorOutlineIcon />
             </div>
           )}

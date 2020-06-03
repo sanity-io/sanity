@@ -29,6 +29,10 @@ export default class DefaultSnackbar extends React.PureComponent {
   }
 
   componentDidMount() {
+    if (!this.context.addToSnackQueue) {
+      console.warn('The snackbar is not wrapped in SnackbarProvider')
+      return
+    }
     this.snackId = this.context.addToSnackQueue(this.getSnackOptions())
   }
 
@@ -66,10 +70,18 @@ export default class DefaultSnackbar extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    if (!this.context.handleDismissSnack) {
+      console.warn('The snackbar is not wrapped in SnackbarProvider')
+      return
+    }
     this.context.handleDismissSnack(this.snackId)
   }
 
   componentDidUpdate() {
+    if (!this.context.updateSnack) {
+      console.warn('The snackbar is not wrapped in SnackbarProvider')
+      return
+    }
     this.context.updateSnack(this.snackId, this.getSnackOptions())
   }
 

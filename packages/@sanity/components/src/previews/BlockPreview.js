@@ -68,7 +68,7 @@ export default class BlockPreview extends React.PureComponent {
             </div>
           )}
         </div>
-        {children && <div className={styles.children}>{children}</div>}
+        {children && <div className={styles.content}>{children}</div>}
         {extendedPreview && <div className={styles.extendedPreview}>{extendedPreview}</div>}
       </div>
     )

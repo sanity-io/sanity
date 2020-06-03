@@ -16,21 +16,24 @@
   text-align: left;
   padding: var(--small-padding);
   font-size: var(--font-size-small);
-
-  @nest & .icon {
-    padding: 0 var(--small-padding) 0 0;
-    font-size: var(--font-size-base);
-  }
+  line-height: var(--line-height-small);
 }
 
 .inner {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-base);
 }
 
 .icon {
-  display: flex;
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
 }
 
 .error {

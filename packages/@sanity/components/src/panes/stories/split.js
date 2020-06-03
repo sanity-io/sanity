@@ -1,11 +1,13 @@
 import {range} from 'lodash'
-import DefaultPane from 'part:@sanity/components/panes/default'
+import Pane from 'part:@sanity/components/panes/default'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {number, object} from 'part:@sanity/storybook/addons/knobs'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import React from 'react'
+
+import styles from './split.css'
 
 class AutoCollapseTest extends React.PureComponent {
   state = {
@@ -39,6 +41,7 @@ class AutoCollapseTest extends React.PureComponent {
   render() {
     const {panes} = this.props
     const {collapsed} = this.state
+
     return (
       <SplitController
         onShouldCollapse={this.handleCollapse}
@@ -53,7 +56,7 @@ class AutoCollapseTest extends React.PureComponent {
               key={pane.key}
               isCollapsed={pane.isCollapsed}
             >
-              <DefaultPane
+              <Pane
                 index={i}
                 title={pane.title}
                 minSize={pane.minSize}
@@ -63,12 +66,12 @@ class AutoCollapseTest extends React.PureComponent {
                 onMenuToggle={action}
                 isCollapsed={pane.isCollapsed}
               >
-                <div style={{marginLeft: '1rem', fontFamily: 'monospace'}}>
-                  <div>Colapsed: {pane.isCollapsed ? 'true' : 'false'}</div>
-                  <div>DefaultSize: {pane.defaultSize}</div>
-                  <div>MinSize: {pane.minSize}</div>
+                <div className={styles.root}>
+                  <pre>collapsed={pane.isCollapsed ? 'true' : 'false'}</pre>
+                  <pre>defaultSize={pane.defaultSize}</pre>
+                  <pre>minSize={pane.minSize}</pre>
                 </div>
-              </DefaultPane>
+              </Pane>
             </SplitPaneWrapper>
           )
         })}
@@ -84,8 +87,8 @@ export function SplitStory() {
       title: `Pane ${i}`,
       key: `pane${i}`,
       isCollapsed: [false][i],
-      minSize: [301, 302, 503, 600][i] || 309,
-      defaultSize: [401, 402, 403, 800][i] || 309
+      minSize: [100, 200, 300, 400][i] || 100,
+      defaultSize: [400, 400, 400, 800][i] || 400
     }
   })
 

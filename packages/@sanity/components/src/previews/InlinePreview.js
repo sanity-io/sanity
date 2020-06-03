@@ -43,7 +43,7 @@ export default class InlinePreview extends React.PureComponent {
         <span className={styles.title}>
           {(typeof title === 'function' && title({layout: 'inline'})) || title}
         </span>
-        {children && <span>{children}</span>}
+        {children && <span className={styles.children}>{children}</span>}
       </span>
     )
   }
