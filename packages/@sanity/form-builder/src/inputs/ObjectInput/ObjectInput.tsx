@@ -218,7 +218,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           markers={markers}
           presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
           onFocus={onFocus}
-          focusPath={focusPath}
+          // focusPath={focusPath}
         >
           {renderedFields}
           {renderedUnknownFields}

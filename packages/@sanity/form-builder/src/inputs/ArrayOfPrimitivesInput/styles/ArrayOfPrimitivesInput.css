@@ -19,9 +19,9 @@
 }
 
 .item {
-  display: block;
-  margin: 0;
-  padding: var(--small-padding) 0;
+  @nest .item + & {
+    margin-top: var(--small-padding);
+  }
 }
 
 .addButton {
@@ -38,6 +38,10 @@
 
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
+
+  &:empty {
+    display: none;
+  }
 }
 
 .list + .functions {

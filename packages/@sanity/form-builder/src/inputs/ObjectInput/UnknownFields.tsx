@@ -4,21 +4,29 @@ import DefaultButton from 'part:@sanity/components/buttons/default'
 import PatchEvent, {unset} from '../../PatchEvent'
 import styles from './styles/UnknownFields.css'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+
 type Props = {
   fieldNames: string[]
   value: Record<string, any>
   onChange: (arg0: PatchEvent) => void
   readOnly?: boolean
 }
+
 export default class UnknownFields extends React.PureComponent<Props, {}> {
   handleUnsetClick = fieldName => {
     this.props.onChange(PatchEvent.from(unset([fieldName])))
   }
+
   render() {
     const {fieldNames, value, readOnly} = this.props
+    const len = fieldNames.length
+
     return (
       <div className={styles.root}>
-        <h2 className={styles.heading}>Found {fieldNames.length} unknown fields</h2>
+        <h2 className={styles.heading}>
+          Found {len === 1 ? <>an</> : len} unknown {len === 1 ? <>field</> : <>fields</>}
+        </h2>
+
         <div className={styles.content}>
           <Details>
             These are not defined in the current schema as valid fields for this value. This could
