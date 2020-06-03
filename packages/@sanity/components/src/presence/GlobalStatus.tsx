@@ -22,12 +22,13 @@ export function GlobalStatus({projectId, presence}: Props) {
     <div className={styles.root}>
       <PopoverList
         items={presence}
-        renderItem={item => (
+        renderItem={(item, onClose) => (
           <PresenceListItem
             user={item.user}
             status={item.status}
             locations={item.locations}
             size="medium"
+            onClose={onClose}
           />
         )}
         isGlobal
