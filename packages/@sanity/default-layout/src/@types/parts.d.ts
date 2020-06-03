@@ -135,8 +135,8 @@ declare module 'part:@sanity/components/lists/create-document' {
 }
 
 declare module 'part:@sanity/base/file-icon' {
-  const FileIcon: React.ComponentType<{}>
-  export default FileIcon
+  const DocumentIcon: React.ComponentType<{}>
+  export default DocumentIcon
 }
 
 declare module 'part:@sanity/components/buttons/fab' {
@@ -158,23 +158,28 @@ declare module 'part:@sanity/base/brand-logo?' {
 }
 
 declare module 'part:@sanity/base/plus-icon' {
-  const Icon: React.ComponentType<{}>
-  export default Icon
+  const PlusIcon: React.ComponentType<{}>
+  export default PlusIcon
+}
+
+declare module 'part:@sanity/base/compose-icon' {
+  const ComposeIcon: React.ComponentType<{}>
+  export default ComposeIcon
 }
 
 declare module 'part:@sanity/base/hamburger-icon' {
-  const Icon: React.ComponentType<{}>
-  export default Icon
+  const MenuIcon: React.ComponentType<{}>
+  export default MenuIcon
 }
 
 declare module 'part:@sanity/base/close-icon' {
-  const Icon: React.ComponentType<{}>
-  export default Icon
+  const CloseIcon: React.ComponentType<{}>
+  export default CloseIcon
 }
 
 declare module 'part:@sanity/base/sign-out-icon' {
-  const Icon: React.ComponentType<{}>
-  export default Icon
+  const LeaveIcon: React.ComponentType<{}>
+  export default LeaveIcon
 }
 
 declare module 'part:@sanity/default-layout/tool-switcher' {

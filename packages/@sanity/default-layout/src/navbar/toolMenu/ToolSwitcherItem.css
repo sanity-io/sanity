@@ -35,11 +35,18 @@
 
 .iconContainer {
   display: block;
-  font-size: calc(25 / 16 * 1em);
-  line-height: 1;
+  width: 25px;
+  height: 25px;
 
   @nest & > svg {
+    font-size: calc(17 / 16 * 1em);
     display: block;
+    margin: calc(4 / 17 * 1em);
+
+    @nest &[data-sanity-icon] {
+      font-size: calc(25 / 16 * 1em);
+      margin: 0;
+    }
   }
 }
 
