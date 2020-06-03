@@ -12,7 +12,6 @@ import {
   maybeSerialize,
   setStructureResolveError
 } from '../utils/resolvePanes'
-import styles from './DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from '../components/StructureError'
 import {calculatePanesEquality} from '../utils/calculatePanesEquality'
@@ -272,18 +271,18 @@ export default withRouterHOC(
         []
       )
 
+      if (!panes) {
+        return null
+      }
+
       return (
-        <div className={styles.deskTool}>
-          {panes && (
-            <DeskToolPanes
-              router={router}
-              panes={this.state.panes}
-              keys={keys}
-              groupIndexes={groupIndexes}
-              autoCollapse
-            />
-          )}
-        </div>
+        <DeskToolPanes
+          router={router}
+          panes={this.state.panes}
+          keys={keys}
+          groupIndexes={groupIndexes}
+          autoCollapse
+        />
       )
     }
   }

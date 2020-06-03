@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FormBuilder from 'part:@sanity/form-builder'
-import styles from '../Editor.css'
+
+import styles from './HistoryForm.css'
 
 const noop = () => null
 const noopPatchChannel = {onPatch: () => noop, receivePatches: noop}
