@@ -1,14 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  min-width: 200px;
   max-width: 250px;
   max-height: 60vh;
   overflow: auto;
   list-style: none;
   margin: 0;
   padding: 0;
-  /* text-align: left; */
 
   @nest &[data-kind='simple'] {
     max-width: 220px;
