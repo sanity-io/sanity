@@ -35,23 +35,24 @@ function Footer(props) {
 
   return (
     <div>
-      {actionStates.filter(Boolean).map((actionState, i) => (
-        <>
-          <Button
-            loading={actionState.showActivityIndicator}
-            onClick={actionState.onHandle}
-            disabled={Boolean(actionState.disabled)}
-          >
-            {actionState.label}
-          </Button>
-          {/*Todo: reset state of others when handling one */}
-          <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
-            x
-          </button>
-          {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
-          {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
-        </>
-      ))}
+      {actionStates &&
+        actionStates.filter(Boolean).map((actionState, i) => (
+          <>
+            <Button
+              loading={actionState.showActivityIndicator}
+              onClick={actionState.onHandle}
+              disabled={Boolean(actionState.disabled)}
+            >
+              {actionState.label}
+            </Button>
+            {/*Todo: reset state of others when handling one */}
+            <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
+              x
+            </button>
+            {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
+            {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
+          </>
+        ))}
     </div>
   )
 }
