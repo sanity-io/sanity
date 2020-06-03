@@ -16,7 +16,6 @@ const DocumentCopyIcon = () => (
     preserveAspectRatio="xMidYMid"
     width="1em"
     height="1em"
-    a
   >
     <path d="M16.5 6.5H19.5V21.5H8.5V18.5" style={strokeStyle} />
     <path d="M10 3.5H16.5V18.5H5.5V8L10 3.5Z" style={strokeStyle} />
