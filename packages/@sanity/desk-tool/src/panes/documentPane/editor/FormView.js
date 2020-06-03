@@ -9,6 +9,7 @@ import styles from '../Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 const noop = () => undefined
 
@@ -130,26 +131,28 @@ export default class FormView extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {history.isOpen ? (
-          <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
-        ) : (
-          <EditForm
-            id={id}
-            margins={margins}
-            value={draft || published || initialValue}
-            filterField={filterField}
-            focusPath={focusPath}
-            markers={markers}
-            onBlur={this.handleBlur}
-            onChange={readOnly ? noop : this.props.onChange}
-            onFocus={this.handleFocus}
-            patchChannel={patchChannel}
-            readOnly={readOnly}
-            schema={schema}
-            type={schemaType}
-            presence={presence}
-          />
-        )}
+        <PresenceOverlay margins={margins}>
+          {history.isOpen ? (
+            <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
+          ) : (
+            <EditForm
+              id={id}
+              margins={margins}
+              value={draft || published || initialValue}
+              filterField={filterField}
+              focusPath={focusPath}
+              markers={markers}
+              onBlur={this.handleBlur}
+              onChange={readOnly ? noop : this.props.onChange}
+              onFocus={this.handleFocus}
+              patchChannel={patchChannel}
+              readOnly={readOnly}
+              schema={schema}
+              type={schemaType}
+              presence={presence}
+            />
+          )}
+        </PresenceOverlay>
 
         {afterEditorComponents.map((AfterEditorComponent, i) => (
           <AfterEditorComponent key={i} documentId={documentId} />
