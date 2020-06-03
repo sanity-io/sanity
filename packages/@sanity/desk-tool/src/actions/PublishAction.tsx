@@ -62,7 +62,7 @@ export function PublishAction(props) {
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, (published || {})._updatedAt) || ''
     : hasValidationErrors
-    ? 'There are validation errors that needs to be fixed before this document can be published'
+    ? 'There are validation errors that need to be fixed before this document can be published'
     : ''
 
   React.useEffect(() => {
