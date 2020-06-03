@@ -3,7 +3,7 @@ import {Tooltip} from 'react-tippy'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, number, select} from 'part:@sanity/storybook/addons/knobs'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
-import PlusIcon from 'part:@sanity/base/plus-icon'
+import ComposeIcon from 'part:@sanity/base/compose-icon'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
 import Branding from '../navbar/branding/Branding'
@@ -78,7 +78,7 @@ export function ExampleStory() {
             >
               <div className={NavbarStyles.createButtonInner} tabIndex={-1}>
                 <div className={NavbarStyles.createButtonIcon}>
-                  <PlusIcon />
+                  <ComposeIcon />
                 </div>
                 <span className={NavbarStyles.createButtonText}>New</span>
               </div>
