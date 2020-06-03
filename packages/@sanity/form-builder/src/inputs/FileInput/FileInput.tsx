@@ -376,7 +376,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             {value && otherFields.length > 0 && (
               <Button
                 icon={readOnly ? VisibilityIcon : EditIcon}
-                kind="simple"
+                inverted
                 title={readOnly ? 'View details' : 'Edit details'}
                 onClick={this.handleStartAdvancedEdit}
               >
