@@ -4,9 +4,9 @@ import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Tab from 'part:@sanity/components/tabs/tab'
 import TabList from 'part:@sanity/components/tabs/tab-list'
-import Styleable from '../utilities/Styleable'
-import defaultStyles from './styles/DefaultPane.css'
 import DefaultPane from './DefaultPane'
+
+import styles from './TabbedPane.css'
 
 const noop = () => {
   /* intentional noop */
@@ -16,11 +16,11 @@ const noop = () => {
 class TabbedPane extends React.Component {
   static propTypes = {
     idPrefix: PropTypes.string.isRequired,
-    styles: PropTypes.shape({
-      headerTabsContainer: PropTypes.string,
-      headerPaneActions: PropTypes.string,
-      headerViewMenu: PropTypes.string
-    }),
+    // styles: PropTypes.shape({
+    //   headerTabsContainer: PropTypes.string,
+    //   headerPaneActions: PropTypes.string,
+    //   headerViewMenu: PropTypes.string
+    // }),
     views: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string.isRequired,
@@ -35,7 +35,7 @@ class TabbedPane extends React.Component {
   }
 
   static defaultProps = {
-    styles: {},
+    // styles: {},
     views: [],
     activeView: undefined,
     isClosable: false,
@@ -47,14 +47,14 @@ class TabbedPane extends React.Component {
   state = {}
 
   renderHeaderViewMenu = () => {
-    const {styles, views = [], onSplitPane, onCloseView, isClosable} = this.props
+    const {views = [], onSplitPane, onCloseView, isClosable} = this.props
     const isSplittable = Boolean(onSplitPane)
 
     // Do not render view menu when there are only 1 view
     if (views.length <= 1) return null
 
     return (
-      <div className={styles.headerViewMenu}>
+      <div className={styles.tabsContainer}>
         {this.renderTabs()}
         <div className={styles.headerPaneActions}>
           {isSplittable && views.length > 1 && (
@@ -77,7 +77,7 @@ class TabbedPane extends React.Component {
   }
 
   renderTabs() {
-    const {idPrefix, views = [], activeView, styles, onSetActiveView} = this.props
+    const {idPrefix, views = [], activeView, onSetActiveView} = this.props
 
     if (views.length <= 1) {
       return null
@@ -129,4 +129,4 @@ class TabbedPane extends React.Component {
   }
 }
 
-export default Styleable(TabbedPane, defaultStyles)
+export default TabbedPane

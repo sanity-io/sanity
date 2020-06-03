@@ -1,7 +1,9 @@
+import classNames from 'classnames'
 import React from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import styles from './styles/ValidationListItem.css'
 import {Marker} from '../typedefs'
+
+import styles from './ValidationListItem.css'
 
 type Props = {
   kind: string
@@ -68,19 +70,19 @@ export default class ValidationListItem extends React.PureComponent<Props> {
         tabIndex={0}
         onClick={this.handleClick}
         onKeyPress={this.handleKeyPress}
-        className={`
-          ${onClick ? styles.interactiveItem : styles.item}
-          ${styles[marker.level]}
-          ${truncate ? styles.truncate : ''}
-        `}
+        className={classNames(
+          onClick ? styles.interactiveItem : styles.item,
+          styles[marker.level],
+          truncate && styles.truncate
+        )}
       >
         <span className={styles.icon}>
           <ErrorOutlineIcon />
         </span>
 
         <div className={styles.content}>
-          <div className={styles.path}>{path}</div>
-          <div className={styles.message}>{marker.item.message}</div>
+          {path && <div className={styles.path}>{path}</div>}
+          {marker.item.message && <div className={styles.message}>{marker.item.message}</div>}
         </div>
       </a>
     )

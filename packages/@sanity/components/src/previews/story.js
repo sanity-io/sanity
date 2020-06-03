@@ -8,6 +8,7 @@ import {DefaultStory} from './stories/default'
 import {DetailStory} from './stories/detail'
 import {InlineStory} from './stories/inline'
 import {MediaStory} from './stories/media'
+import {WithSanityIconStory} from './stories/withSanityIcon'
 
 storiesOf('@sanity/components/previews', module)
   .addDecorator(withKnobs)
@@ -19,3 +20,4 @@ storiesOf('@sanity/components/previews', module)
   .add('Block', BlockStory)
   .add('Block image', BlockImageStory)
   .add('Create document', CreateDocumentStory)
+  .add('With Sanity icon', WithSanityIconStory)

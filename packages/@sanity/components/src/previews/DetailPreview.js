@@ -24,9 +24,9 @@ export default class DetailPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Untitled',
-    subtitle: 'No subtitle…',
-    description: 'No description…',
+    title: undefined,
+    subtitle: undefined, // 'No subtitle…',
+    description: undefined, // 'No description…',
     media: undefined,
     status: undefined,
     children: undefined,
@@ -74,7 +74,9 @@ export default class DetailPreview extends React.PureComponent {
           <div className={styles.top}>
             <div className={styles.heading}>
               <h2 className={styles.title}>
-                {(typeof title === 'function' && title({layout: 'detail'})) || title}
+                {(typeof title === 'function' && title({layout: 'detail'})) || title || (
+                  <em>Untitled</em>
+                )}
               </h2>
               {subtitle && (
                 <h3 className={styles.subtitle}>

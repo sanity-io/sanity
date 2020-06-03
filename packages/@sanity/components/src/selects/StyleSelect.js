@@ -1,11 +1,12 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import styles from 'part:@sanity/components/selects/style-style'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
-import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
-import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
+import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import {List} from 'part:@sanity/components/lists/default'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 
@@ -32,6 +33,13 @@ const modifiers = {
   }
 }
 
+const StyleSelectList = React.forwardRef((props, ref) => (
+  <List className={styles.list} ref={ref}>
+    {props.children}
+  </List>
+))
+StyleSelectList.displayName = 'StyleSelectList'
+
 class StyleSelect extends React.PureComponent {
   static propTypes = {
     placeholder: PropTypes.string,
@@ -39,8 +47,13 @@ class StyleSelect extends React.PureComponent {
     onChange: PropTypes.func,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
-    value: PropTypes.array,
-    renderItem: PropTypes.func,
+    value: PropTypes.arrayOf(
+      PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired
+      })
+    ),
+    renderItem: PropTypes.func.isRequired,
     className: PropTypes.string,
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -48,16 +61,20 @@ class StyleSelect extends React.PureComponent {
         active: PropTypes.bool
       })
     ),
+    padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
     transparent: PropTypes.bool
   }
 
   static defaultProps = {
     className: '',
-    onChange() {},
-    onOpen() {},
-    onClose() {},
+    onChange: () => undefined,
+    onOpen: () => undefined,
+    onClose: () => undefined,
     items: [],
-    transparent: false
+    padding: 'default',
+    placeholder: undefined,
+    transparent: false,
+    value: undefined
   }
 
   state = {
@@ -148,21 +165,33 @@ class StyleSelect extends React.PureComponent {
   }
 
   render() {
-    const {value, items, className, placeholder, renderItem, transparent, disabled} = this.props
+    const {
+      value,
+      items,
+      className: classNameProp,
+      padding,
+      placeholder,
+      renderItem,
+      transparent
+    } = this.props
     const {showList} = this.state
+    const className = classNames(
+      classNameProp,
+      styles.root,
+      transparent && styles.transparent,
+      padding && styles[`padding_${padding}`]
+    )
 
     return (
       <div
-        tabIndex={0}
+        className={className}
         onClick={this.handleButtonClick}
         onBlur={this.handleButtonBlur}
         onKeyPress={this.handleButtonKeyDown}
-        className={`${styles.root} ${className || ''} ${transparent ? styles.transparent : ''} ${
-          disabled ? styles.disabled : ''
-        }`}
+        tabIndex={0}
       >
-        <div className={styles.inner} ref={this.buttonElement}>
-          <div className={styles.selectContainer}>
+        <button className={styles.button} ref={this.buttonElement}>
+          <div className={styles.buttonInner}>
             <span className={styles.title}>
               {value && value.length > 1 && 'Multiple'}
               {value && value.length == 1 && value[0].title}
@@ -172,7 +201,8 @@ class StyleSelect extends React.PureComponent {
               <ArrowIcon color="inherit" />
             </span>
           </div>
-        </div>
+        </button>
+
         <Poppable
           onEscape={this.handleCloseList}
           modifiers={modifiers}
@@ -180,19 +210,18 @@ class StyleSelect extends React.PureComponent {
           popperClassName={styles.popper}
         >
           {showList && (
-            <React.Fragment>
-              <List className={styles.list}>
-                <ArrowKeyNavigation>
-                  {items.map((item, index) => {
-                    const isSemiSelected = value && value.length > 1 && value.includes(item)
-                    const isSelected = value && value.length === 1 && value[0].key == item.key
-                    const classNames = `
+            <>
+              <ArrowKeyNavigation component={StyleSelectList}>
+                {items.map((item, index) => {
+                  const isSemiSelected = value && value.length > 1 && value.includes(item)
+                  const isSelected = value && value.length === 1 && value[0].key == item.key
+                  const classNames = `
                         ${isSelected ? styles.itemSelected : styles.item}
                         ${isSemiSelected ? styles.itemSemiSelected : ''}
                       `
-                    return (
+                  return (
+                    <li key={`${item.key}${index}`}>
                       <div
-                        key={`${item.key}${index}`}
                         title={item.title}
                         data-index={index}
                         onClick={this.handleSelect}
@@ -200,18 +229,19 @@ class StyleSelect extends React.PureComponent {
                         onKeyPress={this.handleItemKeyPress} //eslint-disable-line react/jsx-no-bind
                         ref={index === 0 && this.firstItemElement}
                       >
-                        <div className={styles.itemIcon}>
-                          {isSelected && <CheckCircleIcon />}
-                          {isSemiSelected && <CircleThinIcon />}
-                        </div>
                         <div className={styles.itemContent}>{renderItem(item)}</div>
+                        <div className={styles.itemIcon}>
+                          {isSelected && <CheckmarkIcon />}
+                          {isSemiSelected && <CheckmarkIcon style={{opacity: 0.5}} />}
+                        </div>
                       </div>
-                    )
-                  })}
-                </ArrowKeyNavigation>
-              </List>
+                    </li>
+                  )
+                })}
+              </ArrowKeyNavigation>
+
               <div tabIndex={0} onFocus={this.handleMenuBlur} />
-            </React.Fragment>
+            </>
           )}
         </Poppable>
       </div>

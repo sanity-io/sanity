@@ -24,6 +24,13 @@
 .content {
   flex-grow: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @nest & > * {
+    min-width: 0;
+  }
 }
 
 .ellipsis {
@@ -35,37 +42,31 @@
 .title {
   composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
   composes: ellipsis;
-  color: inherit;
   text-transform: none;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  font-weight: 400;
+  color: inherit;
+  font: inherit;
   margin: 0;
-  padding: 0;
   min-width: 0;
 }
 
 .subtitle {
-  color: inherit;
   margin: 0;
-  padding: 0;
-  margin-top: -0.25em;
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
   font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 0.75;
 }
 
 .description {
-  padding: 0;
-  margin: 0;
-  margin-top: 0.25em;
-  font-size: 0.75em;
-  line-height: 1em;
+  margin: var(--small-padding) 0 0;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   overflow: hidden;
-  height: 2em;
+  max-height: calc(var(--line-height-small) * 2em);
+  opacity: 0.75;
 }
 
 .media {
@@ -96,8 +97,8 @@
 }
 
 .status {
-  color: currentColor;
-  opacity: 0.7;
+  white-space: nowrap;
+  padding-left: var(--small-padding);
 }
 
 .mediaString {

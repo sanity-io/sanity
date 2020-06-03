@@ -109,19 +109,17 @@ export function BlockImageStory() {
         <div style={{width: '100%', maxWidth: 350}}>
           <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
             <Stack>
-              <PreviewCard>
-                <BlockImagePreview
-                  title={renderTitle}
-                  subtitle={renderSubtitle}
-                  description={boolean('description', false, 'props') ? renderDescription : ''}
-                  status={renderStatus}
-                  date={new Date()}
-                  media={renderMedia}
-                  isPlaceholder={boolean('isplaceholder', false, 'props')}
-                >
-                  {boolean('Custom children', false) && renderCustomChildren()}
-                </BlockImagePreview>
-              </PreviewCard>
+              <BlockImagePreview
+                title={renderTitle}
+                subtitle={renderSubtitle}
+                description={boolean('description', false, 'props') ? renderDescription : ''}
+                status={renderStatus}
+                date={new Date()}
+                media={renderMedia}
+                isPlaceholder={boolean('isplaceholder', false, 'props')}
+              >
+                {boolean('Custom children', false) && renderCustomChildren()}
+              </BlockImagePreview>
             </Stack>
           </Sanity>
         </div>

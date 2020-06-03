@@ -1,14 +1,14 @@
-import PlusIcon from 'part:@sanity/base/plus-icon'
-// import TrashIcon from 'part:@sanity/base/trash-outline-icon'
-// import Button from 'part:@sanity/components/buttons/default'
-import DefaultPane from 'part:@sanity/components/panes/default'
+import ComposeIcon from 'part:@sanity/base/compose-icon'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import Button from 'part:@sanity/components/buttons/default'
+import Pane from 'part:@sanity/components/panes/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import React from 'react'
 
-// import styles from './pane.css'
+import styles from './pane.css'
 
 const menuItems = [
   {
@@ -37,48 +37,51 @@ const menuItems = [
     title: 'Add',
     key: '5',
     group: 'actions',
-    icon: PlusIcon,
+    icon: ComposeIcon,
     showAsAction: true,
     action: action('Add')
   }
 ]
 
-// const router = route('/')
-// const handleNavigate = () => null
-
-// const renderActions = isCollapsed => {
-//   return (
-//     <div className={styles.root}>
-//       <Button kind="simple" icon={PlusIcon} color="primary" title="Add" className={styles.button} />
-//       <Button
-//         kind="simple"
-//         icon={TrashIcon}
-//         color="danger"
-//         title="Delete"
-//         className={styles.button}
-//       />
-//     </div>
-//   )
-// }
+const renderActions = () => {
+  return [
+    <Button
+      color="primary"
+      icon={ComposeIcon}
+      key="add"
+      kind="simple"
+      padding="small"
+      title="Add"
+    />,
+    <Button
+      color="danger"
+      icon={TrashIcon}
+      key="delete"
+      kind="simple"
+      padding="small"
+      title="Delete"
+    />
+  ]
+}
 
 export function PaneStory() {
   return (
-    <Sanity part="part:@sanity/components/panes/default" propTables={[DefaultPane]}>
+    <Sanity part="part:@sanity/components/panes/default" propTables={[Pane]}>
       <DebugRouterProvider>
-        <div style={{background: 'red', padding: '1em'}}>
-          <DefaultPane
-            title={text('title', 'This is the default pane title', 'props')}
-            isCollapsed={boolean('isCollapsed', false, 'props')}
-            onExpand={action('onExpand')}
-            onCollapse={action('onCollapse')}
-            minSize={number('minWidth', 300, 'props')}
-            onAction={action('onAction')}
-            menuItems={menuItems}
-            // renderActions={renderActions}
-          >
-            <p>Contents</p>
-          </DefaultPane>
-        </div>
+        <Pane
+          title={text('title', 'This is the default pane title', 'props')}
+          isCollapsed={boolean('isCollapsed', false, 'props')}
+          onExpand={action('onExpand')}
+          onCollapse={action('onCollapse')}
+          minSize={number('minWidth', 300, 'props')}
+          onAction={action('onAction')}
+          menuItems={menuItems}
+          renderActions={renderActions}
+        >
+          <div className={styles.root}>
+            <div className={styles.text}>Contents</div>
+          </div>
+        </Pane>
       </DebugRouterProvider>
     </Sanity>
   )

@@ -5,7 +5,7 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  outline: none !important;
+  outline: none;
 }
 
 .hasFocus {
@@ -36,7 +36,7 @@
 }
 
 .overlay {
-  background-color: color(var(--component-bg) a(95%));
+  background-color: color(var(--component-bg) a(90%));
   z-index: 2;
   width: 100%;
   height: 100%;
@@ -46,7 +46,7 @@
   transition: opacity 0.1s linear;
   opacity: 0;
 
-  @nest .noFocus:hover & {
+  @nest .noFocus:hover &, .root:focus-within & {
     opacity: 0.9;
   }
 
@@ -66,7 +66,7 @@
   opacity: 0;
   text-align: center;
 
-  @nest .noFocus:hover & {
+  @nest .noFocus:hover &, .root:focus-within & {
     opacity: 1;
   }
 

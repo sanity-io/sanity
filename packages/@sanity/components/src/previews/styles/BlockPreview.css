@@ -8,8 +8,9 @@
 
 .header {
   display: flex;
-  max-width: 100%;
-  padding: 0.5em;
+  width: 100%;
+  padding: var(--small-padding);
+  box-sizing: border-box;
 }
 
 .heading {
@@ -19,7 +20,7 @@
   flex-direction: column;
   justify-content: center;
   align-content: center;
-  min-height: 2.5rem;
+  min-height: calc(2.5rem + 1px);
 }
 
 .ellipsis {
@@ -30,15 +31,15 @@
 
 .title {
   composes: title from './DefaultPreview.css';
-  line-height: 1.2em;
+  /* line-height: 1.2em; */
   margin: 0;
   padding: 0;
-  white-space: inherit
+  white-space: inherit;
 }
 
 .subtitle {
   composes: subtitle from './DefaultPreview.css';
-  line-height: 1.2em;
+  /* line-height: 1.2em; */
   margin: 0;
   padding: 0;
 }
@@ -46,7 +47,8 @@
 .description {
   padding: 0;
   margin: 0;
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   padding-right: var(--medium-padding);
   padding-top: var(--small-padding);
   max-height: 5em;
@@ -57,16 +59,17 @@
 .status {
   color: var(--white);
   background-color: var(--gray);
-  padding: 0.25em 0.5em;
+  padding: var(--extra-small-padding) var(--small-padding);
   font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   margin-left: auto;
 }
 
 .media {
-  height: 2.5rem;
-  width: 2.5rem;
-  min-width: 2.5rem;
-  margin-right: 0.5em;
+  height: calc(2.5rem + 1px);
+  width: calc(2.5rem + 1px);
+  min-width: calc(2.5rem + 1px);
+  margin-right: var(--small-padding);
   position: relative;
   overflow: hidden;
 
@@ -79,11 +82,14 @@
 
   @nest & svg {
     display: block;
-    height: 2.5rem !important;
-    width: 2.5rem !important;
+    height: calc(2.5rem + 1px) !important;
+    width: calc(2.5rem + 1px) !important;
   }
 }
 
 .media:empty {
   display: none;
+}
+
+.content {
 }
