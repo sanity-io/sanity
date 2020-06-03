@@ -43,14 +43,15 @@ export default class ListItemButtons extends React.Component<Props, {}> {
     return false
   }
   getItems(): ListItem[] {
-    const {editor} = this.props
+    const {editor, selection} = this.props
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     const focusBlock = PortableTextEditor.focusBlock(editor)
     return ptFeatures.lists.map((listItem: PortableTextFeature) => {
       return {
         ...listItem,
         active: focusBlock ? focusBlock.listItem === listItem.value : false,
-        disabled: focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
+        disabled:
+          !selection || (focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false)
       }
     })
   }
