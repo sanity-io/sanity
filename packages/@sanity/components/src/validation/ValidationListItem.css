@@ -73,14 +73,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  /* @nest & > div:first-child {
-    margin-top: -3px;
-  }
-
-  @nest & > div:last-child {
-    margin-bottom: -2px;
-  } */
 }
 
 .path {

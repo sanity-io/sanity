@@ -1,21 +1,17 @@
+import {select, text} from 'part:@sanity/storybook/addons/knobs'
+import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 import Hotkeys from '../Hotkeys'
 
-const centerStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  width: '100%',
-  position: 'absolute',
-  top: 0,
-  left: 0
-}
-
 export function HotkeysStory() {
+  const keys = text('Keys (array)', 'Ctrl Alt T', 'props')
+
   return (
-    <div style={centerStyle}>
-      <Hotkeys keys={['Ctrl', 'Alt', 'T']} />
-    </div>
+    <CenteredContainer>
+      <Hotkeys
+        keys={keys.split(' ')}
+        size={select('Size', ['large', 'medium', 'small'], undefined, 'props')}
+      />
+    </CenteredContainer>
   )
 }

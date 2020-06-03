@@ -12,7 +12,7 @@
 .inner {
   display: flex;
   align-items: center;
-  outline: noene;
+  outline: none;
 }
 
 .iconContainer {

@@ -33,21 +33,21 @@ export function DropDownStory() {
       <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
         <DropDownButton
           {...actionsProps}
-          items={object('items', items, 'props')}
+          items={object('Items', items, 'props')}
           color={select(
-            'color',
+            'Color',
             [undefined, 'primary', 'success', 'danger', 'white'],
             undefined,
             'props'
           )}
-          kind={select('kind', ['default', 'simple', 'secondary'], 'default', 'props')}
-          disabled={boolean('disabled', false, 'props')}
-          inverted={boolean('inverted', false, 'props')}
-          showArrow={boolean('showArrow', true, 'props')}
-          loading={boolean('loading', false, 'props')}
-          icon={boolean('icon', false, 'props') ? SanityLogoIcon : undefined}
+          kind={select('Kind', ['default', 'simple', 'secondary'], 'default', 'props')}
+          disabled={boolean('Disabled', false, 'props')}
+          inverted={boolean('Inverted', false, 'props')}
+          showArrow={boolean('Show arrow', true, 'props')}
+          loading={boolean('Loading', false, 'props')}
+          icon={boolean('Icon', false, 'props') ? SanityLogoIcon : undefined}
         >
-          {text('prop: children', 'This is a dropdown')}
+          {text('Children', 'This is a dropdown', 'props')}
         </DropDownButton>
       </Sanity>
     </CenteredContainer>
