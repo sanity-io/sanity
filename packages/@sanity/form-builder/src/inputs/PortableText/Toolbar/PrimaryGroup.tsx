@@ -109,6 +109,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
                 collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
                 editor={editor}
                 onFocus={onFocus}
+                selection={selection}
                 showLabels={
                   portableTextFeatures.types.blockObjects.concat(
                     portableTextFeatures.types.inlineObjects
