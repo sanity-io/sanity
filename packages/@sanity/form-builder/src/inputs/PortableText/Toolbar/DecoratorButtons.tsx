@@ -55,14 +55,15 @@ export default class DecoratorButtons extends React.Component<Props, {}> {
     return false
   }
   getItems(): DecoratorItem[] {
-    const {editor} = this.props
+    const {editor, selection} = this.props
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     const focusBlock = PortableTextEditor.focusBlock(editor)
     return ptFeatures.decorators.map<DecoratorItem>(decorator => ({
       ...decorator,
       icon: getIcon(decorator.value, decorator.blockEditor && decorator.blockEditor.icon),
       active: PortableTextEditor.isMarkActive(editor, decorator.value),
-      disabled: focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
+      disabled:
+        !selection || (focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false)
     }))
   }
   handleClick = (item: DecoratorItem): void => {
