@@ -1,5 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  display: flex;
+
+  @nest & > div + div {
+    margin-left: calc(var(--extra-small-padding) / 2);
+  }
+}
+
 .item {
   display: flex;
   padding: var(--extra-small-padding);

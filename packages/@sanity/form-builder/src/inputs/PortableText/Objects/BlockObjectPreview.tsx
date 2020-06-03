@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, SyntheticEvent} from 'react'
+import React, {FunctionComponent} from 'react'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
@@ -77,9 +77,11 @@ export const BlockObjectPreview: FunctionComponent<Props> = ({
       <Preview type={type} value={value} layout="block" />
       <div className={styles.header}>
         <DropDownButton
-          placement="bottom-end"
           items={menuItems}
+          kind="simple"
           onAction={handleHeaderMenuAction}
+          padding="small"
+          placement="bottom-end"
           renderItem={MenuItem}
         >
           {type ? type.title || type.name : 'Unknown'}

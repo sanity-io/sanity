@@ -72,15 +72,17 @@ export default class ListItemButtons extends React.Component<Props, {}> {
     Icon = Icon || getIcon(item.value)
     const onAction = (): void => this.handleClick(item)
     return (
-      <ToggleButton
-        aria-label={`Toggle '${item.title}' list`}
-        disabled={item.disabled}
-        icon={Icon}
-        key={keyGenerator()}
-        onClick={onAction}
-        selected={item.active}
-        title={`Toggle '${item.title}' list`}
-      />
+      <div key={keyGenerator()}>
+        <ToggleButton
+          aria-label={`Toggle '${item.title}' list`}
+          disabled={item.disabled}
+          icon={Icon}
+          onClick={onAction}
+          padding="small"
+          selected={item.active}
+          title={`Toggle '${item.title}' list`}
+        />
+      </div>
     )
   }
   render(): JSX.Element {

@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: paragraph from 'part:@sanity/base/theme/typography/text-blocks-style';
+  text-transform: none;
+}
