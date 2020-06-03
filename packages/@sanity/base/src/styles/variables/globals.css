@@ -1,11 +1,12 @@
 :root {
-  /* Colors */
+  /* Body */
   --body-bg: var(--gray-lightest);
   --body-text: var(--gray-darkest);
-  --component-bg: var(--white);
-  --component-text-color: var(--gray-darkest);
+
+  /* Preview */
   --preview-placeholder-color: var(--gray-lightest);
-  --component-border-color: color(var(--component-bg) contrast(80%) alpha(20%));
+
+  /* Backdrop */
   --backdrop-color: color(var(--brand-darkest) alpha(12%));
 
   /* Main navigation */
@@ -17,15 +18,21 @@
   --dialog-header-color--inverted: var(--body-text);
 
   /* Header */
+  /* @todo: add comment about WHICH header it refers to */
   --header-height: 3.0625rem;
 
   /* Checkerboard */
-  --checkerboard-color: color(var(--component-text-color) alpha(5%));
+  --checkerboard-color: color(var(--gray) alpha(10%));
 
   /* Hairline */
   --hairline-color: color(var(--gray-base) alpha(25%));
 
-  /* Buttons */
+  /* Component */
+  --component-bg: var(--white);
+  --component-text-color: var(--gray-darkest);
+  --component-border-color: var(--hairline-color);
+
+  /* "Default" button */
   --default-button-primary-color: var(--brand-primary);
   --default-button-primary-color--inverted: var(--white);
   --default-button-danger-color: var(--state-danger-color);
@@ -66,8 +73,8 @@
   --block-editor-base-font-family: inherit;
   --block-editor-header-font-family: inherit;
   --block-extras-width: 10rem;
-  --block-extras-border-color: var(--gray-lighter);
-  --block-extras-background-color: var(--gray-lightest);
+  --block-extras-border-color: var(--hairline-color);
+  --block-extras-background-color: color(var(--gray-lightest) alpha(50%));
 
   /* Others */
   --pane-header-height: 3.4375rem; /* 55px */
