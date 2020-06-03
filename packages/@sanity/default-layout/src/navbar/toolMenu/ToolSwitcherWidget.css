@@ -38,6 +38,7 @@
   text-decoration: none;
   color: inherit;
   outline: none;
+  padding: var(--extra-small-padding) 0;
 
   @media (hover: hover) {
     color: var(--gray);
@@ -48,8 +49,12 @@
   }
 
   @nest &:focus {
-    color: var(--main-navigation-color--inverted);
+    color: inherit;
     background-color: color(var(--focus-color) a(20%));
+  }
+
+  @nest .rootVertical & {
+    padding: 0 var(--extra-small-padding);
   }
 }
 

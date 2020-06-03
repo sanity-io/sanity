@@ -11,6 +11,7 @@ import styles from './DatasetSelect.css'
 
 interface OuterProps {
   isVisible: boolean
+  tone?: 'navbar'
 }
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
   router: {
     navigate: (state: {space: string}) => void
   }
+  tone?: 'navbar'
 }
 
 interface State {
@@ -68,11 +70,12 @@ class DatasetSelect extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const {tone} = this.props
     const {currentSpace, isVisible} = this.state
     const tabIndex = isVisible ? 0 : -1
 
     return (
-      <div aria-hidden={!isVisible} className={styles.root}>
+      <div aria-hidden={!isVisible} className={styles.root} data-tone={tone}>
         <select
           onChange={this.handleChange}
           tabIndex={tabIndex}

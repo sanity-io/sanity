@@ -1,28 +1,32 @@
+import classNames from 'classnames'
 import React from 'react'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import {Tooltip} from '../tooltip'
 import styles from './ToolSwitcherItem.css'
 
 interface Props {
-  direction: 'horizontal' | 'vertical'
+  // direction: 'horizontal' | 'vertical'
   isActive: boolean
   title: string
   icon: React.ComponentType<{}>
   showIcon: boolean
   showLabel: boolean
+  tone?: 'navbar'
 }
 
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 function ToolSwitcherItem(props: Props) {
-  const {isActive, title, icon, showIcon, showLabel, direction} = props
+  const {isActive, title, icon, showIcon, showLabel} = props
+  // const isVertical = direction === 'vertical'
   const Icon = icon || PluginIcon
 
   return (
     <Tooltip
-      className={`${isActive ? styles.rootActive : styles.root} ${
-        direction === 'vertical' ? styles.vertical : styles.horizontal
-      }`}
+      className={classNames(
+        isActive ? styles.rootActive : styles.root
+        // isVertical ? styles.vertical : styles.horizontal
+      )}
       content={title}
       disabled={TOUCH_DEVICE || showLabel}
     >
