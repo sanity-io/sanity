@@ -19,10 +19,14 @@ module.exports = async function listApisAction(args, context) {
   if (endpoints && endpoints.length > 0) {
     output.print('Here are the GraphQL endpoints deployed for this project:')
     endpoints.forEach((endpoint, index) => {
-      output.print(`${index + 1}.  ${chalk.bold('Dataset:')}     ${endpoint.dataset}`)
-      output.print(`    ${chalk.bold('Tag:')}         ${endpoint.tag}`)
+      const {dataset, tag} = endpoint
+      const url = client.getUrl(`graphql/${dataset}/${tag}`)
+
+      output.print(`${index + 1}.  ${chalk.bold('Dataset:')}     ${dataset}`)
+      output.print(`    ${chalk.bold('Tag:')}         ${tag}`)
       output.print(`    ${chalk.bold('Generation:')}  ${endpoint.generation}`)
-      output.print(`    ${chalk.bold('Playground:')}  ${endpoint.playgroundEnabled}\n`)
+      output.print(`    ${chalk.bold('Playground:')}  ${endpoint.playgroundEnabled}`)
+      output.print(`    ${chalk.bold('URL:')}  ${url}\n`)
     })
   } else {
     output.print("This project doesn't have any GraphQL endpoints deployed.")
