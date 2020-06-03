@@ -95,17 +95,22 @@
 
 .functionsInGrid {
   composes: functions;
-  background-color: color(var(--component-bg) a(70%));
   position: absolute;
-  top: var(--small-padding);
-  right: var(--small-padding);
-  font-size: var(--font-size-tiny);
-  border-radius: var(--border-radius-base);
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
   z-index: 1;
   color: var(--text-color);
 
   @nest & > * {
     margin: 0;
+  }
+
+  @media (hover: hover) {
+    display: none;
+
+    @nest .root:hover & {
+      display: block;
+    }
   }
 }
 
