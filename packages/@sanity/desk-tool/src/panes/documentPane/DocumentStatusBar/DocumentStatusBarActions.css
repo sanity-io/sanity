@@ -120,24 +120,29 @@
 .menuItemHotkeys {
   display: inline-block;
   color: var(--text-muted);
-  font-size: 0.75em;
+  font-size: var(--font-size-small);
   vertical-align: middle;
-  margin-left: 1em;
-  padding: 0 0 0.25em;
+  margin-left: var(--medium-padding);
+  padding: 0 0 var(--extra-small-padding);
 }
 
 .tooltip {
   display: block !important;
 }
 
+.tooltipBox {
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+  max-width: 250px;
+}
+
 .tooltipTitle {
-  padding-right: 0.5em;
+  padding-right: var(--small-padding);
 }
 
 .tooltipHotkeys {
   display: inline-block;
   color: var(--text-muted);
-  font-size: 0.75em;
+  font-size: var(--font-size-small);
   vertical-align: middle;
-  padding: 0 0 0.25em;
+  padding: 0 0 var(--extra-small-padding);
 }
