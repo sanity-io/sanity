@@ -14,6 +14,7 @@ import {
   getPortableTextFeatures,
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
+import {isEqual} from 'lodash'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
@@ -240,7 +241,7 @@ export default withPatchSubscriber(
         case 'selection':
           this.setState({selection: change.selection})
           if (change.selection) {
-            this.props.onFocus(change.selection)
+            this.props.onFocus(change.selection.focus.path)
           }
           break
         case 'ready':
@@ -267,6 +268,7 @@ export default withPatchSubscriber(
     }
 
     handleFormBuilderEditObjectChange = (patchEvent: PatchEvent, path: Path): void => {
+      const {objectEditStatus} = this.state
       let _patchEvent = patchEvent
       path
         .slice(0)
@@ -275,6 +277,15 @@ export default withPatchSubscriber(
           _patchEvent = _patchEvent.prefixAll(segment)
         })
       _patchEvent.patches.map(patch => this.patche$.next(patch))
+      // Make sure we don't render snapshots if the patch unsets something that is visible in the editor
+      if (
+        objectEditStatus &&
+        _patchEvent.patches.some(
+          p => p.type === 'unset' && isEqual(objectEditStatus.formBuilderPath, p.path)
+        )
+      ) {
+        this.editorSnapshot = null
+      }
       this.props.onChange(_patchEvent)
     }
 
@@ -536,13 +547,12 @@ export default withPatchSubscriber(
             const {editorPath} = objectEditStatus
             const {onFocus} = this.props
             onFocus([])
-            this.setState({objectEditStatus: null})
-            if (this.editor.current) {
+            this.setState({objectEditStatus: null}, () => {
               PortableTextEditor.select(this.editor.current, {
                 focus: {path: editorPath, offset: 0},
                 anchor: {path: editorPath, offset: 0}
               })
-            }
+            })
           }
           return (
             <EditObject
@@ -568,6 +578,10 @@ export default withPatchSubscriber(
         this.setState({objectEditStatus: null})
       }, 0)
       return null
+    }
+
+    renderSnapshot = (): JSX.Element => {
+      return this.editorSnapshot
     }
 
     render(): JSX.Element {
@@ -628,7 +642,9 @@ export default withPatchSubscriber(
                 renderChild={this.renderChild}
                 renderDecorator={this.renderDecorator}
                 renderAnnotation={this.renderAnnotation}
-                renderEditor={objectEditStatus ? () => this.editorSnapshot : this.renderEditor}
+                renderEditor={
+                  objectEditStatus && this.editorSnapshot ? this.renderSnapshot : this.renderEditor
+                }
                 spellCheck={false} // TODO: from schema?
                 type={type}
                 value={value}
