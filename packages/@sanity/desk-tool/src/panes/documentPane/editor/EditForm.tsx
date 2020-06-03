@@ -1,6 +1,5 @@
 import React from 'react'
 import {FormBuilder} from 'part:@sanity/form-builder'
-import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 import documentStore from 'part:@sanity/base/datastore/document'
 
 import styles from '../Editor.css'
@@ -15,7 +14,6 @@ type SchemaType = any
 interface Props {
   headerHeight: number
   id: string
-  margins: [number, number, number, number]
   value: Doc
 
   filterField: () => boolean
@@ -54,7 +52,6 @@ export default class EditForm extends React.PureComponent<Props> {
     const {
       filterField,
       focusPath,
-      margins,
       markers,
       value,
       onBlur,
@@ -67,24 +64,22 @@ export default class EditForm extends React.PureComponent<Props> {
     } = this.props
 
     return (
-      <PresenceOverlay margins={margins}>
-        <form className={styles.editor} onSubmit={preventDefault}>
-          <FormBuilder
-            schema={schema}
-            patchChannel={this.patchChannel}
-            value={value || {_type: type}}
-            type={type}
-            presence={presence}
-            filterField={filterField}
-            readOnly={readOnly}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            focusPath={focusPath}
-            onChange={onChange}
-            markers={markers}
-          />
-        </form>
-      </PresenceOverlay>
+      <form className={styles.editor} onSubmit={preventDefault}>
+        <FormBuilder
+          schema={schema}
+          patchChannel={this.patchChannel}
+          value={value || {_type: type}}
+          type={type}
+          presence={presence}
+          filterField={filterField}
+          readOnly={readOnly}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          focusPath={focusPath}
+          onChange={onChange}
+          markers={markers}
+        />
+      </form>
     )
   }
 }

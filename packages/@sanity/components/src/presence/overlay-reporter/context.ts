@@ -37,7 +37,9 @@ interface OverlayReporterContext {
 
 const DEFAULT_CONTEXT: OverlayReporterContext = {
   dispatch: (event: RegionReporterEvent) => {
-    throw new Error('Missing context')
+    throw new Error(
+      'Tried to report a region without being wrapped in a context provider to handle it. Please make sure the component is wrapped in a <Overlay> component.'
+    )
   }
 }
 
