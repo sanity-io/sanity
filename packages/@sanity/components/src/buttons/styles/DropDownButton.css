@@ -15,12 +15,32 @@
   outline: noene;
 }
 
-.arrow {
-  margin-left: 0.5em;
+.iconContainer {
+  display: inline-block;
+  vertical-align: top;
+  height: 17px;
+  line-height: 0;
+  margin-left: var(--extra-small-padding);
+
+  @nest & > svg {
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.label {
+  display: inline-block;
+  vertical-align: top;
 }
 
 .list {
   display: block;
+  padding: var(--extra-small-padding) 0 !important;
+  border-radius: var(--border-radius-small);
 }
 
 .listItem {
@@ -29,7 +49,7 @@
 }
 
 .list .listItem {
-  padding: 0.5em;
+  padding: var(--small-padding) calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
 .popper {

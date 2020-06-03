@@ -4,22 +4,12 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import {boolean} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
+import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 
-const chance = new Chance()
+import styles from './list.css'
 
-const centerStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  width: '100%',
-  position: 'absolute',
-  boxSizing: 'border-box',
-  padding: '2rem',
-  top: 0,
-  left: 0
-}
+const chance = new Chance()
 
 const mockMarkers = length => {
   return range(length || 5).map((marker, i) => {
@@ -39,10 +29,12 @@ const mockMarkers = length => {
 
 export function ListStory() {
   return (
-    <div style={centerStyle}>
+    <CenteredContainer background={false}>
       <Sanity part="part:@sanity/components/validation/status" propTables={[ValidationStatus]}>
-        <ValidationList markers={mockMarkers()} truncate={boolean('truncate', false, 'props')} />
+        <div className={styles.root}>
+          <ValidationList markers={mockMarkers()} truncate={boolean('truncate', false, 'props')} />
+        </div>
       </Sanity>
-    </div>
+    </CenteredContainer>
   )
 }

@@ -1,30 +1,17 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  /* The height of the navbar */
-  --nav-bar-box: 3.0625em; /* 49px */
-
-  /* Expand/collapse animation timing */
-  --pane-animation-time: 200ms;
-
-  /* The height of the pane footer */
-  --pane-footer-height: 4em;
-}
-
 .root {
   display: flex;
   flex-direction: column;
   background-color: var(--component-bg);
-  min-height: calc(100vh - var(--nav-bar-box));
-  width: 100%;
+
+  @media (--max-screen-medium) {
+    min-height: 100%;
+  }
 
   @media (--screen-medium) {
-    /* Reset mobile first */
     position: relative;
     height: 100%;
-    top: initial;
-    left: initial;
-    min-height: initial;
   }
 }
 
@@ -45,22 +32,24 @@
     composes: root;
     flex-direction: row;
     width: 49px;
-    border-right: 1px solid var(--hairline-color);
+    /* border-right: 1px solid var(--hairline-color); */
     height: 100%;
     overflow: hidden;
   }
 }
 
 .header {
+  background: var(--component-bg);
   position: relative;
-  position: sticky;
-  top: 0;
-  user-select: none;
-  background-color: inherit;
   z-index: var(--zindex-pane);
 
   @nest .isCollapsed & {
-    background-color: transparent;
+    width: 100%;
+  }
+
+  @nest .root:not(.isCollapsed) & {
+    position: sticky;
+    top: 0;
   }
 
   @nest &:after {
@@ -71,6 +60,10 @@
     right: 0;
     bottom: -1px;
     border-bottom: 1px solid var(--hairline-color);
+
+    @nest .root.isCollapsed & {
+      display: none;
+    }
   }
 }
 
@@ -91,124 +84,32 @@
   }
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @nest .isCollapsed & {
-    display: none;
-  }
-}
-
-.buttonWrapper {
-  display: flex;
-  align-items: stretch;
-  align-self: stretch;
-  justify-content: stretch;
-  position: relative;
-}
-
-.actionButton {
-  -webkit-appearance: none;
-  -webkit-font-smoothing: inherit;
-  appearance: none;
-  background-color: transparent;
-  color: var(--text-muted);
-  font: inherit;
-  border: 0;
-  height: calc(1.5625em + 0.5em);
-  width: calc(1.5625em + 0.5em);
-  margin: 0;
-  padding: 0.25em;
-  display: flex;
-  align-self: center;
-  align-items: stretch;
-  justify-content: stretch;
-  outline: none;
-  border-radius: 2px;
-  box-sizing: border-box;
-
-  @media (hover: hover) {
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    background: var(--selectable-item-color-hover);
-    color: inherit;
-  }
-}
-
-.actionButtonInner {
-  outline: none;
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-
-  @nest & > svg {
-    font-size: 1.5625em;
-  }
-}
-
-.menuWrapper {
-  align-self: center;
-  composes: buttonWrapper;
-  z-index: 2;
-
-  @nest .isCollapsed & {
-    display: none;
-  }
-}
-
-.menuInner {
-  margin: -0.375rem -0.75rem; /* To override tooltip padding */
-}
-
-.menuOverflowButton {
-  composes: actionButton;
-}
-
-.menuOverflowButtonInner {
-  composes: actionButtonInner;
-}
-
-.menuContainer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-
-  @nest & > div {
-    position: absolute;
-    right: var(--small-padding);
-  }
-}
-
-.menuButton {
-  display: block;
-  text-align: center;
+.titleContainer {
+  flex: 1;
+  min-width: 0;
+  padding: var(--medium-padding);
+  /* width: stretch; */
+  margin-right: auto;
 }
 
 .title {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 1em;
-  font-size: 1rem;
-  line-height: calc(17 / 16);
+  /* box-sizing: border-box; */
+  margin: -2px 0 -1px;
+  /* padding: 1em; */
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  /* font-size: 1rem; */
+  /* line-height: calc(17 / 16); */
   font-weight: 700;
   user-select: none;
-  cursor: default;
+  /* cursor: default; */
   white-space: nowrap;
   overflow: hidden;
+  width: 100%;
   max-width: 100%;
-  width: stretch;
   text-overflow: ellipsis;
-  margin-right: auto;
-  transform-origin: 1.5em 1.5em;
+  transform-origin: calc((var(--line-height-base) * 1em - 3px) / 2)
+    calc((var(--line-height-base) * 1em) / 2);
   transform: rotate(0deg);
 
   @nest .isCollapsed & {
@@ -216,82 +117,40 @@
   }
 }
 
-.headerViewMenu {
+.headerTools {
+  min-width: 0;
   display: flex;
-  margin-top: -0.5em;
+  align-items: center;
+  justify-content: center;
+  padding: var(--small-padding);
 
   @nest .isCollapsed & {
     display: none;
   }
 }
 
-.headerTabsContainer {
-  flex: 1;
-  overflow: hidden;
-}
+.headerToolContainer {
+  @nest .headerToolContainer + & {
+    margin-left: var(--extra-small-padding);
+  }
 
-.headerPaneActions {
-  padding: 0 0.5em 0 0;
-
-  @nest & button {
-    vertical-align: top;
-    -webkit-appearance: none;
-    -webkit-font-smoothing: inherit;
-    border: 0;
-    padding: 0.25em;
-    border-radius: 2px;
-    background: none;
-    color: var(--text-muted);
-    outline: none;
-
-    @nest & svg {
-      vertical-align: top;
-      font-size: 1.5625em; /* 25px */
-      line-height: 1;
-    }
-
-    /* Focus wrapper */
-    @nest & > div {
-      outline: none;
-    }
-
-    @media (hover: hover) {
-      @nest &:hover {
-        color: inherit;
-      }
-    }
-
-    @nest &:focus {
-      background: var(--selectable-item-color-hover);
-      color: inherit;
-    }
+  @nest &:empty {
+    display: none;
   }
 }
 
-.functions {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: nowrap;
-  opacity: 1;
-  z-index: 1;
-  flex-direction: row;
-  margin-left: 1em;
-}
-
-.functionsLarge {
-  composes: functions;
-}
-
-.functionsSmall {
-  composes: functions;
+.headerViewMenu {
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .main {
   position: relative;
-  flex-grow: 1;
-  display: flex;
-  align-items: stretch;
-  padding-bottom: var(--pane-footer-height);
+  flex: 1;
+  min-height: 0;
+  /* display: flex; */
+  /* align-items: stretch; */
 
   @nest .isCollapsed & {
     display: none;
@@ -305,15 +164,14 @@
 
   @media (--screen-medium) {
     composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    /* position: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+    /* right: 0; */
     height: 100%;
   }
 
   @media (--max-screen-medium) {
-    /* Override default scrollcontainer  */
     transform: initial;
     position: initial;
     top: initial;
@@ -351,59 +209,41 @@
   }
 }
 
-.functionsButton {
-  @nest .isCollapsed & {
-    display: none;
-  }
+.initialValueMenuTooltip {
+  /* empty */
 }
 
-.functionsButtonText {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  @nest .functionsSmall & {
-    display: none;
-  }
-
-  @nest .isCollapsed & {
-    display: none;
-  }
+.initialValueTemplateMenu {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: var(--extra-small-padding) 0;
+  min-width: 200px;
 }
 
-.initialValueTemplateDropDownMenuButton {
-  @nest & [class^='DropDownButton_button'] {
-    width: 2.0625rem;
-    border: 0 !important;
-  }
-
-  @nest & [class^='DropDownButton_button'] > span > span {
-    margin: 0 !important;
-  }
-
-  @nest & [class^='DropDownButton_button']:hover {
-    background-color: transparent;
-  }
-}
-
-.initialValueTemplateDropDownItem {
+.initialValueTemplateMenuItem {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   color: inherit;
   text-decoration: none;
   display: flex;
   justify-content: space-between;
-  padding: 0 var(--small-padding);
+  align-items: center;
+  padding: var(--small-padding) calc(var(--medium-padding) - var(--extra-small-padding));
+  text-align: left;
 }
 
 .initialValueTemplateSubtitle {
-  font-size: 0.7em;
-  font-weight: 300;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   text-transform: capitalize;
+  color: var(--text-color-secondary);
 }
 
-.initialValueTemplateDropDownItemIcon {
+.initialValueTemplateMenuItemIcon {
   display: flex;
   align-items: center;
-  font-size: var(--font-size-large);
+  font-size: 1.5rem;
   margin-left: var(--large-padding);
+  padding: var(--small-padding);
 }
 
 .stickyFooter {

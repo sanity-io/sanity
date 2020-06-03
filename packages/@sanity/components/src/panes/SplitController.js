@@ -1,10 +1,12 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import SplitPane from 'react-split-pane'
 import styles from './styles/SplitController.css'
 
-export default class PanesSplitController extends React.Component {
+export default class PanesSplitController extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onCheckCollapse: PropTypes.func,
@@ -33,23 +35,22 @@ export default class PanesSplitController extends React.Component {
     const isCollapsed = pane1.props.isCollapsed
     const {collapsedWidth} = this.props
     const {isResizing} = this.state
-
     const size = isCollapsed ? collapsedWidth : undefined
 
     return (
       <div
-        className={`
-          ${styles.vertical}
-          ${isResizing ? styles.splitWrapperResizing : styles.splitWrapper}
-          ${pane2 ? '' : styles.singleWrapper}
-          ${isCollapsed ? styles.isCollapsed : styles.notCollapsed}
-        `}
+        className={classNames(
+          styles.root,
+          isResizing ? styles.splitWrapperResizing : styles.splitWrapper,
+          pane2 ? '' : styles.singleWrapper,
+          isCollapsed && styles.collapsed
+        )}
       >
         <SplitPane
           minSize={isCollapsed ? collapsedWidth : pane1.props.minSize}
           defaultSize={isCollapsed ? collapsedWidth : pane1.props.defaultSize}
           size={size}
-          resizerClassName={isCollapsed ? styles.ResizerIsCollapsed : styles.Resizer}
+          resizerClassName={styles.resizer}
           allowResize={!isCollapsed}
           className={styles.splitPane}
           onDragStarted={this.handleDragStarted}
@@ -85,6 +86,7 @@ export default class PanesSplitController extends React.Component {
     if (panes.length === 0) {
       return <div>No panes</div>
     }
+
     return isMobile
       ? children
       : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))

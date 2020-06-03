@@ -38,11 +38,16 @@
 
 .icon {
   display: block;
-  margin: -1px 0;
+  margin: 0;
 
   @nest & > svg {
-    font-size: calc(1rem + 1px);
     display: block;
+    font-size: calc(15 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(21 / 16 * 1em);
+      margin: calc(3 / 21 * -1em);
+    }
   }
 }
 
@@ -51,7 +56,7 @@
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
   font-weight: 600;
-  margin: -1px 0 0;
+  margin: calc(1 / 16 * -1em) 0 0;
 
   @nest .icon + & {
     margin-left: var(--extra-small-padding);

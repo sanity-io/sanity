@@ -77,10 +77,9 @@
 
 .media {
   position: relative;
-  flex-basis: 2.5rem;
-  min-width: 2.5rem;
+  flex-basis: 2.5em;
+  min-width: 2.5em;
   margin-right: var(--small-padding);
-  font-size: 0.5em;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -92,16 +91,22 @@
     height: 2.5rem;
   }
 
-  @nest & img {
+  @nest & > img {
     display: block;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.5em;
+    height: 2.5em;
     object-fit: contain;
   }
 
-  @nest & svg {
-    font-size: 1.5rem;
+  @nest & > svg {
+    display: block;
+    font-size: calc(24 / 16 * 1em);
     color: inherit;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(36 / 16 * 1em);
+      margin: calc(6 / 36 * -1em);
+    }
   }
 }
 
@@ -147,4 +152,5 @@
 .status {
   white-space: nowrap;
   outline: none;
+  padding-left: var(--small-padding);
 }

@@ -5,13 +5,15 @@ import classNames from 'classnames'
 import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
-import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
+import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import {Tooltip} from 'react-tippy'
 import Styleable from '../utilities/Styleable'
-import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
+
+import defaultStyles from './styles/DefaultPane.css'
 
 function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
@@ -28,6 +30,12 @@ const noop = () => {
 
 const isActionButton = item => item.showAsAction
 const isMenuButton = negate(isActionButton)
+
+function toChildNodeArray(nodes) {
+  const arr = Array.isArray(nodes) ? nodes : [nodes]
+
+  return arr.filter(x => x !== undefined && x !== null && x !== false)
+}
 
 class Pane extends React.PureComponent {
   static propTypes = {
@@ -99,7 +107,8 @@ class Pane extends React.PureComponent {
     super(props)
 
     this.state = {
-      isMenuOpen: false
+      isMenuOpen: false,
+      isInitialValueMenuOpen: false
     }
 
     // Passed to rendered <Menu> components. This prevents the "click outside"
@@ -115,6 +124,10 @@ class Pane extends React.PureComponent {
 
   handleToggleMenu = () => {
     this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
+  }
+
+  handleToggleInitialValueTemplateMenu = () => {
+    this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
   }
 
   handleRootClick = event => {
@@ -149,21 +162,18 @@ class Pane extends React.PureComponent {
 
   renderIntentAction = (action, i) => {
     const {styles} = this.props
-    const Icon = action.icon
 
     return (
-      <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
-        <IntentLink
-          className={styles.actionButton}
-          intent={action.intent.type}
-          params={action.intent.params}
-          title={action.title}
-        >
-          <div className={styles.actionButtonInner} tabIndex={-1}>
-            <Icon />
-          </div>
-        </IntentLink>
-      </div>
+      <IntentButton
+        className={styles.actionButton}
+        icon={action.icon}
+        intent={action.intent.type}
+        key={getActionKey(action, i)}
+        kind="simple"
+        padding="small"
+        params={action.intent.params}
+        title={action.title}
+      />
     )
   }
 
@@ -175,16 +185,12 @@ class Pane extends React.PureComponent {
     const params = item.intent.params
     const Icon = item.icon
     return (
-      <IntentLink
-        className={styles.initialValueTemplateDropDownItem}
-        intent="create"
-        params={params}
-      >
+      <IntentLink className={styles.initialValueTemplateMenuItem} intent="create" params={params}>
         <div>
           <div>{item.title}</div>
           <div className={styles.initialValueTemplateSubtitle}>{params.type}</div>
         </div>
-        <div className={styles.initialValueTemplateDropDownItemIcon}>
+        <div className={styles.initialValueTemplateMenuItemIcon}>
           <Icon />
         </div>
       </IntentLink>
@@ -202,48 +208,67 @@ class Pane extends React.PureComponent {
     return (
       <div className={styles.menuWrapper} key={getActionKey(action, i)}>
         {action.action !== 'toggleTemplateSelectionMenu' && (
-          <button
-            className={styles.actionButton}
+          <Button
             data-menu-button-id={this.templateMenuId}
-            type="button"
+            icon={Icon}
+            kind="simple"
+            padding="small"
             title={action.title}
             // eslint-disable-next-line react/jsx-no-bind
             onClick={this.handleMenuAction.bind(this, action)}
-          >
-            <div className={styles.actionButtonInner} tabIndex={-1}>
-              <Icon />
-            </div>
-          </button>
+          />
         )}
         {action.action === 'toggleTemplateSelectionMenu' && (
-          <div className={styles.initialValueTemplateDropDownMenuButton}>
-            <DropDownButton
-              bleed
-              className={styles.initialValueTemplateDropDownMenu}
-              items={items}
-              renderItem={this.renderActionMenuItem}
-              // eslint-disable-next-line react/jsx-no-bind
-              onAction={this.handleMenuAction.bind(this, action)}
-              kind="simple"
-              showArrow={false}
-              ripple={false}
-              placement="bottom-end"
-            >
-              <div className={styles.buttonWrapper}>
-                <div className={styles.actionButton}>
-                  <div className={styles.actionButtonInner}>
-                    <Icon />
-                  </div>
-                </div>
+          <Tooltip
+            arrow
+            className={styles.initialValueMenuTooltip}
+            distance={13}
+            theme="light"
+            trigger="click focus"
+            position="bottom"
+            interactive
+            open={this.state.isInitialValueMenuOpen}
+            onRequestClose={this.handleToggleInitialValueTemplateMenu}
+            useContext
+            html={
+              <div className={styles.initialValueTemplateMenu}>
+                {items.map(item => this.renderActionMenuItem(item))}
               </div>
-            </DropDownButton>
-          </div>
+            }
+          >
+            <Button
+              aria-label="Menu"
+              aria-haspopup="menu"
+              aria-expanded={this.state.isInitialValueMenuOpen}
+              aria-controls={this.templateMenuId}
+              icon={Icon}
+              kind="simple"
+              onClick={this.handleToggleInitialValueTemplateMenu}
+              padding="small"
+              selected={this.state.isInitialValueMenuOpen}
+              title="Create new document"
+            />
+          </Tooltip>
         )}
       </div>
     )
   }
 
-  renderMenu() {
+  renderActionNodes() {
+    const {isCollapsed, menuItems, renderActions} = this.props
+
+    const actions = menuItems.filter(
+      action => action.showAsAction && (!isCollapsed || action.showAsAction.whenCollapsed)
+    )
+
+    if (renderActions) {
+      return renderActions(actions)
+    }
+
+    return actions.map(this.renderAction)
+  }
+
+  renderHeaderToolsOverflowMenu() {
     const {styles, menuItems, menuItemGroups, isCollapsed} = this.props
     const items = menuItems.filter(isMenuButton)
 
@@ -252,9 +277,10 @@ class Pane extends React.PureComponent {
     }
 
     return (
-      <div className={styles.menuWrapper}>
+      <div className={styles.headerToolContainer}>
         <Tooltip
           arrow
+          distance={13}
           theme="light"
           trigger="click focus"
           position="bottom"
@@ -263,33 +289,47 @@ class Pane extends React.PureComponent {
           onRequestClose={this.handleToggleMenu}
           useContext
           html={
-            <div className={styles.menuInner}>
-              <Menu
-                id={this.paneMenuId}
-                items={items}
-                groups={menuItemGroups}
-                origin={isCollapsed ? 'top-left' : 'top-right'}
-                onAction={this.handleMenuAction}
-              />
-            </div>
+            <Menu
+              id={this.paneMenuId}
+              items={items}
+              groups={menuItemGroups}
+              origin={isCollapsed ? 'top-left' : 'top-right'}
+              onAction={this.handleMenuAction}
+            />
           }
         >
-          <button
+          <Button
             aria-label="Menu"
             aria-haspopup="menu"
             aria-expanded={this.state.isMenuOpen}
             aria-controls={this.paneMenuId}
-            type="button"
             className={styles.menuOverflowButton}
-            title="Show menu"
+            icon={IconMoreVert}
+            kind="simple"
             onClick={this.handleToggleMenu}
-          >
-            <div className={styles.menuOverflowButtonInner} tabIndex={-1} aria-hidden="true">
-              <IconMoreVert />
-            </div>
-          </button>
+            padding="small"
+            selected={this.state.isMenuOpen}
+            title="Show menu"
+          />
         </Tooltip>
       </div>
+    )
+  }
+
+  renderHeaderTools() {
+    const {styles} = this.props
+    const headerActionNodes = toChildNodeArray(this.renderActionNodes())
+
+    return (
+      <>
+        {headerActionNodes.map((actionNode, actionNodeIndex) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={actionNodeIndex} className={styles.headerToolContainer}>
+            {actionNode}
+          </div>
+        ))}
+        {this.renderHeaderToolsOverflowMenu()}
+      </>
     )
   }
 
@@ -303,16 +343,11 @@ class Pane extends React.PureComponent {
       isCollapsed,
       isScrollable,
       hasSiblings,
-      menuItems,
       styles,
-      renderActions,
       footer,
       tabIdPrefix,
       viewId
     } = this.props
-    const actions = menuItems.filter(
-      act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
-    )
 
     const mainChildren = isScrollable ? (
       <ScrollContainer className={styles.scrollContainer} tabIndex={-1}>
@@ -322,25 +357,29 @@ class Pane extends React.PureComponent {
       <div className={styles.notScrollable}>{children}</div>
     )
 
+    const headerViewMenuNode = this.props.renderHeaderViewMenu()
+
     return (
       <div
         className={classNames([
-          isCollapsed ? styles.isCollapsed : styles.root,
+          styles.root,
+          isCollapsed && styles.isCollapsed,
           isSelected ? styles.isActive : styles.isDisabled
         ])}
         onClick={this.handleRootClick}
       >
         <div className={styles.header}>
           <div className={styles.headerContent}>
-            <h2 className={styles.title} onClick={this.handleTitleClick}>
-              {title}
-            </h2>
-            <div className={styles.actions}>
-              {renderActions ? renderActions(actions) : actions.map(this.renderAction)}
-              {this.renderMenu()}
+            <div className={styles.titleContainer}>
+              <h2 className={styles.title} onClick={this.handleTitleClick}>
+                {title}
+              </h2>
             </div>
+            <div className={styles.headerTools}>{this.renderHeaderTools()}</div>
           </div>
-          {this.props.renderHeaderViewMenu()}
+
+          {/* To render tabs and similar */}
+          {headerViewMenuNode && <div className={styles.headerViewMenu}>{headerViewMenuNode}</div>}
         </div>
 
         {hasTabs ? (

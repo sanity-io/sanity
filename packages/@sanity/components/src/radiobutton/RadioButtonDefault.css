@@ -3,7 +3,7 @@
 :root {
   --radio-off-color: var(--gray-light);
   --radio-color: var(--brand-primary);
-  --radio-button-size: 1em;
+  --radio-button-size: calc(17 / 16 * 1em);
   --radio-top-offset: 0;
   --radio-focus-color: var(--brand-primary);
 }
@@ -36,7 +36,7 @@
   width: var(--radio-button-size);
   border: 1px solid var(--radio-off-color);
   border-radius: 50%;
-  margin-top: 3px;
+  /* margin-top: 1px; */
   margin-right: var(--small-padding);
   line-height: 1;
 
