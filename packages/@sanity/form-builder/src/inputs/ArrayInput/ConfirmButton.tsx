@@ -3,13 +3,17 @@ import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/ConfirmButton.css'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import PopOver from 'part:@sanity/components/dialogs/popover'
+
 type ConfirmButtonProps = {
+  kind?: 'simple'
   onConfirm?: () => void
   title: string
 }
+
 type ConfirmButtonState = {
   showConfirmDialog: boolean
 }
+
 export default class ConfirmButton extends React.Component<ConfirmButtonProps, ConfirmButtonState> {
   _button: Button | null
   _confirmButton: Button | null
@@ -57,9 +61,9 @@ export default class ConfirmButton extends React.Component<ConfirmButtonProps, C
       <div className={styles.root}>
         <Button
           {...rest}
-          kind="simple"
           icon={TrashIcon}
           onClick={this.handleClick}
+          padding="small"
           ref={this.setButton}
         />
         {showConfirmDialog && (

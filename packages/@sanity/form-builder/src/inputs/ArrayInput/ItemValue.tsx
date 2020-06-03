@@ -286,11 +286,18 @@ export default class RenderItemValue extends React.PureComponent<Props> {
               className={styles.linkToReference}
               icon={LinkIcon}
               intent="edit"
-              kind="simple"
+              kind={isGrid ? undefined : 'simple'}
+              padding="small"
               params={{id: value._ref}}
             />
           )}
-          {!readOnly && <ConfirmButton title="Remove this item" onConfirm={this.handleRemove} />}
+          {!readOnly && (
+            <ConfirmButton
+              kind={isGrid ? undefined : 'simple'}
+              title="Remove this item"
+              onConfirm={this.handleRemove}
+            />
+          )}
         </div>
       </div>
     )
