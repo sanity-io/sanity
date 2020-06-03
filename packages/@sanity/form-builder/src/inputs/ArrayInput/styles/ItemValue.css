@@ -16,7 +16,6 @@
 
 .listItem {
   composes: root;
-  padding: var(--small-padding) 0;
 }
 
 .gridItem {
@@ -52,38 +51,20 @@
 }
 
 .dragHandle {
-  composes: default from 'part:@sanity/components/drag-handle-style';
+  display: block;
+  flex-grow: 0;
+  margin-right: var(--extra-small-padding);
+
+  @nest & > button {
+    cursor: ns-resize;
+  }
 }
 
 .linkToReference {
-  z-index: 2;
-  transition: transform 0.1s linear, opacity 0.1s linear;
-  transform: scale(1.2);
-
-  @nest &:hover {
-    opacity: 1;
-    color: var(--link-color);
-
-    @nest & svg {
-      color: var(--link-color);
-    }
-  }
-
-  @nest &:active {
-    opacity: 1;
-    color: var(--text-color);
-
-    @nest & svg {
-      color: var(--text-color);
-    }
-  }
-
-  @nest & svg {
-    color: var(--text-color);
-  }
 }
 
 .previewWrapper {
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   flex-grow: 1;
   outline: none;
   user-select: none;
@@ -108,13 +89,8 @@
   display: flex;
   align-items: center;
   flex-grow: 0;
-  font-size: var(--font-size-small);
   color: var(--text-color-secondary);
-  margin-left: var(--small-padding);
-
-  @nest & > * {
-    margin-right: var(--small-padding);
-  }
+  margin-left: var(--extra-small-padding);
 }
 
 .functionsInGrid {

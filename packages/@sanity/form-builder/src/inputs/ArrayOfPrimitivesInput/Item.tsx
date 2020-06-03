@@ -7,12 +7,12 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import PatchEvent, {set} from '../../PatchEvent'
 import getEmptyValue from './getEmptyValue'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
-import DragBarsIcon from 'part:@sanity/base/bars-icon'
+import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import {Type, Marker} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <DragBarsIcon />
+    <Button icon={DragHandleIcon} kind="simple" />
   </span>
 ))
 type Props = {

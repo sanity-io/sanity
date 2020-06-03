@@ -470,7 +470,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           kind="default"
           inverted
           showArrow
-          ripple={false}
         >
           Select from
         </DropDownButton>
