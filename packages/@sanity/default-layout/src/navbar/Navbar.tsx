@@ -1,7 +1,6 @@
 import React from 'react'
-import {Tooltip} from 'react-tippy'
 import config from 'config:sanity'
-import PlusIcon from 'part:@sanity/base/plus-icon'
+import ComposeIcon from 'part:@sanity/base/compose-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
@@ -14,6 +13,7 @@ import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {GlobalPresence} from './studioStatus/GlobalPresence'
 import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
+import {Tooltip} from './tooltip'
 import {Router, Tool, User} from '../types'
 
 import styles from './Navbar.css'
@@ -34,6 +34,8 @@ interface Props {
   tools: Tool[]
   user?: User
 }
+
+const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 let isSidecarEnabled: () => boolean
 let SidecarToggleButton: React.ComponentType<{}>
@@ -89,19 +91,10 @@ function Navbar(props: Props) {
         </div>
       )}
       <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
-        <Tooltip
-          disabled={'ontouchstart' in document.documentElement}
-          title="Create new document"
-          arrow
-          inertia
-          theme="dark"
-          distance={7}
-          sticky
-          size="small"
-        >
+        <Tooltip disabled={TOUCH_DEVICE} content={<>Create new document</>}>
           <div className={styles.createButtonInner} tabIndex={-1}>
             <div className={styles.createButtonIcon}>
-              <PlusIcon />
+              <ComposeIcon />
             </div>
             <span className={styles.createButtonText}>New</span>
           </div>
