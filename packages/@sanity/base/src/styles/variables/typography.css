@@ -73,10 +73,12 @@
   --line-height-h6: calc(16 / 13); /* 16px */
 
   /* Blockquote */
-  --blockquote-color: var(--gray);
-  --blockquote-font-size: var(--font-size-large);
-  --blockquote-border-color: var(--gray-light);
-  --blockquote-small-color: var(--gray-light);
+  --blockquote-font-family: var(--font-family-sans-serif);
+  --blockquote-color: var(--text-color-secondary);
+  --blockquote-font-size: var(--font-size-base);
+  --blockquote-line-height: var(--line-height-base);
+  --blockquote-font-style: normal;
+  --blockquote-border-color: var(--hairline-color);
 
   /* Page header */
   --page-header-border-color: var(--gray-lighter);
