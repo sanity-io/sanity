@@ -51,11 +51,11 @@ export default class ValidationStatus extends React.PureComponent<Props> {
     )
 
     const TooltipText = () => (
-      <div className={styles.tooltipText}>
+      <div className={styles.tooltip}>
         <div className={iconClassName}>
           <ErrorOutlineIcon />
         </div>
-        {tooltipText}
+        <div className={styles.tooltipText}>{tooltipText}</div>
       </div>
     )
 
