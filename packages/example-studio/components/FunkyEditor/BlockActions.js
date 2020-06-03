@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import styles from './BlockActions.css'
+
 export default class FunkyBlockActions extends React.Component {
   static propTypes = {
     block: PropTypes.shape({
@@ -22,7 +24,12 @@ export default class FunkyBlockActions extends React.Component {
       ]
     })
   }
+
   render() {
-    return <div onClick={this.handleClick}>Ping</div>
+    return (
+      <div className={styles.root} onClick={this.handleClick}>
+        Ping
+      </div>
+    )
   }
 }
