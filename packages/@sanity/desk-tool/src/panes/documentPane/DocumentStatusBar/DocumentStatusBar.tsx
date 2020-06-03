@@ -16,7 +16,9 @@ export default function DocumentStatusBar(props: Props) {
   return (
     <div className={styles.root}>
       <div className={styles.status}>
-        <DocumentStatusBarBadges id={props.id} type={props.type} />
+        <div className={styles.statusBadgesContainer}>
+          <DocumentStatusBarBadges id={props.id} type={props.type} />
+        </div>
         <div className={styles.statusDetails}>
           <button
             className={styles.lastUpdatedButton}
@@ -30,7 +32,7 @@ export default function DocumentStatusBar(props: Props) {
             ) : (
               'Empty'
             )}
-          </button>{' '}
+          </button>
           <SyncState id={props.id} type={props.type} />
         </div>
       </div>

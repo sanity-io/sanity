@@ -15,11 +15,21 @@
   justify-content: center;
 }
 
+.statusBadgesContainer {
+  /* container for <StatusBadges /> */
+}
+
 .statusDetails {
-  font-size: var(--font-size-tiny);
-  line-height: var(--line-height-tiny);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   font-weight: 500;
+  color: var(--text-color-secondary);
   white-space: nowrap;
+  margin: -2px 0 -1px;
+
+  @nest .statusBadgesContainer + & {
+    margin-top: var(--small-padding);
+  }
 }
 
 .lastUpdatedButton {
@@ -28,14 +38,18 @@
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
   font: inherit;
+  font-size: var(--font-size-tiny);
+  line-height: var(--line-height-tiny);
+  font-weight: 500;
   display: inline-block;
   border: 0;
   border-radius: 0;
   background: none;
   cursor: pointer;
   text-align: inherit;
-  padding: 0;
-  margin: 0;
+  padding: 4px;
+  margin: -5px 0 -4px -4px;
+  outline: none;
 
   @media (hover: hover) {
     @nest &:hover {

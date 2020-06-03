@@ -6,9 +6,13 @@ import styles from './ItemStatus.css'
 
 const DraftStatus = () => (
   <Tooltip
-    tabIndex={0}
+    tabIndex={-1}
     className={styles.itemStatus}
-    title="There are unpublished edits"
+    html={
+      <div className={styles.tooltipWrapper}>
+        <span>Unpublished changes</span>
+      </div>
+    }
     arrow
     theme="light"
     sticky

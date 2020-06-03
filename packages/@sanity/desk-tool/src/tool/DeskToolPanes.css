@@ -1,0 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  height: 100%;
+
+  @media (--screen-medium) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+}

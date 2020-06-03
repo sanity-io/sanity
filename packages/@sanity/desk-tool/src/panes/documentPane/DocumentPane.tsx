@@ -1,4 +1,6 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import React from 'react'
 import {noop} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
@@ -20,20 +22,21 @@ import Delay from '../../utils/Delay'
 import isNarrowScreen from '../../utils/isNarrowScreen'
 import windowWidth$ from '../../utils/windowWidth'
 import History from './History'
-import _documentPaneStyles from './DocumentPane.css'
 import FormView from './editor/FormView'
 import {historyIsEnabled} from './editor/history'
 import {getMenuItems, getProductionPreviewItem} from './documentPaneMenuItems'
 import {PaneRouterContext} from '../../contexts/PaneRouterContext'
 import {DocumentActionShortcuts} from './DocumentActionShortcuts'
-import styles from './Editor.css'
-import {Validation} from './editor/Validation'
+import {Validation} from './Validation'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import {DocumentOperationResults} from './DocumentOperationResults'
 
+// Import CSS
+import _styles from './DocumentPane.css'
+
 declare const __DEV__: boolean
 
-const documentPaneStyles: any = _documentPaneStyles
+const styles: any = _styles
 
 const DEBUG_HISTORY_TRANSITION = false
 const CURRENT_REVISION_FLAG = '-'
@@ -520,8 +523,8 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   renderError(error) {
     return (
-      <div className={documentPaneStyles.error}>
-        <div className={documentPaneStyles.errorInner}>
+      <div className={styles.error}>
+        <div className={styles.errorInner}>
           <h3>We’re sorry, but your changes could not be applied.</h3>
           <UseState startWith={false}>
             {([isExpanded, setExpanded]) => (
@@ -533,7 +536,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
                 <div>
                   {isExpanded && (
                     <textarea
-                      className={documentPaneStyles.errorDetails}
+                      className={styles.errorDetails}
                       onFocus={e => e.currentTarget.select()}
                       value={error.stack}
                     />
@@ -552,8 +555,8 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const {value} = this.props
     const typeName = options.type
     return (
-      <div className={documentPaneStyles.unknownSchemaType}>
-        <div className={documentPaneStyles.unknownSchemaTypeInner}>
+      <div className={styles.unknownSchemaType}>
+        <div className={styles.unknownSchemaTypeInner}>
           <h3>Unknown schema type</h3>
           {typeName && (
             <p>
@@ -614,20 +617,19 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       return null
     }
 
-    return (
-      <div className={styles.paneFunctions}>
-        {LanguageFilter && <LanguageFilter />}
-        <Validation
-          id={options.id}
-          type={options.type}
-          markers={markers}
-          showValidationTooltip={showValidationTooltip}
-          onCloseValidationResults={this.handleCloseValidationResults}
-          onToggleValidationResults={this.handleToggleValidationResults}
-          onFocus={this.handleSetFocus}
-        />
-      </div>
-    )
+    return [
+      LanguageFilter && <LanguageFilter key="language-filter" />,
+      <Validation
+        id={options.id}
+        key="validation-menu"
+        type={options.type}
+        markers={markers}
+        showValidationTooltip={showValidationTooltip}
+        onCloseValidationResults={this.handleCloseValidationResults}
+        onToggleValidationResults={this.handleToggleValidationResults}
+        onFocus={this.handleSetFocus}
+      />
+    ]
   }
 
   findSelectedHistoryEvent() {
@@ -696,7 +698,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const eventDate = this.getHistoryEventDateString()
     return (
       <Delay ms={600}>
-        <div className={documentPaneStyles.spinnerContainer}>
+        <div className={styles.spinnerContainer}>
           <Spinner center message={`Loading revision${eventDate ? ` from ${eventDate}` : ''}…`} />
         </div>
       </Delay>
@@ -820,7 +822,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
     if (connectionState === 'connecting') {
       return (
-        <div className={documentPaneStyles.loading}>
+        <div className={styles.loading}>
           <Spinner center delay={1000} message={`Loading ${schemaType.title}…`} />
         </div>
       )
@@ -839,67 +841,67 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
         id={options.id}
         type={typeName}
         onKeyUp={this.handleKeyUp}
-        className={
-          this.historyIsOpen()
-            ? documentPaneStyles.paneWrapperWithHistory
-            : documentPaneStyles.paneWrapper
-        }
+        className={classNames(styles.root, this.historyIsOpen() && styles.withHistory)}
       >
         {this.historyIsOpen() && this.canShowHistoryList() && (
-          <History
-            key="history"
-            documentId={getPublishedId(options.id)}
-            onClose={this.handleCloseHistory}
-            onItemSelect={this.handleHistorySelect}
-            lastEdited={value && new Date(value._updatedAt)}
-            events={historyState.events}
-            isLoading={historyState.isLoading}
-            error={historyState.error}
-            selectedEvent={selectedHistoryEvent}
-          />
-        )}
-        <TabbedPane
-          key="pane"
-          idPrefix={paneKey}
-          title={this.getTitle(value)}
-          views={views}
-          activeView={this.getActiveViewId()}
-          onSetActiveView={this.handleSetActiveView}
-          onSplitPane={hasNarrowScreen ? undefined : this.handleSplitPane}
-          onCloseView={this.handleClosePane}
-          menuItemGroups={menuItemGroups}
-          isSelected={isSelected}
-          isCollapsed={isCollapsed}
-          onCollapse={onCollapse}
-          onExpand={onExpand}
-          onAction={this.handleMenuAction}
-          menuItems={menuItems}
-          footer={
-            this.historyIsOpen() && selectedHistoryEvent
-              ? this.renderHistoryFooter(selectedHistoryEvent)
-              : this.renderFooter()
-          }
-          renderActions={this.renderActions}
-          isClosable={isClosable}
-          hasSiblings={this.context.hasGroupSiblings}
-        >
-          {this.renderHistorySpinner()}
-          {this.renderCurrentView()}
-          {inspect && this.historyIsOpen() && historical && (
-            <InspectHistory document={historical} onClose={this.handleHideInspector} />
-          )}
-          {inspect && !this.historyIsOpen() && value && (
-            <InspectView value={value} onClose={this.handleHideInspector} />
-          )}
-          {connectionState === 'reconnecting' && (
-            <Snackbar
-              kind="warning"
-              title="Connection lost. Reconnecting when online…"
-              isPersisted
+          <div className={styles.historyContainer}>
+            <History
+              key="history"
+              documentId={getPublishedId(options.id)}
+              onClose={this.handleCloseHistory}
+              onItemSelect={this.handleHistorySelect}
+              lastEdited={value && new Date(value._updatedAt)}
+              events={historyState.events}
+              isLoading={historyState.isLoading}
+              error={historyState.error}
+              selectedEvent={selectedHistoryEvent}
             />
-          )}
-          <DocumentOperationResults id={options.id} type={options.type} />
-        </TabbedPane>
+          </div>
+        )}
+        <div className={styles.editorContainer}>
+          <TabbedPane
+            key="pane"
+            idPrefix={paneKey}
+            title={this.getTitle(value)}
+            views={views}
+            activeView={this.getActiveViewId()}
+            onSetActiveView={this.handleSetActiveView}
+            onSplitPane={hasNarrowScreen ? undefined : this.handleSplitPane}
+            onCloseView={this.handleClosePane}
+            menuItemGroups={menuItemGroups}
+            isSelected={isSelected}
+            isCollapsed={isCollapsed}
+            onCollapse={onCollapse}
+            onExpand={onExpand}
+            onAction={this.handleMenuAction}
+            menuItems={menuItems}
+            footer={
+              this.historyIsOpen() && selectedHistoryEvent
+                ? this.renderHistoryFooter(selectedHistoryEvent)
+                : this.renderFooter()
+            }
+            renderActions={this.renderActions}
+            isClosable={isClosable}
+            hasSiblings={this.context.hasGroupSiblings}
+          >
+            {this.renderHistorySpinner()}
+            {this.renderCurrentView()}
+            {inspect && this.historyIsOpen() && historical && (
+              <InspectHistory document={historical} onClose={this.handleHideInspector} />
+            )}
+            {inspect && !this.historyIsOpen() && value && (
+              <InspectView value={value} onClose={this.handleHideInspector} />
+            )}
+            {connectionState === 'reconnecting' && (
+              <Snackbar
+                kind="warning"
+                title="Connection lost. Reconnecting when online…"
+                isPersisted
+              />
+            )}
+            <DocumentOperationResults id={options.id} type={options.type} />
+          </TabbedPane>
+        </div>
       </DocumentActionShortcuts>
     )
   }

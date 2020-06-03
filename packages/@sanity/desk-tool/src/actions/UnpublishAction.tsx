@@ -1,5 +1,5 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
-import CloseIcon from 'part:@sanity/base/close-icon'
+import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 import React from 'react'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
 
@@ -61,7 +61,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
   }
 
   return {
-    icon: CloseIcon,
+    icon: UnpublishIcon,
     disabled: Boolean(unpublish.disabled),
     label: 'Unpublish',
     title: unpublish.disabled ? DISABLED_REASON_TITLE[unpublish.disabled] : '',

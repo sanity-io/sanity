@@ -4,7 +4,6 @@ import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import styles from './Validation.css'
 
 interface ValidationProps {
   id: string
@@ -28,19 +27,22 @@ export function Validation(props: ValidationProps) {
   const validation = markers.filter(marker => marker.type === 'validation')
   const errors = validation.filter(marker => marker.level === 'error')
   const warnings = validation.filter(marker => marker.level === 'warning')
+
   if (errors.length === 0 && warnings.length === 0) {
     return null
   }
+
   return (
     <Tooltip
       arrow
+      distance={13}
       trigger="click"
       theme="light"
       position="bottom"
+      inertia={false}
       interactive
       open={showValidationTooltip}
       onRequestClose={onCloseValidationResults}
-      distance={6}
       html={
         <ValidationList
           markers={validation}
@@ -55,12 +57,11 @@ export function Validation(props: ValidationProps) {
       <Button
         title="Show validation issues"
         kind="simple"
-        inverted
-        ripple={false}
         color={errors.length > 0 ? 'danger' : 'warning'}
         icon={ErrorOutlineIcon}
-        className={`${styles.button} ${showValidationTooltip ? styles.isOpen : ''}`}
         onClick={onToggleValidationResults}
+        padding="small"
+        selected={showValidationTooltip}
       />
     </Tooltip>
   )
