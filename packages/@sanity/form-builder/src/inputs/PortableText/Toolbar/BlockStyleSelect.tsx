@@ -99,9 +99,10 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
   if (!items || items.length < 2) {
     return null
   }
-  const {className, editor} = props
+  const {className, editor, selection} = props
   const focusBlock = PortableTextEditor.focusBlock(editor)
-  const disabled = focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
+  const disabled =
+    !selection || (focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false)
   return (
     <label className={className}>
       <span style={{display: 'none'}}>Text</span>
