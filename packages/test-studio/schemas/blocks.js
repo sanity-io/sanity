@@ -4,13 +4,14 @@ import imageIcon from 'react-icons/lib/md/photo-library'
 import colorIcon from 'react-icons/lib/md/format-color-fill'
 import {BlockEditor} from 'part:@sanity/form-builder'
 
-const CustomEditor = props => {
+const CustomEditor = React.forwardRef((props, ref) => {
   const {markers, value} = props
   const newMarkers = markers.concat([
     {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
   ])
-  return <BlockEditor {...props} markers={newMarkers} />
-}
+  return <BlockEditor {...props} markers={newMarkers} ref={ref} />
+})
+CustomEditor.displayName = 'CustomEditor'
 CustomEditor.propTypes = BlockEditor.propTypes // eslint-disable-line react/forbid-foreign-prop-types
 
 export default {
