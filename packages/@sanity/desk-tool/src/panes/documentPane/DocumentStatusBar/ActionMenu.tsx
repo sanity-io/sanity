@@ -110,7 +110,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
                       <span className={styles.menuItemLabel}>{actionState.label}</span>
                       {actionState.shortcut && (
                         <span className={styles.menuItemHotkeys}>
-                          <Hotkeys keys={[actionState.shortcut]} />
+                          <Hotkeys keys={String(actionState.shortcut).split('+')} size="small" />
                         </span>
                       )}
                     </div>

@@ -147,14 +147,15 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
         )}
         <div className={styles.menuContainer}>
           <DropDownButton
+            icon={MoreVertIcon}
+            padding="small"
             placement="bottom-end"
             showArrow={false}
             items={isSelected ? menuItems.filter(item => item.name !== 'delete') : menuItems}
             renderItem={this.renderMenuItem}
             onAction={this.handleMenuAction}
-          >
-            <MoreVertIcon />
-          </DropDownButton>
+          />
+
           {dialogType && (
             <Dialog
               title={dialogType === 'error' ? 'Could not delete asset' : 'Documents using this'}
