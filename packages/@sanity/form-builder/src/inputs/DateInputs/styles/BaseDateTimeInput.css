@@ -11,23 +11,38 @@
   display: flex;
   padding: 0;
   position: relative;
+  overflow: hidden;
 
   @nest & > div {
     flex-grow: 1;
   }
 
-  /* from text-input in base */
   @nest &:hover {
     box-shadow: var(--input-box-shadow--hover);
     border-color: var(--input-border-color-hover);
   }
 
-  @nest &:focus, &:focus-within {
-    box-shadow: var(--input-box-shadow--focus);
-  }
-
   @nest &:active {
     border-color: var(--input-border-color-active);
+  }
+
+  @nest &:focus, &:focus-within {
+    box-shadow: var(--input-box-shadow--focus);
+    background-color: var(--input-bg-focus);
+    border-color: var(--input-border-color-focus);
+
+    @nest &:invalid {
+      box-shadow: var(--input-box-shadow--invalid-focus);
+    }
+  }
+
+  @nest &:not(:focus):not(:focus-within):invalid {
+    border-color: var(--input-border-color-invalid);
+  }
+
+  @nest &:invalid {
+    background-color: var(--input-bg-invalid);
+    box-shadow: var(--input-box-shadow--invalid);
   }
 
   @nest & :global(.react-datepicker-wrapper) {
@@ -65,10 +80,12 @@
 .input {
   -webkit-font-smoothing: inherit;
   appearance: none;
+  font: inherit;
   line-height: var(--input-line-height);
   box-sizing: border-box;
-  padding: calc(var(--input-padding-horizontal) - var(--input-border-size))
-    calc(var(--input-padding-vertical) - var(--input-border-size));
+  padding: calc(var(--input-padding-horizontal) - var(--input-border-size) - 2px)
+    calc(var(--input-padding-vertical) - var(--input-border-size))
+    calc(var(--input-padding-horizontal) - var(--input-border-size) - 1px);
   width: 100%;
   border: none;
   outline: none;
@@ -77,6 +94,10 @@
 
   @nest &::placeholder {
     color: var(--input-color-placeholder);
+  }
+
+  @nest &:disabled {
+    color: var(--input-color-disabled);
   }
 }
 
