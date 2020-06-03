@@ -10,7 +10,8 @@
   font: inherit;
   line-height: var(--input-line-height);
   box-sizing: border-box;
-  padding: var(--input-padding-horizontal) var(--input-padding-vertical);
+  padding: calc(var(--input-padding-horizontal) - var(--input-border-size))
+    calc(var(--input-padding-vertical) - var(--input-border-size));
   border-radius: var(--input-border-radius);
   color: var(--input-color);
   background-color: var(--input-bg);
@@ -24,9 +25,14 @@
 .textInput {
   composes: root;
 
-  @nest &:disabled, &:read-only {
+  @nest &:disabled {
     background-color: var(--input-bg-disabled);
     color: var(--input-color-disabled);
+    border-color: transparent;
+  }
+
+  @nest &:read-only {
+    color: var(--input-color-read-only);
   }
 
   @nest &:not(:disabled):not(:read-only) {
