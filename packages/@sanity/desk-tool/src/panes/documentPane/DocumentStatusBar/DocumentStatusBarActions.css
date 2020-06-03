@@ -97,6 +97,8 @@
 }
 
 .menuItemIcon {
+  display: inline-block;
+  vertical-align: top;
   width: 17px;
   margin: 0 0.5em 0 0;
 
