@@ -21,7 +21,7 @@
   composes: base;
   font-size: var(--font-size-large);
   line-height: var(--line-height-large);
-  padding-bottom: var(--medium-padding);
+  margin: var(--medium-padding) 0;
 }
 
 .small {
@@ -37,26 +37,22 @@
 
 .paragraph {
   composes: base;
-  padding-bottom: var(--medium-padding);
+  margin: var(--medium-padding) 0;
 }
 
 .blockquote {
   position: relative;
   color: var(--blockquote-color);
+  font-family: var(--blockquote-font-family);
   font-size: var(--blockquote-font-size);
-  font-family: var(--font-family-serif);
-  font-style: italic;
-  margin: 0;
-  padding: var(--medium-padding);
-  padding-left: 2.5em;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 400 300'><polygon opacity='0.15' fill='currentColor' points='184,40 108,150 166,150 166,300 0,300 16,139 103,40'/><polygon opacity='0.15' fill='currentColor' points='216,260 292,150 234,150 234,0 400,0 384,161 297,260'/></svg>");
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-origin: border-box;
-  background-size: 2em;
+  line-height: var(--blockquote-line-height);
+  font-style: var(--blockquote-font-style);
+  margin: var(--medium-padding) 0;
+  padding-left: calc(var(--medium-padding) - 1px);
+  border-left: 1px solid var(--hairline-color);
 }
 
-.blockquoteSmall {
+/* .blockquoteSmall {
   composes: blockquote;
   color: var(--blockquote-small-color);
-}
+} */
