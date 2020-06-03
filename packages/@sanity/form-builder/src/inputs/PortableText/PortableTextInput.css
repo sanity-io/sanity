@@ -1,116 +1,143 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  display: block;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: var(--block-editor-base-font-family);
-  margin: 0;
-  padding: 0;
-}
-
-.fullscreenWrapper {
+/* The fullscreen editor renders in a portal element */
+.fullscreenPortal {
+  z-index: var(--zindex-portal);
   position: fixed;
   top: 0;
   left: 0;
-  z-index: var(--zindex-portal);
-  background-color: var(--body-bg);
-  margin-top: 4rem;
+  right: 0;
+  bottom: 0;
+}
+
+.root {
+  font-family: var(--block-editor-base-font-family);
+}
+
+.header {
+  position: relative;
+  display: flex;
+  background-color: var(--component-bg);
+  border-bottom: 1px solid var(--hairline-color);
+  z-index: 1;
+
+  @nest .fullscreenPortal & {
+    box-sizing: border-box;
+    width: 100%;
+    border: 0;
+
+    @nest &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      border-bottom: 1px solid var(--hairline-color);
+    }
+  }
+}
+
+.toolbarContainer {
+  min-width: 0;
+  flex: 1;
+  height: 41px;
+
+  @nest .fullscreenPortal & {
+    height: 49px;
+  }
+}
+
+.fullscreenButtonContainer {
+  border-left: 1px solid var(--hairline-color);
+  padding: var(--extra-small-padding);
+
+  @nest .fullscreenPortal & {
+    padding: var(--small-padding);
+  }
+}
+
+.editorBox {
+  border: var(--input-border-size) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  overflow: hidden;
+
+  @nest .root.readOnly &, .root.disabled & {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-color-disabled);
+  }
+
+  @nest .root:not(.readOnly) & {
+    @media (hover: hover) {
+      @nest &:hover {
+        box-shadow: var(--input-box-shadow--hover);
+        border-color: var(--input-border-color-hover);
+      }
+
+      @nest .focus:not(.fullscreenPortal) & {
+        box-shadow: var(--input-box-shadow--focus);
+        border-color: var(--input-border-color-focus);
+
+        /* @todo: Make the focus BG compatible with the annotation gutter */
+        /* background-color: var(--input-bg-focus); */
+      }
+    }
+  }
+
+  @nest .fullscreenPortal & {
+    border: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .scrollContainer {
   composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
+  background-color: var(--body-bg);
   display: block;
   height: 15rem;
-  border: 1px solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
   box-sizing: border-box;
   overflow-y: overlay;
-  display: flex;
   flex-direction: column;
   flex-grow: 1;
 
-  @nest &.hasBlockExtras::after {
-    content: '';
-    position: absolute;
-    box-sizing: border-box;
-    width: var(--block-extras-width);
-    background-color: var(--block-extras-background-color);
-    border-left: 1px solid var(--block-extras-border-color);
-    top: 1px;
-    right: 1px;
-    height: calc(100% - 2px);
-    z-index: -1;
-  }
+  @nest .fullscreenPortal & {
+    min-height: 0;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
 
-  @nest .fullscreenWrapper & {
-    top: 0;
-    left: 0;
-    display: flex;
-    height: calc(100vh - 4rem);
-    width: 100vw;
-    background-color: color(var(--body-bg) lightness(- 2%));
-    background-image: unset;
-    border: none;
-
-    @nest &::before {
-      display: none;
+    @media (--screen-medium) {
+      padding: var(--medium-padding);
     }
-  }
-
-  @nest .focus:not(.fullscreenWrapper) & {
-    border: 1px solid var(--input-border-color-focus);
-    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
   }
 }
 
 .editorWrapper {
-  /* make it fill its parent */
-  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  box-sizing: border-box;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
+  position: relative;
+  height: 100%;
+  margin: 0 auto;
 
-.fullscreen .editorWrapper {
-  max-width: 50em;
-  margin: 3rem auto;
-  background-color: var(--input-bg);
-  width: 95vw;
-  box-sizing: border-box;
-  margin-top: 5rem;
+  @nest .fullscreenPortal & {
+    @media (--screen-medium) {
+      max-width: calc(640px + var(--medium-padding) * 2);
+    }
 
-  @media (--screen-medium) {
-    width: 90vw;
-    margin: 5rem auto;
+    @media (--screen-large) {
+      max-width: calc(720px + var(--large-padding) * 2);
+    }
   }
 }
 
-.root :not(.fullscreen) .editorWrapper {
-  box-shadow: none;
+.activateOnFocusOverlay {
+  top: 1px;
+  left: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
 }
 
-.activeOnFocus {
-  @nest & > h3 {
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-    margin-bottom: var(--small-padding);
-  }
-
-  @nest & > div {
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-    margin-bottom: var(--small-padding);
-  }
-
-  @nest & > button {
-    margin-bottom: var(--small-padding);
-  }
+.activeOnFocusHeading {
+  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
 }
 
 .shortcutHint {
@@ -139,110 +166,66 @@
 */
 
 .editor {
+  background-color: var(--input-bg);
   position: relative;
   box-sizing: border-box;
   font-family: var(--block-editor-base-font-family);
-  width: 100%;
   min-height: 100%;
-  margin: 0;
-  padding: 0;
-}
 
-.editor.hasBlockExtras:not(.fullscreen) {
-  padding-right: var(--block-extras-width);
-}
-
-/* Defaults for text blocks */
-.editor > div > div[class~=pt-text-block] + div[class~=pt-text-block] {
-  padding-top: 0.8rem;
-}
-
-/* spacing on block objects  */
-.editor > div > div[class~=pt-object-block] + div[class~=pt-object-block] {
-  padding-top: 0;
-}
-.editor > div > div[class~=pt-object-block] + div[class~=pt-text-block] {
-  padding-top: 0.8rem;
-}
-.editor > div > div[class~=pt-text-block] + div[class~=pt-object-block] {
-  padding-top: 0.8rem;
-}
-
-.editor > div > div[class~=pt-list-item] + div[class~=pt-list-item] {
-  padding-top: 0.25rem;
-}
-
-
-/* All blocks */
-.editor > div > * {
-  position: relative;
-  box-sizing: content-box;
-  word-break: break-word;
-  padding-left: var(--small-padding);
-  padding-right: var(--small-padding);
-
-  @media (--screen-medium) {
-    padding-left: var(--medium-padding);
-    padding-right: var(--medium-padding);
+  @nest &.hasBlockExtras {
+    margin-right: var(--block-extras-width);
   }
 
-  @nest .fullscreenWrapper & {
-    padding-left: var(--small-padding);
-    padding-right: var(--small-padding);
+  /* The editable div */
 
-    @media (--screen-medium) {
-      padding-left: var(--large-padding);
-      padding-right: var(--large-padding);
+  @nest & > div {
+    padding: calc(var(--medium-padding) - var(--extra-small-padding));
+    overflow: auto;
+
+    @nest .fullscreenPortal & {
+      padding: var(--medium-padding);
+
+      @media (--screen-default) {
+        padding: var(--large-padding);
+      }
+
+      @media (--screen-large) {
+        padding: var(--extra-large-padding);
+      }
+    }
+  }
+
+  /* Text blocks */
+
+  @nest & div > div:first-child > * {
+    margin-top: 0;
+  }
+
+  @nest & div > div:last-child > * {
+    margin-bottom: 0;
+  }
+
+  /* Block objects */
+
+  @nest & div > div[class~='pt-object-block'] {
+    margin: var(--medium-padding) 0;
+
+    @nest &:first-child {
+      margin-top: 0;
     }
 
-    @media (--screen-large) {
-      padding-left: 4rem;
-      padding-right: 4rem;
+    @nest &:last-child {
+      margin-top: 0;
     }
   }
 }
-
-.editor > div > *:first-child {
-  padding-top: var(--small-padding);
-
-  @media (--screen-medium) {
-    margin-top: var(--medium-padding);
-  }
-
-  @nest .fullscreenWrapper & {
-    @media (--screen-medium) {
-      margin-top: var(--large-padding);
-    }
-
-    @media (--screen-large) {
-      margin-top: 4rem;
-    }
-  }
-}
-
-.editor > div {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 100%;
-}
-
-.editor > div > *:last-child {
-  flex-grow: 1;
-  @nest .fullscreenWrapper & {
-    padding-bottom: 3rem;
-  }
-}
-
 
 .blockExtras {
-  position: relative;
-  height: 100%;
+  position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  pointer-events: none;
-  @nest .fullscreen & {
-    padding-left: 0;
+  width: 100%;
+
+  @nest .fullscreenPortal & {
+    width: calc(100% - var(--block-extras-width));
   }
 }

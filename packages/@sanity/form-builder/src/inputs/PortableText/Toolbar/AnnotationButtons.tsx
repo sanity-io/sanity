@@ -89,14 +89,16 @@ export default class AnnotationButtons extends React.PureComponent<Props, {}> {
       this.handleClick(item)
     }
     return (
-      <ToggleButton
-        key={keyGenerator()}
-        selected={item.active}
-        disabled={item.disabled}
-        onClick={onAction}
-        title={item.title}
-        icon={Icon}
-      />
+      <div key={keyGenerator()}>
+        <ToggleButton
+          selected={item.active}
+          disabled={item.disabled}
+          onClick={onAction}
+          title={item.title}
+          icon={Icon}
+          padding="small"
+        />
+      </div>
     )
   }
   render(): JSX.Element {
