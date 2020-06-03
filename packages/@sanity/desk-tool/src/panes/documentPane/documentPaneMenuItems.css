@@ -2,11 +2,10 @@
 
 .menuItem {
   display: inline-flex;
-  justify-content: space-between;
-  width: stretch;
+  /* justify-content: space-between; */
+  /* width: stretch; */
 }
 
 .hotkey {
-  color: var(--text-muted);
   margin-left: var(--medium-padding);
 }

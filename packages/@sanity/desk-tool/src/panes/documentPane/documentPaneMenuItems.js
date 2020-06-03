@@ -30,7 +30,7 @@ const getInspectItem = ({value}) => ({
     <span className={styles.menuItem}>
       Inspect{' '}
       <span className={styles.hotkey}>
-        <Hotkeys keys={['Ctrl', 'Alt', 'I']} />
+        <Hotkeys keys={['Ctrl', 'Alt', 'I']} size="small" />
       </span>
     </span>
   ),

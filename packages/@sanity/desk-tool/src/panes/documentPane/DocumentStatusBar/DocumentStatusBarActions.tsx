@@ -55,7 +55,7 @@ function DocumentStatusBarActionsInner(props: Props) {
                 )}
                 {firstActionState.shortcut && (
                   <span className={styles.tooltipHotkeys}>
-                    <Hotkeys keys={[firstActionState.shortcut]} />
+                    <Hotkeys keys={String(firstActionState.shortcut).split('+')} size="small" />
                   </span>
                 )}
               </div>

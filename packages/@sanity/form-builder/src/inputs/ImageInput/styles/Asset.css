@@ -48,19 +48,15 @@
   box-sizing: border-box;
   position: absolute;
   z-index: 10;
-  top: 0.2em;
-  right: 0.2em;
-  opacity: 1;
-
-  @nest & [class^='DefaultButton_content'] {
-    margin: 0.2em !important;
-  }
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+  border-radius: var(--border-radius-base);
 
   @media (hover: hover) {
-    opacity: 0.5;
+    display: none;
 
-    @nest &:hover {
-      opacity: 1;
+    @nest .item:hover & {
+      display: block;
     }
   }
 }

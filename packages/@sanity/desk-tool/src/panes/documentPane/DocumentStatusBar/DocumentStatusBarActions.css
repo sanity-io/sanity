@@ -91,12 +91,12 @@
   @nest & > div {
     outline: none;
     padding: 0.5em 0.75em;
+    display: flex;
+    align-items: center;
   }
 }
 
 .menuItemIcon {
-  display: inline-block;
-  vertical-align: top;
   width: 17px;
   margin: 0 0.5em 0 0;
 
@@ -113,17 +113,12 @@
 }
 
 .menuItemLabel {
-  display: inline-block;
-  vertical-align: top;
+  margin: -2px 0 -1px;
 }
 
 .menuItemHotkeys {
-  display: inline-block;
-  color: var(--text-muted);
-  font-size: var(--font-size-small);
-  vertical-align: middle;
   margin-left: var(--medium-padding);
-  padding: 0 0 var(--extra-small-padding);
+  line-height: 0;
 }
 
 .tooltip {
@@ -141,8 +136,6 @@
 
 .tooltipHotkeys {
   display: inline-block;
-  color: var(--text-muted);
-  font-size: var(--font-size-small);
   vertical-align: middle;
   padding: 0 0 var(--extra-small-padding);
 }
