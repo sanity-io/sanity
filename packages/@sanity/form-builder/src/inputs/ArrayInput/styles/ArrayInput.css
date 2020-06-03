@@ -37,10 +37,13 @@
 }
 
 .listItem {
-  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
-  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
-  padding: 0;
-  cursor: default;
+  /* composes: lineBetween from 'part:@sanity/components/lists/default-item-style'; */
+  /* padding: 0; */
+  /* cursor: default; */
+
+  @nest .listItem + & {
+    margin-top: var(--small-padding);
+  }
 }
 
 .listItemMute {

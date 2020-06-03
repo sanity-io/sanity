@@ -5,8 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.1em;
-  margin: 0.1em;
+  /* padding: 0.1em; */
+  /* margin: 0.1em; */
 
   &.media {
     height: 15em;
@@ -24,29 +24,21 @@
 }
 
 .dragHandle {
+  display: block;
   flex-grow: 0;
-  cursor: ns-resize;
-  opacity: 0.5;
-  font-size: 1em;
-  padding: 0.5em;
-  border: 1px solid transparent;
-  z-index: 1;
+  margin-right: var(--extra-small-padding);
 
-  @nest &:hover {
-    opacity: 1;
+  @nest & > button {
+    cursor: ns-resize;
   }
 }
 
 .functions {
-  font-size: var(--font-size-small);
+  flex-grow: 0;
   color: var(--text-color-secondary);
   display: flex;
   align-items: center;
-  margin-left: var(--medium-padding);
-
-  @nest & > * {
-    margin-right: var(--small-padding);
-  }
+  margin-left: var(--extra-small-padding);
 }
 
 .validationStatus {
