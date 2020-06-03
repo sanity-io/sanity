@@ -11,9 +11,10 @@ type Props = {
   size?: Size
   onClick?: () => void
   locations?: Location[]
+  onClose?: (event: any) => void
 }
 
-export function PresenceListItem({user, status, size, onClick, locations = []}: Props) {
+export function PresenceListItem({user, status, size, onClick, locations = [], onClose}: Props) {
   const locationWithDocumentId = locations.find(location => location.documentId)
   return (
     <div className={styles.root} data-size={size} onClick={onClick}>
@@ -29,6 +30,7 @@ export function PresenceListItem({user, status, size, onClick, locations = []}: 
           title={`Go to ${user.displayName}`}
           intent="edit"
           params={{id: locationWithDocumentId.documentId}}
+          onClick={onClose}
         >
           <LinkIcon />
         </IntentLink>
