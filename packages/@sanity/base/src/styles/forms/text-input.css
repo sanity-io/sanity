@@ -10,8 +10,9 @@
   font: inherit;
   line-height: var(--input-line-height);
   box-sizing: border-box;
-  padding: calc(var(--input-padding-horizontal) - var(--input-border-size))
-    calc(var(--input-padding-vertical) - var(--input-border-size));
+  padding: calc(var(--input-padding-horizontal) - var(--input-border-size) - 2px)
+    calc(var(--input-padding-vertical) - var(--input-border-size))
+    calc(var(--input-padding-horizontal) - var(--input-border-size) - 1px);
   border-radius: var(--input-border-radius);
   color: var(--input-color);
   background-color: var(--input-bg);
@@ -41,6 +42,10 @@
       border-color: var(--input-border-color-hover);
     }
 
+    @nest &:active {
+      border-color: var(--input-border-color-active);
+    }
+
     @nest &:focus, &:focus-within {
       box-shadow: var(--input-box-shadow--focus);
       background-color: var(--input-bg-focus);
@@ -51,12 +56,11 @@
       }
     }
 
-    @nest &:active {
-      border-color: var(--input-border-color-active);
+    @nest &:not(:focus):not(:focus-within):invalid {
+      border-color: var(--input-border-color-invalid);
     }
 
     @nest &:invalid {
-      border-color: var(--input-border-color-invalid);
       background-color: var(--input-bg-invalid);
       box-shadow: var(--input-box-shadow--invalid);
     }
