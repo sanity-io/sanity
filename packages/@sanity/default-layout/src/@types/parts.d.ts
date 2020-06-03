@@ -199,6 +199,7 @@ declare module 'part:@sanity/default-layout/tool-switcher' {
       title: string
       router?: {}
     }[]
+    tone?: 'navbar'
   }>
   export default ToolSwitcher
 }

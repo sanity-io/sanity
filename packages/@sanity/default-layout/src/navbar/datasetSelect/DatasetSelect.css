@@ -14,7 +14,7 @@
   @nest & > select {
     -webkit-font-smoothing: inherit;
     appearance: none;
-    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
+    background: color(var(--default-button-color) alpha(10%));
     color: inherit;
     font: inherit;
     font-size: var(--font-size-base);
@@ -29,6 +29,10 @@
     @nest &:focus {
       box-shadow: 0 0 0 2px var(--focus-color);
     }
+  }
+
+  @nest &[data-tone='navbar'] > select {
+    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
   }
 
   @nest & > svg {
