@@ -6,13 +6,15 @@ import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import {get} from 'lodash'
 import styles from './InsertMenu.css'
 import {Path} from '../../../typedefs/path'
-import {PortableTextEditor, Type, keyGenerator} from '@sanity/portable-text-editor'
+import {PortableTextEditor, Type, keyGenerator, EditorSelection} from '@sanity/portable-text-editor'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type Props = {
   editor: PortableTextEditor
   onFocus: (arg0: Path) => void
   collapsed: boolean
   showLabels: boolean
+  selection: EditorSelection
 }
 
 type BlockItem = {
@@ -25,7 +27,9 @@ type BlockItem = {
 }
 export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props): boolean {
-    return this.props.collapsed !== nextProps.collapsed
+    return (
+      this.props.collapsed !== nextProps.collapsed || nextProps.selection !== this.props.selection
+    )
   }
 
   renderItem = (item: BlockItem): JSX.Element => {
@@ -53,6 +57,7 @@ export default class InsertMenu extends React.Component<Props> {
         aria-label={`Insert ${item.title || item.value.type.name}${
           item.isInline ? ' (inline)' : ' (block)'
         }`}
+        disabled={item.isDisabled}
         icon={item.icon}
         kind="simple"
         bleed
@@ -69,7 +74,7 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   getItems(): BlockItem[] {
-    const {editor} = this.props
+    const {editor, selection} = this.props
     const focusBlock = PortableTextEditor.focusBlock(editor)
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     let keyCount = 0
@@ -80,7 +85,7 @@ export default class InsertMenu extends React.Component<Props> {
         key: (keyCount++).toString(),
         icon: this.getIcon(type, BlockObjectIcon),
         isInline: false,
-        isDisabled: false
+        isDisabled: !selection
       })
     )
     const inlineItems = ptFeatures.types.inlineObjects.map(
@@ -90,19 +95,24 @@ export default class InsertMenu extends React.Component<Props> {
         value: type,
         key: (keyCount++).toString(),
         isInline: true,
-        isDisabled: focusBlock ? focusBlock._type !== ptFeatures.types.block.name : true
+        isDisabled:
+          !selection || (focusBlock ? focusBlock._type !== ptFeatures.types.block.name : true)
       })
     )
     return blockItems.concat(inlineItems)
   }
 
   handleOnAction = (item: BlockItem): void => {
-    const {editor} = this.props
+    const {editor, onFocus} = this.props
+    let path
     if (item.isInline) {
-      PortableTextEditor.insertChild(editor, item.value)
+      path = PortableTextEditor.insertChild(editor, item.value)
     } else {
-      PortableTextEditor.insertBlock(editor, item.value)
+      path = PortableTextEditor.insertBlock(editor, item.value)
     }
+    setTimeout(() => {
+      onFocus(path.concat(FOCUS_TERMINATOR))
+    })
   }
 
   render(): JSX.Element | JSX.Element[] {
