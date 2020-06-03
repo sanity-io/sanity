@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
