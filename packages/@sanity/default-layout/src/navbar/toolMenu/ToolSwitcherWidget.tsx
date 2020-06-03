@@ -6,6 +6,7 @@ interface Props {
   activeToolName: string
   renderItem: (tool: Tool, showIcon: boolean, showLabel: boolean) => React.ReactNode
   direction: 'vertical' | 'horizontal'
+  tone?: 'navbar'
   tools: Tool[]
 }
 
@@ -14,7 +15,10 @@ function ToolSwitcherWidget(props: Props) {
   const showIcon = true
   const showLabel = direction === 'vertical'
   return (
-    <ul className={direction === 'horizontal' ? styles.rootHorizontal : styles.rootVertical}>
+    <ul
+      className={direction === 'horizontal' ? styles.rootHorizontal : styles.rootVertical}
+      data-tone="navbar"
+    >
       {tools.map(tool => {
         const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
         return (
