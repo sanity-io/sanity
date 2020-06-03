@@ -10,13 +10,17 @@
   }
 }
 
-.tooltipText {
+.tooltip {
   display: flex;
   max-width: 210px;
   text-align: left;
-  padding: var(--small-padding);
+  padding: var(--medium-padding);
+}
+
+.tooltipText {
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
+  margin: -3px 0 -2px var(--small-padding);
 }
 
 .inner {
@@ -33,6 +37,10 @@
       font-size: calc(25 / 16 * 1em);
       margin: calc(4 / 25 * -1em);
     }
+  }
+
+  @nest .tooltip & {
+    margin: -3px 0 -3px -3px;
   }
 }
 
