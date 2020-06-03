@@ -1,12 +1,12 @@
 /* eslint-disable complexity */
+
 import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/SelectLanguage.css'
-import AngleDown from 'part:@sanity/base/angle-down-icon'
-import AngleUp from 'part:@sanity/base/angle-up-icon'
+import ChevronDown from 'part:@sanity/base/angle-down-icon'
 
 const LanguagePropType = PropTypes.shape({id: PropTypes.string, title: PropTypes.string})
 export default class SelectLanguage extends React.Component {
@@ -58,8 +58,9 @@ export default class SelectLanguage extends React.Component {
 
     return (
       <Fragment>
-        <span
+        <div
           className={styles.target}
+          data-open={isOpen}
           onClick={this.handleToggle}
           ref={this.refElement}
           title={
@@ -68,19 +69,26 @@ export default class SelectLanguage extends React.Component {
               : 'Displaying only fields for selected languages'
           }
         >
-          Filter languages{allIsSelected ? '…' : ` (${selected.length}/${languages.length})`}
-          <span className={styles.arrow}>{isOpen ? <AngleUp /> : <AngleDown />}</span>
-        </span>
+          <div className={styles.targetValue}>
+            Filter languages{allIsSelected ? '' : ` (${selected.length}/${languages.length})`}
+          </div>
+          <div className={styles.targetIcon}>
+            <ChevronDown />
+          </div>
+        </div>
         <Poppable
           onEscape={this.handleClose}
           onClickOutside={this.handleClose}
-          placement="bottom-end"
+          placement="bottom"
           referenceElement={refElement}
         >
           {isOpen && (
             <div className={styles.root}>
               <div className={styles.functions}>
-                <Button onClick={allIsSelected ? this.handleSelectNone : this.handleSelectAll}>
+                <Button
+                  inverted
+                  onClick={allIsSelected ? this.handleSelectNone : this.handleSelectAll}
+                >
                   Select {allIsSelected ? 'none' : 'all'}
                 </Button>
               </div>
