@@ -16,7 +16,6 @@ const DocumentIcon = () => (
     preserveAspectRatio="xMidYMid"
     width="1em"
     height="1em"
-    a
   >
     <path d="M10.5 4.5H18.5V20.5H6.5V8.5L10.5 4.5Z" style={strokeStyle} />
     <path d="M10.5 4.5V8.5H6.5" style={strokeStyle} />

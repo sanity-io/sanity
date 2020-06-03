@@ -16,7 +16,6 @@ const ComposeIcon = () => (
     preserveAspectRatio="xMidYMid"
     width="1em"
     height="1em"
-    a
   >
     <path d="M14 5.5H5.5V19.5H19.5V11" style={strokeStyle} />
     <path d="M9.5 13.5L9 16L11.5 15.5L21 6L19 4L9.5 13.5Z" style={strokeStyle} />
