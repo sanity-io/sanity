@@ -49,7 +49,7 @@ function DocumentStatusBarActionsInner(props: Props) {
             disabled={TOUCH_SUPPORT}
             className={styles.tooltip}
             html={
-              <>
+              <div className={styles.tooltipBox}>
                 {firstActionState.title && (
                   <span className={styles.tooltipTitle}>{firstActionState.title}</span>
                 )}
@@ -58,7 +58,7 @@ function DocumentStatusBarActionsInner(props: Props) {
                     <Hotkeys keys={[firstActionState.shortcut]} />
                   </span>
                 )}
-              </>
+              </div>
             }
           >
             <Button
