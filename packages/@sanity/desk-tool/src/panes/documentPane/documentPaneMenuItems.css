@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .menuItem {
   display: inline-flex;
   justify-content: space-between;
@@ -5,9 +7,6 @@
 }
 
 .hotkey {
-  color: inherit;
-  font-size: 0.8em;
-  margin-left: 0.6em;
-  padding-right: 1em;
-  opacity: 0.5;
+  color: var(--text-muted);
+  margin-left: var(--medium-padding);
 }
