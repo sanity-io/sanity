@@ -178,7 +178,6 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
             </div>
             <div className={styles.buttonWrapper}>
               <Button
-                color="primary"
                 bleed
                 onClick={this.handleButtonClick}
                 icon={CalendarIcon}
