@@ -21,7 +21,7 @@ export function Tooltip(props: {
       arrow
       inertia
       theme="dark"
-      distance={7}
+      distance={13}
       sticky
       size="small"
     >

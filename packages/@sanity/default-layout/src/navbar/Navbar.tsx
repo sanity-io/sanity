@@ -87,7 +87,7 @@ function Navbar(props: Props) {
       </StateLink>
       {HAS_SPACES && (
         <div className={styles.datasetSelect}>
-          <DatasetSelect isVisible={showToolSwitcher} />
+          <DatasetSelect isVisible={showToolSwitcher} tone="navbar" />
         </div>
       )}
       <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
@@ -118,6 +118,7 @@ function Navbar(props: Props) {
           onSwitchTool={onSwitchTool}
           router={router}
           showLabel={showLabel}
+          tone="navbar"
         />
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>

@@ -12,6 +12,7 @@ interface Props {
   direction: 'horizontal' | 'vertical'
   router: Router
   showLabel?: boolean
+  tone?: 'navbar'
   tools: Tool[]
 }
 
@@ -28,8 +29,8 @@ class ToolSwitcher extends React.PureComponent<Props> {
     tools: []
   }
 
-  renderItem = (tool: Tool, showIcon: boolean) => {
-    const {activeToolName, router, isVisible, onSwitchTool, direction, showLabel} = this.props
+  renderItem = (tool: Tool, showIcon: boolean, overrideShowLabel?: boolean) => {
+    const {activeToolName, router, isVisible, onSwitchTool, showLabel, tone} = this.props
     const tabIndex = isVisible ? 0 : -1
     return (
       <StateLink
@@ -43,11 +44,11 @@ class ToolSwitcher extends React.PureComponent<Props> {
         tabIndex={tabIndex}
       >
         <ToolSwitcherItem
-          direction={direction}
           icon={tool.icon}
           showIcon={showIcon}
-          showLabel={showLabel}
+          showLabel={showLabel || overrideShowLabel}
           title={tool.title || tool.name}
+          tone={tone}
           isActive={activeToolName === tool.name}
         />
       </StateLink>

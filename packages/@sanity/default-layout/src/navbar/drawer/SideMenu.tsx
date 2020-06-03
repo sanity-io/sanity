@@ -38,27 +38,29 @@ function SideMenu(props: Props) {
           <CloseIcon />
         </button>
 
-        <div className={styles.userProfile}>
-          {user.profileImage ? (
-            <img
-              className={styles.userProfileImage}
-              src={user.profileImage}
-              alt={`${user.name}'s profile image`}
-              data-initials={user.name ? user.name.charAt(0) : user.email.charAt(0)}
-            />
-          ) : (
-            <div className={styles.userProfileImageMissing}>
-              {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+        <div className={styles.header}>
+          <div className={styles.userProfile}>
+            {user.profileImage ? (
+              <img
+                className={styles.userProfileImage}
+                src={user.profileImage}
+                alt={`${user.name}'s profile image`}
+                data-initials={user.name ? user.name.charAt(0) : user.email.charAt(0)}
+              />
+            ) : (
+              <div className={styles.userProfileImageMissing}>
+                {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+              </div>
+            )}
+            <div className={styles.userProfileText}>{user.name || user.email}</div>
+          </div>
+
+          {HAS_SPACES && (
+            <div className={styles.datasetSelectContainer}>
+              <DatasetSelect isVisible={isOpen} />
             </div>
           )}
-          <div className={styles.userProfileText}>{user.name || user.email}</div>
         </div>
-
-        {HAS_SPACES && (
-          <div className={styles.datasetSelectContainer}>
-            <DatasetSelect isVisible={isOpen} />
-          </div>
-        )}
 
         <div className={styles.toolSwitcher}>
           <ToolSwitcher
