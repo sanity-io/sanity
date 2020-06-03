@@ -24,7 +24,6 @@ class DefaultMenu extends React.Component {
   static propTypes = {
     id: PropTypes.string,
     onAction: PropTypes.func.isRequired,
-    ripple: PropTypes.bool,
     className: PropTypes.string,
     onClickOutside: PropTypes.func,
     onClose: PropTypes.func,
@@ -54,19 +53,21 @@ class DefaultMenu extends React.Component {
     className: '',
     items: [],
     groups: [],
-    ripple: true,
     onClickOutside() {},
     onClose() {}
   }
 
   static getDerivedStateFromProps(props) {
-    const groups = props.items.reduce((acc, item) => {
-      if (!item.group) {
-        return acc
-      }
+    const groups = props.items.reduce(
+      (acc, item) => {
+        if (!item.group) {
+          return acc
+        }
 
-      return acc.includes(item.group) ? acc : acc.concat(item.group)
-    }, (props.groups || []).map(group => group.id))
+        return acc.includes(item.group) ? acc : acc.concat(item.group)
+      },
+      (props.groups || []).map(group => group.id)
+    )
 
     const byGroup = groupBy(props.items, item => item.group || ungrouped)
     const hasUngrouped = typeof byGroup[ungrouped] !== 'undefined'
@@ -157,7 +158,6 @@ class DefaultMenu extends React.Component {
   }
 
   renderGroupedItems() {
-    const {ripple} = this.props
     const {focusedItem, items} = this.state
 
     return items.map((item, index) => {
@@ -166,7 +166,6 @@ class DefaultMenu extends React.Component {
         <MenuItem
           key={index}
           item={item}
-          ripple={ripple}
           danger={item.danger}
           isDisabled={item.isDisabled}
           isFocused={item === focusedItem}

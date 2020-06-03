@@ -1,8 +1,8 @@
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
-import classNames from 'classnames'
 
 class DefaultMenuItem extends React.Component {
   static propTypes = {

@@ -15,7 +15,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       })`
 
     static propTypes = {
-      kind: PropTypes.oneOf(['default', 'simple', 'secondary']),
+      kind: PropTypes.oneOf(['simple', 'secondary']),
       color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),
       onBlur: PropTypes.func,
       onClick: PropTypes.func,
@@ -27,15 +27,17 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
       padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
-      bleed: PropTypes.bool
+      bleed: PropTypes.bool,
+      selected: PropTypes.bool
     }
 
     static defaultProps = {
       icon: null,
       onClick() {},
-      kind: 'default',
+      kind: undefined,
       bleed: false,
       padding: 'default',
+      selected: false,
       ...defaultProps
     }
 
@@ -79,6 +81,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         disabled,
         padding,
         bleed,
+        selected,
         ...rest
       } = this.props
 
@@ -89,7 +92,8 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         inverted && styles.inverted,
         color && styles[`color__${color}`],
         bleed && styles.bleed,
-        disabled && styles.disabled
+        disabled && styles.disabled,
+        selected && styles.selected
       ])
 
       return (
@@ -119,7 +123,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
                 </span>
               )}
               {Icon && (
-                <div className={classNames(styles.icon, Icon.sanityIcon && styles.sanityIcon)}>
+                <div className={styles.icon}>
                   <Icon />
                 </div>
               )}

@@ -36,7 +36,12 @@ export default class BlockImagePreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        <h2 className={styles.title}>{title}</h2>
+        {title && (
+          <header className={styles.header}>
+            <h2 className={styles.title}>{title}</h2>
+          </header>
+        )}
+
         <div className={styles.preview}>
           {media && (
             <div className={`${styles.media}`}>
@@ -46,6 +51,7 @@ export default class BlockImagePreview extends React.PureComponent {
               {React.isValidElement(media) && media}
             </div>
           )}
+
           <div className={styles.heading}>
             {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
             {description && <p className={styles.description}>{description}</p>}
@@ -56,6 +62,7 @@ export default class BlockImagePreview extends React.PureComponent {
             )}
           </div>
         </div>
+
         {children && <div className={styles.children}>{children}</div>}
       </div>
     )

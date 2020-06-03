@@ -9,9 +9,8 @@
   box-sizing: border-box;
   outline: none;
   color: inherit;
-  font-size: var(--font-size-small);
-  font-weight: unset;
   padding: var(--medium-padding);
+  line-height: 0;
 }
 
 .item[data-item-type='simple'] {
@@ -22,11 +21,6 @@
 
   @nest & .message {
     color: var(--text-color);
-  }
-
-  @nest & .icon {
-    padding-top: 1px;
-    font-size: var(--font-size-base);
   }
 }
 
@@ -55,13 +49,23 @@
 }
 
 .icon {
-  display: flex;
-  padding: 2px var(--small-padding) 0 0;
-  font-size: var(--font-size-large);
+  display: block;
+  margin: -3px 0 -3px -3px;
+
+  @nest & svg {
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: -4px;
+    }
+  }
 }
 
 .content {
   flex-grow: 1;
+  padding-left: var(--small-padding);
+  margin: -3px 0 -2px;
 
   @nest .truncate & {
     padding-top: 0;
@@ -69,12 +73,28 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  /* @nest & > div:first-child {
+    margin-top: -3px;
+  }
+
+  @nest & > div:last-child {
+    margin-bottom: -2px;
+  } */
 }
 
 .path {
-  font-weight: bold;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
 }
 
 .message {
-  color: var(--gray-dark);
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+
+  @nest .path + & {
+    margin-top: calc(var(--extra-small-padding) / 2);
+  }
 }

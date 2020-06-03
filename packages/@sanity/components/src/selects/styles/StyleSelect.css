@@ -4,48 +4,76 @@
   display: block;
   outline: none;
   position: relative;
-
-  @nest &:focus {
-    box-shadow: 0 0 2px 1px color(var(--input-border-color-focus)),
-      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
-  }
 }
 
-.inner {
-  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
+.button {
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  font: inherit;
+  background: none;
+  color: var(--default-button-color);
   cursor: default;
+  border: 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  outline: none;
+  border: 1px solid transparent;
+  border-radius: var(--button-border-radius);
 
-  @nest .transparent & {
-    background-color: transparent;
-    border: 1px solid color(var(--gray-base) a(8%));
+  @nest .root:not(.transparent) & {
+    border-color: var(--hairline-color);
+  }
 
-    @nest &:hover {
-      background-color: var(--white);
-      border-color: var(--gray-light);
+  @media (hover: hover) {
+    @nest .root.transparent:hover & {
+      background-color: color(var(--default-button-color) a(10%));
+      color: color(var(--default-button-color) lightness(- 20%));
     }
+
+    @nest &:focus {
+      box-shadow: 0 0 0 1px var(--component-bg),
+        0 0 0 3px color(var(--input-border-color-focus) a(50%));
+    }
+  }
+
+  @nest .padding_large & {
+    padding: calc(var(--medium-padding--em) - 1px);
+  }
+
+  @nest .padding_default & {
+    padding: calc(var(--medium-padding--em) - var(--extra-small-padding--em) - 1px);
+  }
+
+  @nest .padding_small & {
+    padding: calc(var(--small-padding--em) - 1px);
   }
 }
 
 .title {
-  padding-right: 1em;
-  color: var(--text-color);
+  color: inherit;
+
+  /* Adjust for difference between physical/visual line height */
+  margin: -2px 0 -1px;
 }
 
-.transparent:not(:hover) .inner {
-  box-shadow: none;
-}
-
-.selectContainer {
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+.buttonInner {
+  position: relative;
   display: flex;
 }
 
 .arrow {
   display: flex;
   align-items: center;
-  padding-left: 0.5em;
+  padding-left: var(--medium-padding);
   margin-left: auto;
+
+  @nest & svg {
+    display: block;
+    font-size: calc(25 / 16 * 1em);
+    margin: calc(4 / 25 * -1em);
+  }
 }
 
 .popper {
@@ -59,51 +87,52 @@
 
 .list {
   margin: 0;
-  padding: 0;
-  display: block;
+
+  & > li {
+    padding: var(--extra-small-padding) 0;
+  }
+
+  & > li + li {
+    border-top: 1px solid var(--hairline-color);
+  }
 }
 
 .item {
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   position: relative;
-  border-bottom: 1px solid var(--gray-light);
-  white-space: nowrap;
   overflow: hidden;
   min-height: 2em;
   cursor: default;
-  padding-right: 1em;
   color: inherit;
-
-  &:last-child {
-    border: 0;
-  }
+  display: flex;
+  align-items: center;
 }
 
 .itemContent {
-  margin-left: 2em;
-  padding: 0.5em 0;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--small-padding);
 }
 
 .itemSelected {
   composes: item;
-  background-color: var(--selected-item-color);
-  color: var(--selected-item-color--inverted);
-
-  @nest &:hover {
-    background-color: var(--selected-item-color);
-    color: var(--selected-item-color--inverted);
-  }
 }
 
 .itemIcon {
+  padding: var(--small-padding);
   display: block;
-  position: absolute;
-  transform: translateY(-50%);
-  top: 50%;
-  left: 0.5em;
-  font-size: 1em;
-  width: 2em;
-  overflow: hidden;
+  width: calc(17 / 16 * 1em);
+
+  @nest & svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
 }
 
 .disabled {
