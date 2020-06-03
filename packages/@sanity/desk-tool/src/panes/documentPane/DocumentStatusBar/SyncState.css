@@ -2,23 +2,31 @@
 
 @keyframes DocumentStatusBar__spin {
   0% {
-    transform: rotate(360deg);
+    transform: rotate(0);
   }
 
   100% {
-    transform: rotate(0deg);
+    transform: rotate(360deg);
   }
 }
 
 .statusIcon {
   display: inline-block;
   vertical-align: top;
-  padding: 2px 0 1px;
+  /* padding: 2px 0 1px; */
   color: var(--text-muted);
+  pointer-events: none;
 
   @nest & svg {
     display: block;
     transform-origin: center center;
+    font-size: 13px;
+    margin: -1px;
+
+    &[data-sanity-icon='true'] {
+      font-size: 17px;
+      margin: -3px;
+    }
   }
 }
 

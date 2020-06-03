@@ -1,29 +1,36 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  min-width: 200px;
-  max-width: 250px;
   height: 100%;
-  width: 100%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   position: relative;
+  color: var(--text-color-secondary);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: var(--medium-padding);
-  height: var(--pane-header-height);
   box-sizing: border-box;
-  min-height: var(--pane-header-height);
-  font-weight: 500;
 }
 
-.closeButton {
-  font-size: 1.5em;
+.title {
+  flex: 1;
+  padding: var(--medium-padding);
+  font: inherit;
+  font-weight: 500;
+  margin: 0;
+
+  @nest & > span {
+    display: block;
+    margin: -2px 0 -1px;
+  }
+}
+
+.closeButtonContainer {
+  padding: var(--small-padding);
 }
 
 .list {

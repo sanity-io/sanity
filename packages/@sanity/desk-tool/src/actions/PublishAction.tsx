@@ -1,8 +1,9 @@
-import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import * as React from 'react'
 import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import TimeAgo from '../components/TimeAgo'
 import {useSyncState} from '@sanity/react-hooks'
+import CheckmarkIcon from 'part:@sanity/base/check-icon'
+import PublishIcon from 'part:@sanity/base/publish-icon'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -98,7 +99,9 @@ export function PublishAction(props) {
         : publishScheduled || publishState === 'publishing'
         ? 'Publishing…'
         : 'Publish',
-    icon: publishState === 'published' ? CheckmarkIcon : null,
+    // @todo: Implement loading state, to show a `<Button loading />` state
+    // loading: publishScheduled || publishState === 'publishing',
+    icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
     title: publishScheduled
       ? 'Waiting for tasks to finish before publishing'
       : publishState === 'published' || publishState === 'publishing'

@@ -1,10 +1,10 @@
 import React from 'react'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import documentStore from 'part:@sanity/base/datastore/document'
-
-import styles from '../Editor.css'
 import {tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
+
+import styles from './EditForm.css'
 
 const preventDefault = ev => ev.preventDefault()
 type Doc = any
