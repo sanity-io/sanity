@@ -1,15 +1,17 @@
 /* eslint-disable complexity */
 import React from 'react'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import EditItemFold from 'part:@sanity/components/edititem/fold'
-import Popover from 'part:@sanity/components/dialogs/popover'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import ValidationStatus from 'part:@sanity/components/validation/status'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import Popover from 'part:@sanity/components/dialogs/popover'
+import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
-import {IntentLink} from 'part:@sanity/base/router'
-import DragBarsIcon from 'part:@sanity/base/bars-icon'
+import ValidationStatus from 'part:@sanity/components/validation/status'
+// import {IntentLink} from 'part:@sanity/base/router'
+import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
@@ -24,7 +26,7 @@ import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/pres
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <DragBarsIcon />
+    <Button icon={DragHandleIcon} kind="simple" />
   </span>
 ))
 const CLOSE_ACTION = {
@@ -280,9 +282,13 @@ export default class RenderItemValue extends React.PureComponent<Props> {
           <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
           <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
           {value._ref && (
-            <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
-              <LinkIcon />
-            </IntentLink>
+            <IntentButton
+              className={styles.linkToReference}
+              icon={LinkIcon}
+              intent="edit"
+              kind="simple"
+              params={{id: value._ref}}
+            />
           )}
           {!readOnly && <ConfirmButton title="Remove this item" onConfirm={this.handleRemove} />}
         </div>
