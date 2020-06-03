@@ -3,12 +3,12 @@ import Dashboard from './containers/Dashboard'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2,
-  vectorEffect: 'non-scaling-stroke'
+  strokeWidth: 1.2
 }
 
-const Icon = () => (
+const DashboardIcon = () => (
   <svg
+    data-sanity-icon
     viewBox="0 0 25 25"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -25,6 +25,6 @@ const Icon = () => (
 export default {
   title: 'Dashboard',
   name: 'dashboard',
-  icon: Icon,
+  icon: DashboardIcon,
   component: Dashboard
 }
