@@ -85,15 +85,16 @@ export default class DecoratorButtons extends React.Component<Props, {}> {
     }
     const title = `${item.title} ${shortCut}`
     return (
-      <span className={styles.buttonWrapper} key={item.value}>
+      <div key={item.value}>
         <ToggleButton
           selected={!!item.active}
           disabled={item.disabled}
           onClick={onAction}
           title={title}
           icon={Icon}
+          padding="small"
         />
-      </span>
+      </div>
     )
   }
   render(): JSX.Element {

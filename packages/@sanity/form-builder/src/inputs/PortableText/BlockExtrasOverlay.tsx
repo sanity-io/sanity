@@ -7,6 +7,8 @@ import {Path} from '../../typedefs/path'
 import {Marker} from '../../typedefs'
 import {PortableTextBlock, PortableTextEditor} from '@sanity/portable-text-editor'
 
+import styles from './BlockExtrasOverlay.css'
+
 type Props = {
   isFullscreen: boolean
   editor: PortableTextEditor
@@ -91,18 +93,18 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
         )
       }
     }
+
     if (markers.length === 0 && !actions) {
       return null
     }
+
     return (
       <div
         key={`blockExtras-${block._key}`}
+        className={styles.root}
         style={{
-          position: 'absolute',
           top: element.scrollTop + element.offsetTop,
-          width: '100%',
-          height: rect.height,
-          left: 0
+          height: rect.height
         }}
       >
         <BlockExtras
@@ -116,6 +118,7 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
       </div>
     )
   }
+
   render(): JSX.Element {
     const {value} = this.props
     const {visible} = this.state

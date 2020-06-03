@@ -48,23 +48,22 @@ export default class InsertMenu extends React.Component<Props> {
   renderButton = (item: BlockItem): JSX.Element => {
     const handleAction = () => this.handleOnAction(item)
     return (
-      <Button
-        key={keyGenerator()}
-        onClick={handleAction}
-        title={`Insert ${item.title || item.value.type.name}${
-          item.isInline ? ' (inline)' : ' (block)'
-        }`}
-        aria-label={`Insert ${item.title || item.value.type.name}${
-          item.isInline ? ' (inline)' : ' (block)'
-        }`}
-        disabled={item.isDisabled}
-        icon={item.icon}
-        kind="simple"
-        bleed
-      >
-        {/* {showLabels && item.title} */}
-      </Button>
-      // </Tooltip>
+      <div key={keyGenerator()}>
+        <Button
+          onClick={handleAction}
+          title={`Insert ${item.title || item.value.type.name}${
+            item.isInline ? ' (inline)' : ' (block)'
+          }`}
+          aria-label={`Insert ${item.title || item.value.type.name}${
+            item.isInline ? ' (inline)' : ' (block)'
+          }`}
+          icon={item.icon}
+          kind="simple"
+          padding="small"
+        >
+          {/* {showLabels && item.title} */}
+        </Button>
+      </div>
     )
   }
 
@@ -119,7 +118,7 @@ export default class InsertMenu extends React.Component<Props> {
     const {collapsed} = this.props
     const items = this.getItems()
     if (!collapsed) {
-      return items.map(this.renderButton)
+      return <div className={styles.root}>{items.map(this.renderButton)}</div>
     }
     return (
       <DropDownButton
@@ -127,6 +126,7 @@ export default class InsertMenu extends React.Component<Props> {
         renderItem={this.renderItem}
         onAction={this.handleOnAction}
         kind="simple"
+        padding="small"
       >
         Insert
       </DropDownButton>

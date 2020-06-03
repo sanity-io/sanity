@@ -1,4 +1,6 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import React from 'react'
 import AnnotationButtons from './AnnotationButtons'
 import BlockStyleSelect from './BlockStyleSelect'
@@ -14,12 +16,14 @@ import {
   HotkeyOptions,
   RenderBlockFunction
 } from '@sanity/portable-text-editor'
+import {getBlockStyleSelectProps} from './helpers'
 
 type Props = {
   collapsedGroups: string[]
   editor: PortableTextEditor
   hotkeys: HotkeyOptions
   insertItems: Type[]
+  isFullscreen: boolean
   isMobile?: boolean
   isPopped?: boolean
   isReadOnly: boolean
@@ -45,6 +49,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
       collapsedGroups,
       editor,
       insertItems,
+      isFullscreen,
       isMobile,
       isPopped,
       isReadOnly,
@@ -55,18 +60,34 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
       return null
     }
     const portableTextFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+
+    const blockStyleSelectProps = {
+      ...getBlockStyleSelectProps(editor)
+    }
+
+    const className = classNames(
+      isPopped ? styles.isPopped : styles.root,
+      isFullscreen && styles.fullscreen
+    )
+
     return (
-      <div className={isPopped ? styles.isPopped : styles.root}>
-        <div className={styles.blockStyleGroup}>
-          {!isReadOnly && (
-            <BlockStyleSelect
-              className={styles.blockStyleSelect}
-              editor={editor}
-              selection={this.props.selection}
-              renderBlock={this.props.renderBlock}
-            />
-          )}
-        </div>
+      <div className={className}>
+        {/* Show block style selection if there are 2 or more styles */}
+        {blockStyleSelectProps.items.length > 1 && (
+          <div className={styles.blockStyleGroup}>
+            {!isReadOnly && (
+              <BlockStyleSelect
+                {...blockStyleSelectProps}
+                className={styles.blockStyleSelect}
+                editor={editor}
+                padding="small"
+                selection={this.props.selection}
+                renderBlock={this.props.renderBlock}
+              />
+            )}
+          </div>
+        )}
+
         {portableTextFeatures.decorators.length > 0 && (
           <div className={styles.group}>
             {!isReadOnly && (
@@ -79,6 +100,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
             )}
           </div>
         )}
+
         {portableTextFeatures.lists.length > 0 && (
           <div className={styles.group}>
             {!isReadOnly && (
@@ -90,6 +112,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
             )}
           </div>
         )}
+
         {portableTextFeatures.annotations.length > 0 && (
           <div className={styles.group}>
             {!isReadOnly && (
@@ -102,6 +125,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
             )}
           </div>
         )}
+
         {insertItems.length > 0 && (
           <div className={styles.group}>
             {!isReadOnly && (
