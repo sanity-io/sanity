@@ -5,7 +5,7 @@ import React from 'react'
 import styles from './centeredContainer.css'
 
 export function CenteredContainer({children, className: classNameProp, style, ...restProps}) {
-  const backgroundColor = color('View color', 'rgba(255, 255, 255, 1', 'test')
+  const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
   const fontSize = number('Font size (rem)', 1, {range: true, min: 0.5, max: 3, step: 0.25})
   const className = classNames(styles.root, classNameProp)
 
