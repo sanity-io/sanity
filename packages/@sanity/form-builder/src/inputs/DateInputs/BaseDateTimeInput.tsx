@@ -183,9 +183,8 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 onClick={this.handleButtonClick}
                 icon={CalendarIcon}
                 kind="simple"
-              >
-                Select
-              </Button>
+                title="Select date"
+              />
             </div>
           </div>
         )}
