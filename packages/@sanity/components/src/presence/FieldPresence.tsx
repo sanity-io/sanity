@@ -2,7 +2,7 @@
 import React, {useContext} from 'react'
 import {splitRight} from './utils'
 import {sortBy, uniqBy} from 'lodash'
-import {AVATAR_DISTANCE, AVATAR_SIZE, MAX_AVATARS} from './constants'
+import {AVATAR_DISTANCE, AVATAR_SIZE} from './constants'
 import {PopoverList, StackCounter} from './index'
 import styles from './FieldPresence.css'
 import UserAvatar from './UserAvatar'
@@ -13,18 +13,20 @@ import {Context} from './context'
 
 interface Props {
   presence: FormFieldPresence[]
+  maxAvatars: number
 }
 
 export function FieldPresence(props: Props) {
   const contextPresence = useContext(Context)
-  const presence = props.presence || contextPresence
+  const {presence = contextPresence, maxAvatars} = props
   return presence.length > 0 ? (
-    <PresenceRegion presence={presence} component={FieldPresenceInner} />
+    <PresenceRegion presence={presence} maxAvatars={maxAvatars} component={FieldPresenceInner} />
   ) : null
 }
 
 interface InnerProps {
   stack?: boolean
+  maxAvatars: number
   presence: FormFieldPresence[]
   position: Position
   animateArrowFrom?: Position
@@ -32,6 +34,7 @@ interface InnerProps {
 
 export function FieldPresenceInner({
   presence,
+  maxAvatars,
   position,
   animateArrowFrom,
   stack = true
@@ -40,7 +43,7 @@ export function FieldPresenceInner({
     uniqBy(presence || [], item => item.user.id),
     presence => presence.lastActiveAt
   )
-  const [hidden, visible] = stack ? splitRight(sorted, MAX_AVATARS) : [[], sorted]
+  const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [
     ...visible.reverse().map(visible => ({
@@ -56,7 +59,7 @@ export function FieldPresenceInner({
         }
       : null
   ].filter(Boolean)
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * MAX_AVATARS
+  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * maxAvatars
   return (
     <div className={styles.root}>
       <PopoverList

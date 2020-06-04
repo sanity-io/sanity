@@ -278,7 +278,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-          <FieldPresence presence={hasItemFocus ? [] : presence} />
+          <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
               <LinkIcon />
