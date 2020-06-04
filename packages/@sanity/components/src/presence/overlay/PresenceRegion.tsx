@@ -8,11 +8,12 @@ import {RegionReporter} from '../overlay-reporter'
 
 type Props = {
   presence: FormFieldPresence[]
+  maxAvatars: number
   component: React.ComponentType<{presence: FormFieldPresence[]}>
 }
 
-function RegionWithOverlay({presence, component}: Props) {
-  return <RegionReporter id={useId()} data={{presence}} component={component} />
+function RegionWithOverlay({presence, component, maxAvatars}: Props) {
+  return <RegionReporter id={useId()} data={{presence, maxAvatars}} component={component} />
 }
 
 function RegionWithoutOverlay({presence, component: Component}: Props) {

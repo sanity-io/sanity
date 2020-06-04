@@ -1,4 +1,3 @@
-
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
@@ -23,7 +22,8 @@ export type Region = {
 }
 
 type Data = {
-  presence: any[]
+  presence: FormFieldPresence[]
+  maxAvatars: number
   avatarComponent: React.ComponentType
 }
 
