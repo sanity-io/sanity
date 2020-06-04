@@ -12,8 +12,6 @@ import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 import styles from './FormView.css'
 
-import styles from './FormView.css'
-
 const noop = () => undefined
 
 const INITIAL_STATE = {
