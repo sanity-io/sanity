@@ -2,8 +2,14 @@
 
 .menuItem {
   display: inline-flex;
-  /* justify-content: space-between; */
-  /* width: stretch; */
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.menuItemLabel {
+  flex: 1;
+  min-width: 0;
 }
 
 .hotkey {

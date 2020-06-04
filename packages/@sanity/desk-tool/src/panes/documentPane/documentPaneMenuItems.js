@@ -28,7 +28,7 @@ const getInspectItem = ({value}) => ({
   action: 'inspect',
   title: (
     <span className={styles.menuItem}>
-      Inspect{' '}
+      <span className={styles.menuItemLabel}>Inspect</span>
       <span className={styles.hotkey}>
         <Hotkeys keys={['Ctrl', 'Alt', 'I']} size="small" />
       </span>
@@ -60,9 +60,9 @@ export const getProductionPreviewItem = ({value, revision}) => {
     action: 'production-preview',
     title: (
       <span className={styles.menuItem}>
-        Open preview
+        <span className={styles.menuItemLabel}>Open preview</span>
         <span className={styles.hotkey}>
-          <Hotkeys keys={['Ctrl', 'Alt', 'O']} />
+          <Hotkeys keys={['Ctrl', 'Alt', 'O']} size="small" />
         </span>
       </span>
     ),
