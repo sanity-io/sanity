@@ -1,103 +1,26 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  -webkit-overflow-scrolling: touch;
   position: relative;
   display: flex;
   justify-content: stretch;
   flex-wrap: nowrap;
+  overflow-x: scroll;
   height: 41px;
-  overflow: auto;
+
+  @nest &::scrollbar {
+    display: none;
+  }
 
   @nest &.fullscreen {
     height: 49px;
   }
 }
 
-.primary {
-  /* position: relative; */
-  display: flex;
-  flex-grow: 1;
-  flex-wrap: nowrap;
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
-
-  @nest &::scrollbar {
-    display: none;
-  }
-
-  /* @media (--screen-medium) {
-    overflow: hidden;
-  } */
-}
-
-/* .secondary::before {
-  position: absolute;
-  content: '';
-  right: 100%;
-  top: 0;
-  height: 100%;
-  width: 1em;
-  z-index: 2;
-  background: radial-gradient(
-    var(--component-border-color),
-    color(var(--component-border-color) a(0%)) 70%
-  );
-  background-position: 0.5em 0;
-  background-repeat: no-repeat;
-  border-right: 1px solid var(--hairline-color);
-
-  @media (--screen-medium) {
-    display: none;
-  }
-} */
-
-.primaryInner {
+.inner {
   display: flex;
   position: relative;
-}
-
-/* .primaryInner::after {
-  position: absolute;
-  content: '';
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 2em;
-  z-index: 3;
-  background: linear-gradient(90deg, color(var(--component-bg) a(0%) 0%), var(--component-bg) 40%);
-  background-position: 0.5em 0;
-  background-repeat: no-repeat;
-
-  @media (--screen-medium) {
-    display: none;
-  }
-} */
-
-.primaryInnerCollapsed {
-  composes: primaryInner;
-  display: none;
-}
-
-.primaryInnerCollapsedOpen {
-  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
-  composes: primaryInner;
-  position: absolute;
-  top: 1em;
-  left: 1em;
-  z-index: 10;
-}
-
-.secondary {
-  position: relative;
-  padding: var(--extra-small-padding);
-
-  @nest .root.fullscreen & {
-    padding: var(--small-padding);
-  }
-
-  @nest &:empty {
-    display: none;
-  }
 }
 
 .showMoreButton {

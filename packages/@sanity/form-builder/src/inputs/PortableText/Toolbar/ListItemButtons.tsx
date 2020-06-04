@@ -4,7 +4,6 @@ import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import CustomIcon from './CustomIcon'
-import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 import styles from './ListItemButtons.css'
 import {
   PortableTextFeature,
@@ -20,7 +19,6 @@ type ListItem = PortableTextFeature & {
 type Props = {
   editor: PortableTextEditor
   selection: EditorSelection
-  collapsed: boolean
 }
 function getIcon(type: string): JSX.ElementClass {
   switch (type) {
@@ -34,9 +32,6 @@ function getIcon(type: string): JSX.ElementClass {
 }
 export default class ListItemButtons extends React.Component<Props, {}> {
   shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.collapsed !== this.props.collapsed) {
-      return true
-    }
     if (nextProps.selection !== this.props.selection) {
       return true
     }
@@ -86,16 +81,8 @@ export default class ListItemButtons extends React.Component<Props, {}> {
     )
   }
   render(): JSX.Element {
-    const {collapsed} = this.props
     const items = this.getItems()
-    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
-    if (items.length > 0 && collapsed) {
-      return (
-        <CollapsibleButtonGroup icon={icon || getIcon(items[0].value)}>
-          {items.map(this.renderListItemButton)}
-        </CollapsibleButtonGroup>
-      )
-    }
+
     return <div className={styles.root}>{items.map(this.renderListItemButton)}</div>
   }
 }

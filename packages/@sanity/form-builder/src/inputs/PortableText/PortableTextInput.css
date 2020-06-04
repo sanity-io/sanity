@@ -47,6 +47,16 @@
   }
 }
 
+.validationContainer {
+  position: relative;
+  padding: var(--extra-small-padding);
+  border-left: 1px solid var(--hairline-color);
+
+  @nest .fullscreenPortal & {
+    padding: var(--small-padding);
+  }
+}
+
 .fullscreenButtonContainer {
   border-left: 1px solid var(--hairline-color);
   padding: var(--extra-small-padding);

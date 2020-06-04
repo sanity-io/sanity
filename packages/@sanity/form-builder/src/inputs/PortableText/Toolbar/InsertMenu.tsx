@@ -1,5 +1,4 @@
 import React from 'react'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
@@ -12,7 +11,6 @@ import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 type Props = {
   editor: PortableTextEditor
   onFocus: (arg0: Path) => void
-  collapsed: boolean
   showLabels: boolean
   selection: EditorSelection
 }
@@ -27,9 +25,7 @@ type BlockItem = {
 }
 export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props): boolean {
-    return (
-      this.props.collapsed !== nextProps.collapsed || nextProps.selection !== this.props.selection
-    )
+    return nextProps.selection !== this.props.selection
   }
 
   renderItem = (item: BlockItem): JSX.Element => {
@@ -115,21 +111,8 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   render(): JSX.Element | JSX.Element[] {
-    const {collapsed} = this.props
     const items = this.getItems()
-    if (!collapsed) {
-      return <div className={styles.root}>{items.map(this.renderButton)}</div>
-    }
-    return (
-      <DropDownButton
-        items={items}
-        renderItem={this.renderItem}
-        onAction={this.handleOnAction}
-        kind="simple"
-        padding="small"
-      >
-        Insert
-      </DropDownButton>
-    )
+
+    return <div className={styles.root}>{items.map(this.renderButton)}</div>
   }
 }
