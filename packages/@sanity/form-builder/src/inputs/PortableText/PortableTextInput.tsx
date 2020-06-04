@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
+import {Tooltip} from 'react-tippy'
 import {
   PortableTextEditor,
   PortableTextBlock,
@@ -15,10 +16,12 @@ import {
   getPortableTextFeatures,
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
-
 import {isEqual} from 'lodash'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import ValidationList from 'part:@sanity/components/validation/list'
 import InvalidValue from './InvalidValue'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
@@ -80,6 +83,7 @@ type State = {
   isActive: boolean
   isLoading: boolean
   selection: EditorSelection | undefined
+  showValidationTooltip: boolean
   valueWithError: PortableTextBlock[] | undefined
   objectEditStatus: {editorPath: Path; formBuilderPath: Path; type: string} | null
 }
@@ -132,6 +136,7 @@ export default withPatchSubscriber(
       isLoading: false,
       objectEditStatus: null,
       selection: undefined,
+      showValidationTooltip: false,
       valueWithError: undefined
     }
 
@@ -201,6 +206,15 @@ export default withPatchSubscriber(
 
     componentWillUnmount(): void {
       this.usubscribe()
+    }
+
+    handleCloseValidationResults = (): void => {
+      this.setState({showValidationTooltip: false})
+    }
+    handleToggleValidationResults = (): void => {
+      this.setState(prevState => ({
+        showValidationTooltip: !prevState.showValidationTooltip
+      }))
     }
 
     private handleDocumentPatches = ({
@@ -419,7 +433,7 @@ export default withPatchSubscriber(
     }
 
     renderEditor = (editor: JSX.Element): JSX.Element => {
-      const {selection, isFullscreen} = this.state
+      const {selection, isFullscreen, showValidationTooltip} = this.state
       const {onFocus, markers, readOnly, renderBlockActions, renderCustomMarkers} = this.props
       const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
       const scClassNames = [
@@ -438,6 +452,10 @@ export default withPatchSubscriber(
         ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
 
+      const validation = markers.filter(marker => marker.type === 'validation')
+      const errors = validation.filter(marker => marker.level === 'error')
+      const warnings = validation.filter(marker => marker.level === 'warning')
+
       const wrappedEditor = (
         <div className={styles.editorBox}>
           <div className={styles.header}>
@@ -445,7 +463,6 @@ export default withPatchSubscriber(
               <Toolbar
                 editor={this.editor.current}
                 isFullscreen={isFullscreen}
-                markers={markers}
                 hotkeys={this.hotkeys}
                 onFocus={onFocus}
                 renderBlock={this.renderBlock}
@@ -453,6 +470,46 @@ export default withPatchSubscriber(
                 isReadOnly={readOnly}
               />
             </div>
+
+            {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
+              <div className={styles.validationContainer}>
+                <Tooltip
+                  arrow
+                  duration={100}
+                  html={
+                    <ValidationList
+                      markers={validation}
+                      showLink
+                      isOpen={showValidationTooltip}
+                      documentType={
+                        PortableTextEditor.getPortableTextFeatures(this.editor.current).types
+                          .portableText
+                      }
+                      onClose={this.handleCloseValidationResults}
+                      onFocus={onFocus}
+                    />
+                  }
+                  interactive
+                  onRequestClose={this.handleCloseValidationResults}
+                  open={showValidationTooltip}
+                  position="bottom"
+                  style={{padding: 0}}
+                  theme="light"
+                  trigger="click"
+                >
+                  <Button
+                    color="danger"
+                    icon={WarningIcon}
+                    kind="simple"
+                    onClick={this.handleToggleValidationResults}
+                    padding="small"
+                  >
+                    {errors.length}
+                  </Button>
+                </Tooltip>
+              </div>
+            )}
+
             <div className={styles.fullscreenButtonContainer}>
               <ExpandCollapseButton
                 isFullscreen={isFullscreen}

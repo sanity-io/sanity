@@ -19,7 +19,6 @@ import {
 import {getBlockStyleSelectProps} from './helpers'
 
 type Props = {
-  collapsedGroups: string[]
   editor: PortableTextEditor
   hotkeys: HotkeyOptions
   insertItems: Type[]
@@ -46,7 +45,6 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
 
   render(): JSX.Element {
     const {
-      collapsedGroups,
       editor,
       insertItems,
       isFullscreen,
@@ -92,7 +90,6 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
           <div className={styles.group}>
             {!isReadOnly && (
               <DecoratorButtons
-                collapsed={collapsedGroups.indexOf('decoratorButtons') >= 0}
                 editor={editor}
                 hotkeys={this.props.hotkeys}
                 selection={selection}
@@ -103,13 +100,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
 
         {portableTextFeatures.lists.length > 0 && (
           <div className={styles.group}>
-            {!isReadOnly && (
-              <ListItemButtons
-                collapsed={collapsedGroups.indexOf('listItemButtons') >= 0}
-                editor={editor}
-                selection={this.props.selection}
-              />
-            )}
+            {!isReadOnly && <ListItemButtons editor={editor} selection={this.props.selection} />}
           </div>
         )}
 
@@ -117,7 +108,6 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
           <div className={styles.group}>
             {!isReadOnly && (
               <AnnotationButtons
-                collapsed={collapsedGroups.indexOf('annotationButtons') >= 0}
                 editor={editor}
                 onFocus={onFocus}
                 selection={this.props.selection}
@@ -130,7 +120,6 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
           <div className={styles.group}>
             {!isReadOnly && (
               <InsertMenu
-                collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
                 editor={editor}
                 onFocus={onFocus}
                 selection={selection}

@@ -1,11 +1,10 @@
 import React from 'react'
-import {get, isEqual} from 'lodash'
+import {get} from 'lodash'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import CustomIcon from './CustomIcon'
 import styles from './AnnotationButtons.css'
-import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 import {Path} from '../../../typedefs/path'
 import {
   PortableTextEditor,
@@ -25,7 +24,6 @@ type Props = {
   editor: PortableTextEditor
   selection: EditorSelection
   onFocus: (arg0: Path) => void
-  collapsed: boolean
 }
 function getIcon(type: string): Function {
   switch (type) {
@@ -102,24 +100,8 @@ export default class AnnotationButtons extends React.PureComponent<Props, {}> {
     )
   }
   render(): JSX.Element {
-    const {collapsed} = this.props
     const items = this.getItems()
-    let Icon
-    const icon = getIconFromItem(items[0])
-    if (icon) {
-      if (typeof icon === 'string') {
-        Icon = (): JSX.Element => <CustomIcon icon={icon} active={items[0].active} />
-      } else if (typeof icon === 'function') {
-        Icon = icon
-      }
-    }
-    if (items.length > 1 && collapsed) {
-      return (
-        <CollapsibleButtonGroup icon={Icon || getIcon(items[0].value)}>
-          <div className={styles.root}>{items.map(this.renderAnnotationButton)}</div>
-        </CollapsibleButtonGroup>
-      )
-    }
+
     return <div className={styles.root}>{items.map(this.renderAnnotationButton)}</div>
   }
 }
