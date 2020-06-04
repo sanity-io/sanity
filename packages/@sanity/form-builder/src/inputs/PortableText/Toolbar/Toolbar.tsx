@@ -1,15 +1,16 @@
-import classNames from 'classnames'
-import React from 'react'
-import {uniq} from 'lodash'
-import {Path} from '../../../typedefs/path'
-import PrimaryGroup from './PrimaryGroup'
-import styles from './Toolbar.css'
 import {
   PortableTextEditor,
   EditorSelection,
   HotkeyOptions,
   RenderBlockFunction
 } from '@sanity/portable-text-editor'
+import classNames from 'classnames'
+import {uniq} from 'lodash'
+import React from 'react'
+import {Path} from '../../../typedefs/path'
+import PrimaryGroup from './PrimaryGroup'
+
+import styles from './Toolbar.css'
 
 const BREAKPOINT_SCREEN_MEDIUM = 512
 
