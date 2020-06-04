@@ -113,6 +113,8 @@
 }
 
 .menuItemLabel {
+  flex: 1;
+  min-width: 0;
   margin: -2px 0 -1px;
 }
 
