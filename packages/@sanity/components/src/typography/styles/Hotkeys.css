@@ -27,6 +27,9 @@
     calc(var(--extra-small-padding) - 2px);
   border-radius: var(--border-radius-small);
   overflow: hidden;
+  text-transform: capitalize;
+  min-width: 1em;
+  text-align: center;
 
   @nest &:after {
     content: '';
