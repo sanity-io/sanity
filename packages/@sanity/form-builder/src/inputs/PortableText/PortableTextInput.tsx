@@ -15,12 +15,8 @@ import {
   getPortableTextFeatures,
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
-<<<<<<< HEAD
+
 import {isEqual} from 'lodash'
-import Button from 'part:@sanity/components/buttons/default'
-=======
-// import Button from 'part:@sanity/components/buttons/default'
->>>>>>> [form-builder] Various UI improvements (PTE)
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
