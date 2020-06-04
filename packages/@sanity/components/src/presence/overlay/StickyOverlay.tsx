@@ -8,6 +8,7 @@ import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
   DEBUG,
+  MAX_AVATARS_DOCK,
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
@@ -189,7 +190,11 @@ function renderDock(
         bottom: AVATAR_ARROW_HEIGHT + 1 + margin
       }}
     >
-      <FieldPresenceInner position={position} presence={allPresenceItems} />
+      <FieldPresenceInner
+        position={position}
+        maxAvatars={MAX_AVATARS_DOCK}
+        presence={allPresenceItems}
+      />
     </div>
   )
 }
@@ -207,7 +212,7 @@ function renderInside(
 
     const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
 
-    const {presence} = withIntersection.region.data
+    const {presence, maxAvatars} = withIntersection.region.data
     return (
       <React.Fragment key={withIntersection.region.id}>
         <div
@@ -225,6 +230,7 @@ function renderInside(
             <FieldPresenceInner
               stack={!nearTop && !nearBottom}
               position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
+              maxAvatars={maxAvatars}
               presence={presence}
             />
           </DebugValue>
