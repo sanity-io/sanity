@@ -23,7 +23,13 @@ export default {
           },
           of: [
             {type: 'image', name: 'image'},
-            {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
+            {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]},
+            {
+              type: 'reference',
+              name: 'strongAuthorRef',
+              title: 'A strong author ref',
+              to: {type: 'author'}
+            }
           ]
         },
         {type: 'image', name: 'image'},
