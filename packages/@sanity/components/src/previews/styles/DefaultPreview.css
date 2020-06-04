@@ -80,6 +80,7 @@
   flex-basis: 2.5em;
   width: 2.5em;
   height: 2.5em;
+  min-width: 2.5em;
   margin-right: var(--small-padding);
   overflow: hidden;
   display: flex;
