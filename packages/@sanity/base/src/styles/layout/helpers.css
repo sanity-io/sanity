@@ -26,8 +26,6 @@
 .movingItem {
   z-index: var(--zindex-moving-item);
   position: relative;
-  background-color: var(--white);
+  background-color: var(--component-bg);
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  box-sizing: content-box;
-  overflow: visible;
 }
