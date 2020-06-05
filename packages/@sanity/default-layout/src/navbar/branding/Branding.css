@@ -9,6 +9,7 @@
   padding: 1em;
   box-sizing: border-box;
   position: relative;
+  text-align: center;
 
   @media (--screen-medium) {
     display: flex;
