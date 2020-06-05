@@ -6,6 +6,8 @@ export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 export interface DocumentRebaseEvent {
   type: 'rebase'
   document: SanityDocument
+  remoteMutations: MutationPayload[]
+  localMutations: MutationPayload[]
 }
 
 export interface DocumentMutationEvent {

@@ -92,8 +92,8 @@ export const createObservableBufferedDocument = (
       })
     }
 
-    bufferedDocument.onRebase = edge => {
-      rebase$.next({type: 'rebase', document: edge})
+    bufferedDocument.onRebase = (edge, remoteMutations, localMutations) => {
+      rebase$.next({type: 'rebase', document: edge, remoteMutations, localMutations})
     }
 
     bufferedDocument.onConsistencyChanged = isConsistent => {
