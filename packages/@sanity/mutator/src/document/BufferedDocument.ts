@@ -32,6 +32,11 @@ class Commit {
   }
 }
 
+const mutReducerFn = (acc, mut) => {
+  acc = acc.concat(mut.mutations)
+  return acc
+}
+
 export default class BufferedDocument {
   mutations: Mutation[]
   // The Document we are wrapping
@@ -53,7 +58,8 @@ export default class BufferedDocument {
     this.buffer = new SquashingBuffer(doc)
     this.document = new Document(doc)
     this.document.onMutation = msg => this.handleDocMutation(msg)
-    this.document.onRebase = msg => this.handleDocRebase(msg)
+    this.document.onRebase = (msg, remoteMutations, localMutations) =>
+      this.handleDocRebase(msg, remoteMutations, localMutations)
     this.document.onConsistencyChanged = msg => this.handleDocConsistencyChanged(msg)
     this.LOCAL = doc
     this.mutations = []
@@ -69,7 +75,7 @@ export default class BufferedDocument {
       debug('Document state reset to being deleted')
     }
     this.document.reset(doc)
-    this.rebase()
+    this.rebase([], [])
     this.handleDocConsistencyChanged(this.document.isConsistent())
   }
 
@@ -195,8 +201,8 @@ export default class BufferedDocument {
     })
   }
 
-  handleDocRebase(msg) {
-    this.rebase()
+  handleDocRebase(msg, remoteMutations, localMutations) {
+    this.rebase(remoteMutations, localMutations)
   }
 
   handleDocumentDeleted() {
@@ -230,10 +236,10 @@ export default class BufferedDocument {
     }
 
     // We had local changes, so need to signal rebase
-    this.rebase()
+    this.rebase([], [])
   }
 
-  rebase() {
+  rebase(remoteMutations: Mutation[], localMutations: Mutation[]) {
     debug('Rebasing document')
     if (this.document.EDGE === null) {
       this.handleDocumentDeleted()
@@ -248,7 +254,11 @@ export default class BufferedDocument {
     }
     const changed = !isEqual(this.LOCAL, oldLocal)
     if (changed && this.onRebase) {
-      this.onRebase(this.LOCAL)
+      this.onRebase(
+        this.LOCAL,
+        remoteMutations.reduce(mutReducerFn, []),
+        localMutations.reduce(mutReducerFn, [])
+      )
     }
   }
 
