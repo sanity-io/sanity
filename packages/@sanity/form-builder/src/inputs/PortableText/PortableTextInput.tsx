@@ -666,24 +666,13 @@ export default withPatchSubscriber(
     render(): JSX.Element {
       const {value, readOnly, type, markers, level, presence} = this.props
       // TODO: deal with validation and loading status
-      const validation = markers.filter(marker => marker.type === 'validation')
-      const errors = validation.filter(marker => marker.level === 'error')
-      const {
-        // isFullscreen,
-        isLoading,
-        hasFocus,
-        invalidValue,
-        objectEditStatus,
-        ignoreValidation
-      } = this.state
+      // const validation = markers.filter(marker => marker.type === 'validation')
+      // const errors = validation.filter(marker => marker.level === 'error')
+      const {hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
+
       return (
         <div
-          className={classNames(
-            styles.root,
-            hasFocus && styles.focus,
-            readOnly && styles.readOnly
-            // isFullscreen && styles.fullscreen
-          )}
+          className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}
         >
           <FormField
             markers={markers}
