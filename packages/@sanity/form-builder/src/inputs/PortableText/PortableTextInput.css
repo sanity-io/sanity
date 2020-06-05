@@ -76,19 +76,17 @@
     color: var(--input-color-disabled);
   }
 
-  @nest .root:not(.readOnly) & {
+  @nest .root.focus & {
+    box-shadow: var(--input-box-shadow--focus);
+    border-color: var(--input-border-color-focus);
+    background-color: var(--input-bg-focus);
+  }
+
+  @nest .root:not(.focus):not(.readOnly):not(.disabled) & {
     @media (hover: hover) {
       @nest &:hover {
         box-shadow: var(--input-box-shadow--hover);
         border-color: var(--input-border-color-hover);
-      }
-
-      @nest .focus:not(.fullscreenPortal) & {
-        box-shadow: var(--input-box-shadow--focus);
-        border-color: var(--input-border-color-focus);
-
-        /* @todo: Make the focus BG compatible with the annotation gutter */
-        /* background-color: var(--input-bg-focus); */
       }
     }
   }
