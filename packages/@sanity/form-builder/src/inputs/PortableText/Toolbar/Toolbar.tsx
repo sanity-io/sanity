@@ -53,8 +53,8 @@ function PTEToolbar(props: Props) {
       onMouseDown={event => event.preventDefault()}
       onKeyPress={event => event.preventDefault()}
     >
-      <div className={styles.blockStyleSelectContainer}>
-        {blockStyleSelectProps && (
+      {blockStyleSelectProps && blockStyleSelectProps.items.length > 1 && (
+        <div className={styles.blockStyleSelectContainer}>
           <BlockStyleSelect
             {...blockStyleSelectProps}
             className={styles.blockStyleSelect}
@@ -64,14 +64,16 @@ function PTEToolbar(props: Props) {
             readOnly={readOnly}
             renderBlock={renderBlock}
           />
-        )}
-      </div>
+        </div>
+      )}
       <div className={styles.actionMenuContainer}>
         <ActionMenu groups={actionGroups} readOnly={readOnly} />
       </div>
-      <div className={styles.insertMenuContainer}>
-        <InsertMenu items={insertMenuItems} readOnly={readOnly} />
-      </div>
+      {insertMenuItems.length > 0 && (
+        <div className={styles.insertMenuContainer}>
+          <InsertMenu items={insertMenuItems} readOnly={readOnly} />
+        </div>
+      )}
     </div>
   )
 }
