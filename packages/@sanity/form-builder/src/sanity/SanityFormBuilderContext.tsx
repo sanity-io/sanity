@@ -35,14 +35,13 @@ function prepareMutationEvent(event) {
 }
 
 function prepareRebaseEvent(event) {
+  const remotePatches = event.remoteMutations.map(mut => mut.patch).filter(Boolean)
+  const localPatches = event.localMutations.map(mut => mut.patch).filter(Boolean)
   return {
     snapshot: event.document,
-    patches: gradientPatchAdapter.toFormBuilder('internal', [
-      {
-        id: event.document._id,
-        set: event.document
-      }
-    ])
+    patches: gradientPatchAdapter
+      .toFormBuilder('remote', remotePatches)
+      .concat(gradientPatchAdapter.toFormBuilder('local', localPatches))
   }
 }
 
