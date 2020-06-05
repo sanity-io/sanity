@@ -17,8 +17,10 @@ const CollapseIcon = () => (
     width="1em"
     height="1em"
   >
-    <path d="M19 10.5H14.5M14.5 10.5V6M14.5 10.5L19 6" style={strokeStyle} />
-    <path d="M6 14.5H10.5M10.5 14.5V19M10.5 14.5L6 19" style={strokeStyle} />
+    <path d="M14.5 10.5L19 6" style={strokeStyle} />
+    <path d="M19 10.5H14.5V6" style={strokeStyle} />
+    <path d="M6 14.5H10.5V19" style={strokeStyle} />
+    <path d="M10.5 14.5L6 19" style={strokeStyle} />
   </svg>
 )
 

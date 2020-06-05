@@ -17,8 +17,10 @@ const ExpandIcon = () => (
     width="1em"
     height="1em"
   >
-    <path d="M14 6.5H18.5M18.5 6.5V11M18.5 6.5L14 11" style={strokeStyle} />
-    <path d="M11 18.5H6.5M6.5 18.5L6.5 14M6.5 18.5L11 14" style={strokeStyle} />
+    <path d="M18.5 6.5L14 11" style={strokeStyle} />
+    <path d="M14 6.5H18.5V11" style={strokeStyle} />
+    <path d="M6.5 18.5L11 14" style={strokeStyle} />
+    <path d="M11 18.5H6.5L6.5 14" style={strokeStyle} />
   </svg>
 )
 
