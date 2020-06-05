@@ -1,24 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  display: block;
-}
-
 .content {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-
-  @media (--screen-medium) {
-    flex-direction: row;
-  }
+  display: grid;
+  grid-gap: var(--medium-padding);
 }
 
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }
 
-.fileName + .functions {
+.content + .functions {
   margin-top: var(--small-padding);
 
   @media (--screen-medium) {
@@ -47,12 +38,34 @@
 }
 
 .assetWrapper {
-  padding: var(--large-padding);
-  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  position: relative;
+  transition: background-color 0.1s linear;
+  max-height: 10rem;
+  overflow: hidden;
+  flex-grow: 1;
+  border-bottom: 1px;
+  box-sizing: border-box;
+  background-color: color(var(--gray-lightest) alpha(50%));
 
-.fieldsWrapper {
-  margin-top: var(--medium-padding);
+  @media (--screen-medium) {
+    min-height: 12rem;
+    max-height: 27rem;
+    min-width: 12rem;
+    height: auto;
+
+    @nest .noContent & {
+      flex-basis: 100%;
+    }
+  }
+
+  @nest &.readOnly {
+    background-image: none;
+    background: var(--input-bg-disabled);
+  }
 }
 
 .previewAsset {

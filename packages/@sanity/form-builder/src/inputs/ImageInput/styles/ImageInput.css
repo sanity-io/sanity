@@ -39,6 +39,11 @@
       flex-basis: 100%;
     }
   }
+
+  @nest &.readOnly {
+    background-image: none;
+    background: var(--input-bg-disabled);
+  }
 }
 
 .progress {
@@ -51,10 +56,6 @@
   width: 100%;
   background-color: color(var(--body-bg) a(90%));
   z-index: 1;
-}
-
-.fieldsWrapper {
-  margin-top: var(--medium-padding);
 }
 
 .functions {

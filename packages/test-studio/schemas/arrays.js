@@ -8,7 +8,10 @@ export const topLevelArrayType = {
     {
       type: 'object',
       title: 'Content',
-      fields: [{name: 'textContent', type: 'text'}, {name: 'imageContent', type: 'image'}],
+      fields: [
+        {name: 'textContent', type: 'text'},
+        {name: 'imageContent', type: 'image'}
+      ],
       preview: {select: {title: 'textContent'}}
     }
   ]

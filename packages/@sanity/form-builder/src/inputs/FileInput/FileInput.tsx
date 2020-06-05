@@ -351,49 +351,49 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
           />
         )}
-        <div className={styles.content}>
-          <div className={styles.assetWrapper}>
-            {value && value._upload && (
-              <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-            )}
-            {this.renderAsset()}
+        <div>
+          <div className={styles.content}>
+            <div className={`${styles.assetWrapper} ${readOnly ? styles.readOnly : ''}`}>
+              {value && value._upload && (
+                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+              )}
+              {this.renderAsset()}
+            </div>
+          </div>
+          <div className={styles.functions}>
+            <ButtonGrid>
+              {!readOnly && (
+                <FileInputButton
+                  inverted
+                  icon={UploadIcon}
+                  onSelect={this.handleSelectFile}
+                  accept={accept}
+                >
+                  Upload
+                </FileInputButton>
+              )}
+              {/* Enable when selecting already uploaded files is possible */}
+              {/* {!readOnly && this.renderSelectFileButton()} */}
+              {value && otherFields.length > 0 && (
+                <Button
+                  icon={readOnly ? VisibilityIcon : EditIcon}
+                  kind="simple"
+                  title={readOnly ? 'View details' : 'Edit details'}
+                  onClick={this.handleStartAdvancedEdit}
+                >
+                  {readOnly ? 'View details' : 'Edit'}
+                </Button>
+              )}
+              {!readOnly && hasAsset && (
+                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                  Remove
+                </Button>
+              )}
+              {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+            </ButtonGrid>
           </div>
         </div>
-        <div className={styles.functions}>
-          <ButtonGrid>
-            {!readOnly && (
-              <FileInputButton
-                inverted
-                icon={UploadIcon}
-                onSelect={this.handleSelectFile}
-                accept={accept}
-              >
-                Upload
-              </FileInputButton>
-            )}
-            {/* Enable when selecting already uploaded files is possible */}
-            {/* {!readOnly && this.renderSelectFileButton()} */}
-            {value && otherFields.length > 0 && (
-              <Button
-                icon={readOnly ? VisibilityIcon : EditIcon}
-                inverted
-                title={readOnly ? 'View details' : 'Edit details'}
-                onClick={this.handleStartAdvancedEdit}
-              >
-                {readOnly ? 'View details' : 'Edit'}
-              </Button>
-            )}
-            {!readOnly && hasAsset && (
-              <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
-                Remove
-              </Button>
-            )}
-            {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-          </ButtonGrid>
-        </div>
-        {highlightedFields.length > 0 && (
-          <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
-        )}
+        {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
       </UploadTargetFieldset>
     )
   }

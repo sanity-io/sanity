@@ -10,15 +10,16 @@
   --thumb-color: var(--switch-color);
   --thumb-off-color: var(--white);
   --thumb-on-color: var(--white);
-  --thumb-disabled-color: var(--gray-lighter);
+  --thumb-disabled-color: var(--input-color-disabled);
   --thumb-offset: 4px;
   /* Track */
   --track-height: 1.4em;
   --track-width: 2.5em;
-  --track-disabled-color: var(--gray-dark);
+  --track-disabled-color: var(--input-bg-disabled);
   --track-color: var(--gray-light);
   --track-off-color: var(--gray);
   --track-on-color: var(--state-success-color);
+
 }
 
 .root {
@@ -100,12 +101,13 @@
   @nest & .thumb {
     background: var(--thumb-disabled-color);
     cursor: auto;
+    opacity: 0.8;
   }
 
   @nest & .track {
     background: var(--track-disabled-color);
-    opacity: 0.5;
     cursor: default;
+    border: 1px solid var(--gray-light);
   }
 }
 

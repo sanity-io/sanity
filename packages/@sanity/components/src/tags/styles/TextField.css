@@ -7,7 +7,16 @@
 
 .rootReadOnly {
   composes: root;
-  opacity: 0.5;
+  
+  @nest & .content {
+    color: var(--input-color-disabled);
+    background: var(--input-bg-disabled);
+
+    @nest &:hover {
+      box-shadow: var(--input-box-shadow);
+      border-color: var(--input-border-color);
+    }
+  }
 }
 
 .tags {

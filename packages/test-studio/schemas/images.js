@@ -19,6 +19,7 @@ export default {
   title: 'Images test',
   icon,
   description: 'Different test cases of image fields',
+  // readOnly: true,
   fields: [
     {
       name: 'title',

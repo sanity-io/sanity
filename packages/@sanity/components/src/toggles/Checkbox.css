@@ -6,6 +6,8 @@
   --checkbox-button-size: 1em;
   --checkbox-top-offset: 0;
   --checkbox-focus-color: var(--brand-primary);
+  --checkbox-disabled-border: var(--input-bg-disabled);
+  --checkbox-disabled-background: var(--input-color-disabled);
 }
 
 .root {
@@ -85,9 +87,9 @@
 }
 
 .input:disabled + .checkbox {
-  background: var(--gray-lighter);
+  background: var(--checkbox-disabled-border);
 
   @nest & svg {
-    color: var(--gray-dark);
+    color: var(--checkbox-disabled-background);
   }
 }

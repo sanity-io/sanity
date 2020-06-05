@@ -74,6 +74,22 @@ export default {
       }
     },
     {
+      name: 'switch',
+      type: 'boolean',
+      title: `I'm a switch`,
+      readOnly: true,
+      description: 'A read only switch'
+    },
+    {
+      name: 'checkbox',
+      type: 'boolean',
+      title: 'Read only checkbox',
+      readOnly: true,
+      options: {
+        layout: 'checkbox'
+      }
+    },
+    {
       name: 'selectObjectOfString',
       title: 'Select string in object',
       description:
@@ -96,7 +112,10 @@ export default {
       type: 'object',
       title: 'A read only object',
       readOnly: true,
-      fields: [{name: 'first', type: 'string'}, {name: 'second', type: 'string'}]
+      fields: [
+        {name: 'first', type: 'string'},
+        {name: 'second', type: 'string'}
+      ]
     },
     {
       name: 'myObject',
