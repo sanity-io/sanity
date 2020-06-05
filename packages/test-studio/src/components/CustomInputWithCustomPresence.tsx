@@ -20,11 +20,15 @@ function useAnimal(sessionId) {
   }, [sessionId])
 }
 
+function AnimalAvatar(props: {sessionId: string}) {
+  return <div title={props.sessionId}>{useAnimal(props.sessionId)}</div>
+}
+
 function MyAvatarList(props) {
   return (
     <div>
       {props.presence.map(item => (
-        <div title={item.sessionId}>{useAnimal(props.sessionId)}</div>
+        <AnimalAvatar sessionId={item.sessionId} />
       ))}
     </div>
   )
