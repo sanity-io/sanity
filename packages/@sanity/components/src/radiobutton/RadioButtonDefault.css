@@ -36,7 +36,6 @@
   width: var(--radio-button-size);
   border: 1px solid var(--radio-off-color);
   border-radius: 50%;
-  /* margin-top: 1px; */
   margin-right: var(--small-padding);
   line-height: 1;
 

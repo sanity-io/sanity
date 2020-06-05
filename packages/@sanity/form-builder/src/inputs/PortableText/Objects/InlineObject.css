@@ -13,9 +13,7 @@
   display: inline;
   cursor: move;
   box-sizing: border-box;
-  /* border: 1px solid transparent; */
   background-color: var(--form-builder-block-background);
-  /* padding: 0 var(--extra-small-padding); */
   padding: 0 2px;
   border-radius: 2px;
   pointer-events: none;

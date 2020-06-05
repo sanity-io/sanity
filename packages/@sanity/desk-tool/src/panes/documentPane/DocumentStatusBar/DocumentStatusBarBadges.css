@@ -6,7 +6,6 @@
   white-space: nowrap;
   font-size: var(--font-size-xsmall--uppercase);
   line-height: 1;
-  /* margin-bottom: var(--extra-small-padding); */
 
   @nest & > div + div {
     margin-left: var(--extra-small-padding);
