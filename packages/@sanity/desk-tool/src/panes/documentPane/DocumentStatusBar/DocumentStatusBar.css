@@ -9,7 +9,6 @@
 }
 
 .status {
-  /* padding: var(--extra-small-padding) 0; */
   display: flex;
   flex-direction: column;
   justify-content: center;

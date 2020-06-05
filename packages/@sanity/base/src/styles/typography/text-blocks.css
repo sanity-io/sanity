@@ -51,8 +51,3 @@
   padding-left: calc(var(--medium-padding) - 1px);
   border-left: 1px solid var(--hairline-color);
 }
-
-/* .blockquoteSmall {
-  composes: blockquote;
-  color: var(--blockquote-small-color);
-} */

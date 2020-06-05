@@ -4,10 +4,8 @@
 }
 
 .content {
-  /* padding: var(--medium-padding); */
   border: 1px solid var(--hairline-color);
   box-sizing: border-box;
-  /* background-color: var(--component-bg); */
 }
 
 .toolbar {
@@ -17,7 +15,6 @@
 .raw {
   font-family: var(--font-family-monospace);
   white-space: pre-wrap;
-  /* font: 14px/1.4 Consolas, monospace; */
   outline: none;
   padding: var(--medium-padding);
   color: var(--gray-dark);
@@ -36,7 +33,6 @@
 
   @nest & :global .json-inspector .json-inspector__leaf {
     padding-left: var(--medium-padding);
-    /* padding: 0 var(--medium-padding); */
   }
 
   @nest &
@@ -52,14 +48,6 @@
   @nest & :global .json-inspector .json-inspector__leaf_root > .json-inspector__leaf:hover {
     background: var(--gray-lightest);
   }
-
-  /* @nest &
-      :global
-      .json-inspector
-      .json-inspector__leaf_root
-      > .json-inspector__leaf:nth-child(even) {
-    background: rgba(0, 0, 0, 0.025);
-  } */
 
   @nest & :global .json-inspector .json-inspector__leaf_root > .json-inspector__leaf {
     margin-bottom: var(--extra-small-padding);
@@ -103,7 +91,6 @@
       > .json-inspector__line::before {
     color: var(--gray);
     content: '▼ ';
-    /* font-size: 90%; */
   }
 
   @nest & :global .json-inspector .json-inspector__radio,
@@ -120,8 +107,6 @@
     font-family: var(--font-family-monospace);
     width: calc(100% + 2px);
     box-sizing: border-box;
-    /* margin: 0; */
-    /* padding: var(--small-padding) var(--small-padding) calc(var(--small-padding) - 1px); */
     padding: calc(var(--input-padding-horizontal) - var(--input-border-size))
       calc(var(--input-padding-vertical) - var(--input-border-size));
     border: 1px solid var(--hairline-color);

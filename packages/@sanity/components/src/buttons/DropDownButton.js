@@ -50,7 +50,6 @@ export default class DropDownButton extends React.PureComponent {
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
-    // colored: PropTypes.bool,
     color: PropTypes.string,
     className: PropTypes.string,
     renderItem: PropTypes.func,

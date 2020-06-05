@@ -5,7 +5,6 @@ import {Tooltip} from '../tooltip'
 import styles from './ToolSwitcherItem.css'
 
 interface Props {
-  // direction: 'horizontal' | 'vertical'
   isActive: boolean
   title: string
   icon: React.ComponentType<{}>
@@ -18,15 +17,11 @@ const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 function ToolSwitcherItem(props: Props) {
   const {isActive, title, icon, showIcon, showLabel} = props
-  // const isVertical = direction === 'vertical'
   const Icon = icon || PluginIcon
 
   return (
     <Tooltip
-      className={classNames(
-        isActive ? styles.rootActive : styles.root
-        // isVertical ? styles.vertical : styles.horizontal
-      )}
+      className={classNames(isActive ? styles.rootActive : styles.root)}
       content={title}
       disabled={TOUCH_DEVICE || showLabel}
     >

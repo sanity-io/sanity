@@ -185,24 +185,10 @@
   --color-button-disabled-text: var(--color-button-text);
 }
 
-/* .spacing {
-  display: inline-flex;
-}
-
-.spacing + .spacing {
-  margin-left: var(--small-padding--em);
-}
-
-.borderRadius {
-
-} */
-
 .root {
   -webkit-font-smoothing: inherit;
   position: relative;
   appearance: none;
-  /* composes: spacing; */
-  /* composes: borderRadius; */
   display: inline-flex;
   vertical-align: middle;
   justify-content: stretch;
@@ -226,13 +212,8 @@
   }
 
   @nest &.bleed {
-    /* padding: 0 !important; */
     display: flex;
     height: 100%;
-
-    /* @nest & .content {
-      margin: 0;
-    } */
   }
 
   @nest &:not(.disabled) {
@@ -316,12 +297,13 @@
   width: stretch;
 }
 
-/* .groupContainer {
-  @nest & .borderRadius:not(:last-child):not(:first-child) {
+/* Used by ./ButtonGroup.css */
+.groupContainer {
+  @nest & .root:not(:last-child):not(:first-child) {
     border-radius: 0;
   }
 
-  @nest & .borderRadius:not(:last-child) {
+  @nest & .root:not(:last-child) {
     border-right: 1px solid color(var(--body-bg) a(30%));
   }
 
@@ -337,18 +319,18 @@
     }
   }
 
-  @nest & .borderRadius:first-child:not(:last-child) {
+  @nest & .root:first-child:not(:last-child) {
     border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
   }
 
-  @nest & .borderRadius:last-child:not(:first-child) {
+  @nest & .root:last-child:not(:first-child) {
     border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
   }
 
-  @nest & .borderRadius + .borderRadius {
+  @nest & .root + .root {
     margin: 0;
   }
-} */
+}
 
 .icon {
   display: flex;
@@ -677,18 +659,10 @@
     }
 
     @nest &.inverted:not(:focus):not(:hover):not(:active) {
-      /* border-color: var(--white); */
-      /* background-color: var(--text-color); */
       color: var(--white);
 
       @nest & .spinner {
-        /* background-color: color(var(--white) alpha(95%)); */
         color: var(--white);
-      }
-
-      @nest &:focus {
-        /* outline-color: var(--white); */
-        /* border-color: var(--white); */
       }
 
       @media (hover: hover) {

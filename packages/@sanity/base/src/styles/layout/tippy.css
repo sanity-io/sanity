@@ -590,7 +590,6 @@
 }
 
 :global(.tippy-tooltip.noPadding-theme) {
-  /* padding: 0 !important; */
 }
 
 :global(.tippy-tooltip [x-circle]::before) {

@@ -4,15 +4,12 @@ import {BlockStyleItem} from './types'
 export function getBlockStyleSelectProps(
   editor: PortableTextEditor
 ): {items: BlockStyleItem[]; value: BlockStyleItem[]} {
-  // const {editor} = props
   const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
 
   const items = ptFeatures.styles.map((style: PortableTextFeature) => {
-    // const StyleComponent =
     return {
       active: PortableTextEditor.hasBlockStyle(editor, style.value),
       key: `style-${style.value}`,
-      // preview: () => renderStyle(style, StyleComponent),
       style: style.value,
       styleComponent: style && style.blockEditor && style.blockEditor.render,
       title: style.title
@@ -26,7 +23,6 @@ export function getBlockStyleSelectProps(
       key: 'style-none',
       style: null,
       styleComponent: null,
-      // preview: noStylePreview,
       title: ' No style',
       active: true
     })

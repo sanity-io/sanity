@@ -31,7 +31,6 @@
 
 .title {
   composes: title from './DefaultPreview.css';
-  /* line-height: 1.2em; */
   margin: 0;
   padding: 0;
   white-space: inherit;
@@ -39,7 +38,6 @@
 
 .subtitle {
   composes: subtitle from './DefaultPreview.css';
-  /* line-height: 1.2em; */
   margin: 0;
   padding: 0;
 }

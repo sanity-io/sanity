@@ -13,7 +13,6 @@
 .statusIcon {
   display: inline-block;
   vertical-align: top;
-  /* padding: 2px 0 1px; */
   color: var(--text-muted);
   pointer-events: none;
 

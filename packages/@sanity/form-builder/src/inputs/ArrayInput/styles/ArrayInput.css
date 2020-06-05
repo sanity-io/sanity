@@ -37,10 +37,6 @@
 }
 
 .listItem {
-  /* composes: lineBetween from 'part:@sanity/components/lists/default-item-style'; */
-  /* padding: 0; */
-  /* cursor: default; */
-
   @nest .listItem + & {
     margin-top: var(--small-padding);
   }

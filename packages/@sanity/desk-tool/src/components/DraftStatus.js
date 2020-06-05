@@ -1,6 +1,5 @@
 import EditIcon from 'part:@sanity/base/edit-icon'
 import React from 'react'
-// import {Tooltip} from 'react-tippy'
 
 import styles from './ItemStatus.css'
 
