@@ -23,7 +23,7 @@
 .mobileContent {
   display: flex;
   text-decoration: none;
-  padding: 0.75em 0.5em;
+  padding: 0.75em;
   white-space: nowrap;
   flex-direction: row;
   align-items: center;
@@ -38,22 +38,28 @@
   }
 
   @media (hover: hover) {
-    opacity: 0.7;
+    color: var(--gray);
 
     @nest &:hover {
-      opacity: 1;
+      color: inherit;
     }
   }
 
-  @nest & .icon {
-    position: relative;
-    font-size: var(--font-size-small);
-    line-height: calc(25 / 14);
+  @nest &:focus {
+    background-color: color(var(--focus-color) a(20%));
   }
 
-  @nest & .icon > svg {
-    font-size: 2em;
-    vertical-align: top;
+  @nest & .icon {
+    @nest & > svg {
+      display: block;
+      font-size: calc(17 / 16 * 1em);
+      margin: calc(4 / 17 * 1em);
+
+      @nest &[data-sanity-icon='true'] {
+        font-size: calc(25 / 16 * 1em);
+        margin: 0;
+      }
+    }
   }
 
   @nest & .statusIndicator {
@@ -95,7 +101,7 @@
 .avatarOverlap {
   display: flex;
 
-  @nest & div[class*="Avatar_root"] {
+  @nest & div[class*='Avatar_root'] {
     border: 1px solid var(--main-navigation-color);
   }
 }
