@@ -27,7 +27,6 @@ export function DefaultStory() {
 
   const buttonProps = {
     ...actionsProps,
-    // kind: select('Kind', ['default', 'simple', 'secondary'], 'default', 'props'),
     disabled: boolean('Disabled', false, 'props'),
     inverted: boolean('Inverted', false, 'props'),
     color: select(
@@ -62,14 +61,6 @@ export function DefaultStory() {
               {children}
             </Button>
           </div>
-
-          {/* <div>
-            <h2>kind="secondary"</h2>
-            <p>(will be deprecated: use inverted instead)</p>
-            <Button {...buttonProps} kind="secondary">
-              {children}
-            </Button>
-          </div> */}
         </div>
       </Sanity>
     </CenteredContainer>

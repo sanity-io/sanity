@@ -16,11 +16,6 @@ const noop = () => {
 class TabbedPane extends React.Component {
   static propTypes = {
     idPrefix: PropTypes.string.isRequired,
-    // styles: PropTypes.shape({
-    //   headerTabsContainer: PropTypes.string,
-    //   headerPaneActions: PropTypes.string,
-    //   headerViewMenu: PropTypes.string
-    // }),
     views: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string.isRequired,
@@ -35,7 +30,6 @@ class TabbedPane extends React.Component {
   }
 
   static defaultProps = {
-    // styles: {},
     views: [],
     activeView: undefined,
     isClosable: false,

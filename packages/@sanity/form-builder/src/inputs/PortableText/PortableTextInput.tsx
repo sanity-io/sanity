@@ -447,20 +447,13 @@ export default withPatchSubscriber(
       const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
       const scClassNames = [
         styles.scrollContainer,
-        // ...(isFullscreen ? [styles.fullscreen] : []),
         ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
-      const editorWrapperClassNames = [
-        styles.editorWrapper
-        // ...(isFullscreen ? [styles.fullscreen] : [])
-      ].join(' ')
-
+      const editorWrapperClassNames = [styles.editorWrapper].join(' ')
       const editorClassNames = [
         styles.editor,
-        // ...(isFullscreen ? [styles.fullscreen] : []),
         ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
-
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       const warnings = validation.filter(marker => marker.level === 'warning')

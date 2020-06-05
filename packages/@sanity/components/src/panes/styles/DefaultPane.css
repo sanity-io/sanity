@@ -32,7 +32,6 @@
     composes: root;
     flex-direction: row;
     width: 49px;
-    /* border-right: 1px solid var(--hairline-color); */
     height: 100%;
     overflow: hidden;
   }
@@ -88,21 +87,15 @@
   flex: 1;
   min-width: 0;
   padding: var(--medium-padding);
-  /* width: stretch; */
   margin-right: auto;
 }
 
 .title {
-  /* box-sizing: border-box; */
   margin: -2px 0 -1px;
-  /* padding: 1em; */
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-  /* font-size: 1rem; */
-  /* line-height: calc(17 / 16); */
   font-weight: 700;
   user-select: none;
-  /* cursor: default; */
   white-space: nowrap;
   overflow: hidden;
   width: 100%;
@@ -149,8 +142,6 @@
   position: relative;
   flex: 1;
   min-height: 0;
-  /* display: flex; */
-  /* align-items: stretch; */
 
   @nest .isCollapsed & {
     display: none;
@@ -164,10 +155,6 @@
 
   @media (--screen-medium) {
     composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-    /* position: absolute; */
-    /* top: 0; */
-    /* left: 0; */
-    /* right: 0; */
     height: 100%;
   }
 
@@ -210,7 +197,7 @@
 }
 
 .initialValueMenuTooltip {
-  /* empty */
+  /* intentionally empty (adds semantic value) */
 }
 
 .initialValueTemplateMenu {

@@ -2,7 +2,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  /* composes: root from 'part:@sanity/components/formfields/default-style'; */
   outline: none;
 }
 
@@ -20,7 +19,6 @@
   margin: 0;
   padding: 0;
   border: none;
-
   /* user agent sets min-width this to --webkit-min-content */
   min-width: 0;
 }
@@ -155,18 +153,6 @@
   cursor: default;
 }
 
-/* .legend + .description {
-  margin-top: calc(var(--small-padding) / 3);
-} */
-
-/* .legend + .content {
-  margin-top: var(--small-padding);
-} */
-
-/* .description + .content {
-  margin-top: var(--small-padding);
-} */
-
 .label {
   padding-right: var(--small-padding);
 }
@@ -188,11 +174,8 @@
 
 .level1 > .fieldset > .inner > .content,
 .level1 > .fieldset > .inner > .animateHeight > .content {
-  /* background-color: var(--fieldset-bg); */
-  /* box-shadow: var(--fieldset-box-shadow); */
   padding-left: var(--small-padding);
   border-left: var(--fieldset-border);
-  /* border-radius: var(--border-radius-medium); */
 
   @media (--screen-medium) {
     padding-left: var(--medium-padding);
@@ -201,35 +184,12 @@
 
 .level2 > .fieldset > .inner > .content,
 .level2 > .fieldset > .inner > .animateHeight > .content {
-  /* background-color: var(--fieldset-bg); */
-  /* box-shadow: var(--fieldset-box-shadow); */
   padding-left: var(--small-padding);
-  /* border-radius: var(--border-radius-medium); */
   border-left: var(--fieldset-border);
 
   @media (--screen-medium) {
     padding-left: var(--medium-padding);
   }
-}
-
-.level1:focus > .fieldset > .inner > .content,
-.level1:focus > .fieldset > .inner > .animateHeight > .content {
-  /* box-shadow: var(--fieldset-box-shadow--focus); */
-}
-
-.level2:focus > .fieldset > .inner > .content,
-.level2:focus > .fieldset > .inner > .animateHeight > .content {
-  /* box-shadow: var(--fieldset-box-shadow--focus); */
-}
-
-.root:not(.level1):focus > .fieldset > .inner > .content,
-.root:not(.level1):focus > .fieldset > .inner > .animateHeight > .content {
-  /* box-shadow: var(--fieldset-box-shadow--focus); */
-}
-
-.root:not(.level2):focus > .fieldset > .inner > .content,
-.root:not(.level2):focus > .fieldset > .inner > .animateHeight > .content {
-  /* box-shadow: var(--fieldset-box-shadow--focus); */
 }
 
 .debugNestingLevel {
