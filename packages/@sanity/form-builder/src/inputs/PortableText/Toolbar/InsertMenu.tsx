@@ -32,8 +32,7 @@ export default function InsertMenu(props: Props) {
         className={styles.initialValueMenuTooltip}
         distance={13}
         theme="light"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        trigger={'click focus' as any}
+        trigger={'click'}
         position="bottom"
         interactive
         open={open}
@@ -42,21 +41,22 @@ export default function InsertMenu(props: Props) {
         html={
           <div className={styles.menu}>
             {items.map(item => {
+              const title = item.type.title || item.type.type.name
+
               return (
                 <button
-                  aria-label={`Insert ${item.title || item.value.type.name}${
-                    item.inline ? ' (inline)' : ' (block)'
-                  }`}
+                  aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
                   className={styles.menuItem}
                   key={item.key}
-                  onClick={item.handle}
-                  title={`Insert ${item.title || item.value.type.name}${
-                    item.inline ? ' (inline)' : ' (block)'
-                  }`}
+                  onClick={() => {
+                    item.handle()
+                    handleClose()
+                  }}
+                  title={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
                   type="button"
                 >
                   <span className={styles.iconContainer}>{React.createElement(item.icon)}</span>
-                  <span className={styles.title}>{item.title}</span>
+                  <span className={styles.title}>{title}</span>
                 </button>
               )
             })}
@@ -75,7 +75,7 @@ export default function InsertMenu(props: Props) {
           selected={open}
           title="Create new document"
         >
-          Insert
+          Insert…
         </Button>
       </Tooltip>
     </div>

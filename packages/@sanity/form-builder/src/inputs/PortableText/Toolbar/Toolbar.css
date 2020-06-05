@@ -9,6 +9,10 @@
   white-space: nowrap;
   padding: var(--extra-small-padding);
   min-width: 8em;
+
+  @nest .fullscreen & {
+    padding: var(--small-padding);
+  }
 }
 
 .actionMenuContainer {
@@ -16,12 +20,17 @@
   min-width: 0;
   padding: var(--extra-small-padding);
   border-left: 1px solid var(--hairline-color);
-  -webkit-overflow-scrolling: touch;
-  overflow-x: auto;
-  overflow-y: hidden;
+
+  @nest .fullscreen & {
+    padding: var(--small-padding);
+  }
 }
 
 .insertMenuContainer {
   padding: var(--extra-small-padding);
   border-left: 1px solid var(--hairline-color);
+
+  @nest .fullscreen & {
+    padding: var(--small-padding);
+  }
 }

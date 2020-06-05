@@ -9,6 +9,8 @@
 }
 
 .menuItem {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+
   -webkit-font-smoothing: inherit;
   display: block;
   appearance: none;
@@ -20,14 +22,10 @@
   text-align: left;
   width: 100%;
   box-sixing: border-box;
-  padding: 0.5em 0.75em;
+  padding: var(--small-padding) calc(var(--medium-padding) - var(--small-padding));
   margin: 0;
   display: flex;
   align-items: center;
-
-  @nest &:hover {
-    background: #eee;
-  }
 }
 
 .iconContainer {

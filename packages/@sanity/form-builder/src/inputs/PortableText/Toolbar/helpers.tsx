@@ -246,53 +246,33 @@ export function getInsertMenuItems(
   onFocus: (arg0: Path) => void
 ): BlockItem[] {
   const focusBlock = PortableTextEditor.focusBlock(editor)
-  const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+  const features = PortableTextEditor.getPortableTextFeatures(editor)
 
-  let keyCount = 0
-
-  const blockItems = ptFeatures.types.blockObjects.map(
-    (type: Type): BlockItem => ({
-      title: type.title,
-      value: type,
-      key: (keyCount++).toString(),
-      icon: getInsertMenuIcon(type, BlockObjectIcon),
+  const blockItems = features.types.blockObjects.map(
+    (type, index): BlockItem => ({
+      disabled: !selection,
       handle(): void {
-        // const {editor, onFocus} = this.props
-        let path
-        if (type.isInline) {
-          path = PortableTextEditor.insertChild(editor, type.value)
-        } else {
-          path = PortableTextEditor.insertBlock(editor, type.value)
-        }
-        setTimeout(() => {
-          onFocus(path.concat(FOCUS_TERMINATOR))
-        })
+        const path = PortableTextEditor.insertBlock(editor, type)
+        setTimeout(() => onFocus(path.concat(FOCUS_TERMINATOR)), 0)
       },
+      icon: getInsertMenuIcon(type, BlockObjectIcon),
       inline: false,
-      disabled: !selection
+      key: `block-${index}`,
+      type
     })
   )
 
-  const inlineItems = ptFeatures.types.inlineObjects.map(
-    (type: Type): BlockItem => ({
-      title: type.title,
-      icon: getInsertMenuIcon(type, InlineObjectIcon),
-      value: type,
+  const inlineItems = features.types.inlineObjects.map(
+    (type, index): BlockItem => ({
+      disabled: !selection || (focusBlock ? focusBlock._type !== features.types.block.name : true),
       handle(): void {
-        // const {editor, onFocus} = this.props
-        let path
-        if (type.isInline) {
-          path = PortableTextEditor.insertChild(editor, type.value)
-        } else {
-          path = PortableTextEditor.insertBlock(editor, type.value)
-        }
-        setTimeout(() => {
-          onFocus(path.concat(FOCUS_TERMINATOR))
-        })
+        const path = PortableTextEditor.insertChild(editor, type)
+        setTimeout(() => onFocus(path.concat(FOCUS_TERMINATOR)), 0)
       },
-      key: (keyCount++).toString(),
+      icon: getInsertMenuIcon(type, InlineObjectIcon),
       inline: true,
-      disabled: !selection || (focusBlock ? focusBlock._type !== ptFeatures.types.block.name : true)
+      key: `inline-${index}`,
+      type
     })
   )
 
