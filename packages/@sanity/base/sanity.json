@@ -840,6 +840,10 @@
       "path": "components/icons/MoreVert.js"
     },
     {
+      "implements": "part:@sanity/base/ellipsis-icon",
+      "path": "components/icons/Ellipsis.js"
+    },
+    {
       "implements": "part:@sanity/base/view-column-icon",
       "path": "components/icons/ViewColumn.js"
     },

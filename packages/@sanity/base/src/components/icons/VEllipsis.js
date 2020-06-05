@@ -1,3 +1,5 @@
+// exported by MoreVert.js
+
 import React from 'react'
 
 const strokeStyle = {

@@ -6,8 +6,7 @@ export interface BlockItem {
   icon: React.ComponentType
   inline: boolean
   key: string
-  title: string
-  value: Type
+  type: Type
 }
 
 export interface BlockStyleItem {

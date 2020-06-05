@@ -18,11 +18,7 @@ import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups}
 
 import styles from './Toolbar.css'
 
-const denyFocusChange = (event: React.SyntheticEvent<HTMLDivElement>): void => {
-  event.preventDefault()
-}
-
-interface PTEToolbarProps {
+interface Props {
   editor?: PortableTextEditor
   hotkeys: HotkeyOptions
   isFullscreen: boolean
@@ -32,9 +28,8 @@ interface PTEToolbarProps {
   selection: EditorSelection
 }
 
-function PTEToolbar(props: PTEToolbarProps): JSX.Element {
+function PTEToolbar(props: Props) {
   const {editor, hotkeys, isFullscreen, readOnly, onFocus, renderBlock, selection} = props
-  const rootClassNames = classNames(styles.root, isFullscreen && styles.fullscreen)
   const actionGroups = React.useMemo(
     () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
     [editor, selection, onFocus, hotkeys]
@@ -52,11 +47,11 @@ function PTEToolbar(props: PTEToolbarProps): JSX.Element {
 
   return (
     <div
-      className={rootClassNames}
+      className={classNames(styles.root, isFullscreen && styles.fullscreen)}
       // Ensure the editor doesn't lose focus when interacting
       // with the toolbar (prevent focus click events)
-      onMouseDown={denyFocusChange}
-      onKeyPress={denyFocusChange}
+      onMouseDown={event => event.preventDefault()}
+      onKeyPress={event => event.preventDefault()}
     >
       <div className={styles.blockStyleSelectContainer}>
         {blockStyleSelectProps && (
@@ -77,20 +72,6 @@ function PTEToolbar(props: PTEToolbarProps): JSX.Element {
       <div className={styles.insertMenuContainer}>
         <InsertMenu items={insertMenuItems} readOnly={readOnly} />
       </div>
-
-      {/* <div className={styles.inner}>
-        <PrimaryGroup
-          editor={editor}
-          hotkeys={hotkeys}
-          insertItems={insertItems}
-          isFullscreen={isFullscreen}
-          isMobile={isMobile}
-          readOnly={readOnly}
-          onFocus={onFocus}
-          renderBlock={c}
-          selection={selection}
-        />
-      </div> */}
     </div>
   )
 }
