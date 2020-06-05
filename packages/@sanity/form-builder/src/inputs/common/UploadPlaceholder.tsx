@@ -6,12 +6,12 @@ import styles from './UploadPlaceholder.css'
 
 type UploadPlaceholderProps = {
   hasFocus?: boolean
+  fileType?: 'image' | 'file'
 }
 
 export default class UploadPlaceholder extends React.PureComponent<UploadPlaceholderProps, {}> {
   render() {
-    const {hasFocus} = this.props
-
+    const {hasFocus, fileType = 'file'} = this.props
     return (
       <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
         <div className={styles.inner}>
@@ -20,7 +20,7 @@ export default class UploadPlaceholder extends React.PureComponent<UploadPlaceho
               <UploadIcon />
             </div>
             <p className={styles.strong}>
-              <span>Drop file</span>
+              <span>{`Drop ${fileType}`}</span>
             </p>
           </div>
           <div className={styles.pasteFile}>
@@ -54,7 +54,7 @@ export default class UploadPlaceholder extends React.PureComponent<UploadPlaceho
             </div>
             <div>
               <p className={styles.strong}>
-                <span>Paste file</span>
+                <span>{`Paste ${fileType}`}</span>
               </p>
             </div>
           </div>

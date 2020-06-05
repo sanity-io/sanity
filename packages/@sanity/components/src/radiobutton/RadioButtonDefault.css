@@ -6,6 +6,8 @@
   --radio-button-size: calc(17 / 16 * 1em);
   --radio-top-offset: 0;
   --radio-focus-color: var(--brand-primary);
+  --radio-disabled-border: var(--input-bg-disabled);
+  --radio-disabled-background: var(--input-color-disabled);
 }
 
 .root {
@@ -75,9 +77,9 @@
 }
 
 .input:disabled + .radio {
-  background: var(--gray-lighter);
+  background: var(--radio-disabled-border);
 
   @nest &::after {
-    background: var(--gray);
+    background: var(--radio-disabled-background);
   }
 }

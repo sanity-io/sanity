@@ -27,13 +27,13 @@
   composes: root;
 
   @nest &:disabled {
-    background-color: var(--input-bg-disabled);
-    color: var(--input-color-disabled);
-    border-color: transparent;
+    color: var(--input-color-read-only);
+    background: var(--input-bg-disabled);
   }
 
   @nest &:read-only {
     color: var(--input-color-read-only);
+    background: var(--input-bg-disabled);
   }
 
   @nest &:not(:disabled):not(:read-only) {

@@ -567,7 +567,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             />
           )}
           <div className={styles.content}>
-            <div className={styles.assetWrapper}>
+            <div className={`${styles.assetWrapper} ${readOnly ? styles.readOnly : ''}`}>
               {value && value._upload && (
                 <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
               )}
@@ -578,7 +578,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               ) : readOnly ? (
                 <span>Field is read only</span>
               ) : (
-                SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} />
+                SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
               )}
             </div>
           </div>
