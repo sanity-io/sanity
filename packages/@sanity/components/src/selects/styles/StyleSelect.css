@@ -33,8 +33,7 @@
     }
 
     @nest &:focus {
-      box-shadow: 0 0 0 1px var(--component-bg),
-        0 0 0 3px color(var(--input-border-color-focus) a(50%));
+      box-shadow: var(--input-box-shadow--focus);
     }
   }
 

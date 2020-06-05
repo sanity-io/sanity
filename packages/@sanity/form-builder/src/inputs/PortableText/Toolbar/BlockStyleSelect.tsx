@@ -13,6 +13,7 @@ type Props = {
   className: string
   editor: PortableTextEditor
   padding?: string
+  readOnly: boolean
   renderBlock: RenderBlockFunction
   selection: EditorSelection
   items: BlockStyleItem[]
@@ -20,7 +21,7 @@ type Props = {
 }
 
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {className, editor, items, padding, renderBlock, value} = props
+  const {className, editor, items, padding, readOnly, renderBlock, value} = props
 
   const ptFeatures = React.useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [
     editor
@@ -78,7 +79,7 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
     <label className={className}>
       <span style={{display: 'none'}}>Text</span>
       <StyleSelect
-        disabled={disabled}
+        disabled={readOnly || disabled}
         items={items}
         onChange={handleChange}
         padding={padding}

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-handler-names */
+/* eslint-disable react/jsx-no-bind */
+
 import {
   PortableTextEditor,
   EditorSelection,
@@ -5,41 +9,46 @@ import {
   RenderBlockFunction
 } from '@sanity/portable-text-editor'
 import classNames from 'classnames'
-import {uniq} from 'lodash'
 import React from 'react'
 import {Path} from '../../../typedefs/path'
-import PrimaryGroup from './PrimaryGroup'
+import ActionMenu from './ActionMenu'
+import BlockStyleSelect from './BlockStyleSelect'
+import InsertMenu from './InsertMenu'
+import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups} from './helpers'
 
 import styles from './Toolbar.css'
-
-const BREAKPOINT_SCREEN_MEDIUM = 512
 
 const denyFocusChange = (event: React.SyntheticEvent<HTMLDivElement>): void => {
   event.preventDefault()
 }
 
 interface PTEToolbarProps {
-  editor: PortableTextEditor
+  editor?: PortableTextEditor
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  isReadOnly: boolean
+  readOnly: boolean
   renderBlock: RenderBlockFunction
   onFocus: (path: Path) => void
   selection: EditorSelection
 }
 
 function PTEToolbar(props: PTEToolbarProps): JSX.Element {
-  const {editor, hotkeys, isFullscreen, isReadOnly, onFocus, renderBlock, selection} = props
-  const [isMobile] = React.useState(
-    typeof window !== 'undefined' ? window.innerWidth < BREAKPOINT_SCREEN_MEDIUM : true
+  const {editor, hotkeys, isFullscreen, readOnly, onFocus, renderBlock, selection} = props
+  const rootClassNames = classNames(styles.root, isFullscreen && styles.fullscreen)
+  const actionGroups = React.useMemo(
+    () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
+    [editor, selection, onFocus, hotkeys]
+  )
+  const blockStyleSelectProps = React.useMemo(
+    () => (editor ? getBlockStyleSelectProps(editor) : null),
+    [editor]
+  )
+  const insertMenuItems = React.useMemo(
+    () => (editor ? getInsertMenuItems(editor, selection, onFocus) : []),
+    [editor]
   )
 
-  // NOTE: do not use any hooks afer this point
   if (!editor) return null
-
-  const features = PortableTextEditor.getPortableTextFeatures(editor)
-  const insertItems = uniq(features.types.inlineObjects.concat(features.types.blockObjects))
-  const rootClassNames = classNames(styles.root, isFullscreen && styles.fullscreen)
 
   return (
     <div
@@ -49,19 +58,39 @@ function PTEToolbar(props: PTEToolbarProps): JSX.Element {
       onMouseDown={denyFocusChange}
       onKeyPress={denyFocusChange}
     >
-      <div className={styles.inner}>
+      <div className={styles.blockStyleSelectContainer}>
+        {blockStyleSelectProps && (
+          <BlockStyleSelect
+            {...blockStyleSelectProps}
+            className={styles.blockStyleSelect}
+            editor={editor}
+            padding="small"
+            selection={selection}
+            readOnly={readOnly}
+            renderBlock={renderBlock}
+          />
+        )}
+      </div>
+      <div className={styles.actionMenuContainer}>
+        <ActionMenu groups={actionGroups} readOnly={readOnly} />
+      </div>
+      <div className={styles.insertMenuContainer}>
+        <InsertMenu items={insertMenuItems} readOnly={readOnly} />
+      </div>
+
+      {/* <div className={styles.inner}>
         <PrimaryGroup
           editor={editor}
           hotkeys={hotkeys}
           insertItems={insertItems}
           isFullscreen={isFullscreen}
           isMobile={isMobile}
-          isReadOnly={isReadOnly}
+          readOnly={readOnly}
           onFocus={onFocus}
-          renderBlock={renderBlock}
+          renderBlock={c}
           selection={selection}
         />
-      </div>
+      </div> */}
     </div>
   )
 }
