@@ -1,28 +1,27 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  -webkit-overflow-scrolling: touch;
-  position: relative;
   display: flex;
-  justify-content: stretch;
   flex-wrap: nowrap;
-  overflow-x: scroll;
-  height: 41px;
-
-  @nest &::scrollbar {
-    display: none;
-  }
-
-  @nest &.fullscreen {
-    height: 49px;
-  }
 }
 
-.inner {
-  display: flex;
-  position: relative;
+.blockStyleSelectContainer {
+  white-space: nowrap;
+  padding: var(--extra-small-padding);
+  min-width: 8em;
 }
 
-.showMoreButton {
-  position: relative;
+.actionMenuContainer {
+  flex: 1;
+  min-width: 0;
+  padding: var(--extra-small-padding);
+  border-left: 1px solid var(--hairline-color);
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.insertMenuContainer {
+  padding: var(--extra-small-padding);
+  border-left: 1px solid var(--hairline-color);
 }

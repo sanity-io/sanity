@@ -1,21 +1,50 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
+  position: relative;
+}
 
-  @nest & > div + div {
-    margin-left: calc(var(--extra-small-padding) / 2);
+.menu {
+  padding: var(--extra-small-padding) 0;
+}
+
+.menuItem {
+  -webkit-font-smoothing: inherit;
+  display: block;
+  appearance: none;
+  font: inherit;
+  background: none;
+  color: none;
+  border: 0;
+  border-radius: 0;
+  text-align: left;
+  width: 100%;
+  box-sixing: border-box;
+  padding: 0.5em 0.75em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+
+  @nest &:hover {
+    background: #eee;
   }
 }
 
-.item {
-  display: flex;
-  padding: var(--extra-small-padding);
-  align-items: stretch;
+.iconContainer {
+  display: block;
+
+  @nest & svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
 }
 
-.icon {
-  margin-right: var(--small-padding);
-  display: flex;
-  align-items: center;
+.title {
+  display: block;
+  margin: -2px 0 -1px var(--small-padding);
 }
