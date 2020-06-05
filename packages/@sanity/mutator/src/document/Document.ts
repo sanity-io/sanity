@@ -10,8 +10,8 @@
 // TODO: When we have timestamps on mutation notifications, we can reject incoming mutations that are older
 // than the document we are seeing.
 
-import { isEqual } from "lodash";
-import Mutation from "./Mutation";
+import {isEqual} from 'lodash'
+import Mutation from './Mutation'
 
 import debug from './debug'
 import {Doc} from './types'
@@ -126,6 +126,7 @@ export default class Document {
   considerIncoming() {
     let mustRebase = false
     let nextMut: Mutation | null
+    const rebaseMutations: Mutation[] = []
     // Filter mutations that are older than the document
     if (this.HEAD) {
       const updatedAt = new Date(this.HEAD._updatedAt)
@@ -148,6 +149,9 @@ export default class Document {
       if (nextMut) {
         const applied = this.applyIncoming(nextMut)
         mustRebase = mustRebase || applied
+        if (mustRebase) {
+          rebaseMutations.push(nextMut)
+        }
         // eslint-disable-next-line max-depth
         if (protect++ > 10) {
           throw new Error(
@@ -164,7 +168,7 @@ export default class Document {
     }
 
     if (mustRebase) {
-      this.rebase()
+      this.rebase(rebaseMutations)
     }
   }
 
@@ -313,16 +317,16 @@ export default class Document {
     this.submitted.push(justSubmitted)
     this.pending = stillPending
     // Must rebase since mutation order has changed
-    this.rebase()
+    this.rebase([])
   }
 
   pendingFailed(pendingTxnId: string) {
     this.pending = this.pending.filter(mutation => mutation.transactionId != pendingTxnId)
     // Rebase to revert document to what it looked like before the failed mutation
-    this.rebase()
+    this.rebase([])
   }
 
-  rebase() {
+  rebase(incomingMutations: Mutation[]) {
     const oldEdge = this.EDGE
     this.EDGE = Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending))
     // Copy over rev, since we don't care if it changed, we only care about the content
@@ -331,7 +335,7 @@ export default class Document {
     }
     const changed = !isEqual(this.EDGE, oldEdge)
     if (changed && this.onRebase) {
-      this.onRebase(this.EDGE)
+      this.onRebase(this.EDGE, incomingMutations, this.pending)
     }
   }
 }
