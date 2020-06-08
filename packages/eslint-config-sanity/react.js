@@ -69,7 +69,7 @@ module.exports = {
     'react/no-direct-mutation-state': 'error',
     'react/no-find-dom-node': 'warn',
     'react/no-is-mounted': 'error',
-    'react/no-multi-comp': 'error',
+    'react/no-multi-comp': 'off',
     'react/no-redundant-should-component-update': 'error',
     'react/no-render-return-value': 'error',
     'react/no-set-state': 'off',
@@ -85,7 +85,7 @@ module.exports = {
     'react/prop-types': 'error',
     'react/react-in-jsx-scope': 'error',
     // "react/require-extension": "...", //@@@ deprecated in favor of the eslint-plugin-import extensions rule
-    'react/require-optimization': 'warn',
+    'react/require-optimization': 'off',
     'react/require-render-return': 'error',
     'react/require-default-props': 'warn',
     'react/prefer-stateless-function': ['warn', {ignorePureComponents: true}],
