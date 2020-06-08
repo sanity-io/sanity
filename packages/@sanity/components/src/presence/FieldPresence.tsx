@@ -2,41 +2,67 @@
 import React, {useContext} from 'react'
 import {splitRight} from './utils'
 import {sortBy, uniqBy} from 'lodash'
-import {AVATAR_DISTANCE, AVATAR_SIZE} from './constants'
+import {
+  AVATAR_DISTANCE,
+  AVATAR_SIZE,
+  DEFAULT_MAX_AVATARS_FIELDS,
+  DISABLE_OVERLAY
+} from './constants'
 import {PopoverList, StackCounter} from './index'
 import styles from './FieldPresence.css'
 import UserAvatar from './UserAvatar'
-import {PresenceRegion} from './overlay/PresenceRegion'
+import {PresenceRegion} from './overlay/PresenceOverlayRegion'
 import {FormFieldPresence, Position} from './types'
 import {PresenceListItem} from './PresenceListItem'
 import {Context} from './context'
 
-interface Props {
+export interface FieldPresenceProps {
   presence: FormFieldPresence[]
   maxAvatars: number
 }
 
-export function FieldPresence(props: Props) {
+function FieldPresencePlaceholder(props: FieldPresenceProps) {
+  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+  return <div className={styles.root} style={{minWidth: minWidth}} />
+}
+
+function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(Context)
-  const {presence = contextPresence, maxAvatars} = props
+  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   return presence.length > 0 ? (
-    <PresenceRegion presence={presence} maxAvatars={maxAvatars} component={FieldPresenceInner} />
+    <PresenceRegion
+      presence={presence}
+      maxAvatars={maxAvatars}
+      component={FieldPresencePlaceholder}
+    />
   ) : null
 }
 
+function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
+  const contextPresence = useContext(Context)
+  const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
+  return presence.length > 0 ? (
+    <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
+  ) : null
+}
+
+export const FieldPresence = DISABLE_OVERLAY
+  ? FieldPresenceWithoutOverlay
+  : FieldPresenceWithOverlay
+
 interface InnerProps {
-  stack?: boolean
   maxAvatars: number
   presence: FormFieldPresence[]
-  position: Position
+  stack?: boolean
+  position?: Position
   animateArrowFrom?: Position
 }
 
 export function FieldPresenceInner({
   presence,
   maxAvatars,
-  position,
-  animateArrowFrom,
+  position = 'inside',
+  animateArrowFrom = 'inside',
   stack = true
 }: InnerProps) {
   const sorted = sortBy(
