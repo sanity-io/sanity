@@ -214,14 +214,16 @@ export class FormBuilderInput extends React.Component<Props> {
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
-    const childPresenceInfo = (presence || [])
-      .filter(presence => {
-        return PathUtils.startsWith(path, presence.path)
-      })
-      .map(presence => ({
-        ...presence,
-        path: trimChildPath(path, presence.path)
-      }))
+    const childPresenceInfo = readOnly
+      ? []
+      : (presence || [])
+          .filter(presence => {
+            return PathUtils.startsWith(path, presence.path)
+          })
+          .map(presence => ({
+            ...presence,
+            path: trimChildPath(path, presence.path)
+          }))
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <PresenceContext.Provider value={childPresenceInfo}>
