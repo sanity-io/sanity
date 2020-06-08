@@ -41,7 +41,7 @@ module.exports = {
         'import/no-unresolved': ['error', {ignore: ['.*:.*']}],
         'import/unambiguous': 'off'
       },
-      plugins: ['import', 'prettier', 'react', 'react-hooks'],
+      plugins: ['import', 'prettier', 'react'],
       settings: {
         'import/ignore': ['\\.css$', '.*node_modules.*', '.*:.*'],
         'import/resolver': 'webpack'
@@ -64,7 +64,7 @@ module.exports = {
         'prettier/prettier': 'error',
         'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}]
       },
-      plugins: ['@typescript-eslint', 'prettier', 'react', 'react-hooks']
+      plugins: ['@typescript-eslint', 'prettier', 'react']
     }
   ]
 }
