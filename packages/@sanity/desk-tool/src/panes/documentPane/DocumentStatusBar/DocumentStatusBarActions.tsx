@@ -77,7 +77,7 @@ function DocumentStatusBarActionsInner(props: Props) {
           {firstActionState.dialog && <ActionStateDialog dialog={firstActionState.dialog} />}
         </div>
       )}
-      {showMenu && (
+      {showMenu && menuActionStates.length > 0 && (
         <ActionMenu
           actionStates={menuActionStates}
           isOpen={props.isMenuOpen}
@@ -106,7 +106,7 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       onMenuOpen={() => setMenuOpen(true)}
       onMenuClose={() => setMenuOpen(false)}
       onActionComplete={() => setMenuOpen(false)}
-      actions={isMenuOpen ? actions : actions.slice(0, 1)}
+      actions={actions}
       actionProps={editState}
       disabled={connectionState !== 'connected'}
     />
