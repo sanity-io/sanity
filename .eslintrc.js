@@ -5,7 +5,6 @@ const common = {
     node: true,
     browser: true
   },
-  extends: ['./packages/eslint-config-sanity/react.js', 'prettier', 'prettier/react'],
   rules: {
     'newline-per-chained-call': 0,
     'prettier/prettier': 'error',
@@ -31,16 +30,15 @@ module.exports = {
       parser: 'babel-eslint',
       extends: [
         './packages/eslint-config-sanity/index.js',
-        './packages/eslint-config-sanity/import.js'
+        './packages/eslint-config-sanity/react.js',
+        './packages/eslint-config-sanity/import.js',
+        'prettier',
+        'prettier/react'
       ],
       rules: {
+        ...common.rules,
         'import/no-extraneous-dependencies': 'off',
-        'import/no-unresolved': [
-          'error',
-          {
-            ignore: ['.*:.*']
-          }
-        ],
+        'import/no-unresolved': ['error', {ignore: ['.*:.*']}],
         'import/unambiguous': 'off'
       },
       plugins: ['import', 'prettier', 'react', 'react-hooks'],
@@ -55,10 +53,14 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       extends: [
         // './packages/eslint-config-sanity/index.js',
+        './packages/eslint-config-sanity/react.js',
         'plugin:@typescript-eslint/recommended',
-        'prettier/@typescript-eslint'
+        'prettier/@typescript-eslint',
+        'prettier',
+        'prettier/react'
       ],
       rules: {
+        ...common.rules,
         'prettier/prettier': 'error',
         'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}]
       },
