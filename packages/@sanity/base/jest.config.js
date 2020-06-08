@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 module.exports = {
   testRegex: 'test\\/.*\\.test\\.js$',
   testURL: 'http://localhost/',

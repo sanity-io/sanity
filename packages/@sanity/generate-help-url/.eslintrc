@@ -4,6 +4,6 @@
     "plugin:es5/no-es2015"
   ],
   "rules": {
-    "import/no-commonjs": "off"
+    "@typescript-eslint/no-var-requires": "off"
   }
 }

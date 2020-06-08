@@ -17,7 +17,7 @@
     "deploy-test": "npm run build && cd packages/test-studio && sanity deploy",
     "deploy-movies": "npm run build && cd packages/movies-studio && sanity deploy",
     "storybook": "gulp storybook",
-    "lint": "eslint . --ext=.js,.ts,.tsx --quiet",
+    "lint": "eslint . --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
     "lint:fix": "eslint . --quiet --fix",
     "typecheck": "lerna run typecheck",
     "start": "npm run test-studio",

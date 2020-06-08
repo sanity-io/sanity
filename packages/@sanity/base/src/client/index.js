@@ -27,5 +27,5 @@ Object.defineProperty(configuredClient, 'default', {
 })
 
 // Expose as CJS to allow Node scripts to consume it without `.default`
-// eslint-disable-next-line import/no-commonjs
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 module.exports = configuredClient

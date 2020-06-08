@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs, no-sync */
+/* eslint-disable @typescript-eslint/no-var-requires, no-sync */
 const fs = require('fs')
 const path = require('path')
 

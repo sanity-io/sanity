@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 /*
 This file is here for the typescript-plugin-css-modules to pick up our postcss config
 The plugin will look for postcss config it current working directory (cwd)

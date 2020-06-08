@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs, import/no-unassigned-import, max-nested-callbacks */
+/* eslint-disable @typescript-eslint/no-var-requires, import/no-unassigned-import, max-nested-callbacks */
 
 const fs = require('fs')
 const path = require('path')

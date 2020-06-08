@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/no-commonjs
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 module.exports = require('@sanity/initial-value-templates').TemplateBuilder

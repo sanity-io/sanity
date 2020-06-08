@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 exports.observeForPreview = require('./lib/observeForPreview').default
 exports.observePaths = require('./lib/observePaths').default
 

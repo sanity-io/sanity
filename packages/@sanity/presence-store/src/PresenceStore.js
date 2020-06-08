@@ -153,5 +153,5 @@ class PresenceStore {
   }
 }
 
-// eslint-disable-next-line import/no-commonjs
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 module.exports = PresenceStore

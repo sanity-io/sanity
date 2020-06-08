@@ -1,2 +1,2 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 module.exports = {__esModule: true, default: undefined}

@@ -13,7 +13,7 @@ module.exports = {
     'import/newline-after-import': 'warn',
     'import/no-absolute-path': 'error',
     'import/no-amd': 'error',
-    'import/no-commonjs': 'error',
+    '@typescript-eslint/no-var-requires': 'error',
     'import/no-deprecated': 'off',
     'import/no-duplicates': 'error',
     'import/no-dynamic-require': 'error',
@@ -30,12 +30,12 @@ module.exports = {
     'import/no-unresolved': 'error',
     'import/no-webpack-loader-syntax': 'error',
     'import/order': 'warn',
-    'import/prefer-default-export': 'warn',
-    'import/unambiguous': 'error'
+    'import/prefer-default-export': 'off',
+    'import/unambiguous': 'off'
   },
   settings: {
     'import/resolve': {
-      extensions: ['.js', '.jsx', '.json']
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
     }
   }
 }
