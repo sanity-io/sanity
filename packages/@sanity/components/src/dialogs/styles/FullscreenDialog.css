@@ -4,158 +4,92 @@
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 100%;
-  height: 100%;
   left: 0;
   right: 0;
   z-index: var(--zindex-portal);
-  overflow: auto;
-  background-color: var(--component-bg);
+  background: color(var(--gray) alpha(20%));
   color: var(--component-text-color);
-}
-
-.centered {
-  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-}
-
-.title {
-  font-size: 1.25em;
-  line-height: 1;
-  font-weight: 700;
-  margin: 0;
-  padding: 0 0 var(--large-padding) 0;
-}
-
-.title:empty {
-  display: none;
-}
-
-.content {
-  color: var(--text-color);
-}
-
-.default {
-  composes: root;
-}
-
-.info {
-  composes: root;
-  color: var(--state-info-color--inverted);
-  background-color: color(var(--state-info-color) a(95%));
-
-  @nest & .closeButton {
-    background-color: color(var(--state-info-color) a(30%));
-  }
-
-  @nest & .content a {
-    color: inherit;
-  }
-}
-
-.danger {
-  composes: root;
-  color: var(--state-danger-color);
-
-  @nest & .content a {
-    color: inherit;
-  }
-}
-
-.success {
-  composes: root;
-  color: var(--state-success-color--inverted);
-  background-color: color(var(--state-success-color) a(95%));
-
-  @nest & .closeButton {
-    background-color: color(var(--state-success-color) a(30%));
-  }
-
-  @nest & .content a {
-    color: inherit;
-  }
-}
-
-.warning {
-  composes: root;
-  color: var(--state-warning-color--inverted);
-  background-color: color(var(--state-warning-color) a(95%));
-
-  @nest & .closeButton {
-    background-color: color(var(--state-warning-color) a(30%));
-  }
-
-  @nest & .content a {
-    color: inherit;
-  }
+  padding: var(--large-padding);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inner {
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   box-sizing: border-box;
-  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-  max-height: 100vh;
-  max-width: 100vw;
+  max-height: 100%;
+  background: var(--component-bg);
+  border-radius: var(--border-radius-base);
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.padding_none {
-  padding: 0;
+.header {
+  border-bottom: 1px solid var(--hairline-color);
+  display: flex;
+  align-items: center;
+  padding: calc(var(--medium-padding) - var(--small-padding));
 }
 
-.padding_small {
+.title {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: 700;
   padding: var(--small-padding);
+  margin: -2px 0 -1px;
+  flex: 1;
 }
 
-.padding_medium {
+.actions {
+  margin-left: 1em;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
   padding: var(--medium-padding);
-}
 
-.padding_large {
-  padding: var(--large-padding);
-}
+  @nest & > :first-child {
+    margin-top: 0;
+  }
 
-.isOpened {
-  display: block;
-}
-
-.isClosed {
-  display: none;
+  @nest & > :last-child {
+    margin-bottom: 0;
+  }
 }
 
 .actionsWrapper {
-  padding-top: 2em;
+  border-top: 1px solid var(--hairline-color);
+  padding: var(--medium-padding);
 }
 
 .closeButton {
   appearance: none;
   background: var(--component-bg);
   display: block;
-  position: fixed;
-  z-index: 100;
-  top: var(--medium-padding);
-  right: var(--medium-padding);
-  font-size: var(--icon-size);
+  font: inherit;
   border: none;
   color: inherit;
   outline: none;
-  padding: var(--small-padding);
-  margin: 0;
-  border-radius: 50%;
+  padding: 0;
+  lmargin: 0;
   cursor: pointer;
 
   & > svg {
     display: block;
   }
 
-  @nest .centered & {
-    position: absolute;
-  }
-
   @nest .default & {
-    color: var(--text-muted);
+    color: var(--gray);
 
     @nest &:hover {
-      background: var(--body-bg);
-      color: var(--text-color);
+      color: inherit;
     }
   }
 }
