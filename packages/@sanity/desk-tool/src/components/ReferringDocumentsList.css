@@ -2,21 +2,15 @@
 
 .root {
   composes: root from 'part:@sanity/components/lists/default-style';
+  margin: calc(0 - var(--small-padding)) calc(0 - var(--medium-padding)) !important;
 }
 
 .item {
-  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
-  background: var(--white);
-  padding: var(--medium-padding);
-  border-radius: var(--border-radius-base);
-  color: inherit;
-  margin-bottom: var(--medium-padding);
 }
 
 .link {
-  color: inherit;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: block;
+  padding: var(--small-padding) var(--medium-padding);
 }

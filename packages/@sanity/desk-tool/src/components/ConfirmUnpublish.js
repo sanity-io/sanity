@@ -83,22 +83,22 @@ export default enhanceWithReferringDocuments(
               <ReferringDocumentsList documents={referringDocuments} />
             </div>
           )}
-          {!isCheckingReferringDocuments &&
-            !hasReferringDocuments && (
-              <div>
-                <p>
-                  Are you sure you would like to unpublish the document{' '}
-                  <strong>
-                    <DocTitle document={draft || published} />
-                  </strong>?
-                </p>
-                <h2>Careful!</h2>
-                <p>
-                  If you unpublish, this document will no longer be available for the public, but it
-                  will not be deleted and can be published again later if you change your mind.
-                </p>
-              </div>
-            )}
+          {!isCheckingReferringDocuments && !hasReferringDocuments && (
+            <div>
+              <p>
+                Are you sure you want to unpublish the document{' '}
+                <strong>
+                  <DocTitle document={draft || published} />
+                </strong>
+                ?
+              </p>
+              <h2>Careful!</h2>
+              <p>
+                If you unpublish, this document will no longer be available for the public, but it
+                will not be deleted and can be published again later if you change your mind.
+              </p>
+            </div>
+          )}
         </Dialog>
       )
     }

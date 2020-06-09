@@ -17,7 +17,7 @@ const paneMap = {
 }
 
 // eslint-disable-next-line react/prefer-stateless-function
-export default class Pane extends React.PureComponent {
+export default class DeskToolPane extends React.PureComponent {
   static propTypes = {
     index: PropTypes.number,
     title: PropTypes.string,
