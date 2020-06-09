@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 import styles from './styles/RadioSelect.css'
 import RadioButton from '../radiobutton/RadioButtonDefault'
@@ -24,9 +25,10 @@ const RadioSelect = React.forwardRef(
 
     return (
       <div
-        className={`
-        ${direction == 'vertical' ? styles.vertical : styles.horizontal}
-       ${styles.root}`}
+        className={classNames(
+          styles.root,
+          direction == 'vertical' ? styles.vertical : styles.horizontal
+        )}
         ref={ref}
       >
         <div className={styles.radioContainer} id={inputId} role="group">
