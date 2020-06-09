@@ -10,7 +10,6 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
-import styles from './styles/ArrayInput.css'
 import resolveListComponents from './resolveListComponents'
 import {ArrayType, ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
@@ -19,6 +18,8 @@ import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Details from '../common/Details'
 import formBuilderConfig from 'config:@sanity/form-builder'
+
+import styles from './styles/ArrayInput.css'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')

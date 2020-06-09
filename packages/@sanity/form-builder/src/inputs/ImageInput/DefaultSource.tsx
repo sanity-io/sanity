@@ -2,10 +2,11 @@ import React from 'react'
 import ImageIcon from 'part:@sanity/base/image-icon'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import styles from './styles/SelectAsset.css'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import AssetWidget from './Asset'
 import {AssetFromSource} from './ImageInput'
+
+import styles from './styles/SelectAsset.css'
 
 const PER_PAGE = 200
 type Asset = {
@@ -88,32 +89,37 @@ class DefaultSource extends React.Component<Props, State> {
     const {selectedAssets} = this.props
     const {assets, isLastPage, isLoading} = this.state
     return (
-      <Dialog title="Select image" onClose={this.handleClose} isOpen>
-        <div className={styles.root}>
-          <div className={styles.imageList}>
-            {assets.map(asset => (
-              <AssetWidget
-                key={asset._id}
-                asset={asset}
-                isSelected={selectedAssets.some(selected => selected._id === asset._id)}
-                onClick={this.handleItemClick}
-                onKeyPress={this.handleItemKeyPress}
-                onDeleteFinished={this.handleDeleteFinished}
-              />
-            ))}
-          </div>
-          {!isLoading && assets.length === 0 && (
-            <div className={styles.noAssets}>No images found</div>
-          )}
-          <div className={styles.loadMore}>
-            {!isLastPage && (
-              <Button onClick={this.handleFetchNextPage} loading={isLoading}>
-                Load more
-              </Button>
-            )}
-          </div>
+      <FullscreenDialog
+        cardClassName={styles.card}
+        title="Select image"
+        onClose={this.handleClose}
+        isOpen
+      >
+        <div className={styles.imageList}>
+          {assets.map(asset => (
+            <AssetWidget
+              key={asset._id}
+              asset={asset}
+              isSelected={selectedAssets.some(selected => selected._id === asset._id)}
+              onClick={this.handleItemClick}
+              onKeyPress={this.handleItemKeyPress}
+              onDeleteFinished={this.handleDeleteFinished}
+            />
+          ))}
         </div>
-      </Dialog>
+
+        {!isLoading && assets.length === 0 && (
+          <div className={styles.noAssets}>No images found</div>
+        )}
+
+        <div className={styles.loadMore}>
+          {!isLastPage && (
+            <Button onClick={this.handleFetchNextPage} loading={isLoading}>
+              Load more
+            </Button>
+          )}
+        </div>
+      </FullscreenDialog>
     )
   }
 }

@@ -12,7 +12,7 @@ import {Type, Marker} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <Button icon={DragHandleIcon} kind="simple" />
+    <Button icon={DragHandleIcon} kind="simple" padding="small" />
   </span>
 ))
 type Props = {
@@ -78,39 +78,42 @@ export default class Item extends React.PureComponent<Props> {
     } = this.props
     return (
       <div className={styles.root}>
-        {isSortable && !readOnly && <DragHandle className={styles.dragHandle} />}
-        <div className={styles.input}>
-          <FormBuilderInput
-            value={value}
-            path={[index]}
-            markers={markers}
-            focusPath={focusPath}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            type={type}
-            readOnly={readOnly || type.readOnly}
-            onKeyUp={this.handleKeyUp}
-            onKeyPress={this.handleKeyPress}
-            onChange={this.handleChange}
-            level={level}
-            presence={presence}
-          />
-        </div>
-        <div className={styles.functions}>
-          <div className={styles.validationStatus}>
-            <ValidationStatus markers={markers} />
+        <div className={styles.inner}>
+          {isSortable && !readOnly && <DragHandle className={styles.dragHandle} />}
+          <div className={styles.input}>
+            <FormBuilderInput
+              value={value}
+              path={[index]}
+              markers={markers}
+              focusPath={focusPath}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              type={type}
+              readOnly={readOnly || type.readOnly}
+              onKeyUp={this.handleKeyUp}
+              onKeyPress={this.handleKeyPress}
+              onChange={this.handleChange}
+              level={level}
+              presence={presence}
+            />
           </div>
-          {!readOnly && (
-            <div>
-              <Button
-                kind="simple"
-                className={styles.deleteButton}
-                icon={TrashIcon}
-                title="Delete"
-                onClick={this.handleRemove}
-              />
+          <div className={styles.functions}>
+            <div className={styles.validationStatus}>
+              <ValidationStatus markers={markers} />
             </div>
-          )}
+            {!readOnly && (
+              <div>
+                <Button
+                  className={styles.deleteButton}
+                  icon={TrashIcon}
+                  kind="simple"
+                  onClick={this.handleRemove}
+                  padding="small"
+                  title="Delete"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )

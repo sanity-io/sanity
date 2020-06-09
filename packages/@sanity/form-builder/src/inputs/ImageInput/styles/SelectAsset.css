@@ -1,8 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  display: block;
-  position: relative;
+.card {
+  max-width: 1280px;
   min-height: calc(100vh - 12em);
 }
 
@@ -19,7 +18,7 @@
 }
 
 .loadMore {
-  margin: var(--medium-padding) 0;
+  margin: var(--medium-padding) 0 0;
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: var(--small-padding);
