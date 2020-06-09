@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable react/jsx-no-bind */
 
+import PlusIcon from 'part:@sanity/base/plus-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import React from 'react'
 import {Tooltip} from 'react-tippy'
@@ -64,19 +65,18 @@ export default function InsertMenu(props: Props) {
         }
       >
         <Button
-          aria-label="Menu"
+          aria-label="Insert elements"
           aria-haspopup="menu"
           aria-expanded={open}
           aria-controls={'insertmenu'}
           disabled={readOnly}
+          icon={PlusIcon}
           kind="simple"
           onClick={handleOpen}
           padding="small"
           selected={open}
-          title="Create new document"
-        >
-          Insert…
-        </Button>
+          title="Insert elements"
+        />
       </Tooltip>
     </div>
   )

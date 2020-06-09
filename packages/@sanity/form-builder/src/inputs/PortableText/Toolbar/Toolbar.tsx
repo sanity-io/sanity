@@ -66,14 +66,14 @@ function PTEToolbar(props: Props) {
           />
         </div>
       )}
-      <div className={styles.actionMenuContainer}>
-        <ActionMenu groups={actionGroups} readOnly={readOnly} />
-      </div>
       {insertMenuItems.length > 0 && (
         <div className={styles.insertMenuContainer}>
           <InsertMenu items={insertMenuItems} readOnly={readOnly} />
         </div>
       )}
+      <div className={styles.actionMenuContainer}>
+        <ActionMenu groups={actionGroups} readOnly={readOnly} />
+      </div>
     </div>
   )
 }
