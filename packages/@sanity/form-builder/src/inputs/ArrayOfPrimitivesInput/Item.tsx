@@ -1,15 +1,17 @@
 import React from 'react'
-import {FormBuilderInput} from '../../FormBuilderInput'
-import styles from './styles/Item.css'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import PatchEvent, {set} from '../../PatchEvent'
-import getEmptyValue from './getEmptyValue'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
+import {FieldPresence} from '@sanity/components/presence'
 import {Type, Marker} from '../../typedefs'
 import {Path} from '../../typedefs/path'
+import PatchEvent, {set} from '../../PatchEvent'
+import {FormBuilderInput} from '../../FormBuilderInput'
+import getEmptyValue from './getEmptyValue'
+import styles from './styles/Item.css'
+
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
     <Button icon={DragHandleIcon} kind="simple" padding="small" />
@@ -101,6 +103,7 @@ export default class Item extends React.PureComponent<Props> {
             <div className={styles.validationStatus}>
               <ValidationStatus markers={markers} />
             </div>
+            {type?.title === '' && <FieldPresence presence={presence} maxAvatars={1} />}
             {!readOnly && (
               <div>
                 <Button

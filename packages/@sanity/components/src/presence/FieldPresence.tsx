@@ -23,7 +23,7 @@ export interface FieldPresenceProps {
 
 function FieldPresencePlaceholder(props: FieldPresenceProps) {
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
-  return <div className={styles.root} style={{minWidth: minWidth}} />
+  return <div className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
 }
 
 function FieldPresenceWithOverlay(props: FieldPresenceProps) {
@@ -60,9 +60,9 @@ interface InnerProps {
 
 export function FieldPresenceInner({
   presence,
-  maxAvatars,
   position = 'inside',
   animateArrowFrom = 'inside',
+  maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
   stack = true
 }: InnerProps) {
   const sorted = sortBy(
