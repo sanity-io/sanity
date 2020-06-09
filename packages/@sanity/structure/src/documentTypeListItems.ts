@@ -103,14 +103,14 @@ export function getDocumentTypeList(
         // Display as <Z>
         new MenuItemBuilder()
           .group('layout')
-          .title('List')
+          .title('Compact view')
           .icon(ListIcon)
           .action('setLayout')
           .params({layout: 'default'}),
 
         new MenuItemBuilder()
           .group('layout')
-          .title('Details')
+          .title('Detailed view')
           .icon(DetailsIcon)
           .action('setLayout')
           .params({layout: 'detail'})
