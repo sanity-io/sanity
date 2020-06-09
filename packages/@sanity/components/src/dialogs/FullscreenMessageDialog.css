@@ -21,7 +21,7 @@
   min-width: 0;
   max-width: 540px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: calc(100vh - (var(--medium-padding) * 2));
+  max-height: calc(100% - (var(--medium-padding) * 2));
   display: flex;
   flex-direction: column;
 
