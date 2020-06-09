@@ -90,7 +90,7 @@ export default function AvatarCircle({
               data-avatar-image
               cx={W / 2}
               cy={H / 2}
-              r={W / 2 - 2}
+              r={W / 2 - (imageUrl ? 2 : 0)}
               fill={imageUrl ? `url(#${elementId}-image-url)` : 'currentColor'}
             />
             <defs>

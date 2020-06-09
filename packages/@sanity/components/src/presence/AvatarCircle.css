@@ -13,6 +13,10 @@
 
   &[data-tone='navbar'] {
     box-shadow: 0 0 0 1px var(--main-navigation-color);
+
+    @nest & .avatarInitials {
+      color: var(--main-navigation-color);
+    }
   }
 }
 
