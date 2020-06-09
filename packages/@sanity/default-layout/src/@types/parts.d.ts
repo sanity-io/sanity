@@ -119,6 +119,7 @@ declare module 'part:@sanity/components/buttons/default' {
 
 declare module 'part:@sanity/components/dialogs/fullscreen' {
   const FullscreenDialog: React.ComponentType<{
+    cardClassName?: string
     className?: string
     isOpen?: boolean
     onClose?: () => void
