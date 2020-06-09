@@ -45,4 +45,5 @@
 
 .validationStatus {
   composes: validationStatus from 'part:@sanity/base/theme/forms/validation-style';
+  padding: 0 var(--small-padding);
 }
