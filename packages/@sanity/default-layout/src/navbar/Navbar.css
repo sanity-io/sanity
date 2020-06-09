@@ -89,7 +89,6 @@ a.branding {
   }
 
   @nest &:focus {
-    opacity: 1;
     background-color: color(var(--focus-color) a(20%));
   }
 }
@@ -285,15 +284,14 @@ a.branding {
   padding: 0;
 
   @media (hover: hover) {
-    opacity: 0.7;
+    color: var(--gray);
 
     @nest &:hover {
-      opacity: 1;
+      color: inherit;
     }
   }
 
   @nest &:focus {
-    opacity: 1;
     background-color: color(var(--focus-color) a(20%));
   }
 
