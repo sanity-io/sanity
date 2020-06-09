@@ -220,20 +220,6 @@ function menuItemsWithCreateIntents(
     items.unshift(actionButton.action('toggleTemplateSelectionMenu').serialize())
   }
 
-  // Menu buttons
-  initialValueTemplates.forEach(tpl => {
-    const template = getTemplateById(tpl.templateId)
-    const templateTitle = tpl.title || (template && template.title)
-    items.push(
-      new MenuItemBuilder()
-        .title(`Create new ${templateTitle}`)
-        .icon(PlusIcon)
-        .intent(getCreateIntent(tpl))
-        .group('create-new')
-        .serialize()
-    )
-  })
-
   return items
 }
 
