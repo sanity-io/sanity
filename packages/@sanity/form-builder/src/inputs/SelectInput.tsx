@@ -15,7 +15,7 @@ function toSelectItem(option) {
   return {title: capitalize(option), value: option}
 }
 
-export default class StringSelect extends React.Component<Props> {
+export default class SelectInput extends React.Component<Props> {
   _input: (RadioSelect | Select) | null
   name = uniqueId('RadioName')
   static defaultProps = {
