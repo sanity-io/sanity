@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "1.149.0",
+  "version": "1.149.16",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "main": "lib/index.js",
   "scripts": {
