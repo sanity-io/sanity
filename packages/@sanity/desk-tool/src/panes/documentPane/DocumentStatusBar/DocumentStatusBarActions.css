@@ -34,6 +34,7 @@
   top: -0.5em; /* 8px */
   right: 0;
   display: none;
+  z-index: var(--zindex-pane);
 
   @nest .isMenuOpen & {
     display: block;
