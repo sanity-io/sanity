@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import scroll from 'scroll'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import ErrorIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -124,11 +125,18 @@ export default class History extends React.PureComponent {
             />
           </div>
         </div>
-        {isLoading && <Spinner center message="Loading history" />}
-        {error && <p>Could not load history</p>}
-        <div className={styles.list} ref={this._listElement}>
-          {!(isLoading || error) &&
-            events.map((event, i) => (
+        <div className={styles.info}>
+          {isLoading && <Spinner center message="Loading events..." />}
+          {error && (
+            <div className={styles.errorMessage}>
+              <ErrorIcon />
+              <div>Could not load events</div>
+            </div>
+          )}
+        </div>
+        {!(isLoading || error) && (
+          <div className={styles.list} ref={this._listElement}>
+            {events.map((event, i) => (
               <HistoryItem
                 {...event}
                 key={event.rev}
@@ -139,7 +147,8 @@ export default class History extends React.PureComponent {
                 onSelectNext={this.handleSelectNext}
               />
             ))}
-        </div>
+          </div>
+        )}
         {error && <Snackbar kind="error" isPersisted title={error} />}
       </div>
     )

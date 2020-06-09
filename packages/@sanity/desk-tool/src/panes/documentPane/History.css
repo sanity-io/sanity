@@ -38,3 +38,28 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+.info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 6rem;
+  text-align: center;
+  color: var(--text-muted);
+
+  @nest &:empty {
+    display: none;
+  }
+}
+
+.errorMessage {
+  text-align: center;
+  
+  @nest & svg {
+    display: block;
+    margin: auto;
+    font-size: 1.2rem;
+    padding-bottom: var(--extra-small-padding);
+  }
+}
