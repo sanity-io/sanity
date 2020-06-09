@@ -15,14 +15,15 @@ interface Props {
   readOnly: boolean
 }
 
-function ActionButton(props: {action: PTEToolbarAction; visible: boolean}) {
-  const {action, visible} = props
+function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visible: boolean}) {
+  const {action, disabled, visible} = props
   const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
 
   return (
     <ToggleButton
       aria-hidden={!visible}
       data-visible={visible}
+      disabled={disabled}
       icon={action.icon}
       kind="simple"
       padding="small"
@@ -34,13 +35,14 @@ function ActionButton(props: {action: PTEToolbarAction; visible: boolean}) {
   )
 }
 
-function ActionMenuItem(props: {action: PTEToolbarAction; onClose: () => void}) {
-  const {action, onClose} = props
+function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onClose: () => void}) {
+  const {action, disabled, onClose} = props
   const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
 
   return (
     <button
       className={styles.menuItem}
+      disabled={disabled}
       onClick={() => {
         action.handle()
         onClose()

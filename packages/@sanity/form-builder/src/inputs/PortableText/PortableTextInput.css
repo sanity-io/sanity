@@ -205,17 +205,17 @@
 
   /* Text blocks */
 
-  @nest & div > div:first-child > * {
+  @nest & > div > div:first-child > * {
     margin-top: 0;
   }
 
-  @nest & div > div:last-child > * {
+  @nest & > div > div:last-child > * {
     margin-bottom: 0;
   }
 
   /* Block objects */
 
-  @nest & div > div[class~='pt-object-block'] {
+  @nest & > div > div[class~='pt-object-block'] {
     margin: var(--medium-padding) 0;
 
     @nest &:first-child {
