@@ -13,43 +13,44 @@ type Props = {
   inputId: string
 }
 
-export default function RadioSelect({
-  name,
-  direction,
-  onChange = () => {},
-  onFocus,
-  value,
-  readOnly,
-  items = [],
-  inputId
-}: Props) {
-  const handleRadioChange = item => {
-    onChange(item)
-  }
+const RadioSelect = React.forwardRef(
+  (
+    {name, direction, onChange = () => {}, onFocus, value, readOnly, items = [], inputId}: Props,
+    ref: React.MutableRefObject<HTMLDivElement>
+  ) => {
+    const handleRadioChange = item => {
+      onChange(item)
+    }
 
-  return (
-    <div
-      className={`
+    return (
+      <div
+        className={`
         ${direction == 'vertical' ? styles.vertical : styles.horizontal}
        ${styles.root}`}
-    >
-      <div className={styles.radioContainer} id={inputId} role="group">
-        {items.map((item, i) => {
-          return (
-            <div className={styles.item} key={i}>
-              <RadioButton
-                disabled={readOnly}
-                name={name}
-                label={item.title}
-                item={item}
-                onChange={handleRadioChange}
-                checked={value === item}
-                onFocus={onFocus}
-              />
-            </div>
-          )
-        })}
+        ref={ref}
+      >
+        <div className={styles.radioContainer} id={inputId} role="group">
+          {items.map((item, i) => {
+            return (
+              <div className={styles.item} key={i}>
+                <RadioButton
+                  disabled={readOnly}
+                  name={name}
+                  label={item.title}
+                  item={item}
+                  onChange={handleRadioChange}
+                  checked={value === item}
+                  onFocus={onFocus}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+)
+
+RadioSelect.displayName = 'RadioSelect'
+
+export default RadioSelect

@@ -8,43 +8,49 @@ import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/components/presence'
 import {Props} from './types'
 
-export default function BooleanInput(props: Props) {
-  const ref = useRef<any>(null)
-  const handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
+const BooleanInput = React.forwardRef(
+  (props: Props, ref: React.MutableRefObject<HTMLDivElement>) => {
+    const inputRef = useRef<any>(null)
+    const handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+      props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
+    }
+    const {value, type, readOnly, onFocus, markers, presence} = props
+    const isCheckbox = type.options && type.options.layout === 'checkbox'
+    return (
+      <div className={styles.root} ref={ref}>
+        {isCheckbox ? (
+          <Checkbox
+            ref={inputRef}
+            label={type.title}
+            readOnly={readOnly}
+            onChange={handleChange}
+            onFocus={onFocus}
+            checked={value}
+            description={type.description}
+          >
+            <ValidationStatus markers={markers} />
+          </Checkbox>
+        ) : (
+          <Switch
+            ref={inputRef}
+            readOnly={readOnly}
+            checked={value}
+            label={type.title}
+            description={type.description}
+            onChange={handleChange}
+            onFocus={onFocus}
+          >
+            <ValidationStatus markers={markers} />
+          </Switch>
+        )}
+        <FieldStatus position="top">
+          <FieldPresence presence={presence} />
+        </FieldStatus>
+      </div>
+    )
   }
-  const {value, type, readOnly, onFocus, markers, presence} = props
-  const isCheckbox = type.options && type.options.layout === 'checkbox'
-  return (
-    <div className={styles.root}>
-      {isCheckbox ? (
-        <Checkbox
-          ref={ref}
-          label={type.title}
-          readOnly={readOnly}
-          onChange={handleChange}
-          onFocus={onFocus}
-          checked={value}
-          description={type.description}
-        >
-          <ValidationStatus markers={markers} />
-        </Checkbox>
-      ) : (
-        <Switch
-          ref={ref}
-          readOnly={readOnly}
-          checked={value}
-          label={type.title}
-          description={type.description}
-          onChange={handleChange}
-          onFocus={onFocus}
-        >
-          <ValidationStatus markers={markers} />
-        </Switch>
-      )}
-      <FieldStatus position="top">
-        <FieldPresence presence={presence} />
-      </FieldStatus>
-    </div>
-  )
-}
+)
+
+BooleanInput.displayName = 'BooleanInput'
+
+export default BooleanInput
