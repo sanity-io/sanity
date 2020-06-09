@@ -72,7 +72,7 @@
   /* Block editor */
   --block-editor-base-font-family: inherit;
   --block-editor-header-font-family: inherit;
-  --block-extras-width: 10rem;
+  --block-extras-width: 2rem;
   --block-extras-border-color: var(--hairline-color);
   --block-extras-background-color: color(var(--gray-lightest) alpha(50%));
 
