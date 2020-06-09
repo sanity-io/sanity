@@ -80,8 +80,8 @@
 
   @nest & svg {
     display: block;
-    height: calc(2.5rem + 1px) !important;
     width: calc(2.5rem + 1px) !important;
+    height: calc(2.5rem + 1px) !important;
   }
 }
 

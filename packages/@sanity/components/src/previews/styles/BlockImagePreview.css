@@ -44,6 +44,13 @@
     pointer-events: none;
   }
 
+  @nest & svg {
+    display: block;
+    width: calc(2.5rem + 1px) !important;
+    height: calc(2.5rem + 1px) !important;
+    margin: var(--small-padding);
+  }
+
   @nest .header + & {
     &:before {
       content: '';
