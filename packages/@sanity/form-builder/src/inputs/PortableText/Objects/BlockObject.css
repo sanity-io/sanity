@@ -22,20 +22,10 @@
   cursor: move;
   position: relative;
   border-radius: var(--form-builder-block-border-radius);
-  box-shadow: var(--form-builder-block-shadow);
+  /* box-shadow: var(--form-builder-block-shadow); */
   box-sizing: border-box;
   overflow: hidden;
   min-height: 3.5rem;
-
-  @media (hover: hover) {
-    color: var(--text-muted);
-
-    @nest &:hover {
-      background-color: var(--form-builder-block-background-hover);
-      box-shadow: var(--form-builder-block-shadow--hover);
-      color: var(--component-text-color);
-    }
-  }
 
   @nest &:after {
     content: '';
@@ -49,6 +39,20 @@
     box-shadow: inset 0 0 0 1px var(--form-builder-block-border-color);
     z-index: 1;
     pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    color: var(--text-muted);
+
+    @nest &:hover {
+      background-color: var(--form-builder-block-background-hover);
+      color: var(--component-text-color);
+
+      @nest &:after {
+        /* box-shadow: var(--form-builder-block-shadow--hover); */
+        box-shadow: inset 0 0 0 1px var(--form-builder-block-border-color--hover);
+      }
+    }
   }
 }
 

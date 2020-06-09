@@ -17,8 +17,12 @@ type Action = {
 }
 
 interface Props {
-  actionButtonComponent: React.ComponentType<{action: Action; visible: boolean}>
-  actionMenuItemComponent: React.ComponentType<{action: Action; onClose: () => void}>
+  actionButtonComponent: React.ComponentType<{action: Action; disabled: boolean; visible: boolean}>
+  actionMenuItemComponent: React.ComponentType<{
+    action: Action
+    disabled: boolean
+    onClose: () => void
+  }>
   actions: Action[]
   disabled?: boolean
 }
@@ -103,7 +107,11 @@ export function OverflowMenu(props: Props) {
             data-visible={actionStates[actionIndex].visible}
             key={String(actionIndex)}
           >
-            <ActionButton action={action} visible={actionStates[actionIndex].visible} />
+            <ActionButton
+              action={action}
+              disabled={disabled}
+              visible={actionStates[actionIndex].visible}
+            />
           </div>
         ))}
       </div>
@@ -132,7 +140,7 @@ export function OverflowMenu(props: Props) {
                     )}
                     key={String(hiddenActionIndex)}
                   >
-                    <ActionMenuItem action={action} onClose={handleClose} />
+                    <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
                   </div>
                 )
               })}
@@ -144,7 +152,6 @@ export function OverflowMenu(props: Props) {
             aria-haspopup="menu"
             aria-expanded={open}
             aria-controls={'insertmenu'}
-            disabled={disabled}
             icon={EllipsisIcon}
             kind="simple"
             onClick={handleOpen}

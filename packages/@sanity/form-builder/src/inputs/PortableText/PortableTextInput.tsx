@@ -17,7 +17,7 @@ import {
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
 import {isEqual} from 'lodash'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import ErrorCircleIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
@@ -504,13 +504,11 @@ export default withPatchSubscriber(
                 >
                   <Button
                     color="danger"
-                    icon={WarningIcon}
+                    icon={ErrorCircleIcon}
                     kind="simple"
                     onClick={this.handleToggleValidationResults}
                     padding="small"
-                  >
-                    {errors.length}
-                  </Button>
+                  />
                 </Tooltip>
               </div>
             )}
