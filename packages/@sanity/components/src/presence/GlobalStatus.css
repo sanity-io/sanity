@@ -64,12 +64,12 @@
 
   @nest & .statusIndicator {
     position: absolute;
-    top: 0.1em;
-    right: 0.15em;
+    top: calc(1em - 2px);
+    right: calc(1em - 2px);
     height: 0.5em;
     width: 0.5em;
     border-radius: 50%;
-    border: 1px solid currentColor;
+    border: 1px solid var(--main-navigation-color);
     background: var(--state-success-color);
     box-sizing: border-box;
   }
