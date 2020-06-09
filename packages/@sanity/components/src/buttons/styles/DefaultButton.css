@@ -13,25 +13,25 @@
   /* :focus */
   --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
   --color-button-focus-shadow: 0 0 0 1px var(--component-bg),
-    0 0 0 3px color(var(--input-border-color-focus) a(50%));
+    0 0 0 3px color(var(--brand-primary) alpha(50%));
   /* :hover */
   --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
   /* :active */
   --color-button-active-bg: color(var(--color-button-bg) lightness(- 10%));
   /* inverted={true} */
   --color-button-inverted-color: var(--color-button-bg);
-  --color-button-inverted-border: color(var(--color-button-bg) a(35%));
+  --color-button-inverted-border: color(var(--color-button-bg) alpha(35%));
   --color-button-inverted-spinner-bg: color(var(--color-button-text) alpha(80%));
   /* simple={true} */
   --color-button-simple-color: var(--color-button-bg);
   /* :focus */
-  --color-button-simple-focus-bg: color(var(--color-button-bg) a(10%));
+  --color-button-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
   --color-button-simple-focus-text: color(var(--color-button-bg) lightness(- 20%));
   /* :hover */
-  --color-button-simple-hover-bg: color(var(--color-button-bg) a(10%));
+  --color-button-simple-hover-bg: color(var(--color-button-bg) alpha(10%));
   --color-button-simple-hover-text: color(var(--color-button-bg) lightness(- 20%));
   /* :active */
-  --color-button-simple-active-bg: color(var(--color-button-bg) a(20%));
+  --color-button-simple-active-bg: color(var(--color-button-bg) alpha(20%));
   /* :selected */
   --color-button-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
   --color-button-simple-selected-text: var(--selected-item-color);
@@ -50,7 +50,7 @@
   /* :active */
   --color-button-primary-active-bg: color(var(--color-button-primary-bg) lightness(- 10%));
   /* inverted={true} */
-  --color-button-primary-inverted-border: color(var(--color-button-primary-bg) a(50%));
+  --color-button-primary-inverted-border: color(var(--color-button-primary-bg) alpha(50%));
   --color-button-primary-inverted-color: var(--color-button-primary-bg);
   --color-button-primary-inverted-spinner-bg: color(var(--color-button-primary-text) alpha(80%));
   /* :focus */
@@ -59,13 +59,13 @@
   /* simple={true} */
   --color-button-primary-simple-color: var(--color-button-primary-bg);
   /* :focus */
-  --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) a(10%));
+  --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) alpha(10%));
   --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 20%));
   /* :hover */
-  --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) a(10%));
+  --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) alpha(10%));
   --color-button-primary-simple-hover-text: color(var(--color-button-primary-bg) lightness(- 20%));
   /* :active */
-  --color-button-primary-simple-active-bg: color(var(--color-button-primary-bg) a(20%));
+  --color-button-primary-simple-active-bg: color(var(--color-button-primary-bg) alpha(20%));
   /* :selected */
   --color-button-primary-simple-selected-bg: color(var(--color-button-primary-bg) alpha(15%));
   --color-button-primary-simple-selected-text: color(
@@ -86,7 +86,7 @@
   /* :active */
   --color-button-success-active-bg: color(var(--color-button-success-bg) lightness(- 10%));
   /* inverted={true} */
-  --color-button-success-inverted-border: color(var(--color-button-success-bg) a(50%));
+  --color-button-success-inverted-border: color(var(--color-button-success-bg) alpha(50%));
   --color-button-success-inverted-color: var(--color-button-success-bg);
   --color-button-success-inverted-spinner-bg: color(var(--color-button-success-text) alpha(80%));
   /* :focus */
@@ -95,13 +95,13 @@
   /* simple={true} */
   --color-button-success-simple-color: var(--color-button-success-bg);
   /* :focus */
-  --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) a(10%));
+  --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) alpha(10%));
   --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 20%));
   /* :hover */
-  --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) a(10%));
+  --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) alpha(10%));
   --color-button-success-simple-hover-text: color(var(--color-button-success-bg) lightness(- 20%));
   /* :active */
-  --color-button-success-simple-active-bg: color(var(--color-button-success-bg) a(20%));
+  --color-button-success-simple-active-bg: color(var(--color-button-success-bg) alpha(20%));
   /* :selected */
   --color-button-success-simple-selected-bg: color(var(--color-button-success-bg) alpha(15%));
   --color-button-success-simple-selected-text: color(
@@ -122,7 +122,7 @@
   /* :active */
   --color-button-warning-active-bg: color(var(--color-button-warning-bg) lightness(- 10%));
   /* inverted={true} */
-  --color-button-warning-inverted-border: color(var(--color-button-warning-bg) a(50%));
+  --color-button-warning-inverted-border: color(var(--color-button-warning-bg) alpha(50%));
   --color-button-warning-inverted-color: var(--color-button-warning-bg);
   --color-button-warning-inverted-spinner-bg: color(var(--color-button-warning-text) alpha(80%));
   /* :focus */
@@ -131,13 +131,13 @@
   /* simple={true} */
   --color-button-warning-simple-color: var(--color-button-warning-bg);
   /* :focus */
-  --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) a(10%));
+  --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) alpha(10%));
   --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 20%));
   /* :hover */
-  --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) a(10%));
+  --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) alpha(10%));
   --color-button-warning-simple-hover-text: color(var(--color-button-warning-bg) lightness(- 20%));
   /* :active */
-  --color-button-warning-simple-active-bg: color(var(--color-button-warning-bg) a(20%));
+  --color-button-warning-simple-active-bg: color(var(--color-button-warning-bg) alpha(20%));
   /* :selected */
   --color-button-warning-simple-selected-bg: color(var(--color-button-warning-bg) alpha(15%));
   --color-button-warning-simple-selected-text: color(
@@ -158,7 +158,7 @@
   /* :active */
   --color-button-danger-active-bg: color(var(--color-button-danger-bg) lightness(- 10%));
   /* inverted={true} */
-  --color-button-danger-inverted-border: color(var(--color-button-danger-bg) a(50%));
+  --color-button-danger-inverted-border: color(var(--color-button-danger-bg) alpha(50%));
   --color-button-danger-inverted-color: var(--color-button-danger-bg);
   --color-button-danger-inverted-spinner-bg: color(var(--color-button-danger-text) alpha(80%));
   /* :focus */
@@ -167,13 +167,13 @@
   /* simple={true} */
   --color-button-danger-simple-color: var(--color-button-danger-bg);
   /* :focus */
-  --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) a(10%));
+  --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) alpha(10%));
   --color-button-danger-simple-focus-text: color(var(--color-button-danger-bg) lightness(- 20%));
   /* :hover */
-  --color-button-danger-simple-hover-bg: color(var(--color-button-danger-bg) a(10%));
+  --color-button-danger-simple-hover-bg: color(var(--color-button-danger-bg) alpha(10%));
   --color-button-danger-simple-hover-text: color(var(--color-button-danger-bg) lightness(- 20%));
   /* :active */
-  --color-button-danger-simple-active-bg: color(var(--color-button-danger-bg) a(20%));
+  --color-button-danger-simple-active-bg: color(var(--color-button-danger-bg) alpha(20%));
   /* :selected */
   --color-button-danger-simple-selected-bg: color(var(--color-button-danger-bg) alpha(15%));
   --color-button-danger-simple-selected-text: color(var(--color-button-danger-bg) lightness(- 5%));
@@ -304,7 +304,7 @@
   }
 
   @nest & .root:not(:last-child) {
-    border-right: 1px solid color(var(--body-bg) a(30%));
+    border-right: 1px solid color(var(--body-bg) alpha(30%));
   }
 
   @nest & .inverted:not(:last-child) {
@@ -667,12 +667,12 @@
 
       @media (hover: hover) {
         @nest &:hover {
-          background-color: color(var(--white) a(10%));
+          background-color: color(var(--white) alpha(10%));
         }
       }
 
       @nest &:active {
-        background-color: color(var(--white) a(20%));
+        background-color: color(var(--white) alpha(20%));
       }
     }
 
