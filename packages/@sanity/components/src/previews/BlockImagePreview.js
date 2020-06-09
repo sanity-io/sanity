@@ -44,7 +44,7 @@ export default class BlockImagePreview extends React.PureComponent {
 
         <div className={styles.preview}>
           {media && (
-            <div className={`${styles.media}`}>
+            <div className={styles.media}>
               {typeof media === 'function' &&
                 media({dimensions: mediaDimensions, layout: 'blockImage'})}
               {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
@@ -52,15 +52,17 @@ export default class BlockImagePreview extends React.PureComponent {
             </div>
           )}
 
-          <div className={styles.heading}>
-            {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
-            {description && <p className={styles.description}>{description}</p>}
-            {status && (
-              <div className={styles.status}>
-                {(typeof status === 'function' && status({layout: 'default'})) || status}
-              </div>
-            )}
-          </div>
+          {subtitle || description || status || (
+            <div className={styles.heading}>
+              {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
+              {description && <p className={styles.description}>{description}</p>}
+              {status && (
+                <div className={styles.status}>
+                  {(typeof status === 'function' && status({layout: 'default'})) || status}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {children && <div className={styles.children}>{children}</div>}
