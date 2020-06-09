@@ -296,13 +296,7 @@ export default withPatchSubscriber(
     }
 
     handleEditObjectFormBuilderBlur = (): void => {
-      const {focusPath} = this.props
-      if (this.editor.current && focusPath && focusPath[1] !== 'markDefs') {
-        PortableTextEditor.select(this.editor.current, {
-          anchor: {path: focusPath, offset: 0},
-          focus: {path: focusPath, offset: 0}
-        })
-      }
+      // Do nothing
     }
 
     handleIgnoreValidation = (): void => {
