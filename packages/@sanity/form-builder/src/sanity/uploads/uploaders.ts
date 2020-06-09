@@ -13,13 +13,13 @@ const UPLOAD_IMAGE: UploaderDef = {
 
 const UPLOAD_FILE: UploaderDef = {
   type: 'file',
-  accepts: [],
+  accepts: '',
   upload: (file: File, type: Type, options?: UploadOptions) => uploadFile(file, options)
 }
 
 const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
-  accepts: ['text/*'],
+  accepts: 'text/*',
   upload: (file: File, type: Type, options?: UploadOptions) =>
     uploadFile(file, options).pipe(
       map(content => ({
