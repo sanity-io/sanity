@@ -5,27 +5,33 @@
   color: var(--selectable-item-color--inverted);
   cursor: default;
 
-  @media (hover: hover) {
-    @media (--screen-medium) {
-      @nest &:hover {
-        background-color: var(--selectable-item-color-hover);
-        color: var(--selectable-item-color-hover--inverted);
+  @nest &[disabled] {
+    color: var(--gray-lightest);
+  }
+
+  @nest &:not([disabled]) {
+    @media (hover: hover) {
+      @media (--screen-medium) {
+        @nest &:hover {
+          background-color: var(--selectable-item-color-hover);
+          color: var(--selectable-item-color-hover--inverted);
+        }
       }
     }
-  }
 
-  @nest &:focus {
-    outline: none;
+    @nest &:focus {
+      outline: none;
 
-    @media (hover: hover) {
-      background-color: var(--selectable-item-color-focus);
-      color: var(--selectable-item-color-focus--inverted);
+      @media (hover: hover) {
+        background-color: var(--selectable-item-color-focus);
+        color: var(--selectable-item-color-focus--inverted);
+      }
     }
-  }
 
-  @nest &:active {
-    background-color: var(--selectable-item-color-active);
-    color: var(--selectable-item-color-active--inverted);
+    @nest &:active {
+      background-color: var(--selectable-item-color-active);
+      color: var(--selectable-item-color-active--inverted);
+    }
   }
 }
 
