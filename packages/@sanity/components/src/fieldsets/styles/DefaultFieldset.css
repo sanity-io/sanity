@@ -157,24 +157,9 @@
   padding-right: var(--small-padding);
 }
 
-.animateHeight {
-  /* needed to prevent cascading of nested */
-}
-
-.canFocus > .fieldset > .inner > .content,
-.canFocus > .fieldset > .inner > .animateHeight > .content {
-  padding-left: var(--small-padding);
-  /* border-radius: var(--border-radius-medium); */
+.canFocus > .fieldset > .inner > .content {
+  padding-left: calc(var(--small-padding) - 1px);
   box-shadow: var(--fieldset-box-shadow);
-
-  @media (--screen-medium) {
-    padding-left: var(--medium-padding);
-  }
-}
-
-.level1 > .fieldset > .inner > .content,
-.level1 > .fieldset > .inner > .animateHeight > .content {
-  padding-left: var(--small-padding);
   border-left: var(--fieldset-border);
 
   @media (--screen-medium) {
@@ -182,9 +167,17 @@
   }
 }
 
-.level2 > .fieldset > .inner > .content,
-.level2 > .fieldset > .inner > .animateHeight > .content {
-  padding-left: var(--small-padding);
+.level1 > .fieldset > .inner > .content {
+  padding-left: calc(var(--small-padding) - 1px);
+  border-left: var(--fieldset-border);
+
+  @media (--screen-medium) {
+    padding-left: var(--medium-padding);
+  }
+}
+
+.level2 > .fieldset > .inner > .content {
+  padding-left: calc(var(--small-padding) - 1px);
   border-left: var(--fieldset-border);
 
   @media (--screen-medium) {
