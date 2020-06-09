@@ -16,7 +16,8 @@ export default class DefaultTextArea extends React.Component {
     isClearable: PropTypes.bool,
     rows: PropTypes.number,
     hasFocus: PropTypes.bool,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -72,12 +73,14 @@ export default class DefaultTextArea extends React.Component {
       onBlur,
       onClear,
       customValidity,
+      inputId,
       ...rest
     } = this.props
 
     return (
       <div className={styles.root}>
         <textarea
+          id={inputId}
           className={styles.textarea}
           rows={rows}
           value={value}
@@ -89,12 +92,11 @@ export default class DefaultTextArea extends React.Component {
           ref={this.setInput}
           {...rest}
         />
-        {isClearable &&
-          !this.props.disabled && (
-            <button type="button" className={styles.clearButton} onClick={onClear}>
-              <IoAndroidClose color="inherit" />
-            </button>
-          )}
+        {isClearable && !this.props.disabled && (
+          <button type="button" className={styles.clearButton} onClick={onClear}>
+            <IoAndroidClose color="inherit" />
+          </button>
+        )}
       </div>
     )
   }

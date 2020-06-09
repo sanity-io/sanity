@@ -3,20 +3,10 @@ import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import PatchEvent, {set} from '../PatchEvent'
-import {Type, Marker, Presence} from '../typedefs'
 import styles from './BooleanInput.css'
 import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/components/presence'
-
-type Props = {
-  type: Type
-  value: boolean | null
-  readOnly: boolean | null
-  onFocus: () => void
-  onChange: (arg0: PatchEvent) => void
-  markers: Marker[]
-  presence: Presence[]
-}
+import {Props} from './types'
 
 export default function BooleanInput(props: Props) {
   const ref = useRef<any>(null)

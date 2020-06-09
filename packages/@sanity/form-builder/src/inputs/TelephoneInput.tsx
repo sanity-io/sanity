@@ -2,19 +2,11 @@ import React from 'react'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Type, Marker} from '../typedefs'
-type Props = {
-  type: Type
-  level: number
-  value: string | null
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-  markers: Array<Marker>
-  presence: any
-}
+import {Props} from './types'
+import {uniqueId} from 'lodash'
 export default class TelephoneInput extends React.Component<Props> {
   _input: TextInput | null
+  _inputId = uniqueId('TelephoneInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
@@ -38,8 +30,10 @@ export default class TelephoneInput extends React.Component<Props> {
         label={type.title}
         description={type.description}
         presence={presence}
+        labelFor={this._inputId}
       >
         <TextInput
+          inputId={this._inputId}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type="tel"
           value={value}

@@ -10,6 +10,7 @@ type Props = {
   value: any
   readOnly: boolean
   items: {title: string}[]
+  inputId: string
 }
 
 export default function RadioSelect({
@@ -19,7 +20,8 @@ export default function RadioSelect({
   onFocus,
   value,
   readOnly,
-  items = []
+  items = [],
+  inputId
 }: Props) {
   const handleRadioChange = item => {
     onChange(item)
@@ -31,7 +33,7 @@ export default function RadioSelect({
         ${direction == 'vertical' ? styles.vertical : styles.horizontal}
        ${styles.root}`}
     >
-      <div className={styles.radioContainer} role="group">
+      <div className={styles.radioContainer} id={inputId} role="group">
         {items.map((item, i) => {
           return (
             <div className={styles.item} key={i}>

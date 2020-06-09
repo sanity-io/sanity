@@ -2,20 +2,12 @@ import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Type, Marker} from '../typedefs'
-type Props = {
-  type: Type
-  level: number
-  value: string | null
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-  onBlur: () => void
-  markers: Array<Marker>
-  presence: any
-}
+import {Props} from './types'
+import {uniqueId} from 'lodash'
+
 export default class TextInput extends React.Component<Props> {
   _input: TextArea | null
+  _inputId = uniqueId('TextInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
@@ -39,8 +31,10 @@ export default class TextInput extends React.Component<Props> {
         label={type.title}
         description={type.description}
         presence={presence}
+        labelFor={this._inputId}
       >
         <TextArea
+          inputId={this._inputId}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           value={value}
           readOnly={readOnly}
