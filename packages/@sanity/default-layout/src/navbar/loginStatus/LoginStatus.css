@@ -39,7 +39,7 @@
     left: 1em;
     right: 1em;
     bottom: 0.5em;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid color(var(--white) alpha(15%));
     border-radius: 50%;
   }
 }

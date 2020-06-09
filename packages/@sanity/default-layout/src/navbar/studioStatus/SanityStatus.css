@@ -3,16 +3,6 @@
 .root {
   display: flex;
   align-items: center;
-
-  @nest & span {
-    font-size: var(--font-size-small);
-    line-height: calc(25 / 14);
-  }
-
-  @nest & span > svg {
-    font-size: 2em;
-    vertical-align: top;
-  }
 }
 
 .button {
@@ -30,22 +20,22 @@
   outline: none;
 
   @media (hover: hover) {
-    opacity: 0.7;
+    color: var(--gray);
 
     @nest &:hover {
-      opacity: 1;
+      color: inherit;
     }
   }
 
   @nest &:focus {
-    opacity: 1;
+    color: inherit;
     background-color: color(var(--focus-color) a(20%));
   }
 }
 
 .buttonInner {
   outline: none;
-  padding: 0.75em;
+  padding: var(--medium-padding);
 }
 
 .hasUpdates {
@@ -54,36 +44,43 @@
 }
 
 .updateIcon {
+  display: block;
   position: relative;
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
 }
 
 .updateIndicator {
   position: absolute;
-  top: 0.2em;
-  right: 0.15em;
+  top: -2px;
+  right: -2px;
   height: 0.5em;
   width: 0.5em;
   border-radius: 50%;
-  border: 1px solid currentColor;
+  border: 1px solid var(--main-navigation-color);
   box-sizing: border-box;
-}
 
-.updateIndicator[data-severity='notice'] {
-  background: currentColor;
-}
+  @nest &[data-severity='notice'], &[data-severity='low'] {
+    background: var(--brand-primary);
+  }
 
-.updateIndicator[data-severity='low'] {
-  background: currentColor;
-}
+  @nest &[data-severity='medium'] {
+    background: var(--state-warning-color);
+  }
 
-.updateIndicator[data-severity='medium'] {
-  background: var(--state-warning-color);
-}
-
-.updateIndicator[data-severity='high'] {
-  background: var(--state-danger-color);
+  @nest &[data-severity='high'] {
+    background: var(--state-danger-color);
+  }
 }
 
 .updateLabel {
-  margin-left: 0.25em;
+  margin-left: var(--extra-small-padding);
 }

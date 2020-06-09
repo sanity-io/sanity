@@ -64,8 +64,8 @@
 
   @nest & .statusIndicator {
     position: absolute;
-    top: calc(1em - 2px);
-    right: calc(1em - 2px);
+    top: calc(1em - 1px);
+    right: calc(1em - 1px);
     height: 0.5em;
     width: 0.5em;
     border-radius: 50%;

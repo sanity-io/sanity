@@ -6,7 +6,7 @@
 
 .versionsTable {
   border-collapse: collapse;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--hairline-color);
   margin: 0;
   width: 100%;
   margin-top: var(--medium-padding);
@@ -19,7 +19,7 @@
 }
 
 .versionsTable tr td {
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--hairline-color);
 }
 
 .details {
