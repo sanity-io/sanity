@@ -5,6 +5,7 @@
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
+  width: 100%;
 }
 
 .root[data-size='small'] {
@@ -30,24 +31,23 @@
   max-width: 17ch;
 }
 
-.intentLink {
+.linkIcon {
   display: flex;
   align-items: center;
-  padding-left: var(--extra-small-padding);
+  padding-left: var(--medium-padding);
   transition: transform 0.1s linear, opacity 0.1s linear;
   align-self: center;
   margin-left: auto;
-  font-size: var(--font-size-huge);
   color: var(--gray);
+  
+  @nest & > svg {
+    font-size: calc(17 / 16 * 1em); /* 17px */
+    display: block;
+    font-size: calc(17 / 16 * 1em); /* 17px */
 
-  @nest &:hover, &:focus, &:focus-within {
-    opacity: 1;
-    transform: scale(1.1);
-    color: var(--link-color);
-
-    @nest & svg {
-      align-self: flex-end;
-      color: var(--link-color);
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em); /* 25px */
+      margin: calc(4 / 25 * -1em); /* -4px */
     }
   }
 }

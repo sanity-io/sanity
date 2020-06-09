@@ -5,10 +5,37 @@ import styles from './GlobalStatus.css'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
 import StackCounter from './StackCounter'
-import {GlobalPresence} from './types'
+import {GlobalPresence, Size} from './types'
 import UserAvatar from './UserAvatar'
 import {PresenceListItem} from './PresenceListItem'
 import {MAX_AVATARS_GLOBAL} from './constants'
+import {IntentLink} from 'part:@sanity/base/router'
+
+type GlobalPresenceListItemProps = {
+  presence: GlobalPresence
+  size?: Size
+  onClose?: (event) => void
+}
+
+function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
+  const {presence, onClose, size} = props
+  const locationWithDocumentId = presence?.locations.find(location => location.documentId)
+  const item = (
+    <PresenceListItem user={presence.user} status={presence.status} size={size} hasLink={locationWithDocumentId?.documentId} />
+  )
+  return locationWithDocumentId ? (
+    <IntentLink
+      className={styles.intentLink}
+      intent="edit"
+      params={{id: locationWithDocumentId.documentId}}
+      onClick={onClose}
+    >
+      {item}
+    </IntentLink>
+  ) : (
+    item
+  )
+}
 
 interface Props {
   projectId: string
@@ -24,10 +51,8 @@ export function GlobalStatus({projectId, presence, maxAvatars = MAX_AVATARS_GLOB
       <PopoverList
         items={presence}
         renderItem={(item, onClose) => (
-          <PresenceListItem
-            user={item.user}
-            status={item.status}
-            locations={item.locations}
+          <GlobalPresenceListItem
+            presence={item}
             size="medium"
             onClose={onClose}
           />

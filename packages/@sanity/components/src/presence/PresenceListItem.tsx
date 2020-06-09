@@ -9,32 +9,21 @@ type Props = {
   user: User
   status: Status
   size?: Size
-  onClick?: () => void
   locations?: Location[]
-  onClose?: (event: any) => void
+  hasLink?: string | undefined
 }
 
-export function PresenceListItem({user, status, size, onClick, locations = [], onClose}: Props) {
+export function PresenceListItem({user, status, size, locations = [], hasLink}: Props) {
   const locationWithDocumentId = locations.find(location => location.documentId)
   return (
-    <div className={styles.root} data-size={size} onClick={onClick}>
+    <div className={styles.root} data-size={size}>
       <div className={styles.avatar}>
         <UserAvatar user={user} size={size} status={status} />
       </div>
       <div className={styles.inner}>
         <div className={styles.userName}>{user.displayName}</div>
       </div>
-      {locationWithDocumentId && (
-        <IntentLink
-          className={styles.intentLink}
-          title={`Go to ${user.displayName}`}
-          intent="edit"
-          params={{id: locationWithDocumentId.documentId}}
-          onClick={onClose}
-        >
-          <LinkIcon />
-        </IntentLink>
-      )}
+      {hasLink && <div className={styles.linkIcon}><LinkIcon /></div>}
     </div>
   )
 }

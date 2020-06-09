@@ -74,7 +74,18 @@
   line-height: 1;
   color: inherit;
   text-decoration: none;
-  font-size: var(--font-size-base);
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   outline: none;
+  
+  @nest & > svg {
+    color: var(--gray);
+    font-size: calc(17 / 16 * 1em); /* 17px */
+    display: block;
+    font-size: calc(17 / 16 * 1em); /* 17px */
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em); /* 25px */
+      margin: calc(4 / 25 * -1em); /* -4px */
+    }
+  }
 }
