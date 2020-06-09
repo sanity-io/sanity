@@ -2,16 +2,18 @@
 
 .root {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* padding: 0.1em; */
-  /* margin: 0.1em; */
 
   &.media {
     height: 15em;
     width: 15em;
   }
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--extra-small-padding) 0;
 }
 
 .input {

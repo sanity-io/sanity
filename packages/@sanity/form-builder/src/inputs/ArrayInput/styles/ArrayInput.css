@@ -7,6 +7,10 @@
 
 .list {
   user-select: none;
+
+  @nest .root & {
+    margin: -0.25em 0;
+  }
 }
 
 .listReadOnly {
@@ -32,18 +36,16 @@
   left: 2em;
 }
 
+.listItem {
+  /* semantic class name */
+}
+
 .movingItem {
   composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
 }
 
-.listItem {
-  @nest .listItem + & {
-    margin-top: var(--small-padding);
-  }
-}
-
 .listItemMute {
-  composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+  /* composes: lineBetween from 'part:@sanity/components/lists/default-item-style'; */
 }
 
 .gridItem {

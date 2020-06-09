@@ -8,6 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: var(--extra-small-padding) 0;
 }
 
 .innerWithError {
@@ -43,10 +44,10 @@
 .missingKeyMessage {
   color: var(--state-warning-color);
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: 0;
+  right: 0;
   z-index: 200;
-  padding: 0.2em 0.4em;
+  padding: var(--extra-small-padding) var(--small-padding);
   background-color: var(--input-bg);
 }
 
@@ -65,6 +66,7 @@
 
 .previewWrapper {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  border-radius: var(--border-radius-base);
   flex-grow: 1;
   outline: none;
   user-select: none;

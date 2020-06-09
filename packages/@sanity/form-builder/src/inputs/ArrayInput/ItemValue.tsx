@@ -25,7 +25,7 @@ import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/pres
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <Button icon={DragHandleIcon} kind="simple" />
+    <Button icon={DragHandleIcon} kind="simple" padding="small" />
   </span>
 ))
 const CLOSE_ACTION = {

@@ -19,9 +19,7 @@
 }
 
 .item {
-  @nest .item + & {
-    margin-top: var(--small-padding);
-  }
+  /* semantic class name */
 }
 
 .addButton {
