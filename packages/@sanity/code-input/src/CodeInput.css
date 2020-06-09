@@ -1,9 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.aceEditorContainer {
+.editorContainer {
   position: relative;
-  border-radius: var(--input-border-radius);
-  overflow: hidden;
 
   &:after {
     content: '';
@@ -14,10 +12,17 @@
     right: 0;
     bottom: 0;
     box-shadow: inset 0 0 0 1px var(--hairline-color);
-    z-index: 1000;
+    z-index: 1;
     pointer-events: none;
     border-radius: var(--input-border-radius);
   }
+}
+
+.aceEditorContainer {
+  border-radius: var(--input-border-radius);
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
 
   @nest &.readOnly {
   }

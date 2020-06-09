@@ -307,7 +307,7 @@ export default class CodeInput extends PureComponent {
           </FormField>
         )}
         <FormField label={(selectedLanguage && selectedLanguage.title) || 'Code'} level={level + 1}>
-          {this.renderEditor()}
+          <div className={styles.editorContainer}>{this.renderEditor()}</div>
         </FormField>
       </Fieldset>
     )
