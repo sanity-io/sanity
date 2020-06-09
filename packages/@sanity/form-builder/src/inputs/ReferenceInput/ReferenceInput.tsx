@@ -16,6 +16,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {uniqueId} from 'lodash'
 
 type SanityDocument = {
   _id: string
@@ -96,6 +97,7 @@ export default withValuePath(
       _input: SearchableSelect
       state = getInitialState()
       subscriptions = subscriptionManager('search', 'previewSnapshot')
+      _inputId = uniqueId('ReferenceInput')
       componentWillUnmount() {
         this.subscriptions.unsubscribeAll()
       }
@@ -257,6 +259,7 @@ export default withValuePath(
         const placeholder = isLoadingSnapshot ? 'Loading…' : 'Type to search…'
         return (
           <FormField
+            labelFor={this._inputId}
             markers={markers}
             label={type.title}
             level={level}
@@ -274,6 +277,7 @@ export default withValuePath(
                 </div>
               )}
               <SearchableSelect
+                inputId={this._inputId}
                 placeholder={readOnly ? '' : placeholder}
                 title={
                   isMissing && hasRef

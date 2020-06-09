@@ -9,6 +9,8 @@ import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/SlugInput.css'
 import {Path} from '../../typedefs/path'
+import {uniqueId} from 'lodash'
+
 // Fallback slugify function if not defined in field options
 function defaultSlugify(value, type) {
   const maxLength = (type.options && type.options.maxLength) || 200
@@ -46,6 +48,7 @@ export default withValuePath(
     class SlugInput extends React.Component<Props> {
       _textInput: any
       _isMounted: boolean
+      _inputId = uniqueId('SlugInput')
       static defaultProps = {
         value: {current: undefined},
         readOnly: false,
@@ -145,7 +148,8 @@ export default withValuePath(
           description: type.description,
           level: level,
           markers,
-          presence
+          presence,
+          labelFor: this._inputId
         }
         const validation = markers.filter(marker => marker.type === 'validation')
         const errors = validation.filter(marker => marker.level === 'error')
@@ -154,6 +158,7 @@ export default withValuePath(
             <div className={styles.wrapper}>
               <div className={styles.input}>
                 <TextInput
+                  inputId={this._inputId}
                   ref={this.setTextInput}
                   customValidity={errors.length > 0 ? errors[0].item.message : ''}
                   disabled={loading}

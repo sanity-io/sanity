@@ -23,7 +23,8 @@ export default class DefaultTextField extends React.Component {
     isClearable: PropTypes.bool,
     className: PropTypes.string,
     description: PropTypes.string,
-    hasFocus: PropTypes.bool
+    hasFocus: PropTypes.bool,
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -59,7 +60,8 @@ export default class DefaultTextField extends React.Component {
       onKeyPress,
       onFocus,
       onBlur,
-      value
+      value,
+      inputId
     } = this.props
 
     return (
@@ -70,10 +72,11 @@ export default class DefaultTextField extends React.Component {
         label={label}
         description={description}
         type={type}
+        labelFor={this._inputId}
       >
         <DefaultTextInput
           className={styles.input}
-          id={this._inputId}
+          inputId={this._inputId}
           type={type}
           onChange={onChange}
           value={value}

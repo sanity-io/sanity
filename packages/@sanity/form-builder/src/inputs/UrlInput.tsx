@@ -1,22 +1,13 @@
 import React from 'react'
-import {get} from 'lodash'
+import {get, uniqueId} from 'lodash'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Type, Marker} from '../typedefs'
-type Props = {
-  type: Type
-  level: number
-  value: string | null
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-  markers: Array<Marker>
-  presence: any
-}
+import {Props} from './types'
 export default class UrlInput extends React.Component<Props> {
   _input: TextInput | null
+  _inputId = uniqueId('UrlInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
@@ -43,8 +34,10 @@ export default class UrlInput extends React.Component<Props> {
         label={type.title}
         description={type.description}
         presence={presence}
+        labelFor={this._inputId}
       >
         <TextInput
+          inputId={this._inputId}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type={inputType}
           value={value}

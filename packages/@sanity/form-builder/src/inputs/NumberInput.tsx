@@ -3,18 +3,11 @@ import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Type, Marker} from '../typedefs'
-type Props = {
-  type: Type
-  level: number
-  value: string | null
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-  markers: Array<Marker>
-}
+import {Props} from './types'
+import {uniqueId} from 'lodash'
 export default class NumberInput extends React.Component<Props, {}> {
   _input: TextInput | null
+  _inputId = uniqueId('NumberInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const nextValue = event.currentTarget.value
     this.props.onChange(PatchEvent.from(nextValue === '' ? unset() : set(Number(nextValue))))
@@ -35,8 +28,15 @@ export default class NumberInput extends React.Component<Props, {}> {
     const minRule = getValidationRule(type, 'min')
     const onlyPositiveNumber = minRule && minRule.constraint >= 0
     return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
+        description={type.description}
+        labelFor={this._inputId}
+      >
         <TextInput
+          inputId={this._inputId}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type="number"
           value={value}

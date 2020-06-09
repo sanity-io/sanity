@@ -30,7 +30,8 @@ export default class DefaultTextInput extends React.PureComponent {
       inputOnDisabled: PropTypes.string,
       inputOnError: PropTypes.string,
       containerOnError: PropTypes.string
-    })
+    }),
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -45,7 +46,8 @@ export default class DefaultTextInput extends React.PureComponent {
     onFocus: NOOP,
     onBlur: NOOP,
     styles: {},
-    customValidity: ''
+    customValidity: '',
+    inputId: ''
   }
 
   componentDidMount() {
@@ -85,6 +87,7 @@ export default class DefaultTextInput extends React.PureComponent {
       styles: passedStyles,
       customValidity,
       focusPath,
+      inputId,
       ...rest
     } = this.props
 
@@ -101,6 +104,7 @@ export default class DefaultTextInput extends React.PureComponent {
         ])}
       >
         <input
+          id={inputId}
           ref={this.setInput}
           {...rest}
           className={classNames(styles.input)}

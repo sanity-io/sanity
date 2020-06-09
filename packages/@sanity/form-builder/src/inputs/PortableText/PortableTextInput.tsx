@@ -44,6 +44,7 @@ import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
 import BlockExtrasOverlay from './BlockExtrasOverlay'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
+import {uniqueId} from 'lodash'
 
 export const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -102,6 +103,8 @@ export default withPatchSubscriber(
     private usubscribe: any
     private ptFeatures: PortableTextFeatures
     private editorSnapshot: JSX.Element
+
+    _inputId = uniqueId('PortableTextInput')
 
     handleToggleFullscreen = (): void => {
       if (!this.editor.current) {
@@ -680,6 +683,7 @@ export default withPatchSubscriber(
             label={type.title}
             presence={presence}
             description={type.description}
+            labelFor={this._inputId}
           />
           {invalidValue && !ignoreValidation && (
             <InvalidValue
@@ -691,6 +695,7 @@ export default withPatchSubscriber(
           )}
           {(!invalidValue || ignoreValidation) && (
             <ActivateOnFocus
+              inputId={this._inputId}
               html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
               isActive={this.state.isActive}
               onActivate={this.handleActivate}

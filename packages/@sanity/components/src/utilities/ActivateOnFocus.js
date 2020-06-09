@@ -11,7 +11,8 @@ class ActivateOnFocus extends React.Component {
     message: PropTypes.string,
     html: PropTypes.node,
     isActive: PropTypes.bool,
-    onActivate: PropTypes.func
+    onActivate: PropTypes.func,
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -51,14 +52,15 @@ class ActivateOnFocus extends React.Component {
       children,
       isActive,
       html,
-      overlayClassName: overlayClassNameProp
+      overlayClassName: overlayClassNameProp,
+      inputId
     } = this.props
     const {hasFocus} = this.state
     const className = classNames(hasFocus ? styles.hasFocus : styles.noFocus, classNameProp)
     const overlayClassName = classNames(styles.overlay, overlayClassNameProp)
 
     return (
-      <div className={className}>
+      <div className={className} id={inputId}>
         {!isActive && (
           <div className={styles.eventHandler} onClick={this.handleClick}>
             <div className={overlayClassName}>

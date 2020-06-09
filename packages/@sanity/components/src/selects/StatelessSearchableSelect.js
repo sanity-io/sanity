@@ -36,7 +36,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     isInputSelected: PropTypes.bool,
     disabled: PropTypes.bool,
     dropdownPosition: PropTypes.string,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -48,7 +49,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     readOnly: false,
     renderItem: item => item,
     items: [],
-    dropdownPosition: 'bottom'
+    dropdownPosition: 'bottom',
+    inputId: ''
   }
 
   handleSelect = item => {

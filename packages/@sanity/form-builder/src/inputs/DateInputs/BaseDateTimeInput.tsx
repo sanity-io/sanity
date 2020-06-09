@@ -9,6 +9,7 @@ import TextInput from 'part:@sanity/components/textinputs/default'
 import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import {Marker} from '../../typedefs'
+import {uniqueId} from 'lodash'
 import styles from './styles/BaseDateTimeInput.css'
 type Props = {
   value: Moment | null
@@ -36,6 +37,7 @@ type State = {
 
 export default class BaseDateTimeInput extends React.Component<Props, State> {
   _datepicker: DatePicker | null
+  _inputId = uniqueId('BaseDateTimeInput')
   state = {
     inputValue: null,
     isDialogOpen: false
@@ -133,9 +135,11 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
         level={level}
         description={description}
         presence={presence}
+        labelFor={this._inputId}
       >
         {readOnly && (
           <TextInput
+            inputId={this._inputId}
             customValidity={errors.length > 0 ? errors[0].item.message : ''}
             readOnly
             value={value ? value.format(format) : ''}
@@ -143,7 +147,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
         )}
         {!readOnly && (
           <div className={styles.root}>
-            <div className={styles.inputWrapper}>
+            <div className={styles.inputWrapper} id={this._inputId}>
               <DatePicker
                 onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
                 autoFocus={false}
