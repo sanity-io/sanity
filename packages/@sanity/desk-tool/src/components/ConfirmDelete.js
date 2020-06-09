@@ -1,12 +1,15 @@
 /* eslint-disable complexity */
+
 import PropTypes from 'prop-types'
-import React, {Fragment} from 'react'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import React from 'react'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
+
+import styles from './ConfirmDelete.css'
 
 export default enhanceWithReferringDocuments(
   class ConfirmDelete extends React.PureComponent {
@@ -42,13 +45,16 @@ export default enhanceWithReferringDocuments(
           title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now',
           color: 'danger'
         },
-        {name: 'cancel', title: 'Cancel', kind: 'simple'}
+        {name: 'cancel', title: 'Cancel', inverted: true}
       ].filter(Boolean)
 
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
 
+      const docTitle = <DocTitle document={draft || published} />
+
       return (
-        <Dialog
+        <FullscreenDialog
+          cardClassName={styles.card}
           isOpen
           showHeader
           color="danger"
@@ -58,41 +64,38 @@ export default enhanceWithReferringDocuments(
           actions={actions}
         >
           {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" />}
+
           {hasReferringDocuments && (
-            <div>
-              <h3>
-                Warning: Found{' '}
-                {referringDocuments.length === 1
-                  ? 'a document'
-                  : `${referringDocuments.length} documents`}{' '}
-                that refers to {'"'}
-                <DocTitle document={draft || published} />
-                {'"'}
-              </h3>
+            <>
               <p>
-                You may not be allowed to delete
-                {' "'}
-                <DocTitle document={draft || published} />
-                {'" '}
-                as the following document{referringDocuments.length === 1 ? '' : 's'} refers to it:
+                <strong>
+                  Warning: Found{' '}
+                  {referringDocuments.length === 1 ? (
+                    <>a document</>
+                  ) : (
+                    `${referringDocuments.length} documents`
+                  )}{' '}
+                  that refer{referringDocuments.length === 1 ? <>s</> : ''} to “{docTitle}”.
+                </strong>
               </p>
+
+              <p>
+                You may not be able to delete “{docTitle}” because{' '}
+                {referringDocuments.length === 1 ? <>this document</> : <>these documents</>} refer
+                {referringDocuments.length === 1 ? <>s</> : ''} to it:
+              </p>
+
               <ReferringDocumentsList documents={referringDocuments} />
-            </div>
+            </>
           )}
           {!isCheckingReferringDocuments && !hasReferringDocuments && (
-            <Fragment>
-              <h3>
-                Are you sure you would like to permanently delete the document
-                <strong>
-                  &nbsp;&ldquo;
-                  <DocTitle document={draft || published} />
-                  &rdquo;
-                </strong>
-                ?
-              </h3>
-            </Fragment>
+            <>
+              <p>
+                Are you sure you want to delete <strong>“{docTitle}”</strong>?
+              </p>
+            </>
           )}
-        </Dialog>
+        </FullscreenDialog>
       )
     }
   }

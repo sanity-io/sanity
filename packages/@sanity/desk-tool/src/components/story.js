@@ -60,7 +60,7 @@ storiesOf('@sanity/desk-tool', module)
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <Fragment>
             <h3>
-              Are you sure you would like to permanently delete the document
+              Are you sure you want to permanently delete the document
               <strong>&nbsp;&ldquo;Test document&rdquo;</strong>?
             </h3>
           </Fragment>
@@ -119,7 +119,7 @@ storiesOf('@sanity/desk-tool', module)
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <div>
             <p>
-              Are you sure you would like to unpublish the document <strong>Document title</strong>?
+              Are you sure you want to unpublish the document <strong>Document title</strong>?
             </p>
             <h2>Careful!</h2>
             <p>
