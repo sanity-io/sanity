@@ -5,27 +5,21 @@ import {Type} from '../../typedefs'
 import {set} from '../../utils/patches'
 import {map} from 'rxjs/operators'
 
-const UPLOAD_BLOB: UploaderDef = {
-  type: 'image',
-  accepts: 'application/octet-stream',
-  upload: (file: File, type?: Type, options?: UploadOptions) => uploadImage(file, options)
-}
-
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
-  accepts: 'image/*',
+  accepts: ['image/*', 'application/octet-stream'],
   upload: (file: File, type?: Type, options?: UploadOptions) => uploadImage(file, options)
 }
 
 const UPLOAD_FILE: UploaderDef = {
   type: 'file',
-  accepts: '',
+  accepts: [],
   upload: (file: File, type: Type, options?: UploadOptions) => uploadFile(file, options)
 }
 
 const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
-  accepts: 'text/*',
+  accepts: ['text/*'],
   upload: (file: File, type: Type, options?: UploadOptions) =>
     uploadFile(file, options).pipe(
       map(content => ({
@@ -37,11 +31,9 @@ const UPLOAD_TEXT: UploaderDef = {
   // and make it possible to register custom uploaders
 }
 
-const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE, UPLOAD_BLOB].map(
-  (uploader, i) => ({
-    ...uploader,
-    priority: i
-  })
-)
+const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE].map((uploader, i) => ({
+  ...uploader,
+  priority: i
+}))
 
 export default uploaders

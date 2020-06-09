@@ -25,13 +25,13 @@ export type UploadOptions = {
 
 export type UploaderDef = {
   type: string
-  accepts: string
+  accepts: string[]
   upload: (file: File, type: Type) => Observable<UploadEvent>
 }
 
 export type Uploader = {
   type: string
-  accepts: string
+  accepts: string[]
   upload: (file: File, type: Type, options?: UploadOptions) => Observable<UploadEvent>
   priority: number
 }
