@@ -10,7 +10,9 @@ type Props = {
 export default function StackCounter({count, isGlobal = false, tone}: Props) {
   return (
     <div className={styles.root} data-tone={tone} key="counter">
-      <div className={`${styles.counter} ${isGlobal ? styles.isGlobal : ''}`}>{count}</div>
+      <div className={`${styles.counter} ${isGlobal ? styles.isGlobal : ''}`}>
+        <span>{count}</span>
+      </div>
     </div>
   )
 }
