@@ -166,6 +166,7 @@ class StyleSelect extends React.PureComponent {
 
   render() {
     const {
+      disabled,
       value,
       items,
       className: classNameProp,
@@ -190,7 +191,7 @@ class StyleSelect extends React.PureComponent {
         onKeyPress={this.handleButtonKeyDown}
         tabIndex={0}
       >
-        <button className={styles.button} ref={this.buttonElement}>
+        <button className={styles.button} disabled={disabled} ref={this.buttonElement}>
           <div className={styles.buttonInner}>
             <span className={styles.title}>
               {value && value.length > 1 && 'Multiple'}

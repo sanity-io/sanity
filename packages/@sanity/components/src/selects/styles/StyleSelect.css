@@ -26,14 +26,20 @@
     border-color: var(--hairline-color);
   }
 
-  @media (hover: hover) {
-    @nest .root.transparent:hover & {
-      background-color: color(var(--default-button-color) a(10%));
-      color: color(var(--default-button-color) lightness(- 20%));
-    }
+  @nest &[disabled] {
+    color: var(--gray-lightest);
+  }
 
-    @nest &:focus {
-      box-shadow: var(--input-box-shadow--focus);
+  @nest &:not([disabled]) {
+    @media (hover: hover) {
+      @nest .root.transparent:hover & {
+        background-color: color(var(--default-button-color) a(10%));
+        color: color(var(--default-button-color) lightness(- 20%));
+      }
+
+      @nest &:focus {
+        box-shadow: var(--input-box-shadow--focus);
+      }
     }
   }
 
