@@ -27,7 +27,7 @@
   }
 
   @nest &[disabled] {
-    color: var(--gray-lightest);
+    color: var(--gray-lighter);
   }
 
   @nest &:not([disabled]) {

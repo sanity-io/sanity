@@ -78,17 +78,6 @@
   box-sizing: border-box;
   text-align: left;
 
-  @nest &[disabled] {
-    opacity: 0.25;
-
-    @media (hover: hover) {
-      @nest &:hover {
-        color: inherit;
-        background: none;
-      }
-    }
-  }
-
   @nest & > div {
     outline: none;
     padding: 0.5em 0.75em;
