@@ -78,6 +78,7 @@ import TruncateIcon from 'part:@sanity/base/truncate-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
+import UserIcon from 'part:@sanity/base/user-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
@@ -263,6 +264,7 @@ const icons = [
   {title: 'UndoIcon', component: UndoIcon, partId: 'part:@sanity/base/undo-icon'},
   {title: 'UnpublishIcon', component: UnpublishIcon, partId: 'part:@sanity/base/unpublish-icon'},
   {title: 'UploadIcon', component: UploadIcon, partId: 'part:@sanity/base/upload-icon'},
+  {title: 'UserIcon', component: UserIcon, partId: 'part:@sanity/base/user-icon'},
   {title: 'UsersIcon', component: UsersIcon, partId: 'part:@sanity/base/users-icon'},
   {
     title: 'VisibilityOffIcon',
