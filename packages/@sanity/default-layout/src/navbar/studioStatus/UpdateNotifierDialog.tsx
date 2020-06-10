@@ -1,6 +1,5 @@
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import {Package} from './types'
 
 import styles from './UpdateNotifierDialog.css'
@@ -24,73 +23,96 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
     const {outdated} = this.props
 
     return (
-      <div>
-        <table className={styles.versionsTable}>
-          <thead>
-            <tr>
-              <th>Module</th>
-              <th>Installed</th>
-              <th>Latest</th>
-              <th>Importance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {outdated.map(pkg => (
-              <tr key={pkg.name}>
-                <td>{pkg.name}</td>
-                <td>{pkg.version}</td>
-                <td>{pkg.latest}</td>
-                <td>{upperFirst(pkg.severity || 'low')}</td>
+      <>
+        <div className={styles.versionsTable}>
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Installed</th>
+                <th>Latest</th>
+                <th>Importance</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className={styles.upgradeText}>
+            </thead>
+            <tbody>
+              {outdated.map(pkg => (
+                <tr key={pkg.name}>
+                  <td className={styles.npmValue}>{pkg.name}</td>
+                  <td className={styles.npmValue}>{pkg.version}</td>
+                  <td className={styles.npmValue}>{pkg.latest}</td>
+                  <td>{upperFirst(pkg.severity || 'low')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.textContent}>
           <p>
             To upgrade, run the <a href="https://www.sanity.io/docs/reference/cli">Sanity CLI</a>{' '}
             upgrade command in your project folder from a terminal.
           </p>
-          <code className={styles.code}>sanity upgrade</code>
+
+          <pre className={styles.code}>
+            <code>sanity upgrade</code>
+          </pre>
         </div>
-      </div>
+      </>
     )
   }
 
   renderContactDeveloper() {
     const {severity} = this.props
     return (
-      <div>
-        <p>
-          This Studio is now outdated.{' '}
-          {severity === 'high'
-            ? 'Please get in touch with your developers and ask them to upgrade it for you.'
-            : 'Consider getting in touch with your developers and ask them to upgrade it for you.'}
-        </p>
+      <>
+        <div className={styles.textContent}>
+          {severity === 'high' ? (
+            <p>
+              This Studio should be updated. Please get in touch with the developers and ask them to
+              upgrade it for you.
+            </p>
+          ) : (
+            <p>
+              This Studio has available upgrades. Consider getting in touch with the developers and
+              ask them to upgrade it for you.
+            </p>
+          )}
+        </div>
 
         <details className={styles.details}>
           <summary className={styles.summary}>Developer info</summary>
           {this.renderTable()}
         </details>
-      </div>
+      </>
     )
   }
 
   render() {
     const {severity, onClose} = this.props
+
     return (
-      <Dialog isOpen onClose={onClose} onClickOutside={onClose}>
-        <DialogContent size="medium" padding="large">
-          <h2 className={styles.dialogHeading}>
-            {severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
-          </h2>
+      <Dialog
+        isOpen
+        onClose={onClose}
+        onClickOutside={onClose}
+        title={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
+      >
+        <div className={styles.content}>
           {__DEV__ && (
-            <p>
-              This Studio is no longer up to date{' '}
-              {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
-            </p>
+            <>
+              <div className={styles.textContent}>
+                <p>
+                  This Studio is no longer up to date{' '}
+                  {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
+                </p>
+              </div>
+
+              {this.renderTable()}
+            </>
           )}
-          {__DEV__ ? this.renderTable() : this.renderContactDeveloper()}
-        </DialogContent>
+
+          {!__DEV__ && this.renderContactDeveloper()}
+        </div>
       </Dialog>
     )
   }

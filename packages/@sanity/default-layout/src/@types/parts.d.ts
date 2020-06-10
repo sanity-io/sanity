@@ -277,6 +277,7 @@ declare module 'part:@sanity/components/dialogs/default' {
     isOpen: boolean
     onClickOutside: () => void
     onClose: () => void
+    title?: React.ReactNode
   }>
   export default DefaultDialog
 }
