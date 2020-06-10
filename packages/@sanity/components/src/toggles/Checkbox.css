@@ -13,6 +13,7 @@
 .root {
   position: relative;
   display: flex;
+  margin-bottom: var(--small-padding);
 }
 
 .input {
@@ -38,7 +39,7 @@
   width: var(--checkbox-button-size);
   border: 1px solid var(--checkbox-off-color);
   border-radius: 3px;
-  margin-top: 3px;
+  margin-top: 1px;
   margin-right: var(--small-padding);
   line-height: 1;
 
