@@ -945,7 +945,7 @@
     },
     {
       "implements": "part:@sanity/base/user-icon",
-      "path": "components/icons/UserIcon.js"
+      "path": "components/icons/User.js"
     },
     {
       "implements": "part:@sanity/base/drag-handle-icon",
