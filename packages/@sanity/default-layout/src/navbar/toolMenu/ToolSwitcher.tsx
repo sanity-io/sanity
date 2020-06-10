@@ -2,8 +2,9 @@ import React from 'react'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import ToolSwitcherWidget from './ToolSwitcherWidget'
 import ToolSwitcherItem from './ToolSwitcherItem'
-import ToolSwitcherWidgetStyles from './ToolSwitcherWidget.css'
 import {Router, Tool} from '../../types'
+
+import styles from './ToolSwitcher.css'
 
 interface Props {
   activeToolName: string
@@ -32,24 +33,21 @@ class ToolSwitcher extends React.PureComponent<Props> {
   renderItem = (tool: Tool, showIcon: boolean, overrideShowLabel?: boolean) => {
     const {activeToolName, router, isVisible, onSwitchTool, showLabel, tone} = this.props
     const tabIndex = isVisible ? 0 : -1
+
     return (
       <StateLink
-        state={{
-          ...router.state,
-          tool: tool.name,
-          [tool.name]: undefined
-        }}
+        state={{...router.state, tool: tool.name, [tool.name]: undefined}}
         onClick={onSwitchTool}
-        className={ToolSwitcherWidgetStyles.link}
+        className={styles.link}
         tabIndex={tabIndex}
       >
         <ToolSwitcherItem
           icon={tool.icon}
           showIcon={showIcon}
           showLabel={showLabel || overrideShowLabel}
-          title={tool.title || tool.name}
+          title={tool.title || tool.name || undefined}
           tone={tone}
-          isActive={activeToolName === tool.name}
+          selected={activeToolName === tool.name}
         />
       </StateLink>
     )

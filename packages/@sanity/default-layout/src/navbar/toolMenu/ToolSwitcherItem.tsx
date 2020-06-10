@@ -5,9 +5,9 @@ import {Tooltip} from '../tooltip'
 import styles from './ToolSwitcherItem.css'
 
 interface Props {
-  isActive: boolean
   title: string
   icon: React.ComponentType<{}>
+  selected: boolean
   showIcon: boolean
   showLabel: boolean
   tone?: 'navbar'
@@ -16,14 +16,16 @@ interface Props {
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 function ToolSwitcherItem(props: Props) {
-  const {isActive, title, icon, showIcon, showLabel} = props
+  const {selected, title, icon, showIcon, showLabel} = props
   const Icon = icon || PluginIcon
 
   return (
     <Tooltip
-      className={classNames(isActive ? styles.rootActive : styles.root)}
+      className={classNames(styles.root, selected && styles.selected)}
       content={title}
       disabled={TOUCH_DEVICE || showLabel}
+      key={showLabel ? 'tippy' : 'tippy-disabled'}
+      title={showLabel ? '' : title}
     >
       <div className={styles.inner} tabIndex={-1}>
         <div>
@@ -40,7 +42,7 @@ function ToolSwitcherItem(props: Props) {
 }
 
 ToolSwitcherItem.defaultProps = {
-  isActive: false,
+  selected: false,
   showIcon: true,
   showLabel: true,
   direction: 'horizontal'

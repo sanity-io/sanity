@@ -11,6 +11,7 @@
 .rootVertical {
   composes: root;
   flex-direction: column;
+  padding: 0 var(--extra-small-padding);
 }
 
 .rootHorizontal {
@@ -19,6 +20,7 @@
   align-self: stretch;
   align-items: stretch;
   flex-wrap: nowrap;
+  padding: var(--extra-small-padding) 0;
 }
 
 .item {
@@ -31,33 +33,4 @@
   @nest .rootVertical & {
     width: 100%;
   }
-}
-
-.link {
-  composes: item;
-  text-decoration: none;
-  color: inherit;
-  outline: none;
-  padding: var(--extra-small-padding) 0;
-
-  @media (hover: hover) {
-    color: var(--gray);
-
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    color: inherit;
-    background-color: color(var(--focus-color) a(20%));
-  }
-
-  @nest .rootVertical & {
-    padding: 0 var(--extra-small-padding);
-  }
-}
-
-.activeItem {
-  composes: item;
 }
