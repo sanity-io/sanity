@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/fa/calendar'
+import icon from 'part:@sanity/base/calendar-icon'
 
 export default {
   name: 'datetimeTest',

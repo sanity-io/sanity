@@ -45,6 +45,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
 import ImageAreaIcon from 'part:@sanity/base/image-area-icon'
 import ImageIcon from 'part:@sanity/base/image-icon'
+import ImagesIcon from 'part:@sanity/base/images-icon'
 import InfoIcon from 'part:@sanity/base/info-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import LaunchIcon from 'part:@sanity/base/launch-icon'
@@ -209,6 +210,7 @@ const icons = [
   {title: 'HistoryIcon', component: HistoryIcon, partId: 'part:@sanity/base/history-icon'},
   {title: 'ImageAreaIcon', component: ImageAreaIcon, partId: 'part:@sanity/base/image-area-icon'},
   {title: 'ImageIcon', component: ImageIcon, partId: 'part:@sanity/base/image-icon'},
+  {title: 'ImagesIcon', component: ImagesIcon, partId: 'part:@sanity/base/images-icon'},
   {title: 'InfoIcon', component: InfoIcon, partId: 'part:@sanity/base/info-icon'},
   {
     title: 'InlineObjectIcon',
@@ -293,6 +295,10 @@ const icons = [
 ]
 
 function IconRow({component, partId, title}) {
+  if (!component) {
+    return <li>Missing `component` for {partId}</li>
+  }
+
   return (
     <li className={styles.icon}>
       <div className={styles.iconPreview}>{React.createElement(component)}</div>

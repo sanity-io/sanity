@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/fa/recycle'
+import icon from 'part:@sanity/base/sync-icon'
 
 export default {
   name: 'referenceTest',
