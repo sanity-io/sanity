@@ -1,14 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-}
+  display: block !important;
+  border-radius: var(--border-radius-medium);
 
-.rootActive {
-  composes: root;
-  color: inherit;
+  @nest &:not(.selected) {
+    @media (hover: hover) {
+      color: var(--gray);
 
-  @nest &[data-tone='navbar'] {
-    color: var(--main-navigation-color--inverted);
+      @nest &:hover {
+        color: inherit;
+      }
+    }
+  }
+
+  @nest a:focus & {
+    background-color: color(var(--focus-color) a(20%));
+    color: inherit;
   }
 }
 
@@ -44,6 +52,6 @@
 .toolName {
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-  padding: 0 var(--small-padding);
+  padding: 0 0 0 var(--small-padding);
   margin-top: -1px;
 }

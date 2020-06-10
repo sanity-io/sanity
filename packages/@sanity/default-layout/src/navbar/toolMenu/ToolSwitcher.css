@@ -1,0 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+}

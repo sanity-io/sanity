@@ -11,18 +11,18 @@ interface Props {
 }
 
 function ToolSwitcherWidget(props: Props) {
-  const {tools, direction, activeToolName, renderItem} = props
+  const {tools, direction, renderItem} = props
   const showIcon = true
   const showLabel = direction === 'vertical'
+
   return (
     <ul
       className={direction === 'horizontal' ? styles.rootHorizontal : styles.rootVertical}
       data-tone="navbar"
     >
       {tools.map(tool => {
-        const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
         return (
-          <li key={tool.name} className={itemClass}>
+          <li key={tool.name} className={styles.item}>
             {renderItem(tool, showIcon, showLabel)}
           </li>
         )

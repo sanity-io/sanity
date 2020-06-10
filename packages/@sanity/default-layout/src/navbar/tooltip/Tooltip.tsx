@@ -8,6 +8,7 @@ export function Tooltip(props: {
   className?: string
   content: React.ReactNode
   disabled?: boolean
+  title?: string
 }) {
   return (
     <BaseTooltip
@@ -24,6 +25,7 @@ export function Tooltip(props: {
       distance={13}
       sticky
       size="small"
+      title={props.title || ''}
     >
       {props.children}
     </BaseTooltip>
