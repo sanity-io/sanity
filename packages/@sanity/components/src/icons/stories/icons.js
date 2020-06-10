@@ -14,6 +14,8 @@ import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
+import ClipboardIcon from 'part:@sanity/base/clipboard-icon'
+import ClipboardImageIcon from 'part:@sanity/base/clipboard-image-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
@@ -112,7 +114,6 @@ const icons = [
     component: ChevronDownIcon,
     partId: 'part:@sanity/base/chevron-down-icon'
   },
-  {title: 'CloseIcon', component: CloseIcon, partId: 'part:@sanity/base/close-icon'},
   {
     title: 'CircleCheckIcon',
     component: CircleCheckIcon,
@@ -123,6 +124,17 @@ const icons = [
     component: CircleThinIcon,
     partId: 'part:@sanity/base/circle-thin-icon'
   },
+  {
+    title: 'ClipboardIcon',
+    component: ClipboardIcon,
+    partId: 'part:@sanity/base/clipboard-icon'
+  },
+  {
+    title: 'ClipboardImageIcon',
+    component: ClipboardImageIcon,
+    partId: 'part:@sanity/base/clipboard-image-icon'
+  },
+  {title: 'CloseIcon', component: CloseIcon, partId: 'part:@sanity/base/close-icon'},
   {title: 'CogIcon', component: CogIcon, partId: 'part:@sanity/base/cog-icon'},
   {title: 'CommentIcon', component: CommentIcon, partId: 'part:@sanity/base/comment-icon'},
   {title: 'ComposeIcon', component: ComposeIcon, partId: 'part:@sanity/base/compose-icon'},
