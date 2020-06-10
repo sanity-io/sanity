@@ -78,7 +78,7 @@ class DefaultSource extends React.Component<Props, State> {
     }
   }
 
-  handleItemClick = (event: React.SyntheticEvent<any>) => {
+  handleItemClick = (event: React.MouseEvent) => {
     event.preventDefault()
 
     this.select(event.currentTarget.getAttribute('data-id'))
@@ -112,7 +112,7 @@ class DefaultSource extends React.Component<Props, State> {
         onClose={this.handleClose}
         isOpen
       >
-        <div className={styles.imageList}>
+        <div className={styles.imageGrid}>
           {assets.map(asset => (
             <Asset
               key={asset._id}
@@ -131,7 +131,7 @@ class DefaultSource extends React.Component<Props, State> {
 
         <div className={styles.loadMore}>
           {!isLastPage && (
-            <Button kind="simple" onClick={this.handleFetchNextPage} loading={isLoading}>
+            <Button inverted onClick={this.handleFetchNextPage} loading={isLoading}>
               Load more
             </Button>
           )}

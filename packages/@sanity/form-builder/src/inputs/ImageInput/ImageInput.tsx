@@ -20,6 +20,8 @@ import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ImageIcon from 'part:@sanity/base/image-icon'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
+import SearchIcon from 'part:@sanity/base/search-icon'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
@@ -472,7 +474,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           items={this.assetSources}
           renderItem={this.renderDropDownMenuItem}
           onAction={this.handleSelectImageFromAssetSource}
-          kind="default"
           inverted
           showArrow
         >
@@ -480,9 +481,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         </DropDownButton>
       )
     }
+
     // Single asset source (just a normal button)
     return (
       <Button
+        icon={SearchIcon}
         onClick={this.handleSelectImageFromAssetSource.bind(this, this.assetSources[0])}
         inverted
       >
@@ -619,7 +622,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 </Button>
               )}
               {hasAsset && !readOnly && (
-                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                <Button
+                  color="danger"
+                  icon={TrashIcon}
+                  inverted
+                  onClick={this.handleRemoveButtonClick}
+                >
                   Remove
                 </Button>
               )}

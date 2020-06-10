@@ -7,6 +7,7 @@ export interface AssetRecord {
 export interface AssetAction {
   color?: 'danger'
   icon?: React.ComponentType
+  inverted?: boolean
   name: string
   title: string
 }
