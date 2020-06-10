@@ -18,18 +18,18 @@ import {isEqual} from 'lodash'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
-import InvalidValue from './InvalidValue'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
+import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
-import styles from './PortableTextInput.css'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {Subject} from 'rxjs'
+import {Path} from '../../typedefs/path'
+import InvalidValue from './InvalidValue'
+import styles from './PortableTextInput.css'
 import Toolbar from './Toolbar/Toolbar'
 import {BlockObject} from './Objects/BlockObject'
-import {Path} from '../../typedefs/path'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
@@ -131,6 +131,7 @@ export default withPatchSubscriber(
       valueWithError: undefined
     }
 
+    // eslint-disable-next-line complexity
     static getDerivedStateFromProps(nextProps: Props, prevState: State): {} | null {
       let state = {}
       // Reset invalidValue state if new value is coming in from props
@@ -149,10 +150,12 @@ export default withPatchSubscriber(
           const block =
             nextProps.value && nextProps.value.find(blk => blk._key === blockSegment._key)
           const markDefSegment = focusPath[2]
+          // eslint-disable-next-line max-depth
           if (block && markDefSegment && typeof markDefSegment === 'object') {
             const span = block.children.find(
               child => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
             )
+            // eslint-disable-next-line max-depth
             if (span) {
               const spanPath = [blockSegment, 'children', {_key: span._key}]
               state = {
@@ -171,6 +174,7 @@ export default withPatchSubscriber(
         ) {
           let type = 'blockObject'
           let path = focusPath.slice(0, 1)
+          // eslint-disable-next-line max-depth
           if (isChild) {
             type = 'inlineObject'
             path = path.concat(focusPath.slice(1, 3))
@@ -213,6 +217,7 @@ export default withPatchSubscriber(
       }
     }
 
+    // eslint-disable-next-line complexity
     private handleEditorChange = (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
@@ -406,6 +411,7 @@ export default withPatchSubscriber(
       // console.log('Hightlight cursor')
     }
 
+    // eslint-disable-next-line complexity
     renderEditor = (editor: JSX.Element): JSX.Element => {
       const {selection, isFullscreen} = this.state
       const {onFocus, markers, renderBlockActions, renderCustomMarkers} = this.props
@@ -474,6 +480,7 @@ export default withPatchSubscriber(
       return this.editorSnapshot
     }
 
+    // eslint-disable-next-line complexity
     renderEditObject = (): JSX.Element => {
       const {objectEditStatus} = this.state
       let object
@@ -488,7 +495,8 @@ export default withPatchSubscriber(
         blockKey &&
         Array.isArray(this.props.value) &&
         this.props.value.find(blk => blk._key === blockKey)
-
+      const child =
+        block && block.children.find(cld => cld._key === objectEditStatus.editorPath[2]._key)
       if (block) {
         switch (objectEditStatus.type) {
           case 'blockObject':
@@ -499,8 +507,9 @@ export default withPatchSubscriber(
             break
           case 'inlineObject':
             object = block.children.find(
-              child => child._key === objectEditStatus.formBuilderPath[2]._key
+              cld => cld._key === objectEditStatus.formBuilderPath[2]._key
             )
+            // eslint-disable-next-line max-depth
             if (object) {
               lookForType = object._type
               // eslint-disable-next-line react/no-find-dom-node
@@ -508,14 +517,13 @@ export default withPatchSubscriber(
             }
             break
           case 'annotation':
-            const child =
-              block &&
-              block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
+            // eslint-disable-next-line max-depth
             if (child) {
               const markDef =
                 child.marks &&
                 block.markDefs &&
                 block.markDefs.find(def => child.marks.includes(def._key))
+              // eslint-disable-next-line max-depth
               if (markDef) {
                 lookForType = markDef._type
                 object = markDef
@@ -523,17 +531,18 @@ export default withPatchSubscriber(
                 referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
               }
             }
+            break
+          default:
+          // None
         }
       }
 
       if (object && lookForType) {
         // Find the type
+        const annotationOrInline =
+          objectEditStatus.type === 'annotation' ? 'annotations' : 'inlineObjects'
         const type = this.ptFeatures.types[
-          objectEditStatus.formBuilderPath.length === 1
-            ? 'blockObjects'
-            : objectEditStatus.type === 'annotation'
-            ? 'annotations'
-            : 'inlineObjects'
+          objectEditStatus.formBuilderPath.length === 1 ? 'blockObjects' : annotationOrInline
         ].find(t => t.name === lookForType)
 
         if (type) {
@@ -578,6 +587,7 @@ export default withPatchSubscriber(
       return this.editorSnapshot
     }
 
+    // eslint-disable-next-line complexity
     render(): JSX.Element {
       const {value, readOnly, type, markers, level} = this.props
       // TODO: deal with validation and loading status
