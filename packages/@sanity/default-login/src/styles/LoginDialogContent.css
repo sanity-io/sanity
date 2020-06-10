@@ -121,7 +121,14 @@
 
   @nest & svg {
     height: 1.5em;
-    width: auto;
+    width: 1.5em;
     vertical-align: top;
+  }
+
+  @nest & img {
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: top;
+    border-radius: 50%;
   }
 }
