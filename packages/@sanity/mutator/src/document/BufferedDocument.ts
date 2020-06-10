@@ -236,7 +236,7 @@ export default class BufferedDocument {
     }
 
     // We had local changes, so need to signal rebase
-    this.rebase([], [])
+    this.rebase([msg.mutation], [])
   }
 
   rebase(remoteMutations: Mutation[], localMutations: Mutation[]) {
