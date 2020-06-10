@@ -40,7 +40,6 @@
 .list {
   display: block;
   padding: var(--extra-small-padding) 0 !important;
-  border-radius: var(--border-radius-small);
 }
 
 .listItem {
@@ -59,4 +58,5 @@
   background-color: var(--component-bg);
   overflow: auto;
   max-height: calc(100vh - var(--medium-padding) * 2);
+  border-radius: var(--border-radius-small);
 }
