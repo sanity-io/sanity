@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/person'
+import icon from 'part:@sanity/base/user-icon'
 
 export default {
   name: 'author',

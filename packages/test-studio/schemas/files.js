@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/fa/file-o'
+import icon from 'part:@sanity/base/file-icon'
 
 export default {
   name: 'filesTest',

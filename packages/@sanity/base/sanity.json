@@ -868,6 +868,10 @@
       "path": "components/icons/ImageArea.js"
     },
     {
+      "implements": "part:@sanity/base/images-icon",
+      "path": "components/icons/Images.js"
+    },
+    {
       "implements": "part:@sanity/base/sync-icon",
       "path": "components/icons/Sync.js"
     },

@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/photo-library'
+import icon from 'part:@sanity/base/image-icon'
 
 export const myImage = {
   name: 'myImage',
