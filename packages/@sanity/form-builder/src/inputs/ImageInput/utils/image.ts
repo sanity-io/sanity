@@ -9,7 +9,8 @@ export function urlToFile(url: string, filename?: string): Promise<File> {
         const string = reader.result.toString()
         const ext = string.substring('data:image/'.length, string.indexOf(';base64'))
         if (!ext && !filename) {
-          return reject(new Error('Could not find mime type for image'))
+          reject(new Error('Could not find mime type for image'))
+          return
         }
         resolve(dataURLtoFile(reader.result, filename || `${UUID()}.${ext}`))
       }
@@ -29,7 +30,8 @@ export function base64ToFile(base64Data: string | ArrayBuffer, filename?: string
     const string = base64Data.toString()
     const ext = string.substring('data:image/'.length, string.indexOf(';base64'))
     if (!ext && !filename) {
-      return reject(new Error('Could not find mime type for image'))
+      reject(new Error('Could not find mime type for image'))
+      return
     }
     resolve(dataURLtoFile(base64Data, filename || `${UUID()}.${ext}`))
   })

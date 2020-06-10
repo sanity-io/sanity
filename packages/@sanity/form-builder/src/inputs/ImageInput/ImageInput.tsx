@@ -37,7 +37,7 @@ import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 
-import styles from './styles/ImageInput.css'
+import styles from './ImageInput.css'
 
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
@@ -210,6 +210,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         }
       },
       error: err => {
+        // eslint-disable-next-line no-console
         console.error(err)
         this.setState({uploadError: err})
         this.clearUploadStatus()
@@ -300,10 +301,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           ])
         )
         break
-      case 'file':
+      case 'file': {
         const uploader = resolveUploader(type, firstAsset.value)
         this.uploadWith(uploader, firstAsset.value, {label, title, description, creditLine, source})
         break
+      }
       case 'base64':
         base64ToFile(firstAsset.value, originalFilename).then(file => {
           const uploader = resolveUploader(type, file)
@@ -524,6 +526,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
+  // eslint-disable-next-line complexity
   render() {
     const {type, value, level, materialize, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
@@ -580,6 +583,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               {value && value._upload && (
                 <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
               )}
+              {/* eslint-disable-next-line no-nested-ternary */}
               {hasAsset ? (
                 <WithMaterializedReference reference={value.asset} materialize={materialize}>
                   {this.renderMaterializedAsset}

@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.menuItem {
+  display: flex;
+  align-items: center;
+}
+
+.menuItemDanger {
+  composes: menuItem;
+  color: var(--state-danger-color);
+}
