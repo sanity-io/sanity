@@ -53,14 +53,14 @@ export default class ConfirmDialog extends React.PureComponent {
     } = this.props
 
     const actions = [
-      {
+      confirmButtonText && {
         key: 'confirm',
         index: 1,
         title: confirmButtonText,
         color: confirmColor,
         action: onConfirm
       },
-      {
+      cancelButtonText && {
         key: 'cancel',
         index: 2,
         title: cancelButtonText,
@@ -69,7 +69,7 @@ export default class ConfirmDialog extends React.PureComponent {
         kind: 'simple',
         secondary: true
       }
-    ]
+    ].filter(Boolean)
 
     return (
       <DefaultDialog

@@ -85,8 +85,6 @@ export default class FullScreenDialog extends React.PureComponent {
   render() {
     const {title, cardClassName, className, onClose, onEscape, isOpen, actions} = this.props
 
-    console.log(this.props)
-
     return (
       <StackedEscapable onEscape={onEscape || onClose || noop}>
         <Portal>
@@ -94,23 +92,25 @@ export default class FullScreenDialog extends React.PureComponent {
             className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}
           >
             <div className={classNames(styles.inner, cardClassName)}>
-              <header className={styles.header}>
-                {title && <h1 className={styles.title}>{title}</h1>}
+              {(title || onClose) && (
+                <header className={styles.header}>
+                  {title && <h1 className={styles.title}>{title}</h1>}
 
-                {onClose && (
-                  <div className={styles.actions}>
-                    <Button
-                      className={styles.closeButton}
-                      icon={CloseIcon}
-                      kind="simple"
-                      onClick={onClose}
-                      padding="small"
-                    />
-                  </div>
-                )}
-              </header>
+                  {onClose && (
+                    <div className={styles.actions}>
+                      <Button
+                        className={styles.closeButton}
+                        icon={CloseIcon}
+                        kind="simple"
+                        onClick={onClose}
+                        padding="small"
+                      />
+                    </div>
+                  )}
+                </header>
+              )}
 
-              <div className={styles.content}>{this.props.children}</div>
+              {this.props.children && <div className={styles.content}>{this.props.children}</div>}
 
               {actions && actions.length > 0 && (
                 <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>

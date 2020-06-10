@@ -106,32 +106,24 @@
 
 .header {
   position: relative;
-  height: var(--dialog-header-height);
-  min-height: var(--dialog-header-height);
-  line-height: var(--dialog-header-height);
   background-color: var(--dialog-header-color);
   color: var(--dialog-header-color--inverted);
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  padding: var(--medium-padding);
+  z-index: 10;
+  line-height: 0;
 
   @nest &::after {
     content: '';
-    width: 100%;
-    background: linear-gradient(
-      to top,
-      color(var(--shadow-base) a(0%)) 0%,
-      color(var(--shadow-base) a(4%)) 75%,
-      color(var(--shadow-base) a(12%)) 100%
-    );
-    height: 0.25em;
-    top: var(--dialog-header-height);
+    display: block;
     position: absolute;
     left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
     pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.2s linear;
   }
 
   @nest .danger & {
@@ -169,6 +161,14 @@
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   box-sizing: border-box;
   background-color: var(--component-bg);
+
+  @nest & > :first-child {
+    margin-top: 0;
+  }
+
+  @nest & > :last-child {
+    margin-bottom: 0;
+  }
 }
 
 .contentWithoutFooter {
@@ -182,21 +182,47 @@
 }
 
 .title {
-  line-height: inherit;
-  padding: 0 var(--dialog-padding);
-  margin: 0;
-  font-size: 1.25em;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 
-  @media (--screen-medium) {
-    margin-right: 2rem;
+  @nest & > h1 {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    font-weight: 700;
+    margin: -2px 0 -1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
+.closeButtonContainer {
+  margin-left: var(--medium-padding);
+}
+
 .closeButton {
+  @nest .header & {
+    margin: calc(0 - var(--medium-padding) + var(--small-padding));
+  }
+}
+
+.floatingCloseButtonContainer {
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  position: absolute;
+  border: 0;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background: var(--component-bg);
+  transform: translate(50%, -50%);
+  border-radius: 50%;
+
+  @nest & > button > span {
+    border-radius: 50% !important;
+  }
+}
+
+/* .closeButton {
   appearance: none;
   display: flex;
   align-items: center;
@@ -232,9 +258,9 @@
       opacity: 1;
     }
   }
-}
+} */
 
-.closeButtonOutside {
+/* .closeButtonOutside {
   position: absolute;
   outline: none;
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
@@ -261,40 +287,25 @@
   @nest &:active .closeButtonIcon {
     transform: scale(0.8);
   }
-}
+} */
 
 .footer {
-  min-height: 4.5rem;
   box-sizing: border-box;
   padding: var(--medium-padding);
   background-color: var(--component-bg);
   border-radius: 0 0 var(--dialog-border-radius) var(--dialog-border-radius);
   display: flex;
   position: relative;
+  z-index: 10;
 
   @nest &::before {
     content: '';
-    width: 100%;
-    background: linear-gradient(
-      to bottom,
-      color(var(--shadow-base) a(0%)) 0%,
-      color(var(--shadow-base) a(2%)) 70%,
-      color(var(--shadow-base) a(7%)) 100%
-    );
-    height: 0.25em;
-    top: -0.25rem;
     position: absolute;
+    display: block;
     left: 0;
+    top: -1px;
+    right: 0;
+    border-top: 1px solid var(--hairline-color);
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s linear;
-  }
-}
-
-.footerWithShadow {
-  composes: footer;
-
-  @nest &::before {
-    opacity: 1;
   }
 }

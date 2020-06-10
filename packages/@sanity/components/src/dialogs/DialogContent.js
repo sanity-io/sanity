@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/dialogs/content-style'
@@ -14,12 +14,10 @@ export default class DialogContent extends React.PureComponent {
     size: 'auto',
     padding: 'medium'
   }
+
   render() {
     const {size, children, padding} = this.props
-    return (
-      <div className={`${styles[size]} ${padding ? styles[`padding_${padding}`] : ''}`}>
-        {children}
-      </div>
-    )
+
+    return <div className={classNames(styles[size], styles[`padding_${padding}`])}>{children}</div>
   }
 }
