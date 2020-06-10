@@ -30,11 +30,13 @@ const DragHandle = createDragHandle(() => (
 ))
 const CLOSE_ACTION = {
   name: 'close',
-  title: 'Close'
+  title: 'Close',
+  inverted: true
 }
 const CANCEL_ACTION = {
   name: 'close',
-  title: 'Cancel'
+  title: 'Cancel',
+  inverted: true
 }
 const DELETE_ACTION = {
   name: 'delete',
