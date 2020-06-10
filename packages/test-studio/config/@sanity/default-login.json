@@ -2,6 +2,13 @@
   "providers": {
     "mode": "append",
     "redirectOnSingle": false,
-    "entries": []
+    "entries": [
+      {
+        "name": "sso",
+        "title": "Sanity.io G Suite",
+        "url": "http://intra.sanity.io/login",
+        "logo": "/static/sanity-login.png"
+      }
+    ]
   }
 }
