@@ -48,7 +48,7 @@
 
 .pasteFile {
   opacity: 0.2;
-  transition: opacity linear 0.2s;
+  transition: opacity linear 0.1s;
 
   @nest .hasFocus & {
     opacity: 1;

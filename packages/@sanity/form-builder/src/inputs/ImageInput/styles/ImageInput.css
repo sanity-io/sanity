@@ -15,7 +15,6 @@
   justify-content: center;
   min-height: 10rem;
   position: relative;
-  transition: background-color 0.1s linear;
   max-height: 18rem;
   overflow: hidden;
   flex-grow: 1;
@@ -28,6 +27,7 @@
     linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  border-radius: var(--input-border-radius);
 
   @media (--screen-medium) {
     min-height: 12rem;
@@ -43,6 +43,10 @@
   @nest &.readOnly {
     background-image: none;
     background: var(--input-bg-disabled);
+  }
+
+  @nest &.focused {
+    box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px color(var(--brand-primary) alpha(50%));
   }
 }
 
