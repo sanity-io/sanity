@@ -1,4 +1,6 @@
 // Modules
+
+import classNames from 'classnames'
 import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
@@ -31,10 +33,11 @@ import {urlToFile, base64ToFile} from './utils/image'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import styles from './styles/ImageInput.css'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
+
+import styles from './styles/ImageInput.css'
 
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
@@ -567,7 +570,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             />
           )}
           <div className={styles.content}>
-            <div className={`${styles.assetWrapper} ${readOnly ? styles.readOnly : ''}`}>
+            <div
+              className={classNames(
+                styles.assetWrapper,
+                readOnly && styles.readOnly,
+                hasFocus && styles.focused
+              )}
+            >
               {value && value._upload && (
                 <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
               )}
