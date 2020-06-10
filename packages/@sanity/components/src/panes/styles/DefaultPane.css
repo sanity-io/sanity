@@ -278,11 +278,13 @@
 .hoverFooter {
   composes: stickyFooter;
 
-  @media (hover: hover) {
+  /* @note: This is disabled, because it leads to issues with dropdown menus. */
+
+  /* @media (hover: hover) {
     display: none;
 
     @nest .root:hover & {
       display: block;
     }
-  }
+  } */
 }
