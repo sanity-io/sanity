@@ -117,6 +117,10 @@
         {
           "implements": "part:@sanity/base/tool",
           "path": "src/tools/css-variables/tool.js"
+        },
+        {
+          "implements": "part:@sanity/base/tool",
+          "path": "src/tools/long.js"
         }
       ]
     }
