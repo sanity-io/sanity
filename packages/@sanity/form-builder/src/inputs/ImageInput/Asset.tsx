@@ -1,8 +1,6 @@
 import classNames from 'classnames'
-import {get} from 'lodash'
 import React from 'react'
 import client from 'part:@sanity/base/client'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import AssetDialog from './AssetDialog'
 import AssetMenu from './AssetMenu'
@@ -28,18 +26,6 @@ const DPI =
   typeof window === 'undefined' || !window.devicePixelRatio
     ? 1
     : Math.round(window.devicePixelRatio)
-
-const DIALOG_DELETE_ACTION: AssetAction = {
-  name: 'delete',
-  title: 'Delete',
-  icon: TrashIcon,
-  color: 'danger'
-}
-
-const DIALOG_CLOSE_ACTION: AssetAction = {
-  name: 'close',
-  title: 'Close'
-}
 
 export default class Asset extends React.PureComponent<AssetProps, State> {
   state: State = {
@@ -72,7 +58,9 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
   handleMenuAction = (action: AssetAction) => {
     if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
-    } else if (action.name === 'showRefs') {
+    }
+
+    if (action.name === 'showRefs') {
       this.setState({dialogType: 'showRefs'})
     }
   }
@@ -80,27 +68,17 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
   handleDialogAction = (action: AssetAction) => {
     if (action.name === 'close') {
       this.handleDialogClose()
-    } else if (action.name === 'delete') {
+    }
+
+    if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
     }
   }
 
-  getDialogActions = dialogType => {
-    if (dialogType != 'error') {
-      return [DIALOG_DELETE_ACTION, DIALOG_CLOSE_ACTION]
-    }
-
-    return [DIALOG_CLOSE_ACTION]
-  }
-
-  // eslint-disable-next-line complexity
   render() {
     const {asset, onClick, onKeyPress, isSelected} = this.props
     const {isDeleting, dialogType} = this.state
-    const size = 75
     const imgH = 100 * Math.max(1, DPI)
-    const width = get(asset, 'metadata.dimensions.width') || 100
-    const height = get(asset, 'metadata.dimensions.height') || 100
 
     return (
       <a
@@ -108,15 +86,8 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
         tabIndex={0}
         data-id={asset._id}
         onKeyPress={onKeyPress}
-        style={{
-          width: `${(width * size) / height}px`,
-          flexGrow: (width * size) / height
-        }}
       >
-        <div
-          className={styles.imageContainer}
-          style={{paddingBottom: `${(height / width) * 100}%`}}
-        >
+        <div className={styles.imageContainer}>
           <img
             src={`${asset.url}?h=${imgH}&fit=max`}
             className={styles.image}
@@ -136,7 +107,6 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
 
           {dialogType && (
             <AssetDialog
-              actions={this.getDialogActions(dialogType)}
               asset={asset}
               dialogType={dialogType}
               onAction={this.handleDialogAction}

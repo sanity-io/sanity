@@ -1,5 +1,6 @@
 import React from 'react'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
@@ -13,14 +14,37 @@ import {AssetAction, AssetRecord} from './types'
 import styles from './AssetDialog.css'
 
 interface Props {
-  actions: AssetAction[]
   asset: AssetRecord
   dialogType: string
   onAction: (action: AssetAction) => void
   onClose: () => void
 }
 
-export default function AssetDialog({actions, asset, dialogType, onAction, onClose}: Props) {
+const DIALOG_DELETE_ACTION: AssetAction = {
+  color: 'danger',
+  icon: TrashIcon,
+  inverted: true,
+  name: 'delete',
+  title: 'Delete'
+}
+
+const DIALOG_CLOSE_ACTION: AssetAction = {
+  inverted: true,
+  name: 'close',
+  title: 'Close'
+}
+
+function getDialogActions(dialogType: string) {
+  if (dialogType != 'error') {
+    return [DIALOG_DELETE_ACTION, DIALOG_CLOSE_ACTION]
+  }
+
+  return [DIALOG_CLOSE_ACTION]
+}
+
+export default function AssetDialog({asset, dialogType, onAction, onClose}: Props) {
+  const actions = getDialogActions(dialogType)
+
   return (
     <Dialog
       title={dialogType === 'error' ? 'Could not delete asset' : 'Documents using this'}

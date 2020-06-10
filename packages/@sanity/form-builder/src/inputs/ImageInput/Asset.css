@@ -1,9 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: var(--gray-lighter);
   display: block;
-  margin: calc(var(--small-padding) / 2);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -12,15 +10,14 @@
 
   @nest &.selected {
     opacity: 1;
-    box-shadow: 0 0 0 1px var(--body-bg), 0 0 0 4px var(--body-text);
+    box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--body-text);
   }
 
-  @media (hover: hover) {
-    opacity: 0.75;
-
-    @nest &:not(.selected):hover {
-      opacity: 1;
-      box-shadow: 0 0 0 1px var(--body-bg), 0 0 0 3px var(--selected-item-color);
+  @nest &:not(.selected) {
+    @media (hover: hover) {
+      @nest &:hover {
+        box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--selected-item-color);
+      }
     }
   }
 }
@@ -28,22 +25,25 @@
 .imageContainer {
   position: relative;
   z-index: 1;
+  padding-bottom: 100%;
+  background-color: var(--body-bg);
+  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
 .image {
   position: absolute;
   z-index: 1;
   top: 0;
+  left: 0;
   width: 100%;
-  vertical-align: top;
-  box-sizing: border-box;
-  background-color: var(--body-bg);
-  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 .spinnerContainer {
@@ -68,7 +68,7 @@
   @media (hover: hover) {
     display: none;
 
-    @nest .item:hover & {
+    @nest .root:hover & {
       display: block;
     }
   }

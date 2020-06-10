@@ -5,16 +5,15 @@
   min-height: calc(100vh - 12em);
 }
 
-.imageList {
-  margin: calc(0 - (var(--small-padding) / 2));
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-}
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  grid-gap: 0.5em;
 
-.imageList::after {
-  content: '';
-  flex-grow: 999999999;
+  @media (--screen-medium) {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-gap: 1em;
+  }
 }
 
 .loadMore {
