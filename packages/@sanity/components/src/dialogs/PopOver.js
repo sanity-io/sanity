@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/dialogs/popover-style'
@@ -107,7 +108,11 @@ export default class PopOver extends React.PureComponent {
                       ref={ref}
                       style={style}
                       data-placement={placement}
-                      className={`${styles.popper} ${styles[`color_${color}`]}`}
+                      className={classNames(
+                        styles.popper,
+                        styles[`color_${color}`],
+                        styles[`padding_${padding}`]
+                      )}
                     >
                       <div className={hasAnimation ? styles.popperAnimation : ''}>
                         <div
@@ -121,7 +126,9 @@ export default class PopOver extends React.PureComponent {
                           style={arrowProps.style}
                         />
                         <Escapable
-                          onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape(event)}
+                          onEscape={event =>
+                            (isActive || event.shiftKey) && onEscape && onEscape(event)
+                          }
                         />
                         <CaptureOutsideClicks
                           onClickOutside={isActive ? onClickOutside : undefined}
@@ -129,36 +136,35 @@ export default class PopOver extends React.PureComponent {
                         >
                           {title && (
                             <div className={styles.header}>
-                              <h3 className={styles.title}>{title}</h3>
+                              <div className={styles.title}>
+                                <h3>{title}</h3>
+                              </div>
                               {onClose && (
-                                <button
-                                  className={styles.closeInHeader}
-                                  type="button"
-                                  onClick={onClose}
-                                >
-                                  <CloseIcon />
-                                </button>
+                                <div className={styles.closeButtonContainer}>
+                                  <Button
+                                    className={styles.closeButton}
+                                    icon={CloseIcon}
+                                    kind="simple"
+                                    onClick={onClose}
+                                    padding="small"
+                                    title="Close"
+                                  />
+                                </div>
                               )}
                             </div>
                           )}
                           {!title && onClose && (
-                            <button
-                              className={styles.closeOutsideHeader}
-                              type="button"
-                              onClick={onClose}
-                            >
-                              <CloseIcon />
-                            </button>
+                            <div className={styles.floatingCloseButtonContainer}>
+                              <Button
+                                icon={CloseIcon}
+                                kind="simple"
+                                onClick={onClose}
+                                padding="small"
+                                title="Close"
+                              />
+                            </div>
                           )}
-
-                          <div
-                            className={`
-                            ${actions.length > 0 ? styles.contentWithActions : styles.content}
-                            ${styles[`padding_${padding}`]}
-                          `}
-                          >
-                            {children}
-                          </div>
+                          <div className={styles.content}>{children}</div>
                           {actions.length > 0 && (
                             <div className={styles.footer}>
                               <ButtonGrid

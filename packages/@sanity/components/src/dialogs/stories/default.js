@@ -24,7 +24,7 @@ function renderContent(type) {
     case 'paragraph':
       return <p>{paragraph}</p>
     case 'longtext':
-      return <div>{paragraphs}</div>
+      return paragraphs
     case 'example':
       return (
         <DialogContent size="medium" padding="medium">
