@@ -890,7 +890,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
               <InspectHistory document={historical} onClose={this.handleHideInspector} />
             )}
             {inspect && !this.historyIsOpen() && value && (
-              <InspectView value={value} onClose={this.handleHideInspector} />
+              <InspectView idPrefix={paneKey} value={value} onClose={this.handleHideInspector} />
             )}
             {connectionState === 'reconnecting' && (
               <Snackbar

@@ -9,7 +9,8 @@
 }
 
 .toolbar {
-  margin-bottom: var(--medium-padding);
+  /* tabs */
+  margin: -0.5em -1em 0;
 }
 
 .raw {
@@ -103,6 +104,7 @@
   }
 
   @nest & :global .json-inspector .json-inspector__search {
+    appearance: none;
     font: inherit;
     font-family: var(--font-family-monospace);
     width: calc(100% + 2px);
@@ -110,8 +112,13 @@
     padding: calc(var(--input-padding-horizontal) - var(--input-border-size))
       calc(var(--input-padding-vertical) - var(--input-border-size));
     border: 1px solid var(--hairline-color);
-    outline: 0;
+    outline: none;
     margin: -1px;
+    border-radius: 0;
+
+    @nest &::placeholder {
+      color: var(--input-color-placeholder);
+    }
   }
 
   @nest & :global .json-inspector .json-inspector__key {
@@ -122,6 +129,10 @@
     & :global .json-inspector .json-inspector__value_null,
     & :global .json-inspector .json-inspector__not-found {
     color: var(--gray);
+  }
+
+  @nest & :global .json-inspector .json-inspector__not-found {
+    padding: var(--medium-padding);
   }
 
   @nest & :global .json-inspector .json-inspector__value_string {
@@ -137,23 +148,23 @@
   }
 
   @nest & :global .json-inspector .json-inspector__hl {
-    background: #ff0;
-    box-shadow: 0 0 0 #ff0;
+    background: color(var(--selectable-item-base) a(30%));
+    box-shadow: 0 0 0 color(var(--selectable-item-base) a(30%));
   }
 
   @nest & :global .json-inspector .json-inspector__show-original {
     display: inline-block;
     padding: 0 6px;
-    color: #666;
+    color: var(--gray);
     cursor: pointer;
   }
 
   @nest & :global .json-inspector .json-inspector__show-original:hover {
-    color: #111;
+    color: inherit;
   }
 
   @nest & :global .json-inspector .json-inspector__show-original::before {
-    content: '⥂';
+    content: '↔';
   }
 
   @nest & :global .json-inspector .json-inspector__show-original:hover::after {
