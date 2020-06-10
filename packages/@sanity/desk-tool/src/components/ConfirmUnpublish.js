@@ -2,12 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import Alert from 'part:@sanity/components/alerts/alert'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
+
+import styles from './ConfirmUnpublish.css'
 
 export default enhanceWithReferringDocuments(
   class ConfirmUnpublish extends React.PureComponent {
@@ -46,10 +48,15 @@ export default enhanceWithReferringDocuments(
 
       const actions = [
         canContinue && {
+          color: 'danger',
           name: 'confirm',
           title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'
         },
-        {name: 'cancel', title: 'Cancel', kind: 'simple'}
+        {
+          inverted: true,
+          name: 'cancel',
+          title: 'Cancel'
+        }
       ].filter(Boolean)
 
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'
@@ -57,7 +64,8 @@ export default enhanceWithReferringDocuments(
       const docTitle = <DocTitle document={draft || published} />
 
       return (
-        <Dialog
+        <FullscreenDialog
+          cardClassName={styles.card}
           isOpen
           showHeader
           centered
@@ -67,8 +75,9 @@ export default enhanceWithReferringDocuments(
           actions={actions}
         >
           {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" />}
+
           {hasReferringDocuments && (
-            <div>
+            <>
               <Alert color="warning" icon={WarningIcon}>
                 Warning: Found{' '}
                 {referringDocuments.length === 1 ? (
@@ -80,25 +89,26 @@ export default enhanceWithReferringDocuments(
               </Alert>
 
               <p>
-                You may not be allowed to unpublish “{docTitle}” as the following document
-                {referringDocuments.length === 1 ? '' : 's'} refers to it:
+                You may not be able to unpublish “{docTitle}” because the following document
+                {referringDocuments.length !== 1 && <>s</>} refers to it:
               </p>
               <ReferringDocumentsList documents={referringDocuments} />
-            </div>
+            </>
           )}
+
           {!isCheckingReferringDocuments && !hasReferringDocuments && (
-            <div>
+            <>
+              <Alert color="warning" icon={WarningIcon} title="Careful!">
+                If you unpublish this document, it will no longer be available for the public.
+                However, it will not be deleted and can be published again later.
+              </Alert>
+
               <p>
                 Are you sure you want to unpublish the document <strong>“{docTitle}”</strong>?
               </p>
-              <h2>Careful!</h2>
-              <p>
-                If you unpublish, this document will no longer be available for the public, but it
-                will not be deleted and can be published again later if you change your mind.
-              </p>
-            </div>
+            </>
           )}
-        </Dialog>
+        </FullscreenDialog>
       )
     }
   }
