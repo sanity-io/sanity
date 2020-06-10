@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root:not(:focus):focus-within > span:not(:focus) {
+  box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px color(var(--brand-primary) alpha(50%));
+  border-color: transparent !important;
+}

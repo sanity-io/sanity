@@ -1,6 +1,9 @@
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {uniqueId} from 'lodash'
+
+import styles from './DefaultFileInput.css'
 
 export default class DefaultFileInput extends React.PureComponent {
   static propTypes = {
@@ -29,7 +32,7 @@ export default class DefaultFileInput extends React.PureComponent {
   render() {
     const {children, style = {}, className, onSelect, ...rest} = this.props
     return (
-      <label style={style} className={className} htmlFor={this._inputId}>
+      <label style={style} className={classNames(styles.root, className)} htmlFor={this._inputId}>
         <input
           {...rest}
           type="file"
