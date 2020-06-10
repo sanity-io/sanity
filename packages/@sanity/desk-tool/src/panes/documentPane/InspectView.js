@@ -6,10 +6,11 @@ import JSONInspector from 'react-json-inspector'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import TabList from 'part:@sanity/components/tabs/tab-list'
 import Tab from 'part:@sanity/components/tabs/tab'
+import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
-import settings from '../../settings'
 import {withPropsStream} from 'react-props-stream'
+import settings from '../../settings'
 import DocTitle from '../../components/DocTitle'
 
 import styles from './InspectView.css'
@@ -75,7 +76,11 @@ function mapReceivedPropsToChildProps(props$) {
 }
 
 function InspectView(props) {
-  const {value, viewMode, onClose, onViewModeChange} = props
+  const {idPrefix, onClose, onViewModeChange, value, viewMode} = props
+
+  // @todo: prefix with pane id
+  const tabIdPrefix = `${idPrefix}_inspect_`
+
   return (
     <FullScreenDialog
       showHeader
@@ -91,14 +96,32 @@ function InspectView(props) {
     >
       <div>
         <div className={styles.toolbar}>
-          {/* <RadioButtons value={viewMode} items={VIEW_MODES} onChange={onViewModeChange} /> */}
-
           <TabList>
-            <Tab label="Parsed" />
-            <Tab label="Raw JSON" />
+            <Tab
+              aria-controls={`${tabIdPrefix}tabpanel`}
+              id={`${tabIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
+              isActive={viewMode === VIEW_MODE_PARSED}
+              label="Parsed"
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => onViewModeChange(VIEW_MODE_PARSED)}
+            />
+            <Tab
+              aria-controls={`${tabIdPrefix}tabpanel`}
+              id={`${tabIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
+              isActive={viewMode === VIEW_MODE_RAW}
+              label="Raw JSON"
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => onViewModeChange(VIEW_MODE_RAW)}
+            />
           </TabList>
         </div>
-        <div className={styles.content}>
+
+        <TabPanel
+          aria-labelledby={`${tabIdPrefix}tab-${viewMode.id}`}
+          className={styles.content}
+          id={`${tabIdPrefix}tabpanel`}
+          role="tabpanel"
+        >
           {viewMode === VIEW_MODE_PARSED && (
             <div className={styles.jsonInspectorContainer}>
               <JSONInspector isExpanded={isExpanded} onClick={toggleExpanded} data={value} />
@@ -115,17 +138,27 @@ function InspectView(props) {
               {JSON.stringify(value, null, 2)}
             </pre>
           )}
-        </div>
+        </TabPanel>
       </div>
     </FullScreenDialog>
   )
 }
 
 InspectView.propTypes = {
-  value: PropTypes.object,
+  idPrefix: PropTypes.string.isRequired,
   onClose: PropTypes.func,
-  onViewModeChange: PropTypes.func,
-  viewMode: PropTypes.shape({id: PropTypes.string, title: PropTypes.string})
+  onViewModeChange: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  value: PropTypes.object,
+  viewMode: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
+  }).isRequired
+}
+
+InspectView.defaultProps = {
+  onClose: undefined,
+  value: undefined
 }
 
 export default withPropsStream(mapReceivedPropsToChildProps, InspectView)
