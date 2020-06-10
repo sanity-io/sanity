@@ -1,129 +1,110 @@
-import React from 'react'
-import Spinner from 'part:@sanity/components/loading/spinner'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import Dialog from 'part:@sanity/components/dialogs/default'
-import DialogContent from 'part:@sanity/components/dialogs/content'
-import {List, Item} from 'part:@sanity/components/lists/default'
-import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
-import Preview from '../../Preview'
-import schema from 'part:@sanity/base/schema'
-import {IntentLink} from 'part:@sanity/base/router'
-import client from 'part:@sanity/base/client'
-import styles from './styles/Asset.css'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import MoreVertIcon from 'part:@sanity/base/more-vert-icon'
+import classNames from 'classnames'
 import {get} from 'lodash'
-const DIALOG_DELETE_ACTION = {
-  name: 'delete',
-  title: 'Delete',
-  icon: TrashIcon,
-  color: 'danger'
-}
-const DIALOG_CLOSE_ACTION = {name: 'close', title: 'Close'}
-type AssetProps = {
-  asset?: {
-    _id?: string
-    referenceCount?: number
-    url?: string
-  }
+import React from 'react'
+import client from 'part:@sanity/base/client'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import Spinner from 'part:@sanity/components/loading/spinner'
+import AssetDialog from './AssetDialog'
+import AssetMenu from './AssetMenu'
+import {AssetAction, AssetRecord} from './types'
+
+import styles from './Asset.css'
+
+interface AssetProps {
+  asset?: AssetRecord
   isSelected: boolean
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any
   onDeleteFinished: (...args: any[]) => any
 }
-type State = {
+
+interface State {
   isDeleting: boolean
   dialogType: null | 'showRefs' | 'error'
 }
+
+// Get pixel density of the current device
+const DPI =
+  typeof window === 'undefined' || !window.devicePixelRatio
+    ? 1
+    : Math.round(window.devicePixelRatio)
+
+const DIALOG_DELETE_ACTION: AssetAction = {
+  name: 'delete',
+  title: 'Delete',
+  icon: TrashIcon,
+  color: 'danger'
+}
+
+const DIALOG_CLOSE_ACTION: AssetAction = {
+  name: 'close',
+  title: 'Close'
+}
+
 export default class Asset extends React.PureComponent<AssetProps, State> {
   state: State = {
     isDeleting: false,
     dialogType: null
   }
+
   handleDeleteAsset = asset => {
     const {onDeleteFinished} = this.props
+
     this.setState({isDeleting: true})
+
     return client
       .delete(asset._id)
       .then(() => {
-        this.setState({
-          isDeleting: false
-        })
+        this.setState({isDeleting: false})
         onDeleteFinished(asset._id)
       })
       .catch(err => {
-        this.setState({
-          isDeleting: false,
-          dialogType: 'error'
-        })
-        // eslint-disable-next-line
+        this.setState({isDeleting: false, dialogType: 'error'})
+        // eslint-disable-next-line no-console
         console.error('Could not delete asset', err)
       })
   }
+
   handleDialogClose = () => {
-    this.setState({
-      dialogType: null
-    })
+    this.setState({dialogType: null})
   }
-  handleMenuAction = action => {
+
+  handleMenuAction = (action: AssetAction) => {
     if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
     } else if (action.name === 'showRefs') {
-      this.setState({
-        dialogType: 'showRefs'
-      })
+      this.setState({dialogType: 'showRefs'})
     }
   }
-  handleDialogAction = action => {
+
+  handleDialogAction = (action: AssetAction) => {
     if (action.name === 'close') {
       this.handleDialogClose()
     } else if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
     }
   }
-  renderMenuItem = item => {
-    const {color, title, icon} = item
-    const Icon = icon
-    return (
-      <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
-        {icon && <Icon />}&nbsp;&nbsp;{title}
-      </div>
-    )
-  }
+
   getDialogActions = dialogType => {
     if (dialogType != 'error') {
       return [DIALOG_DELETE_ACTION, DIALOG_CLOSE_ACTION]
     }
+
     return [DIALOG_CLOSE_ACTION]
   }
+
+  // eslint-disable-next-line complexity
   render() {
     const {asset, onClick, onKeyPress, isSelected} = this.props
     const {isDeleting, dialogType} = this.state
     const size = 75
-    const dpi =
-      typeof window === 'undefined' || !window.devicePixelRatio
-        ? 1
-        : Math.round(window.devicePixelRatio)
-    const imgH = 100 * Math.max(1, dpi)
+    const imgH = 100 * Math.max(1, DPI)
     const width = get(asset, 'metadata.dimensions.width') || 100
     const height = get(asset, 'metadata.dimensions.height') || 100
-    const menuItems = [
-      {
-        name: 'showRefs',
-        title: 'Show documents using this',
-        icon: LinkIcon
-      },
-      {
-        name: 'delete',
-        title: 'Delete',
-        color: 'danger',
-        icon: TrashIcon
-      }
-    ]
+
     return (
       <a
-        className={`${styles.item}${isSelected ? ` ${styles.selected}` : ''}`}
+        className={classNames(styles.root, isSelected && styles.selected)}
         tabIndex={0}
         data-id={asset._id}
         onKeyPress={onKeyPress}
@@ -132,102 +113,35 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
           flexGrow: (width * size) / height
         }}
       >
-        <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
-
-        <img
-          src={`${asset.url}?h=${imgH}&fit=max`}
-          className={styles.image}
-          onClick={onClick}
-          data-id={asset._id}
-        />
-        {isDeleting && (
-          <div className={styles.spinnerContainer}>
-            <Spinner center />
-          </div>
-        )}
-        <div className={styles.menuContainer}>
-          <DropDownButton
-            icon={MoreVertIcon}
-            padding="small"
-            placement="bottom-end"
-            showArrow={false}
-            items={isSelected ? menuItems.filter(item => item.name !== 'delete') : menuItems}
-            renderItem={this.renderMenuItem}
-            onAction={this.handleMenuAction}
+        <div
+          className={styles.imageContainer}
+          style={{paddingBottom: `${(height / width) * 100}%`}}
+        >
+          <img
+            src={`${asset.url}?h=${imgH}&fit=max`}
+            className={styles.image}
+            onClick={onClick}
+            data-id={asset._id}
           />
 
+          {isDeleting && (
+            <div className={styles.spinnerContainer}>
+              <Spinner center />
+            </div>
+          )}
+        </div>
+
+        <div className={styles.menuContainer}>
+          <AssetMenu isSelected={isSelected} onAction={this.handleMenuAction} />
+
           {dialogType && (
-            <Dialog
-              title={dialogType === 'error' ? 'Could not delete asset' : 'Documents using this'}
-              color={dialogType === 'error' ? 'danger' : undefined}
-              onClose={this.handleDialogClose}
-              onAction={this.handleDialogAction}
+            <AssetDialog
               actions={this.getDialogActions(dialogType)}
-            >
-              <DialogContent size="medium" key={dialogType}>
-                <div className={styles.dialogContent}>
-                  <img src={`${asset.url}?w=200`} style={{maxWidth: '200px'}} />
-                  <WithReferringDocuments id={asset._id}>
-                    {({isLoading, referringDocuments}) => {
-                      const drafts = referringDocuments.reduce(
-                        (acc, doc) =>
-                          doc._id.startsWith('drafts.') ? acc.concat(doc._id.slice(7)) : acc,
-                        []
-                      )
-                      const filteredDocuments = referringDocuments.filter(
-                        doc => !drafts.includes(doc._id)
-                      )
-                      if (isLoading) {
-                        return <Spinner>Loading…</Spinner>
-                      }
-                      return (
-                        <div>
-                          {filteredDocuments.length === 0 ? (
-                            <div>No documents are referencing this asset</div>
-                          ) : (
-                            <>
-                              {dialogType === 'error' && (
-                                <div>
-                                  <h4 className={styles.dialogSubtitle}>
-                                    {filteredDocuments.length > 1
-                                      ? `${filteredDocuments.length} documents are using this asset`
-                                      : 'A document is using this asset'}
-                                  </h4>
-                                  <p className={styles.referringDocumentsDescription}>
-                                    {`Open the document${
-                                      referringDocuments.length > 1 ? 's' : ''
-                                    } and remove the asset before deleting it.`}
-                                  </p>
-                                </div>
-                              )}
-                              <List>
-                                {filteredDocuments.map(doc => {
-                                  return (
-                                    <Item key={doc._id}>
-                                      <IntentLink
-                                        intent="edit"
-                                        params={{id: doc._id}}
-                                        key={doc._id}
-                                        className={styles.intentLink}
-                                      >
-                                        <Preview value={doc} type={schema.get(doc._type)} />
-                                        <span className={styles.openDocLink}>
-                                          <LinkIcon /> Open
-                                        </span>
-                                      </IntentLink>
-                                    </Item>
-                                  )
-                                })}
-                              </List>
-                            </>
-                          )}
-                        </div>
-                      )
-                    }}
-                  </WithReferringDocuments>
-                </div>
-              </DialogContent>
-            </Dialog>
+              asset={asset}
+              dialogType={dialogType}
+              onAction={this.handleDialogAction}
+              onClose={this.handleDialogClose}
+            />
           )}
         </div>
       </a>
