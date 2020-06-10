@@ -115,6 +115,14 @@
       "api": {
         "projectId": "exx11uqh"
       }
+    },
+    "development": {
+      "parts": [
+        {
+          "implements": "part:@sanity/base/tool",
+          "path": "src/tools/long.js"
+        }
+      ]
     }
   }
 }
