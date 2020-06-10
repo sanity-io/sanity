@@ -54,7 +54,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           title={type.title}
           padding="none"
         >
-          <DialogContent size="medium" padding="small">
+          <DialogContent size="medium" padding="medium">
             <PresenceOverlay>
               <FormBuilderInput
                 type={type}
