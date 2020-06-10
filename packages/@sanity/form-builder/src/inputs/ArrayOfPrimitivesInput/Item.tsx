@@ -103,7 +103,9 @@ export default class Item extends React.PureComponent<Props> {
             <div className={styles.validationStatus}>
               <ValidationStatus markers={markers} />
             </div>
-            {type?.title === '' && <FieldPresence presence={presence} maxAvatars={1} />}
+            {(!type.title || type.title === '') && (
+              <FieldPresence presence={presence} maxAvatars={1} />
+            )}
             {!readOnly && (
               <div>
                 <Button
