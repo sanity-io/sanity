@@ -948,6 +948,14 @@
       "path": "components/icons/User.js"
     },
     {
+      "implements": "part:@sanity/base/clipboard-icon",
+      "path": "components/icons/Clipboard.js"
+    },
+    {
+      "implements": "part:@sanity/base/clipboard-image-icon",
+      "path": "components/icons/ClipboardImage.js"
+    },
+    {
       "implements": "part:@sanity/base/drag-handle-icon",
       "path": "components/icons/DragHandle.js"
     },
