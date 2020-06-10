@@ -26,7 +26,7 @@
 
 .iconContainer {
   width: calc(17 / 16 * 1em);
-  margin: -2px calc(var(--small-padding) - 2px) -2px -2px;
+  margin: -2px calc(var(--medium-padding) - var(--extra-small-padding) - 2px) -2px -2px;
 
   @nest & > svg {
     display: block;
@@ -52,5 +52,17 @@
 
   @nest & > :last-child {
     margin-bottom: 0;
+  }
+}
+
+.title {
+  font: inherit;
+  font-weight: 700;
+  margin: 0;
+}
+
+.description {
+  @nest .title + & {
+    margin-top: calc(var(--extra-small-padding) / 2);
   }
 }
