@@ -200,65 +200,73 @@
   font: inherit;
   user-select: none;
   text-decoration: none;
-  background-color: var(--color-button-bg);
-  color: var(--color-button-text);
-  border: 1px solid var(--color-button-border);
-  overflow: hidden;
-
-  @nest & .spinner {
-    background-color: var(--color-button-spinner-bg);
-  }
-
-  @nest &:not(.bleed) {
-    border-radius: var(--button-border-radius);
-  }
+  background: inherit;
+  color: inherit;
+  border: none;
+  border-radius: 0;
 
   @nest &.bleed {
     display: flex;
     height: 100%;
   }
 
+  @nest & > .inner {
+    background-color: var(--color-button-bg);
+    color: var(--color-button-text);
+    border: 1px solid var(--color-button-border);
+  }
+
+  @nest &:not(.bleed) > .inner {
+    border-radius: var(--button-border-radius);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-spinner-bg);
+  }
+
   @nest &:not(.disabled) {
-    @nest &:focus {
-      background-color: var(--color-button-focus-bg);
+    @nest &:focus > .inner {
+      /* background-color: var(--color-button-focus-bg); */
       box-shadow: var(--color-button-focus-shadow);
     }
 
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: var(--color-button-hover-bg);
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: var(--color-button-active-bg);
     }
 
     @nest &.simple {
-      background-color: transparent;
-      color: var(--color-button-simple-color);
+      @nest & > .inner {
+        background-color: transparent;
+        color: var(--color-button-simple-color);
+      }
 
       @nest & .spinner {
         background-color: var(--white);
       }
 
-      @nest &:focus {
+      /* @nest &:focus > .inner {
         background-color: var(--color-button-simple-focus-bg);
         color: var(--color-button-simple-focus-text);
-      }
+      } */
 
       @media (hover: hover) {
-        @nest &:hover {
+        @nest &:hover > .inner {
           background-color: var(--color-button-simple-hover-bg);
           color: var(--color-button-simple-hover-text);
         }
       }
 
-      @nest &:active {
+      @nest &:active > .inner {
         background-color: var(--color-button-simple-active-bg);
       }
 
-      @nest &.selected {
+      @nest &.selected > .inner {
         background-color: var(--color-button-simple-selected-bg);
         color: var(--color-button-simple-selected-text);
       }
@@ -266,24 +274,26 @@
   }
 
   @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
-    color: var(--color-button-inverted-color);
-    border-color: var(--color-button-inverted-border);
-    background-color: transparent;
+    @nest & > .inner {
+      color: var(--color-button-inverted-color);
+      border-color: var(--color-button-inverted-border);
+      background-color: transparent;
+    }
 
     @nest & .spinner {
       background-color: var(--color-button-inverted-spinner-bg);
     }
 
-    @nest &.selected {
+    @nest &.selected > .inner {
       background-color: color(var(--default-button-color) alpha(20%));
     }
   }
 
-  @nest &.disabled {
+  @nest &.disabled > .inner {
     background-color: var(--color-button-disabled-bg);
     color: var(--color-button-disabled-text);
 
-    @nest &.simple {
+    @nest &.simple > .inner {
       background-color: var(--color-button-simple-disabled-bg);
       color: var(--color-button-simple-disabled-text);
     }
@@ -358,12 +368,6 @@
   }
 }
 
-/* Handles fileupload buttons with focus-within */
-.root:not(:focus):focus-within .inner:not(:focus) {
-  box-shadow: var(--color-button-focus-shadow);
-  border-radius: var(--button-border-radius);
-}
-
 .content {
   display: flex;
   align-items: center;
@@ -388,32 +392,36 @@
 }
 
 .color__primary:not(.disabled) {
-  border-color: var(--color-button-primary-border);
-  background-color: var(--color-button-primary-bg);
-  color: var(--color-button-primary-text);
+  @nest & > .inner {
+    border-color: var(--color-button-primary-border);
+    background-color: var(--color-button-primary-bg);
+    color: var(--color-button-primary-text);
+  }
 
   @nest & .spinner {
     background-color: var(--color-button-primary-spinner-bg);
   }
 
-  @nest &:focus {
+  /* @nest &:focus > .inner {
     background-color: var(--color-button-primary-focus-bg);
-  }
+  } */
 
   @media (hover: hover) {
-    @nest &:hover {
+    @nest &:hover > .inner {
       background-color: var(--color-button-primary-hover-bg);
     }
   }
 
-  @nest &:active {
+  @nest &:active > .inner {
     background-color: var(--color-button-primary-active-bg);
   }
 
   @nest &.inverted:not(:focus):not(:hover):not(:active) {
-    border-color: var(--color-button-primary-inverted-border);
-    background-color: transparent;
-    color: var(--color-button-primary-inverted-color);
+    @nest & > .inner {
+      border-color: var(--color-button-primary-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-primary-inverted-color);
+    }
 
     @nest & .spinner {
       background-color: var(--color-button-primary-inverted-spinner-bg);
@@ -421,26 +429,28 @@
   }
 
   @nest &.simple {
-    background-color: transparent;
-    color: var(--color-button-primary-simple-color);
-
-    @nest &:focus {
-      background-color: var(--color-button-primary-simple-focus-bg);
-      color: var(--color-button-primary-simple-focus-text);
+    @nest & > .inner {
+      background-color: transparent;
+      color: var(--color-button-primary-simple-color);
     }
 
+    /* @nest &:focus > .inner {
+      background-color: var(--color-button-primary-simple-focus-bg);
+      color: var(--color-button-primary-simple-focus-text);
+    } */
+
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: var(--color-button-primary-simple-hover-bg);
         color: var(--color-button-primary-simple-hover-text);
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: var(--color-button-primary-simple-active-bg);
     }
 
-    @nest &.selected {
+    @nest &.selected > .inner {
       background-color: var(--color-button-primary-simple-selected-bg);
       color: var(--color-button-primary-simple-selected-text);
     }
@@ -448,32 +458,36 @@
 }
 
 .color__success:not(.disabled) {
-  border-color: var(--color-button-success-border);
-  background-color: var(--color-button-success-bg);
-  color: var(--color-button-success-text);
+  @nest & > .inner {
+    border-color: var(--color-button-success-border);
+    background-color: var(--color-button-success-bg);
+    color: var(--color-button-success-text);
+  }
 
   @nest & .spinner {
     background-color: var(--color-button-success-spinner-bg);
   }
 
-  @nest &:focus {
+  /* @nest &:focus > .inner {
     background-color: var(--color-button-success-focus-bg);
-  }
+  } */
 
   @media (hover: hover) {
-    @nest &:hover {
+    @nest &:hover > .inner {
       background-color: var(--color-button-success-hover-bg);
     }
   }
 
-  @nest &:active {
+  @nest &:active > .inner {
     background-color: var(--color-button-success-active-bg);
   }
 
   @nest &.inverted:not(:focus):not(:hover):not(:active) {
-    border-color: var(--color-button-success-inverted-border);
-    background-color: transparent;
-    color: var(--color-button-success-inverted-color);
+    @nest & > .inner {
+      border-color: var(--color-button-success-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-success-inverted-color);
+    }
 
     @nest & .spinner {
       background-color: var(--color-button-success-inverted-spinner-bg);
@@ -481,26 +495,28 @@
   }
 
   @nest &.simple {
-    background-color: transparent;
-    color: var(--color-button-success-simple-color);
-
-    @nest &:focus {
-      background-color: var(--color-button-success-simple-focus-bg);
-      color: var(--color-button-success-simple-focus-text);
+    @nest & > .inner {
+      background-color: transparent;
+      color: var(--color-button-success-simple-color);
     }
 
+    /* @nest &:focus > .inner {
+      background-color: var(--color-button-success-simple-focus-bg);
+      color: var(--color-button-success-simple-focus-text);
+    } */
+
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: var(--color-button-success-simple-hover-bg);
         color: var(--color-button-success-simple-hover-text);
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: var(--color-button-success-simple-active-bg);
     }
 
-    @nest &.selected {
+    @nest &.selected > .inner {
       background-color: var(--color-button-success-simple-selected-bg);
       color: var(--color-button-success-simple-selected-text);
     }
@@ -508,32 +524,36 @@
 }
 
 .color__warning:not(.disabled) {
-  border-color: var(--color-button-warning-border);
-  background-color: var(--color-button-warning-bg);
-  color: var(--color-button-warning-text);
+  @nest & > .inner {
+    border-color: var(--color-button-warning-border);
+    background-color: var(--color-button-warning-bg);
+    color: var(--color-button-warning-text);
+  }
 
   @nest & .spinner {
     background-color: var(--color-button-warning-spinner-bg);
   }
 
-  @nest &:focus {
+  /* @nest &:focus > .inner {
     background-color: var(--color-button-warning-focus-bg);
-  }
+  } */
 
   @media (hover: hover) {
-    @nest &:hover {
+    @nest &:hover > .inner {
       background-color: var(--color-button-warning-hover-bg);
     }
   }
 
-  @nest &:active {
+  @nest &:active > .inner {
     background-color: var(--color-button-warning-active-bg);
   }
 
   @nest &.inverted:not(:focus):not(:hover):not(:active) {
-    border-color: var(--color-button-warning-inverted-border);
-    background-color: transparent;
-    color: var(--color-button-warning-inverted-color);
+    @nest & > .inner {
+      border-color: var(--color-button-warning-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-warning-inverted-color);
+    }
 
     @nest & .spinner {
       background-color: var(--color-button-warning-inverted-spinner-bg);
@@ -541,26 +561,28 @@
   }
 
   @nest &.simple {
-    background-color: transparent;
-    color: var(--color-button-warning-simple-color);
-
-    @nest &:focus {
-      background-color: var(--color-button-warning-simple-focus-bg);
-      color: var(--color-button-warning-simple-focus-text);
+    @nest & > .inner {
+      background-color: transparent;
+      color: var(--color-button-warning-simple-color);
     }
 
+    /* @nest &:focus > .inner {
+      background-color: var(--color-button-warning-simple-focus-bg);
+      color: var(--color-button-warning-simple-focus-text);
+    } */
+
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: var(--color-button-warning-simple-hover-bg);
         color: var(--color-button-warning-simple-hover-text);
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: var(--color-button-warning-simple-active-bg);
     }
 
-    @nest &.selected {
+    @nest &.selected > .inner {
       background-color: var(--color-button-warning-simple-selected-bg);
       color: var(--color-button-warning-simple-selected-text);
     }
@@ -568,32 +590,36 @@
 }
 
 .color__danger:not(.disabled) {
-  border-color: var(--color-button-danger-border);
-  background-color: var(--color-button-danger-bg);
-  color: var(--color-button-danger-text);
+  @nest & > .inner {
+    border-color: var(--color-button-danger-border);
+    background-color: var(--color-button-danger-bg);
+    color: var(--color-button-danger-text);
+  }
 
   @nest & .spinner {
     background-color: var(--color-button-danger-spinner-bg);
   }
 
-  @nest &:focus {
+  /* @nest &:focus > .inner {
     background-color: var(--color-button-danger-focus-bg);
-  }
+  } */
 
   @media (hover: hover) {
-    @nest &:hover {
+    @nest &:hover > .inner {
       background-color: var(--color-button-danger-hover-bg);
     }
   }
 
-  @nest &:active {
+  @nest &:active > .inner {
     background-color: var(--color-button-danger-active-bg);
   }
 
   @nest &.inverted:not(:focus):not(:hover):not(:active) {
-    border-color: var(--color-button-danger-inverted-border);
-    background-color: transparent;
-    color: var(--color-button-danger-inverted-color);
+    @nest & > .inner {
+      border-color: var(--color-button-danger-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-danger-inverted-color);
+    }
 
     @nest & .spinner {
       background-color: var(--color-button-danger-inverted-spinner-bg);
@@ -601,26 +627,28 @@
   }
 
   @nest &.simple {
-    background-color: transparent;
-    color: var(--color-button-danger-simple-color);
-
-    @nest &:focus {
-      background-color: var(--color-button-danger-simple-focus-bg);
-      color: var(--color-button-danger-simple-focus-text);
+    @nest & > .inner {
+      background-color: transparent;
+      color: var(--color-button-danger-simple-color);
     }
 
+    /* @nest &:focus > .inner {
+      background-color: var(--color-button-danger-simple-focus-bg);
+      color: var(--color-button-danger-simple-focus-text);
+    } */
+
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: var(--color-button-danger-simple-hover-bg);
         color: var(--color-button-danger-simple-hover-text);
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: var(--color-button-danger-simple-active-bg);
     }
 
-    @nest &.selected {
+    @nest &.selected > .inner {
       background-color: var(--color-button-danger-simple-selected-bg);
       color: var(--color-button-danger-simple-selected-text);
     }
@@ -629,84 +657,91 @@
 
 /* @todo */
 .color__white {
-  &.disabled {
+  &.disabled > .inner {
     background-color: transparent;
     color: color(var(--default-button-color) alpha(20%));
   }
 
   &:not(.disabled) {
-    /* border-color: transpare; */
-    background-color: var(--white);
-    color: var(--default-button-color);
+    @nest & > .inner {
+      background-color: var(--white);
+      color: var(--default-button-color);
+    }
 
     @nest & .spinner {
       background-color: color(var(--white) alpha(80%));
     }
 
-    @nest &:focus {
+    /* @nest &:focus > .inner {
       background-color: color(var(--white) lightness(- 5%));
       color: color(var(--default-button-color) lightness(- 20%));
-    }
+    } */
 
     @media (hover: hover) {
-      @nest &:hover {
+      @nest &:hover > .inner {
         background-color: color(var(--white) lightness(- 5%));
         color: color(var(--default-button-color) lightness(- 20%));
       }
     }
 
-    @nest &:active {
+    @nest &:active > .inner {
       background-color: color(var(--white) lightness(- 10%));
       color: color(var(--default-button-color) lightness(- 20%));
     }
 
     @nest &.inverted:not(:focus):not(:hover):not(:active) {
-      color: var(--white);
+      @nest & > .inner {
+        color: var(--white);
+      }
 
       @nest & .spinner {
         color: var(--white);
       }
 
       @media (hover: hover) {
-        @nest &:hover {
+        @nest &:hover > .inner {
           background-color: color(var(--white) alpha(10%));
         }
       }
 
-      @nest &:active {
+      @nest &:active > .inner {
         background-color: color(var(--white) alpha(20%));
       }
     }
 
     @nest &.simple {
-      background-color: transparent;
-      color: var(--white);
-
-      @nest &:focus {
-        background-color: color(var(--white) alpha(10%));
+      @nest & > .inner {
+        background-color: transparent;
         color: var(--white);
       }
 
+      /* @nest &:focus > .inner {
+        background-color: color(var(--white) alpha(10%));
+        color: var(--white);
+      } */
+
       @media (hover: hover) {
-        @nest &:hover {
+        @nest &:hover > .inner {
           background-color: color(var(--white) alpha(10%));
           color: var(--white);
         }
       }
 
-      @nest &:active {
+      @nest &:active > .inner {
         background-color: color(var(--white) alpha(20%));
         color: var(--white);
       }
 
-      @nest &.selected {
+      @nest &.selected > .inner {
         background-color: color(var(--white) alpha(20%));
         color: var(--white);
       }
     }
 
     @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
-      border-color: color(var(--white) alpha(10%));
+      @nest & > .inner {
+        border-color: color(var(--white) alpha(10%));
+      }
     }
   }
 }
