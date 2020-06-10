@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+import Alert from 'part:@sanity/components/alerts/alert'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
@@ -28,6 +30,7 @@ export default enhanceWithReferringDocuments(
       }
     }
 
+    // eslint-disable-next-line complexity
     render() {
       const {
         isCheckingReferringDocuments,
@@ -51,6 +54,8 @@ export default enhanceWithReferringDocuments(
 
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'
 
+      const docTitle = <DocTitle document={draft || published} />
+
       return (
         <Dialog
           isOpen
@@ -64,21 +69,19 @@ export default enhanceWithReferringDocuments(
           {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" />}
           {hasReferringDocuments && (
             <div>
-              <h3>
+              <Alert color="warning" icon={WarningIcon}>
                 Warning: Found{' '}
-                {referringDocuments.length === 1
-                  ? 'a document'
-                  : `${referringDocuments.length} documents`}{' '}
-                that refers to {'"'}
-                <DocTitle document={draft || published} />
-                {'"'}
-              </h3>
+                {referringDocuments.length === 1 ? (
+                  <>a document</>
+                ) : (
+                  <>{referringDocuments.length} documents</>
+                )}{' '}
+                that refers to “{docTitle}”
+              </Alert>
+
               <p>
-                You may not be allowed to unpublish
-                {' "'}
-                <DocTitle document={draft || published} />
-                {'" '}
-                as the following document{referringDocuments.length === 1 ? '' : 's'} refers to it:
+                You may not be allowed to unpublish “{docTitle}” as the following document
+                {referringDocuments.length === 1 ? '' : 's'} refers to it:
               </p>
               <ReferringDocumentsList documents={referringDocuments} />
             </div>
@@ -86,11 +89,7 @@ export default enhanceWithReferringDocuments(
           {!isCheckingReferringDocuments && !hasReferringDocuments && (
             <div>
               <p>
-                Are you sure you want to unpublish the document{' '}
-                <strong>
-                  <DocTitle document={draft || published} />
-                </strong>
-                ?
+                Are you sure you want to unpublish the document <strong>“{docTitle}”</strong>?
               </p>
               <h2>Careful!</h2>
               <p>

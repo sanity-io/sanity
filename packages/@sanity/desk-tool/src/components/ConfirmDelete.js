@@ -2,9 +2,10 @@
 
 import PropTypes from 'prop-types'
 import React from 'react'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+import Alert from 'part:@sanity/components/alerts/alert'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
-
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
@@ -67,17 +68,15 @@ export default enhanceWithReferringDocuments(
 
           {hasReferringDocuments && (
             <>
-              <p>
-                <strong>
-                  Warning: Found{' '}
-                  {referringDocuments.length === 1 ? (
-                    <>a document</>
-                  ) : (
-                    `${referringDocuments.length} documents`
-                  )}{' '}
-                  that refer{referringDocuments.length === 1 ? <>s</> : ''} to “{docTitle}”.
-                </strong>
-              </p>
+              <Alert color="warning" icon={WarningIcon}>
+                Warning: Found{' '}
+                {referringDocuments.length === 1 ? (
+                  <>a document</>
+                ) : (
+                  <>{referringDocuments.length} documents</>
+                )}{' '}
+                that refer{referringDocuments.length === 1 ? <>s</> : ''} to “{docTitle}”.
+              </Alert>
 
               <p>
                 You may not be able to delete “{docTitle}” because{' '}
