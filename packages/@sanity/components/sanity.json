@@ -346,6 +346,11 @@
       "name": "part:@sanity/components/lists/create-document",
       "description": "List of create document previews"
     },
+
+    {
+      "implements": "part:@sanity/components/alerts/alert",
+      "path": "alerts/Alert"
+    },
     {
       "implements": "part:@sanity/components/lists/default-style",
       "path": "lists/styles/DefaultList.css"
