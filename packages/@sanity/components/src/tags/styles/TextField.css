@@ -28,10 +28,10 @@
 
 .tag {
   display: inline-block;
-  background-color: var(--gray-lighter);
+  background-color: var(--gray-lightest);
   border-radius: var(--border-radius-small);
   color: var(--gray-dark);
-  border: 1px solid color(var(--gray-lighter) lightness(-15%));
+  border: 1px solid var(--gray-light);
   box-sizing: border-box;
   margin-right: 0.25em;
   padding: 0 0.5em;
@@ -55,7 +55,7 @@
   padding-left: 0.5em;
 
   @nest &:hover {
-    color: var(--black);
+    color: var(--state-danger-color);
   }
 }
 
