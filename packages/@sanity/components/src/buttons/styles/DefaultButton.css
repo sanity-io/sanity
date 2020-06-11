@@ -205,6 +205,10 @@
   border: none;
   border-radius: 0;
 
+  @nest &[disabled] {
+    color: inherit;
+  }
+
   @nest &.bleed {
     display: flex;
     height: 100%;
@@ -226,7 +230,6 @@
 
   @nest &:not(.disabled) {
     @nest &:focus > .inner {
-      /* background-color: var(--color-button-focus-bg); */
       box-shadow: var(--color-button-focus-shadow);
     }
 
@@ -247,13 +250,8 @@
       }
 
       @nest & .spinner {
-        background-color: var(--white);
+        background-color: color(var(--white) alpha(80%));
       }
-
-      /* @nest &:focus > .inner {
-        background-color: var(--color-button-simple-focus-bg);
-        color: var(--color-button-simple-focus-text);
-      } */
 
       @media (hover: hover) {
         @nest &:hover > .inner {
@@ -300,6 +298,10 @@
       color: var(--color-button-simple-disabled-text);
     }
   }
+
+  @nest &.loading > .inner {
+    overflow: hidden;
+  }
 }
 
 .inner {
@@ -309,6 +311,7 @@
   justify-content: stretch;
   align-items: stretch;
   width: stretch;
+  position: relative;
 }
 
 /* Used by ./ButtonGroup.css */
@@ -404,10 +407,6 @@
     background-color: var(--color-button-primary-spinner-bg);
   }
 
-  /* @nest &:focus > .inner {
-    background-color: var(--color-button-primary-focus-bg);
-  } */
-
   @media (hover: hover) {
     @nest &:hover > .inner {
       background-color: var(--color-button-primary-hover-bg);
@@ -435,11 +434,6 @@
       background-color: transparent;
       color: var(--color-button-primary-simple-color);
     }
-
-    /* @nest &:focus > .inner {
-      background-color: var(--color-button-primary-simple-focus-bg);
-      color: var(--color-button-primary-simple-focus-text);
-    } */
 
     @media (hover: hover) {
       @nest &:hover > .inner {
@@ -470,10 +464,6 @@
     background-color: var(--color-button-success-spinner-bg);
   }
 
-  /* @nest &:focus > .inner {
-    background-color: var(--color-button-success-focus-bg);
-  } */
-
   @media (hover: hover) {
     @nest &:hover > .inner {
       background-color: var(--color-button-success-hover-bg);
@@ -501,11 +491,6 @@
       background-color: transparent;
       color: var(--color-button-success-simple-color);
     }
-
-    /* @nest &:focus > .inner {
-      background-color: var(--color-button-success-simple-focus-bg);
-      color: var(--color-button-success-simple-focus-text);
-    } */
 
     @media (hover: hover) {
       @nest &:hover > .inner {
@@ -536,10 +521,6 @@
     background-color: var(--color-button-warning-spinner-bg);
   }
 
-  /* @nest &:focus > .inner {
-    background-color: var(--color-button-warning-focus-bg);
-  } */
-
   @media (hover: hover) {
     @nest &:hover > .inner {
       background-color: var(--color-button-warning-hover-bg);
@@ -567,11 +548,6 @@
       background-color: transparent;
       color: var(--color-button-warning-simple-color);
     }
-
-    /* @nest &:focus > .inner {
-      background-color: var(--color-button-warning-simple-focus-bg);
-      color: var(--color-button-warning-simple-focus-text);
-    } */
 
     @media (hover: hover) {
       @nest &:hover > .inner {
@@ -602,10 +578,6 @@
     background-color: var(--color-button-danger-spinner-bg);
   }
 
-  /* @nest &:focus > .inner {
-    background-color: var(--color-button-danger-focus-bg);
-  } */
-
   @media (hover: hover) {
     @nest &:hover > .inner {
       background-color: var(--color-button-danger-hover-bg);
@@ -634,11 +606,6 @@
       color: var(--color-button-danger-simple-color);
     }
 
-    /* @nest &:focus > .inner {
-      background-color: var(--color-button-danger-simple-focus-bg);
-      color: var(--color-button-danger-simple-focus-text);
-    } */
-
     @media (hover: hover) {
       @nest &:hover > .inner {
         background-color: var(--color-button-danger-simple-hover-bg);
@@ -657,7 +624,6 @@
   }
 }
 
-/* @todo */
 .color__white {
   &.disabled > .inner {
     background-color: transparent;
@@ -673,11 +639,6 @@
     @nest & .spinner {
       background-color: color(var(--white) alpha(80%));
     }
-
-    /* @nest &:focus > .inner {
-      background-color: color(var(--white) lightness(- 5%));
-      color: color(var(--default-button-color) lightness(- 20%));
-    } */
 
     @media (hover: hover) {
       @nest &:hover > .inner {
@@ -716,11 +677,6 @@
         background-color: transparent;
         color: var(--white);
       }
-
-      /* @nest &:focus > .inner {
-        background-color: color(var(--white) alpha(10%));
-        color: var(--white);
-      } */
 
       @media (hover: hover) {
         @nest &:hover > .inner {
