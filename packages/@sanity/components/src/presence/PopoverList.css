@@ -26,6 +26,7 @@
 .inner {
   position: relative;
   max-height: 250px;
+  max-width: 250px;
   outline: none;
 }
 
@@ -63,7 +64,7 @@
   padding: var(--extra-small-padding) 0;
   position: sticky;
   bottom: 0;
-  min-width: 190px;
+  min-width: 200px;
 }
 
 .manageLink {

@@ -25,6 +25,7 @@ function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
   )
   return locationWithDocumentId ? (
     <IntentLink
+      title={presence?.user?.displayName && `Go to ${presence.user.displayName}`}
       className={styles.intentLink}
       intent="edit"
       params={{id: locationWithDocumentId.documentId}}
