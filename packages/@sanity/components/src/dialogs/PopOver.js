@@ -12,6 +12,7 @@ import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 
+// @todo: Rename to `Popover`
 export default class PopOver extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
@@ -48,7 +49,7 @@ export default class PopOver extends React.PureComponent {
     modifiers: {
       preventOverflow: {
         boundariesElement: 'viewport',
-        padding: 24
+        padding: 16
       }
     }
   }
@@ -109,12 +110,12 @@ export default class PopOver extends React.PureComponent {
                       style={style}
                       data-placement={placement}
                       className={classNames(
-                        styles.popper,
+                        styles.root,
                         styles[`color_${color}`],
                         styles[`padding_${padding}`]
                       )}
                     >
-                      <div className={hasAnimation ? styles.popperAnimation : ''}>
+                      <div className={classNames(hasAnimation && styles.popperAnimation)}>
                         <div
                           className={title ? styles.filledArrow : styles.arrow}
                           ref={arrowProps.ref}
