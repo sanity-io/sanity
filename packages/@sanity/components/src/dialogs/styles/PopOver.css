@@ -51,10 +51,9 @@
   height: 100%;
 }
 
-.popper {
-  font-size: 1rem;
-  z-index: var(--zindex-portal);
+.root {
   position: relative;
+  z-index: var(--zindex-portal);
 
   @nest .responsive & {
     @media (--max-screen-medium) {
@@ -90,25 +89,25 @@
     background-color: var(--state-danger-color);
   }
 
-  @nest .popper[data-placement^='bottom'] & {
+  @nest .root[data-placement^='bottom'] & {
     top: 0;
     bottom: unset;
     transform: translate(0, -50%) rotate(135deg);
   }
 
-  @nest .popper[data-placement^='top'] & {
+  @nest .root[data-placement^='top'] & {
     top: unset;
     bottom: 0;
     transform: translate(-50%, 50%) rotate(-45deg);
   }
 
-  @nest .popper[data-placement^='right'] & {
+  @nest .root[data-placement^='right'] & {
     right: unset;
     left: 0;
     transform: translate(-50%, 0) rotate(45deg);
   }
 
-  @nest .popper[data-placement^='left'] & {
+  @nest .root[data-placement^='left'] & {
     left: unset;
     right: 0;
     transform: translate(50%, 0) rotate(225deg);
