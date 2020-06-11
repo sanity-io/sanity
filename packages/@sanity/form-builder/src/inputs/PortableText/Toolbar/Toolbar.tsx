@@ -34,6 +34,7 @@ function PTEToolbar(props: Props) {
     () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
     [editor, selection, onFocus, hotkeys]
   )
+  const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const blockStyleSelectProps = React.useMemo(
     () => (editor ? getBlockStyleSelectProps(editor) : null),
     [editor]
@@ -71,9 +72,11 @@ function PTEToolbar(props: Props) {
           <InsertMenu items={insertMenuItems} readOnly={readOnly} />
         </div>
       )}
-      <div className={styles.actionMenuContainer}>
-        <ActionMenu groups={actionGroups} readOnly={readOnly} />
-      </div>
+      {actionsLen > 0 && (
+        <div className={styles.actionMenuContainer}>
+          <ActionMenu groups={actionGroups} readOnly={readOnly} />
+        </div>
+      )}
     </div>
   )
 }
