@@ -93,14 +93,15 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         color && styles[`color__${color}`],
         bleed && styles.bleed,
         disabled && styles.disabled,
-        selected && styles.selected
+        selected && styles.selected,
+        loading && styles.loading
       ])
 
       return (
         <Component
           {...rest}
           className={style}
-          disabled={disabled}
+          disabled={disabled || loading}
           ref={this.setRootElement}
           tabIndex={0}
           onBlur={this.handleBlur}
