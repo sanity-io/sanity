@@ -4,6 +4,7 @@
   opacity: 1;
   outline: none;
   z-index: 10;
+  margin-right: var(--small-padding);
 
   @nest &:hover {
     opacity: 1;
@@ -29,6 +30,7 @@
 }
 
 .icon {
+  font-size: var(--font-size-small);
   @nest & > svg {
     display: block;
     font-size: calc(17 / 16 * 1em);
