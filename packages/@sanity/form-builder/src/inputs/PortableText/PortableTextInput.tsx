@@ -639,6 +639,7 @@ export default withPatchSubscriber(
               markers={this.props.markers} // TODO: filter relevant
               editorPath={objectEditStatus.editorPath}
               object={object}
+              objectEditStatusType={objectEditStatus.type}
               onBlur={this.handleEditObjectFormBuilderBlur}
               onChange={this.handleFormBuilderEditObjectChange}
               onClose={handleClose}

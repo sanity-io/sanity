@@ -11,8 +11,9 @@ import {Marker, Presence} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-type Props = {
+interface Props {
   object: PortableTextBlock | PortableTextChild
+  objectEditStatusType: string
   type: Type
   referenceElement: HTMLElement
   readOnly: boolean
@@ -27,8 +28,9 @@ type Props = {
   onBlur: () => void
 }
 
-export const EditObject: FunctionComponent<Props> = ({
+export const EditObject = ({
   object,
+  objectEditStatusType,
   type,
   referenceElement,
   readOnly,
@@ -40,7 +42,7 @@ export const EditObject: FunctionComponent<Props> = ({
   presence,
   onClose,
   onBlur
-}): JSX.Element => {
+}: Props) => {
   const editModalLayout: ModalType = get(type, 'options.editModal')
   const handleClose = (): void => {
     onClose()
@@ -49,58 +51,57 @@ export const EditObject: FunctionComponent<Props> = ({
   const handleChange = (patchEvent: PatchEvent): void => {
     onChange(patchEvent, formBuilderPath)
   }
-  switch (editModalLayout) {
-    case 'fullscreen': {
-      return (
-        <FullscreenObjectEditing
-          object={object}
-          type={type}
-          readOnly={readOnly}
-          markers={markers}
-          focusPath={focusPath}
-          path={formBuilderPath}
-          onChange={handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          presence={presence}
-          onClose={handleClose}
-        />
-      )
-    }
-    case 'popover': {
-      return (
-        <PopoverObjectEditing
-          object={object}
-          type={type}
-          referenceElement={refElm}
-          readOnly={readOnly}
-          markers={markers}
-          focusPath={focusPath}
-          path={formBuilderPath}
-          onChange={handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          presence={presence}
-          onClose={handleClose}
-        />
-      )
-    }
-    default: {
-      return (
-        <DefaultObjectEditing
-          object={object}
-          type={type}
-          readOnly={readOnly}
-          markers={markers}
-          focusPath={focusPath}
-          path={formBuilderPath}
-          onChange={handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          presence={presence}
-          onClose={handleClose}
-        />
-      )
-    }
+
+  if (editModalLayout === 'fullscreen') {
+    return (
+      <FullscreenObjectEditing
+        object={object}
+        type={type}
+        readOnly={readOnly}
+        markers={markers}
+        focusPath={focusPath}
+        path={formBuilderPath}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        presence={presence}
+        onClose={handleClose}
+      />
+    )
   }
+
+  if (editModalLayout === 'popover' || objectEditStatusType === 'annotation') {
+    return (
+      <PopoverObjectEditing
+        object={object}
+        type={type}
+        referenceElement={refElm}
+        readOnly={readOnly}
+        markers={markers}
+        focusPath={focusPath}
+        path={formBuilderPath}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        presence={presence}
+        onClose={handleClose}
+      />
+    )
+  }
+
+  return (
+    <DefaultObjectEditing
+      object={object}
+      type={type}
+      readOnly={readOnly}
+      markers={markers}
+      focusPath={focusPath}
+      path={formBuilderPath}
+      onChange={handleChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      presence={presence}
+      onClose={handleClose}
+    />
+  )
 }

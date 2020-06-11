@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
 
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
@@ -12,7 +11,7 @@ import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
-type Props = {
+interface Props {
   type: Type
   object: PortableTextBlock | PortableTextChild
   referenceElement: HTMLElement
@@ -40,11 +39,11 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   presence,
   onBlur,
   onClose
-}): JSX.Element => {
+}) => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   return (
     <Stacked>
-      {(): JSX.Element => (
+      {() => (
         <Popover
           placement="bottom"
           referenceElement={referenceElement}
@@ -52,25 +51,22 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           onEscape={onClose}
           onClose={onClose}
           title={type.title}
-          padding="none"
         >
-          <DialogContent size="medium" padding="medium">
-            <PresenceOverlay>
-              <FormBuilderInput
-                type={type}
-                level={0}
-                readOnly={readOnly || type.readOnly}
-                value={object}
-                onChange={handleChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                focusPath={focusPath}
-                path={path}
-                presence={presence}
-                markers={markers}
-              />
-            </PresenceOverlay>
-          </DialogContent>
+          <PresenceOverlay>
+            <FormBuilderInput
+              type={type}
+              level={0}
+              readOnly={readOnly || type.readOnly}
+              value={object}
+              onChange={handleChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              focusPath={focusPath}
+              path={path}
+              presence={presence}
+              markers={markers}
+            />
+          </PresenceOverlay>
         </Popover>
       )}
     </Stacked>
