@@ -37,11 +37,11 @@ function PTEToolbar(props: Props) {
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const blockStyleSelectProps = React.useMemo(
     () => (editor ? getBlockStyleSelectProps(editor) : null),
-    [editor]
+    [selection]
   )
   const insertMenuItems = React.useMemo(
     () => (editor ? getInsertMenuItems(editor, selection, onFocus) : []),
-    [editor]
+    [selection]
   )
 
   if (!editor) return null
