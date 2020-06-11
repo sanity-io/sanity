@@ -45,15 +45,12 @@ export const IS_MAC =
 const HEADER_STYLES = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 type Props = {
-  type: Type
+  focusPath: Path
   level: number
-  value: PortableTextBlock[]
-  readOnly: boolean | null
+  markers: Array<Marker>
+  onBlur: () => void
   onChange: (arg0: PatchEvent) => void
   onFocus: (Path) => void
-  onBlur: () => void
-  markers: Array<Marker>
-  focusPath: Path
   onPaste?: (arg0: {
     event: React.SyntheticEvent
     path: []
@@ -63,21 +60,25 @@ type Props = {
     insert?: PortableTextBlock[]
     path?: []
   }
+  readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   subscribe: (arg0: ({patches: PatchEvent}) => void) => void
+  type: Type
+  value: PortableTextBlock[] | undefined
 }
 
 type State = {
-  isFullscreen: boolean
   hasFocus: boolean
   ignoreValidation: boolean
   invalidValue: InvalidEditorValue | null
   isActive: boolean
+  isFullscreen: boolean
   isLoading: boolean
-  selection: EditorSelection | undefined
-  valueWithError: PortableTextBlock[] | undefined
   objectEditStatus: {editorPath: Path; formBuilderPath: Path; type: string} | null
+  selection: EditorSelection | undefined
+  valueFromPatchSubscriber: PortableTextBlock[] | undefined
+  valueWithError: PortableTextBlock[] | undefined
 }
 
 type PatchWithOrigin = Patch & {
@@ -128,6 +129,7 @@ export default withPatchSubscriber(
       isLoading: false,
       objectEditStatus: null,
       selection: undefined,
+      valueFromPatchSubscriber: undefined,
       valueWithError: undefined
     }
 
@@ -137,6 +139,10 @@ export default withPatchSubscriber(
       // Reset invalidValue state if new value is coming in from props
       if (nextProps.value !== (prevState.invalidValue && prevState.invalidValue.value)) {
         state = {...state, invalidValue: null}
+      }
+      // Only initial
+      if (!prevState.valueFromPatchSubscriber) {
+        state = {...state, valueFromPatchSubscriber: nextProps.value}
       }
       // Figure out if the current focusPath is editing something that isn't text.
       // Set object edit path if so, or nullify the object edit path.
@@ -192,6 +198,7 @@ export default withPatchSubscriber(
       super(props)
       this.ptFeatures = getPortableTextFeatures(props.type)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
+      this.setState({valueFromPatchSubscriber: props.value})
     }
 
     componentDidMount(): void {
@@ -204,7 +211,8 @@ export default withPatchSubscriber(
     }
 
     private handleDocumentPatches = ({
-      patches
+      patches,
+      snapshot
     }: {
       patches: PatchWithOrigin[]
       snapshot: PortableTextBlock[] | undefined
@@ -215,6 +223,7 @@ export default withPatchSubscriber(
         this.incoming = this.incoming.concat(patchSelection)
         patchSelection.map(patch => this.patche$.next(patch))
       }
+      this.setState({valueFromPatchSubscriber: snapshot})
     }
 
     // eslint-disable-next-line complexity
@@ -496,7 +505,9 @@ export default withPatchSubscriber(
         Array.isArray(this.props.value) &&
         this.props.value.find(blk => blk._key === blockKey)
       const child =
-        block && block.children.find(cld => cld._key === objectEditStatus.editorPath[2]._key)
+        block &&
+        block.children &&
+        block.children.find(cld => cld._key === objectEditStatus.editorPath[2]._key)
       if (block) {
         switch (objectEditStatus.type) {
           case 'blockObject':
@@ -651,7 +662,7 @@ export default withPatchSubscriber(
                 }
                 spellCheck={false} // TODO: from schema?
                 type={type}
-                value={value}
+                value={this.state.valueFromPatchSubscriber}
               />
             </ActivateOnFocus>
           )}
