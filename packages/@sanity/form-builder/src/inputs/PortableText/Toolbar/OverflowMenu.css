@@ -5,7 +5,6 @@
 }
 
 .actionBar {
-  overflow: auto;
   white-space: nowrap;
   overflow: hidden;
   text-align: left;

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/jsx-handler-names */
 /* eslint-disable react/jsx-no-bind */
 
 import classNames from 'classnames'
@@ -36,47 +34,49 @@ export function OverflowMenu(props: Props) {
   } = props
   const actionBarRef = useRef<HTMLDivElement | null>(null)
   const [actionStates, setActionStates] = useState(
-    actions.map((_, index) => ({index, visible: false}))
+    actions.map((__, index) => ({index, visible: false}))
   )
   const actionStatesRef = useRef(actionStates)
   const showOverflowButton = actionStates.filter(a => !a.visible).length > 0
   const hiddenActions = actionStates.filter(a => !a.visible)
   const lastHidden = hiddenActions.length === 1
   const ioRef = useRef<IntersectionObserver | null>(null)
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   useEffect(() => {
     const actionBar = actionBarRef.current
 
     if (actionBar) {
       const actionContainerEls = Array.from(actionBar.childNodes) as HTMLDivElement[]
-      const lastActionEl = actionContainerEls[actionContainerEls.length - 1] as
-        | HTMLElement
-        | undefined
-      const lastWidth = lastActionEl && lastActionEl.offsetWidth
 
       const handleEntries: IntersectionObserverCallback = entries => {
         const newActionStates = actionStatesRef.current.slice(0)
 
         entries.forEach(entry => {
-          const actionIndex = actionContainerEls.indexOf(entry.target as HTMLDivElement)
+          const element = entry.target as HTMLDivElement
+          const actionIndex = Array.from(actionBar.childNodes).indexOf(element)
+          const visible = entry.intersectionRatio === 1
 
           newActionStates[actionIndex] = {
             index: actionIndex,
-            visible: entry.intersectionRatio === 1
+            visible
           }
         })
 
-        setActionStates(newActionStates)
+        setActionStates(() => newActionStates)
 
         actionStatesRef.current = newActionStates
       }
 
-      const marginRight = lastHidden ? lastWidth + 4 : 0
+      // @todo: Improve this to show the last item if there's enough space
+      const marginRight = 0
 
       const io = new window.IntersectionObserver(handleEntries, {
         root: actionBar,
         rootMargin: `0px ${marginRight}px 0px 0px`,
-        threshold: [0, 1]
+        threshold: [0, 0.1, 0.9, 1]
       })
 
       actionContainerEls.forEach(actionContainerEl => io.observe(actionContainerEl))
@@ -88,22 +88,13 @@ export function OverflowMenu(props: Props) {
     }
   }, [lastHidden])
 
-  const [open, setOpen] = useState(false)
-
-  const handleOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
-
   return (
     <div className={styles.root}>
       <div className={styles.actionBar} ref={actionBarRef} style={{flex: 1, minWidth: 0}}>
         {actions.map((action, actionIndex) => (
           <div
             className={classNames(styles.actionButton, action.firstInGroup && styles.firstInGroup)}
+            data-index={actionIndex}
             data-visible={actionStates[actionIndex].visible}
             key={String(actionIndex)}
           >
