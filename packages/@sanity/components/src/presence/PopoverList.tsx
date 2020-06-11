@@ -52,8 +52,10 @@ export default function PopoverList<Item extends {user: User}>({
     >
       {isGlobal && items.length < 1 && (
         <div className={styles.header}>
-          <h2 className={styles.title}>No collaborators here!</h2>
-          <p className={styles.subtitle}>Invite more collaborators to see their online statuses.</p>
+          <h2 className={styles.title}>No one else is here</h2>
+          <p className={styles.subtitle}>
+            Invite people to your project to see their online status.
+          </p>
         </div>
       )}
       {items.length > 0 && (
