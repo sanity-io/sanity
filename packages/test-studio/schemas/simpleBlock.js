@@ -35,6 +35,15 @@ export default {
         {type: 'image', name: 'image'},
         {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
       ]
+    },
+    {
+      name: 'notes',
+      type: 'array',
+      of: [
+        {
+          type: 'simpleBlockNote'
+        }
+      ]
     }
   ]
 }
