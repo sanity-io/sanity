@@ -16,7 +16,7 @@ import {
   getPortableTextFeatures,
   PortableTextFeatures
 } from '@sanity/portable-text-editor'
-import {isEqual} from 'lodash'
+import {isEqual, uniqueId} from 'lodash'
 import ErrorCircleIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -44,7 +44,6 @@ import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
 import BlockExtrasOverlay from './BlockExtrasOverlay'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
-import {uniqueId} from 'lodash'
 
 export const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
