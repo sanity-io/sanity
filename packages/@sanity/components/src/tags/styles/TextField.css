@@ -3,6 +3,7 @@
 .root {
   display: block;
   position: relative;
+  cursor: text;
 }
 
 .rootReadOnly {
@@ -20,10 +21,9 @@
 }
 
 .tags {
-  display: block;
+  display: flex;
   margin: 0;
-  padding: 0;
-  float: left;
+  padding: 0; 
 }
 
 .tag {
@@ -104,7 +104,7 @@
   margin: 0;
   padding: 0;
   line-height: 1em;
-  width: stretch;
+  flex: 1;
   margin-top: 0.2em;
   padding-left: 0.1em;
   z-index: 1;

@@ -122,7 +122,6 @@ export default class TagsTextField extends React.Component {
                 onKeyDown={this.handleKeyDown}
                 onKeyPress={this.handleKeyPress}
                 onChange={this.handleInputChange}
-                style={{width: `${Math.max(3, inputValue.length) * 0.8}em`}}
                 onBlur={this.handleBlur}
                 ref={this.setInput}
                 autoComplete="off"
