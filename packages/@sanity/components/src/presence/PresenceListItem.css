@@ -6,6 +6,7 @@
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
   width: 100%;
+  min-width: 200px;
 }
 
 .root[data-size='small'] {
@@ -28,7 +29,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 17ch;
+  max-width: 15ch;
 }
 
 .linkIcon {
