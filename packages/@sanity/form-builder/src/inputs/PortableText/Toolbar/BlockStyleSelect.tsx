@@ -21,24 +21,20 @@ type Props = {
 }
 
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {className, editor, items, padding, readOnly, renderBlock, value} = props
+  const {className, editor, items, padding, readOnly, renderBlock, value, selection} = props
 
   const ptFeatures = React.useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [
     editor
   ])
 
-  const handleChange = React.useCallback(
-    (item: BlockStyleItem): void => {
-      const focusBlock = PortableTextEditor.focusBlock(editor)
-
-      if (focusBlock && item.style !== focusBlock.style) {
-        PortableTextEditor.toggleBlockStyle(editor, item.style)
-      } else {
-        PortableTextEditor.focus(editor)
-      }
-    },
-    [editor]
-  )
+  const handleChange = (item: BlockStyleItem): void => {
+    const focusBlock = PortableTextEditor.focusBlock(editor)
+    if (focusBlock && item.style !== focusBlock.style) {
+      PortableTextEditor.toggleBlockStyle(editor, item.style)
+    } else {
+      PortableTextEditor.focus(editor)
+    }
+  }
 
   const renderItem = React.useCallback(
     (item: BlockStyleItem): JSX.Element => {
@@ -69,9 +65,8 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
 
       return <div key={item.key}>No style</div>
     },
-    [ptFeatures]
+    [selection]
   )
-
   const focusBlock = PortableTextEditor.focusBlock(editor)
   const disabled = focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
 
