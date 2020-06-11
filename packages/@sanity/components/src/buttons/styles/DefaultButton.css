@@ -289,9 +289,11 @@
     }
   }
 
-  @nest &.disabled > .inner {
-    background-color: var(--color-button-disabled-bg);
-    color: var(--color-button-disabled-text);
+  @nest &.disabled {
+    @nest & > .inner {
+      background-color: var(--color-button-disabled-bg);
+      color: var(--color-button-disabled-text);
+    }
 
     @nest &.simple > .inner {
       background-color: var(--color-button-simple-disabled-bg);
