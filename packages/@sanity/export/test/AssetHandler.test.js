@@ -15,13 +15,14 @@ describe('asset handler', () => {
   test('can rewrite documents / queue downloads', done => {
     // prettier-ignore
     const docs = [
-      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-idx_abc123-3360x840-png'}, nested: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}}},
-      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
-      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-idx_abc456-310x282-jpg'}}},
-      {_id: 'old4', _type: 'bike', name: 'Cool', image: {asset: {_ref: 'mzFgq1cvHSEeGscxBsRFoqKG'}}},
+      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}, nested: {_type: 'image', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}}},
+      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
+      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg'}}},
+      {_id: 'datMuxAsset', _type: 'mux.videoAsset', assetId: 'someAssetId'},
+      {_id: 'refsDatMuxAsset', _type: 'bike', video: {_type: 'mux.video', asset: {_ref: 'datMuxAsset'}}},
       {_id: 'mzFgq1cvHSEeGscxBsRFoqKG', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/mzFgq1cvHSEeGscxBsRFoqKG-2048x1364.jpg'},
-      {_id: 'image-idx_abc123-dads3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc123-3360x840.png'},
-      {_id: 'image-idx_abc456-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc456-310x282.jpg'},
+      {_id: 'image-54e9595477915230501dfec656c8e86235bb470a-dads3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png'},
+      {_id: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282.jpg'},
       {_id: 'plain', _type: 'bike', name: 'Broom'}
     ]
 
@@ -32,12 +33,14 @@ describe('asset handler', () => {
       .pipe(miss.concat(onComplete))
 
     async function onComplete(newDocs) {
-      expect(newDocs).toHaveLength(5)
+      expect(newDocs).toHaveLength(6)
       expect(docById(newDocs, 'doc1')).toMatchSnapshot('Rewritten asset for doc1')
       expect(docById(newDocs, 'doc2')).toMatchSnapshot('Rewritten asset for doc2')
       expect(docById(newDocs, 'doc3')).toMatchSnapshot('Rewritten asset for doc3')
-      expect(docById(newDocs, 'old4')).toMatchSnapshot('Rewritten asset for old4')
       expect(docById(newDocs, 'plain')).toMatchSnapshot('Nothing rewritten in assetless doc')
+      expect(docById(newDocs, 'refsDatMuxAsset')).toMatchSnapshot(
+        'Nothing rewritten if pattern doesnt match Sanity asset'
+      )
 
       await assetHandler.finish()
       expect(assetHandler.filesWritten).toEqual(3)
@@ -48,13 +51,12 @@ describe('asset handler', () => {
   test('can remove asset documents', done => {
     // prettier-ignore
     const docs = [
-      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
-      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
-      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-idx_abc456-310x282-jpg'}}},
-      {_id: 'old4', _type: 'bike', name: 'Cool', image: {asset: {_ref: 'mzFgq1cvHSEeGscxBsRFoqKG'}}},
+      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
+      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
+      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg'}}},
       {_id: 'mzFgq1cvHSEeGscxBsRFoqKG', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/mzFgq1cvHSEeGscxBsRFoqKG-2048x1364.jpg'},
-      {_id: 'image-idx_abc123-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc123-3360x840.png'},
-      {_id: 'image-idx_abc456-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc456-310x282.jpg'},
+      {_id: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png'},
+      {_id: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282.jpg'},
       {_id: 'plain', _type: 'bike', name: 'Broom'}
     ]
 
@@ -65,11 +67,10 @@ describe('asset handler', () => {
       .pipe(miss.concat(onComplete))
 
     async function onComplete(newDocs) {
-      expect(newDocs).toHaveLength(5)
+      expect(newDocs).toHaveLength(4)
       expect(docById(newDocs, 'doc1')).toMatchSnapshot('doc1 with no image asset')
       expect(docById(newDocs, 'doc2')).toMatchSnapshot('doc2 with no image asset')
       expect(docById(newDocs, 'doc3')).toMatchSnapshot('doc3 with no image asset')
-      expect(docById(newDocs, 'old4')).toMatchSnapshot('old4 with no image asset')
       expect(docById(newDocs, 'plain')).toMatchSnapshot('Nothing removed in assetless doc')
 
       await assetHandler.finish()
@@ -81,7 +82,7 @@ describe('asset handler', () => {
   test('downloads assets that are not referenced by documents', done => {
     // prettier-ignore
     const docs = [
-      {_id: 'image-idx_abc123-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc123-3360x840.png'},
+      {_id: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png'},
       {_id: 'mzFgq1cvHSEeGscxBsRFoqKG', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/mzFgq1cvHSEeGscxBsRFoqKG-2048x1364.jpg'},
       {_id: 'plain', _type: 'bike', name: 'Broom'}
     ]
@@ -105,12 +106,12 @@ describe('asset handler', () => {
   test('can skip asset documents', done => {
     // prettier-ignore
     const docs = [
-      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
-      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
-      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-idx_abc456-310x282-jpg'}}},
+      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
+      {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
+      {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg'}}},
       {_id: 'mzFgq1cvHSEeGscxBsRFoqKG', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/mzFgq1cvHSEeGscxBsRFoqKG-2048x1364.jpg'},
-      {_id: 'image-idx_abc123-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc123-3360x840.png'},
-      {_id: 'image-idx_abc456-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/idx_abc456-310x282.jpg'},
+      {_id: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png'},
+      {_id: 'image-31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282-jpg', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282.jpg'},
       {_id: 'plain', _type: 'bike', name: 'Broom'}
     ]
 
