@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable react/jsx-no-bind */
 
@@ -10,12 +9,13 @@ import styles from './InsertMenu.css'
 import {BlockItem} from './types'
 
 type Props = {
+  disabled: boolean
   items: BlockItem[]
   readOnly: boolean
 }
 
 export default function InsertMenu(props: Props) {
-  const {items, readOnly} = props
+  const {disabled, items, readOnly} = props
   const [open, setOpen] = React.useState(false)
 
   const handleOpen = () => {
@@ -69,14 +69,16 @@ export default function InsertMenu(props: Props) {
           aria-haspopup="menu"
           aria-expanded={open}
           aria-controls={'insertmenu'}
-          disabled={readOnly}
+          disabled={disabled || readOnly}
           icon={PlusIcon}
           kind="simple"
           onClick={handleOpen}
           padding="small"
           selected={open}
           title="Insert elements"
-        />
+        >
+          Insert
+        </Button>
       </Tooltip>
     </div>
   )

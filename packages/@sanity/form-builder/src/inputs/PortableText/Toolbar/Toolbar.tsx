@@ -30,6 +30,7 @@ interface Props {
 
 function PTEToolbar(props: Props) {
   const {editor, hotkeys, isFullscreen, readOnly, onFocus, renderBlock, selection} = props
+  const disabled = !selection
   const actionGroups = React.useMemo(
     () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
     [editor, selection, onFocus, hotkeys]
@@ -59,6 +60,7 @@ function PTEToolbar(props: Props) {
           <BlockStyleSelect
             {...blockStyleSelectProps}
             className={styles.blockStyleSelect}
+            disabled={disabled}
             editor={editor}
             padding="small"
             selection={selection}
@@ -67,14 +69,14 @@ function PTEToolbar(props: Props) {
           />
         </div>
       )}
-      {insertMenuItems.length > 0 && (
-        <div className={styles.insertMenuContainer}>
-          <InsertMenu items={insertMenuItems} readOnly={readOnly} />
-        </div>
-      )}
       {actionsLen > 0 && (
         <div className={styles.actionMenuContainer}>
-          <ActionMenu groups={actionGroups} readOnly={readOnly} />
+          <ActionMenu disabled={disabled} groups={actionGroups} readOnly={readOnly} />
+        </div>
+      )}
+      {insertMenuItems.length > 0 && (
+        <div className={styles.insertMenuContainer}>
+          <InsertMenu disabled={disabled} items={insertMenuItems} readOnly={readOnly} />
         </div>
       )}
     </div>
