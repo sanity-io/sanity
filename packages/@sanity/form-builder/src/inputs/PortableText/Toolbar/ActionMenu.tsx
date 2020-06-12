@@ -11,6 +11,7 @@ import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import styles from './ActionMenu.css'
 
 interface Props {
+  disabled: boolean
   groups: PTEToolbarActionGroup[]
   readOnly: boolean
 }
@@ -56,7 +57,7 @@ function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onC
 }
 
 export default function ActionMenu(props: Props) {
-  const {groups, readOnly} = props
+  const {disabled, groups, readOnly} = props
 
   const actions = groups.reduce((acc: PTEToolbarAction[], group) => {
     return acc.concat(
@@ -72,7 +73,7 @@ export default function ActionMenu(props: Props) {
       actions={actions}
       actionButtonComponent={ActionButton}
       actionMenuItemComponent={ActionMenuItem}
-      disabled={readOnly}
+      disabled={disabled || readOnly}
     />
   )
 }
