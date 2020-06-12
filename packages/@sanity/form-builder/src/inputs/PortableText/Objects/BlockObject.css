@@ -15,8 +15,8 @@
 }
 
 .previewContainer {
-  color: var(--component-text-color);
-  background: var(--component-bg);
+  /* color: var(--component-text-color); */
+  /* background: var(--component-bg); */
   width: 100%;
   display: block;
   cursor: move;
