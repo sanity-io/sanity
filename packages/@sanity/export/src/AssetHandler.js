@@ -66,7 +66,7 @@ class AssetHandler {
       return
     }
 
-    callback(null, await this.findAndModify(doc, ACTION_REWRITE))
+    callback(null, this.findAndModify(doc, ACTION_REWRITE))
   })
 
   // Called in the case where we don't _want_ assets, so basically just remove all asset documents
@@ -77,7 +77,7 @@ class AssetHandler {
       return
     }
 
-    callback(null, await this.findAndModify(doc, ACTION_REMOVE))
+    callback(null, this.findAndModify(doc, ACTION_REMOVE))
   })
 
   // Called when we are using raw export mode along with `assets: false`, where we simply
@@ -224,10 +224,9 @@ class AssetHandler {
     return true
   }
 
-  // eslint-disable-next-line complexity
-  findAndModify = async (item, action) => {
+  findAndModify = (item, action) => {
     if (Array.isArray(item)) {
-      const children = await Promise.all(item.map(child => this.findAndModify(child, action)))
+      const children = item.map(child => this.findAndModify(child, action))
       return children.filter(Boolean)
     }
 
@@ -243,21 +242,11 @@ class AssetHandler {
     if (isAsset && action === ACTION_REWRITE) {
       const {asset, ...other} = item
       const assetId = asset._ref
-      if (isModernAsset(assetId)) {
-        const assetType = getAssetType(item)
-        const filePath = `${assetType}s/${generateFilename(assetId)}`
-        return {
-          _sanityAsset: `${assetType}@file://./${filePath}`,
-          ...(await this.findAndModify(other, action))
-        }
-      }
-
-      // Legacy asset
-      const type = this.assetsSeen.get(assetId) || (await this.lookupAssetType(assetId))
-      const filePath = `${type}s/${generateFilename(assetId)}`
+      const assetType = getAssetType(item)
+      const filePath = `${assetType}s/${generateFilename(assetId)}`
       return {
-        _sanityAsset: `${type}@file://./${filePath}`,
-        ...(await this.findAndModify(other, action))
+        _sanityAsset: `${assetType}@file://./${filePath}`,
+        ...this.findAndModify(other, action)
       }
     }
 
@@ -267,8 +256,7 @@ class AssetHandler {
       const key = keys[i]
       const value = item[key]
 
-      // eslint-disable-next-line no-await-in-loop
-      newItem[key] = await this.findAndModify(value, action)
+      newItem[key] = this.findAndModify(value, action)
 
       if (typeof newItem[key] === 'undefined') {
         delete newItem[key]
@@ -277,15 +265,10 @@ class AssetHandler {
 
     return newItem
   }
-
-  lookupAssetType = async assetId => {
-    const docType = await this.client.fetch('*[_id == $id][0]._type', {id: assetId})
-    return docType === 'sanity.imageAsset' ? 'image' : 'file'
-  }
 }
 
 function isAssetField(item) {
-  return item.asset && item.asset._ref
+  return item.asset && item.asset._ref && isSanityAsset(item.asset._ref)
 }
 
 function getAssetType(item) {
@@ -297,8 +280,11 @@ function getAssetType(item) {
   return type || null
 }
 
-function isModernAsset(assetId) {
-  return /^(image|file)/.test(assetId)
+function isSanityAsset(assetId) {
+  return (
+    /^image-[a-f0-9]{40}-\d+x\d+-[a-z]+$/.test(assetId) ||
+    /^file-[a-f0-9]{40}-[a-z]+$/.test(assetId)
+  )
 }
 
 function generateFilename(assetId) {

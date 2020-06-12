@@ -32,11 +32,16 @@ Object {
 }
 `;
 
-exports[`asset handler can remove asset documents: old4 with no image asset 1`] = `
+exports[`asset handler can rewrite documents / queue downloads: Nothing rewritten if pattern doesnt match Sanity asset 1`] = `
 Object {
-  "_id": "old4",
+  "_id": "refsDatMuxAsset",
   "_type": "bike",
-  "name": "Cool",
+  "video": Object {
+    "_type": "mux.video",
+    "asset": Object {
+      "_ref": "datMuxAsset",
+    },
+  },
 }
 `;
 
@@ -53,11 +58,11 @@ Object {
   "_id": "doc1",
   "_type": "bike",
   "image": Object {
-    "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+    "_sanityAsset": "image@file://./images/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png",
     "_type": "image",
     "caption": "Scooter bike",
     "nested": Object {
-      "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+      "_sanityAsset": "image@file://./images/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png",
       "_type": "image",
     },
   },
@@ -70,7 +75,7 @@ Object {
   "_id": "doc2",
   "_type": "bike",
   "image": Object {
-    "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+    "_sanityAsset": "image@file://./images/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png",
     "_type": "image",
   },
   "name": "Dupe",
@@ -82,20 +87,9 @@ Object {
   "_id": "doc3",
   "_type": "bike",
   "image": Object {
-    "_sanityAsset": "image@file://./images/idx_abc456-310x282.jpg",
+    "_sanityAsset": "image@file://./images/31befc6dfa0315d6c535b8a57e34f86c18eb5f20-310x282.jpg",
     "_type": "image",
   },
   "name": "Tandem",
-}
-`;
-
-exports[`asset handler can rewrite documents / queue downloads: Rewritten asset for old4 1`] = `
-Object {
-  "_id": "old4",
-  "_type": "bike",
-  "image": Object {
-    "_sanityAsset": "image@file://./images/mzFgq1cvHSEeGscxBsRFoqKG.bin",
-  },
-  "name": "Cool",
 }
 `;
