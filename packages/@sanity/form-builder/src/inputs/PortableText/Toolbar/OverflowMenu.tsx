@@ -90,7 +90,7 @@ export function OverflowMenu(props: Props) {
 
   return (
     <div className={styles.root}>
-      <div className={styles.actionBar} ref={actionBarRef} style={{flex: 1, minWidth: 0}}>
+      <div className={styles.actionBar} ref={actionBarRef}>
         {actions.map((action, actionIndex) => (
           <div
             className={classNames(styles.actionButton, action.firstInGroup && styles.firstInGroup)}
