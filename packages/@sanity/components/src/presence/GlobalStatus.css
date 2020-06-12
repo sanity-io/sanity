@@ -18,6 +18,8 @@
 .inner {
   display: flex;
   outline: none;
+  padding: 0 var(--small-padding);
+  position: relative;
 }
 
 .mobileContent {
@@ -76,6 +78,7 @@
 }
 
 .avatars {
+  position: relative;
   display: none;
   align-items: stretch;
   flex: 1;
