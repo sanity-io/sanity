@@ -20,7 +20,7 @@ type Props<Item> = {
 
 export default function PopoverList<Item extends {user: User}>({
   items = [],
-  position = 'top',
+  position = 'bottom-end',
   distance = 0,
   trigger,
   renderItem,
@@ -95,6 +95,13 @@ export default function PopoverList<Item extends {user: User}>({
         distance={distance}
         open={isOpen}
         onRequestClose={handleCloseList}
+        popperOptions={{
+          modifiers: {
+            preventOverflow: {
+              boundariesElement: 'window'
+            }
+          }
+        }}
       >
         <button
           aria-label={isOpen ? 'Hide online collaborators' : 'Show online collaborators'}
