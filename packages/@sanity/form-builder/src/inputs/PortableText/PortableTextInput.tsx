@@ -543,7 +543,9 @@ export default withPatchSubscriber(
       this.editorSnapshot = isFullscreen ? (
         <Portal>
           <StackedEscapeable onEscape={this.handleToggleFullscreen}>
-            <div className={styles.fullscreenPortal}>{wrappedEditor}</div>
+            <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
+              {wrappedEditor}
+            </div>
           </StackedEscapeable>
         </Portal>
       ) : (

@@ -15,7 +15,7 @@
   --input-bg: var(--component-bg);
   --input-bg-focus: var(--input-bg);
   --input-bg-invalid: var(--component-bg);
-  --input-bg-disabled: color(var(--gray-lightest) alpha(50%));
+  --input-bg-disabled: color(var(--gray-lightest) blend(var(--white) 75%));
   --input-color: var(--text-color);
   --input-color-disabled: var(--gray);
   --input-color-read-only: var(--gray-darker);

@@ -71,15 +71,15 @@
   border-radius: var(--input-border-radius);
   overflow: hidden;
 
-  @nest .root.readOnly &, .root.disabled & {
+  /* @nest .root.readOnly &, .root.disabled & {
     background-color: var(--input-bg-disabled);
     color: var(--input-color-disabled);
-  }
+  } */
 
   @nest .root.focus & {
     box-shadow: var(--input-box-shadow--focus);
     border-color: var(--input-border-color-focus);
-    background-color: var(--input-bg-focus);
+    /* background-color: var(--input-bg-focus); */
   }
 
   @nest .root:not(.focus):not(.readOnly):not(.disabled) & {
@@ -179,6 +179,22 @@
   box-sizing: border-box;
   font-family: var(--block-editor-base-font-family);
   min-height: 100%;
+
+  @nest .readOnly & {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-color-read-only);
+  }
+
+  @nest .disabled & {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-color-disabled);
+  }
+
+  @nest .focus & {
+    /* box-shadow: var(--input-box-shadow--focus); */
+    /* border-color: var(--input-border-color-focus); */
+    background-color: var(--input-bg-focus);
+  }
 
   @nest &.hasBlockExtras {
     margin-right: var(--block-extras-width);
