@@ -202,6 +202,11 @@
 
   /* The editable div */
 
+  @nest & > div [data-slate-placeholder='true'] {
+    color: var(--input-color-placeholder);
+    opacity: 1 !important;
+  }
+
   @nest & > div {
     padding: calc(var(--medium-padding) - var(--extra-small-padding));
     overflow: auto;
