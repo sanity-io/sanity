@@ -14,6 +14,7 @@
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
+  border-bottom: 1px solid var(--hairline-color);
 }
 
 .title {
