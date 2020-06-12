@@ -5,8 +5,8 @@
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
-  width: 100%;
-  min-width: 200px;
+  flex: 1;
+  min-width: 0;
 }
 
 .root[data-size='small'] {

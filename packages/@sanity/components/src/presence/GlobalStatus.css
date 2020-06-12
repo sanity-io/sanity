@@ -110,5 +110,5 @@
 }
 
 .avatarOverlap:not(:last-of-type) {
-  margin-right: -8px;
+  margin-right: -5px;
 }

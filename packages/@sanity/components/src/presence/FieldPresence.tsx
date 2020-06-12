@@ -65,8 +65,9 @@ export function FieldPresenceInner({
   maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
   stack = true
 }: InnerProps) {
+  const uniquePresence = uniqBy(presence || [], item => item.user.id)
   const sorted = sortBy(
-    uniqBy(presence || [], item => item.user.id),
+    uniquePresence,
     presence => presence.lastActiveAt
   )
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
@@ -89,7 +90,7 @@ export function FieldPresenceInner({
   return (
     <div className={styles.root}>
       <PopoverList
-        items={presence}
+        items={uniquePresence}
         position="top-end"
         trigger="mouseenter"
         distance={10}
