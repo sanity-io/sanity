@@ -58,7 +58,7 @@
   top: calc((100% - var(--thumb-size)) / 2);
   height: var(--thumb-size);
   width: var(--thumb-size);
-  border-radius: 50%;
+  border-radius: var(--thumb-size);
   cursor: default;
   composes: animation-default from 'part:@sanity/base/theme/animation-style';
   transform-origin: left;
