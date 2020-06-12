@@ -31,7 +31,7 @@
   --input-border-color-focus: transparent;
   --input-border-color-active: color(var(--brand-primary) a(50%));
   --input-border-color-invalid: color(var(--state-danger-color) a(50%));
-  --input-color-placeholder: var(--text-muted);
+  --input-color-placeholder: var(--gray-lighter);
   --input-box-shadow-base: var(--gray);
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
