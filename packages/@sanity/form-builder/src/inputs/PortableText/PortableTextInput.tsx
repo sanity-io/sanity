@@ -85,7 +85,6 @@ type State = {
   objectEditStatus: {editorPath: Path; formBuilderPath: Path; type: string} | null
   selection: EditorSelection | undefined
   showValidationTooltip: boolean
-  valueFromPatchSubscriber: PortableTextBlock[] | undefined
   valueWithError: PortableTextBlock[] | undefined
 }
 
@@ -102,8 +101,7 @@ export default withPatchSubscriber(
     private usubscribe: any
     private ptFeatures: PortableTextFeatures
     private editorSnapshot: JSX.Element
-
-    _inputId = uniqueId('PortableTextInput')
+    private inputId = uniqueId('PortableTextInput')
 
     handleToggleFullscreen = (): void => {
       if (!this.editor.current) {
@@ -140,7 +138,6 @@ export default withPatchSubscriber(
       objectEditStatus: null,
       selection: undefined,
       showValidationTooltip: false,
-      valueFromPatchSubscriber: undefined,
       valueWithError: undefined
     }
 
@@ -150,10 +147,6 @@ export default withPatchSubscriber(
       // Reset invalidValue state if new value is coming in from props
       if (nextProps.value !== (prevState.invalidValue && prevState.invalidValue.value)) {
         state = {...state, invalidValue: null}
-      }
-      // Only initial
-      if (!prevState.valueFromPatchSubscriber) {
-        state = {...state, valueFromPatchSubscriber: nextProps.value}
       }
       // Figure out if the current focusPath is editing something that isn't text.
       // Set object edit path if so, or nullify the object edit path.
@@ -209,7 +202,6 @@ export default withPatchSubscriber(
       super(props)
       this.ptFeatures = getPortableTextFeatures(props.type)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
-      this.setState({valueFromPatchSubscriber: props.value})
     }
 
     componentDidMount(): void {
@@ -243,7 +235,6 @@ export default withPatchSubscriber(
         this.incoming = this.incoming.concat(patchSelection)
         patchSelection.map(patch => this.patche$.next(patch))
       }
-      this.setState({valueFromPatchSubscriber: snapshot})
     }
 
     // eslint-disable-next-line complexity
@@ -683,7 +674,7 @@ export default withPatchSubscriber(
             label={type.title}
             presence={presence}
             description={type.description}
-            labelFor={this._inputId}
+            labelFor={this.inputId}
           />
           {invalidValue && !ignoreValidation && (
             <InvalidValue
@@ -695,7 +686,7 @@ export default withPatchSubscriber(
           )}
           {(!invalidValue || ignoreValidation) && (
             <ActivateOnFocus
-              inputId={this._inputId}
+              inputId={this.inputId}
               html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
               isActive={this.state.isActive}
               onActivate={this.handleActivate}
@@ -718,7 +709,7 @@ export default withPatchSubscriber(
                 }
                 spellCheck={false} // TODO: from schema?
                 type={type}
-                value={this.state.valueFromPatchSubscriber}
+                value={value}
               />
             </ActivateOnFocus>
           )}
