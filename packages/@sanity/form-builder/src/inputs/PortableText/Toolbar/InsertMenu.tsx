@@ -42,11 +42,12 @@ export default function InsertMenu(props: Props) {
         html={
           <div className={styles.menu}>
             {items.map(item => {
+              const itemIsDisabled = item.disabled
               const title = item.type.title || item.type.type.name
-
               return (
                 <button
                   aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
+                  disabled={itemIsDisabled}
                   className={styles.menuItem}
                   key={item.key}
                   onClick={() => {
