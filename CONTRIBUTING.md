@@ -6,9 +6,9 @@ Contributions are always welcome, no matter how large or small.
 
 ## Getting started
 
-Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/master/CODE_OF_CONDUCT.md).
+Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md).
 
-Then make sure you have _Node.js version 4 or newer_ and _npm version 5 or newer_.
+Then make sure you have _Node.js version 10 or newer_ and _npm version 6 or newer_.
 
 ```sh
 git clone git@github.com:sanity-io/sanity.git
@@ -20,7 +20,7 @@ npm start
 
 # Release/workflow guidelines
 
-- Anything in the `master` branch can be released
+- Anything in the `current` branch can be released
 - Anything in the `next` branch is scheduled for the next release
 - To work on something new, create a descriptively named branch off of `next` (ie: feature/new-oauth2-scopes)
 - Commit to that branch locally and regularly push your work to the same named branch on the server.
@@ -35,22 +35,25 @@ npm start
   - The code is linted and the test suite is passing
 
 - It's fine to open a pull request to start a discussion / ask for help, but it should be stated clearly that it's not yet ready for merge.
-- When the `next`-branch is thoroughly tested and ready to be released (either as a minor or major version bump), it should be merged into master and bumped.
-- Critical fixes go straight into master (preferably through a pull request)
+- When the `next`-branch is thoroughly tested and ready to be released (either as a minor or major version bump), it should be merged into `current` and bumped.
+- Critical fixes go straight into `current` (preferably through a pull request)
 
 ## Merging
 
 Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people has been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `[some-package] Fix stuff (#22)`
 
+## Branches
+
+- `current`: This contains all the features and fixes included in the latest official release.
+- `next`: This includes everything scheduled for the next, upcoming release.
+
 ## Publishing official releases
 
-[**NOTE** Only publish _minor_ releases until Sanity passes the 1.0 mark]
+When `next` is ready for release, run `npm run publish` and select version. After a successful release, remember to rebase `next` against `current`.
 
-When `next` is ready for release, run `npm run publish` and select version. After a successful release, remember to rebase `next` against `master`.
+## Publishing a hotfix release from `current`
 
-## Publishing a hotfix release from `master`
-
-If we need to publish a hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `master` after the release is completed.
+If we need to publish a hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `current` after the release is completed.
 
 ## Publishing _prerelease_ versions from `next`
 

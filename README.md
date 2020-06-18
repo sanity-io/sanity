@@ -78,14 +78,14 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 
 ## Code of Conduct
 
-We aim to be an inclusive, welcoming community for everyone. To make that explicit, we have a [code of conduct](https://github.com/sanity-io/sanity/blob/master/CODE_OF_CONDUCT.md) that applies to communication around the project.
+We aim to be an inclusive, welcoming community for everyone. To make that explicit, we have a [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md) that applies to communication around the project.
 
 ## Want to contribute?
 
-Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/master/CONTRIBUTING.md) to learn how.
+Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/current/CONTRIBUTING.md) to learn how.
 
 ## License
 
-Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/master/LICENSE)
+Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/current/LICENSE)
 
 ![Hands collaborating](https://cdn.sanity.io/images/3do82whm/next/7f0f7283fb8080cd5e39afe074474aa292d73dbf-2578x1448.png?w=1200&fit=max&auto=format)
