@@ -283,7 +283,7 @@ function getAssetType(item) {
 function isSanityAsset(assetId) {
   return (
     /^image-[a-f0-9]{40}-\d+x\d+-[a-z]+$/.test(assetId) ||
-    /^file-[a-f0-9]{40}-[a-z]+$/.test(assetId)
+    /^file-[a-f0-9]{40}-[a-z0-9]+$/.test(assetId)
   )
 }
 
