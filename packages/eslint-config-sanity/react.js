@@ -11,7 +11,7 @@ module.exports = {
     }
   },
   rules: {
-    'react/boolean-prop-naming': 'off', // todo: enable this with whitelist of native html boolean attributes and is/has/can/will/*-prefixes"
+    'react/boolean-prop-naming': 'off', // todo: enable this with list of native html boolean attributes allowed (and is/has/can/will/*-prefixes)
     'react/button-has-type': 'error',
     'react/display-name': ['error', {ignoreTranspilerName: false}],
     'react/default-props-match-prop-types': 'error',

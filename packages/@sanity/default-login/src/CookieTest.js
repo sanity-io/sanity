@@ -69,7 +69,7 @@ class CookieTest extends PureComponent {
       name
     })
       .pipe(
-        mapTo(`Successfully performed the cookie whitelisting routine`),
+        mapTo('Successfully performed the cookie allowal routine'),
         finalize(() => window.location.reload()),
         catchError(error => of(error.message))
       )
