@@ -30,6 +30,7 @@ export default class FormView extends React.PureComponent {
     }).isRequired,
     margins: PropTypes.arrayOf(PropTypes.number),
     initialValue: PropTypes.shape({_type: PropTypes.string}),
+    initialFocusPath: PropTypes.array,
     isConnected: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     schemaType: PropTypes.shape({name: PropTypes.string, title: PropTypes.string}).isRequired,
@@ -60,6 +61,14 @@ export default class FormView extends React.PureComponent {
   state = INITIAL_STATE
 
   componentDidMount() {
+    const {initialFocusPath} = this.props
+    if (initialFocusPath) {
+      this.setState({
+        focusPath: initialFocusPath
+      })
+      this.reportFocusPath(initialFocusPath)
+    }
+
     if (filterFieldFn$) {
       this.filterFieldFnSubscription = filterFieldFn$.subscribe(filterField =>
         this.setState({filterField})
@@ -75,6 +84,10 @@ export default class FormView extends React.PureComponent {
 
   handleFocus = path => {
     this.setState({focusPath: path})
+    this.reportFocusPath(path)
+  }
+
+  reportFocusPath(path) {
     setLocation([{type: 'document', documentId: this.getCanonicalDocumentId(), path}])
   }
 
