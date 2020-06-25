@@ -10,6 +10,7 @@ import UserAvatar from './UserAvatar'
 import {PresenceListItem} from './PresenceListItem'
 import {MAX_AVATARS_GLOBAL} from './constants'
 import {IntentLink} from 'part:@sanity/base/router'
+import * as PathUtils from '@sanity/util/paths'
 
 type GlobalPresenceListItemProps = {
   presence: GlobalPresence
@@ -28,7 +29,10 @@ function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
       title={presence?.user?.displayName && `Go to ${presence.user.displayName}`}
       className={styles.intentLink}
       intent="edit"
-      params={{id: locationWithDocumentId.documentId}}
+      params={{
+        id: locationWithDocumentId.documentId,
+        path: encodeURIComponent(PathUtils.toString(locationWithDocumentId.path))
+      }}
       onClick={onClose}
     >
       {item}

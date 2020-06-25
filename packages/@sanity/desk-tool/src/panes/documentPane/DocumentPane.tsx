@@ -2,7 +2,7 @@
 
 import classNames from 'classnames'
 import React from 'react'
-import {noop} from 'lodash'
+import {noop, omit} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
 import {from, Subscription} from 'rxjs'
 import {map} from 'rxjs/operators'
@@ -30,6 +30,7 @@ import {DocumentActionShortcuts} from './DocumentActionShortcuts'
 import {Validation} from './Validation'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import {DocumentOperationResults} from './DocumentOperationResults'
+import * as PathUtils from '@sanity/util/paths'
 
 // Import CSS
 import _styles from './DocumentPane.css'
@@ -152,7 +153,8 @@ interface Props {
   }
   urlParams: {
     view: string
-    rev: string
+    rev?: string
+    path?: string
   }
   presence: any
 }
@@ -340,6 +342,14 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   componentDidMount() {
     this._isMounted = true
 
+    if (this.props.urlParams.path) {
+      // todo
+      //  We don't want to keep the initial path param in the url (and the path param doesn't update according to user focus)
+      //  However, uncommenting the following line in order to "clear" the param from the url causes all of the panes to
+      //  be reloaded. We need to look into why this happens.
+      //  this.context.setParams(omit(this.context.params, 'path'))
+    }
+
     this.resizeSubscriber = windowWidth$.subscribe(() => {
       const historyEnabled = historyIsEnabled()
       const hasNarrowScreen = isNarrowScreen()
@@ -370,6 +380,11 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   historyIsOpen() {
     return Boolean(this.props.urlParams.rev)
+  }
+
+  getInitialFocusPath() {
+    const {urlParams} = this.props
+    return urlParams.path ? PathUtils.fromString(urlParams.path) : []
   }
 
   dispose() {
@@ -755,6 +770,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       value: value,
       connectionState,
       markers,
+      initialFocusPath: this.getInitialFocusPath(),
       history: {
         isOpen: this.historyIsOpen(),
         selectedEvent: selectedHistoryEvent,

@@ -38,7 +38,8 @@ interface Props {
   }
   urlParams: {
     view: string
-    rev: string
+    rev?: string
+    path?: string
   }
 }
 
