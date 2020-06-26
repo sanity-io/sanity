@@ -1,27 +1,27 @@
 /* eslint-disable max-depth, no-console */
 
-import fs from 'fs'
-import color from 'css-color-function'
-import postcss from 'postcss'
-import postcssCalc from 'postcss-calc'
-import postcssColorFunction from 'postcss-color-function'
-import postcssCustomProperties from 'postcss-custom-properties'
-import postcssImport from 'postcss-import'
+const fs = require('fs')
+const color = require('css-color-function')
+const postcss = require('postcss')
+const postcssCalc = require('postcss-calc')
+const postcssColorFunction = require('postcss-color-function')
+const postcssCustomProperties = require('postcss-custom-properties')
+const {getPostcssImportPlugin} = require('./postcss')
 
 const VAR_RE = /var\([\s+]?(--[A-Za-z0-9-]+)[\s+]?\)/g
 
-export async function extractCssCustomProperties(filePath) {
+async function extractCssCustomProperties(basePath, entryPath) {
   const processor = postcss([
-    postcssImport(),
+    getPostcssImportPlugin({basePath}),
     postcssCustomProperties({preserve: true}),
     postcssCalc(),
     postcssColorFunction({preserveCustomProps: true})
   ])
 
   // eslint-disable-next-line no-sync
-  const code = fs.readFileSync(filePath)
+  const code = fs.readFileSync(entryPath)
 
-  const result = await processor.process(code, {from: filePath})
+  const result = await processor.process(code, {from: entryPath})
 
   const customProperties = {}
 
@@ -63,3 +63,5 @@ export async function extractCssCustomProperties(filePath) {
 
   return customProperties
 }
+
+module.exports = extractCssCustomProperties
