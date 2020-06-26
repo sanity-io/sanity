@@ -13,7 +13,7 @@ const target = 'resolve'
 const isSanityPart = request =>
   [partMatcher, configMatcher, sanityMatcher].some(match => match.test(request.request))
 
-const PartResolverPlugin = function(options, extractCssCustomProperties) {
+const PartResolverPlugin = function(options) {
   if (!options || !options.basePath) {
     throw new Error('`basePath` option must be specified in part resolver plugin constructor')
   }
@@ -22,7 +22,7 @@ const PartResolverPlugin = function(options, extractCssCustomProperties) {
   this.basePath = options.basePath
   this.additionalPlugins = options.additionalPlugins || []
   this.configPath = path.join(this.basePath, 'config')
-  this.extractCssCustomProperties = extractCssCustomProperties
+  this.extractCssCustomProperties = options.extractCssCustomProperties
 }
 
 PartResolverPlugin.prototype.apply = function(compiler) {
