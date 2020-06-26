@@ -56,8 +56,23 @@ function registerLoader(options) {
     parts.implementations = Object.assign(parts.implementations, overrides)
   }
 
+  // Keep track of used requires
+  const usedImports = new Set()
+
   const realResolve = Module._resolveFilename
+
+  // eslint-disable-next-line max-statements
   Module._resolveFilename = (request, parent) => {
+    // Keep track of the used imports so we can remove them from cache when unregistering
+    if (
+      request.startsWith('sanity:') ||
+      request.startsWith('all:') ||
+      request.startsWith('part:') ||
+      request.startsWith('config:')
+    ) {
+      usedImports.add(request)
+    }
+
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {
       const debug = Object.assign({}, parts, {basePath})
@@ -99,7 +114,9 @@ function registerLoader(options) {
         return request
       }
 
-      return path.join(configPath, `${configFor}.json`)
+      const pluginConfigPath = path.join(configPath, `${configFor}.json`)
+      usedImports.add(pluginConfigPath)
+      return pluginConfigPath
     }
 
     // Should we load all the implementations or just a single one
@@ -162,7 +179,9 @@ function registerLoader(options) {
     }
 
     const partPath = parts.implementations[partName][0]
-    return require.resolve(partPath)
+    const resolvedPath = require.resolve(partPath)
+    usedImports.add(resolvedPath)
+    return resolvedPath
   }
 
   // Register CSS hook
@@ -184,6 +203,11 @@ function registerLoader(options) {
   return function restore() {
     Module._resolveFilename = realResolve
     require.extensions['.css'] = prevCssExtension
+    Object.keys(require.cache)
+      .filter(request => request.endsWith('.css'))
+      .forEach(request => delete require.cache[request])
+
+    usedImports.forEach(request => delete require.cache[request])
   }
 }
 
