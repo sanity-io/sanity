@@ -9,7 +9,7 @@ const extractCssCustomProperties = require('./extractCssCustomProperties')
 const partLoaderPath = require.resolve('@sanity/webpack-loader/lib/partLoader')
 
 function getPartResolverPlugin(options) {
-  return new PartResolverPlugin(options, extractCssCustomProperties)
+  return new PartResolverPlugin({...options, extractCssCustomProperties})
 }
 
 function tryReadDotEnv(studioRootPath, configEnv) {
@@ -71,7 +71,7 @@ function getPlugins(options) {
   return [getPartResolverPlugin(options), getEnvPlugin(options)]
 }
 
-function getPartLoader(options) {
+function getPartLoader() {
   return {
     resourceQuery: /[?&]sanityPart=/,
     use: partLoaderPath
