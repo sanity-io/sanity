@@ -1,12 +1,15 @@
 /* eslint-disable max-depth, no-console */
 
 const fs = require('fs')
+const util = require('util')
 const color = require('css-color-function')
 const postcss = require('postcss')
 const postcssCalc = require('postcss-calc')
 const postcssColorFunction = require('postcss-color-function')
 const postcssCustomProperties = require('postcss-custom-properties')
 const {getPostcssImportPlugin} = require('./postcss')
+
+const readFile = util.promisify(fs.readFile)
 
 const VAR_RE = /var\([\s+]?(--[A-Za-z0-9-]+)[\s+]?\)/g
 
@@ -18,9 +21,7 @@ async function extractCssCustomProperties(basePath, entryPath) {
     postcssColorFunction({preserveCustomProps: true})
   ])
 
-  // eslint-disable-next-line no-sync
-  const code = fs.readFileSync(entryPath)
-
+  const code = await readFile(entryPath)
   const result = await processor.process(code, {from: entryPath})
 
   const customProperties = {}
