@@ -34,14 +34,14 @@ PartResolverPlugin.prototype.apply = function(compiler) {
 
   compiler.plugin('watch-run', (watcher, cb) => {
     cacheParts(watcher)
-      .then(cacheCssCustomProperties)
+      .then(resolveCssCustomProperties)
       .then(cb)
       .catch(cb)
   })
 
   compiler.plugin('run', (params, cb) => {
     cacheParts(params)
-      .then(cacheCssCustomProperties)
+      .then(resolveCssCustomProperties)
       .then(cb)
       .catch(cb)
   })
@@ -55,8 +55,12 @@ PartResolverPlugin.prototype.apply = function(compiler) {
     })
   }
 
-  function cacheCssCustomProperties({instance, parts}) {
+  function resolveCssCustomProperties({instance, parts}) {
     const impl = parts.implementations['part:@sanity/base/theme/variables-style']
+    if (!impl || !impl[0] || !extractCssCustomProperties) {
+      return Promise.resolve()
+    }
+
     return extractCssCustomProperties(basePath, impl[0].path).then(cssCustomProperties => {
       instance.sanity.cssCustomProperties = cssCustomProperties
     })
