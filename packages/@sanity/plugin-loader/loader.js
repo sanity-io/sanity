@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const path = require('path')
 const Module = require('module')
 const interopRequire = require('interop-require')
@@ -80,6 +81,7 @@ function registerLoader(options) {
 
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
+        // eslint-disable-next-line import/no-dynamic-require
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
         require.cache[request] = getModule(
           request,
@@ -157,6 +159,7 @@ function registerLoader(options) {
   }
 
   // Register CSS hook
+  const prevCssExtension = require.extensions['.css']
   if (options.stubCss) {
     require.extensions['.css'] = function stubCssHook(mod, filename) {
       return mod._compile(`module.exports = {} `, filename)
@@ -169,6 +172,11 @@ function registerLoader(options) {
         .getPostcssPlugins({basePath: basePath})
         .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
     })
+  }
+
+  return function restore() {
+    Module._resolveFilename = realResolve
+    require.extensions['.css'] = prevCssExtension
   }
 }
 
