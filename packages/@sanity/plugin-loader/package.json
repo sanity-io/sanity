@@ -4,7 +4,7 @@
   "description": "Monkey-patches node's require algorithm to allow requiring of Sanity parts",
   "main": "loader.js",
   "scripts": {
-    "test": "#todo: ava",
+    "test": "tape test/*.test.js",
     "coverage": "nyc --reporter=html ava"
   },
   "engines": {
@@ -31,14 +31,8 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
-  "ava": {
-    "files": [
-      "test/*.test.js"
-    ]
-  },
   "devDependencies": {
-    "ava": "^0.19.1",
-    "nyc": "^11.0.3"
+    "tape": "^4.8.0"
   },
   "dependencies": {
     "@sanity/resolver": "1.149.16",

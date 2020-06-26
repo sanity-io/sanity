@@ -71,6 +71,13 @@ function registerLoader(options) {
       return request
     }
 
+    if (request === 'sanity:css-custom-properties') {
+      // postcss-import doesn't support synchronous operation which we
+      // would need to actually resolve these values
+      require.cache[request] = getModule(request, {})
+      return request
+    }
+
     const configMatch = request.match(configMatcher)
     if (configMatch) {
       const configOverrides = overrides && overrides[request]
