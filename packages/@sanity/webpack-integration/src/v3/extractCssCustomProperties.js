@@ -1,4 +1,4 @@
-/* eslint-disable max-depth, no-console */
+/* eslint-disable max-depth, no-console, complexity */
 
 const fs = require('fs')
 const util = require('util')
@@ -11,7 +11,7 @@ const {getPostcssImportPlugin} = require('./postcss')
 
 const readFile = util.promisify(fs.readFile)
 
-const VAR_RE = /var\([\s+]?(--[A-Za-z0-9-]+)[\s+]?\)/g
+const VAR_RE = /var\([\s+]?(--[A-Za-z0-9-]+)[\s+]?\)/
 
 async function extractCssCustomProperties(basePath, entryPath) {
   const processor = postcss([
@@ -21,8 +21,14 @@ async function extractCssCustomProperties(basePath, entryPath) {
     postcssColorFunction({preserveCustomProps: true})
   ])
 
-  const code = await readFile(entryPath)
-  const result = await processor.process(code, {from: entryPath})
+  let result
+  try {
+    const code = await readFile(entryPath)
+    result = await processor.process(code, {from: entryPath})
+  } catch (err) {
+    console.error(`Failed to read CSS custom properties: ${err.message}`)
+    return undefined
+  }
 
   const customProperties = {}
 
@@ -38,18 +44,28 @@ async function extractCssCustomProperties(basePath, entryPath) {
   })
 
   // Loop and replace `var(--name)` if exists in scope
-  // NOTE: It runs in 3 passes to evaluate all variable references
-  for (let i = 0; i < 3; i += 1) {
-    for (const [key, value] of Object.entries(customProperties)) {
-      const match = VAR_RE.exec(value)
+  // NOTE: Loops in order to resolve multiple variables in the same declaration
+  let hasVarRefs
+  do {
+    // Reset on each iteration
+    hasVarRefs = false
 
-      if (match) {
-        if (customProperties[match[1]]) {
-          customProperties[key] = value.replace(match[0], customProperties[match[1]])
-        }
+    for (const [key, value] of Object.entries(customProperties)) {
+      const [varDecl, variableName] = value.match(VAR_RE) || []
+
+      if (varDecl && customProperties[variableName]) {
+        customProperties[key] = value.replace(varDecl, customProperties[variableName])
+
+        // If we still have variables, we call for another pass
+        hasVarRefs = hasVarRefs || VAR_RE.test(customProperties[key])
+      } else if (varDecl && !customProperties[variableName]) {
+        console.warn(
+          `variable ${customProperties[key]} references undeclared variable, "${variableName}" - skipping`
+        )
+        delete customProperties[key]
       }
     }
-  }
+  } while (hasVarRefs)
 
   // Loop and evaluate color function
   for (const [key, value] of Object.entries(customProperties)) {

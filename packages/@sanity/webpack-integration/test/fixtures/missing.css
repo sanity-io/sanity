@@ -1,0 +1,5 @@
+:root {
+  --color: #bf1942;
+  --present: var(--color);
+  --missing: var(--bar);
+}
