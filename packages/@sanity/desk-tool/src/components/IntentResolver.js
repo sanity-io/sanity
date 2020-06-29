@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import client from 'part:@sanity/base/client'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {useRouter} from 'part:@sanity/base/router'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {useStructure} from '../utils/resolvePanes'
@@ -13,7 +14,20 @@ import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const FALLBACK_ID = '__fallback__'
 
+function removeDraftPrefix(documentId) {
+  const publishedId = getPublishedId(documentId)
+  if (publishedId !== documentId) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Removed unexpected draft id in document link: All links to documents should have the `draft.`-prefix removed and something appears to have made an intent link to `%s`',
+      documentId
+    )
+  }
+  return publishedId
+}
+
 /**
+ *
  * This is a *very naive* implementation of an intent resolver:
  * - If type is missing from params, it'lltry to resolve from document
  * - It manually builds a pane segment path: "<typeName>;<documentId>"
@@ -73,7 +87,7 @@ function getNewRouterState({structure, documentType, params, payload, documentId
   const template = isTemplateCreate && getTemplateById(params.template)
   const type = (template && template.schemaType) || documentType
   const fallbackParameters = {type, template: params.template}
-  const newDocumentId = documentId === FALLBACK_ID ? UUID() : documentId
+  const newDocumentId = documentId === FALLBACK_ID ? UUID() : removeDraftPrefix(documentId)
 
   return terminatesInDocument
     ? paneSegments
