@@ -78,6 +78,7 @@ type Props = {
 type State = {
   hasFocus: boolean
   ignoreValidation: boolean
+  initialSelection?: EditorSelection
   invalidValue: InvalidEditorValue | null
   isActive: boolean
   isFullscreen: boolean
@@ -131,6 +132,7 @@ export default withPatchSubscriber(
     state = {
       hasFocus: false,
       ignoreValidation: false,
+      initialSelection: undefined,
       invalidValue: null,
       isActive: false,
       isFullscreen: false,
@@ -148,10 +150,19 @@ export default withPatchSubscriber(
       if (nextProps.value !== (prevState.invalidValue && prevState.invalidValue.value)) {
         state = {...state, invalidValue: null}
       }
+      const {focusPath} = nextProps
+      // If there is a focusPath in the editor, but we haven't focused it ourselves,
+      // set the focus there
+      if (focusPath && !prevState.hasFocus) {
+        const initialSelection = focusPath
+          ? {focus: {path: focusPath, offset: 0}, anchor: {path: focusPath, offset: 0}}
+          : undefined
+        state = {...state, isActive: true, initialSelection}
+      }
+
       // Figure out if the current focusPath is editing something that isn't text.
       // Set object edit path if so, or nullify the object edit path.
       // This will open the editing interfaces.
-      const {focusPath} = nextProps
       if (focusPath && prevState.objectEditStatus === null) {
         const isChild = focusPath[1] === 'children'
         const isMarkdef = focusPath[1] === 'markDefs'
@@ -211,6 +222,18 @@ export default withPatchSubscriber(
 
     componentWillUnmount(): void {
       this.usubscribe()
+    }
+
+    componentDidUpdate(prevProps: Props, prevState: State): void {
+      // If we have an initial focusPath, set focus in the editor
+      // unless it's pointing to somewhere inside a modal (has objectEditStatus)
+      if (
+        !prevState.initialSelection &&
+        this.state.initialSelection &&
+        this.state.objectEditStatus === null
+      ) {
+        this.focus()
+      }
     }
 
     handleCloseValidationResults = (): void => {
@@ -662,7 +685,13 @@ export default withPatchSubscriber(
       // TODO: deal with validation and loading status
       // const validation = markers.filter(marker => marker.type === 'validation')
       // const errors = validation.filter(marker => marker.level === 'error')
-      const {hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
+      const {
+        hasFocus,
+        invalidValue,
+        objectEditStatus,
+        ignoreValidation,
+        initialSelection
+      } = this.state
 
       return (
         <div
@@ -707,6 +736,7 @@ export default withPatchSubscriber(
                 renderEditor={
                   objectEditStatus && this.editorSnapshot ? this.renderSnapshot : this.renderEditor
                 }
+                selection={initialSelection}
                 spellCheck={false} // TODO: from schema?
                 type={type}
                 value={value}
