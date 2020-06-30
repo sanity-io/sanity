@@ -7,8 +7,8 @@ import Icon from 'part:@sanity/base/view-column-icon'
 import {route, useRouterState} from 'part:@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from '../utils/parsePanesSegment'
 import IntentResolver from '../components/IntentResolver'
-import DeskTool from './DeskTool'
 import {EMPTY_PARAMS} from '../constants'
+import DeskTool from './DeskTool'
 
 function toState(pathSegment) {
   return parsePanesSegment(decodeURIComponent(pathSegment))
