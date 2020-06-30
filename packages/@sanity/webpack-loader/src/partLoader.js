@@ -2,6 +2,7 @@ const path = require('path')
 const loaderUtils = require('loader-utils')
 const sanityUtil = require('@sanity/util')
 const multiImplementationHandler = require('./multiImplementationHandler')
+
 const reduceConfig = sanityUtil.reduceConfig
 const getSanityVersions = sanityUtil.getSanityVersions
 
@@ -10,6 +11,7 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
+// eslint-disable-next-line complexity
 function sanityPartLoader(input) {
   this.cacheable()
 
@@ -37,6 +39,12 @@ function sanityPartLoader(input) {
     const indent = buildEnv === 'production' ? 0 : 2
     const reduced = reduceConfig(config, buildEnv, {studioRootPath: basePath})
     return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`
+  }
+
+  if (request === 'sanity:css-custom-properties') {
+    const cssCustomProperties = this._compiler.sanity.cssCustomProperties
+    const indent = buildEnv === 'production' ? 0 : 2
+    return `module.exports = ${JSON.stringify(cssCustomProperties, null, indent)}\n`
   }
 
   if (request === 'sanity:versions') {

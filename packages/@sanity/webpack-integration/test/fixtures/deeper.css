@@ -1,0 +1,14 @@
+@import 'part:deepest/css';
+
+:root {
+  --from-deeper: #bf1942;
+  --composed-from-deepest: color(#fff blend(var(--from-deepest) 50%));
+  --deeper-composed-from-non-part: color(var(--composed-from-non-part) alpha(10%));
+
+  --blend-amount: 20%;
+  --border-base: blue;
+  --top-border: color(var(--from-deeper) blend(var(--border-base) var(--blend-amount)));
+  --right-border: color(var(--from-deeper) blend(var(--top-border) var(--blend-amount)));
+  --bottom-border: color(var(--from-deeper) blend(var(--right-border) var(--blend-amount)));
+  --left-border: color(var(--from-deeper) blend(var(--bottom-border) var(--blend-amount)));
+}

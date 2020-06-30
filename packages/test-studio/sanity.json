@@ -104,6 +104,10 @@
     {
       "implements": "part:@sanity/desk-tool/after-editor-component",
       "path": "src/components/AfterEditorComponent.js"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/tools/css-variables/tool.js"
     }
   ],
   "env": {
@@ -111,14 +115,6 @@
       "api": {
         "projectId": "exx11uqh"
       }
-    },
-    "development": {
-      "parts": [
-        {
-          "implements": "part:@sanity/base/tool",
-          "path": "src/tools/css-variables/tool.js"
-        }
-      ]
     }
   }
 }

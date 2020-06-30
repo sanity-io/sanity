@@ -1,6 +1,7 @@
 const qs = require('querystring')
 const path = require('path')
 const partResolver = require('@sanity/resolver')
+
 const emptyPart = require.resolve('./emptyPart')
 const debugPart = require.resolve('./debugPart')
 const unimplementedPart = require.resolve('./unimplementedPart')
@@ -21,6 +22,7 @@ const PartResolverPlugin = function(options) {
   this.basePath = options.basePath
   this.additionalPlugins = options.additionalPlugins || []
   this.configPath = path.join(this.basePath, 'config')
+  this.extractCssCustomProperties = options.extractCssCustomProperties
 }
 
 PartResolverPlugin.prototype.apply = function(compiler) {
@@ -28,27 +30,44 @@ PartResolverPlugin.prototype.apply = function(compiler) {
   const basePath = this.basePath
   const additionalPlugins = this.additionalPlugins
   const configPath = this.configPath
+  const extractCssCustomProperties = this.extractCssCustomProperties
 
-  compiler.plugin('watch-run', (watcher, cb) =>
+  compiler.plugin('watch-run', (watcher, cb) => {
     cacheParts(watcher)
+      .then(resolveCssCustomProperties)
       .then(cb)
       .catch(cb)
-  )
-  compiler.plugin('run', (params, cb) =>
+  })
+
+  compiler.plugin('run', (params, cb) => {
     cacheParts(params)
+      .then(resolveCssCustomProperties)
       .then(cb)
       .catch(cb)
-  )
+  })
 
   function cacheParts(params) {
     const instance = params.compiler || params
     instance.sanity = compiler.sanity || {basePath: basePath}
     return partResolver.resolveParts({env, basePath, additionalPlugins}).then(parts => {
       instance.sanity.parts = parts
+      return {instance, parts}
+    })
+  }
+
+  function resolveCssCustomProperties({instance, parts}) {
+    const impl = parts.implementations['part:@sanity/base/theme/variables-style']
+    if (!impl || !impl[0] || !extractCssCustomProperties) {
+      return Promise.resolve()
+    }
+
+    return extractCssCustomProperties(basePath, impl[0].path).then(cssCustomProperties => {
+      instance.sanity.cssCustomProperties = cssCustomProperties
     })
   }
 
   compiler.plugin('compilation', () => {
+    // eslint-disable-next-line complexity
     compiler.resolvers.normal.plugin('module', function(request, callback) {
       // If it doesn't match the string pattern of a Sanity part, stop trying to resolve it
       if (!isSanityPart(request)) {
@@ -57,6 +76,18 @@ PartResolverPlugin.prototype.apply = function(compiler) {
 
       const parts = compiler.sanity.parts
       const sanityPart = request.request.replace(/^all:/, '')
+
+      if (request.request === 'sanity:css-custom-properties') {
+        return this.doResolve(
+          target,
+          getResolveOptions({
+            resolveTo: debugPart,
+            request: request
+          }),
+          null,
+          callback
+        )
+      }
 
       // The debug part should return the whole part/plugin tree
       if (request.request === 'sanity:debug') {

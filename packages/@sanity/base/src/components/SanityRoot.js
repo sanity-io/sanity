@@ -10,6 +10,7 @@ import DevServerStatus from './DevServerStatus'
 
 function SanityRoot() {
   const {projectId, dataset} = config.api || {}
+
   if (!projectId || !dataset) {
     return <MissingProjectConfig />
   }

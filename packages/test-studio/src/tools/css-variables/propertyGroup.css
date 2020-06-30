@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin: var(--large-padding) 0;
+
+  @nest & > summary {
+    font-weight: 700;
+    outline: none;
+    cursor: default;
+  }
+}

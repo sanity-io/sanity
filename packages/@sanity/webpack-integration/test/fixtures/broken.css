@@ -1,0 +1,4 @@
+:root {
+  --missing-semi: var(--color)
+  --not-missing-semi: #bf1942;
+}

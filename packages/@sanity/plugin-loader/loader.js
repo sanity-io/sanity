@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const path = require('path')
 const Module = require('module')
 const interopRequire = require('interop-require')
@@ -55,8 +56,23 @@ function registerLoader(options) {
     parts.implementations = Object.assign(parts.implementations, overrides)
   }
 
+  // Keep track of used requires
+  const usedImports = new Set()
+
   const realResolve = Module._resolveFilename
+
+  // eslint-disable-next-line max-statements
   Module._resolveFilename = (request, parent) => {
+    // Keep track of the used imports so we can remove them from cache when unregistering
+    if (
+      request.startsWith('sanity:') ||
+      request.startsWith('all:') ||
+      request.startsWith('part:') ||
+      request.startsWith('config:')
+    ) {
+      usedImports.add(request)
+    }
+
     // `sanity:debug` returns the whole resolve result
     if (request === 'sanity:debug') {
       const debug = Object.assign({}, parts, {basePath})
@@ -70,6 +86,13 @@ function registerLoader(options) {
       return request
     }
 
+    if (request === 'sanity:css-custom-properties') {
+      // postcss-import doesn't support synchronous operation which we
+      // would need to actually resolve these values
+      require.cache[request] = getModule(request, {})
+      return request
+    }
+
     const configMatch = request.match(configMatcher)
     if (configMatch) {
       const configOverrides = overrides && overrides[request]
@@ -80,6 +103,7 @@ function registerLoader(options) {
 
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
+        // eslint-disable-next-line import/no-dynamic-require
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
         require.cache[request] = getModule(
           request,
@@ -90,7 +114,9 @@ function registerLoader(options) {
         return request
       }
 
-      return path.join(configPath, `${configFor}.json`)
+      const pluginConfigPath = path.join(configPath, `${configFor}.json`)
+      usedImports.add(pluginConfigPath)
+      return pluginConfigPath
     }
 
     // Should we load all the implementations or just a single one
@@ -153,10 +179,13 @@ function registerLoader(options) {
     }
 
     const partPath = parts.implementations[partName][0]
-    return require.resolve(partPath)
+    const resolvedPath = require.resolve(partPath)
+    usedImports.add(resolvedPath)
+    return resolvedPath
   }
 
   // Register CSS hook
+  const prevCssExtension = require.extensions['.css']
   if (options.stubCss) {
     require.extensions['.css'] = function stubCssHook(mod, filename) {
       return mod._compile(`module.exports = {} `, filename)
@@ -169,6 +198,16 @@ function registerLoader(options) {
         .getPostcssPlugins({basePath: basePath})
         .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
     })
+  }
+
+  return function restore() {
+    Module._resolveFilename = realResolve
+    require.extensions['.css'] = prevCssExtension
+    Object.keys(require.cache)
+      .filter(request => request.endsWith('.css'))
+      .forEach(request => delete require.cache[request])
+
+    usedImports.forEach(request => delete require.cache[request])
   }
 }
 
