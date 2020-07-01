@@ -25,6 +25,11 @@ interface Props {
   disabled?: boolean
 }
 
+const preventDefault = (event: any) => {
+  event.preventDefault()
+  event.stopPropagation()
+}
+
 export function OverflowMenu(props: Props) {
   const {
     actionButtonComponent: ActionButton,
@@ -130,6 +135,7 @@ export function OverflowMenu(props: Props) {
                       action.firstInGroup && styles.firstInGroup
                     )}
                     key={String(hiddenActionIndex)}
+                    onMouseDown={preventDefault} // Needed so the editor doesn't reset selection
                   >
                     <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
                   </div>
