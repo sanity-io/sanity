@@ -155,7 +155,14 @@ export default async (args, context) => {
     }
 
     // Copy static assets (from /static folder) to output dir
-    await fse.copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
+    await fse
+      .copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
+      .catch(err => {
+        // Allow missing static folder
+        if (err.code !== 'ENOENT') {
+          throw err
+        }
+      })
   } catch (err) {
     spin.fail()
     throw err
