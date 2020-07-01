@@ -158,8 +158,6 @@ export default withPatchSubscriber(
           ? {focus: {path: focusPath, offset: 0}, anchor: {path: focusPath, offset: 0}}
           : undefined
         state = {...state, isActive: true, initialSelection}
-      } else {
-        state = {...state, initialSelection: undefined}
       }
 
       // Figure out if the current focusPath is editing something that isn't text.
