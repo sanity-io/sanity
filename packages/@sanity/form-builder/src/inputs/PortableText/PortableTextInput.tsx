@@ -736,7 +736,7 @@ export default withPatchSubscriber(
                 renderEditor={
                   objectEditStatus && this.editorSnapshot ? this.renderSnapshot : this.renderEditor
                 }
-                selection={initialSelection}
+                // selection={initialSelection} // Disabled for now
                 spellCheck={false} // TODO: from schema?
                 type={type}
                 value={value}
