@@ -179,6 +179,7 @@ function getPTEAnnotationActions(
         const paths = PortableTextEditor.addAnnotation(editor, item.type)
         if (paths && paths.markDefPath) {
           setTimeout(() => {
+            PortableTextEditor.select(editor, null)
             onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
           })
         }
