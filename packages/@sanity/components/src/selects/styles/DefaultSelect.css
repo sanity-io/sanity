@@ -62,6 +62,17 @@
   }
 }
 
+.invalid:not(:disabled) {
+  border-color: var(--input-border-color-invalid);
+  background-color: var(--input-bg-invalid);
+  @nest &:hover:not(:focus) {
+    border-color: var(--input-border-color-invalid);
+  }
+  @nest &:focus {
+    box-shadow: var(--input-box-shadow--invalid-focus);
+  }
+}
+
 .disabled:hover {
   @nest & .arrow {
     color: var(--input-color-read-only);
