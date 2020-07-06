@@ -3,6 +3,7 @@
 .root {
   display: block;
   box-sizing: border-box;
+  margin-top: 2px;
 }
 
 .auto {
