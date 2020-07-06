@@ -12,7 +12,9 @@ import PropTypes from 'prop-types'
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import Dialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
@@ -365,6 +367,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const {value, level, type, onChange, readOnly, materialize} = this.props
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
+        <PresenceOverlay>
+          <DialogContent size="medium">
         {this.isImageToolEnabled() && value && value.asset && (
           <WithMaterializedReference materialize={materialize} reference={value.asset}>
             {imageAsset => (
@@ -381,6 +385,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         )}
         <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
         <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
+          </DialogContent>
+        </PresenceOverlay>
       </Dialog>
     )
   }

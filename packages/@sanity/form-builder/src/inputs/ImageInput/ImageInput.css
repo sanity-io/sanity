@@ -76,6 +76,10 @@
 
 .advancedEditFields {
   margin-bottom: var(--medium-padding);
+
+  @nest & .field {
+    padding-bottom: var(--large-padding);
+  }
 }
 
 .selectDropDownAssetSourceItem {
