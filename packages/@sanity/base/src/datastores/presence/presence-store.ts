@@ -143,12 +143,21 @@ const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
   )
 )
 
+const stateEventToSession = (stateEvent: StateEvent): Session => {
+  return {
+    lastActiveAt: stateEvent.timestamp,
+    locations: stateEvent.locations,
+    sessionId: stateEvent.sessionId,
+    userId: stateEvent.userId
+  }
+}
+
 const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, useMock$).pipe(
   scan(
-    (keyed, event) =>
+    (keyed, event: StateEvent | DisconnectEvent): {[sessionId: string]: Session} =>
       event.type === 'disconnect'
         ? omit(keyed, event.sessionId)
-        : {...keyed, [event.sessionId]: event},
+        : {...keyed, [event.sessionId]: stateEventToSession(event)},
     {}
   )
 )
