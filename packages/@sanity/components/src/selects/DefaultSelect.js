@@ -56,7 +56,7 @@ export default class DefaultSelect extends React.Component {
       >
         <select
           {...rest}
-          className={styles.select}
+          className={`${styles.select} ${hasError ? styles.invalid : ''}`}
           onChange={this.handleChange}
           disabled={disabled || readOnly}
           value={(value && items.indexOf(value)) || ''}

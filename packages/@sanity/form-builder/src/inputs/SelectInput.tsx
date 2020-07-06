@@ -40,6 +40,7 @@ export default class SelectInput extends React.Component<Props> {
     const items = (type.options.list || []).map(toSelectItem)
     const currentItem = items.find(item => item.value === value)
     const isRadio = type.options && type.options.layout === 'radio'
+    const validation = markers.filter(marker => marker.type === 'validation')
     return (
       <FormField
         labelFor={this.name}
@@ -73,6 +74,7 @@ export default class SelectInput extends React.Component<Props> {
             items={[EMPTY_ITEM].concat(items)}
             ref={this.setInput}
             readOnly={readOnly}
+            hasError={validation.length >= 1}
           />
         )}
       </FormField>
