@@ -88,7 +88,14 @@ export default class FormView extends React.PureComponent {
   }
 
   reportFocusPath(path) {
-    setLocation([{type: 'document', documentId: this.getCanonicalDocumentId(), path}])
+    setLocation([
+      {
+        type: 'document',
+        documentId: this.getCanonicalDocumentId(),
+        path,
+        lastActiveAt: new Date().toISOString()
+      }
+    ])
   }
 
   handleBlur = () => {
