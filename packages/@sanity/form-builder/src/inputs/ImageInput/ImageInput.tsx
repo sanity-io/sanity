@@ -12,7 +12,10 @@ import PropTypes from 'prop-types'
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DialogContent from 'part:@sanity/components/dialogs/content'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
@@ -363,9 +366,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderAdvancedEdit(fields: Array<FieldT>) {
     const {value, level, type, onChange, readOnly, materialize} = this.props
+    const withImageTool = this.isImageToolEnabled() && value && value.asset
+    const Dialog = withImageTool ? FullscreenDialog : DefaultDialog
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        {this.isImageToolEnabled() && value && value.asset && (
+        <PresenceOverlay>
+          <DialogContent size={withImageTool ? 'large' : 'medium'}>
+            {withImageTool && (
           <WithMaterializedReference materialize={materialize} reference={value.asset}>
             {imageAsset => (
               <ImageToolInput
@@ -381,6 +388,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         )}
         <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
         <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
+          </DialogContent>
+        </PresenceOverlay>
       </Dialog>
     )
   }
