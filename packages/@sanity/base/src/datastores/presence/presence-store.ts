@@ -78,7 +78,7 @@ export const SESSION_ID = getSessionId() || setSessionId(generate())
 
 const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
 
-const currentLocation$ = new BehaviorSubject([])
+const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
 const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
 
 export const setLocation = (nextLocation: PresenceLocation[]) => {

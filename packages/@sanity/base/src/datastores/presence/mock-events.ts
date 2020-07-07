@@ -67,6 +67,7 @@ export const mock$ = defer(() => from(USERIDS)).pipe(
           documentId: Math.random() * 10 > 5 ? 'presence-test' : null,
           // documentId: 'foo-bar',
           // path: ['bestFriend']
+          lastActiveAt: new Date().toISOString(),
           path: sample(PATHS)
         }
       ]

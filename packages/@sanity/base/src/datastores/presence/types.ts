@@ -15,6 +15,7 @@ export interface Session {
 export interface PresenceLocation {
   type: 'document'
   documentId: string
+  lastActiveAt: LastActiveAt
   path: PathElement[]
 }
 
