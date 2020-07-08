@@ -26,7 +26,7 @@ export const MenuItem: FunctionComponent<DropDownMenuItemProps> = ({
   return (
     <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
       {intent ? (
-        <IntentLink intent={intent} params={params}>
+        <IntentLink className={styles.intentLink} intent={intent} params={params}>
           <div className={styles.iconContainer}>{Icon && <Icon />}</div>
           <div className={styles.title}>{title}</div>
         </IntentLink>

@@ -26,3 +26,11 @@
 .title {
   margin: -2px 0 -1px var(--small-padding);
 }
+
+.intentLink {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  color: inherit;
+  text-decoration: none;
+}
