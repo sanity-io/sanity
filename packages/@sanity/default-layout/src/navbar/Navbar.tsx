@@ -7,14 +7,14 @@ import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
+import {Router, Tool, User} from '../types'
 import Branding from './branding/Branding'
 import LoginStatus from './loginStatus/LoginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
-import {GlobalPresence} from './studioStatus/GlobalPresence'
+import {GlobalPresenceStatus} from './studioStatus/GlobalPresenceStatus'
 import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
 import {Tooltip} from './tooltip'
-import {Router, Tool, User} from '../types'
 
 import styles from './Navbar.css'
 
@@ -126,7 +126,7 @@ function Navbar(props: Props) {
         <SanityStatusContainer />
       </div>
       <div className={styles.presenceStatus}>
-        <GlobalPresence />
+        <GlobalPresenceStatus />
       </div>
       {isSidecarEnabled && isSidecarEnabled() && (
         <div className={styles.sidecarStatus}>

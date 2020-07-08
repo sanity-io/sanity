@@ -1,10 +1,10 @@
-import {GlobalStatus} from '@sanity/components/presence'
+import {GlobalPresence} from '@sanity/components/presence'
 import {useGlobalPresence} from '@sanity/base/hooks'
 import client from 'part:@sanity/base/client'
 import React from 'react'
 
-export function GlobalPresence() {
+export function GlobalPresenceStatus() {
   const {projectId} = client.config()
   const presence = useGlobalPresence()
-  return <GlobalStatus presence={presence} projectId={projectId} />
+  return <GlobalPresence presence={presence} projectId={projectId} />
 }
