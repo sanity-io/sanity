@@ -40,10 +40,18 @@
   color: var(--text-color-secondary);
   display: flex;
   align-items: center;
-  margin-left: var(--extra-small-padding);
+  padding-left: var(--medium-padding);
+  @nest &[data-presence="true"] {
+    @nest & .validationStatus {
+      padding-right: var(--medium-padding);
+    }
+    @nest & .deleteButton {
+      padding-left: var(--small-padding);
+    }
+  }
 }
 
 .validationStatus {
   composes: validationStatus from 'part:@sanity/base/theme/forms/validation-style';
-  padding: 0 var(--small-padding);
+  padding-right: var(--small-padding);
 }

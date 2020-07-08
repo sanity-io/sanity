@@ -99,15 +99,20 @@ export default class Item extends React.PureComponent<Props> {
               presence={presence}
             />
           </div>
-          <div className={styles.functions}>
-            <div className={styles.validationStatus}>
-              <ValidationStatus markers={markers} />
-            </div>
+          <div
+            className={styles.functions}
+            data-presence={presence.length > 0 && (!type.title || type.title === '')}
+          >
+            {markers.length >= 1 && (
+              <div className={styles.validationStatus}>
+                <ValidationStatus markers={markers} />
+              </div>
+            )}
             {(!type.title || type.title === '') && (
               <FieldPresence presence={presence} maxAvatars={1} />
             )}
             {!readOnly && (
-              <div>
+              <div className={styles.deleteFunction}>
                 <Button
                   className={styles.deleteButton}
                   icon={TrashIcon}
