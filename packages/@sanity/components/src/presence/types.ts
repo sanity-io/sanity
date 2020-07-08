@@ -65,6 +65,7 @@ export interface PresenceLocation {
   documentId: string
   path: PathElement[]
   data: PresenceData
+  lastActiveAt: string
 }
 
 type PresenceData = {[key: string]: any}
