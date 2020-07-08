@@ -69,7 +69,7 @@ export interface PresenceLocation {
 
 type PresenceData = {[key: string]: any}
 
-export type GlobalPresence = {
+export type GlobalPresenceItem = {
   user: User
   status: Status
   lastActiveAt: string

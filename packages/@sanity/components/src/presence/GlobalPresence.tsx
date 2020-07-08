@@ -1,19 +1,19 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import UsersIcon from 'part:@sanity/base/users-icon'
-import styles from './GlobalStatus.css'
+import {IntentLink} from 'part:@sanity/base/router'
+import * as PathUtils from '@sanity/util/paths'
+import styles from './GlobalPresence.css'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
 import StackCounter from './StackCounter'
-import {GlobalPresence, Size} from './types'
+import {GlobalPresenceItem, Size} from './types'
 import UserAvatar from './UserAvatar'
 import {PresenceListItem} from './PresenceListItem'
 import {MAX_AVATARS_GLOBAL} from './constants'
-import {IntentLink} from 'part:@sanity/base/router'
-import * as PathUtils from '@sanity/util/paths'
 
 type GlobalPresenceListItemProps = {
-  presence: GlobalPresence
+  presence: GlobalPresenceItem
   size?: Size
   onClose?: (event) => void
 }
@@ -22,7 +22,12 @@ function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
   const {presence, onClose, size} = props
   const locationWithDocumentId = presence?.locations.find(location => location.documentId)
   const item = (
-    <PresenceListItem user={presence.user} status={presence.status} size={size} hasLink={locationWithDocumentId?.documentId} />
+    <PresenceListItem
+      user={presence.user}
+      status={presence.status}
+      size={size}
+      hasLink={locationWithDocumentId?.documentId}
+    />
   )
   return locationWithDocumentId ? (
     <IntentLink
@@ -45,10 +50,10 @@ function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
 interface Props {
   projectId: string
   maxAvatars: number
-  presence: GlobalPresence[]
+  presence: GlobalPresenceItem[]
 }
 
-export function GlobalStatus({projectId, presence, maxAvatars = MAX_AVATARS_GLOBAL}: Props) {
+export function GlobalPresence({projectId, presence, maxAvatars = MAX_AVATARS_GLOBAL}: Props) {
   const [hiddenUsers, visibleUsers] = splitRight(presence, maxAvatars)
   const showCounter = hiddenUsers.length >= maxAvatars - 1 || presence.length === 0
   return (
@@ -56,11 +61,7 @@ export function GlobalStatus({projectId, presence, maxAvatars = MAX_AVATARS_GLOB
       <PopoverList
         items={presence}
         renderItem={(item, onClose) => (
-          <GlobalPresenceListItem
-            presence={item}
-            size="medium"
-            onClose={onClose}
-          />
+          <GlobalPresenceListItem presence={item} size="medium" onClose={onClose} />
         )}
         isGlobal
         projectId={projectId}
