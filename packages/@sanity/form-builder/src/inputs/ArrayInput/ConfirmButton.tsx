@@ -1,8 +1,8 @@
 import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import styles from './styles/ConfirmButton.css'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import PopOver from 'part:@sanity/components/dialogs/popover'
+import styles from './styles/ConfirmButton.css'
 
 type ConfirmButtonProps = {
   kind?: 'simple'
@@ -77,13 +77,12 @@ export default class ConfirmButton extends React.Component<ConfirmButtonProps, C
             <div className={styles.wrapper}>
               <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
               <Button
-                color="white"
-                inverted
+                color="danger"
                 onClick={onConfirm}
                 icon={TrashIcon}
                 ref={this.setConfirmButton}
               >
-                Confirm remove
+                Remove?
               </Button>
               <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
             </div>
