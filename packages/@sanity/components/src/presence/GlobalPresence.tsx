@@ -3,6 +3,7 @@ import React from 'react'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import * as PathUtils from '@sanity/util/paths'
+import {orderBy} from 'lodash'
 import styles from './GlobalPresence.css'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
@@ -20,23 +21,25 @@ type GlobalPresenceListItemProps = {
 
 function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
   const {presence, onClose, size} = props
-  const locationWithDocumentId = presence?.locations.find(location => location.documentId)
+  const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
+    location => location.documentId
+  )
   const item = (
     <PresenceListItem
       user={presence.user}
       status={presence.status}
       size={size}
-      hasLink={locationWithDocumentId?.documentId}
+      hasLink={lastActiveLocation?.documentId}
     />
   )
-  return locationWithDocumentId ? (
+  return lastActiveLocation ? (
     <IntentLink
       title={presence?.user?.displayName && `Go to ${presence.user.displayName}`}
       className={styles.intentLink}
       intent="edit"
       params={{
-        id: locationWithDocumentId.documentId,
-        path: encodeURIComponent(PathUtils.toString(locationWithDocumentId.path))
+        id: lastActiveLocation.documentId,
+        path: encodeURIComponent(PathUtils.toString(lastActiveLocation.path))
       }}
       onClick={onClose}
     >

@@ -214,7 +214,8 @@ export const globalPresence$ = allSessions$.pipe(
         .map(location => ({
           type: location.type,
           documentId: location.documentId,
-          path: location.path
+          path: location.path,
+          lastActiveAt: location.lastActiveAt
         }))
         .reduce(concatValues, [])
     }))
