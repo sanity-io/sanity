@@ -7,16 +7,28 @@
   color: inherit;
 }
 
+.hasFocus {
+  composes: root;
+}
+
 .root:hover .arrow {
-  color: var(--input-border-color-focus);
+  color: var(--link-color);
+  
+  @nest & svg {
+    color: inherit;
+    opacity: 1;
+    transform: scale(1.1  );
+  }
 }
 
 .root:focus-within .arrow {
-  color: var(--input-border-color-focus);
-}
+  color: var(--link-color);
 
-.hasFocus {
-  composes: root;
+  @nest & svg {
+    color: inherit;
+    opacity: 1;
+    transform: scale(1.1  );
+  }
 }
 
 .select {
@@ -137,6 +149,7 @@
     justify-content: center;
     width: 2.5em;
     color: inherit;
+    font-size: var(--font-size-large);
   }
 
   @nest & > *:not(:first-child) {
