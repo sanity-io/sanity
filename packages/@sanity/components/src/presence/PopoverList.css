@@ -25,7 +25,7 @@
 
 .inner {
   position: relative;
-  max-height: 250px;
+  max-height: calc(100vh - 200px);
   max-width: 250px;
   outline: none;
 }
@@ -52,7 +52,7 @@
   margin: 0;
   padding: var(--extra-small-padding) 0;
   overflow-x: auto;
-  max-height: 180px;
+  max-height: calc(100vh - 400px);
 }
 
 .userList::-webkit-scrollbar {
