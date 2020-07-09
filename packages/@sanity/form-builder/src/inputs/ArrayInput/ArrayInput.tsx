@@ -2,22 +2,23 @@ import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {map} from 'rxjs/operators'
 import {isPlainObject, get} from 'lodash'
+import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
+import Button from 'part:@sanity/components/buttons/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import formBuilderConfig from 'config:@sanity/form-builder'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
 import {Marker, Type} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
+import Details from '../common/Details'
 import resolveListComponents from './resolveListComponents'
 import {ArrayType, ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
-import Button from 'part:@sanity/components/buttons/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import Details from '../common/Details'
-import formBuilderConfig from 'config:@sanity/form-builder'
+import UnknownValues from './UnknownValues'
 
 import styles from './styles/ArrayInput.css'
 
@@ -268,6 +269,20 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     }
   }
 
+  renderUnknownValueTypes = () => {
+    const {value, type, readOnly} = this.props
+    const knownTypes = (type.of || []).map(t => t.name).filter(typeName => typeName !== 'object')
+    const unknownValues = (value || []).filter(v => v._type && !knownTypes.includes(v._type))
+    if (!unknownValues || unknownValues.length === 0) {
+      return null
+    }
+    return (
+      <div className={styles.unknownValueTypes}>
+        <UnknownValues values={unknownValues} onClick={this.handleRemoveItem} readOnly={readOnly} />
+      </div>
+    )
+  }
+
   render() {
     const {type, level, markers, readOnly, onChange, value, presence} = this.props
     const hasNonObjectValues = (value || []).some(item => !isPlainObject(item))
@@ -349,6 +364,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       >
         <div>
           {value && value.length > 0 && this.renderList()}
+          {this.renderUnknownValueTypes()}
           <ArrayFunctions
             type={type}
             value={value}

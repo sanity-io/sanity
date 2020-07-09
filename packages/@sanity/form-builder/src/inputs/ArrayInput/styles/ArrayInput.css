@@ -85,3 +85,8 @@
 .removeNonObjectsButtonWrapper {
   composes: fixMissingKeysButtonWrapper;
 }
+
+.unknownValueTypes {
+  padding-top: var(--medium-padding);
+  padding-bottom: var(--large-padding);
+}
