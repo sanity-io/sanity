@@ -163,7 +163,7 @@
   background-color: var(--component-bg);
 
   @nest & > :first-child {
-    margin-top: 0;
+    margin-top: 2px;
   }
 
   @nest & > :last-child {
