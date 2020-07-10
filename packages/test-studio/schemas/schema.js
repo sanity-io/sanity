@@ -33,7 +33,7 @@ import geopoint from './geopoint'
 import fieldsets from './fieldsets'
 import empty from './empty'
 import readOnly from './readOnly'
-import validation from './validation'
+import validation, {validationArraySuperType} from './validation'
 import experiment from './experiment'
 import customInputs from './customInputs'
 import notitle from './notitle'
@@ -71,6 +71,7 @@ export default createSchema({
     datetime,
     date,
     richDateTest,
+    validationArraySuperType,
     validation,
     actions,
     topLevelArrayType,

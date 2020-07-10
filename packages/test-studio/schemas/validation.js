@@ -3,6 +3,18 @@ import {points, featureCollection} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
 import norway from '../data/norway'
 
+// "gallery" schema
+export const validationArraySuperType = {
+  name: 'gallery',
+  title: 'Gallery',
+  type: 'array',
+  of: [
+    {
+      type: 'image'
+    }
+  ]
+}
+
 export default {
   name: 'validationTest',
   type: 'document',
@@ -296,7 +308,12 @@ export default {
         ]
       }
     },
-
+    {
+      name: 'inheritedArray',
+      title: 'Inherited array type with custom validation',
+      type: 'gallery',
+      validation: Rule => [Rule.min(2), Rule.max(6).warning('too many images')]
+    },
     {
       name: 'location',
       type: 'geopoint',
