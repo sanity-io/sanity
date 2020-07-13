@@ -19,7 +19,7 @@ const EventSource = isWindowEventSource
   ? window.EventSource // Native browser EventSource
   : polyfilledEventSource // Node.js, IE etc
 
-const possibleOptions = ['includePreviousRevision', 'includeResult', 'visibility']
+const possibleOptions = ['includePreviousRevision', 'includeResult', 'visibility', 'effectFormat']
 const defaultOptions = {
   includeResult: true
 }
