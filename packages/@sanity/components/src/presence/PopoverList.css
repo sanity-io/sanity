@@ -25,9 +25,13 @@
 
 .inner {
   position: relative;
-  max-height: calc(100vh - 200px);
+  max-height: 300px;
   max-width: 250px;
   outline: none;
+}
+
+.isGlobalInner {
+  max-height: calc(100vh - 200px);
 }
 
 .header {
@@ -52,6 +56,10 @@
   margin: 0;
   padding: var(--extra-small-padding) 0;
   overflow-x: auto;
+  max-height: 200px;
+}
+
+.isGlobalUserList {
   max-height: calc(100vh - 400px);
 }
 

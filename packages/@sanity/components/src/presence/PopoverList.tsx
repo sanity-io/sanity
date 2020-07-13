@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
-import React, {useRef, useState} from 'react'
-import styles from './PopoverList.css'
+import React, {useState} from 'react'
 import {Tooltip, Position} from 'react-tippy'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import {useId} from '@reach/auto-id'
+import styles from './PopoverList.css'
 import {User} from './types'
 
 type Props<Item> = {
@@ -44,7 +44,7 @@ export default function PopoverList<Item extends {user: User}>({
 
   const html = (
     <div
-      className={styles.inner}
+      className={`${styles.inner} ${isGlobal ? styles.isGlobalInner : ''}`}
       role="menu"
       id={elementId}
       aria-label="Online users"
@@ -59,7 +59,7 @@ export default function PopoverList<Item extends {user: User}>({
         </div>
       )}
       {items.length > 0 && (
-        <ul className={styles.userList}>
+        <ul className={`${styles.userList} ${isGlobal ? styles.isGlobalUserList : ''}`}>
           {items.map(item => (
             <li key={item.user.id}>{renderItem(item, handleCloseList)}</li>
           ))}
