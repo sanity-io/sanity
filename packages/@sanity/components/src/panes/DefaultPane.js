@@ -10,8 +10,8 @@ import IntentButton from 'part:@sanity/components/buttons/intent'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import {Tooltip} from 'react-tippy'
-import Styleable from '../utilities/Styleable'
 import S from '@sanity/base/structure-builder'
+import Styleable from '../utilities/Styleable'
 
 import defaultStyles from './styles/DefaultPane.css'
 
@@ -122,6 +122,12 @@ class Pane extends React.PureComponent {
       .substr(2, 6)
   }
 
+  // Triggered by clicking "outside" of the menu when open, or after triggering action
+  handleCloseMenu = () => {
+    this.setState({isMenuOpen: false})
+  }
+
+  // Triggered by pane menu button
   handleToggleMenu = () => {
     this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
   }
@@ -145,12 +151,11 @@ class Pane extends React.PureComponent {
   }
 
   handleMenuAction = item => {
-    this.setState({isMenuOpen: false})
+    this.handleCloseMenu()
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
     }
-
     const actionHandled = this.props.onAction(item)
     if (actionHandled) {
       return
@@ -271,7 +276,7 @@ class Pane extends React.PureComponent {
   renderHeaderToolsOverflowMenu() {
     const {styles, menuItems, menuItemGroups, isCollapsed} = this.props
     const items = menuItems.filter(isMenuButton)
-
+    const {isMenuOpen} = this.state
     if (items.length === 0) {
       return null
     }
@@ -285,8 +290,8 @@ class Pane extends React.PureComponent {
           trigger="click focus"
           position="bottom"
           interactive
-          open={this.state.isMenuOpen}
-          onRequestClose={this.handleToggleMenu}
+          open={isMenuOpen}
+          onRequestClose={this.handleCloseMenu}
           useContext
           html={
             <Menu
@@ -295,20 +300,22 @@ class Pane extends React.PureComponent {
               groups={menuItemGroups}
               origin={isCollapsed ? 'top-left' : 'top-right'}
               onAction={this.handleMenuAction}
+              onClose={this.handleCloseMenu}
+              onClickOutside={this.handleCloseMenu}
             />
           }
         >
           <Button
             aria-label="Menu"
             aria-haspopup="menu"
-            aria-expanded={this.state.isMenuOpen}
+            aria-expanded={isMenuOpen}
             aria-controls={this.paneMenuId}
             className={styles.menuOverflowButton}
             icon={IconMoreVert}
             kind="simple"
             onClick={this.handleToggleMenu}
             padding="small"
-            selected={this.state.isMenuOpen}
+            selected={isMenuOpen}
             title="Show menu"
           />
         </Tooltip>

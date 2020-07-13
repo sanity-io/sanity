@@ -92,6 +92,7 @@ class DefaultMenu extends React.Component {
       return
     }
 
+    this.setState({focusedItem: null})
     onClickOutside(event)
   }
 
@@ -113,6 +114,7 @@ class DefaultMenu extends React.Component {
     const currentIndex = items.indexOf(focusedItem) || 0
 
     if (event.key === 'Escape') {
+      this.setState({focusedItem: null})
       this.props.onClose(event)
     }
 
