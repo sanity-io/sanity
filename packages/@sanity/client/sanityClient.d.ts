@@ -529,6 +529,7 @@ export type MutationEvent<R = any> = {
   resultRev?: string
   result?: SanityDocument<R>
   previous?: SanityDocument<R> | null
+  effects?: {apply: unknown[]; revert: unknown[]}
   timestamp: string
   transactionId: string
   transition: 'update' | 'appear' | 'disappear'
@@ -564,6 +565,7 @@ export interface ListenOptions {
   includePreviousRevision?: boolean
   visibility?: 'sync' | 'async' | 'query'
   events?: ListenEventName[]
+  effectFormat?: 'mendoza'
 }
 
 export type PreviousNextListenOptions = ListenOptions & {
@@ -1993,6 +1995,16 @@ export interface SanityClient {
    * @param options Request options
    */
   request(options: RawRequestOptions): Promise<any>
+
+  /**
+   * DEPRECATED: Perform an HTTP request a `/data` sub-endpoint
+   *
+   * @deprecated Use your own request library!
+   * @param endpoint Endpoint to hit (mutate, query etc)
+   * @param body Request body
+   * @param options Request options
+   */
+  dataRequest(endpoint: string, body: unknown, options?: BaseMutationOptions): Promise<any>
 }
 
 export interface ClientConstructor {
