@@ -1,6 +1,6 @@
 {
   "name": "@sanity/server",
-  "version": "1.149.16",
+  "version": "1.149.18",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
@@ -44,8 +44,8 @@
     "@sanity/css-loader": "^0.28.12",
     "@sanity/eventsource": "1.149.16",
     "@sanity/resolver": "1.149.16",
-    "@sanity/webpack-integration": "1.149.16",
-    "@sanity/webpack-loader": "1.149.16",
+    "@sanity/webpack-integration": "1.149.18",
+    "@sanity/webpack-loader": "1.149.18",
     "babel-loader": "^8.0.6",
     "eventsource-polyfill": "^0.9.6",
     "express": "^4.16.1",
