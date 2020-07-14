@@ -4,7 +4,6 @@
   opacity: 1;
   outline: none;
   z-index: 10;
-  margin-right: var(--small-padding);
 
   @nest &:hover {
     opacity: 1;
