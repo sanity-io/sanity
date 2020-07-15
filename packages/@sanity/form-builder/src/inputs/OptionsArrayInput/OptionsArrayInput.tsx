@@ -1,13 +1,14 @@
 import React from 'react'
 import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import {resolveTypeName} from '../../utils/resolveTypeName'
+import {Type} from '../../typedefs'
+import Warning from '../Warning'
 import Item from './Item'
 import styles from './styles/OptionsArrayInput.css'
-import {resolveTypeName} from '../../utils/resolveTypeName'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
-import {Type} from '../../typedefs'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
@@ -80,6 +81,22 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     this.props.onFocus([FOCUS_TERMINATOR])
   }
 
+  renderInvalidOptions = options => {
+    const invalidOptions = options
+      .filter(option => !this.getMemberTypeOfItem(option))
+      .map(option => resolveTypeName(resolveValueWithLegacyOptionsSupport(option)))
+    const len = invalidOptions.length
+    const heading = (
+      <>
+        Found {len === 1 ? <>an</> : len} invalid option {len === 1 ? <>type</> : <>types</>}
+      </>
+    )
+    if (invalidOptions.length < 1) {
+      return null
+    }
+    return <Warning heading={heading} values={invalidOptions} />
+  }
+
   render() {
     const {type, markers, value, level, readOnly, presence} = this.props
     const options = get(type.options, 'list')
@@ -93,36 +110,32 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         level={level}
         onClick={this.handleFocus}
       >
-        <div
-          className={
-            direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
-          }
-        >
-          {options.map((option, index) => {
-            const optionType = this.getMemberTypeOfItem(option)
-            if (!optionType) {
-              const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
-              const validTypes = type.of.map(ofType => ofType.name)
+        <div>
+          <div
+            className={
+              direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
+            }
+          >
+            {options.map((option, index) => {
+              const optionType = this.getMemberTypeOfItem(option)
+              if (!optionType) {
+                return null
+              }
+              const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
               return (
-                <div key={option._key || index} className={styles.error}>
-                  Invalid option type: Type <code>{actualType}</code> not valid for array of [
-                  {validTypes.join(', ')}]. Check the list options of this field
+                <div key={option._key || index}>
+                  <Item
+                    type={optionType}
+                    readOnly={readOnly}
+                    value={option}
+                    checked={checked}
+                    onChange={this.handleChange}
+                  />
                 </div>
               )
-            }
-            const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
-            return (
-              <div key={option._key || index}>
-                <Item
-                  type={optionType}
-                  readOnly={readOnly}
-                  value={option}
-                  checked={checked}
-                  onChange={this.handleChange}
-                />
-              </div>
-            )
-          })}
+            })}
+          </div>
+          {this.renderInvalidOptions(options)}
         </div>
       </Fieldset>
     )
