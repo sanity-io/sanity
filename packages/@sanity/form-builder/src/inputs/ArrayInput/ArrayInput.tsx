@@ -2,22 +2,24 @@ import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {map} from 'rxjs/operators'
 import {isPlainObject, get} from 'lodash'
+import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
+import Button from 'part:@sanity/components/buttons/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import formBuilderConfig from 'config:@sanity/form-builder'
+import DefaultButton from 'part:@sanity/components/buttons/default'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
 import {Marker, Type} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
+import Details from '../common/Details'
+import Warning from '../Warning'
 import resolveListComponents from './resolveListComponents'
 import {ArrayType, ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
-import Button from 'part:@sanity/components/buttons/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import Details from '../common/Details'
-import formBuilderConfig from 'config:@sanity/form-builder'
 
 import styles from './styles/ArrayInput.css'
 
@@ -267,6 +269,45 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       [key]: events$.subscribe(onChange)
     }
   }
+  renderUnknownValueTypes = () => {
+    const {value, type, readOnly} = this.props
+    const knownTypes = (type.of || []).map(t => t.name).filter(typeName => typeName !== 'object')
+    const unknownValues = (value || []).filter(v => v._type && !knownTypes.includes(v._type))
+    if (!unknownValues || unknownValues.length < 1) {
+      return null
+    }
+    const message = (
+      <>
+        These are not defined in the current schema as valid types for this array. This could mean
+        that the type has been removed, or that someone else has added it to their own local schema
+        that is not yet deployed.
+        {unknownValues.map(item => {
+          return (
+            <div key={item._type}>
+              <h4>{item._type}</h4>
+              <pre className={styles.inspectValue}>{JSON.stringify(item, null, 2)}</pre>
+              {readOnly ? (
+                <div>
+                  This array is <em>read only</em> according to its enclosing schema type and values
+                  cannot be unset. If you want to unset a value, make sure you remove the{' '}
+                  <strong>readOnly</strong> property from the enclosing type.
+                </div>
+              ) : (
+                <DefaultButton onClick={() => this.handleRemoveItem(item)} color="danger">
+                  Unset {item._type}
+                </DefaultButton>
+              )}
+            </div>
+          )
+        })}
+      </>
+    )
+    return (
+      <div className={styles.unknownValueTypes}>
+        <Warning message={message} values={unknownValues} />
+      </div>
+    )
+  }
 
   render() {
     const {type, level, markers, readOnly, onChange, value, presence} = this.props
@@ -349,6 +390,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       >
         <div>
           {value && value.length > 0 && this.renderList()}
+          {this.renderUnknownValueTypes()}
           <ArrayFunctions
             type={type}
             value={value}

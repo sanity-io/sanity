@@ -4,12 +4,13 @@ import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {PatchEvent, set, unset} from '../../PatchEvent'
 import {startsWith} from '@sanity/util/paths'
+import DefaultButton from 'part:@sanity/components/buttons/default'
+import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {Path} from '../../typedefs/path'
 import {Marker, Type} from '../../typedefs'
-import InvalidValue from '../InvalidValueInput'
+import Warning from '../Warning'
 import styles from './styles/ArrayOfPrimitivesInput.css'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
@@ -121,15 +122,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
     if (!itemMemberType) {
-      return (
-        <InvalidValue
-          key={index}
-          actualType={typeName}
-          validTypes={type.of.map(memberType => memberType.name)}
-          onChange={ev => onChange(ev.prefixAll(index))}
-          value={value}
-        />
-      )
+      return null
     }
     const isSortable = get(type, 'options.sortable') !== false
     const ListItem = isSortable ? SortableItem : DefaultItem
@@ -189,6 +182,56 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     this.props.onFocus([index])
   }
 
+  renderUnknownValueTypes = () => {
+    const {value, readOnly} = this.props
+    // Find values with types not specified in the schema
+    const unknownValues = (value || [])
+      .filter(v => {
+        const typeName = resolveTypeName(v)
+        const itemMemberType = this.getMemberType(typeName)
+        return !itemMemberType
+      })
+      .map(v => ({value: v, type: resolveTypeName(v)}))
+
+    if (!unknownValues || unknownValues.length === 0) {
+      return null
+    }
+    const message = (
+      <>
+        These are not defined in the current schema as valid types for this array. This could mean
+        that the type has been removed, or that someone else has added it to their own local schema
+        that is not yet deployed.
+        {unknownValues.map(item => {
+          return (
+            <div key={item.type}>
+              <h4>{item.type}</h4>
+              <pre className={styles.inspectValue}>{JSON.stringify(item.value, null, 2)}</pre>
+              {readOnly ? (
+                <div>
+                  This array is <em>read only</em> according to its enclosing schema type and values
+                  cannot be unset. If you want to unset a value, make sure you remove the{' '}
+                  <strong>readOnly</strong> property from the enclosing type.
+                </div>
+              ) : (
+                <DefaultButton
+                  onClick={() => this.handleRemoveItem(value.findIndex(v => v === item.value))}
+                  color="danger"
+                >
+                  Unset {item.value}
+                </DefaultButton>
+              )}
+            </div>
+          )
+        })}
+      </>
+    )
+    return (
+      <div className={styles.unknownValueTypes}>
+        <Warning values={unknownValues} message={message} />
+      </div>
+    )
+  }
+
   render() {
     const {type, value, level, markers, readOnly, onChange, onFocus, presence} = this.props
     return (
@@ -204,6 +247,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       >
         <div className={styles.root}>
           {value && value.length > 0 && <div className={styles.list}>{this.renderList(value)}</div>}
+          {this.renderUnknownValueTypes()}
           <div className={styles.functions}>
             <ArrayFunctions
               type={type}

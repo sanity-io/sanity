@@ -11,17 +11,17 @@ import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
+import * as PathUtils from '@sanity/util/paths'
+import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/presence'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {Path} from '../../typedefs/path'
 import {Presence, Marker, Type} from '../../typedefs'
-import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
-import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -258,7 +258,10 @@ export default class RenderItemValue extends React.PureComponent<Props> {
       .filter(Boolean)
 
     const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
-
+    const memberType = this.getMemberType()
+    if (!memberType) {
+      return null
+    }
     return (
       <div className={styles.inner}>
         {!isGrid && isSortable && <DragHandle />}
@@ -275,7 +278,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onFocus={this.handleFocus}
           >
             {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-            <Preview layout={previewLayout} value={value} type={this.getMemberType()} />
+            <Preview layout={previewLayout} value={value} type={memberType} />
           </div>
         </div>
 

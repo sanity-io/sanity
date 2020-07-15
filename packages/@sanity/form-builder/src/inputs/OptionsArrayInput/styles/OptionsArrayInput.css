@@ -1,16 +1,11 @@
-.error {
-  font-size: 0.8rem;
-  padding: 1em;
-  margin-bottom: 0.5rem;
-}
+@import 'part:@sanity/base/theme/variables-style';
 
 .itemWrapperVertical {
   display: block;
-  margin-bottom: 0.5rem;
 }
 
 .itemWrapperHorizontal {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1em;
+  gap: var(--medium-padding);
 }

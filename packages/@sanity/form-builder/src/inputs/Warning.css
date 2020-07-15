@@ -2,6 +2,8 @@
 
 .root {
   /* empty */
+  padding-top: var(--small-padding);
+  padding-bottom: var(--medium-padding);
 }
 
 .heading {
@@ -21,10 +23,4 @@
   background-color: var(--component-bg);
   padding: var(--small-padding);
   margin: 0 0 var(--medium-padding);
-}
-
-.buttonWrapper {
-  @nest & button {
-    margin-right: var(--medium-padding);
-  }
 }
