@@ -24,7 +24,7 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "dependencies": {
-    "@sanity/image-url": "0.140.15",
+    "@sanity/image-url": "^0.140.19",
     "lodash": "^4.17.15",
     "observable-props": "^2.0.0",
     "react-props-stream": "^1.0.0",
