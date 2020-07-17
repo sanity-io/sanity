@@ -10,7 +10,7 @@ function HintCard(props) {
    * Hint cards currently only link to external sources.
    * In future iterations a hint card may have it's own page
    * that opens by clicking the card (onCardClick prop), that
-   * then renders the HintPage.js component.
+   * then renders a page component.
    */
   /*
   <div className={styles.root} onClick={() => onCardClick(card._id)}>

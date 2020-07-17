@@ -1,10 +1,9 @@
 /* eslint-disable no-console, class-methods-use-this */
 import React from 'react'
-import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import {locationSetting, getHints} from '../datastore'
+import {getHints} from '../datastore'
 import {resolveUrl} from './utils'
 import LinksList from './LinksList'
 import styles from './HintsPackage.css'
@@ -16,7 +15,6 @@ export default class HintsPackage extends React.PureComponent {
     error: null,
     hintsPackage: null,
     sidebarRemovalInstructions: null,
-    activePage: null,
     isLoading: true
   }
 
@@ -37,10 +35,6 @@ export default class HintsPackage extends React.PureComponent {
   componentDidMount() {
     const repoId = studioHintsConfig.templateRepoId
     this.fetchHintsPackage(repoId)
-
-    this.subscription = locationSetting.listen().subscribe(currentLocation => {
-      this.setState({activePage: currentLocation ? JSON.parse(currentLocation).id : null})
-    })
   }
 
   componentWillUnmount() {
@@ -57,7 +51,7 @@ export default class HintsPackage extends React.PureComponent {
    * Hint cards currently only link to external sources.
    * In future iterations a hint card may have it's own page
    * that opens by clicking the card (onCardClick prop), that
-   * then renders the HintPage.js component.
+   * then renders a page component.
    * These are the handlers for opening and closing hint pages:
    */
   /*
@@ -125,7 +119,7 @@ export default class HintsPackage extends React.PureComponent {
       return this.renderError('Hints not found', 'An error occurred while fetching the hints.')
     }
 
-    if (!hintsPackage || isEmpty(hintsPackage)) {
+    if (!hintsPackage || !hintsPackage.hintsTitle) {
       return this.renderError('Hints not found', `No hints found for slug "${repoId}"`)
     }
 
