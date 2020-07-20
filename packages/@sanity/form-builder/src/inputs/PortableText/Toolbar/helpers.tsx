@@ -274,5 +274,8 @@ export function getInsertMenuItems(
     })
   )
 
-  return blockItems.concat(inlineItems)
+  // Do not include items that are supposed to be hidden
+  const filteredBlockItems = blockItems.concat(inlineItems).filter(item => !item.type?.hidden)
+
+  return filteredBlockItems
 }
