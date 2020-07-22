@@ -110,6 +110,7 @@ export default function InsertMenu(props: Props) {
                   {items.map(item => {
                     const itemIsDisabled = item.disabled
                     const title = item.type.title || item.type.type.name
+                    const description = item.type.description
                     if (item.type.hidden) {
                       return null
                     }
@@ -126,10 +127,14 @@ export default function InsertMenu(props: Props) {
                         title={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
                         type="button"
                       >
-                        <div className={styles.media}>{React.createElement(item.icon)}</div>
                         <div className={styles.heading}>
-                          <h2 className={styles.title}>{title}</h2>
+                          <div>
+                            <h2 className={styles.title}>{title}</h2>
+                            <p className={styles.subtitle}>{item.inline ? 'Inline' : 'Block'}</p>
+                          </div>
+                          <div className={styles.media}>{React.createElement(item.icon)}</div>
                         </div>
+                        {description && <p className={styles.description}>{description}</p>}
                       </button>
                     )
                   })}

@@ -54,7 +54,9 @@
   grid-gap: var(--medium-padding);
 
   @nest & .menuItem {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
     text-decoration: none;
     position: relative;
     background-color: var(--component-bg);
@@ -86,18 +88,40 @@
   @nest & .heading {
     min-width: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
     min-height: calc(36 / 16 * 1em);
     margin: -3px 0 -2px;
-  }
+
+    @nest & .title {
+      font-weight: normal;
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-base);
+      padding: 0;
+      margin: 0;
+    }
   
-  @nest & .title {
-    font-weight: normal;
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-base);
+    @nest & .subtitle {
+      font-weight: normal;
+      font-size: var(--font-size-small);
+      line-height: var(--line-height-small);
+      color: var(--text-color-secondary);
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  @nest & .description {
     padding: 0;
+    padding-top: var(--small-padding);
+    font-weight: normal;
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-small);
+    color: var(--text-color-secondary);
     margin: 0;
+    white-space: break-spaces;
+    word-break: break-word;
   }
   
   @nest & .media {

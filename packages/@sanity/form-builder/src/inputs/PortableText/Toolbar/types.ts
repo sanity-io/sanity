@@ -7,6 +7,7 @@ export interface BlockItem {
   inline: boolean
   key: string
   type: Type
+  description?: string
 }
 
 export interface BlockStyleItem {

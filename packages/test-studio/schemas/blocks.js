@@ -235,20 +235,43 @@ export default {
       of: [
         {type: 'author', title: 'Author', hidden: true},
         {type: 'book', title: 'Boko'},
-        {type: 'color', title: 'Color'},
+        {
+          type: 'color',
+          title: 'Color',
+          description:
+            'This is an example of a description. Could explain what this type represents when inserted.'
+        },
         {type: 'boolean', title: 'Boolean'},
-        {type: 'date', title: 'Date'},
-        {type: 'email', title: 'Email'},
-        {type: 'gallery', title: 'Gallery', icon: imageIcon},
-        {type: 'geopoint', title: 'Geopoint'},
-        {type: 'image', title: 'Image', icon: imageIcon},
+        {type: 'date', title: 'Date', subtitle: 'We love dates'},
+        {
+          type: 'email',
+          title: 'Email',
+          description: 'Are emails the letters of today that will be gone tomorrow?'
+        },
+        {
+          type: 'gallery',
+          title: 'Gallery',
+          icon: imageIcon,
+          description: 'Could be a slideshow on the frontend'
+        },
+        {type: 'geopoint', title: 'Geopoint', description: 'Where to find something'},
+        {
+          type: 'image',
+          title: 'Image',
+          icon: imageIcon
+        },
         {type: 'presence', title: 'Presence'},
         {type: 'richDate', title: 'Rich date'},
         {type: 'simpleBlock', title: 'Block'},
         {type: 'spotifyEmbed', title: 'Spotify'},
         {type: 'textsTest', title: 'Text block'},
         {type: 'slug', title: 'Slug'},
-        {type: 'review', title: 'Review'},
+        {
+          type: 'review',
+          title: 'Review',
+          description:
+            'Something to be reviewd. Could be a book maybe. Or could be a long description. Cats rule.'
+        },
         {
           type: 'block',
           styles: [
