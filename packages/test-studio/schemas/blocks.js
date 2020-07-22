@@ -227,9 +227,28 @@ export default {
     {
       name: 'customized',
       title: 'Customized with block types',
+      description: 'And insert menu as a dialog',
       type: 'array',
+      options: {
+        insertMenu: 'dialog'
+      },
       of: [
-        {type: 'author', title: 'Author'},
+        {type: 'author', title: 'Author', hidden: true},
+        {type: 'book', title: 'Boko'},
+        {type: 'color', title: 'Color'},
+        {type: 'boolean', title: 'Boolean'},
+        {type: 'date', title: 'Date'},
+        {type: 'email', title: 'Email'},
+        {type: 'gallery', title: 'Gallery', icon: imageIcon},
+        {type: 'geopoint', title: 'Geopoint'},
+        {type: 'image', title: 'Image', icon: imageIcon},
+        {type: 'presence', title: 'Presence'},
+        {type: 'richDate', title: 'Rich date'},
+        {type: 'simpleBlock', title: 'Block'},
+        {type: 'spotifyEmbed', title: 'Spotify'},
+        {type: 'textsTest', title: 'Text block'},
+        {type: 'slug', title: 'Slug'},
+        {type: 'review', title: 'Review'},
         {
           type: 'block',
           styles: [

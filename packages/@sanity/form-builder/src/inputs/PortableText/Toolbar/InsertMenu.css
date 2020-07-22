@@ -47,3 +47,75 @@
   display: block;
   margin: -2px 0 -1px var(--small-padding);
 }
+
+.menuDialog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-gap: var(--medium-padding);
+
+  @nest & .menuItem {
+    display: block;
+    text-decoration: none;
+    position: relative;
+    background-color: var(--component-bg);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--hairline-color);
+    height: 100%;
+    box-sizing: border-box;
+    padding: var(--medium-padding);
+  
+    @media (hover: hover) {
+      color: var(--text-color-secondary);
+  
+      @nest &:hover {
+        color: var(--text-color);
+      }
+    }
+  
+    @nest &:focus {
+      background-color: var(--component-bg);
+      border-color: var(--selectable-item-base) a(50%);
+      box-shadow: 0 0 0 3px color(var(--selectable-item-base) a(50%));
+  
+      @nest &:active {
+        background-color: var(--selectable-item-color-active);
+      }
+    }
+  }
+  
+  @nest & .heading {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(36 / 16 * 1em);
+    margin: -3px 0 -2px;
+  }
+  
+  @nest & .title {
+    font-weight: normal;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    padding: 0;
+    margin: 0;
+  }
+  
+  @nest & .media {
+    float: right;
+    display: flex;
+    align-items: flex-start;
+    width: calc(33 / 16 * 1em);
+    height: calc(33 / 16 * 1em);
+  
+    @nest & > svg {
+      display: block;
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * 1em);
+  
+      &[data-sanity-icon='true'] {
+        font-size: calc(37 / 16 * 1em);
+        margin: calc(2 / 37 * -1em);
+      }
+    }
+  }
+}

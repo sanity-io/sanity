@@ -26,10 +26,20 @@ interface Props {
   renderBlock: RenderBlockFunction
   onFocus: (path: Path) => void
   selection: EditorSelection
+  insertMenu: 'dialog' | 'dropdown' | undefined
 }
 
 function PTEToolbar(props: Props) {
-  const {editor, hotkeys, isFullscreen, readOnly, onFocus, renderBlock, selection} = props
+  const {
+    editor,
+    hotkeys,
+    isFullscreen,
+    readOnly,
+    onFocus,
+    renderBlock,
+    selection,
+    insertMenu
+  } = props
   const disabled = !selection
   const actionGroups = React.useMemo(
     () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
@@ -76,7 +86,12 @@ function PTEToolbar(props: Props) {
       )}
       {insertMenuItems.length > 0 && (
         <div className={styles.insertMenuContainer}>
-          <InsertMenu disabled={disabled} items={insertMenuItems} readOnly={readOnly} />
+          <InsertMenu
+            mode={insertMenu}
+            disabled={disabled}
+            items={insertMenuItems}
+            readOnly={readOnly}
+          />
         </div>
       )}
     </div>

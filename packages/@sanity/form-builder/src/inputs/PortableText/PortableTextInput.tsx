@@ -459,7 +459,8 @@ export default withPatchSubscriber(
     // eslint-disable-next-line complexity
     renderEditor = (editor: JSX.Element): JSX.Element => {
       const {selection, isFullscreen, showValidationTooltip} = this.state
-      const {onFocus, markers, readOnly, renderBlockActions, renderCustomMarkers} = this.props
+      const {onFocus, markers, readOnly, renderBlockActions, renderCustomMarkers, type} = this.props
+      const options = type.options || {}
       const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
       const scClassNames = [
         styles.scrollContainer,
@@ -486,6 +487,7 @@ export default withPatchSubscriber(
                 renderBlock={this.renderBlock}
                 selection={selection}
                 readOnly={readOnly}
+                insertMenu={options.insertMenu}
               />
             </div>
 
