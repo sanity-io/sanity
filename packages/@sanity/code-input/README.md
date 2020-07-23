@@ -33,8 +33,10 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
 ## Options
 
 - `language` - Default language for this code field
-- `languageAlternatives` - Array of languages that should be available
-- `theme` - Name of the theme to use. Possible values: `['github', 'monokai', 'terminal', 'tomorrow']`
+- `languageAlternatives` - Array of languages that should be available (se its format in the example below)
+- `theme` - Name of the theme to use.
+  - Possible values include: `['github', 'monokai', 'terminal', 'tomorrow']`.
+  - For the full list and a live playground, refer to the [react-ace page](http://securingsincity.github.io/react-ace/).
 - `withFilename` - Boolean option to display input field for filename
 
 ```js
@@ -44,7 +46,14 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
   title: 'Example usage',
   type: 'code',
   options: {
-    language: 'js'
+    theme: 'solarized_dark',
+    language: 'js',
+    languageAlternatives: [
+      {title: 'Javascript', value: 'js'},
+      {title: 'HTML', value: 'html'},
+      {title: 'CSS', value: 'css'},
+      {title: 'SASS', value: 'sass'},
+    ]
   }
 }
 ```
