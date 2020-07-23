@@ -10,6 +10,7 @@ import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
+import copyDatasetCommand from './dataset/copyDatasetCommand'
 import documentsGroup from './documents/documentsGroup'
 import getDocumentsCommand from './documents/getDocumentsCommand'
 import queryDocumentsCommand from './documents/queryDocumentsCommand'
@@ -50,6 +51,7 @@ export default [
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
+  copyDatasetCommand,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,
