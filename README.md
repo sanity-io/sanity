@@ -62,7 +62,7 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 
 ### [Structured Content](https://www.sanity.io/structured-content)
 
-- Distribute from a single source of thruth, in real-time.
+- Distribute from a single source of truth, in real-time.
 - Unlock programmatic approaches to workflows and design.
 - [Upload images and transform them on demand](https://www.sanity.io/docs/asset-pipeline).
 - Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
