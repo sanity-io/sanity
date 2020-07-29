@@ -1,8 +1,8 @@
 import React from 'react'
 import customResolver from 'part:@sanity/base/preview-resolver?'
 import {get} from 'lodash'
-import SanityDefaultPreview from './SanityDefaultPreview'
 import {Type} from '../types'
+import SanityDefaultPreview from './SanityDefaultPreview'
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
@@ -17,7 +17,7 @@ function resolvePreview(type) {
 }
 
 type Props = {
-  snapshot: object
+  snapshot: any
   type: Type
   isLive: boolean
   layout: string
@@ -28,13 +28,14 @@ export default function RenderPreviewSnapshot(props: Props) {
 
   // TODO: Bjoerge: Check for image type with "is()"
   const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
-
+  const typeName = snapshot?._type
+  const icon = (type.to && type.to.find(t => t.name === typeName)?.icon) || type.icon
   const preview = (
     <PreviewComponent // Render media always until we have schema functionality for determining if there is media
       media={() => undefined}
       {...rest}
       value={snapshot}
-      icon={type && type.icon}
+      icon={icon}
       layout={layout}
       isPlaceholder={!snapshot}
       _renderAsBlockImage={renderAsBlockImage}
