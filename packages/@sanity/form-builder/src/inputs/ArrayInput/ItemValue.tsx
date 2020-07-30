@@ -13,6 +13,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import * as PathUtils from '@sanity/util/paths'
 import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/presence'
+import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
@@ -59,6 +60,7 @@ type Props = {
   readOnly: boolean | null
   focusPath: Path
   presence: Presence[]
+  onCopyItem?: () => void
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}
@@ -155,6 +157,11 @@ export default class RenderItemValue extends React.PureComponent<Props> {
       }
     }
   }
+
+  handleCopyValue = () => {
+    this.props.onCopyItem()
+  }
+
   renderEditItemForm(item: ItemValue) {
     const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
     const options = type.options || {}
@@ -302,6 +309,15 @@ export default class RenderItemValue extends React.PureComponent<Props> {
               onConfirm={this.handleRemove}
             />
           )}
+          <div>
+            <Button
+              kind={isGrid ? undefined : 'simple'}
+              title="Copy this item"
+              onClick={this.handleCopyValue}
+              icon={ContentCopyIcon}
+              padding="small"
+            />
+          </div>
         </div>
       </div>
     )

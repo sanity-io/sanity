@@ -66,6 +66,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   static defaultProps = {
     focusPath: []
   }
+
+  static contextTypes = {
+    addToSnackQueue: () => {}
+  }
+
   state = {
     isMoving: false
   }
@@ -145,6 +150,51 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     )
   }
 
+  handleCopyItem = (item: ItemValue, index: number) => {
+    const value = JSON.stringify({
+      index,
+      item
+    })
+    navigator.clipboard.writeText(value).then(() => {
+      const date = new Date()
+      this.context.addToSnackQueue({
+        id: `item-copied-${date}`,
+        setFocus: false,
+        kind: 'success',
+        title: 'Item copied!'
+      })
+    })
+  }
+
+  handlePasteItem = () => {
+    navigator.clipboard.readText().then(text => {
+      const date = new Date()
+      try {
+        const parsedValue = JSON.parse(text)
+        const memberType = this.getMemberTypeOfItem(parsedValue.item)
+        if (memberType) {
+          this.insert({...parsedValue.item, _key: randomKey(12)}, 'after', parsedValue.index)
+        } else {
+          this.context.addToSnackQueue({
+            id: `invalid-paste-${date}`,
+            setFocus: false,
+            kind: 'error',
+            title: 'Invalid type',
+            subtitle: `The item you are trying to insert has a type that isn't allowed in this array.`
+          })
+        }
+      } catch (error) {
+        this.context.addToSnackQueue({
+          id: `invalid-paste-${date}`,
+          setFocus: false,
+          kind: 'error',
+          title: 'Invalid item',
+          subtitle: `The item you tried to paste is unrecognizable and not valid.`
+        })
+      }
+    })
+  }
+
   getMemberTypeOfItem(item: ItemValue): Type {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
@@ -190,6 +240,9 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = isGrid ? [] : presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
+          const handleOnCopyItem = () => {
+            this.handleCopyItem(item, index)
+          }
           return (
             <Item
               key={item._key}
@@ -203,6 +256,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
+                onCopyItem={handleOnCopyItem}
                 focusPath={focusPath}
                 filterField={filterField}
                 onFocus={onFocus}
@@ -375,34 +429,42 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
     return (
-      <FieldSetComponent
-        markers={markers}
-        tabIndex={0}
-        legend={type.title}
-        description={type.description}
-        level={level}
-        className={styles.root}
-        onFocus={this.handleFocus}
-        type={type}
-        ref={this.setElement}
-        presence={presence.filter(item => item.path[0] === '$')}
-        {...uploadProps}
+      <div
+        onPaste={e => {
+          e.preventDefault()
+          e.stopPropagation()
+          this.handlePasteItem()
+        }}
       >
-        <div>
-          {value && value.length > 0 && this.renderList()}
-          {this.renderUnknownValueTypes()}
-          <ArrayFunctions
-            type={type}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
-            onCreateValue={createProtoValue}
-            onChange={onChange}
-          />
-        </div>
-      </FieldSetComponent>
+        <FieldSetComponent
+          markers={markers}
+          tabIndex={0}
+          legend={type.title}
+          description={type.description}
+          level={level}
+          className={styles.root}
+          onFocus={this.handleFocus}
+          type={type}
+          ref={this.setElement}
+          presence={presence.filter(item => item.path[0] === '$')}
+          {...uploadProps}
+        >
+          <div>
+            {value && value.length > 0 && this.renderList()}
+            {this.renderUnknownValueTypes()}
+            <ArrayFunctions
+              type={type}
+              value={value}
+              readOnly={readOnly}
+              onAppendItem={this.handleAppend}
+              onPrependItem={this.handlePrepend}
+              onFocusItem={this.handleFocusItem}
+              onCreateValue={createProtoValue}
+              onChange={onChange}
+            />
+          </div>
+        </FieldSetComponent>
+      </div>
     )
   }
 }

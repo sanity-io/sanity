@@ -8,6 +8,9 @@
 import {flatten} from 'lodash'
 
 export function extractPastedFiles(dataTransfer: DataTransfer): Promise<Array<File>> {
+  if (dataTransfer.files && dataTransfer.files.length === 0) {
+    return Promise.resolve([])
+  }
   if (dataTransfer.files && dataTransfer.files.length > 0) {
     return Promise.resolve(Array.from(dataTransfer.files || []))
   }
