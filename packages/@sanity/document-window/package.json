@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-window",
-  "version": "1.149.18",
+  "version": "1.149.19",
   "description": "Utility to keep a window of documents in sync",
   "main": "src/DocumentWindow.js",
   "scripts": {
