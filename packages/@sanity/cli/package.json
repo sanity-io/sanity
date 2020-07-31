@@ -41,7 +41,7 @@
     "@sanity/util": "1.149.16",
     "boxen": "^4.1.0",
     "chalk": "^2.3.0",
-    "configstore": "^3.0.0",
+    "configstore": "^5.0.1",
     "debug": "^3.1.0",
     "decompress": "^4.2.0",
     "deep-sort-object": "^1.0.1",
