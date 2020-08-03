@@ -1,0 +1,32 @@
+{
+  "private": true,
+  "name": "sanity-design-studio",
+  "version": "1.150.1",
+  "description": "Sanity Design Studio",
+  "main": "package.json",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "sanity start --port 4000",
+    "test": "sanity check"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/base": "1.150.3",
+    "@sanity/components": "1.150.3",
+    "@sanity/core": "1.150.3",
+    "@sanity/default-layout": "1.150.3",
+    "@sanity/default-login": "1.150.1",
+    "@sanity/desk-tool": "1.150.3",
+    "@sanity/vision": "1.150.1",
+    "prop-types": "^15.6.0",
+    "react": "16.9.0",
+    "react-dom": "^16.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.7.3",
+    "typescript-plugin-css-modules": "^1.2.1"
+  }
+}
