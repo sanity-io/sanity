@@ -3,9 +3,7 @@
   "concurrency": 8,
   "ci": false,
   "npmClient": "npm",
-  "npmClientArgs": [
-    "--no-package-lock"
-  ],
+  "npmClientArgs": ["--no-package-lock"],
   "packages": [
     "packages/@sanity/*",
     "packages/blog-studio",
@@ -19,7 +17,8 @@
     "packages/movies-studio",
     "packages/sanity",
     "packages/storybook",
-    "packages/test-studio"
+    "packages/test-studio",
+    "packages/design-studio"
   ],
   "version": "1.150.7"
 }
