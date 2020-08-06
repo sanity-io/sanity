@@ -21,7 +21,7 @@
   "dependencies": {
     "@types/diff-match-patch": "^1.0.32",
     "debug": "^4.1.1",
-    "diff-match-patch": "^1.0.0",
+    "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
