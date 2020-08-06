@@ -32,7 +32,7 @@
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "debug": "^3.1.0",
-    "diff-match-patch": "^1.0.0",
+    "diff-match-patch": "^1.0.4",
     "exif-component": "^1.0.1",
     "get-random-values": "^1.2.0",
     "get-window": "^1.1.1",
