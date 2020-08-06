@@ -15,6 +15,7 @@
     "packages/eslint-config-sanity",
     "packages/example-studio",
     "packages/groq",
+    "packages/mendoza",
     "packages/movies-studio",
     "packages/sanity",
     "packages/storybook",

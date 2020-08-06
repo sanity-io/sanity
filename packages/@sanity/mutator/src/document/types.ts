@@ -1,5 +1,6 @@
 export interface Doc {
   _id: string
+  _type: string
   _rev?: string
   _updatedAt?: string
   [attribute: string]: any

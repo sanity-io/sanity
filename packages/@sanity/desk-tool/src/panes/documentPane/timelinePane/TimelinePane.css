@@ -1,0 +1,35 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-color-secondary);
+}
+
+.header {
+  position: relative;
+
+  @nest &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+  }
+}
+
+.title {
+  padding: 1rem;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 700;
+}
+
+.timelineContainer {
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}

@@ -78,8 +78,7 @@ const withInitialValue = Pane => {
               switchMap(({isResolving, initialValue, resolveError}) => {
                 if (resolveError) {
                   return of(
-                    <ErrorPane>
-                      <h2>Failed to resolve initial value</h2>
+                    <ErrorPane {...props} title="Failed to resolve initial value">
                       <p>Check developer console for details</p>
                     </ErrorPane>
                   )

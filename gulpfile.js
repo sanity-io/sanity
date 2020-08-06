@@ -32,11 +32,11 @@ const IGNORED_PACKAGES = [
   'packages/create-sanity',
   'packages/storybook',
   'packages/sanity',
-  /packages\/.*-studio/
+  /packages\/.*-studio/,
 ]
 
-const PACKAGE_PATHS = getPackagePaths().filter(pkgPath =>
-  IGNORED_PACKAGES.every(pattern =>
+const PACKAGE_PATHS = getPackagePaths().filter((pkgPath) =>
+  IGNORED_PACKAGES.every((pattern) =>
     typeof pattern === 'string' ? pattern !== pkgPath : !pattern.test(pkgPath)
   )
 )
@@ -51,7 +51,7 @@ const TASK_INFO = {
   dts: {title: 'TypeScript (d.ts)', color: chalk.blueBright},
   assets: {title: 'Assets (copy)', color: chalk.greenBright},
   watch: {title: 'Watch', color: chalk.cyanBright},
-  _unknown: {title: 'Unknown', color: chalk.white}
+  _unknown: {title: 'Unknown', color: chalk.white},
 }
 
 const compileTaskName = (taskType, packagePath, extra = '') => {
@@ -67,7 +67,7 @@ function buildJavaScript(packageDir) {
       .pipe(
         changed(DEST_DIR, {
           cwd: packageDir,
-          transformPath: orgPath => orgPath.replace(/\.tsx?$/, '.js')
+          transformPath: (orgPath) => orgPath.replace(/\.tsx?$/, '.js'),
         })
       )
       .pipe(babel())
@@ -100,20 +100,20 @@ function watchPackage(name, packageDir, task) {
   return withDisplayName(name, () => watch([`${SRC_DIR}/**/*`], {cwd: packageDir}, task))
 }
 
-const isTSProject = packageDir => {
+const isTSProject = (packageDir) => {
   const tsConfigPath = path.join(packageDir, 'tsconfig.json')
   return fs.existsSync(tsConfigPath)
 }
 
 // We the list of packages ordered by topology to make sure we compile in the correct order
-const ORDERED_PACKAGES = getPackagesOrderedByTopology().map(pkgName => `packages/${pkgName}`)
+const ORDERED_PACKAGES = getPackagesOrderedByTopology().map((pkgName) => `packages/${pkgName}`)
 
 const TS_PROJECTS = ORDERED_PACKAGES.filter(isTSProject)
 
 const buildTS = series(TS_PROJECTS.map(buildTypeScript))
 
 const watchTS = parallel(
-  flatten(TS_PROJECTS).map(packageDir =>
+  flatten(TS_PROJECTS).map((packageDir) =>
     watchPackage(
       compileTaskName('watch', packageDir, 'TS'),
       packageDir,
@@ -124,7 +124,7 @@ const watchTS = parallel(
 
 const buildJSAndAssets = parallel(PACKAGE_PATHS.map(buildPackage))
 const watchJSAndAssets = parallel(
-  PACKAGE_PATHS.map(packageDir =>
+  PACKAGE_PATHS.map((packageDir) =>
     watchPackage(
       compileTaskName('watch', packageDir, 'JS/Assets'),
       packageDir,
@@ -159,11 +159,11 @@ function studioTask(name, port) {
   ['blog-studio', '3336'],
   ['ecommerce-studio', '3337'],
   ['clean-studio', '3338'],
-  ['storybook', '9002']
+  ['storybook', '9002'],
 ].forEach(([name, port]) => {
   exports[name] = studioTask(name, port)
 })
 
 exports.build = parallel(buildJSAndAssets, buildTS)
 exports.watch = series(parallel(buildJSAndAssets, buildTS), parallel(watchJSAndAssets, watchTS))
-exports.clean = () => del(PACKAGE_PATHS.map(pth => path.join(pth, DEST_DIR)))
+exports.clean = () => del(PACKAGE_PATHS.map((pth) => path.join(pth, DEST_DIR)))
