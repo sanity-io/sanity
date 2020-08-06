@@ -8,7 +8,7 @@ export function diffSimple<A, I extends NumberInput<A> | BooleanInput<A>>(
   const fromValue = fromInput.value
   const toValue = toInput.value
 
-  if (fromValue !== toValue)
+  if (fromValue === toValue)
     return {
       type: 'unchanged',
       fromValue,
