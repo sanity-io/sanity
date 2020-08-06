@@ -1,3 +1,7 @@
+import {ComponentType} from 'react'
+import {Diff, Path} from '@sanity/diff'
+import {Annotation} from './history/types'
+
 export interface Doc {
   _id?: string
   _type?: string
@@ -29,12 +33,31 @@ export interface ObjectSchemaType {
   jsonType: string
   title?: string
   fields: ObjectField[]
+  diffComponent?: ComponentType<any>
 }
 
 export interface ObjectField {
   name: string
-  title: string
   type: SchemaType
 }
 
 export type SchemaType = ObjectSchemaType
+
+export interface GroupChangeNode {
+  type: 'group'
+  changes: ChangeNode[]
+  key: string
+  path: Path
+  titlePath: string[]
+}
+
+export interface FieldChangeNode {
+  type: 'field'
+  diff: Diff<Annotation>
+  key: string
+  path: Path
+  titlePath: string[]
+  schemaType: SchemaType
+}
+
+export type ChangeNode = GroupChangeNode | FieldChangeNode
