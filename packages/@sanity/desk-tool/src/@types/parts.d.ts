@@ -23,5 +23,6 @@ declare module 'part:@sanity/base/router' {
     state: S
   }
 
+  export const useRouter: () => Router
   export const StateLink: PureComponent<StateLinkProps>
 }
