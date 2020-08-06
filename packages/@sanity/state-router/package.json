@@ -43,7 +43,7 @@
     "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
     "ts-jest": "^24.2.0",
-    "ts-node": "^8.3.0",
+    "ts-node": "^8.6.2",
     "tsify": "^4.0.1"
   },
   "peerDependencies": {
