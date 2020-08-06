@@ -4,8 +4,9 @@ import {
   CommitFunction,
   CommittedEvent,
   DocumentMutationEvent,
+  DocumentRemoteMutationEvent,
   DocumentRebaseEvent,
-  SnapshotEvent
+  SnapshotEvent,
 } from './types'
 import {ListenerEvent} from '../getPairListener'
 import {Mutation} from '../types'
@@ -14,6 +15,7 @@ export type BufferedDocumentEvent =
   | SnapshotEvent
   | DocumentRebaseEvent
   | DocumentMutationEvent
+  | DocumentRemoteMutationEvent
   | CommittedEvent
 
 const prepare = id => document => {
