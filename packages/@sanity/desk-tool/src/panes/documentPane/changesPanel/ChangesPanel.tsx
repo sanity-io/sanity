@@ -6,7 +6,7 @@ import {FallbackDiff} from '../../../components/diffs/FallbackDiff'
 import {resolveDiffComponent} from '../../../components/diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType, ChangeNode, FieldChangeNode, GroupChangeNode} from '../types'
-import styles from './ChangesPannel.css'
+import styles from './ChangesPanel.css'
 
 type Props = {
   diff: Diff<Annotation> | NoDiff | null
