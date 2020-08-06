@@ -648,6 +648,18 @@
       "description": "Public icon"
     },
     {
+      "name": "part:@sanity/base/publish-icon",
+      "description": "Publish icon"
+    },
+    {
+      "name": "part:@sanity/base/truncate-icon",
+      "description": "Truncate icon"
+    },
+    {
+      "name": "part:@sanity/base/unpublish-icon",
+      "description": "Unpublish icon"
+    },
+    {
       "name": "part:@sanity/base/search-icon",
       "description": "Search icon"
     },
@@ -806,6 +818,18 @@
     {
       "implements": "part:@sanity/base/public-icon",
       "path": "components/icons/Public.js"
+    },
+    {
+      "implements": "part:@sanity/base/publish-icon",
+      "path": "components/icons/Publish.js"
+    },
+    {
+      "implements": "part:@sanity/base/truncate-icon",
+      "path": "components/icons/Truncate.js"
+    },
+    {
+      "implements": "part:@sanity/base/unpublish-icon",
+      "path": "components/icons/Unpublish.js"
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",

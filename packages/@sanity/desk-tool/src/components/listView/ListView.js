@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import {List as GridList} from 'part:@sanity/components/lists/grid'

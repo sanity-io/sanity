@@ -15,12 +15,11 @@ export interface EditStateFor {
 export const editState = memoize(
   (idPair: IdPair, typeName: string): Observable<EditStateFor> => {
     return operationArgs(idPair, typeName).pipe(
-      switchMap(({draft, published}) => combineLatest([draft.snapshots$, published.snapshots$])),
-      map(([draftSnapshot, publishedSnapshot]) => ({
+      map(({snapshots}) => ({
         id: idPair.publishedId,
         type: typeName,
-        draft: draftSnapshot,
-        published: publishedSnapshot,
+        draft: snapshots.draft,
+        published: snapshots.published,
         liveEdit: isLiveEditEnabled(typeName)
       })),
       publishReplay(1),
