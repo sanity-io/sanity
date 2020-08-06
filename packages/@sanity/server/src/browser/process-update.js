@@ -4,7 +4,7 @@
  * Original copyright Tobias Koppers @sokra (MIT license)
  */
 
-/* eslint-disable complexity, no-console, camelcase, no-case-declarations, max-depth */
+/* eslint-disable complexity, no-console, camelcase, no-case-declarations, max-depth, @typescript-eslint/camelcase */
 /* global __webpack_hash__ */
 
 if (!module.hot) {
@@ -176,7 +176,7 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
   }
 
   function normalizeModulePath(pathName) {
-    if (!pathName) {
+    if (typeof pathName !== 'string') {
       return {path: '<unknown>'}
     }
 
