@@ -6,13 +6,13 @@ export type DiffComponent<T extends Diff<Annotation> = Diff<Annotation>> = Compo
   DiffProps<T>
 >
 
-export type DiffProps<T extends Diff<Annotation> = Diff<Annotation>> = T & {
+export type DiffProps<T extends Diff<Annotation> = Diff<Annotation>> = {
+  diff: T
   schemaType: SchemaType<T>
 }
 
 export interface ObjectField {
   name: string
-  title: string
   type: SchemaType
 }
 

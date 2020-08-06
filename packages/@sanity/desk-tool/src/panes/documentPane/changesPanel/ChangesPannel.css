@@ -1,0 +1,12 @@
+.root {
+  min-width: 280px;
+  padding: 0 10px;
+}
+
+.group {
+  border-left: 1px solid gray;
+  padding-left: 10px;
+}
+
+.change {
+}
