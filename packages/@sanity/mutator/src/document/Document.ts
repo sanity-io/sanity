@@ -43,6 +43,8 @@ export default class Document {
   onMutation: Function
   // Called when consistency state changes with the boolean value of the current consistency state
   onConsistencyChanged: Function
+  // Called whenever a new incoming mutation comes in. These are always ordered correctly.
+  onRemoteMutation?: (mut: Mutation) => void
   // We are consistent when there are no unresolved mutations of our own, and no un-applicable incoming mutations.
   // When this has been going on for too long, and there has been a while since we staged a new mutation,
   //  it is time to reset your state.
@@ -208,6 +210,10 @@ export default class Document {
 
     this.HEAD = mut.apply(this.HEAD)
 
+    if (this.onRemoteMutation) {
+      this.onRemoteMutation(mut)
+    }
+    
     // Eliminate from incoming set
     this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)
 

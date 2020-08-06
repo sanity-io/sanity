@@ -14,6 +14,7 @@ export type MutationParams = {
   resultRev?: string
   mutations: Array<Mut>
   timestamp?: String
+  effects?: { apply: unknown, revert: unknown }
 }
 
 // change its behavior after that.
@@ -48,6 +49,9 @@ export default class Mutation {
       return new Date(this.params.timestamp)
     }
     return undefined
+  }
+  get effects() {
+    return this.params.effects
   }
   assignRandomTransactionId() {
     this.params.resultRev = this.params.transactionId = luid()

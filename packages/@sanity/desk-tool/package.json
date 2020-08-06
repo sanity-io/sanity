@@ -41,26 +41,24 @@
     "hashlru": "^2.1.0",
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
+    "mendoza": "^0.1.0",
     "promise-latest": "^1.0.4",
     "react-click-outside": "^3.0.0",
     "react-json-inspector": "^7.1.1",
     "react-tiny-virtual-list": "^2.0.5",
     "react-tippy": "1.4.0",
     "rxjs": "^6.5.3",
-    "scroll": "^3.0.1",
     "shallow-equals": "^1.0.0",
     "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
-    "history": "^4.6.3",
     "jest": "^24.9.0",
-    "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^0.147.0",
+    "@sanity/base": "^1.150.3",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9"
   },

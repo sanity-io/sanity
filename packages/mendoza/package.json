@@ -1,0 +1,16 @@
+{
+  "name": "mendoza",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./lib",
+  "devDependencies": {
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.3"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "bracketSpacing": false,
+    "singleQuote": true
+  }
+}
