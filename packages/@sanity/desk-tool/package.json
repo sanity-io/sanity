@@ -33,7 +33,6 @@
     "@sanity/structure": "1.150.1",
     "@sanity/util": "1.150.1",
     "@sanity/uuid": "1.150.1",
-    "@sanity/validation": "1.150.1",
     "boundless-arrow-key-navigation": "^1.1.0",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
