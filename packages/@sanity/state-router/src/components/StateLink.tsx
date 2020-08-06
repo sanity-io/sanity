@@ -6,7 +6,7 @@ import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 const EMPTY_STATE = {}
 
 type Props = {
-  state?: Object
+  state?: Record<string, any>
   toIndex?: boolean
 }
 

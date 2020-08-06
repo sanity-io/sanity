@@ -22,7 +22,8 @@ export const publish = {
       // before being created, we don't want to overwrite if, instead we want to yield an error
       tx.create({
         ...omit(snapshots.draft, '_updatedAt'),
-        _id: idPair.publishedId
+        _id: idPair.publishedId,
+        _type: snapshots.draft._type
       })
     } else {
       // If it exists already, we only want to update it if the revision on the remote server
@@ -33,7 +34,8 @@ export const publish = {
         ifRevisionID: snapshots.published._rev
       }).createOrReplace({
         ...omit(snapshots.draft, '_updatedAt'),
-        _id: idPair.publishedId
+        _id: idPair.publishedId,
+        _type: snapshots.draft._type
       })
     }
 

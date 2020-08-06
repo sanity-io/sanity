@@ -1,5 +1,5 @@
-import {SanityDocument} from '../types'
 import {Mutation} from '@sanity/mutator'
+import {SanityDocument} from '../types'
 
 export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 
@@ -24,6 +24,17 @@ export interface SnapshotEvent {
 
 export interface CommittedEvent {
   type: 'committed'
+}
+
+export interface DocumentRemoteMutationEvent {
+  type: 'remoteMutation'
+  transactionId: string
+  author: string
+  timestamp: Date
+  effects: {
+    apply: unknown
+    revert: unknown
+  }
 }
 
 // HTTP API Mutation payloads

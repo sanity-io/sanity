@@ -19,7 +19,8 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
   MutationPayload,
-  SnapshotEvent
+  SnapshotEvent,
+  DocumentRemoteMutationEvent
 } from './types'
 
 import {ListenerEvent, MutationEvent} from '../getPairListener'
@@ -50,6 +51,7 @@ const getUpdatedSnapshot = (bufferedDocument: BufferedDocument) => {
 
   return {
     ...LOCAL,
+    _type: (HEAD || LOCAL)._type,
     _rev: (HEAD || LOCAL)._rev,
     _updatedAt: new Date().toISOString()
   }
@@ -78,6 +80,9 @@ export const createObservableBufferedDocument = (
   // a stream of rebase events emitted from the mutator
   const rebase$ = new Subject<DocumentRebaseEvent>()
 
+  // a stream of remote mutations with effetcs
+  const effects$ = new Subject<DocumentRemoteMutationEvent>();
+
   const createInitialBufferedDocument = initialSnapshot => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
     bufferedDocument.onMutation = ({mutation, remote}) => {
@@ -89,6 +94,16 @@ export const createObservableBufferedDocument = (
         document: getUpdatedSnapshot(bufferedDocument),
         mutations: mutation.mutations,
         origin: remote ? 'remote' : 'local'
+      })
+    }
+
+    bufferedDocument.onRemoteMutation = (mutation) => {
+      effects$.next({
+        type: 'remoteMutation',
+        transactionId: mutation.transactionId,
+        timestamp: mutation.timestamp,
+        author: mutation.identity,
+        effects: mutation.effects
       })
     }
 
@@ -122,7 +137,7 @@ export const createObservableBufferedDocument = (
   }
 
   const currentBufferedDocument$ = listenerEvent$.pipe(
-    scan((bufferedDocument, listenerEvent): BufferedDocument => {
+    scan((bufferedDocument: BufferedDocument | null, listenerEvent) => {
       // consider renaming 'snapshot' to initial/welcome
       if (listenerEvent.type === 'snapshot') {
         if (bufferedDocument) {
@@ -197,7 +212,7 @@ export const createObservableBufferedDocument = (
   ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
 
   return {
-    updates$: merge(snapshot$, actionHandler$, mutations$, rebase$),
+    updates$: merge(snapshot$, actionHandler$, mutations$, rebase$, effects$),
     consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
     addMutation,
     addMutations,

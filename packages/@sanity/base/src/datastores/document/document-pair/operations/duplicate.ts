@@ -14,7 +14,8 @@ export const duplicate = {
     const source = snapshots.draft || snapshots.published
     return client.create({
       ...omit(source, omitProps),
-      _id: isLiveEditEnabled(typeName) ? dupeId : getDraftId(dupeId)
+      _id: isLiveEditEnabled(typeName) ? dupeId : getDraftId(dupeId),
+      _type: source._type
     })
   }
 }

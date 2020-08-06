@@ -8,5 +8,7 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
   'fieldsets',
   'validation',
   'readOnly',
-  'hidden'
+  'hidden',
+  'inputComponent',
+  'diffComponent'
 ]
