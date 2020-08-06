@@ -19,8 +19,8 @@ import DocumentStatusBar from './statusBar/DocumentStatusBar'
 import {createObservableController} from './history/controller'
 import {Timeline} from './history/timeline'
 import InspectView from './inspect/InspectView'
+import {ChangesPanel} from './changesPanel/ChangesPanel'
 import RevisionSummary from './RevisionSummary'
-import ChangeSummary from './ChangeSummary'
 import HistoryTimeline from './HistoryTimeline'
 import FormView from './FormView'
 import {Validation} from './Validation'
@@ -367,7 +367,7 @@ function DocumentPane(props: Props) {
           </TabbedPane>
         </div>
 
-        {isHistoryOpen && <ChangeSummary diff={timeline.currentDiff()} schemaType={schemaType} />}
+        {isHistoryOpen && <ChangesPanel diff={timeline.currentDiff()} schemaType={schemaType} />}
       </div>
     </DocumentActionShortcuts>
   )
