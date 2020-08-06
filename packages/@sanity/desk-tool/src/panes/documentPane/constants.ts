@@ -1,0 +1,1 @@
+export const HISTORY_BREAKPOINT_MIN = 512

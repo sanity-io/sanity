@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.segment {
+  white-space: pre-wrap;
+}
+
+.add {
+  /* empty */
+  composes: segment;
+  background-color: var(--state-success-color--faded);
+  color: var(--state-success-color--inverted);
+}
+
+.remove {
+  composes: segment;
+  text-decoration: line-through;
+  background-color: var(--state-danger-color--faded);
+  color: var(--state-danger-color--inverted);
+}

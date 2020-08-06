@@ -1,0 +1,35 @@
+import React from 'react'
+import {Timeline} from '../history2/timeline'
+import styles from './TimelinePane.css'
+import {format} from 'date-fns'
+
+type Props = {
+  timeline: Timeline
+  onSelect: (id: string) => void
+}
+
+export default function TimelinePane(props: Props) {
+  const {timeline, onSelect} = props
+  const isComplete = timeline.reachedEarliestEntry
+
+  return (
+    <div className={styles.root}>
+    <header className={styles.header}>
+      <div className={styles.title}>History</div>
+    </header>
+
+    <div>
+      {timeline.chunks.map(chunk => (
+        <div key={chunk.id} className={styles.chunk} onClick={evt => {
+          evt.preventDefault()
+          evt.stopPropagation();
+          onSelect(chunk.id)
+        }}>
+          {format(chunk.endTimestamp)}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  )
+}
