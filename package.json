@@ -40,7 +40,7 @@
     "normalize-pkgfields": "node scripts/normalizePackageFields.js",
     "prettify": "lerna run clean && prettier --write \"**/*.js\"",
     "postinstall": "lerna bootstrap",
-    "now-build": "npm run build && cd packages/design-studio && node ../@sanity/cli/bin/sanity build -y && mv packages/design-studio/dest packages/test-studio/dest"
+    "now-build": "npm run build && (cd packages/design-studio && node ../@sanity/cli/bin/sanity build -y) && mv packages/design-studio/dest packages/test-studio/dest"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
