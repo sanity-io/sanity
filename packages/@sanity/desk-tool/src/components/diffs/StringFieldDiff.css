@@ -1,14 +1,20 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.75em;
+  border-radius: 4px;
+}
+
 .segment {
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
 }
 
 .add {
-  /* empty */
   composes: segment;
   background-color: var(--state-success-color--faded);
   color: var(--state-success-color--inverted);
+  text-decoration: none;
 }
 
 .remove {

@@ -3,10 +3,17 @@ import {Diff} from '@sanity/diff'
 import {Annotation} from '../../panes/documentPane/history/types'
 import {DiffComponent} from './types'
 
+import styles from './FallbackDiff.css'
+
 export const FallbackDiff: DiffComponent<Diff<Annotation>> = ({diff}) => {
   return (
-    <div>
-      Missing diff component
+    <div className={styles.root}>
+      <div>
+        <strong>
+          Missing diff component (<code>{diff.type}</code>)
+        </strong>
+      </div>
+
       <details>
         <summary>JSON</summary>
 
