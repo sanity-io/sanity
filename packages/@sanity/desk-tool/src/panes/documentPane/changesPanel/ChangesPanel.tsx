@@ -1,5 +1,5 @@
 /* eslint-disable max-depth */
-import React from 'react'
+import React, {Fragment} from 'react'
 import {Diff, NoDiff} from '@sanity/diff'
 import {FallbackDiff} from '../../../components/diffs/FallbackDiff'
 import {resolveDiffComponent} from '../../../components/diffs/resolveDiffComponent'
@@ -39,10 +39,10 @@ function FieldChange({change, level = 0}: {change: FieldChangeNode; level: numbe
       <div>
         {change.titlePath.slice(level).map((titleSegment, idx) => {
           return (
-            <>
+            <Fragment key={idx}>
               {idx > 0 && <> › </>}
               <strong>{titleSegment}</strong>
-            </>
+            </Fragment>
           )
         })}
       </div>
@@ -59,10 +59,10 @@ function GroupChange({change: group}: {change: GroupChangeNode; level: number}) 
       <div>
         {titlePath.map((titleSegment, idx) => {
           return (
-            <>
+            <Fragment key={idx}>
               {idx > 0 && <> › </>}
               <strong>{titleSegment}</strong>
-            </>
+            </Fragment>
           )
         })}
       </div>
