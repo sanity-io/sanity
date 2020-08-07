@@ -1,0 +1,31 @@
+.root {
+  /* display: block; */
+  overflow: auto;
+}
+
+.header {
+  padding: 1em;
+  font-weight: 700;
+}
+
+.item {
+  padding: 1em;
+
+  @nest &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  @nest &[data-selected='true'] {
+    background: #06f;
+    color: #fff;
+  }
+}
+
+.item__typeName {
+  /* display: block; */
+}
+
+.item__timestamp {
+  font-size: 13px;
+  line-height: 16px;
+}

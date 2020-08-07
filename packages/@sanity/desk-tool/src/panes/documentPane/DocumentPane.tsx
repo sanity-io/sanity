@@ -21,7 +21,7 @@ import {Timeline} from './history/timeline'
 import InspectView from './inspect/InspectView'
 import {ChangesPanel} from './changesPanel/ChangesPanel'
 import RevisionSummary from './RevisionSummary'
-import HistoryTimeline from './HistoryTimeline'
+import {HistoryTimelinePanel} from './historyTimelinePanel'
 import FormView from './FormView'
 import {Validation} from './Validation'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -314,7 +314,11 @@ function DocumentPane(props: Props) {
 
       <div className={styles.container}>
         {isHistoryOpen && (
-          <HistoryTimeline timeline={timeline} onSelect={time => toggleHistory(time)} />
+          <HistoryTimelinePanel
+            timeline={timeline}
+            onSelect={time => toggleHistory(time)}
+            startTimeId={startTimeId}
+          />
         )}
 
         <div className={styles.editorContainer} key="editor">
