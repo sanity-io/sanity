@@ -98,7 +98,7 @@ export class Controller {
 
     let queryParams = `effectFormat=mendoza&excludeContent=true&excludeMutations=true&includeIdentifiedDocumentsOnly=true&reverse=true&limit=${limit}`
     if (this._earliestTransactionId) {
-      queryParams += `&fromTransaction=${this._earliestTransactionId}`
+      queryParams += `&toTransaction=${this._earliestTransactionId}`
     }
 
     const url = `/data/history/${dataset}/transactions/${publishedId},${draftId}?${queryParams}`
@@ -116,6 +116,11 @@ export class Controller {
       }
 
       count++
+
+      if (result.value.id === this._earliestTransactionId) {
+        // toTransaction is inclusive so we must ignore it when we fetch the next page
+        continue
+      }
 
       this.timeline.addTranslogEntry(result.value)
       this._earliestTransactionId = result.value.id
