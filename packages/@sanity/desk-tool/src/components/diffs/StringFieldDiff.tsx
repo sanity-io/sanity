@@ -1,8 +1,10 @@
 /* eslint-disable react/no-multi-comp, react/prop-types */
 
-import * as React from 'react'
+import {useUserColorManager} from '@sanity/base'
 import {StringDiffSegment, StringDiff} from '@sanity/diff'
+import React from 'react'
 import {Annotation} from '../../panes/documentPane/history/types'
+import {getAnnotationColor} from './helpers'
 import {DiffComponent} from './types'
 
 import styles from './StringFieldDiff.css'
@@ -12,12 +14,26 @@ export function StringSegment({
 }: {
   segment: StringDiffSegment<Annotation>
 }): React.ReactElement {
+  const userColorManager = useUserColorManager()
+
   if (segment.type === 'added') {
-    return <ins className={styles.add}>{segment.text}</ins>
+    const color = getAnnotationColor(userColorManager, segment.annotation)
+
+    return (
+      <ins className={styles.add} style={{background: color.bg, color: color.fg}}>
+        {segment.text}
+      </ins>
+    )
   }
 
   if (segment.type === 'removed') {
-    return <del className={styles.remove}>{segment.text}</del>
+    const color = getAnnotationColor(userColorManager, segment.annotation)
+
+    return (
+      <del className={styles.remove} style={{background: color.bg, color: color.fg}}>
+        {segment.text}
+      </del>
+    )
   }
 
   return <>{segment.text}</>

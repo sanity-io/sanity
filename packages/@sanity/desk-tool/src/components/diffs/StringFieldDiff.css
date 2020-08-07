@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background: rgba(0, 0, 0, 0.05);
+  background: #f1f3f6;
   padding: 0.75em;
   border-radius: 4px;
 }
@@ -12,14 +12,12 @@
 
 .add {
   composes: segment;
-  background-color: var(--state-success-color--faded);
-  color: var(--state-success-color--inverted);
   text-decoration: none;
+  mix-blend-mode: multiply;
 }
 
 .remove {
   composes: segment;
   text-decoration: line-through;
-  background-color: var(--state-danger-color--faded);
-  color: var(--state-danger-color--inverted);
+  mix-blend-mode: multiply;
 }
