@@ -1,6 +1,22 @@
 declare module 'part:*'
 declare module 'all:part:*'
 
+declare module '@sanity/base' {
+  export type UserColorHue =
+    | 'blue'
+    | 'cyan'
+    // | 'green'
+    | 'yellow'
+    | 'orange'
+    // | 'red'
+    | 'magenta'
+    | 'purple'
+  export interface UserColorManager {
+    get: (userId: string) => UserColorHue
+  }
+  export const useUserColorManager: () => UserColorManager
+}
+
 declare module 'part:@sanity/base/router' {
   export * from '@sanity/state-router'
 
