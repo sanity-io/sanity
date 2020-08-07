@@ -42,6 +42,7 @@
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "mendoza": "^0.1.0",
+    "polished": "^3.6.5",
     "promise-latest": "^1.0.4",
     "react-click-outside": "^3.0.0",
     "react-json-inspector": "^7.1.1",
