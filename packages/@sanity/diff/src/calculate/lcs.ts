@@ -5,19 +5,19 @@
 
 type NumberArray = number[]
 type LengthMatrix = NumberArray[]
-type Subsequence = {
-  sequence: unknown[]
+type Subsequence<E> = {
+  sequence: E[]
   prevIndices: number[]
   nextIndices: number[]
 }
 
-export function getLongestCommonSubsequence(previous: unknown[], next: unknown[]) {
+export function getLongestCommonSubsequence<E>(previous: E[], next: E[]) {
   const matrix = getLengthMatrix(previous, next)
   const result = backtrack(matrix, previous, next)
   return result
 }
 
-function getLengthMatrix(previous: unknown[], next: unknown[]): LengthMatrix {
+function getLengthMatrix<E>(previous: E[], next: E[]): LengthMatrix {
   const len1 = previous.length
   const len2 = next.length
   let x = 0
@@ -46,10 +46,10 @@ function getLengthMatrix(previous: unknown[], next: unknown[]): LengthMatrix {
   return matrix
 }
 
-function backtrack(matrix: LengthMatrix, previous: unknown[], next: unknown[]): Subsequence {
+function backtrack<E>(matrix: LengthMatrix, previous: E[], next: E[]): Subsequence<E> {
   let prevIndex = previous.length
   let nextIndex = next.length
-  const subsequence: Subsequence = {
+  const subsequence: Subsequence<E> = {
     sequence: [],
     prevIndices: [],
     nextIndices: []
