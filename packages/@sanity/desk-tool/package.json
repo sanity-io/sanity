@@ -49,6 +49,7 @@
     "react-tiny-virtual-list": "^2.0.5",
     "react-tippy": "^1.2.3",
     "rxjs": "^6.5.3",
+    "sanity-diff-patch": "^1.0.7",
     "shallow-equals": "^1.0.0",
     "use-onclickoutside": "^0.3.1"
   },
