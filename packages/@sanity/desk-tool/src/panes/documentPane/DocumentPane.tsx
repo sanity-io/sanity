@@ -371,7 +371,13 @@ function DocumentPane(props: Props) {
           </TabbedPane>
         </div>
 
-        {isHistoryOpen && <ChangesPanel diff={timeline.currentDiff()} schemaType={schemaType} />}
+        {isHistoryOpen && (
+          <ChangesPanel
+            diff={timeline.currentDiff()}
+            schemaType={schemaType}
+            documentId={documentId}
+          />
+        )}
       </div>
     </DocumentActionShortcuts>
   )
