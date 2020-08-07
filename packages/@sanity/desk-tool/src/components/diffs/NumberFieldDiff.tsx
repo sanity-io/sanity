@@ -4,6 +4,8 @@ import {Annotation} from '../../panes/documentPane/history/types'
 import {DiffComponent} from './types'
 import {StringSegment} from './StringFieldDiff'
 
+import styles from './NumberFieldDiff.css'
+
 export const NumberFieldDiff: DiffComponent<NumberDiff<Annotation>> = ({diff}) => {
   const {fromValue, toValue, annotation} = diff
   const segments: StringDiffSegment[] = []
@@ -16,10 +18,10 @@ export const NumberFieldDiff: DiffComponent<NumberDiff<Annotation>> = ({diff}) =
   }
 
   return (
-    <>
+    <div className={styles.root}>
       {segments.map((segment, index) => (
         <StringSegment key={index} segment={segment} />
       ))}
-    </>
+    </div>
   )
 }
