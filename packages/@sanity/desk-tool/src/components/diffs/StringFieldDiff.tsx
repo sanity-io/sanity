@@ -4,6 +4,7 @@ import {useUserColorManager} from '@sanity/base'
 import {StringDiffSegment, StringDiff} from '@sanity/diff'
 import React from 'react'
 import {Annotation} from '../../panes/documentPane/history/types'
+import {AnnotationTooltip} from './annotationTooltip'
 import {getAnnotationColor} from './helpers'
 import {DiffComponent} from './types'
 
@@ -20,9 +21,11 @@ export function StringSegment({
     const color = getAnnotationColor(userColorManager, segment.annotation)
 
     return (
-      <ins className={styles.add} style={{background: color.bg, color: color.fg}}>
-        {segment.text}
-      </ins>
+      <AnnotationTooltip annotation={segment.annotation}>
+        <ins className={styles.add} style={{background: color.bg, color: color.fg}}>
+          {segment.text}
+        </ins>
+      </AnnotationTooltip>
     )
   }
 
@@ -30,9 +33,11 @@ export function StringSegment({
     const color = getAnnotationColor(userColorManager, segment.annotation)
 
     return (
-      <del className={styles.remove} style={{background: color.bg, color: color.fg}}>
-        {segment.text}
-      </del>
+      <AnnotationTooltip annotation={segment.annotation}>
+        <del className={styles.remove} style={{background: color.bg, color: color.fg}}>
+          {segment.text}
+        </del>
+      </AnnotationTooltip>
     )
   }
 
