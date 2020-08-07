@@ -16,7 +16,7 @@ export function buildChangeList(
   const diffComponent = resolveDiffComponent(schemaType)
   if (diffComponent) {
     const fieldDiff = getDiffAtPath(diff, path)
-    if (fieldDiff) {
+    if (fieldDiff && fieldDiff.isChanged) {
       list.push({
         type: 'field',
         diff: fieldDiff,
@@ -26,38 +26,40 @@ export function buildChangeList(
         schemaType
       })
     }
-  } else {
-    schemaType.fields.forEach(field => {
-      const fieldPath = path.concat([field.name])
-      const fieldTitlePath = titlePath.concat([field.type.title || field.name])
-      if (field.type.jsonType === 'object') {
-        const objectChanges = buildChangeList(field.type, diff, fieldPath, fieldTitlePath)
-        if (objectChanges.length > 1) {
-          list.push({
-            type: 'group',
-            key: pathToString(fieldPath),
-            path: fieldPath,
-            titlePath: fieldTitlePath,
-            changes: objectChanges
-          })
-        } else {
-          list.push(...objectChanges)
-        }
-      } else {
-        const fieldDiff = getDiffAtPath(diff, fieldPath)
-        if (fieldDiff) {
-          list.push({
-            type: 'field',
-            diff: fieldDiff,
-            key: fieldPath.join('.'),
-            path: fieldPath,
-            titlePath: fieldTitlePath,
-            schemaType: field.type
-          })
-        }
-      }
-    })
+
+    return list
   }
+
+  schemaType.fields.forEach(field => {
+    const fieldPath = path.concat([field.name])
+    const fieldTitlePath = titlePath.concat([field.type.title || field.name])
+    if (field.type.jsonType === 'object') {
+      const objectChanges = buildChangeList(field.type, diff, fieldPath, fieldTitlePath)
+      if (objectChanges.length > 1) {
+        list.push({
+          type: 'group',
+          key: pathToString(fieldPath),
+          path: fieldPath,
+          titlePath: fieldTitlePath,
+          changes: objectChanges
+        })
+      } else {
+        list.push(...objectChanges)
+      }
+    } else {
+      const fieldDiff = getDiffAtPath(diff, fieldPath)
+      if (fieldDiff && fieldDiff.isChanged) {
+        list.push({
+          type: 'field',
+          diff: fieldDiff,
+          key: fieldPath.join('.'),
+          path: fieldPath,
+          titlePath: fieldTitlePath,
+          schemaType: field.type
+        })
+      }
+    }
+  })
 
   return list
 }
@@ -65,9 +67,9 @@ export function buildChangeList(
 function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotation> | null {
   let node: Diff<Annotation> = diff
 
-  for (const segment of path) {
-    if (node.type === 'object' && typeof segment === 'string') {
-      const fieldDiff: FieldDiff<Annotation> = node.fields[segment]
+  for (const pathSegment of path) {
+    if (node.type === 'object' && typeof pathSegment === 'string') {
+      const fieldDiff: FieldDiff<Annotation> = node.fields[pathSegment]
       if (!fieldDiff || fieldDiff.type === 'unchanged') {
         return null
       }
@@ -80,7 +82,7 @@ function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotatio
       node = fieldDiff.diff
     } else {
       throw new Error(
-        `Mismatch between path segment (${typeof segment}) and diff type (${diff.type})`
+        `Mismatch between path segment (${typeof pathSegment}) and diff type (${diff.type})`
       )
     }
   }
