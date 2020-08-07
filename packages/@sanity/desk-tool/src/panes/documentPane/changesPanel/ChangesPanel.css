@@ -1,12 +1,60 @@
 .root {
+  background: #fff;
   min-width: 280px;
-  padding: 0 10px;
+  max-width: 480px;
+  border-left: 8px solid #eee;
+  overflow: auto;
+}
+
+.header {
+  padding: 1em;
+
+  @nest & h2 {
+    margin: 0;
+    font: inherit;
+    font-weight: 700;
+  }
+}
+
+.changeList {
+  display: grid;
+  grid-gap: 2.25em;
+  /* padding: 0 1em; */
 }
 
 .group {
-  border-left: 1px solid gray;
-  padding-left: 10px;
+  /* border-left: 1px solid gray;
+  padding-left: 0.75em; */
 }
 
 .change {
+  border-left: 1px solid #ccc;
+  padding-left: 0.75em;
+}
+
+.change__header {
+  margin: 0 0 0.5em;
+  display: flex;
+}
+
+.change__breadcrumb {
+  flex: 1;
+  font-size: 13px;
+
+  @nest & strong {
+    font-weight: 600;
+  }
+}
+
+.change__revertButton {
+  font-size: 12px;
+  padding: 0.25em;
+}
+
+.fieldChange {
+  composes: change;
+}
+
+.groupChange {
+  composes: change;
 }
