@@ -134,6 +134,13 @@ const numberRadioExample = {
   }
 }
 
+const referenceExample = {
+  type: 'reference',
+  name: 'referenceExample',
+  title: 'Reference example',
+  to: [{type: 'allInputs'}]
+}
+
 const slugExample = {
   type: 'slug',
   name: 'slugExample',
@@ -144,13 +151,6 @@ const slugExample = {
     // slugify: () => ...
     // isUnique: () => ...
   }
-}
-
-const referenceExample = {
-  type: 'reference',
-  name: 'referenceExample',
-  title: 'Reference example',
-  to: [{type: 'allInputs'}]
 }
 
 const stringExample = {
