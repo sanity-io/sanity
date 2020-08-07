@@ -67,7 +67,8 @@ function diffArrayByReinsert<A>(
       fromValue: undefined,
       toIndex: idx,
       toValue: input.value,
-      hasMoved: false
+      hasMoved: false,
+      annotation: input.annotation
     })
   }
 
@@ -84,7 +85,8 @@ function diffArrayByReinsert<A>(
       fromValue: input.value,
       toIndex: undefined,
       toValue: undefined,
-      hasMoved: false
+      hasMoved: false,
+      annotation: input.annotation
     })
   }
 
@@ -161,15 +163,18 @@ function diffArrayByKey<A>(
       continue
     }
 
+    let input = fromArray.at(fromIndex)
+
     // Not a part of the to-value => removed
     items.push({
       type: 'removed',
       isChanged: true,
       fromIndex,
-      fromValue: fromArray.at(fromIndex).value,
+      fromValue: input.value,
       toValue: undefined,
       toIndex: undefined,
-      hasMoved: false
+      hasMoved: false,
+      annotation: input.annotation
     })
 
     isChanged = true
@@ -178,14 +183,16 @@ function diffArrayByKey<A>(
   // The remaining data in toKeyIndex are the new elements which has been added
   for (let positions of toKeyIndex.index.values()) {
     for (let toIndex of positions) {
+      let input = toArray.at(toIndex)
       items.push({
         type: 'added',
         isChanged: true,
         fromIndex: undefined,
         fromValue: undefined,
         toIndex,
-        toValue: toArray.at(toIndex).value,
-        hasMoved: false
+        toValue: input.value,
+        hasMoved: false,
+        annotation: input.annotation
       })
     }
 

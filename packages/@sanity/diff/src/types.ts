@@ -210,6 +210,7 @@ export interface ItemDiffAdded<A> extends ItemDiffBase<A> {
   toIndex: number
   hasMoved: false
   fromValue: undefined
+  annotation: A
 }
 
 export interface ItemDiffRemoved<A> extends ItemDiffBase<A> {
@@ -219,4 +220,5 @@ export interface ItemDiffRemoved<A> extends ItemDiffBase<A> {
   toIndex: undefined
   hasMoved: false
   toValue: undefined
+  annotation: A
 }
