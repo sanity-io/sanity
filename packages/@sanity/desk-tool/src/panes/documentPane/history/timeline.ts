@@ -413,20 +413,17 @@ export class Timeline {
       for (let idx = chunk.start; idx < chunk.end; idx++) {
         const transaction = this._transactions.get(idx)
 
-        const didHaveDraft = incremental.getType(draftValue) !== 'null'
-        const didHavePublished = incremental.getType(publishedValue) !== 'null'
         const meta = {
           chunk,
           chunkIndex: chunkIdx,
           transactionIndex: idx
         }
 
+        const preDraftValue = draftValue
+        const prePublishedValue = publishedValue
+
         if (transaction.draftEffect) {
           draftValue = incremental.applyPatch(draftValue, transaction.draftEffect.apply, meta)
-
-          if (!didHaveDraft) {
-            draftValue = incremental.rebaseValue(publishedValue, draftValue)
-          }
         }
 
         if (transaction.publishedEffect) {
@@ -435,10 +432,18 @@ export class Timeline {
             transaction.publishedEffect.apply,
             meta
           )
+        }
 
-          if (!didHavePublished) {
-            publishedValue = incremental.rebaseValue(draftValue, publishedValue)
-          }
+        const didHaveDriaft = incremental.getType(preDraftValue) !== 'null'
+        const haveDraft = incremental.getType(draftValue) !== 'null'
+        const havePublished = incremental.getType(publishedValue) !== 'null'
+
+        if (havePublished && !haveDraft) {
+          publishedValue = incremental.rebaseValue(preDraftValue, publishedValue)
+        }
+
+        if (haveDraft && !didHaveDriaft) {
+          draftValue = incremental.rebaseValue(prePublishedValue, draftValue)
         }
       }
 
