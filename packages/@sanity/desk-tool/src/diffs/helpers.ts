@@ -1,6 +1,6 @@
 import {UserColorManager} from '@sanity/base'
 import {parseToRgb} from 'polished'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {Annotation} from '../panes/documentPane/history/types'
 
 interface RGB {
   red: number
