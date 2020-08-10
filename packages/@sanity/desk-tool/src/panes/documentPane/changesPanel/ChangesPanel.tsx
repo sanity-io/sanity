@@ -30,7 +30,7 @@ export function ChangesPanel({diff, schemaType, documentId}: Props) {
   }
 
   const documentContext = {documentId, schemaType}
-  const changes = buildChangeList(schemaType, diff, [], [])
+  const changes = buildChangeList(schemaType, diff)
   return (
     <div className={styles.root}>
       <header className={styles.header}>
