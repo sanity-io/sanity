@@ -1,7 +1,7 @@
 /* eslint-disable max-depth */
 import {toString as pathToString} from '@sanity/util/paths'
 import {Diff, ObjectDiff, Path, FieldDiff} from '@sanity/diff'
-import {resolveDiffComponent} from '../../../components/diffs/resolveDiffComponent'
+import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType, ChangeNode} from '../types'
 
