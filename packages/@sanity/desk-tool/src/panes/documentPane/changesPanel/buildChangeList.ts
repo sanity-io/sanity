@@ -3,7 +3,9 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {Diff, ObjectDiff, Path, FieldDiff} from '@sanity/diff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
-import {SchemaType, ChangeNode} from '../types'
+import {SchemaType} from '../types'
+import {resolveTypeName} from './schemaUtils/resolveType'
+import {ChangeNode} from './types'
 
 export function buildChangeList(
   schemaType: SchemaType,
@@ -30,6 +32,7 @@ export function buildChangeList(
     return list
   }
 
+  // eslint-disable-next-line complexity
   schemaType.fields.forEach(field => {
     const fieldPath = path.concat([field.name])
     const fieldTitlePath = titlePath.concat([field.type.title || field.name])
@@ -47,6 +50,24 @@ export function buildChangeList(
         list.push({
           ...objectChanges[0],
           titlePath: fieldTitlePath.concat(objectChanges[0].titlePath)
+        })
+      }
+    } else if (field.type.jsonType === 'array') {
+      const fieldDiff = getDiffAtPath(diff, fieldPath)
+      if (fieldDiff && fieldDiff.isChanged) {
+        list.push({
+          type: 'field',
+          diff: fieldDiff,
+          key: fieldPath.join('.'),
+          path: fieldPath,
+          titlePath: fieldTitlePath,
+          schemaType: field.type,
+          items: ((fieldDiff as any) || []).items.map(diffItem => {
+            return {
+              fromType: diffItem.fromValue && resolveTypeName(diffItem.fromValue),
+              toType: diffItem.toValue && resolveTypeName(diffItem.toValue)
+            }
+          })
         })
       }
     } else {
