@@ -1,15 +1,14 @@
 /* eslint-disable max-depth */
 import React, {useCallback, Fragment, useContext} from 'react'
-import {diffItem} from 'sanity-diff-patch'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Diff, NoDiff, Path} from '@sanity/diff'
-import {toString as pathToString} from '@sanity/util/paths'
+import {Diff, NoDiff} from '@sanity/diff'
 import {FallbackDiff} from '../../../diffs/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType, ChangeNode, FieldChangeNode, GroupChangeNode} from '../types'
 import {buildChangeList} from './buildChangeList'
-import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI} from './types'
+import {OperationsAPI} from './types'
+import {undoChange} from './undoChange'
 import styles from './ChangesPanel.css'
 
 type Props = {
@@ -117,31 +116,4 @@ function ChangeResolver({change, level = 0}: {change: ChangeNode; level: number}
   ) : (
     <GroupChange change={change} />
   )
-}
-
-function undoChange(diff: Diff, path: Path, documentOperations: OperationsAPI) {
-  const patches = diffItem(diff.toValue, diff.fromValue, {diffMatchPatch: {enabled: false}}, path)
-
-  const inserts = patches
-    .filter((patch): patch is InsertPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after, items}}))
-
-  const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
-
-  let hasSets = false
-  const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
-    .reduce((acc, patch) => {
-      hasSets = true
-      acc[pathToString(patch.path)] = patch.value
-      return acc
-    }, {} as Record<string, unknown>)
-
-  return documentOperations.patch.execute([
-    ...inserts,
-    ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : [])
-  ])
 }
