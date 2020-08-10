@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {Observable} from 'rxjs'
-import createActions from '../utils/createActions'
+import {Observable, of, from} from 'rxjs'
+import raf from 'raf'
+import DataLoader from 'dataloader'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import client from 'part:@sanity/base/client'
+import createActions from '../utils/createActions'
+
+const userCache: Record<string, User | null> = {}
 
 const userChannel = pubsub()
 const errorChannel = pubsub()
@@ -12,13 +16,38 @@ let _initialFetched = false
 let _currentUser = null
 let _currentError = null
 
-userChannel.subscribe(val => {
+userChannel.subscribe((val: CurrentUser | null) => {
   _currentUser = val
+
+  if (val) {
+    const normalized = normalizeOwnUser(val)
+    userCache.me = normalized
+    userCache[val.id] = normalized
+  }
 })
 
 errorChannel.subscribe(val => {
   _currentError = val
 })
+
+export interface CurrentUser {
+  id: string
+  name: string
+  profileImage?: string
+  role: string
+}
+
+export interface CurrentUserError {
+  type: 'error'
+  error: Error
+}
+
+export interface CurrentUserSnapshot {
+  type: 'snapshot'
+  user: CurrentUser
+}
+
+export type CurrentUserEvent = CurrentUserError | CurrentUserSnapshot
 
 export interface User {
   id: string
@@ -40,7 +69,7 @@ function logout() {
   )
 }
 
-const currentUser = new Observable(observer => {
+const currentUser = new Observable<CurrentUserEvent>(observer => {
   if (_initialFetched) {
     const emitter = _currentError ? emitError : emitSnapshot
     emitter(_currentError || _currentUser)
@@ -67,33 +96,78 @@ const currentUser = new Observable(observer => {
   }
 })
 
-const userCache = {}
+const userLoader = new DataLoader(loadUsers, {
+  batchScheduleFn: cb => raf(cb)
+})
 
-const getUser = (id: string): Promise<User> => {
-  if (!userCache[id]) {
-    userCache[id] = client
+async function loadUsers(userIds: readonly string[]): Promise<(User | null)[]> {
+  const missingIds = userIds.filter(userId => !(userId in userCache))
+  let users = []
+  if (missingIds.length > 0) {
+    users = await client
       .request({
-        uri: `/users/${id}`,
+        uri: `/users/${missingIds.join(',')}`,
         withCredentials: true
       })
-      .then(user => {
-        return user && user.id ? user : null
-      })
+      .then(arrayify)
+
+    users.forEach(user => {
+      userCache[user.id] = user
+    })
   }
 
-  return userCache[id]
+  return userIds.map(userId => {
+    // Try cache first
+    if (userCache[userId]) {
+      return userCache[userId]
+    }
+
+    // Look up from returned users
+    return users.find(user => user.id === userId) || null
+  })
 }
 
-// TODO Optimize for getting all users in one query
-const getUsers = (ids: string[]): Promise<User[]> => {
-  return Promise.all(ids.map(id => getUser(id)))
+function getUser(userId: string): Promise<User | null> {
+  return userLoader.load(userId)
 }
 
-export default function createUserStore(options = {}) {
+async function getUsers(ids: string[]): Promise<User[]> {
+  const users = await userLoader.loadMany(ids)
+  return users.filter((user): user is User => user && !(user instanceof Error))
+}
+
+function arrayify(users: User | User[]): User[] {
+  return Array.isArray(users) ? users : [users]
+}
+
+function normalizeOwnUser(user: CurrentUser): User {
+  return {
+    id: user.id,
+    displayName: user.name,
+    imageUrl: user.profileImage
+  }
+}
+
+const observableApi = {
+  currentUser,
+
+  getUser: (userId: string): Observable<User | null> =>
+    typeof userCache[userId] === 'undefined' ? from(getUser(userId)) : of(userCache[userId]),
+
+  getUsers: (userIds: string[]): Observable<User[]> => {
+    const missingIds = userIds.filter(userId => !(userId in userCache))
+    return missingIds.length === 0
+      ? of(userIds.map(userId => userCache[userId]).filter(Boolean))
+      : from(getUsers(userIds))
+  }
+}
+
+export default function createUserStore() {
   return {
     actions: createActions({logout, retry: fetchInitial}),
     currentUser,
     getUser,
-    getUsers
+    getUsers,
+    observable: observableApi
   }
 }
