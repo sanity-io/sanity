@@ -1,11 +1,11 @@
 /* eslint-disable max-depth */
 import {toString as pathToString} from '@sanity/util/paths'
-import {Diff, ObjectDiff, Path, FieldDiff} from '@sanity/diff'
+import {Diff, ObjectDiff, Path, FieldDiff, ArrayDiff} from '@sanity/diff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType} from '../types'
 import {resolveTypeName} from './schemaUtils/resolveType'
-import {ChangeNode} from './types'
+import {ArrayItemMetadata, ChangeNode} from './types'
 
 export function buildChangeList(
   schemaType: SchemaType,
@@ -54,20 +54,15 @@ export function buildChangeList(
       }
     } else if (field.type.jsonType === 'array') {
       const fieldDiff = getDiffAtPath(diff, fieldPath)
-      if (fieldDiff && fieldDiff.isChanged) {
+      if (fieldDiff && fieldDiff.type === 'array' && fieldDiff.isChanged) {
         list.push({
-          type: 'field',
+          type: 'array',
           diff: fieldDiff,
           key: fieldPath.join('.'),
           path: fieldPath,
           titlePath: fieldTitlePath,
           schemaType: field.type,
-          items: ((fieldDiff as any) || []).items.map(diffItem => {
-            return {
-              fromType: diffItem.fromValue && resolveTypeName(diffItem.fromValue),
-              toType: diffItem.toValue && resolveTypeName(diffItem.toValue)
-            }
-          })
+          items: getArrayDiffItemTypes(fieldDiff, field as any)
         })
       }
     } else {
@@ -113,4 +108,39 @@ function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotatio
   }
 
   return node
+}
+
+function resolveArrayOfType(field: any, value: any): any | null {
+  const typeName = resolveTypeName(value)
+
+  return field.type.of.find(t => t.name === typeName) || null
+}
+
+function getArrayDiffItemTypes(
+  diff: ArrayDiff<Annotation>,
+  field: SchemaType
+): ArrayItemMetadata[] {
+  return diff.items.map(diffItem => {
+    // for (const diffItem of diff.items) {
+    if (diffItem.type === 'added') {
+      return {
+        toType: resolveArrayOfType(field, diffItem.toValue)
+      }
+    } else if (diffItem.type === 'changed') {
+      return {
+        fromType: resolveArrayOfType(field, diffItem.toValue),
+        toType: resolveArrayOfType(field, diffItem.toValue)
+      }
+      //
+    } else if (diffItem.type === 'removed') {
+      return {
+        fromType: resolveArrayOfType(field, diffItem.fromValue)
+      }
+    }
+
+    // unchanged
+    return {
+      toType: resolveArrayOfType(field, diffItem.toValue)
+    }
+  })
 }
