@@ -9,22 +9,19 @@ import {
   NoDiff
 } from '@sanity/diff'
 import {Value, ArrayContent, ObjectContent, StringContent} from 'mendoza/lib/incremental-patcher'
-import {Chunk, Annotation} from './types'
+import {Chunk, Annotation, AnnotationUnchanged} from './types'
+import {Timeline} from './timeline'
 
-export type Meta = Chunk | null
+export type Meta = {chunk: Chunk; chunkIndex: number; transactionIndex: number} | null
 
-export type Accessor = 'startMeta' | 'endMeta'
-
-function reverseAccessor(accessor: Accessor): Accessor {
-  return accessor === 'startMeta' ? 'endMeta' : 'startMeta'
-}
+export type AnnotationExtractor = (value: Value<Meta>) => Annotation
 
 class ArrayContentWrapper implements ArrayInput<Annotation> {
   type: 'array' = 'array'
   value: unknown[]
   length: number
   annotation: Annotation
-  accessor: Accessor
+  extractor: AnnotationExtractor
 
   private content: ArrayContent<Meta>
   private elements: Input<Annotation>[] = []
@@ -33,12 +30,12 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
     content: ArrayContent<Meta>,
     value: unknown[],
     annotation: Annotation,
-    accessor: Accessor
+    extractor: AnnotationExtractor
   ) {
     this.content = content
     this.value = value
     this.annotation = annotation
-    this.accessor = accessor
+    this.extractor = extractor
     this.length = content.elements.length
   }
 
@@ -51,7 +48,7 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
     return (this.elements[idx] = wrapValue(
       this.content.elements[idx],
       this.value[idx],
-      this.accessor
+      this.extractor
     ))
   }
 }
@@ -61,21 +58,21 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
   value: object
   keys: string[]
   annotation: Annotation
-  accessor: Accessor
+  extractor: AnnotationExtractor
 
   private content: ObjectContent<Meta>
-  private fields: Record<string, Input<Meta>> = {}
+  private fields: Record<string, Input<Annotation>> = {}
 
   constructor(
     content: ObjectContent<Meta>,
     value: object,
     annotation: Annotation,
-    accessor: Accessor
+    extractor: AnnotationExtractor
   ) {
     this.content = content
     this.value = value
     this.annotation = annotation
-    this.accessor = accessor
+    this.extractor = extractor
     this.keys = Object.keys(content.fields)
   }
 
@@ -86,7 +83,7 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
     }
     const value = this.content.fields[key]
     if (!value) return undefined
-    return (this.fields[key] = wrapValue(value, this.value[key], this.accessor))
+    return (this.fields[key] = wrapValue(value, this.value[key], this.extractor))
   }
 }
 
@@ -94,21 +91,20 @@ class StringContentWrapper implements StringInput<Annotation> {
   type: 'string' = 'string'
   value: string
   annotation: Annotation
-  accessor: Accessor
+  extractor: AnnotationExtractor
 
   private content: StringContent<Meta>
-  private _data?: string
 
   constructor(
     content: StringContent<Meta>,
     value: string,
     annotation: Annotation,
-    accessor: Accessor
+    extractor: AnnotationExtractor
   ) {
     this.content = content
     this.value = value
     this.annotation = annotation
-    this.accessor = accessor
+    this.extractor = extractor
   }
 
   sliceAnnotation(start: number, end: number): {text: string; annotation: Annotation}[] {
@@ -132,7 +128,7 @@ class StringContentWrapper implements StringInput<Annotation> {
 
         result.push({
           text: part.value.slice(subStart, subEnd),
-          annotation: part[this.accessor]
+          annotation: this.extractor(part)
         })
       }
 
@@ -143,17 +139,21 @@ class StringContentWrapper implements StringInput<Annotation> {
   }
 }
 
-function wrapValue(value: Value<Meta>, raw: unknown, accessor: Accessor): Input<Annotation> {
-  const annotation = value[accessor]
+function wrapValue(
+  value: Value<Meta>,
+  raw: unknown,
+  extractor: AnnotationExtractor
+): Input<Annotation> {
+  const annotation = extractor(value)
 
   if (value.content) {
     switch (value.content.type) {
       case 'array':
-        return new ArrayContentWrapper(value.content, raw as unknown[], annotation, accessor)
+        return new ArrayContentWrapper(value.content, raw as unknown[], annotation, extractor)
       case 'object':
-        return new ObjectContentWrapper(value.content, raw as object, annotation, accessor)
+        return new ObjectContentWrapper(value.content, raw as object, annotation, extractor)
       case 'string':
-        return new StringContentWrapper(value.content, raw as string, annotation, accessor)
+        return new StringContentWrapper(value.content, raw as string, annotation, extractor)
       default:
       // do nothing
     }
@@ -162,13 +162,51 @@ function wrapValue(value: Value<Meta>, raw: unknown, accessor: Accessor): Input<
   return wrap(raw, annotation)
 }
 
+const unchangedAnnotation: AnnotationUnchanged = {type: 'unchanged'}
+
+function extractAnnotationForFromInput(timeline: Timeline, value: Value<Meta>): Annotation {
+  if (value.endMeta) {
+    // The next transaction is where it disappeared:
+    const nextTxIndex = value.endMeta.transactionIndex + 1
+    const tx = timeline.transactionByIndex(nextTxIndex)
+    if (!tx) return unchangedAnnotation
+
+    const chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunkIndex)
+
+    return {
+      type: 'changed',
+      chunk,
+      author: tx.author
+    }
+  }
+
+  return unchangedAnnotation
+}
+
+function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): Annotation {
+  if (value.startMeta) {
+    const tx = timeline.transactionByIndex(value.startMeta.transactionIndex)!
+
+    return {
+      type: 'changed',
+      chunk: value.startMeta.chunk,
+      author: tx.author
+    }
+  }
+
+  return unchangedAnnotation
+}
+
 export function diffValue(
+  timeline: Timeline,
   from: Value<Meta>,
   fromRaw: unknown,
   to: Value<Meta>,
   toRaw: unknown
 ): Diff<Annotation> | NoDiff {
-  const fromInput = wrapValue(from, fromRaw, 'endMeta')
-  const toInput = wrapValue(to, toRaw, 'startMeta')
+  const fromInput = wrapValue(from, fromRaw, value =>
+    extractAnnotationForFromInput(timeline, value)
+  )
+  const toInput = wrapValue(to, toRaw, value => extractAnnotationForToInput(timeline, value))
   return diffInput(fromInput, toInput)
 }
