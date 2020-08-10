@@ -314,11 +314,13 @@ function DocumentPane(props: Props) {
 
       <div className={styles.container}>
         {isHistoryOpen && (
-          <HistoryTimelinePanel
-            timeline={timeline}
-            onSelect={time => toggleHistory(time)}
-            startTimeId={startTimeId}
-          />
+          <div className={styles.historyTimelineContainer}>
+            <HistoryTimelinePanel
+              timeline={timeline}
+              onSelect={time => toggleHistory(time)}
+              startTimeId={startTimeId}
+            />
+          </div>
         )}
 
         <div className={styles.editorContainer} key="editor">
@@ -372,11 +374,13 @@ function DocumentPane(props: Props) {
         </div>
 
         {isHistoryOpen && (
-          <ChangesPanel
-            diff={timeline.currentDiff()}
-            schemaType={schemaType}
-            documentId={documentId}
-          />
+          <div className={styles.changesContainer}>
+            <ChangesPanel
+              diff={timeline.currentDiff()}
+              schemaType={schemaType}
+              documentId={documentId}
+            />
+          </div>
         )}
       </div>
     </DocumentActionShortcuts>
