@@ -5,9 +5,9 @@ import {Diff, NoDiff} from '@sanity/diff'
 import {FallbackDiff} from '../../../diffs/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
-import {SchemaType, ChangeNode, FieldChangeNode, GroupChangeNode} from '../types'
+import {SchemaType} from '../types'
 import {buildChangeList} from './buildChangeList'
-import {OperationsAPI} from './types'
+import {OperationsAPI, ChangeNode, FieldChangeNode, GroupChangeNode} from './types'
 import {undoChange} from './undoChange'
 import styles from './ChangesPanel.css'
 
@@ -51,6 +51,7 @@ export function ChangesPanel({diff, schemaType, documentId}: Props) {
 }
 
 function FieldChange({change, level = 0}: {change: FieldChangeNode; level: number}) {
+  // console.log('FieldChange', change)
   const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
   const {documentId, schemaType} = useContext(DocumentContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
@@ -77,7 +78,11 @@ function FieldChange({change, level = 0}: {change: FieldChangeNode; level: numbe
         </button>
       </div>
 
-      <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+      <DiffComponent
+        diff={change.diff}
+        schemaType={change.schemaType}
+        items={change.items as any}
+      />
     </div>
   )
 }
