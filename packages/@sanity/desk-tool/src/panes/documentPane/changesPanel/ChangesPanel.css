@@ -1,7 +1,6 @@
 .root {
   background: #fff;
   height: 100%;
-  border-left: 8px solid #eee;
   overflow: auto;
 }
 
@@ -48,6 +47,10 @@
 .change__revertButton {
   font-size: 12px;
   padding: 0.25em;
+}
+
+.arrayChange {
+  composes: change;
 }
 
 .fieldChange {

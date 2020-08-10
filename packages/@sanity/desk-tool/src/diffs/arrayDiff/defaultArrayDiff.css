@@ -32,13 +32,18 @@
   margin: 0;
   padding: 0.5em;
   font-size: 14px;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   overflow: auto;
 }
 
 .addedItem {
   composes: item;
   background: #d0f4dc;
+}
+
+.changedItem {
+  composes: item;
+  background: #fdefb6;
 }
 
 .removedItem {
