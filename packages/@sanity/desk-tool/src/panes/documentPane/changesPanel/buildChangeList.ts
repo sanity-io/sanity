@@ -8,8 +8,8 @@ import {SchemaType, ChangeNode} from '../types'
 export function buildChangeList(
   schemaType: SchemaType,
   diff: ObjectDiff<Annotation>,
-  path: Path,
-  titlePath: string[]
+  path: Path = [],
+  titlePath: string[] = []
 ): ChangeNode[] {
   const list: ChangeNode[] = []
 
@@ -79,6 +79,7 @@ function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotatio
 
       if (fieldDiff.type === 'added' || fieldDiff.type === 'removed') {
         // @todo how do we want to handle this?
+        // @todo to test, set a boolean field from undefined to a value
         return null
       }
 
