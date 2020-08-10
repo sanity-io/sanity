@@ -18,6 +18,7 @@
 .container {
   display: flex;
   flex: 1;
+  min-width: 0;
   align-items: stretch;
   overflow: hidden;
 }
