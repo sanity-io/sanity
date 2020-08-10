@@ -40,7 +40,13 @@ function UserItem(props: {userId: string}) {
   const user = useUser(props.userId)
   return (
     <div className={styles.userItem}>
-      {user && user !== LOADING_USER ? <UserAvatar user={user} /> : '…'}
+      {user && user !== LOADING_USER ? (
+        <>
+          <UserAvatar user={user} /> {user.displayName}
+        </>
+      ) : (
+        'Loading…'
+      )}
     </div>
   )
 }
