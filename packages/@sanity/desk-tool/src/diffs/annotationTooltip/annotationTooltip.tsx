@@ -1,6 +1,6 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
-import {Annotation} from '../../../panes/documentPane/history/types'
+import {Annotation} from '../../panes/documentPane/history/types'
 
 import styles from './annotationTooltip.css'
 
