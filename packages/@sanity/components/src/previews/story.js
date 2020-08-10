@@ -491,7 +491,7 @@ storiesOf('Previews')
 
     if (propType === 'functions') {
       return (
-        <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+        <Sanity part="part:@sanity/components/previews/block" propTables={[BlockPreview]}>
           <BlockPreview
             title={renderTitle}
             subtitle={renderSubtitle}
@@ -509,7 +509,7 @@ storiesOf('Previews')
 
     if (propType === 'elements') {
       return (
-        <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+        <Sanity part="part:@sanity/components/previews/block" propTables={[BlockPreview]}>
           <BlockPreview
             title={
               <span>
@@ -543,7 +543,7 @@ storiesOf('Previews')
     }
 
     return (
-      <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+      <Sanity part="part:@sanity/components/previews/block" propTables={[BlockPreview]}>
         <BlockPreview
           title={text('title', 'This is the title', 'props')}
           subtitle={text('subtitle', 'This is the subtitle', 'props')}
@@ -563,7 +563,7 @@ storiesOf('Previews')
 
     if (propType === 'functions') {
       return (
-        <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+        <Sanity part="part:@sanity/components/previews/block-image" propTables={[BlockImagePreview]}>
           <BlockImagePreview
             title={renderTitle}
             subtitle={renderSubtitle}
@@ -581,7 +581,7 @@ storiesOf('Previews')
 
     if (propType === 'elements') {
       return (
-        <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+        <Sanity part="part:@sanity/components/previews/block-image" propTables={[BlockImagePreview]}>
           <BlockImagePreview
             title={
               <span>
@@ -620,7 +620,7 @@ storiesOf('Previews')
     }
 
     return (
-      <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
+      <Sanity part="part:@sanity/components/previews/block-image" propTables={[BlockImagePreview]}>
         <BlockImagePreview
           title={text('title', 'This is the title', 'props')}
           subtitle={text('subtitle', 'This is the subtitle', 'props')}
