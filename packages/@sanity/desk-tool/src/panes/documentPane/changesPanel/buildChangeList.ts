@@ -34,7 +34,7 @@ export function buildChangeList(
     const fieldPath = path.concat([field.name])
     const fieldTitlePath = titlePath.concat([field.type.title || field.name])
     if (field.type.jsonType === 'object') {
-      const objectChanges = buildChangeList(field.type, diff, fieldPath, fieldTitlePath)
+      const objectChanges = buildChangeList(field.type, diff, fieldPath, [])
       if (objectChanges.length > 1) {
         list.push({
           type: 'group',
@@ -43,8 +43,11 @@ export function buildChangeList(
           titlePath: fieldTitlePath,
           changes: objectChanges
         })
-      } else {
-        list.push(...objectChanges)
+      } else if (objectChanges.length === 1) {
+        list.push({
+          ...objectChanges[0],
+          titlePath: fieldTitlePath.concat(objectChanges[0].titlePath)
+        })
       }
     } else {
       const fieldDiff = getDiffAtPath(diff, fieldPath)
