@@ -28,8 +28,17 @@ export type Chunk = {
   authors: Set<string>
 }
 
-// TODO: How should this look?
-export type Annotation = any
+export type AnnotationChanged = {
+  type: 'changed'
+  chunk: Chunk
+  author: string
+}
+
+export type AnnotationUnchanged = {
+  type: 'unchanged'
+}
+
+export type Annotation = AnnotationChanged | AnnotationUnchanged
 
 export type Transaction = {
   id: string

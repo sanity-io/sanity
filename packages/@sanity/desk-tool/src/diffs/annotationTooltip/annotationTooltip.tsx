@@ -1,6 +1,6 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {Annotation, AnnotationChanged} from '../../panes/documentPane/history/types'
 
 import styles from './annotationTooltip.css'
 
@@ -10,6 +10,10 @@ interface AnnotationTooltipProps {
 }
 
 export function AnnotationTooltip(props: AnnotationTooltipProps) {
+  if (props.annotation.type === 'unchanged') {
+    return <>{props.children}</>
+  }
+
   return (
     <Tooltip
       arrow
@@ -22,14 +26,10 @@ export function AnnotationTooltip(props: AnnotationTooltipProps) {
   )
 }
 
-function AnnotationTooltipContent(props: {annotation: Annotation}) {
-  const userIds: string[] = Array.from(props.annotation.authors)
-
+function AnnotationTooltipContent(props: {annotation: AnnotationChanged}) {
   return (
     <div className={styles.root}>
-      {userIds.map(userId => (
-        <UserItem key={userId} userId={userId} />
-      ))}
+      <UserItem userId={props.annotation.author} />
     </div>
   )
 }
