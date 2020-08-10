@@ -120,10 +120,10 @@ export type StringSegmentUnchanged = {
   text: string
 }
 
-export interface ObjectDiff<A> extends BaseDiff<A> {
+export interface ObjectDiff<A, V extends {} = object> extends BaseDiff<A> {
   type: 'object'
-  fromValue: object
-  toValue: object
+  fromValue: V | undefined | null
+  toValue: V | undefined | null
   fields: {[fieldName: string]: FieldDiff<A>}
 }
 
