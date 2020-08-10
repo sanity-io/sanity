@@ -1,7 +1,6 @@
 .root {
   background: #fff;
-  min-width: 280px;
-  max-width: 480px;
+  height: 100%;
   border-left: 8px solid #eee;
   overflow: auto;
 }
