@@ -227,7 +227,7 @@ client
 The patch operation `insert` takes a location (`before`, `after` or `replace`), a path selector and an array of elements to insert.
 
 ```js
-const nanoid = require('nanoid')
+const {nanoid} = require('nanoid')
 
 client
   .patch('bike-123')
@@ -247,7 +247,7 @@ client
 The operations of appending and prepending to an array are so common that they have been given their own methods for better readability:
 
 ```js
-const nanoid = require('nanoid')
+const {nanoid} = require('nanoid')
 
 client
   .patch('bike-123')
