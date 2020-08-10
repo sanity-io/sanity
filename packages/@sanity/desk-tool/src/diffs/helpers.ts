@@ -1,11 +1,11 @@
 import {UserColorManager} from '@sanity/base'
 import {Annotation} from '../panes/documentPane/history/types'
 
-interface RGB {
-  red: number
-  green: number
-  blue: number
-}
+// interface RGB {
+//   red: number
+//   green: number
+//   blue: number
+// }
 
 interface UserColors {
   blue: {bg: string; fg: string}
@@ -28,13 +28,13 @@ const color: UserColors = {
   purple: {bg: '#F8E9FE', fg: '#7B1EA5'}
 }
 
-function multiply(rgb1: RGB, rgb2: RGB) {
-  return {
-    red: Math.floor((rgb1.red * rgb2.red) / 255),
-    green: Math.floor((rgb1.green * rgb2.green) / 255),
-    blue: Math.floor((rgb1.blue * rgb2.blue) / 255)
-  }
-}
+// function multiply(rgb1: RGB, rgb2: RGB) {
+//   return {
+//     red: Math.floor((rgb1.red * rgb2.red) / 255),
+//     green: Math.floor((rgb1.green * rgb2.green) / 255),
+//     blue: Math.floor((rgb1.blue * rgb2.blue) / 255)
+//   }
+// }
 
 export function getAnnotationColor(
   colorManager: UserColorManager,
