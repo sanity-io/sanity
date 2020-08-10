@@ -1,5 +1,5 @@
 import {UserColorManager} from '@sanity/base'
-import {AnnotationChanged} from '../panes/documentPane/history/types'
+import {Annotation} from '../panes/documentPane/history/types'
 
 interface RGB {
   red: number
@@ -38,8 +38,12 @@ function multiply(rgb1: RGB, rgb2: RGB) {
 
 export function getAnnotationColor(
   colorManager: UserColorManager,
-  annotation: AnnotationChanged
+  annotation: Annotation
 ): {bg: string; fg: string} {
+  if (annotation.type === 'unchanged') {
+    return {bg: '#fcc', fg: '#f00'}
+  }
+
   const hueKey = colorManager.get(annotation.author)
   return color[hueKey]
 }
