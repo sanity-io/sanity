@@ -11,6 +11,7 @@ import {
 import {Value, ArrayContent, ObjectContent, StringContent} from 'mendoza/lib/incremental-patcher'
 import {Chunk, Annotation, AnnotationUnchanged} from './types'
 import {Timeline} from './timeline'
+import {isSameAnnotation} from './utilts'
 
 export type Meta = {chunk: Chunk; chunkIndex: number; transactionIndex: number} | null
 
@@ -111,6 +112,18 @@ class StringContentWrapper implements StringInput<Annotation> {
     const result: {text: string; annotation: Annotation}[] = []
     let idx = 0
 
+    function push(text: string, annotation: Annotation) {
+      if (result.length > 0) {
+        const lst = result[result.length - 1]
+        if (isSameAnnotation(lst.annotation, annotation)) {
+          lst.text += text
+          return
+        }
+      }
+
+      result.push({text, annotation})
+    }
+
     for (const part of this.content.parts) {
       const length = part.value.length
 
@@ -126,10 +139,7 @@ class StringContentWrapper implements StringInput<Annotation> {
         // eslint-disable-next-line max-depth
         if (subEnd <= 0) break
 
-        result.push({
-          text: part.value.slice(subStart, subEnd),
-          annotation: this.extractor(part)
-        })
+        push(part.value.slice(subStart, subEnd), this.extractor(part))
       }
 
       idx += length
