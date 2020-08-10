@@ -1,15 +1,15 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, useMemo} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
-import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
+import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
-import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 interface Props {
   type: Type
@@ -41,12 +41,13 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   onClose
 }) => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
+  const element = useMemo(() => referenceElement, [])
   return (
     <Stacked>
       {() => (
         <Popover
           placement="bottom"
-          referenceElement={referenceElement}
+          referenceElement={element}
           onClickOutside={onClose}
           onEscape={onClose}
           onClose={onClose}

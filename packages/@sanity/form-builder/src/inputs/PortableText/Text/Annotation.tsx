@@ -3,12 +3,12 @@ import React, {FunctionComponent, SyntheticEvent} from 'react'
 import classNames from 'classnames'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 
 import styles from './Annotation.css'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type Props = {
   value: PortableTextChild
@@ -17,7 +17,6 @@ type Props = {
   attributes: RenderAttributes
   readOnly: boolean
   markers: Marker[]
-  focusPath: Path
   onFocus: (arg0: Path) => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
 }

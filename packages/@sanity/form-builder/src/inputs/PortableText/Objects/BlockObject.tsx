@@ -17,8 +17,7 @@ import styles from './BlockObject.css'
 
 type Props = {
   attributes: RenderAttributes
-  editorRef: React.RefObject<PortableTextEditor>
-  focusPath: Path
+  editor: PortableTextEditor
   markers: Marker[]
   onChange: (patchEvent: PatchEvent, path: Path) => void
   onFocus: (arg0: Path) => void
@@ -29,7 +28,7 @@ type Props = {
 
 export const BlockObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
-  editorRef,
+  editor,
   markers,
   onFocus,
   readOnly,
@@ -60,13 +59,13 @@ export const BlockObject: FunctionComponent<Props> = ({
   }
 
   const handleDelete = (): void => {
-    if (editorRef && editorRef.current) {
+    if (editor) {
       PortableTextEditor.remove(
-        editorRef.current,
+        editor,
         {focus: {path, offset: 0}, anchor: {path, offset: 0}},
         {mode: 'block'}
       )
-      PortableTextEditor.focus(editorRef.current)
+      PortableTextEditor.focus(editor)
     }
   }
 

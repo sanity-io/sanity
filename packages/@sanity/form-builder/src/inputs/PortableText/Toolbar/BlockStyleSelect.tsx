@@ -1,18 +1,18 @@
 /* eslint-disable react/no-multi-comp */
 
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import {
   EditorSelection,
   PortableTextEditor,
-  RenderBlockFunction
+  RenderBlockFunction,
+  usePortableTextEditor
 } from '@sanity/portable-text-editor'
 import {BlockStyleItem} from './types'
 
 type Props = {
   className: string
   disabled: boolean
-  editor: PortableTextEditor
   padding?: string
   readOnly: boolean
   renderBlock: RenderBlockFunction
@@ -22,27 +22,26 @@ type Props = {
 }
 
 export default function BlockStyleSelect(props: Props): JSX.Element {
-  const {
-    className,
-    disabled,
-    editor,
-    items,
-    padding,
-    readOnly,
-    renderBlock,
-    value,
-    selection
-  } = props
+  const {className, disabled, items, padding, readOnly, renderBlock, value, selection} = props
+  const editor = usePortableTextEditor()
+  const [changed, setChanged] = useState(false)
 
   const features = React.useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [editor])
+
+  // Use this effect to set focus back into the editor when the new value get's in.
+  useEffect(() => {
+    if (changed) {
+      PortableTextEditor.focus(editor)
+      setChanged(false)
+    }
+  }, [value, changed])
 
   const handleChange = (item: BlockStyleItem): void => {
     const focusBlock = PortableTextEditor.focusBlock(editor)
     if (focusBlock && item.style !== focusBlock.style) {
       PortableTextEditor.toggleBlockStyle(editor, item.style)
-    } else {
-      PortableTextEditor.focus(editor)
     }
+    setChanged(true)
   }
 
   const renderItem = React.useCallback(
@@ -64,9 +63,9 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
             style: item.style
           },
           features.types.block,
+          {focused: false, selected: false, path: []},
           () =>
             StyleComponent ? <StyleComponent>{item.title}</StyleComponent> : <>{item.title}</>,
-          {focused: false, selected: false, path: []},
           // @todo: remove this:
           React.createRef()
         )
@@ -80,11 +79,11 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
 
   // @todo: Document what's going on here
   const _disabled = focusBlock ? features.types.block.name !== focusBlock._type : false
-
   return (
     <label className={className}>
       <span style={{display: 'none'}}>Text</span>
       <StyleSelect
+        onClick={event => event.preventDefault()}
         disabled={readOnly || disabled || _disabled}
         items={items}
         onChange={handleChange}

@@ -127,7 +127,6 @@ export function OverflowMenu(props: Props) {
             <div className={styles.overflowMenu}>
               {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
                 const action = actions[hiddenAction.index]
-
                 return (
                   <div
                     className={classNames(

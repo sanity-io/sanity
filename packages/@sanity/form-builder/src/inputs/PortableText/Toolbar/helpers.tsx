@@ -178,10 +178,7 @@ function getPTEAnnotationActions(
         }
         const paths = PortableTextEditor.addAnnotation(editor, item.type)
         if (paths && paths.markDefPath) {
-          setTimeout(() => {
-            PortableTextEditor.select(editor, null)
-            onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
-          })
+          onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
         }
       },
       title: item.title
@@ -254,7 +251,7 @@ export function getInsertMenuItems(
       disabled: !selection,
       handle(): void {
         const path = PortableTextEditor.insertBlock(editor, type)
-        setTimeout(() => onFocus(path.concat(FOCUS_TERMINATOR)), 0)
+        onFocus(path.concat(FOCUS_TERMINATOR))
       },
       icon: getInsertMenuIcon(type, BlockObjectIcon),
       inline: false,
@@ -268,7 +265,7 @@ export function getInsertMenuItems(
       disabled: !selection || (focusBlock ? focusBlock._type !== features.types.block.name : true),
       handle(): void {
         const path = PortableTextEditor.insertChild(editor, type)
-        setTimeout(() => onFocus(path.concat(FOCUS_TERMINATOR)), 0)
+        onFocus(path.concat(FOCUS_TERMINATOR))
       },
       icon: getInsertMenuIcon(type, InlineObjectIcon),
       inline: true,

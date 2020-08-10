@@ -2,7 +2,7 @@ import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import React from 'react'
-import {IS_MAC} from '../PortableTextInput'
+import {IS_MAC} from '../Input'
 
 interface Props {
   isFullscreen: boolean

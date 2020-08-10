@@ -4,13 +4,13 @@ import {isEqual} from 'lodash'
 import classNames from 'classnames'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import Preview from '../../../Preview'
 import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 
 import styles from './InlineObject.css'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type Props = {
   value: PortableTextChild
@@ -18,7 +18,6 @@ type Props = {
   attributes: RenderAttributes
   readOnly: boolean
   markers: Marker[]
-  focusPath: Path
   onFocus: (arg0: Path) => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
 }
@@ -42,8 +41,6 @@ export const InlineObject: FunctionComponent<Props> = ({
 
   const handleOpen = (event: SyntheticEvent<HTMLSpanElement>): void => {
     if (focused) {
-      event.preventDefault()
-      event.stopPropagation()
       onFocus(path.concat(FOCUS_TERMINATOR))
     }
   }

@@ -3,10 +3,11 @@
 /* eslint-disable react/jsx-no-bind */
 
 import {
-  PortableTextEditor,
-  EditorSelection,
   HotkeyOptions,
-  RenderBlockFunction
+  RenderBlockFunction,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+  PortableTextEditor
 } from '@sanity/portable-text-editor'
 import classNames from 'classnames'
 import React from 'react'
@@ -19,17 +20,17 @@ import {getBlockStyleSelectProps, getInsertMenuItems, getPTEToolbarActionGroups}
 import styles from './Toolbar.css'
 
 interface Props {
-  editor?: PortableTextEditor
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   readOnly: boolean
   renderBlock: RenderBlockFunction
   onFocus: (path: Path) => void
-  selection: EditorSelection
 }
 
 function PTEToolbar(props: Props) {
-  const {editor, hotkeys, isFullscreen, readOnly, onFocus, renderBlock, selection} = props
+  const {hotkeys, isFullscreen, readOnly, onFocus, renderBlock} = props
+  const editor = usePortableTextEditor()
+  const selection = usePortableTextEditorSelection()
   const disabled = !selection
   const actionGroups = React.useMemo(
     () => (editor ? getPTEToolbarActionGroups(editor, selection, onFocus, hotkeys) : []),
@@ -45,8 +46,6 @@ function PTEToolbar(props: Props) {
     [selection]
   )
 
-  if (!editor) return null
-
   return (
     <div
       className={classNames(styles.root, isFullscreen && styles.fullscreen)}
@@ -61,7 +60,6 @@ function PTEToolbar(props: Props) {
             {...blockStyleSelectProps}
             className={styles.blockStyleSelect}
             disabled={disabled}
-            editor={editor}
             padding="small"
             selection={selection}
             readOnly={readOnly}

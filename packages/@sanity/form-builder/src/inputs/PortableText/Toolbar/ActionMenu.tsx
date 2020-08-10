@@ -9,6 +9,11 @@ import {OverflowMenu} from './OverflowMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 import styles from './ActionMenu.css'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection
+} from '@sanity/portable-text-editor'
 
 interface Props {
   disabled: boolean
@@ -58,6 +63,14 @@ function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onC
 
 export default function ActionMenu(props: Props) {
   const {disabled, groups, readOnly} = props
+  const editor = usePortableTextEditor()
+  const focusBlock = PortableTextEditor.focusBlock(editor)
+  const focusChild = PortableTextEditor.focusChild(editor)
+  const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+
+  const isNotText =
+    (focusBlock && focusBlock._type !== ptFeatures.types.block.name) ||
+    (focusChild && focusChild._type !== ptFeatures.types.span.name)
 
   const actions = groups.reduce((acc: PTEToolbarAction[], group) => {
     return acc.concat(
@@ -73,7 +86,7 @@ export default function ActionMenu(props: Props) {
       actions={actions}
       actionButtonComponent={ActionButton}
       actionMenuItemComponent={ActionMenuItem}
-      disabled={disabled || readOnly}
+      disabled={disabled || readOnly || isNotText}
     />
   )
 }
