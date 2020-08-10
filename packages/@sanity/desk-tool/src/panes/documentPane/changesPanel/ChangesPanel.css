@@ -14,15 +14,16 @@
   }
 }
 
+.body {
+  padding: 1em;
+}
+
 .changeList {
   display: grid;
   grid-gap: 2.25em;
-  /* padding: 0 1em; */
 }
 
 .group {
-  /* border-left: 1px solid gray;
-  padding-left: 0.75em; */
 }
 
 .change {

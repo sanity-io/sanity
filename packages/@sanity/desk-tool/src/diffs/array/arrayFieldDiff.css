@@ -1,5 +1,5 @@
 .root {
-  /* border: 1px solid #ccc; */
+  /* display: block; */
 }
 
 .itemList {
@@ -23,7 +23,6 @@
 .diffItemBox {
   flex: 1;
   min-width: 0;
-  /* border-left: 1px solid #ccc; */
   padding-left: 0.25em;
 }
 
@@ -32,7 +31,6 @@
   margin: 0;
   padding: 0.5em;
   font-size: 14px;
-  /* border-radius: 4px; */
   overflow: auto;
 }
 
