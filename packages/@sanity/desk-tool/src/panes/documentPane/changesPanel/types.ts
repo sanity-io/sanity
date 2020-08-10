@@ -1,4 +1,6 @@
-import {Path} from '@sanity/diff'
+import {Diff, Path} from '@sanity/diff'
+import {Annotation} from '../history/types'
+import {SchemaType} from '../types'
 
 export interface OperationsAPI {
   patch: {
@@ -24,3 +26,23 @@ export interface InsertPatch {
 }
 
 export type DiffPatch = SetPatch | UnsetPatch | InsertPatch
+
+export interface GroupChangeNode {
+  type: 'group'
+  changes: ChangeNode[]
+  key: string
+  path: Path
+  titlePath: string[]
+}
+
+export interface FieldChangeNode {
+  type: 'field'
+  diff: Diff<Annotation>
+  key: string
+  path: Path
+  titlePath: string[]
+  schemaType: SchemaType
+  items?: {fromType?: string; toType?: string}[]
+}
+
+export type ChangeNode = GroupChangeNode | FieldChangeNode
