@@ -3,7 +3,7 @@
 import {useUserColorManager} from '@sanity/base'
 import {StringDiffSegment, StringDiff} from '@sanity/diff'
 import React from 'react'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {Annotation} from '../panes/documentPane/history/types'
 import {AnnotationTooltip} from './annotationTooltip'
 import {getAnnotationColor} from './helpers'
 import {DiffComponent} from './types'
