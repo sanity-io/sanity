@@ -30,6 +30,7 @@ export function DefaultArrayDiff(props: ArrayDiffProps) {
 // eslint-disable-next-line complexity
 function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: number}) {
   if (fromIndex === undefined && toIndex === undefined) {
+    // neither `fromIndex` nor `toIndex`
     return <span className={styles.arrayDiffIndexes} />
   }
 
@@ -47,6 +48,15 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
     return (
       <span className={styles.arrayDiffIndexes}>
         <span>{toIndex}</span>
+      </span>
+    )
+  }
+
+  if (fromIndex === toIndex) {
+    // unchanged
+    return (
+      <span className={styles.arrayDiffIndexes}>
+        <span>{fromIndex}</span>
       </span>
     )
   }
@@ -70,9 +80,10 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
   )
 }
 
+// eslint-disable-next-line complexity
 function DefaultArrayDiffItem(props: {
   diff: ItemDiff<Annotation>
-  metadata?: {fromType?: string; toType?: string}
+  metadata?: {fromType?: {name: string}; toType?: {name: string}}
 }) {
   const {diff} = props
   const metadata = props.metadata || {fromType: undefined, toType: undefined}
@@ -80,7 +91,17 @@ function DefaultArrayDiffItem(props: {
   if (diff.type === 'added') {
     return (
       <pre className={styles.addedItem}>
-        Added array item ({metadata.toType}): {JSON.stringify(diff, null, 2)}
+        Added array item ({metadata.toType && metadata.toType.name}):{' '}
+        {JSON.stringify(diff, null, 2)}
+      </pre>
+    )
+  }
+
+  if (diff.type === 'changed') {
+    return (
+      <pre className={styles.changedItem}>
+        Changed array item ({metadata.fromType && metadata.fromType.name}&rarr;
+        {metadata.toType && metadata.toType.name}): {JSON.stringify(diff, null, 2)}
       </pre>
     )
   }
@@ -88,7 +109,8 @@ function DefaultArrayDiffItem(props: {
   if (diff.type === 'removed') {
     return (
       <pre className={styles.removedItem}>
-        Removed array item ({metadata.fromType}): {JSON.stringify(diff, null, 2)}
+        Removed array item ({metadata.fromType && metadata.fromType.name}):{' '}
+        {JSON.stringify(diff, null, 2)}
       </pre>
     )
   }
@@ -96,9 +118,7 @@ function DefaultArrayDiffItem(props: {
   // @todo: render moved items?
   return (
     <pre className={styles.item}>
-      Unchanged item ({metadata.toType}): {JSON.stringify(diff, null, 2)}
+      Unchanged item ({metadata.toType && metadata.toType.name}): {JSON.stringify(diff, null, 2)}
     </pre>
   )
-
-  // return null
 }

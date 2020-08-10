@@ -7,7 +7,7 @@ import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType} from '../types'
 import {buildChangeList} from './buildChangeList'
-import {OperationsAPI, ChangeNode, FieldChangeNode, GroupChangeNode} from './types'
+import {OperationsAPI, ChangeNode, ArrayChangeNode, FieldChangeNode, GroupChangeNode} from './types'
 import {undoChange} from './undoChange'
 import styles from './ChangesPanel.css'
 
@@ -50,8 +50,40 @@ export function ChangesPanel({diff, schemaType, documentId}: Props) {
   )
 }
 
-function FieldChange({change, level = 0}: {change: FieldChangeNode; level: number}) {
+function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: number}) {
   // console.log('FieldChange', change)
+  const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
+  const {documentId, schemaType} = useContext(DocumentContext)
+  const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const handleUndoChange = useCallback(() => undoChange(change.diff, change.path, docOperations), [
+    documentId,
+    change.key,
+    change.diff
+  ])
+
+  return (
+    <div className={styles.arrayChange}>
+      <div className={styles.change__header}>
+        <div className={styles.change__breadcrumb}>
+          {change.titlePath.slice(level).map((titleSegment, idx) => (
+            <Fragment key={idx}>
+              {idx > 0 && <> › </>}
+              <strong>{titleSegment}</strong>
+            </Fragment>
+          ))}
+        </div>
+
+        <button type="button" className={styles.change__revertButton} onClick={handleUndoChange}>
+          Revert changes
+        </button>
+      </div>
+
+      <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
+    </div>
+  )
+}
+
+function FieldChange({change, level = 0}: {change: FieldChangeNode; level: number}) {
   const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
   const {documentId, schemaType} = useContext(DocumentContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
@@ -78,11 +110,7 @@ function FieldChange({change, level = 0}: {change: FieldChangeNode; level: numbe
         </button>
       </div>
 
-      <DiffComponent
-        diff={change.diff}
-        schemaType={change.schemaType}
-        items={change.items as any}
-      />
+      <DiffComponent diff={change.diff} schemaType={change.schemaType} />
     </div>
   )
 }
@@ -116,9 +144,17 @@ function GroupChange({change: group}: {change: GroupChangeNode}) {
 }
 
 function ChangeResolver({change, level = 0}: {change: ChangeNode; level: number}) {
-  return change.type === 'field' ? (
-    <FieldChange change={change} level={level} />
-  ) : (
-    <GroupChange change={change} />
-  )
+  if (change.type === 'array') {
+    return <ArrayChange change={change} level={level} />
+  }
+
+  if (change.type === 'field') {
+    return <FieldChange change={change} level={level} />
+  }
+
+  if (change.type === 'group') {
+    return <GroupChange change={change} />
+  }
+
+  return <div>Unknown change type: {(change as any).type}</div>
 }
