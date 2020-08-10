@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Diff} from '@sanity/diff'
-import {Annotation} from '../panes/documentPane/history/types'
-import {DiffComponent} from './types'
+import {Annotation} from '../../panes/documentPane/history/types'
+import {DiffComponent} from '../types'
 
 import styles from './FallbackDiff.css'
 

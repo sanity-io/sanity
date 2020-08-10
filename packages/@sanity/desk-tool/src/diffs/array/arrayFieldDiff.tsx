@@ -1,27 +1,46 @@
+import {useUserColorManager} from '@sanity/base'
 import {ItemDiff} from '@sanity/diff'
 import React from 'react'
 import {Annotation} from '../../panes/documentPane/history/types'
+import {getAnnotationColor} from '../helpers'
+import {isPTSchemaType, PTDiff} from '../portableText'
 import {ArrayDiffProps} from './types'
 
-import styles from './defaultArrayDiff.css'
+import styles from './arrayFieldDiff.css'
 
-export function DefaultArrayDiff(props: ArrayDiffProps) {
+export function ArrayFieldDiff(props: ArrayDiffProps) {
+  const userColorManager = useUserColorManager()
+
+  if (isPTSchemaType(props.schemaType)) {
+    return <PTDiff diff={props.diff} items={props.items} schemaType={props.schemaType} />
+  }
+
   return (
     <div className={styles.root}>
       <div className={styles.itemList}>
-        {props.diff.items.map((diffItem, diffItemIndex) => (
-          <div className={styles.diffItemContainer} key={diffItemIndex}>
-            <div className={styles.diffItemIndexes}>
-              <ArrayDiffIndexes fromIndex={diffItem.fromIndex} toIndex={diffItem.toIndex} />
+        {props.diff.items.map((diffItem, diffItemIndex) => {
+          const color =
+            diffItem.type === 'added' || diffItem.type === 'removed'
+              ? getAnnotationColor(userColorManager, diffItem.annotation)
+              : null
+
+          return (
+            <div className={styles.diffItemContainer} key={diffItemIndex}>
+              <div
+                className={styles.diffItemIndexes}
+                style={color ? {background: color.bg, color: color.fg} : {}}
+              >
+                <ArrayDiffIndexes fromIndex={diffItem.fromIndex} toIndex={diffItem.toIndex} />
+              </div>
+              <div className={styles.diffItemBox}>
+                <DefaultArrayDiffItem
+                  diff={diffItem}
+                  metadata={props.items && props.items[diffItemIndex]}
+                />
+              </div>
             </div>
-            <div className={styles.diffItemBox}>
-              <DefaultArrayDiffItem
-                diff={diffItem}
-                metadata={props.items && props.items[diffItemIndex]}
-              />
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

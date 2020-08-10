@@ -20,7 +20,6 @@ import {createObservableController} from './history/controller'
 import {Timeline} from './history/timeline'
 import InspectView from './inspect/InspectView'
 import {ChangesPanel} from './changesPanel/ChangesPanel'
-import RevisionSummary from './RevisionSummary'
 import {HistoryTimelinePanel} from './historyTimelinePanel'
 import FormView from './FormView'
 import {Validation} from './Validation'
@@ -310,8 +309,6 @@ function DocumentPane(props: Props) {
       onKeyUp={handleKeyUp}
       className={styles.root}
     >
-      {isHistoryOpen && <RevisionSummary />}
-
       <div className={styles.container}>
         {isHistoryOpen && (
           <div className={styles.historyTimelineContainer}>

@@ -1,12 +1,12 @@
-/* eslint-disable max-depth */
 import {toString as pathToString} from '@sanity/util/paths'
-import {Diff, ObjectDiff, Path, FieldDiff, ArrayDiff} from '@sanity/diff'
+import {ObjectDiff, Path} from '@sanity/diff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
 import {SchemaType} from '../types'
-import {resolveTypeName} from './schemaUtils/resolveType'
-import {ArrayItemMetadata, ChangeNode} from './types'
+import {getArrayDiffItemTypes, getDiffAtPath} from './helpers'
+import {ChangeNode} from './types'
 
+// eslint-disable-next-line complexity
 export function buildChangeList(
   schemaType: SchemaType,
   diff: ObjectDiff<Annotation>,
@@ -32,12 +32,12 @@ export function buildChangeList(
     return list
   }
 
-  // eslint-disable-next-line complexity
-  schemaType.fields.forEach(field => {
+  for (const field of schemaType.fields) {
     const fieldPath = path.concat([field.name])
     const fieldTitlePath = titlePath.concat([field.type.title || field.name])
     if (field.type.jsonType === 'object') {
       const objectChanges = buildChangeList(field.type, diff, fieldPath, [])
+      // eslint-disable-next-line max-depth
       if (objectChanges.length > 1) {
         list.push({
           type: 'group',
@@ -58,7 +58,7 @@ export function buildChangeList(
         list.push({
           type: 'array',
           diff: fieldDiff,
-          key: fieldPath.join('.'),
+          key: pathToString(fieldPath),
           path: fieldPath,
           titlePath: fieldTitlePath,
           schemaType: field.type,
@@ -71,76 +71,14 @@ export function buildChangeList(
         list.push({
           type: 'field',
           diff: fieldDiff,
-          key: fieldPath.join('.'),
+          key: pathToString(fieldPath),
           path: fieldPath,
           titlePath: fieldTitlePath,
           schemaType: field.type
         })
       }
     }
-  })
-
-  return list
-}
-
-function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotation> | null {
-  let node: Diff<Annotation> = diff
-
-  for (const pathSegment of path) {
-    if (node.type === 'object' && typeof pathSegment === 'string') {
-      const fieldDiff: FieldDiff<Annotation> = node.fields[pathSegment]
-      if (!fieldDiff || fieldDiff.type === 'unchanged') {
-        return null
-      }
-
-      if (fieldDiff.type === 'added' || fieldDiff.type === 'removed') {
-        // @todo how do we want to handle this?
-        // @todo to test, set a boolean field from undefined to a value
-        return null
-      }
-
-      node = fieldDiff.diff
-    } else {
-      throw new Error(
-        `Mismatch between path segment (${typeof pathSegment}) and diff type (${diff.type})`
-      )
-    }
   }
 
-  return node
-}
-
-function resolveArrayOfType(field: any, value: any): any | null {
-  const typeName = resolveTypeName(value)
-
-  return field.type.of.find(t => t.name === typeName) || null
-}
-
-function getArrayDiffItemTypes(
-  diff: ArrayDiff<Annotation>,
-  field: SchemaType
-): ArrayItemMetadata[] {
-  return diff.items.map(diffItem => {
-    // for (const diffItem of diff.items) {
-    if (diffItem.type === 'added') {
-      return {
-        toType: resolveArrayOfType(field, diffItem.toValue)
-      }
-    } else if (diffItem.type === 'changed') {
-      return {
-        fromType: resolveArrayOfType(field, diffItem.toValue),
-        toType: resolveArrayOfType(field, diffItem.toValue)
-      }
-      //
-    } else if (diffItem.type === 'removed') {
-      return {
-        fromType: resolveArrayOfType(field, diffItem.fromValue)
-      }
-    }
-
-    // unchanged
-    return {
-      toType: resolveArrayOfType(field, diffItem.toValue)
-    }
-  })
+  return list
 }
