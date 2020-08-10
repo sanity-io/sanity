@@ -1,5 +1,7 @@
 import React from 'react'
+import {useUser, LOADING_USER} from '@sanity/react-hooks'
 import {Tooltip} from 'react-tippy'
+import {UserAvatar} from '@sanity/components/presence'
 import {Annotation, AnnotationChanged} from '../../panes/documentPane/history/types'
 
 import styles from './annotationTooltip.css'
@@ -35,9 +37,10 @@ function AnnotationTooltipContent(props: {annotation: AnnotationChanged}) {
 }
 
 function UserItem(props: {userId: string}) {
+  const user = useUser(props.userId)
   return (
     <div className={styles.userItem}>
-      <code>userId={props.userId}</code>
+      {user && user !== LOADING_USER ? <UserAvatar user={user} /> : '…'}
     </div>
   )
 }
