@@ -7,7 +7,7 @@ import {map} from 'rxjs/operators'
 
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
-  accepts: 'image/*',
+  accepts: ['image/*', 'application/octet-stream'],
   upload: (file: File, type?: Type, options?: UploadOptions) => uploadImage(file, options)
 }
 
