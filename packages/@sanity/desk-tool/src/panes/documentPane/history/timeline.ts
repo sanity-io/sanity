@@ -49,7 +49,6 @@ function patchVersion(
   patch: RawPatch
 ): DocumentVersion | null {
   const attributes = version ? version.attributes : null
-  console.log(attributes, patch)
   const newAttributes = applyPatch(attributes, patch)
   return newAttributes === null ? null : {rev, attributes: newAttributes}
 }
@@ -210,7 +209,7 @@ export class Timeline {
   }
 
   private _invalidateTransactionFrom(idx: number) {
-    if (this._recreateTransactionsFrom == null || idx < this._recreateTransactionsFrom) {
+    if (this._recreateTransactionsFrom === undefined || idx < this._recreateTransactionsFrom) {
       this._recreateTransactionsFrom = idx
     }
   }
@@ -263,6 +262,27 @@ export class Timeline {
       id: `${timestamp}/${chunk.id}`,
       chunkIdx,
       chunk
+    }
+  }
+
+  transactionByIndex(idx: number): Transaction | null {
+    if (!this._transactions.has(idx)) return null
+    return this._transactions.get(idx)
+  }
+
+  chunkByTransactionIndex(idx: number, startChunkIdx = 0): Chunk {
+    let chunkIdx = startChunkIdx
+    for (;;) {
+      const chunk = this._chunks.get(chunkIdx)
+      if (!chunk) throw new Error('transaction does not belong in any chunk')
+
+      if (idx >= chunk.end) {
+        chunkIdx++
+      } else if (idx < chunk.start) {
+        chunkIdx--
+      } else {
+        return chunk
+      }
     }
   }
 
@@ -379,8 +399,8 @@ export class Timeline {
 
     const doc = current.startDocument!
 
-    let draftValue = incremental.wrap<Chunk | null>(doc.draft, null)
-    let publishedValue = incremental.wrap<Chunk | null>(doc.published, null)
+    let draftValue = incremental.wrap<Meta>(doc.draft, null)
+    let publishedValue = incremental.wrap<Meta>(doc.published, null)
 
     const initialValue = getValue(draftValue, publishedValue)
     const initialAttributes = getAttrs(doc)
@@ -395,9 +415,14 @@ export class Timeline {
 
         const didHaveDraft = incremental.getType(draftValue) !== 'null'
         const didHavePublished = incremental.getType(publishedValue) !== 'null'
+        const meta = {
+          chunk,
+          chunkIndex: chunkIdx,
+          transactionIndex: idx
+        }
 
         if (transaction.draftEffect) {
-          draftValue = incremental.applyPatch(draftValue, transaction.draftEffect.apply, chunk)
+          draftValue = incremental.applyPatch(draftValue, transaction.draftEffect.apply, meta)
 
           if (!didHaveDraft) {
             draftValue = incremental.rebaseValue(publishedValue, draftValue)
@@ -408,7 +433,7 @@ export class Timeline {
           publishedValue = incremental.applyPatch(
             publishedValue,
             transaction.publishedEffect.apply,
-            chunk
+            meta
           )
 
           if (!didHavePublished) {
@@ -428,7 +453,7 @@ export class Timeline {
 
     const finalValue = incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
     const finalAttributes = getAttrs(current.endDocument!)
-    current.diff = diffValue(initialValue, initialAttributes, finalValue, finalAttributes)
+    current.diff = diffValue(this, initialValue, initialAttributes, finalValue, finalAttributes)
     return current.diff
   }
 }

@@ -61,6 +61,14 @@ export class TwoEndedArray<T> {
     }
   }
 
+  has(idx: number) {
+    if (idx >= 0) {
+      return idx < this._postive.length
+    } else {
+      return -(idx + 1) < this._negative.length
+    }
+  }
+
   get(idx: number): T {
     if (idx >= 0) {
       return this._postive[idx]
