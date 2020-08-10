@@ -9,7 +9,7 @@ export type DiffComponent<T extends Diff<Annotation> = Diff<Annotation>> = Compo
 export type DiffProps<T extends Diff<Annotation> = Diff<Annotation>> = {
   diff: T
   schemaType: SchemaType<T>
-  items?: {fromType?: string; toType: string}[]
+  items?: {fromType?: {name: string}; toType?: {name: string}}[]
 }
 
 export interface ObjectField {
