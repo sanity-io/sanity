@@ -4,11 +4,11 @@
   background: #f1f3f6;
   padding: 0.75em;
   border-radius: 4px;
+  white-space: pre-line;
 }
 
 .segment {
   position: relative;
-  white-space: pre-line;
   /* white-space: pre-wrap; */
 }
 
