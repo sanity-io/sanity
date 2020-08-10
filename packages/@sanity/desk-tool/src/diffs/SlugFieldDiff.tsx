@@ -1,7 +1,7 @@
 import React from 'react'
-import {ObjectDiff} from '@sanity/diff'
+import {ObjectDiff, StringDiff} from '@sanity/diff'
 import {Annotation} from '../panes/documentPane/history/types'
-import {DiffComponent} from './types'
+import {DiffComponent, SchemaType} from './types'
 import {StringFieldDiff} from './StringFieldDiff'
 
 interface Slug {
@@ -9,11 +9,16 @@ interface Slug {
 }
 
 export const SlugFieldDiff: DiffComponent<ObjectDiff<Annotation, Slug>> = ({diff, schemaType}) => {
-  const currentType = schemaType.fields?.find(field => field.name === 'current')
+  const currentField = schemaType.fields?.find(field => field.name === 'current')
   const currentDiff = diff.fields.current
-  if (!currentDiff || !currentType) {
+  if (!currentField || currentDiff?.type !== 'changed' || currentDiff.diff?.type !== 'string') {
     return null
   }
 
-  return <StringFieldDiff diff={currentDiff.diff} schemaType={currentType} />
+  return (
+    <StringFieldDiff
+      diff={currentDiff.diff}
+      schemaType={currentField as SchemaType<StringDiff<Annotation>>}
+    />
+  )
 }
