@@ -1,6 +1,5 @@
 import {UserColorManager} from '@sanity/base'
-import {parseToRgb} from 'polished'
-import {Annotation} from '../panes/documentPane/history/types'
+import {AnnotationChanged} from '../panes/documentPane/history/types'
 
 interface RGB {
   red: number
@@ -37,30 +36,10 @@ function multiply(rgb1: RGB, rgb2: RGB) {
   }
 }
 
-export function getAnnotationColor(colorManager: UserColorManager, annotation: Annotation) {
-  if (!annotation) {
-    throw new Error('missing annotation')
-  }
-
-  const colors = Array.from(annotation.authors).map((userId: any) => {
-    const hueKey = colorManager.get(userId)
-    const hue = color[hueKey]
-
-    return {
-      bg: parseToRgb(hue.bg),
-      fg: parseToRgb(hue.fg)
-    }
-  })
-
-  const result = colors.reduce((acc, x) => {
-    return {
-      bg: multiply(acc.bg, x.bg),
-      fg: multiply(acc.fg, x.fg)
-    }
-  })
-
-  return {
-    bg: `rgb(${result.bg.red}, ${result.bg.green}, ${result.bg.blue})`,
-    fg: `rgb(${result.fg.red}, ${result.fg.green}, ${result.fg.blue})`
-  }
+export function getAnnotationColor(
+  colorManager: UserColorManager,
+  annotation: AnnotationChanged
+): {bg: string; fg: string} {
+  const hueKey = colorManager.get(annotation.author)
+  return color[hueKey]
 }
