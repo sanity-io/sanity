@@ -160,11 +160,17 @@ class Model<T>
     } else {
       if (content.type === 'array') {
         for (let val of content.elements) {
-          if (val.content && val.endMeta !== this.meta) this.updateEndMeta(val.content)
+          if (val.content && val.endMeta !== this.meta) {
+            this.updateEndMeta(val.content)
+          }
+          val.endMeta = this.meta
         }
       } else {
         for (let val of Object.values(content.fields)) {
-          if (val.content && val.endMeta !== this.meta) this.updateEndMeta(val.content)
+          if (val.content && val.endMeta !== this.meta) {
+            this.updateEndMeta(val.content)
+          }
+          val.endMeta = this.meta
         }
       }
     }
@@ -185,7 +191,7 @@ class Model<T>
   copyObject(value: Value<T> | null): ObjectContent<T> {
     let obj: ObjectContent<T> = {
       type: 'object',
-      fields: {},
+      fields: {}
     }
 
     if (value) {
@@ -201,7 +207,7 @@ class Model<T>
 
     return {
       type: 'array',
-      elements,
+      elements
     }
   }
 
