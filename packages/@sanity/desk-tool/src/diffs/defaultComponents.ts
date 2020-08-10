@@ -1,14 +1,14 @@
 import {DiffComponent} from './types'
-import {ArrayDiff} from './arrayDiff'
-import {NumberFieldDiff} from './NumberFieldDiff'
-import {StringFieldDiff} from './StringFieldDiff'
-import {ReferenceFieldDiff} from './ReferenceFieldDiff'
-import {ImageFieldDiff} from './ImageFieldDiff'
-import {BooleanFieldDiff} from './BooleanFieldDiff'
-import {SlugFieldDiff} from './SlugFieldDiff'
+import {ArrayFieldDiff} from './array'
+import {NumberFieldDiff} from './number'
+import {StringFieldDiff} from './string'
+import {ReferenceFieldDiff} from './reference'
+import {ImageFieldDiff} from './image'
+import {BooleanFieldDiff} from './boolean'
+import {SlugFieldDiff} from './slug'
 
 export const defaultComponents: {[key: string]: DiffComponent<any>} = {
-  array: ArrayDiff,
+  array: ArrayFieldDiff,
   string: StringFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
