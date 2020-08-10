@@ -22,9 +22,21 @@
   overflow: hidden;
 }
 
+.historyTimelineContainer {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
 .editorContainer {
   flex: 3;
   min-width: 300px;
+}
+
+.changesContainer {
+  flex: 2;
+  min-width: 280px;
+  max-width: 540px;
 }
 
 .loading {
