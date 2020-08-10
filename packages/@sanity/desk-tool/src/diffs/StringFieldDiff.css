@@ -8,6 +8,7 @@
 
 .segment {
   position: relative;
+  white-space: pre-line;
   /* white-space: pre-wrap; */
 }
 
