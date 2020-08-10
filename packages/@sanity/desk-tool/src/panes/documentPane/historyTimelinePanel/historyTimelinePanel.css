@@ -1,5 +1,4 @@
 .root {
-  /* display: block; */
   overflow: auto;
 }
 
@@ -16,6 +15,14 @@
   }
 
   @nest &[data-selected='true'] {
+    background: #a6c8fd;
+  }
+
+  @nest &[data-selection-start='true'] {
+    background: #a6c8fd;
+  }
+
+  @nest &[data-selection-end='true'] {
     background: #06f;
     color: #fff;
   }
