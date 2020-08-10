@@ -36,7 +36,13 @@ export function StringSegment({
   }
 
   if (segment.type === 'removed') {
-    const color = getAnnotationColor(userColorManager, segment.annotation)
+    if (!segment.annotation) {
+      console.error('@todo: why are we missing annotation for added string segment?')
+    }
+
+    const color = segment.annotation
+      ? getAnnotationColor(userColorManager, segment.annotation)
+      : {bg: '#fcc', fg: '#f00'}
 
     return (
       <AnnotationTooltip annotation={segment.annotation}>
