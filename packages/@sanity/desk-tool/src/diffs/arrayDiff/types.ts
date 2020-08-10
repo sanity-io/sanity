@@ -3,6 +3,6 @@ import {Annotation} from '../../panes/documentPane/history/types'
 
 export interface ArrayDiffProps {
   diff: ArrayDiff<Annotation>
-  items?: {fromType?: string; toType?: string}[]
-  schemaType: any
+  items?: {fromType?: {name: string}; toType?: {name: string}}[]
+  schemaType: {name: string}
 }
