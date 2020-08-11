@@ -140,6 +140,9 @@ function DocumentPane(props: Props) {
     historyController.version
   ])
 
+  const historyDisplayed: 'from' | 'to' =
+    paneRouter.params.historyDisplayed === 'from' ? 'from' : 'to'
+
   if (startTimeId && !startTime) {
     // TODO: The chunk is not available yet
   }
@@ -174,6 +177,10 @@ function DocumentPane(props: Props) {
     } else {
       paneRouter.setParams(params)
     }
+  }
+
+  const toggleHistoryDisplayed = (value: 'from' | 'to') => {
+    paneRouter.setParams({...paneRouter.params, historyDisplayed: value})
   }
 
   const handleKeyUp = (event: any) => {
@@ -258,7 +265,7 @@ function DocumentPane(props: Props) {
 
   if (startTime) {
     timeline.setRange(startTime, null)
-    displayed = timeline.endAttributes()
+    displayed = historyDisplayed === 'from' ? timeline.startAttributes() : timeline.endAttributes()
   }
 
   const paneHeaderTitle = (
@@ -313,9 +320,12 @@ function DocumentPane(props: Props) {
       <div className={styles.container}>
         {isHistoryOpen && (
           <div className={styles.historyTimelineContainer}>
+            <SelectHistoryDisplayed value={historyDisplayed} onChange={toggleHistoryDisplayed} />
             <HistoryTimelinePanel
               timeline={timeline}
               onSelect={time => toggleHistory(time)}
+              displayed={historyDisplayed}
+              onSelectDisplayed={toggleHistoryDisplayed}
               startTimeId={startTimeId}
             />
           </div>
@@ -359,7 +369,8 @@ function DocumentPane(props: Props) {
               presence={presence}
               initialFocusPath={initialFocusPath}
               onChange={onChange}
-              value={value}
+              value={displayed}
+              readOnly={historyDisplayed === 'from'}
               views={views}
             />
 
@@ -398,6 +409,7 @@ function DocumentView({
   initialFocusPath,
   onChange,
   value,
+  readOnly,
   views
 }: {
   activeViewId: string
@@ -412,6 +424,7 @@ function DocumentView({
   initialFocusPath: unknown[] | null
   onChange: (patches: any[]) => void
   value: Doc | null
+  readOnly?: boolean
   views: {
     type: string
     id: string
@@ -440,7 +453,7 @@ function DocumentView({
     initialFocusPath,
     presence,
     onChange,
-    showHistoric: false
+    readOnly
   }
 
   switch (activeView.type) {
@@ -451,6 +464,40 @@ function DocumentView({
     default:
       return null
   }
+}
+
+function SelectHistoryDisplayed({
+  value,
+  onChange
+}: {
+  value: 'from' | 'to'
+  onChange: (newValue: 'from' | 'to') => void
+}) {
+  return (
+    <div>
+      <div>
+        <label>
+          Newest{' '}
+          <input
+            type="radio"
+            checked={value === 'to'}
+            onChange={evt => onChange(evt.target.checked ? 'to' : 'from')}
+          />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Oldest{' '}
+          <input
+            type="radio"
+            checked={value === 'from'}
+            onChange={evt => onChange(evt.target.checked ? 'from' : 'to')}
+          />
+        </label>
+      </div>
+    </div>
+  )
 }
 
 export default DocumentPane
