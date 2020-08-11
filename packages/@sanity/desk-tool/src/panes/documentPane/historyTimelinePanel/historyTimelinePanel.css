@@ -19,11 +19,7 @@
     background: #a6c8fd;
   }
 
-  @nest &[data-selection-start='true'] {
-    background: #a6c8fd;
-  }
-
-  @nest &[data-selection-end='true'] {
+  @nest &[data-selection-displayed='true'] {
     background: #06f;
     color: #fff;
   }
