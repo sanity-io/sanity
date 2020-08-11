@@ -6,6 +6,7 @@ import {Transaction, TransactionLogEvent, Chunk, Doc, RemoteMutationWithVersion}
 import {diffValue, Meta} from './mendozaDiffer'
 import {TwoEndedArray} from './twoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'
+import {TraceEvent} from './tracer'
 
 /**
  * TimeRef represents a resolved point in the history. The ID contains both a timestamp and a chunk ID.
@@ -25,6 +26,7 @@ type Options = {
   publishedId: string
   draft: Doc | null
   published: Doc | null
+  enableTrace?: boolean
 }
 
 type DocumentVersion = {
@@ -80,12 +82,24 @@ export class Timeline {
     }
   >()
   private _recreateTransactionsFrom?: number
+  private _trace?: TraceEvent[]
 
   constructor(opts: Options) {
     this.publishedId = opts.publishedId
     this.draftId = `drafts.${opts.publishedId}`
     this._draftVersion = createVersion(opts.draft)
     this._publishedVersion = createVersion(opts.published)
+
+    if (opts.enableTrace) {
+      this._trace = []
+      this._trace.push({
+        type: 'initial',
+        publishedId: opts.publishedId,
+        draft: opts.draft,
+        published: opts.published
+      })
+      ;(window as any).__sanityTimelineTrace = this._trace
+    }
   }
 
   get chunkCount() {
@@ -116,6 +130,8 @@ export class Timeline {
    * the mutation for the draft is out of order.
    */
   addRemoteMutation(entry: RemoteMutationWithVersion) {
+    if (this._trace) this._trace.push({type: 'addRemoteMutation', event: entry})
+
     const pending = this._possiblePendingTransactions.get(entry.transactionId)
 
     const transaction: Transaction = pending
@@ -155,6 +171,8 @@ export class Timeline {
   }
 
   addTranslogEntry(event: TransactionLogEvent) {
+    if (this._trace) this._trace.push({type: 'addTranslogEntry', event})
+
     this._transactions.addToBeginning({
       id: event.id,
       author: event.author,
@@ -166,6 +184,8 @@ export class Timeline {
 
   /** Mark that we've reached the earliest entry. */
   didReachEarliestEntry() {
+    if (this._trace) this._trace.push({type: 'didReachEarliestEntry'})
+
     this.reachedEarliestEntry = true
   }
 
@@ -175,6 +195,8 @@ export class Timeline {
    * to invalidate all TimeRefs.
    */
   updateChunks() {
+    if (this._trace) this._trace.push({type: 'updateChunks'})
+
     if (this._recreateTransactionsFrom) {
       while (this._chunks.length > 0) {
         const chunk = this._chunks.last

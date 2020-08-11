@@ -95,7 +95,8 @@ function DocumentPane(props: Props) {
       new Timeline({
         publishedId: documentId,
         draft,
-        published
+        published,
+        enableTrace: __DEV__
       })
   )
 
