@@ -274,6 +274,17 @@ export class Timeline {
     return this.createTimeRef(chunkIdx, chunk).id
   }
 
+  publishedTimeId(): string | null {
+    for (let chunkIdx = this._chunks.lastIdx; chunkIdx >= this._chunks.firstIdx; chunkIdx--) {
+      const chunk = this._chunks.get(chunkIdx)
+      if (chunk.type === 'publish') {
+        return this.createTimeId(chunkIdx, chunk)
+      }
+    }
+
+    return null
+  }
+
   /** Creates a time reference from a chunk. */
   private createTimeRef(chunkIdx: number, chunk = this._chunks.get(chunkIdx)): TimeRef {
     const timestamp = Math.round(
