@@ -8,8 +8,7 @@ interface HistoryTimelinePanelProps {
   timeline: Timeline
   onSelect: (id: string) => void
   displayed: 'from' | 'to'
-  startTimeId?: string
-  endTimeId?: string
+  startTime: TimeRef | null
 }
 
 export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
@@ -17,24 +16,22 @@ export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
 
   // @todo
   let isFirst = true
-  let isSelected = true
+  let isSelected = false
 
   return (
     <div className={styles.root}>
       <div className={styles.header}>Timeline</div>
 
       {timeline.mapChunks((chunk, idx) => {
-        const timeId = timeline.createTimeId(idx, chunk)
-        const isStartTime = props.startTimeId === timeId
-        const isEndTime = isFirst && !props.endTimeId ? true : props.endTimeId === timeId
+        const isStartTime = props.startTime && props.startTime.chunk === chunk
+        const isEndTime = props.startTime && isFirst
+        console.log({isStartTime, isEndTime})
 
-        isFirst = false
-
-        if (isStartTime) {
-          isSelected = false
+        if (isEndTime) {
+          isSelected = true
         }
 
-        return (
+        const item = (
           <div
             className={styles.item}
             data-selected={isSelected}
@@ -44,13 +41,21 @@ export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
             onClick={evt => {
               evt.preventDefault()
               evt.stopPropagation()
-              onSelect(timeId)
+              onSelect(timeline.createTimeId(idx, chunk))
             }}
           >
             <div className={styles.item__typeName}>{chunk.type}</div>
             <div className={styles.item__timestamp}>{format(chunk.startTimestamp)}</div>
           </div>
         )
+
+        if (isStartTime) {
+          isSelected = false
+        }
+
+        isFirst = false
+
+        return item
       })}
     </div>
   )

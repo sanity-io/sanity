@@ -327,7 +327,7 @@ function DocumentPane(props: Props) {
               onSelect={time => toggleHistory(time)}
               displayed={historyDisplayed}
               onSelectDisplayed={toggleHistoryDisplayed}
-              startTimeId={startTimeId}
+              startTime={startTime}
             />
           </div>
         )}
