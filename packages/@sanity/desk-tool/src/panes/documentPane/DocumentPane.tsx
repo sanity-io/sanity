@@ -320,6 +320,7 @@ function DocumentPane(props: Props) {
       <div className={styles.container}>
         {isHistoryOpen && (
           <div className={styles.historyTimelineContainer}>
+            <SelectPublishedButton timeId={timeline.publishedTimeId()} onSelect={toggleHistory} />
             <SelectHistoryDisplayed value={historyDisplayed} onChange={toggleHistoryDisplayed} />
             <HistoryTimelinePanel
               timeline={timeline}
@@ -497,6 +498,26 @@ function SelectHistoryDisplayed({
         </label>
       </div>
     </div>
+  )
+}
+
+function SelectPublishedButton({
+  timeId,
+  onSelect
+}: {
+  timeId: string | null
+  onSelect: (timeId: string) => void
+}) {
+  return (
+    <button
+      type="button"
+      disabled={timeId === null}
+      onClick={() => {
+        if (timeId) onSelect(timeId)
+      }}
+    >
+      Compare against latest published
+    </button>
   )
 }
 
