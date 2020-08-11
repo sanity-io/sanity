@@ -16,6 +16,7 @@ import styles from './FormView.css'
 
 interface Props {
   id: string
+  readOnly?: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: Doc | null
   initialValue: Doc
@@ -96,10 +97,11 @@ export default class FormView extends React.PureComponent<Props> {
   }
 
   isReadOnly() {
-    const {value, schemaType, isConnected} = this.props
+    const {value, schemaType, isConnected, readOnly} = this.props
     const isNonExistent = !value || !value._id
 
     return (
+      readOnly ||
       !isConnected ||
       !isActionEnabled(schemaType, 'update') ||
       (isNonExistent && !isActionEnabled(schemaType, 'create'))

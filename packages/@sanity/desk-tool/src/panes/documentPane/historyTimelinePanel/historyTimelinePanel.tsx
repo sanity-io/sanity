@@ -7,12 +7,13 @@ import styles from './historyTimelinePanel.css'
 interface HistoryTimelinePanelProps {
   timeline: Timeline
   onSelect: (id: string) => void
+  displayed: 'from' | 'to'
   startTimeId?: string
   endTimeId?: string
 }
 
 export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
-  const {timeline, onSelect} = props
+  const {timeline, onSelect, displayed} = props
 
   // @todo
   let isFirst = true
@@ -37,8 +38,7 @@ export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
           <div
             className={styles.item}
             data-selected={isSelected}
-            data-selection-end={isEndTime}
-            data-selection-start={isStartTime}
+            data-selection-displayed={displayed === 'from' ? isStartTime : isEndTime}
             key={chunk.id}
             title={chunk.id}
             onClick={evt => {
