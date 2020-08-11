@@ -154,6 +154,7 @@ export class Patcher<V, S, O, A> {
     let key = this.read() as string
     let entry = this.outputStack.pop()!
     let result = this.finalizeOutput(entry)
+    result = this.model.markChanged(result)
     let obj = this.outputObject()
     this.model.objectSetField(obj, key, result)
   }
