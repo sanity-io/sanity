@@ -10,6 +10,8 @@ export interface ObjectModel<V, S, O, A> {
 
   finalize(b: S | O | A): V
 
+  markChanged(value: V): V
+
   copyString(value: V | null): S
   copyObject(value: V | null): O
   copyArray(value: V | null): A

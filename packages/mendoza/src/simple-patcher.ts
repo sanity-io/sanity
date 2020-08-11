@@ -19,6 +19,10 @@ const Model: ObjectModel<unknown, StringBuilder, ObjectBuilder, ArrayBuilder> = 
     }
   },
 
+  markChanged(value) {
+    return value
+  },
+
   objectGetKeys(value: unknown): string[] {
     return Object.keys(value as any)
   },

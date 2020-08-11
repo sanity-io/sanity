@@ -152,6 +152,10 @@ class Model<T>
     return {content, startMeta: this.meta, endMeta: this.meta}
   }
 
+  markChanged(value: Value<T>): Value<T> {
+    return this.wrap(unwrap(value))
+  }
+
   updateEndMeta(content: Content<T>) {
     if (content.type == 'string') {
       for (let part of content.parts) {
