@@ -1,5 +1,5 @@
 import userStore from 'part:@sanity/base/user'
-import {useObservable} from './utils/use-observable'
+import {useLoadable, LoadableState} from './utils/useLoadable'
 
 export interface User {
   id: string
@@ -7,8 +7,6 @@ export interface User {
   imageUrl?: string
 }
 
-export const LOADING_USER = Symbol.for('LOADING_USER')
-
-export function useUser(userId): User | null | typeof LOADING_USER {
-  return useObservable(userStore.observable.getUser(userId))
+export function useUser(userId): LoadableState<User> {
+  return useLoadable(userStore.observable.getUser(userId))
 }
