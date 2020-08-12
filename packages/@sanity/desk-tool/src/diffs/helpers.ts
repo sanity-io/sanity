@@ -40,7 +40,7 @@ export function getAnnotationColor(
   colorManager: UserColorManager,
   annotation: Annotation
 ): {bg: string; fg: string} {
-  if (annotation.type === 'unchanged') {
+  if (!annotation) {
     return {bg: '#fcc', fg: '#f00'}
   }
 

@@ -1,4 +1,4 @@
-import {Diff, ObjectDiff, Path, FieldDiff, ArrayDiff} from '@sanity/diff'
+import {Diff, ObjectDiff, Path, ArrayDiff} from '@sanity/diff'
 import {Annotation} from '../history/types'
 import {SchemaType} from '../types'
 import {ArrayItemMetadata} from './types'
@@ -67,21 +67,9 @@ export function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<An
 
   for (const pathSegment of path) {
     if (node.type === 'object' && typeof pathSegment === 'string') {
-      const fieldDiff: FieldDiff<Annotation> = node.fields[pathSegment]
-
+      node = node.fields[pathSegment]
       // eslint-disable-next-line max-depth
-      if (!fieldDiff || fieldDiff.type === 'unchanged') {
-        return null
-      }
-
-      // eslint-disable-next-line max-depth
-      if (fieldDiff.type === 'added' || fieldDiff.type === 'removed') {
-        // @todo how do we want to handle this?
-        // @todo to test, set a boolean field from undefined to a value
-        return null
-      }
-
-      node = fieldDiff.diff
+      if (!node) return null
     } else {
       throw new Error(
         `Mismatch between path segment (${typeof pathSegment}) and diff type (${diff.type})`
@@ -104,24 +92,24 @@ export function getArrayDiffItemTypes(
   field: SchemaType
 ): ArrayItemMetadata[] {
   return diff.items.map(diffItem => {
-    if (diffItem.type === 'added') {
+    if (diffItem.diff.action === 'added') {
       return {
-        toType: resolveArrayOfType(field, diffItem.toValue)
+        toType: resolveArrayOfType(field, diffItem.diff.toValue)
       }
-    } else if (diffItem.type === 'changed') {
+    } else if (diffItem.diff.action === 'changed') {
       return {
-        fromType: resolveArrayOfType(field, diffItem.toValue),
-        toType: resolveArrayOfType(field, diffItem.toValue)
+        fromType: resolveArrayOfType(field, diffItem.diff.fromValue),
+        toType: resolveArrayOfType(field, diffItem.diff.toValue)
       }
-    } else if (diffItem.type === 'removed') {
+    } else if (diffItem.diff.action === 'removed') {
       return {
-        fromType: resolveArrayOfType(field, diffItem.fromValue)
+        fromType: resolveArrayOfType(field, diffItem.diff.fromValue)
       }
     }
 
     // unchanged
     return {
-      toType: resolveArrayOfType(field, diffItem.toValue)
+      toType: resolveArrayOfType(field, diffItem.diff.toValue)
     }
   })
 }

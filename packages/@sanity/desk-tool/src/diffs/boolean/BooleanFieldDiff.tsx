@@ -10,19 +10,20 @@ import styles from './BooleanFieldDiff.css'
 
 export const BooleanFieldDiff: DiffComponent<BooleanDiff<Annotation>> = ({diff}) => {
   const userColorManager = useUserColorManager()
-  const {fromValue, toValue, annotation} = diff
+  const {fromValue, toValue} = diff
+  const annotation = diff.isChanged ? diff.annotation : null
   const color = getAnnotationColor(userColorManager, annotation)
 
   return (
     <AnnotationTooltip annotation={annotation}>
       <div className={styles.root} style={{background: color.bg, color: color.fg}}>
-        {fromValue !== undefined && (
-          <>
-            <input type="checkbox" checked={fromValue} readOnly />
-            <span>&rarr;</span>
-          </>
+        {fromValue !== undefined && fromValue !== null && (
+          <input type="checkbox" checked={fromValue} readOnly />
         )}
-        <input type="checkbox" checked={toValue} readOnly />
+        {diff.action === 'changed' && <span>&rarr;</span>}
+        {toValue !== undefined && toValue !== null && (
+          <input type="checkbox" checked={toValue} readOnly />
+        )}
       </div>
     </AnnotationTooltip>
   )

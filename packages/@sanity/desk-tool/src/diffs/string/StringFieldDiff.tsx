@@ -18,14 +18,9 @@ export function StringSegment({
   const userColorManager = useUserColorManager()
 
   if (segment.type === 'added') {
-    if (segment.annotation.type === 'unchanged') {
-      console.error('@todo: why are we missing annotation for added string segment?')
-    }
-
-    const color =
-      segment.annotation.type === 'changed'
-        ? getAnnotationColor(userColorManager, segment.annotation)
-        : {bg: '#fcc', fg: '#f00'}
+    const color = segment.annotation
+      ? getAnnotationColor(userColorManager, segment.annotation)
+      : {bg: '#fcc', fg: '#f00'}
 
     return (
       <AnnotationTooltip annotation={segment.annotation}>
@@ -37,14 +32,9 @@ export function StringSegment({
   }
 
   if (segment.type === 'removed') {
-    if (segment.annotation.type === 'unchanged') {
-      console.error('@todo: why are we missing annotation for removed string segment?')
-    }
-
-    const color =
-      segment.annotation.type === 'changed'
-        ? getAnnotationColor(userColorManager, segment.annotation)
-        : {bg: '#fcc', fg: '#f00'}
+    const color = segment.annotation
+      ? getAnnotationColor(userColorManager, segment.annotation)
+      : {bg: '#fcc', fg: '#f00'}
 
     return (
       <AnnotationTooltip annotation={segment.annotation}>

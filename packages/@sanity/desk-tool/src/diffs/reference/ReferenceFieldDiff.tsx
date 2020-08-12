@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {useUserColorManager} from '@sanity/base'
-import {ObjectDiff, FieldDiff, StringSegmentChanged, StringDiff} from '@sanity/diff'
+import {ObjectDiff, StringSegmentChanged, StringDiff} from '@sanity/diff'
 import Preview from 'part:@sanity/base/preview?'
 import {Annotation} from '../../panes/documentPane/history/types'
 import {AnnotationTooltip} from '../annotationTooltip'
@@ -13,10 +13,7 @@ interface Reference {
   _ref?: string
 }
 
-export const ReferenceFieldDiff: DiffComponent<ObjectDiff<Annotation, Reference>> = ({
-  diff,
-  schemaType
-}) => {
+export const ReferenceFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff, schemaType}) => {
   const userColorManager = useUserColorManager()
   const {fromValue, toValue} = diff
   const prev = fromValue && fromValue._ref
@@ -49,35 +46,25 @@ export const ReferenceFieldDiff: DiffComponent<ObjectDiff<Annotation, Reference>
   )
 }
 
-function getAnnotation(diff: ObjectDiff<Annotation, Reference>): Annotation | null {
+function getAnnotation(diff: ObjectDiff<Annotation>): Annotation {
   const refChange = diff.fields._ref
-  if (refChange && refChange.isChanged) {
+  if (refChange && refChange.type === 'string') {
     return getStringFieldAnnotation(refChange)
   }
 
   // Fall back to other fields if _ref field was not changed (eg, weak was changed)
-  const modified = Object.keys(diff.fields).find(
-    fieldName => diff.fields[fieldName].type !== 'unchanged'
+  const modified = Object.values(diff.fields).find(
+    fieldDiff => fieldDiff.action !== 'unchanged' && fieldDiff.type === 'string'
   )
 
-  return modified ? getStringFieldAnnotation(diff.fields[modified]) : null
+  return modified ? getStringFieldAnnotation(modified as StringDiff<Annotation>) : null
 }
 
-function getStringFieldAnnotation(field: FieldDiff<Annotation>): Annotation | null {
-  if (field.type === 'added' || field.type === 'removed') {
-    return field.annotation
-  }
+function getStringFieldAnnotation(diff: StringDiff<Annotation>): Annotation | null {
+  const changed = diff.segments.find(
+    (segment): segment is StringSegmentChanged<Annotation> =>
+      (segment.type === 'added' || segment.type === 'removed') && Boolean(segment.annotation)
+  )
 
-  if (field.type === 'changed') {
-    const diff = field.diff as StringDiff
-    const changed = diff.segments.find(
-      (segment): segment is StringSegmentChanged<Annotation> =>
-        (segment.type === 'added' || segment.type === 'removed') && Boolean(segment.annotation)
-    )
-
-    return changed ? changed.annotation : null
-  }
-
-  // Unchanged
-  return null
+  return changed ? changed.annotation : null
 }
