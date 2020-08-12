@@ -4,7 +4,7 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {StringDiffSegment, StringDiff, StringInput, DiffOptions, NoDiff} from '../types'
+import {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
 
 const dmp = new DiffMatchPatch()
 
@@ -12,24 +12,28 @@ export function diffString<A>(
   fromInput: StringInput<A>,
   toInput: StringInput<A>,
   options: DiffOptions
-): StringDiff<A> | NoDiff {
+): StringDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value
 
   if (fromValue === toValue) {
     return {
-      type: 'unchanged',
+      type: 'string',
+      action: 'unchanged',
       isChanged: false,
       fromValue,
-      toValue
+      toValue,
+      segments: [{type: 'unchanged', text: fromValue}]
     }
   }
 
   return {
     type: 'string',
+    action: 'changed',
     isChanged: true,
     fromValue,
     toValue,
+    annotation: toInput.annotation,
 
     // Compute and memoize string segments only when accessed
     get segments(): StringDiffSegment<A>[] {
@@ -83,4 +87,50 @@ function buildSegments<A>(
   }
 
   return segments
+}
+
+export function removedString<A>(
+  input: StringInput<A>,
+  toValue: null | undefined,
+  options: DiffOptions
+): StringDiff<A> & {action: 'removed'} {
+  return {
+    type: 'string',
+    action: 'removed',
+    isChanged: true,
+    fromValue: input.value,
+    toValue,
+    annotation: input.annotation,
+
+    get segments(): StringDiffSegment<A>[] {
+      delete this.segments
+      this.segments = input
+        .sliceAnnotation(0, input.value.length)
+        .map(segment => ({type: 'removed', ...segment}))
+      return this.segments
+    }
+  }
+}
+
+export function addedString<A>(
+  input: StringInput<A>,
+  fromValue: null | undefined,
+  options: DiffOptions
+): StringDiff<A> & {action: 'added'} {
+  return {
+    type: 'string',
+    action: 'added',
+    isChanged: true,
+    fromValue,
+    toValue: input.value,
+    annotation: input.annotation,
+
+    get segments(): StringDiffSegment<A>[] {
+      delete this.segments
+      this.segments = input
+        .sliceAnnotation(0, input.value.length)
+        .map(segment => ({type: 'added', ...segment}))
+      return this.segments
+    }
+  }
 }

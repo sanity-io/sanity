@@ -19,10 +19,9 @@ export function ArrayFieldDiff(props: ArrayDiffProps) {
     <div className={styles.root}>
       <div className={styles.itemList}>
         {props.diff.items.map((diffItem, diffItemIndex) => {
-          const color =
-            diffItem.type === 'added' || diffItem.type === 'removed'
-              ? getAnnotationColor(userColorManager, diffItem.annotation)
-              : null
+          const color = diffItem.diff.isChanged
+            ? getAnnotationColor(userColorManager, diffItem.diff.annotation)
+            : null
 
           return (
             <div className={styles.diffItemContainer} key={diffItemIndex}>
@@ -34,7 +33,7 @@ export function ArrayFieldDiff(props: ArrayDiffProps) {
               </div>
               <div className={styles.diffItemBox}>
                 <DefaultArrayDiffItem
-                  diff={diffItem}
+                  itemDiff={diffItem}
                   metadata={props.items && props.items[diffItemIndex]}
                 />
               </div>
@@ -101,13 +100,14 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
 
 // eslint-disable-next-line complexity
 function DefaultArrayDiffItem(props: {
-  diff: ItemDiff<Annotation>
+  itemDiff: ItemDiff<Annotation>
   metadata?: {fromType?: {name: string}; toType?: {name: string}}
 }) {
-  const {diff} = props
+  const {itemDiff} = props
+  const diff = itemDiff.diff
   const metadata = props.metadata || {fromType: undefined, toType: undefined}
 
-  if (diff.type === 'added') {
+  if (diff.action === 'added') {
     return (
       <pre className={styles.addedItem}>
         Added array item ({metadata.toType && metadata.toType.name}):{' '}
@@ -116,7 +116,7 @@ function DefaultArrayDiffItem(props: {
     )
   }
 
-  if (diff.type === 'changed') {
+  if (diff.action === 'changed') {
     return (
       <pre className={styles.changedItem}>
         Changed array item ({metadata.fromType && metadata.fromType.name}&rarr;
@@ -125,7 +125,7 @@ function DefaultArrayDiffItem(props: {
     )
   }
 
-  if (diff.type === 'removed') {
+  if (diff.action === 'removed') {
     return (
       <pre className={styles.removedItem}>
         Removed array item ({metadata.fromType && metadata.fromType.name}):{' '}

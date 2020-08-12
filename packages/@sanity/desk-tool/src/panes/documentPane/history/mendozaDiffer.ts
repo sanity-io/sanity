@@ -1,15 +1,6 @@
-import {
-  Input,
-  ArrayInput,
-  ObjectInput,
-  StringInput,
-  wrap,
-  Diff,
-  diffInput,
-  NoDiff
-} from '@sanity/diff'
+import {Input, ArrayInput, ObjectInput, StringInput, wrap, Diff, diffInput} from '@sanity/diff'
 import {Value, ArrayContent, ObjectContent, StringContent} from 'mendoza/lib/incremental-patcher'
-import {Chunk, Annotation, AnnotationUnchanged} from './types'
+import {Chunk, Annotation} from './types'
 import {Timeline} from './timeline'
 import {isSameAnnotation} from './utilts'
 
@@ -56,7 +47,7 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
 
 class ObjectContentWrapper implements ObjectInput<Annotation> {
   type: 'object' = 'object'
-  value: object
+  value: Record<string, unknown>
   keys: string[]
   annotation: Annotation
   extractor: AnnotationExtractor
@@ -66,7 +57,7 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
 
   constructor(
     content: ObjectContent<Meta>,
-    value: object,
+    value: Record<string, unknown>,
     annotation: Annotation,
     extractor: AnnotationExtractor
   ) {
@@ -161,7 +152,12 @@ function wrapValue(
       case 'array':
         return new ArrayContentWrapper(value.content, raw as unknown[], annotation, extractor)
       case 'object':
-        return new ObjectContentWrapper(value.content, raw as object, annotation, extractor)
+        return new ObjectContentWrapper(
+          value.content,
+          raw as Record<string, unknown>,
+          annotation,
+          extractor
+        )
       case 'string':
         return new StringContentWrapper(value.content, raw as string, annotation, extractor)
       default:
@@ -172,25 +168,22 @@ function wrapValue(
   return wrap(raw, annotation)
 }
 
-const unchangedAnnotation: AnnotationUnchanged = {type: 'unchanged'}
-
 function extractAnnotationForFromInput(timeline: Timeline, value: Value<Meta>): Annotation {
   if (value.endMeta) {
     // The next transaction is where it disappeared:
     const nextTxIndex = value.endMeta.transactionIndex + 1
     const tx = timeline.transactionByIndex(nextTxIndex)
-    if (!tx) return unchangedAnnotation
+    if (!tx) return null
 
     const chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunkIndex)
 
     return {
-      type: 'changed',
       chunk,
       author: tx.author
     }
   }
 
-  return unchangedAnnotation
+  return null
 }
 
 function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): Annotation {
@@ -198,13 +191,12 @@ function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): An
     const tx = timeline.transactionByIndex(value.startMeta.transactionIndex)!
 
     return {
-      type: 'changed',
       chunk: value.startMeta.chunk,
       author: tx.author
     }
   }
 
-  return unchangedAnnotation
+  return null
 }
 
 export function diffValue(
@@ -213,7 +205,7 @@ export function diffValue(
   fromRaw: unknown,
   to: Value<Meta>,
   toRaw: unknown
-): Diff<Annotation> | NoDiff {
+): Diff<Annotation> {
   const fromInput = wrapValue(from, fromRaw, value =>
     extractAnnotationForFromInput(timeline, value)
   )
