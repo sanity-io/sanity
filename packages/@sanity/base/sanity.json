@@ -33,6 +33,10 @@
       "description": "Function that resolves a preview component for a given type"
     },
     {
+      "name": "part:@sanity/base/diff-resolver",
+      "description": "Function that resolves a diff component for a given type"
+    },
+    {
       "name": "part:@sanity/base/configure-client",
       "description": "Function that configures the default sanity client"
     },
