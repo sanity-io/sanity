@@ -10,7 +10,8 @@ import styles from './NumberFieldDiff.css'
 
 export const NumberFieldDiff: DiffComponent<NumberDiff<Annotation>> = ({diff}) => {
   const userColorManager = useUserColorManager()
-  const {fromValue, toValue, annotation} = diff
+  const {fromValue, toValue} = diff
+  const annotation = diff.isChanged ? diff.annotation : null
   const color = getAnnotationColor(userColorManager, annotation)
 
   const inlineStyle = {

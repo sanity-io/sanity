@@ -1,96 +1,133 @@
-import {ArrayDiff, ArrayInput, Input, ItemDiff, DiffOptions, NoDiff} from '../types'
-import {diffInput} from './diffInput'
+import {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
+import {diffInput, removedInput, addedInput} from './diffInput'
 import {getLongestCommonSubsequence} from './lcs'
 
 export function diffArray<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
   options: DiffOptions
-): ArrayDiff<A> | NoDiff {
+): ArrayDiff<A> {
+  if (fromInput === toInput) {
+    const fromValue = fromInput.value
+    const toValue = toInput.value
+
+    return {
+      type: 'array',
+      action: 'unchanged',
+      isChanged: false,
+      fromValue,
+      toValue,
+      get items(): ItemDiff<A>[] {
+        delete this.items
+        const items = diffExactByPosition(fromInput, toInput, options)
+        if (!items) throw new Error('invariant broken: equivalent input, but diff detected')
+        return (this.items = items)
+      }
+    }
+  }
+
+  // The key-ed approach should handle most cases (_key'ed objects, primitives):
+  const keyedA = indexByKey(fromInput)
+  const keyedB = indexByKey(toInput)
+
+  if (keyedA && keyedB) {
+    return diffArrayByKey(fromInput, keyedA, toInput, keyedB, options)
+  }
+
+  // Check if they are 100% equivalent:
+  const items = diffExactByPosition(fromInput, toInput, options)
+  if (items) return buildArrayDiff(fromInput, toInput, items, false)
+
+  // Otherwise we create a diff where we model it as removing the from-items and adding the to-items.
+  return diffArrayByReinsert(fromInput, toInput, options)
+}
+
+function buildArrayDiff<A>(
+  fromInput: ArrayInput<A>,
+  toInput: ArrayInput<A>,
+  items: ItemDiff<A>[],
+  isChanged: boolean
+): ArrayDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value
-  const items = diffArrayItems(fromInput, toInput, options)
 
-  return items
+  return isChanged
     ? {
         type: 'array',
+        action: 'changed',
         isChanged: true,
+        fromValue,
+        toValue,
+        items,
+        annotation: toInput.annotation
+      }
+    : {
+        type: 'array',
+        action: 'unchanged',
+        isChanged: false,
         fromValue,
         toValue,
         items
       }
-    : {
-        type: 'unchanged',
-        isChanged: false,
-        fromValue,
-        toValue
-      }
 }
 
-/** Returns the items array for the diff, or `undefined` if there are no changes. */
-function diffArrayItems<A>(
+/**
+ * Diffes the two arrays by position. Returns an `items` array if they are unchanged, or undefined
+ * if there are any changes anywhere.
+ */
+function diffExactByPosition<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
   options: DiffOptions
 ): ItemDiff<A>[] | undefined {
-  if (fromInput === toInput) return
+  if (fromInput.length !== toInput.length) return
 
-  const keyedA = indexByKey(fromInput)
-  const keyedB = indexByKey(toInput)
+  const items: ItemDiff<A>[] = []
 
-  return keyedA && keyedB
-    ? diffArrayByKey(fromInput, keyedA, toInput, keyedB)
-    : diffArrayByReinsert(fromInput, toInput)
+  for (let idx = 0; idx < fromInput.length; idx++) {
+    let diff = diffInput(fromInput.at(idx), toInput.at(idx), options)
+    if (diff.isChanged) return
+    items.push({
+      fromIndex: idx,
+      toIndex: idx,
+      hasMoved: false,
+      diff
+    })
+  }
+
+  return items
 }
 
 function diffArrayByReinsert<A>(
   fromInput: ArrayInput<A>,
-  toInput: ArrayInput<A>
-): ItemDiff<A>[] | undefined {
+  toInput: ArrayInput<A>,
+  options: DiffOptions
+): ArrayDiff<A> {
   const items: ItemDiff<A>[] = []
-  let mightBeSame = fromInput.length === toInput.length
 
   for (let idx = 0; idx < toInput.length; idx++) {
     let input = toInput.at(idx)
 
-    if (mightBeSame) {
-      let diff = diffInput(fromInput.at(idx), input)
-      if (diff.isChanged) {
-        mightBeSame = false
-      }
-    }
-
     items.push({
-      type: 'added',
-      isChanged: true,
       fromIndex: undefined,
-      fromValue: undefined,
       toIndex: idx,
-      toValue: input.value,
       hasMoved: false,
-      annotation: input.annotation
+      diff: addedInput(input, undefined, options)
     })
   }
-
-  // If `mightBeSame` is still true, then they are indeed equivalent.
-  if (mightBeSame) return
 
   for (let idx = 0; idx < fromInput.length; idx++) {
     let input = fromInput.at(idx)
 
     items.push({
-      type: 'removed',
-      isChanged: true,
       fromIndex: idx,
-      fromValue: input.value,
       toIndex: undefined,
-      toValue: undefined,
       hasMoved: false,
-      annotation: input.annotation
+      diff: removedInput(input, undefined, options)
     })
   }
 
-  return items
+  return buildArrayDiff(fromInput, toInput, items, true)
 }
 
 type Key = string | number | boolean
@@ -102,8 +139,9 @@ function diffArrayByKey<A>(
   fromArray: ArrayInput<A>,
   fromKeyIndex: KeyIndex,
   toArray: ArrayInput<A>,
-  toKeyIndex: KeyIndex
-): ItemDiff<A>[] | undefined {
+  toKeyIndex: KeyIndex,
+  options: DiffOptions
+): ArrayDiff<A> {
   const items: ItemDiff<A>[] = []
   let isChanged = false
 
@@ -115,32 +153,15 @@ function diffArrayByKey<A>(
     let toInput = toArray.at(toIndex)
 
     let diff = diffInput(fromInput, toInput)
-    if (diff.isChanged) {
-      items.push({
-        type: 'changed',
-        isChanged: true,
-        fromIndex,
-        fromValue: fromInput.value,
-        toIndex,
-        toValue: toInput.value,
-        diff,
-        hasMoved
-      })
-      isChanged = true
-    } else {
-      items.push({
-        type: 'unchanged',
-        isChanged: false,
-        fromIndex,
-        fromValue: fromInput.value,
-        toIndex,
-        toValue: toInput.value,
-        hasMoved
-      })
+    items.push({
+      fromIndex,
+      toIndex,
+      hasMoved,
+      diff
+    })
 
-      if (fromIndex !== toIndex) {
-        isChanged = true
-      }
+    if (diff.isChanged || fromIndex !== toIndex) {
+      isChanged = true
     }
   }
 
@@ -165,16 +186,11 @@ function diffArrayByKey<A>(
 
     let input = fromArray.at(fromIndex)
 
-    // Not a part of the to-value => removed
     items.push({
-      type: 'removed',
-      isChanged: true,
       fromIndex,
-      fromValue: input.value,
-      toValue: undefined,
       toIndex: undefined,
       hasMoved: false,
-      annotation: input.annotation
+      diff: removedInput(input, undefined, options)
     })
 
     isChanged = true
@@ -185,25 +201,19 @@ function diffArrayByKey<A>(
     for (let toIndex of positions) {
       let input = toArray.at(toIndex)
       items.push({
-        type: 'added',
-        isChanged: true,
         fromIndex: undefined,
-        fromValue: undefined,
         toIndex,
-        toValue: input.value,
         hasMoved: false,
-        annotation: input.annotation
+        diff: addedInput(input, undefined, options)
       })
     }
 
     isChanged = true
   }
 
-  if (!isChanged) return
-
   items.sort(compareItemDiff)
 
-  return items
+  return buildArrayDiff(fromArray, toArray, items, isChanged)
 }
 
 function compareItemDiff<A>(a: ItemDiff<A>, b: ItemDiff<A>): number {
@@ -302,4 +312,64 @@ function indexByKey<A>(arr: ArrayInput<A>): KeyIndex | undefined {
 
   // All is good.
   return {keys, index}
+}
+
+export function removedArray<A>(
+  input: ArrayInput<A>,
+  toValue: null | undefined,
+  options: DiffOptions
+): ArrayDiff<A> & {action: 'removed'} {
+  return {
+    type: 'array',
+    action: 'removed',
+    isChanged: true,
+    fromValue: input.value,
+    toValue,
+    annotation: input.annotation,
+
+    get items(): ArrayDiff<A>['items'] {
+      delete this.items
+      this.items = []
+      for (let i = 0; i < input.length; i++) {
+        let item = input.at(i)
+        this.items.push({
+          fromIndex: i,
+          toIndex: undefined,
+          hasMoved: false,
+          diff: removedInput(item, undefined, options)
+        })
+      }
+      return this.items
+    }
+  }
+}
+
+export function addedArray<A>(
+  input: ArrayInput<A>,
+  fromValue: null | undefined,
+  options: DiffOptions
+): ArrayDiff<A> & {action: 'added'} {
+  return {
+    type: 'array',
+    action: 'added',
+    isChanged: true,
+    fromValue,
+    toValue: input.value,
+    annotation: input.annotation,
+
+    get items(): ArrayDiff<A>['items'] {
+      delete this.items
+      this.items = []
+      for (let i = 0; i < input.length; i++) {
+        let item = input.at(i)
+        this.items.push({
+          fromIndex: undefined,
+          toIndex: i,
+          hasMoved: false,
+          diff: addedInput(item, undefined, options)
+        })
+      }
+      return this.items
+    }
+  }
 }

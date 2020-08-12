@@ -3,13 +3,13 @@ import {wrap} from '.'
 
 export default class ObjectWrapper<A> implements ObjectInput<A> {
   type: 'object' = 'object'
-  value: object
+  value: Record<string, unknown>
   keys: string[]
   annotation: A
 
   private fields: Record<string, Input<A>> = {}
 
-  constructor(value: object, annotation: A) {
+  constructor(value: Record<string, unknown>, annotation: A) {
     this.value = value
     this.annotation = annotation
     this.keys = Object.keys(value)

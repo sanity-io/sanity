@@ -17,7 +17,7 @@ export function wrap<A>(input: unknown, annotation: A): Input<A> {
       case 'boolean':
         return new BasicWrapper(type, input as boolean, annotation)
       case 'object':
-        return new ObjectWrapper(input as object, annotation)
+        return new ObjectWrapper(input as Record<string, unknown>, annotation)
       case 'string':
         return new StringWrapper(input as string, annotation)
     }
