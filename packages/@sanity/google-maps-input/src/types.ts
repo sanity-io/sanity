@@ -5,6 +5,7 @@ export interface LatLng {
 
 export interface Geopoint {
   _type: 'geopoint'
+  _key?: string
   lat: number
   lng: number
   alt?: number
@@ -15,3 +16,6 @@ export interface GeopointSchemaType {
   title?: string
   description?: string
 }
+
+// @todo replace
+export type Annotation = {author: string}
