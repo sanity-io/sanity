@@ -18,13 +18,19 @@
     "google-maps-input",
     "sanity-plugin"
   ],
+  "dependencies": {
+    "@sanity/react-hooks": "1.150.4"
+  },
   "devDependencies": {
     "@sanity/check": "1.150.1",
+    "@sanity/components": "1.150.3",
+    "@sanity/diff": "1.150.1",
     "@types/googlemaps": "^3.39.11",
     "lodash": "^4.17.15",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
+    "@sanity/components": "^1.150.0",
     "react": "^16.9",
     "react-dom": "^16.9"
   },

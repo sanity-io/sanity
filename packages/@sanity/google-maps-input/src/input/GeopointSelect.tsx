@@ -1,9 +1,9 @@
 import React from 'react'
-import {SearchInput} from './map/SearchInput'
-import {GoogleMap} from './map/Map'
-import {Marker} from './map/Marker'
-import styles from './styles/GeopointSelect.css'
-import {LatLng, Geopoint} from './types'
+import {SearchInput} from '../map/SearchInput'
+import {GoogleMap} from '../map/Map'
+import {Marker} from '../map/Marker'
+import {LatLng, Geopoint} from '../types'
+import styles from './GeopointSelect.css'
 
 const fallbackLatLng: LatLng = {lat: 40.7058254, lng: -74.1180863}
 
