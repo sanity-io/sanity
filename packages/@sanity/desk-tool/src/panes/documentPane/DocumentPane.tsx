@@ -326,7 +326,6 @@ function DocumentPane(props: Props) {
               timeline={timeline}
               onSelect={time => toggleHistory(time)}
               displayed={historyDisplayed}
-              onSelectDisplayed={toggleHistoryDisplayed}
               startTime={startTime}
             />
           </div>
@@ -386,7 +385,7 @@ function DocumentPane(props: Props) {
         {isHistoryOpen && (
           <div className={styles.changesContainer}>
             <ChangesPanel
-              diff={timeline.currentDiff()}
+              diff={timeline.currentDiff() as any}
               schemaType={schemaType}
               documentId={documentId}
             />

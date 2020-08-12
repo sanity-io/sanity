@@ -1,5 +1,5 @@
 /* eslint-disable max-depth, complexity */
-import {Diff, NoDiff} from '@sanity/diff'
+import {Diff} from '@sanity/diff'
 import {applyPatch, incremental, RawPatch} from 'mendoza'
 import {Value} from 'mendoza/lib/incremental-patcher'
 import {Transaction, TransactionLogEvent, Chunk, Doc, RemoteMutationWithVersion} from './types'
@@ -517,5 +517,5 @@ type Reconstruction = {
   end: Chunk
   startDocument?: CombinedDocument
   endDocument?: CombinedDocument
-  diff?: Diff<any> | NoDiff
+  diff?: Diff<any>
 }

@@ -7,7 +7,6 @@ import styles from './historyTimelinePanel.css'
 interface HistoryTimelinePanelProps {
   timeline: Timeline
   onSelect: (id: string) => void
-  onSelectDisplayed: (dir: 'from' | 'to') => void
   displayed: 'from' | 'to'
   startTime: TimeRef | null
 }

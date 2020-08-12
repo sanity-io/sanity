@@ -1,5 +1,5 @@
-import {ObjectDiff, ObjectInput, DiffOptions, NoDiff} from '../types'
-import {diffInput} from './diffInput'
+import {ObjectDiff, ObjectInput, DiffOptions} from '../types'
+import {diffInput, removedInput, addedInput} from './diffInput'
 
 const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev'])
 
@@ -7,11 +7,9 @@ export function diffObject<A>(
   fromInput: ObjectInput<A>,
   toInput: ObjectInput<A>,
   options: DiffOptions
-): ObjectDiff<A> | NoDiff {
+): ObjectDiff<A> {
   const fields: ObjectDiff<A>['fields'] = {}
   let isChanged = false
-
-  // TODO: Handle nulls
 
   for (let key of fromInput.keys) {
     if (ignoredFields.has(key)) continue
@@ -20,35 +18,11 @@ export function diffObject<A>(
 
     let toField = toInput.get(key)
     if (toField) {
-      let diff = diffInput(fromField, toField, options)
-      let fromValue = fromField.value
-      let toValue = toField.value
-
-      if (diff.isChanged) {
-        fields[key] = {
-          type: 'changed',
-          isChanged: true,
-          fromValue,
-          toValue,
-          diff
-        }
-        isChanged = true
-      } else {
-        fields[key] = {
-          type: 'unchanged',
-          isChanged: false,
-          fromValue,
-          toValue
-        }
-      }
+      let fieldDiff = diffInput(fromField, toField, options)
+      fields[key] = fieldDiff
+      if (fieldDiff.isChanged) isChanged = true
     } else {
-      fields[key] = {
-        type: 'removed',
-        isChanged: true,
-        fromValue: fromField.value,
-        toValue: undefined,
-        annotation: fromInput.annotation
-      }
+      fields[key] = removedInput(fromInput, undefined, options)
       isChanged = true
     }
   }
@@ -60,32 +34,81 @@ export function diffObject<A>(
     if (fromInput.get(key)) continue
 
     let toField = toInput.get(key)!
-    fields[key] = {
-      type: 'added',
-      isChanged: true,
-      fromValue: undefined,
-      toValue: toField.value,
-      annotation: toInput.annotation
-    }
+    fields[key] = addedInput(toField, undefined, options)
     isChanged = true
   }
 
   const fromValue = fromInput.value
   const toValue = toInput.value
 
-  if (!isChanged)
+  if (!isChanged) {
     return {
-      type: 'unchanged',
+      type: 'object',
+      action: 'unchanged',
       isChanged: false,
       fromValue,
-      toValue
+      toValue,
+      fields
     }
+  }
 
   return {
     type: 'object',
+    action: 'changed',
     isChanged: true,
     fromValue,
     toValue,
-    fields
+    fields,
+    annotation: toInput.annotation
+  }
+}
+
+export function removedObject<A>(
+  input: ObjectInput<A>,
+  toValue: null | undefined,
+  options: DiffOptions
+): ObjectDiff<A> & {action: 'removed'} {
+  return {
+    type: 'object',
+    action: 'removed',
+    isChanged: true,
+    fromValue: input.value,
+    toValue,
+    annotation: input.annotation,
+
+    get fields(): ObjectDiff<A>['fields'] {
+      delete this.fields
+      this.fields = {}
+      for (let key of input.keys) {
+        let value = input.get(key)!
+        this.fields[key] = removedInput(value, undefined, options)
+      }
+      return this.fields
+    }
+  }
+}
+
+export function addedObject<A>(
+  input: ObjectInput<A>,
+  fromValue: null | undefined,
+  options: DiffOptions
+): ObjectDiff<A> & {action: 'added'} {
+  return {
+    type: 'object',
+    action: 'added',
+    isChanged: true,
+    fromValue,
+    toValue: input.value,
+    annotation: input.annotation,
+
+    get fields(): ObjectDiff<A>['fields'] {
+      delete this.fields
+      this.fields = {}
+      for (let key of input.keys) {
+        let value = input.get(key)!
+        this.fields[key] = addedInput(value, undefined, options)
+      }
+      return this.fields
+    }
   }
 }
