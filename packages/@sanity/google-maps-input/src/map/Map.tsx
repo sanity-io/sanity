@@ -5,7 +5,10 @@ import styles from './Map.css'
 interface MapProps {
   api: typeof window.google.maps
   location: LatLng
+  bounds?: google.maps.LatLngBounds
   defaultZoom?: number
+  mapTypeControl?: boolean
+  controlSize?: number
   onClick?: (event: google.maps.MouseEvent) => void
   children?: (map: google.maps.Map) => React.ReactElement
 }
@@ -52,12 +55,18 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
       return
     }
 
-    if (prevProps.onClick !== this.props.onClick) {
+    const {onClick, location, bounds} = this.props
+
+    if (prevProps.onClick !== onClick) {
       this.attachClickHandler()
     }
 
-    if (prevProps.location !== this.props.location) {
+    if (prevProps.location !== location) {
       map.panTo(this.getCenter())
+    }
+
+    if (prevProps.bounds !== bounds && bounds) {
+      map.fitBounds(bounds)
     }
   }
 
@@ -73,15 +82,21 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
   }
 
   constructMap(el: HTMLDivElement) {
-    const {defaultZoom, api} = this.props
-    const GMap = api.Map
-    const geoPoint = this.getCenter()
-    const options = {
+    const {defaultZoom, api, mapTypeControl, controlSize, bounds} = this.props
+
+    const map = new api.Map(el, {
       zoom: defaultZoom,
-      center: geoPoint
+      center: this.getCenter(),
+      streetViewControl: false,
+      mapTypeControl,
+      controlSize
+    })
+
+    if (bounds) {
+      map.fitBounds(bounds)
     }
 
-    return new GMap(el, options)
+    return map
   }
 
   setMapElement = (element: HTMLDivElement | null) => {
@@ -99,7 +114,7 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
     return (
       <>
         <div ref={this.setMapElement} className={styles.map} />
-        {children && map && children(map)}
+        {children && map ? children(map) : null}
       </>
     )
   }

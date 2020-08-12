@@ -45,7 +45,7 @@ export class GoogleMapsLoadProxy extends React.Component<LoadProps, LoadState> {
     }
 
     if (api) {
-      return this.props.children(api)
+      return this.props.children(api) || null
     }
 
     return null

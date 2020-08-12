@@ -8,7 +8,11 @@
     {
       "name": "part:@sanity/google-maps-input/input/geopoint",
       "implements": "part:@sanity/form-builder/input/geopoint",
-      "path": "GeopointInput.js"
+      "path": "input/GeopointInput"
+    },
+    {
+      "implements": "part:@sanity/base/diff-resolver",
+      "path": "diff/resolver"
     }
   ]
 }

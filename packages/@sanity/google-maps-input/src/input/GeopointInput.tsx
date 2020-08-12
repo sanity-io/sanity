@@ -7,10 +7,10 @@ import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/pa
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import styles from './styles/GeopointInput.css'
+import {GoogleMapsLoadProxy} from '../GoogleMapsLoadProxy'
+import {Geopoint, GeopointSchemaType} from '../types'
+import styles from './GeopointInput.css'
 import {GeopointSelect} from './GeopointSelect'
-import {GoogleMapsLoadProxy} from './GoogleMapsLoadProxy'
-import {Geopoint, GeopointSchemaType} from './types'
 
 const getStaticImageUrl = value => {
   const loc = `${value.lat},${value.lng}`
