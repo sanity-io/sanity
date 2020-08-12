@@ -2,8 +2,6 @@ import React from 'react'
 import {loadGoogleMapsApi} from './loadGoogleMapsApi'
 
 interface LoadProps {
-  apiKey: string
-  locale?: string
   children: (api: typeof window.google.maps) => React.ReactElement
 }
 
@@ -31,8 +29,7 @@ export class GoogleMapsLoadProxy extends React.Component<LoadProps, LoadState> {
       return
     }
 
-    const {apiKey, locale} = this.props
-    loadGoogleMapsApi(apiKey, locale)
+    loadGoogleMapsApi()
       .then(api => this.setState({loading: false, api}))
       .catch(error => this.setState({error}))
   }
