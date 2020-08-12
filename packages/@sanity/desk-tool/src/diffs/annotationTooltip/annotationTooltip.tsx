@@ -2,7 +2,7 @@ import React from 'react'
 import {useUser} from '@sanity/react-hooks'
 import {Tooltip} from 'react-tippy'
 import {UserAvatar} from '@sanity/components/presence'
-import {Annotation, AnnotationChanged} from '../../panes/documentPane/history/types'
+import {Annotation, AnnotationDetails} from '../../panes/documentPane/history/types'
 
 import styles from './annotationTooltip.css'
 
@@ -12,7 +12,7 @@ interface AnnotationTooltipProps {
 }
 
 export function AnnotationTooltip(props: AnnotationTooltipProps) {
-  if (props.annotation.type === 'unchanged') {
+  if (!props.annotation) {
     return <>{props.children}</>
   }
 
@@ -28,7 +28,7 @@ export function AnnotationTooltip(props: AnnotationTooltipProps) {
   )
 }
 
-function AnnotationTooltipContent(props: {annotation: AnnotationChanged}) {
+function AnnotationTooltipContent(props: {annotation: AnnotationDetails}) {
   return (
     <div className={styles.root}>
       <UserItem userId={props.annotation.author} />
