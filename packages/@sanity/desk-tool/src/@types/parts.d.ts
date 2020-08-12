@@ -1,6 +1,16 @@
 declare module 'part:*'
 declare module 'all:part:*'
 
+declare module 'all:part:@sanity/base/diff-resolver' {
+  import {ComponentType} from 'react'
+
+  type DiffComponent = ComponentType<unknown>
+  type DiffResolver = (schemaType: unknown) => DiffComponent | undefined
+
+  const diffResolvers: DiffResolver[]
+  export default diffResolvers
+}
+
 declare module '@sanity/base' {
   export type UserColorHue =
     | 'blue'
