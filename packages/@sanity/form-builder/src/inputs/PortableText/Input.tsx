@@ -1,24 +1,21 @@
 import classNames from 'classnames'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {
-  EditorChange,
   getPortableTextFeatures,
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
   Type,
-  EditorSelection,
-  usePortableTextEditor
+  usePortableTextEditor,
+  usePortableTextEditorSelection
 } from '@sanity/portable-text-editor'
 import {uniqueId, isEqual} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
 import {Presence, Marker} from '../../typedefs'
-import {Patch} from '../../typedefs/patch'
 import {Path} from '../../typedefs/path'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
@@ -38,10 +35,7 @@ const HEADER_STYLES = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 type Props = {
   focusPath: Path
-  handleEditorChange: (change: EditorChange) => void
   hasFocus: boolean
-  invalidValue: EditorChange
-  level: number
   markers: Array<Marker>
   onBlur: () => void
   onChange: (arg0: PatchEvent) => void
@@ -55,19 +49,13 @@ type Props = {
     insert?: PortableTextBlock[]
     path?: []
   }
+  patche$: Subject<EditorPatch>
+  presence: Presence[]
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  selection: EditorSelection
-  presence: Presence[]
-  subscribe: (arg0: ({patches: PatchEvent}) => void) => void
   type: Type
   value: PortableTextBlock[] | undefined
-}
-
-export type PatchWithOrigin = Patch & {
-  origin: 'local' | 'remote' | 'internal'
-  timestamp: Date
 }
 
 export type ObjectEditData = {
@@ -80,7 +68,6 @@ export default function PortableTextInput(props: Props) {
   const {
     focusPath,
     hasFocus,
-    level,
     markers,
     onBlur,
     onChange,
@@ -90,25 +77,13 @@ export default function PortableTextInput(props: Props) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    selection,
-    type,
     value
   } = props
 
-  let incoming: PatchWithOrigin[] = [] // Incoming patches (not the user's own)
-  let unsubscribe // Subscribe / unsubscribe to patches
-
   const editor = usePortableTextEditor()
-  const patche$: Subject<EditorPatch> = new Subject()
+  const selection = usePortableTextEditorSelection()
   const inputId = uniqueId('PortableTextInput')
   const ptFeatures = getPortableTextFeatures(props.type)
-
-  useEffect(() => {
-    unsubscribe = props.subscribe(handleDocumentPatches)
-    return () => {
-      unsubscribe()
-    }
-  }, [])
 
   // States
   const [isActive, setIsActive] = useState(false)
@@ -116,14 +91,6 @@ export default function PortableTextInput(props: Props) {
   const [objectEditData, setobjectEditData] = useState(null) as [ObjectEditData, any]
   const [showValidationTooltip, setShowValidationTooltip] = useState(false)
   const [initialSelection, setInitialSelection] = useState(undefined)
-
-  // Restore the selection when toggling from fullscreen
-  useEffect(() => {
-    if (selection) {
-      setInitialSelection(selection)
-      focus()
-    }
-  }, [isFullscreen])
 
   // This will open the editing interfaces automatically according to the focusPath.
   // eslint-disable-next-line complexity
@@ -178,7 +145,9 @@ export default function PortableTextInput(props: Props) {
     // as this will close the editing interface
     const isAnnotationPath = focusPath && focusPath[1] === 'markDefs'
     if (selection && !objectEditData && !isAnnotationPath) {
-      const isCollapsed = isEqual(selection.focus.path, selection.anchor.path)
+      const isCollapsed =
+        isEqual(selection.focus.path, selection.anchor.path) &&
+        selection.focus.offset === selection.anchor.offset
       // Only do it when anchor and focus is the same, or the component will re-render
       // in the middle of selecting multiple lines with the keyboard.
       // TODO: handle this better when we support live cursors
@@ -187,16 +156,6 @@ export default function PortableTextInput(props: Props) {
       }
     }
   }, [selection, initialSelection, objectEditData])
-
-  // // // If there is a focusPath, but the editor doesn't have focus, set the focus there.
-  // useEffect(() => {
-  //   if (!objectEditData && focusPath && !selection) {
-  //     const sel = focusPath
-  //       ? {focus: {path: focusPath, offset: 0}, anchor: {path: focusPath, offset: 0}}
-  //       : undefined
-  //     setInitialSelection(sel)
-  //   }
-  // }, [focusPath, hasFocus])
 
   function handleCloseValidationResults(): void {
     setShowValidationTooltip(false)
@@ -207,21 +166,9 @@ export default function PortableTextInput(props: Props) {
   }
 
   function handleToggleFullscreen(): void {
+    setInitialSelection(PortableTextEditor.getSelection(editor))
     setIsFullscreen(!isFullscreen)
-  }
-
-  function handleDocumentPatches({
-    patches
-  }: {
-    patches: PatchWithOrigin[]
-    snapshot: PortableTextBlock[] | undefined
-  }): void {
-    const patchSelection =
-      patches && patches.length > 0 && patches.filter(patch => patch.origin !== 'local')
-    if (patchSelection) {
-      incoming = incoming.concat(patchSelection)
-      patchSelection.map(patch => patche$.next(patch))
-    }
+    PortableTextEditor.focus(editor)
   }
 
   function focus(): void {
@@ -245,7 +192,7 @@ export default function PortableTextInput(props: Props) {
       .forEach(segment => {
         _patchEvent = _patchEvent.prefixAll(segment)
       })
-    _patchEvent.patches.map(patch => patche$.next(patch))
+    _patchEvent.patches.map(patch => props.patche$.next(patch))
     onChange(_patchEvent)
   }
 
@@ -348,6 +295,7 @@ export default function PortableTextInput(props: Props) {
         anchor: {path: editorPath, offset: 0}
       }
       onFocus(editorPath)
+      PortableTextEditor.select(editor, sel)
       setInitialSelection(sel)
       focus()
     }
@@ -381,7 +329,6 @@ export default function PortableTextInput(props: Props) {
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
         onToggleValidationResults={handleToggleValidationResults}
-        patche$={patche$}
         portableTextFeatures={ptFeatures}
         readOnly={readOnly}
         renderAnnotation={renderAnnotation}
@@ -395,55 +342,35 @@ export default function PortableTextInput(props: Props) {
     )
   }
 
-  const formField = useMemo(
-    () => (
-      <FormField
-        description={type.description}
-        label={type.title}
-        labelFor={inputId}
-        level={level}
-        markers={markers}
-        presence={presence}
-      />
-    ),
-    [presence, markers]
-  )
-
   const editObject = useMemo(() => {
     return renderEditObject()
   }, [value, focusPath, markers, presence])
 
-  // eslint-disable-next-line complexity
-  const wrappedPtEditor = useMemo(() => {
-    return (
-      <div
-        className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}
-      >
-        {isFullscreen ? (
-          <Portal>
-            <StackedEscapeable onEscape={handleToggleFullscreen}>
-              <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-                {renderPortableTextEditor()}
-              </div>
-            </StackedEscapeable>
-          </Portal>
-        ) : (
-          <ActivateOnFocus
-            inputId={inputId}
-            html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
-            isActive={isActive}
-            onActivate={handleActivate}
-            overlayClassName={styles.activateOnFocusOverlay}
-          >
-            {renderPortableTextEditor()}
-          </ActivateOnFocus>
-        )}
-      </div>
-    )
-  }, [hasFocus, initialSelection, isActive, isFullscreen, markers, readOnly, value])
+  const wrappedPtEditor = (
+    <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
+      {isFullscreen ? (
+        <Portal>
+          <StackedEscapeable onEscape={handleToggleFullscreen}>
+            <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
+              {renderPortableTextEditor()}
+            </div>
+          </StackedEscapeable>
+        </Portal>
+      ) : (
+        <ActivateOnFocus
+          inputId={inputId}
+          html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
+          isActive={isActive}
+          onActivate={handleActivate}
+          overlayClassName={styles.activateOnFocusOverlay}
+        >
+          {renderPortableTextEditor()}
+        </ActivateOnFocus>
+      )}
+    </div>
+  )
   return (
     <>
-      {formField}
       {wrappedPtEditor}
       {editObject}
     </>

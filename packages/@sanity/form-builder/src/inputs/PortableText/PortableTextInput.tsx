@@ -1,10 +1,14 @@
-import React, {useEffect, useState} from 'react'
+import FormField from 'part:@sanity/components/formfields/default'
+import React, {useEffect, useState, useMemo} from 'react'
 import {
   EditorChange,
+  Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
   Type
 } from '@sanity/portable-text-editor'
+import {Subject} from 'rxjs'
+import {Patch} from '../../typedefs/patch'
 import PatchEvent from '../../PatchEvent'
 import {Presence, Marker} from '../../typedefs'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
@@ -12,6 +16,11 @@ import {Path} from '../../typedefs/path'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import InvalidValue from './InvalidValue'
+
+export type PatchWithOrigin = Patch & {
+  origin: 'local' | 'remote' | 'internal'
+  timestamp: Date
+}
 
 type Props = {
   focusPath: Path
@@ -39,25 +48,36 @@ type Props = {
 }
 
 export default withPatchSubscriber(function PortableTextInput(props: Props) {
-  const {readOnly, type, markers, value, onChange} = props
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const validationHash = validation
-    .map(marker => JSON.stringify(marker.path))
-    .sort()
-    .join('')
+  const {
+    level,
+    markers,
+    onBlur,
+    onChange,
+    onFocus,
+    onPaste,
+    presence,
+    readOnly,
+    renderBlockActions,
+    renderCustomMarkers,
+    type,
+    value
+  } = props
 
   const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(value)
   const [hasFocus, setHasFocus] = useState(false)
-  const [selection, setSelection] = useState(null)
   const [invalidValue, setInvalidValue] = useState(null)
   const [ignoreValidation, setIgnoreValidation] = useState(false)
 
-  // The PTE editor will not re-render unless the value is changed.
+  let incoming: PatchWithOrigin[] = [] // Incoming patches (not the user's own)
+  let unsubscribe
+  const patche$: Subject<EditorPatch> = new Subject()
+
+  // The PTE editor (module) will not re-render unless the value is changed.
   // We want to re-render it when markers changes too (as we display error indicators within the content),
-  // so create a fresh value when marker paths changes.
+  // so create a fresh value when marker content changes.
   useEffect(() => {
     setValueTouchedByMarkers(value ? [...value] : value)
-  }, [validationHash, value])
+  }, [markers, value])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -66,14 +86,33 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     }
   }, [value])
 
+  // Subscribe to incoming patches
+  useEffect(() => {
+    unsubscribe = props.subscribe(handleDocumentPatches)
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  function handleDocumentPatches({
+    patches
+  }: {
+    patches: PatchWithOrigin[]
+    snapshot: PortableTextBlock[] | undefined
+  }): void {
+    const patchSelection =
+      patches && patches.length > 0 && patches.filter(patch => patch.origin !== 'local')
+    if (patchSelection) {
+      incoming = incoming.concat(patchSelection)
+      patchSelection.map(patch => patche$.next(patch))
+    }
+  }
+
   // eslint-disable-next-line complexity
   function handleEditorChange(change: EditorChange): void {
     switch (change.type) {
       case 'mutation':
-        // Don't wait for the form-builder to save the document. We are in a local async state when changing the document anyway.
-        setTimeout(() => {
-          onChange(PatchEvent.from(change.patches))
-        })
+        onChange(PatchEvent.from(change.patches))
         break
       case 'focus':
         setHasFocus(true)
@@ -89,13 +128,9 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
         setInvalidValue(change)
         break
       case 'selection':
-        if (change.selection) {
-          setSelection(change.selection)
-        }
-        break
+      case 'value':
       case 'ready':
       case 'patch':
-      case 'value':
       case 'unset':
       case 'loading':
         break
@@ -108,44 +143,62 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     setIgnoreValidation(true)
   }
 
+  const formField = useMemo(
+    () => (
+      <FormField
+        description={type.description}
+        label={type.title}
+        level={level}
+        markers={markers}
+        presence={presence}
+      />
+    ),
+    [markers, presence]
+  )
+
   if (invalidValue && !ignoreValidation) {
     return (
-      <InvalidValue
-        onChange={handleEditorChange}
-        onIgnore={handleIgnoreValidation}
-        resolution={invalidValue.resolution}
-        value={value}
-      />
+      <>
+        {formField}
+        <InvalidValue
+          onChange={handleEditorChange}
+          onIgnore={handleIgnoreValidation}
+          resolution={invalidValue.resolution}
+          value={value}
+        />
+      </>
     )
   }
-  return (
-    <PortableTextEditor
-      onChange={handleEditorChange}
-      maxBlocks={undefined} // TODO: from schema?
-      readOnly={readOnly}
-      type={type}
-      value={valueTouchedByMarkers}
-    >
-      <Input
-        focusPath={props.focusPath}
-        level={props.level}
-        markers={props.markers}
-        onChange={props.onChange}
-        onBlur={props.onBlur}
-        onFocus={props.onFocus}
-        onPaste={props.onPaste}
-        readOnly={props.readOnly}
-        renderBlockActions={props.renderBlockActions}
-        renderCustomMarkers={props.renderCustomMarkers}
-        presence={props.presence}
-        subscribe={props.subscribe}
-        type={props.type}
+  const input = useMemo(
+    () => (
+      <PortableTextEditor
+        incomingPatche$={patche$.asObservable()}
+        onChange={handleEditorChange}
+        maxBlocks={undefined} // TODO: from schema?
+        readOnly={readOnly}
+        type={type}
         value={valueTouchedByMarkers}
-        handleEditorChange={handleEditorChange}
-        hasFocus={hasFocus}
-        invalidValue={invalidValue}
-        selection={selection}
-      />
-    </PortableTextEditor>
+      >
+        {formField}
+        <Input
+          focusPath={props.focusPath}
+          hasFocus={hasFocus}
+          markers={markers}
+          onBlur={onBlur}
+          onChange={onChange}
+          onFocus={onFocus}
+          onPaste={onPaste}
+          patche$={patche$}
+          presence={presence}
+          readOnly={readOnly}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          type={props.type}
+          value={valueTouchedByMarkers}
+        />
+      </PortableTextEditor>
+    ),
+    [valueTouchedByMarkers, hasFocus, props.focusPath, readOnly]
   )
+  return input
 })

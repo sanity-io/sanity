@@ -45,7 +45,6 @@ type Props = {
   }
   onToggleFullscreen: () => void
   onToggleValidationResults: () => void
-  patche$: Subject<EditorPatch>
   portableTextFeatures: PortableTextFeatures
   readOnly: boolean | null
   renderAnnotation: RenderAnnotationFunction
@@ -63,7 +62,7 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
 
 // eslint-disable-next-line complexity
 function PortableTextSanityEditor(props: Props) {
-  const {value, showValidationTooltip, markers, readOnly, isFullscreen, patche$} = props
+  const {value, showValidationTooltip, markers, readOnly, isFullscreen} = props
   const hotkeys: HotkeyOptions = {
     marks: {
       'mod+b': 'strong',
@@ -164,7 +163,6 @@ function PortableTextSanityEditor(props: Props) {
             <PortableTextEditable
               hotkeys={hotkeys}
               placeholderText={value ? undefined : 'Empty'}
-              incomingPatche$={patche$.asObservable()}
               renderAnnotation={renderAnnotation}
               renderBlock={renderBlock}
               renderChild={renderChild}

@@ -59,14 +59,12 @@ export const BlockObject: FunctionComponent<Props> = ({
   }
 
   const handleDelete = (): void => {
-    if (editor) {
-      PortableTextEditor.remove(
-        editor,
-        {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-        {mode: 'block'}
-      )
-      PortableTextEditor.focus(editor)
-    }
+    PortableTextEditor.delete(
+      editor,
+      {focus: {path, offset: 0}, anchor: {path, offset: 0}},
+      {mode: 'block'}
+    )
+    PortableTextEditor.focus(editor)
   }
 
   return (

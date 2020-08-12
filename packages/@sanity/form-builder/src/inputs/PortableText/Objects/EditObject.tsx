@@ -158,9 +158,12 @@ export const EditObject = ({
   function handleChange(patchEvent: PatchEvent): void {
     const appliedValue = applyAll(stateValue, patchEvent.patches)
     setStateValue(appliedValue)
-    const _patches = PATCHES.get(editor).concat(patchEvent.patches)
-    setIsThrottling(true)
-    PATCHES.set(editor, _patches)
+    const patches = PATCHES.get(editor)
+    if (patches) {
+      const _patches = PATCHES.get(editor).concat(patchEvent.patches)
+      setIsThrottling(true)
+      PATCHES.set(editor, _patches)
+    }
   }
 
   function sendPatches() {
