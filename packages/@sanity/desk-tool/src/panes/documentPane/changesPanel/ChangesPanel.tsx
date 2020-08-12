@@ -10,6 +10,7 @@ import {buildChangeList} from './buildChangeList'
 import {OperationsAPI, ChangeNode, ArrayChangeNode, FieldChangeNode, GroupChangeNode} from './types'
 import {undoChange} from './undoChange'
 import styles from './ChangesPanel.css'
+import {DiffErrorBoundary} from './DiffErrorBoundary'
 
 type Props = {
   diff: Diff<Annotation> | NoDiff | null
@@ -77,7 +78,9 @@ function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: numbe
         </button>
       </div>
 
-      <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
+      <DiffErrorBoundary>
+        <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
+      </DiffErrorBoundary>
     </div>
   )
 }
@@ -109,7 +112,9 @@ function FieldChange({change, level = 0}: {change: FieldChangeNode; level: numbe
         </button>
       </div>
 
-      <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+      <DiffErrorBoundary>
+        <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+      </DiffErrorBoundary>
     </div>
   )
 }
