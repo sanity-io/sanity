@@ -1,7 +1,7 @@
 /* eslint-disable max-depth */
 import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Diff, NoDiff} from '@sanity/diff'
+import {Diff} from '@sanity/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {Annotation} from '../history/types'
@@ -13,7 +13,7 @@ import styles from './ChangesPanel.css'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 
 type Props = {
-  diff: Diff<Annotation> | NoDiff | null
+  diff: Diff<Annotation>
   schemaType: SchemaType
   documentId: string
 }
@@ -26,7 +26,7 @@ type DocumentContextProps = {
 const DocumentContext = React.createContext<DocumentContextProps>({} as any)
 
 export function ChangesPanel({diff, schemaType, documentId}: Props) {
-  if (!diff || diff.type !== 'object') {
+  if (diff.type !== 'object') {
     return null
   }
 

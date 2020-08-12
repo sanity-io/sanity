@@ -5,49 +5,143 @@ import {
   StringInput,
   ObjectInput,
   DiffOptions,
-  NoDiff,
   BooleanInput,
   NumberInput
 } from '../types'
-import {diffArray} from './diffArray'
-import {diffString} from './diffString'
+import {diffArray, addedArray, removedArray} from './diffArray'
+import {diffString, removedString, addedString} from './diffString'
 import {diffTypeChange} from './diffTypeChange'
-import {diffObject} from './diffObject'
-import {diffSimple} from './diffSimple'
+import {diffObject, removedObject, addedObject} from './diffObject'
+import {diffBoolean, diffNumber} from './diffSimple'
 
 export function diffInput<A>(
   fromInput: Input<A>,
   toInput: Input<A>,
   options: DiffOptions = {}
-): Diff<A> | NoDiff {
-  // eg: null/undefined => string
+): Diff<A> {
   if (fromInput.type !== toInput.type) {
+    if (fromInput.type === 'null') {
+      return addedInput(toInput, null, options)
+    }
+
+    if (toInput.type === 'null') {
+      return removedInput(fromInput, null, options)
+    }
+
     return diffTypeChange(fromInput, toInput, options)
   }
 
   return diffWithType(fromInput.type, fromInput, toInput, options)
 }
 
-const nullNoDiff: NoDiff = {type: 'unchanged', isChanged: false, fromValue: null, toValue: null}
-
 function diffWithType<A>(
   type: Input<A>['type'],
   fromInput: Input<A>,
   toInput: Input<A>,
   options: DiffOptions
-): Diff<A> | NoDiff {
+): Diff<A> {
   switch (type) {
     case 'null':
-      return nullNoDiff
+      return {
+        type: 'null',
+        action: 'unchanged',
+        isChanged: false,
+        toValue: null,
+        fromValue: null
+      }
     case 'boolean':
-      return diffSimple(fromInput as BooleanInput<A>, toInput as BooleanInput<A>, options)
+      return diffBoolean(fromInput as BooleanInput<A>, toInput as BooleanInput<A>, options)
     case 'number':
-      return diffSimple(fromInput as NumberInput<A>, toInput as NumberInput<A>, options)
+      return diffNumber(fromInput as NumberInput<A>, toInput as NumberInput<A>, options)
     case 'string':
       return diffString(fromInput as StringInput<A>, toInput as StringInput<A>, options)
     case 'array':
       return diffArray(fromInput as ArrayInput<A>, toInput as ArrayInput<A>, options)
     case 'object':
       return diffObject(fromInput as ObjectInput<A>, toInput as ObjectInput<A>, options)
+  }
+}
+
+export function removedInput<A>(
+  input: Input<A>,
+  toValue: null | undefined,
+  options: DiffOptions
+): Diff<A> & {action: 'removed'} {
+  switch (input.type) {
+    case 'null':
+      return {
+        type: 'null',
+        action: 'removed',
+        isChanged: true,
+        fromValue: null,
+        toValue,
+        annotation: input.annotation
+      }
+    case 'boolean':
+      return {
+        type: 'boolean',
+        action: 'removed',
+        isChanged: true,
+        fromValue: input.value,
+        toValue,
+        annotation: input.annotation
+      }
+    case 'number':
+      return {
+        type: 'number',
+        action: 'removed',
+        isChanged: true,
+        fromValue: input.value,
+        toValue,
+        annotation: input.annotation
+      }
+    case 'string':
+      return removedString(input, toValue, options)
+    case 'array':
+      return removedArray(input, toValue, options)
+    case 'object':
+      return removedObject(input, toValue, options)
+  }
+}
+
+export function addedInput<A>(
+  input: Input<A>,
+  fromValue: null | undefined,
+  options: DiffOptions
+): Diff<A> & {action: 'added'} {
+  switch (input.type) {
+    case 'null':
+      return {
+        type: 'null',
+        action: 'added',
+        isChanged: true,
+        fromValue,
+        toValue: null,
+        annotation: input.annotation
+      }
+    case 'boolean':
+      return {
+        type: 'boolean',
+        action: 'added',
+        isChanged: true,
+        fromValue,
+        toValue: input.value,
+        annotation: input.annotation
+      }
+    case 'number':
+      return {
+        type: 'number',
+        action: 'added',
+        isChanged: true,
+        fromValue,
+        toValue: input.value,
+        annotation: input.annotation
+      }
+    case 'string':
+      return addedString(input, fromValue, options)
+    case 'array':
+      return addedArray(input, fromValue, options)
+    case 'object':
+      return addedObject(input, fromValue, options)
   }
 }
