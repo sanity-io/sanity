@@ -154,7 +154,9 @@ export default class DefaultDialog extends React.PureComponent {
                         <div className={styles.closeButtonContainer}>
                           <Button
                             className={styles.closeButton}
-                            color={['danger', 'success', 'warning'].includes(color) && 'white'}
+                            color={
+                              ['danger', 'success', 'warning'].includes(color) ? 'white' : undefined
+                            }
                             icon={CloseIcon}
                             kind="simple"
                             onClick={onClose}
