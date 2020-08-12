@@ -12,8 +12,6 @@ import {GeopointSelect} from './GeopointSelect'
 import {GoogleMapsLoadProxy} from './GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from './types'
 
-const locale = (typeof window !== 'undefined' && window.navigator.language) || 'en'
-
 const getStaticImageUrl = value => {
   const loc = `${value.lat},${value.lng}`
   const params = {
@@ -148,7 +146,7 @@ class GeopointInput extends React.Component<InputProps, InputState> {
               isOpen={this.state.modalOpen}
             >
               <div className={styles.dialogInner}>
-                <GoogleMapsLoadProxy apiKey={config.apiKey} locale={locale}>
+                <GoogleMapsLoadProxy>
                   {api => (
                     <GeopointSelect
                       api={api}
@@ -156,7 +154,6 @@ class GeopointInput extends React.Component<InputProps, InputState> {
                       onChange={this.handleChange}
                       defaultLocation={config.defaultLocation}
                       defaultZoom={config.defaultZoom}
-                      locale={locale}
                     />
                   )}
                 </GoogleMapsLoadProxy>

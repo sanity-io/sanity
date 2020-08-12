@@ -7,7 +7,6 @@ const fallbackLatLng: LatLng = {lat: 40.7058254, lng: -74.1180863}
 interface SelectProps {
   api: typeof window.google.maps
   value?: Geopoint
-  locale: string
   onChange: (latLng: google.maps.LatLng) => void
   defaultLocation?: LatLng
   defaultZoom?: number
