@@ -25,7 +25,6 @@ export function HistoryTimelinePanel(props: HistoryTimelinePanelProps) {
       {timeline.mapChunks((chunk, idx) => {
         const isStartTime = props.startTime && props.startTime.chunk === chunk
         const isEndTime = props.startTime && isFirst
-        console.log({isStartTime, isEndTime})
 
         if (isEndTime) {
           isSelected = true
