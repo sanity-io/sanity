@@ -11,7 +11,7 @@ interface Slug {
 export const SlugFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff, schemaType}) => {
   const currentField = schemaType.fields?.find(field => field.name === 'current')
   const currentDiff = diff.fields.current
-  if (!currentField || currentDiff?.action !== 'changed' || currentDiff?.type !== 'string') {
+  if (!currentField || currentDiff?.type !== 'string') {
     return null
   }
 
