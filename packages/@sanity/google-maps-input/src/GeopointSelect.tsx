@@ -1,4 +1,7 @@
 import React from 'react'
+import {SearchInput} from './map/SearchInput'
+import {GoogleMap} from './map/Map'
+import {Marker} from './map/Marker'
 import styles from './styles/GeopointSelect.css'
 import {LatLng, Geopoint} from './types'
 
@@ -18,73 +21,15 @@ export class GeopointSelect extends React.Component<SelectProps> {
     defaultLocation: {lng: 10.74609, lat: 59.91273}
   }
 
-  map: google.maps.Map | undefined
-  marker: google.maps.Marker | undefined
-  autoComplete: google.maps.places.Autocomplete | undefined
-
   mapRef = React.createRef<HTMLDivElement>()
-  searchInputRef = React.createRef<HTMLInputElement>()
 
-  componentDidMount() {
-    if (!this.mapRef.current || !this.searchInputRef.current) {
-      // Shouldn't ever happen, but for typescript
-      return
-    }
-
-    const {Circle, places, event} = this.props.api
-    const GMap = this.props.api.Map
-    const geoPoint = this.getValueLatLng()
-    const options = {
-      zoom: this.props.defaultZoom,
-      center: geoPoint
-    }
-
-    this.map = new GMap(this.mapRef.current, options)
-    this.marker = this.getMarker()
-
-    const searchBounds = new Circle({center: geoPoint, radius: 100}).getBounds()
-    const input = this.searchInputRef.current
-    this.autoComplete = new places.Autocomplete(input, {
-      bounds: searchBounds,
-      types: [] // return all kinds of places
-    })
-
-    event.addListener(this.autoComplete, 'place_changed', this.handlePlaceChanged.bind(this))
-
-    event.addListener(this.map, 'click', clickEvent => {
-      this.setValue(clickEvent.latLng)
-    })
+  getCenter() {
+    const {value = {}, defaultLocation = {}} = this.props
+    const point: LatLng = {...fallbackLatLng, ...defaultLocation, ...value}
+    return point
   }
 
-  getValueLatLng(): google.maps.LatLng {
-    const {api, value = {}, defaultLocation = {}} = this.props
-    const point = {...fallbackLatLng, ...defaultLocation, ...value}
-    return new api.LatLng(point.lat, point.lng)
-  }
-
-  getMarker(): google.maps.Marker {
-    if (this.marker) {
-      return this.marker
-    }
-
-    const {Marker, event} = this.props.api
-    const marker = new Marker({
-      position: this.getValueLatLng(),
-      map: this.map,
-      draggable: true
-    })
-
-    event.addListener(marker, 'dragend', this.handleMarkerDragEnd)
-
-    return marker
-  }
-
-  handlePlaceChanged() {
-    if (!this.autoComplete) {
-      return
-    }
-
-    const place = this.autoComplete.getPlace()
+  handlePlaceChanged = (place: google.maps.places.PlaceResult) => {
     if (!place.geometry) {
       return
     }
@@ -92,36 +37,37 @@ export class GeopointSelect extends React.Component<SelectProps> {
     this.setValue(place.geometry.location)
   }
 
-  handleMarkerDragEnd = event => {
+  handleMarkerDragEnd = (event: google.maps.MouseEvent) => {
     this.setValue(event.latLng)
   }
 
-  setValue(geoPoint) {
+  handleMapClick = (event: google.maps.MouseEvent) => {
+    this.setValue(event.latLng)
+  }
+
+  setValue(geoPoint: google.maps.LatLng) {
     this.props.onChange(geoPoint)
   }
 
-  componentDidUpdate() {
-    if (!this.map || !this.marker || !this.searchInputRef.current) {
-      return
-    }
-
-    this.map.panTo(this.getValueLatLng())
-    this.marker.setPosition(this.getValueLatLng())
-    this.searchInputRef.current.value = ''
-  }
-
   render() {
+    const {api, defaultZoom, value} = this.props
     return (
       <div className={styles.wrapper}>
-        <div ref={this.mapRef} className={styles.map} />
-        <div className={styles.searchInput}>
-          <input
-            name="place"
-            ref={this.searchInputRef}
-            placeholder="Search for place or address"
-            className={styles.input}
-          />
-        </div>
+        <GoogleMap
+          api={api}
+          location={this.getCenter()}
+          onClick={this.handleMapClick}
+          defaultZoom={defaultZoom}
+        >
+          {map => (
+            <>
+              <SearchInput api={api} map={map} onChange={this.handlePlaceChanged} />
+              {value && (
+                <Marker api={api} map={map} position={value} onMove={this.handleMarkerDragEnd} />
+              )}
+            </>
+          )}
+        </GoogleMap>
       </div>
     )
   }

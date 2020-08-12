@@ -1,5 +1,6 @@
 {
   "rules": {
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "complexity": ["warn", 15]
   }
 }
