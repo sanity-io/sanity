@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import config from 'config:@sanity/google-maps-input'
 import Button from 'part:@sanity/components/buttons/default'
@@ -7,14 +6,13 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import styles from '../styles/GeopointInput.css'
-import GeopointSelect from './GeopointSelect'
-import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import styles from './styles/GeopointInput.css'
+import {GeopointSelect} from './GeopointSelect'
+import {GoogleMapsLoadProxy} from './GoogleMapsLoadProxy'
+import {Geopoint, GeopointSchemaType} from './types'
 
-const getLocale = context => {
-  const intl = context.intl || {}
-  return intl.locale || (typeof window !== 'undefined' && window.navigator.language) || 'en'
-}
+const locale = (typeof window !== 'undefined' && window.navigator.language) || 'en'
 
 const getStaticImageUrl = value => {
   const loc = `${value.lat},${value.lng}`
@@ -29,55 +27,44 @@ const getStaticImageUrl = value => {
 
   const qs = Object.keys(params).reduce((res, param) => {
     return res.concat(`${param}=${encodeURIComponent(params[param])}`)
-  }, [])
+  }, [] as string[])
 
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-class GeopointInput extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func.isRequired,
-    markers: PropTypes.arrayOf(
-      PropTypes.shape({
-        type: PropTypes.string
-      })
-    ),
-    value: PropTypes.shape({
-      lat: PropTypes.number,
-      lng: PropTypes.number
-    }),
-    type: PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      description: PropTypes.string
-    })
-  }
+interface InputProps {
+  markers: unknown[]
+  value?: Geopoint
+  type: GeopointSchemaType
+  onChange: (patchEvent: unknown) => void
+}
 
+interface InputState {
+  modalOpen: boolean
+}
+
+class GeopointInput extends React.Component<InputProps, InputState> {
   static defaultProps = {
     markers: []
   }
 
-  static contextTypes = {
-    intl: PropTypes.shape({
-      locale: PropTypes.string
-    })
-  }
-
-  constructor() {
-    super()
-
-    this.handleToggleModal = this.handleToggleModal.bind(this)
-    this.handleCloseModal = this.handleCloseModal.bind(this)
+  constructor(props) {
+    super(props)
 
     this.state = {
       modalOpen: false
     }
   }
 
-  handleToggleModal() {
+  handleToggleModal = () => {
     this.setState(prevState => ({modalOpen: !prevState.modalOpen}))
   }
 
-  handleChange = latLng => {
+  handleCloseModal = () => {
+    this.setState({modalOpen: false})
+  }
+
+  handleChange = (latLng: google.maps.LatLng) => {
     const {type, onChange} = this.props
     onChange(
       PatchEvent.from([
@@ -93,10 +80,6 @@ class GeopointInput extends React.Component {
   handleClear = () => {
     const {onChange} = this.props
     onChange(PatchEvent.from(unset()))
-  }
-
-  handleCloseModal() {
-    this.setState({modalOpen: false})
   }
 
   render() {
@@ -116,7 +99,7 @@ class GeopointInput extends React.Component {
           </ul>
           <p>
             Please enter the API key with access to these services in
-            <code style={{whitespace: 'nowrap'}}>
+            <code style={{whiteSpace: 'nowrap'}}>
               `&lt;project-root&gt;/config/@sanity/google-maps-input.json`
             </code>
           </p>
@@ -149,7 +132,7 @@ class GeopointInput extends React.Component {
               </Button>
 
               {value && (
-                <Button color="danger" inverted type="button" onClick={this.handleClear}>
+                <Button color="danger" icon={TrashIcon} inverted onClick={this.handleClear}>
                   Remove
                 </Button>
               )}
@@ -161,20 +144,22 @@ class GeopointInput extends React.Component {
               title="Place on map"
               onClose={this.handleCloseModal}
               onCloseClick={this.handleCloseModal}
-              onOpen={this.handleOpenModal}
               message="Select location by dragging the marker or search for a place"
               isOpen={this.state.modalOpen}
             >
               <div className={styles.dialogInner}>
-                <GoogleMapsLoadProxy
-                  value={value}
-                  apiKey={config.apiKey}
-                  onChange={this.handleChange}
-                  defaultLocation={config.defaultLocation}
-                  defaultZoom={config.defaultZoom}
-                  locale={getLocale(this.context)}
-                  component={GeopointSelect}
-                />
+                <GoogleMapsLoadProxy apiKey={config.apiKey} locale={locale}>
+                  {api => (
+                    <GeopointSelect
+                      api={api}
+                      value={value}
+                      onChange={this.handleChange}
+                      defaultLocation={config.defaultLocation}
+                      defaultZoom={config.defaultZoom}
+                      locale={locale}
+                    />
+                  )}
+                </GoogleMapsLoadProxy>
               </div>
             </Dialog>
           )}
