@@ -3,10 +3,11 @@ import {points, featureCollection} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
 import norway from '../data/norway'
 
-// "gallery" schema
 export const validationArraySuperType = {
-  name: 'gallery',
-  title: 'Gallery',
+  name: 'imageArray',
+  title: 'Array supertype',
+  description:
+    'This field uses a supertype of an image array without validation. This tests that when used as a field type it can add its own validation rules',
   type: 'array',
   of: [
     {
@@ -153,9 +154,9 @@ export default {
       ]
     },
     {
-      name: 'gallery',
-      title: 'Gallery',
-      type: 'gallery',
+      name: 'imageArray',
+      title: 'Images',
+      type: 'imageArray',
       validation: Rule => [Rule.min(1), Rule.required()]
     },
     {
