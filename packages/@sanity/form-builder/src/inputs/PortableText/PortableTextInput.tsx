@@ -15,7 +15,7 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Path} from '../../typedefs/path'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
-import InvalidValue from './InvalidValue'
+import RespondToInvalidContent from './InvalidValue'
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -49,6 +49,7 @@ type Props = {
 
 export default withPatchSubscriber(function PortableTextInput(props: Props) {
   const {
+    focusPath,
     level,
     markers,
     onBlur,
@@ -63,23 +64,25 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     value
   } = props
 
+  // The PortableTextEditor will not re-render unless the value is changed (which is good).
+  // But, we want to re-render it when the markers changes too,
+  // (we render error indicators directly in the editor nodes)
+  const validation = markers.filter(marker => marker.type === 'validation')
+  const validationHash = validation
+    .map(marker =>
+      JSON.stringify(marker.path)
+        .concat(marker.type)
+        .concat(marker.level)
+    )
+    .sort()
+    .join('')
   const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(value)
-  const [hasFocus, setHasFocus] = useState(false)
-  const [invalidValue, setInvalidValue] = useState(null)
-  const [ignoreValidation, setIgnoreValidation] = useState(false)
-
-  let incoming: PatchWithOrigin[] = [] // Incoming patches (not the user's own)
-  let unsubscribe
-  const patche$: Subject<EditorPatch> = new Subject()
-
-  // The PTE editor (module) will not re-render unless the value is changed.
-  // We want to re-render it when markers changes too (as we display error indicators within the content),
-  // so create a fresh value when marker content changes.
   useEffect(() => {
     setValueTouchedByMarkers(value ? [...value] : value)
-  }, [markers, value])
+  }, [validationHash, value])
 
   // Reset invalidValue if new value is coming in from props
+  const [invalidValue, setInvalidValue] = useState(null)
   useEffect(() => {
     if (invalidValue && value !== invalidValue.value) {
       setInvalidValue(null)
@@ -87,6 +90,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   }, [value])
 
   // Subscribe to incoming patches
+  let unsubscribe
   useEffect(() => {
     unsubscribe = props.subscribe(handleDocumentPatches)
     return () => {
@@ -94,6 +98,9 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     }
   }, [])
 
+  // Handle incoming patches from withPatchSubscriber HOC
+  let incoming: PatchWithOrigin[] = []
+  const patche$: Subject<EditorPatch> = new Subject()
   function handleDocumentPatches({
     patches
   }: {
@@ -108,7 +115,9 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     }
   }
 
+  // Handle editor changes
   // eslint-disable-next-line complexity
+  const [hasFocus, setHasFocus] = useState(false)
   function handleEditorChange(change: EditorChange): void {
     switch (change.type) {
       case 'mutation':
@@ -127,20 +136,22 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
       case 'invalidValue':
         setInvalidValue(change)
         break
-      case 'selection':
-      case 'value':
-      case 'ready':
-      case 'patch':
-      case 'unset':
-      case 'loading':
-        break
+      // case 'selection':
+      // case 'value':
+      // case 'ready':
+      // case 'patch':
+      // case 'unset':
+      // case 'loading':
+      //   break
+      // default:
+      //   throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
       default:
-        throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
     }
   }
 
+  const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   function handleIgnoreValidation(): void {
-    setIgnoreValidation(true)
+    setIgnoreValidationError(true)
   }
 
   const formField = useMemo(
@@ -156,11 +167,13 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     [markers, presence]
   )
 
-  if (invalidValue && !ignoreValidation) {
-    return (
+  // Render error message and resolution
+  let respondToInvalidContent = null
+  if (invalidValue) {
+    respondToInvalidContent = (
       <>
         {formField}
-        <InvalidValue
+        <RespondToInvalidContent
           onChange={handleEditorChange}
           onIgnore={handleIgnoreValidation}
           resolution={invalidValue.resolution}
@@ -169,7 +182,9 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
       </>
     )
   }
-  const input = useMemo(
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const handleToggleFullscreen = () => setIsFullscreen(!isFullscreen)
+  const editorInput = useMemo(
     () => (
       <PortableTextEditor
         incomingPatche$={patche$.asObservable()}
@@ -181,13 +196,15 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
       >
         {formField}
         <Input
-          focusPath={props.focusPath}
+          focusPath={focusPath}
           hasFocus={hasFocus}
+          isFullscreen={isFullscreen}
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
           onPaste={onPaste}
+          onToggleFullscreen={handleToggleFullscreen}
           patche$={patche$}
           presence={presence}
           readOnly={readOnly}
@@ -198,7 +215,12 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
         />
       </PortableTextEditor>
     ),
-    [valueTouchedByMarkers, hasFocus, props.focusPath, readOnly]
+    [focusPath, hasFocus, isFullscreen, readOnly, valueTouchedByMarkers]
   )
-  return input
+  return (
+    <>
+      {invalidValue && !ignoreValidationError && respondToInvalidContent}
+      {(!invalidValue || ignoreValidationError) && editorInput}
+    </>
+  )
 })

@@ -25,17 +25,13 @@ import {Annotation} from './Text/Annotation'
 import Blockquote from './Text/Blockquote'
 import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
-import {RenderBlockActions, RenderCustomMarkers} from './types'
+import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-
-export const IS_MAC =
-  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
-
-const HEADER_STYLES = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 type Props = {
   focusPath: Path
   hasFocus: boolean
+  isFullscreen: boolean
   markers: Array<Marker>
   onBlur: () => void
   onChange: (arg0: PatchEvent) => void
@@ -49,6 +45,7 @@ type Props = {
     insert?: PortableTextBlock[]
     path?: []
   }
+  onToggleFullscreen: () => void
   patche$: Subject<EditorPatch>
   presence: Presence[]
   readOnly: boolean | null
@@ -62,11 +59,13 @@ export default function PortableTextInput(props: Props) {
   const {
     focusPath,
     hasFocus,
+    isFullscreen,
     markers,
     onBlur,
     onChange,
     onFocus,
     onPaste,
+    onToggleFullscreen,
     presence,
     readOnly,
     renderBlockActions,
@@ -76,12 +75,11 @@ export default function PortableTextInput(props: Props) {
 
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const inputId = uniqueId('PortableTextInput')
+
   const ptFeatures = getPortableTextFeatures(props.type)
 
   // States
   const [isActive, setIsActive] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
   const [objectEditData, setobjectEditData] = useState(null) as [ObjectEditData, any]
   const [showValidationTooltip, setShowValidationTooltip] = useState(false)
   const [initialSelection, setInitialSelection] = useState(undefined)
@@ -161,7 +159,7 @@ export default function PortableTextInput(props: Props) {
 
   function handleToggleFullscreen(): void {
     setInitialSelection(PortableTextEditor.getSelection(editor))
-    setIsFullscreen(!isFullscreen)
+    onToggleFullscreen()
     PortableTextEditor.focus(editor)
   }
 
@@ -207,7 +205,7 @@ export default function PortableTextInput(props: Props) {
       // Deal with block style
       if (block.style === 'blockquote') {
         returned = <Blockquote>{returned}</Blockquote>
-      } else if (HEADER_STYLES.includes(block.style)) {
+      } else if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(block.style)) {
         returned = <Header style={block.style}>{returned}</Header>
       } else {
         returned = <Paragraph>{returned}</Paragraph>
@@ -307,65 +305,63 @@ export default function PortableTextInput(props: Props) {
         value={value}
       />
     )
-  }, [focusPath, value])
+  }, [focusPath, isFullscreen, markers, objectEditData, presence, readOnly, value])
 
-  const renderPortableTextEditor = () => {
-    // Set to readOnly when we are editing objects
-    return (
-      <PortableTextSanityEditor
-        initialSelection={initialSelection}
-        isFullscreen={isFullscreen}
-        markers={markers}
-        onBlur={onBlur}
-        onCloseValidationResults={handleCloseValidationResults}
-        onFocus={onFocus}
-        onFormBuilderChange={onChange}
-        onPaste={onPaste}
-        onToggleFullscreen={handleToggleFullscreen}
-        onToggleValidationResults={handleToggleValidationResults}
-        portableTextFeatures={ptFeatures}
-        readOnly={readOnly}
-        renderAnnotation={renderAnnotation}
-        renderBlock={renderBlock}
-        renderBlockActions={renderBlockActions}
-        renderChild={renderChild}
-        renderCustomMarkers={renderCustomMarkers}
-        showValidationTooltip={showValidationTooltip}
-        value={value}
-      />
-    )
-  }
+  const ptEditor = (
+    <PortableTextSanityEditor
+      initialSelection={initialSelection}
+      isFullscreen={isFullscreen}
+      markers={markers}
+      onBlur={onBlur}
+      onCloseValidationResults={handleCloseValidationResults}
+      onFocus={onFocus}
+      onFormBuilderChange={onChange}
+      onPaste={onPaste}
+      onToggleFullscreen={handleToggleFullscreen}
+      onToggleValidationResults={handleToggleValidationResults}
+      portableTextFeatures={ptFeatures}
+      readOnly={isActive === false || readOnly}
+      renderAnnotation={renderAnnotation}
+      renderBlock={renderBlock}
+      renderBlockActions={renderBlockActions}
+      renderChild={renderChild}
+      renderCustomMarkers={renderCustomMarkers}
+      showValidationTooltip={showValidationTooltip}
+      value={value}
+    />
+  )
 
   const editObject = useMemo(() => {
     return renderEditObject()
-  }, [value, focusPath, markers, presence])
+  }, [focusPath, markers, presence, value])
 
-  const wrappedPtEditor = (
+  const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
+  const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
         <Portal>
           <StackedEscapeable onEscape={handleToggleFullscreen}>
             <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-              {renderPortableTextEditor()}
+              {ptEditor}
             </div>
           </StackedEscapeable>
         </Portal>
       ) : (
         <ActivateOnFocus
-          inputId={inputId}
+          inputId={activationId}
           html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
           isActive={isActive}
           onActivate={handleActivate}
           overlayClassName={styles.activateOnFocusOverlay}
         >
-          {renderPortableTextEditor()}
+          {ptEditor}
         </ActivateOnFocus>
       )}
     </div>
   )
   return (
     <>
-      {wrappedPtEditor}
+      {fullscreenToggledEditor}
       {editObject}
     </>
   )

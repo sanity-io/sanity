@@ -1,8 +1,7 @@
-import React from 'react'
+import React, {useMemo, useCallback} from 'react'
 import {Tooltip} from 'react-tippy'
 import {
   HotkeyOptions,
-  Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditable,
   PortableTextFeatures,
@@ -16,7 +15,6 @@ import {
 import ErrorCircleIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ValidationList from 'part:@sanity/components/validation/list'
-import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import styles from './PortableTextInput.css'
@@ -88,8 +86,7 @@ function PortableTextSanityEditor(props: Props) {
     renderCustomMarkers
   } = props
 
-  const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
-
+  const hasMarkers = markers.length > 0
   const scClassNames = [
     styles.scrollContainer,
     ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
@@ -104,88 +101,100 @@ function PortableTextSanityEditor(props: Props) {
   const errors = validation.filter(marker => marker.level === 'error')
   const warnings = validation.filter(marker => marker.level === 'warning')
 
-  return (
-    <div className={styles.editorBox}>
-      <div className={styles.header}>
-        <div className={styles.toolbarContainer}>
-          <Toolbar
-            isFullscreen={isFullscreen}
-            hotkeys={hotkeys}
-            onFocus={onFocus}
-            renderBlock={renderBlock}
-            readOnly={readOnly}
-          />
-        </div>
-        {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
-          <div className={styles.validationContainer}>
-            <Tooltip
-              arrow
-              duration={100}
-              html={
-                <ValidationList
-                  markers={validation}
-                  showLink
-                  isOpen={showValidationTooltip}
-                  documentType={portableTextFeatures.types.portableText}
-                  onClose={onCloseValidationResults}
-                  onFocus={onFocus}
-                />
-              }
-              interactive
-              onRequestClose={onCloseValidationResults}
-              open={showValidationTooltip}
-              position="bottom"
-              style={{padding: 0}}
-              theme="light"
-              trigger="click"
-            >
-              <Button
-                color="danger"
-                icon={ErrorCircleIcon}
-                kind="simple"
-                onClick={onToggleValidationResults}
-                padding="small"
-              />
-            </Tooltip>
-          </div>
-        )}
-
-        <div className={styles.fullscreenButtonContainer}>
-          <ExpandCollapseButton
-            isFullscreen={isFullscreen}
-            onToggleFullscreen={onToggleFullscreen}
-          />
-        </div>
-      </div>
-      <div className={scClassNames}>
-        <div className={editorWrapperClassNames}>
-          <div className={editorClassNames}>
-            <PortableTextEditable
-              hotkeys={hotkeys}
-              placeholderText={value ? undefined : 'Empty'}
-              renderAnnotation={renderAnnotation}
-              renderBlock={renderBlock}
-              renderChild={renderChild}
-              renderDecorator={renderDecorator}
-              selection={initialSelection}
-              spellCheck={false} // TODO: from schema?
-            />
-          </div>
-          <div className={styles.blockExtras}>
-            <BlockExtrasOverlay
-              isFullscreen={isFullscreen}
-              markers={markers}
-              onFocus={onFocus}
-              onChange={onFormBuilderChange}
-              renderBlockActions={readOnly ? undefined : renderBlockActions}
-              renderCustomMarkers={renderCustomMarkers}
-              value={value}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+  const validationList = useMemo(
+    () => (
+      <ValidationList
+        markers={validation}
+        showLink
+        isOpen={showValidationTooltip}
+        documentType={portableTextFeatures.types.portableText}
+        onClose={onCloseValidationResults}
+        onFocus={onFocus}
+      />
+    ),
+    [validation, showValidationTooltip]
   )
+  const renderBlockExtras = useCallback(
+    () => (
+      <BlockExtrasOverlay
+        isFullscreen={isFullscreen}
+        markers={markers}
+        onFocus={onFocus}
+        onChange={onFormBuilderChange}
+        renderBlockActions={readOnly ? undefined : renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
+        value={value}
+      />
+    ),
+    [markers, isFullscreen]
+  )
+  const editor = useMemo(
+    () => (
+      <div className={styles.editorBox}>
+        <div className={styles.header}>
+          <div className={styles.toolbarContainer}>
+            <Toolbar
+              isFullscreen={isFullscreen}
+              hotkeys={hotkeys}
+              onFocus={onFocus}
+              renderBlock={renderBlock}
+              readOnly={readOnly}
+            />
+          </div>
+          {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
+            <div className={styles.validationContainer}>
+              <Tooltip
+                arrow
+                duration={100}
+                html={validationList}
+                interactive
+                onRequestClose={onCloseValidationResults}
+                open={showValidationTooltip}
+                position="bottom"
+                style={{padding: 0}}
+                theme="light"
+                trigger="click"
+              >
+                <Button
+                  color="danger"
+                  icon={ErrorCircleIcon}
+                  kind="simple"
+                  onClick={onToggleValidationResults}
+                  padding="small"
+                />
+              </Tooltip>
+            </div>
+          )}
+
+          <div className={styles.fullscreenButtonContainer}>
+            <ExpandCollapseButton
+              isFullscreen={isFullscreen}
+              onToggleFullscreen={onToggleFullscreen}
+            />
+          </div>
+        </div>
+        <div className={scClassNames}>
+          <div className={editorWrapperClassNames}>
+            <div className={editorClassNames}>
+              <PortableTextEditable
+                hotkeys={hotkeys}
+                placeholderText={value ? undefined : 'Empty'}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
+                renderChild={renderChild}
+                renderDecorator={renderDecorator}
+                selection={initialSelection}
+                spellCheck={false} // TODO: from schema?
+              />
+            </div>
+            <div className={styles.blockExtras}>{renderBlockExtras()}</div>
+          </div>
+        </div>
+      </div>
+    ),
+    [initialSelection, isFullscreen, value, markers, readOnly, errors]
+  )
+  return editor
 }
 
 export default PortableTextSanityEditor
