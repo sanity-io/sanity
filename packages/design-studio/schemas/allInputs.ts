@@ -33,6 +33,13 @@ const arrayOfPrimitives = {
   of: [{type: 'string'}]
 }
 
+const arrayOfGeopoints = {
+  type: 'array',
+  name: 'arrayOfGeopoints',
+  title: 'Array of geopoints',
+  of: [{type: 'geopoint'}]
+}
+
 const booleanExample = {
   type: 'boolean',
   name: 'booleanExample',
@@ -213,6 +220,7 @@ export default {
     arrayOfReferences,
     arrayOfPrimitives,
     arrayGridOfImages,
+    arrayOfGeopoints,
 
     // boolean
     booleanExample,
