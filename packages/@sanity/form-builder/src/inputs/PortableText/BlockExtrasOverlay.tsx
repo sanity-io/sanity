@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useMemo} from 'react'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import {
   PortableTextBlock,
@@ -23,6 +23,9 @@ type Props = {
   value: PortableTextBlock[] | undefined
 }
 
+const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[] =>
+  markers.filter(marker => typeof marker.path[0] === 'object' && marker.path[0]._key === block._key)
+
 export default function BlockExtrasOverlay(props: Props) {
   const {
     onFocus,
@@ -38,19 +41,15 @@ export default function BlockExtrasOverlay(props: Props) {
   const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
 
   function renderBlockExtras(block: PortableTextBlock): JSX.Element {
-    // Find block markers
-    const myMarkers = Array.from(markers).filter(
-      marker => typeof marker.path[0] === 'object' && marker.path[0]._key === block._key
-    )
+    const blockMarkers = findBlockMarkers(block, markers)
 
     // Return if no markers
-    if (myMarkers.length === 0 && !renderBlockActions) {
+    if (blockMarkers.length === 0 && !renderBlockActions) {
       return null
     }
 
     // Try to find DOMNode and return if not
     const element = PortableTextEditor.findDOMNode(editor, block) as HTMLElement
-
     if (!element) {
       return null
     }
@@ -72,7 +71,7 @@ export default function BlockExtrasOverlay(props: Props) {
       }
     }
 
-    if (myMarkers.length === 0 && !actions) {
+    if (blockMarkers.length === 0 && !actions) {
       return null
     }
 
