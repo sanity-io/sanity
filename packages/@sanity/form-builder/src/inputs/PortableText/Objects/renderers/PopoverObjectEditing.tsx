@@ -12,33 +12,33 @@ import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
 interface Props {
-  type: Type
-  object: PortableTextBlock | PortableTextChild
-  referenceElement: HTMLElement
-  readOnly: boolean
-  markers: Marker[]
   focusPath: Path
-  path: Path
-  onChange: (patchEvent: PatchEvent, path: Path) => void
-  onFocus: (arg0: Path) => void
-  onClose: (event: React.SyntheticEvent) => void
+  markers: Marker[]
+  object: PortableTextBlock | PortableTextChild
   onBlur: () => void
+  onChange: (patchEvent: PatchEvent, path: Path) => void
+  onClose: (event: React.SyntheticEvent) => void
+  onFocus: (arg0: Path) => void
+  path: Path
   presence: Presence[]
+  readOnly: boolean
+  referenceElement: HTMLElement
+  type: Type
 }
 
 export const PopoverObjectEditing: FunctionComponent<Props> = ({
-  type,
-  object,
-  referenceElement,
-  readOnly,
-  markers,
   focusPath,
-  path,
-  onChange,
-  onFocus,
-  presence,
+  markers,
+  object,
   onBlur,
-  onClose
+  onChange,
+  onClose,
+  onFocus,
+  path,
+  presence,
+  readOnly,
+  referenceElement,
+  type
 }) => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   const element = useMemo(() => referenceElement, [])

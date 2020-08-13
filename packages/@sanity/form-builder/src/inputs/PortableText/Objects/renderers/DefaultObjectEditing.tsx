@@ -12,17 +12,17 @@ import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
 type Props = {
-  type: Type
-  object: PortableTextBlock | PortableTextChild
-  readOnly: boolean
-  markers: Marker[]
   focusPath: Path
-  path: Path
-  onChange: (patchEvent: PatchEvent, path: Path) => void
-  onFocus: (arg0: Path) => void
+  markers: Marker[]
+  object: PortableTextBlock | PortableTextChild
   onBlur: () => void
+  onChange: (patchEvent: PatchEvent, path: Path) => void
   onClose: (event: React.SyntheticEvent) => void
+  onFocus: (arg0: Path) => void
+  path: Path
   presence: Presence[]
+  readOnly: boolean
+  type: Type
 }
 
 export function DefaultObjectEditing(props: Props) {
@@ -45,25 +45,25 @@ export function DefaultObjectEditing(props: Props) {
       {(): JSX.Element => (
         <DefaultDialog
           isOpen
-          title={type.title}
-          onClose={onClose}
           onClickOutside={onClose}
+          onClose={onClose}
           showCloseButton
+          title={type.title}
         >
           <DialogContent size="medium">
             <PresenceOverlay>
               <FormBuilderInput
-                type={type}
+                focusPath={focusPath}
                 level={0}
-                readOnly={readOnly || type.readOnly}
-                value={object}
+                markers={markers}
+                onBlur={onBlur}
                 onChange={handleChange}
                 onFocus={onFocus}
-                onBlur={onBlur}
-                presence={presence}
-                focusPath={focusPath}
                 path={path}
-                markers={markers}
+                presence={presence}
+                readOnly={readOnly || type.readOnly}
+                type={type}
+                value={object}
               />
             </PresenceOverlay>
           </DialogContent>

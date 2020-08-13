@@ -11,31 +11,31 @@ import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
 type Props = {
-  type: Type
-  object: PortableTextBlock | PortableTextChild
-  readOnly: boolean
-  markers: Marker[]
   focusPath: Path
-  path: Path
-  onChange: (patchEvent: PatchEvent, path: Path) => void
-  onFocus: (arg0: Path) => void
+  markers: Marker[]
+  object: PortableTextBlock | PortableTextChild
   onBlur: () => void
+  onChange: (patchEvent: PatchEvent, path: Path) => void
   onClose: (event: React.SyntheticEvent) => void
+  onFocus: (arg0: Path) => void
+  path: Path
   presence: Presence[]
+  readOnly: boolean
+  type: Type
 }
 
 export const FullscreenObjectEditing: FunctionComponent<Props> = ({
-  type,
-  object,
-  readOnly,
-  markers,
   focusPath,
-  path,
-  onChange,
-  onFocus,
+  markers,
+  object,
   onBlur,
+  onChange,
   onClose,
-  presence
+  onFocus,
+  path,
+  presence,
+  readOnly,
+  type
 }): JSX.Element => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   return (
