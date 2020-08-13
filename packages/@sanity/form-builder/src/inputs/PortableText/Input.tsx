@@ -58,12 +58,6 @@ type Props = {
   value: PortableTextBlock[] | undefined
 }
 
-export type ObjectEditData = {
-  editorPath: Path // The object representation in the editor (i.e. an text for an annotation)
-  formBuilderPath: Path // The actual data storage path in the PT model (like .markDefs for annotations)
-  kind: 'annotation' | 'blockObject' | 'inlineObject'
-}
-
 export default function PortableTextInput(props: Props) {
   const {
     focusPath,
