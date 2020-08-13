@@ -22,6 +22,7 @@
     "@sanity/react-hooks": "1.150.4"
   },
   "devDependencies": {
+    "@sanity/base": "1.150.3",
     "@sanity/check": "1.150.1",
     "@sanity/components": "1.150.3",
     "@sanity/diff": "1.150.1",
@@ -30,6 +31,7 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
+    "@sanity/base": "^1.150.0",
     "@sanity/components": "^1.150.0",
     "react": "^16.9",
     "react-dom": "^16.9"

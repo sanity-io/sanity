@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import {ObjectDiff} from '@sanity/diff'
+import {useUserColorManager} from '@sanity/base'
 import {useUser} from '@sanity/react-hooks'
 import {UserAvatar} from '@sanity/components/presence'
 import {Marker} from '../map/Marker'
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function GeopointMove({diff, api, map, label}: Props) {
+  const userColorManager = useUserColorManager()
   const {fromValue: from, toValue: to} = diff
   const annotation = diff.isChanged ? diff.annotation : undefined
   const fromRef = React.useRef<google.maps.Marker>()
@@ -50,10 +52,18 @@ export function GeopointMove({diff, api, map, label}: Props) {
           opacity={0.75}
           onClick={openInfoOnFrom}
           markerRef={fromRef}
-          label={label}
         />
       )}
-      {from && to && <Arrow api={api} map={map} from={from} to={to} zIndex={1} />}
+      {from && to && (
+        <Arrow
+          api={api}
+          map={map}
+          from={from}
+          to={to}
+          zIndex={1}
+          color={annotation ? userColorManager.get(annotation.author) : undefined}
+        />
+      )}
       {to && (
         <Marker
           api={api}
