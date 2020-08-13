@@ -12,9 +12,14 @@ export interface Geopoint {
 }
 
 export interface GeopointSchemaType {
-  name: string
+  name: 'geopoint'
   title?: string
   description?: string
+}
+
+export interface ArraySchemaType {
+  name: 'array'
+  of: {name: string}[]
 }
 
 // @todo replace
