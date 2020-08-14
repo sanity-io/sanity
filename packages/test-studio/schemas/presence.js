@@ -1,6 +1,5 @@
 import BookIcon from 'react-icons/lib/fa/book'
 import {CustomInputWithDefaultPresence} from '../src/components/CustomInputWithDefaultPresence'
-import {CustomInputWithCustomPresence} from '../src/components/CustomInputWithCustomPresence'
 import {CustomInputWithDialogOverlay} from '../src/components/CustomInputWithDialogOverlay'
 import {range} from 'lodash'
 
@@ -76,19 +75,9 @@ export default {
       inputComponent: CustomInputWithDefaultPresence
     },
     {
-      name: 'customInputWithCustomPresence',
-      title: 'Custom input with custom presence',
-      description:
-        'This uses a custom presence component that assigns a random animal emoji to each user',
-      type: 'array',
-      of: [{type: 'string'}],
-      inputComponent: CustomInputWithCustomPresence
-    },
-    {
       name: 'customInputWithDialog',
       title: 'Custom input with dialog and overlay',
-      description:
-        'This uses a custom presence component that assigns a random animal emoji to each user',
+      description: 'This is an example of how to use a presence overlay inside a dialog',
       type: 'object',
       fields: range(20).map(n => ({type: 'string', name: `fieldNo${n}`})),
       inputComponent: CustomInputWithDialogOverlay

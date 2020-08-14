@@ -1,3 +1,4 @@
+// todo: revisit later when (or if) we want to support custom rendering of presence indicators
 import React from 'react'
 import {range, sample} from 'lodash'
 import {PresenceRegion} from '@sanity/components/presence'
@@ -34,48 +35,58 @@ function MyAvatarList(props) {
   )
 }
 
-export function CustomInputWithCustomPresence(props) {
-  const {value, type, presence, onFocus, onChange} = props
+export const CustomInputWithCustomPresence = React.forwardRef(
+  function CustomInputWithCustomPresence(props, ref) {
+    const {value, type, presence, onFocus, onChange} = props
 
-  return (
-    <div>
-      <div>{type.title}</div>
-      <div>
-        <em>{type.description}</em>
-      </div>
+    const handleRootFocus = React.useCallback(event => {
+      if (event.currentTarget.element === ref) onFocus()
+    }, [])
 
-      <div style={{display: 'flex', flexWrap: 'wrap'}}>
-        {range(4).map(row =>
-          range(8).map(col => {
-            return (
-              <div key={col + row} style={{position: 'relative'}}>
-                <div>
-                  <div style={{position: 'absolute', top: 2, left: -22}}>
-                    {/* Render presence region for this cell with a custom avatar list */}
-                    <PresenceRegion
-                      presence={presence.filter(
-                        item => item.path[0] === row && item.path[1] === col
-                      )}
-                      component={MyAvatarList}
+    return (
+      <div tabIndex={-1} ref={ref} onFocus={handleRootFocus}>
+        <div>{type.title}</div>
+        <div>
+          <em>{type.description}</em>
+        </div>
+
+        <em>
+          <b>NOTE: Custom avatar list component doesn't work currently, revisit later</b>
+        </em>
+
+        <div style={{display: 'flex', flexWrap: 'wrap'}}>
+          {range(4).map(row =>
+            range(8).map(col => {
+              return (
+                <div key={col + row} style={{position: 'relative'}}>
+                  <div>
+                    <div style={{position: 'absolute', top: 2, left: -22}}>
+                      {/* Render presence region for this cell with a custom avatar list */}
+                      {/*<PresenceRegion*/}
+                      {/*  presence={presence.filter(*/}
+                      {/*    item => item.path[0] === row && item.path[1] === col*/}
+                      {/*  )}*/}
+                      {/*  component={MyAvatarList}*/}
+                      {/*/>*/}
+                    </div>
+                    <input
+                      type="text"
+                      size={8}
+                      value={value}
+                      onChange={e => {
+                        onChange(PatchEvent.from(set([row, col], e.currentTarget.value)))
+                      }}
+                      onFocus={() => {
+                        onFocus([row, col])
+                      }}
                     />
                   </div>
-                  <input
-                    type="text"
-                    size={8}
-                    value={value}
-                    onChange={e => {
-                      onChange(PatchEvent.from(set([row, col], e.currentTarget.value)))
-                    }}
-                    onFocus={() => {
-                      onFocus([row, col])
-                    }}
-                  />
                 </div>
-              </div>
-            )
-          })
-        )}
+              )
+            })
+          )}
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+)
