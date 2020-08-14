@@ -4,6 +4,8 @@ import React, {useEffect, useState, useMemo} from 'react'
 import {
   EditorChange,
   ErrorChange,
+  OnCopyFn,
+  OnPasteFn,
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
@@ -31,15 +33,8 @@ type Props = {
   onBlur: () => void
   onChange: (arg0: PatchEvent) => void
   onFocus: (Path) => void
-  onPaste?: (arg0: {
-    event: React.SyntheticEvent
-    path: []
-    type: Type
-    value: PortableTextBlock[] | undefined
-  }) => {
-    insert?: PortableTextBlock[]
-    path?: []
-  }
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
@@ -56,6 +51,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     markers,
     onBlur,
     onChange,
+    onCopy,
     onFocus,
     onPaste,
     presence,
@@ -212,6 +208,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
+          onCopy={onCopy}
           onFocus={onFocus}
           onPaste={onPaste}
           onToggleFullscreen={handleToggleFullscreen}

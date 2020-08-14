@@ -3,6 +3,8 @@ import classNames from 'classnames'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {
   getPortableTextFeatures,
+  OnCopyFn,
+  OnPasteFn,
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
@@ -36,16 +38,9 @@ type Props = {
   markers: Array<Marker>
   onBlur: () => void
   onChange: (arg0: PatchEvent) => void
+  onCopy?: OnCopyFn
   onFocus: (Path) => void
-  onPaste?: (arg0: {
-    event: React.SyntheticEvent
-    path: []
-    type: Type
-    value: PortableTextBlock[] | undefined
-  }) => {
-    insert?: PortableTextBlock[]
-    path?: []
-  }
+  onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patche$: Subject<EditorPatch>
   presence: Presence[]
@@ -64,6 +59,7 @@ export default function PortableTextInput(props: Props) {
     markers,
     onBlur,
     onChange,
+    onCopy,
     onFocus,
     onPaste,
     onToggleFullscreen,
@@ -325,6 +321,7 @@ export default function PortableTextInput(props: Props) {
       onCloseValidationResults={handleCloseValidationResults}
       onFocus={onFocus}
       onFormBuilderChange={onChange}
+      onCopy={onCopy}
       onPaste={onPaste}
       onToggleFullscreen={handleToggleFullscreen}
       onToggleValidationResults={handleToggleValidationResults}

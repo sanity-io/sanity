@@ -10,7 +10,9 @@ import {
   RenderChildFunction,
   RenderDecoratorFunction,
   Type,
-  EditorSelection
+  EditorSelection,
+  OnPasteFn,
+  OnCopyFn
 } from '@sanity/portable-text-editor'
 import ErrorCircleIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -29,18 +31,11 @@ type Props = {
   isFullscreen: boolean
   markers: Array<Marker>
   onBlur: () => void
+  onCopy?: OnCopyFn
   onCloseValidationResults: () => void
   onFocus: (Path) => void
   onFormBuilderChange: (change: PatchEvent) => void
-  onPaste?: (arg0: {
-    event: React.SyntheticEvent
-    path: []
-    type: Type
-    value: PortableTextBlock[] | undefined
-  }) => {
-    insert?: PortableTextBlock[]
-    path?: []
-  }
+  onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   onToggleValidationResults: () => void
   portableTextFeatures: PortableTextFeatures
@@ -74,8 +69,10 @@ function PortableTextSanityEditor(props: Props) {
   const {
     initialSelection,
     onCloseValidationResults,
+    onCopy,
     onFocus,
     onFormBuilderChange,
+    onPaste,
     onToggleFullscreen,
     onToggleValidationResults,
     portableTextFeatures,
@@ -178,6 +175,8 @@ function PortableTextSanityEditor(props: Props) {
             <div className={editorClassNames}>
               <PortableTextEditable
                 hotkeys={hotkeys}
+                onCopy={onCopy}
+                onPaste={onPaste}
                 placeholderText={value ? undefined : 'Empty'}
                 renderAnnotation={renderAnnotation}
                 renderBlock={renderBlock}
