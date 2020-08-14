@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, {useState, useEffect} from 'react'
 import {useId} from '@reach/auto-id'
-import styles from './AvatarCircle.css'
+import styles from './Avatar.css'
 import {Position, Status, Size} from './types'
 
 type Props = {
@@ -21,7 +21,7 @@ type Props = {
 const W = 21
 const H = 21
 
-export default function AvatarCircle({
+export default function Avatar({
   borderColor = 'currentColor',
   imageUrl,
   label,

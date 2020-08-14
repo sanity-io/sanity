@@ -1,4 +1,4 @@
-export {default as Avatar} from './AvatarCircle'
+export {default as Avatar} from './Avatar'
 export {default as AvatarProvider} from './UserAvatar'
 export {default as PopoverList} from './PopoverList'
 export {default as StackCounter} from './StackCounter'

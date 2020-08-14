@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import AvatarCircle from './AvatarCircle'
+import Avatar from './Avatar'
 import {Position, Size, Status, PresentUser} from './types'
 import {User} from './types'
 
@@ -35,7 +35,7 @@ export default function UserAvatar({
   const userColor = color || /* colorHasher(userId) */ 'currentColor'
   const imageUrl = imageLoadError ? null : user?.imageUrl
   return (
-    <AvatarCircle
+    <Avatar
       imageUrl={imageUrl}
       animateArrowFrom={animateArrowFrom}
       isAnimating={isAnimating}
@@ -47,6 +47,6 @@ export default function UserAvatar({
       tone={tone}
     >
       {!imageUrl && user?.displayName && nameToInitials(user.displayName)}
-    </AvatarCircle>
+    </Avatar>
   )
 }
