@@ -1,7 +1,7 @@
 {
   "name": "@sanity/diff",
   "version": "1.150.1",
-  "description": "Generates and display diffs between documents and primitive types",
+  "description": "Generates diffs between documents and primitive types",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
@@ -26,9 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/react-hooks": "1.150.1",
-    "diff-match-patch": "^1.0.4",
-    "sanity-diff-patch": "^1.0.7"
+    "diff-match-patch": "^1.0.4"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
