@@ -11,7 +11,7 @@
   grid-gap: 0.5em;
 
   @media (--screen-medium) {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     grid-gap: 1em;
   }
 }

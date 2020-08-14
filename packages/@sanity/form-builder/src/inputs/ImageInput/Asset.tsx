@@ -78,7 +78,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
   render() {
     const {asset, onClick, onKeyPress, isSelected} = this.props
     const {isDeleting, dialogType} = this.state
-    const imgH = 100 * Math.max(1, DPI)
+    const imgH = 200 * Math.max(1, DPI)
 
     return (
       <a
