@@ -25,6 +25,8 @@ type Props = {
   presence: Presence[]
 }
 
+const EMPTY = []
+
 export default class SanityFormBuilder extends React.Component<Props, {}> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
 
@@ -74,6 +76,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
           readOnly={readOnly}
           filterField={filterField}
           ref={this.setInput}
+          path={EMPTY}
           presence={presence}
         />
       </SanityFormBuilderContext>
