@@ -2,18 +2,18 @@
 import pubsub from 'nano-pubsub'
 import {Observable} from 'rxjs'
 
-export default function createActions(actions) {
+export default function createActions(actions: Record<string, Function>) {
   return Object.keys(actions).reduce((acc, name) => {
     acc[name] = createAction(name, actions[name])
     return acc
   }, {})
 }
 
-function createAction(name, fn) {
+function createAction(name: string, fn: Function) {
   const calls = pubsub()
 
+  // eslint-disable-next-line func-name-matching
   const functor = function action(...args) {
-    // eslint-disable-line func-name-matching
     const retValue = fn(...args)
 
     calls.publish({
