@@ -44,7 +44,7 @@ export interface CurrentUserError {
 
 export interface CurrentUserSnapshot {
   type: 'snapshot'
-  user: CurrentUser
+  user: CurrentUser | null
 }
 
 export type CurrentUserEvent = CurrentUserError | CurrentUserSnapshot
