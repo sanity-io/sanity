@@ -134,6 +134,13 @@ const numberRadioExample = {
   }
 }
 
+const portableText = {
+  type: 'array',
+  name: 'portableText',
+  title: 'Portable text',
+  of: [{type: 'block'}]
+}
+
 const referenceExample = {
   type: 'reference',
   name: 'referenceExample',
@@ -232,6 +239,9 @@ export default {
     numberRadioExample,
 
     // @todo: object
+
+    // portableText
+    portableText,
 
     // reference
     referenceExample,
