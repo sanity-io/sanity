@@ -48,9 +48,6 @@ export const EditObject = ({
   readOnly,
   value
 }: Props) => {
-  if (!objectEditData) {
-    return null
-  }
   const editor = usePortableTextEditor()
   const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
   const {formBuilderPath, editorPath, kind} = objectEditData
@@ -71,39 +68,37 @@ export const EditObject = ({
     block.children &&
     block.children.find(cld => typeof editorPath[2] === 'object' && cld._key === editorPath[2]._key)
 
-  if (!block) {
-    return null
-  }
-
-  // Get object, type, and relevant editor element
-  switch (kind) {
-    case 'blockObject':
-      object = block
-      type = ptFeatures.types.blockObjects.find(t => t.name === block._type)
-      break
-    case 'inlineObject':
-      object = child
-      // eslint-disable-next-line max-depth
-      if (object) {
-        type = ptFeatures.types.inlineObjects.find(t => t.name === child._type)
-      }
-      break
-    case 'annotation':
-      // eslint-disable-next-line max-depth
-      if (child) {
-        const markDef =
-          child.marks &&
-          block.markDefs &&
-          block.markDefs.find(def => child.marks.includes(def._key))
+  if (block) {
+    // Get object, type, and relevant editor element
+    switch (kind) {
+      case 'blockObject':
+        object = block
+        type = ptFeatures.types.blockObjects.find(t => t.name === block._type)
+        break
+      case 'inlineObject':
+        object = child
         // eslint-disable-next-line max-depth
-        if (markDef) {
-          type = ptFeatures.types.annotations.find(t => t.name === markDef._type)
-          object = markDef
+        if (object) {
+          type = ptFeatures.types.inlineObjects.find(t => t.name === child._type)
         }
-      }
-      break
-    default:
-    // Nothing
+        break
+      case 'annotation':
+        // eslint-disable-next-line max-depth
+        if (child) {
+          const markDef =
+            child.marks &&
+            block.markDefs &&
+            block.markDefs.find(def => child.marks.includes(def._key))
+          // eslint-disable-next-line max-depth
+          if (markDef) {
+            type = ptFeatures.types.annotations.find(t => t.name === markDef._type)
+            object = markDef
+          }
+        }
+        break
+      default:
+      // Nothing
+    }
   }
 
   const [stateValue, setStateValue] = useState(object)
@@ -148,11 +143,6 @@ export const EditObject = ({
     }
   }, [value])
 
-  // Render nothing if object or type wasn't found
-  if (!object || !type) {
-    return null
-  }
-
   const editModalLayout: ModalType = get(type, 'options.editModal')
 
   function handleChange(patchEvent: PatchEvent): void {
@@ -177,6 +167,11 @@ export const EditObject = ({
     setTimeout(() => {
       onChange(PatchEvent.from(_patches), formBuilderPath)
     })
+  }
+
+  // Render nothing if object or type wasn't found
+  if (!object || !type) {
+    return null
   }
 
   const editorElement: HTMLElement = PortableTextEditor.findDOMNode(
