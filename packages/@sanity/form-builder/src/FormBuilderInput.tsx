@@ -6,7 +6,7 @@ import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths.js'
 import {Type, Marker, Presence} from './typedefs'
-import {Context as PresenceContext} from '@sanity/components/presence'
+import {Context as PresenceContext} from '@sanity/components/lib/presence'
 
 const NO_MARKERS: Marker[] = []
 
@@ -43,6 +43,7 @@ export class FormBuilderInput extends React.Component<Props> {
   scrollTimeout: number
   _element: HTMLDivElement | null
   static contextTypes = {
+    presence: PresenceContext,
     formBuilder: ENABLE_CONTEXT,
     getValuePath: ENABLE_CONTEXT
   }
@@ -187,7 +188,7 @@ export class FormBuilderInput extends React.Component<Props> {
       markers,
       type,
       level,
-      presence,
+      presence = this.context.presence,
       focusPath,
       isRoot,
       ...rest
