@@ -1,7 +1,9 @@
 import FormField from 'part:@sanity/components/formfields/default'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
 import {
   EditorChange,
+  ErrorChange,
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
@@ -81,6 +83,10 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     setValueTouchedByMarkers(value ? [...value] : value)
   }, [validationHash, value])
 
+  const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
+    undefined
+  )
+
   // Reset invalidValue if new value is coming in from props
   const [invalidValue, setInvalidValue] = useState(null)
   useEffect(() => {
@@ -136,6 +142,9 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
       case 'invalidValue':
         setInvalidValue(change)
         break
+      case 'error':
+        setEditorErrorNotification(change)
+        break
       // case 'selection':
       // case 'value':
       // case 'ready':
@@ -182,6 +191,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
       </>
     )
   }
+
   const [isFullscreen, setIsFullscreen] = useState(false)
   const handleToggleFullscreen = () => setIsFullscreen(!isFullscreen)
   const editorInput = useMemo(
@@ -219,6 +229,14 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   )
   return (
     <>
+      {editorErrorNotification && (
+        <Snackbar
+          kind={editorErrorNotification.level}
+          isPersisted
+          onAction={() => setEditorErrorNotification(undefined)}
+          subtitle={<div>{editorErrorNotification.description}</div>}
+        />
+      )}
       {invalidValue && !ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && editorInput}
     </>
