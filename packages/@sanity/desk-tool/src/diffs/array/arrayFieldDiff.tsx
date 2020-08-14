@@ -2,8 +2,10 @@ import {useUserColorManager} from '@sanity/base'
 import {ItemDiff} from '@sanity/diff'
 import React from 'react'
 import {Annotation} from '../../panes/documentPane/history/types'
+import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {getAnnotationColor} from '../helpers'
 import {isPTSchemaType, PTDiff} from '../portableText'
+import {resolveDiffComponent} from '../resolveDiffComponent'
 import {ArrayDiffProps} from './types'
 
 import styles from './arrayFieldDiff.css'
@@ -32,7 +34,7 @@ export function ArrayFieldDiff(props: ArrayDiffProps) {
                 <ArrayDiffIndexes fromIndex={diffItem.fromIndex} toIndex={diffItem.toIndex} />
               </div>
               <div className={styles.diffItemBox}>
-                <DefaultArrayDiffItem
+                <ArrayFieldDiffItem
                   itemDiff={diffItem}
                   metadata={props.items && props.items[diffItemIndex]}
                 />
@@ -99,7 +101,7 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
 }
 
 // eslint-disable-next-line complexity
-function DefaultArrayDiffItem(props: {
+function ArrayFieldDiffItem(props: {
   itemDiff: ItemDiff<Annotation>
   metadata?: {fromType?: {name: string}; toType?: {name: string}}
 }) {
@@ -108,36 +110,31 @@ function DefaultArrayDiffItem(props: {
   const metadata = props.metadata || {fromType: undefined, toType: undefined}
 
   if (diff.action === 'added') {
-    return (
-      <pre className={styles.addedItem}>
-        Added array item ({metadata.toType && metadata.toType.name}):{' '}
-        {JSON.stringify(diff, null, 2)}
-      </pre>
-    )
+    const schemaType: any = metadata.toType
+    const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
+
+    return <DiffComponent diff={diff} schemaType={schemaType} />
   }
 
   if (diff.action === 'changed') {
-    return (
-      <pre className={styles.changedItem}>
-        Changed array item ({metadata.fromType && metadata.fromType.name}&rarr;
-        {metadata.toType && metadata.toType.name}): {JSON.stringify(diff, null, 2)}
-      </pre>
-    )
+    const schemaType: any = metadata.toType
+    const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
+
+    return <DiffComponent diff={diff} schemaType={schemaType} />
   }
 
   if (diff.action === 'removed') {
-    return (
-      <pre className={styles.removedItem}>
-        Removed array item ({metadata.fromType && metadata.fromType.name}):{' '}
-        {JSON.stringify(diff, null, 2)}
-      </pre>
-    )
+    const schemaType: any = metadata.fromType || metadata.toType
+    const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
+
+    return <DiffComponent diff={diff} schemaType={schemaType} />
   }
 
-  // @todo: render moved items?
-  return (
-    <pre className={styles.item}>
-      Unchanged item ({metadata.toType && metadata.toType.name}): {JSON.stringify(diff, null, 2)}
-    </pre>
-  )
+  // @todo: render unchanged items?
+  return <div>[unchanged]</div>
+  // return (
+  //   <pre className={styles.item}>
+  //     Unchanged item ({metadata.toType && metadata.toType.name}): {JSON.stringify(diff, null, 2)}
+  //   </pre>
+  // )
 }
