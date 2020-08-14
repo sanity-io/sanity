@@ -88,7 +88,7 @@ export default function BlockExtrasOverlay(props: Props) {
           block={block}
           isFullscreen={isFullscreen}
           blockActions={actions}
-          markers={markers}
+          markers={blockMarkers}
           onFocus={onFocus}
           renderCustomMarkers={renderCustomMarkers}
         />
