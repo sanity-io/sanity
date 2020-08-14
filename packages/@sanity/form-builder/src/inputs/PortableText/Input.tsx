@@ -106,6 +106,10 @@ export default function PortableTextInput(props: Props) {
           if (span) {
             const spanPath = [blockSegment, 'children', {_key: span._key}]
             setIsActive(true)
+            PortableTextEditor.select(editor, {
+              focus: {path: spanPath, offset: 0},
+              anchor: {path: spanPath, offset: 0}
+            })
             setobjectEditData({
               editorPath: spanPath,
               formBuilderPath: focusPath.slice(0, 3),
@@ -126,6 +130,10 @@ export default function PortableTextInput(props: Props) {
           path = path.concat(focusPath.slice(1, 3))
         }
         setIsActive(true)
+        PortableTextEditor.select(editor, {
+          focus: {path, offset: 0},
+          anchor: {path, offset: 0}
+        })
         setobjectEditData({editorPath: path, formBuilderPath: path, kind})
       }
     }
