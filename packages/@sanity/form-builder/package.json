@@ -19,6 +19,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@sanity/base": "1.149.19",
     "@sanity/components": "1.149.19",
     "@sanity/block-tools": "1.149.19",
     "@sanity/generate-help-url": "1.149.16",

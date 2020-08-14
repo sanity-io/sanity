@@ -5,7 +5,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import PatchEvent, {set} from '../PatchEvent'
 import styles from './BooleanInput.css'
 import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
-import {FieldPresence} from '@sanity/components/presence'
+import {FieldPresence} from '@sanity/base/presence'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(

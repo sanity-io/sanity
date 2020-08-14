@@ -8,7 +8,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
-import {Overlay as PresenceOverlay} from '@sanity/components/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 
 import styles from './FormView.css'
 

@@ -117,8 +117,13 @@ const isTSProject = packageDir => {
 // Note: If you run into problems with packages that errors during TS compile due to issues with
 // another package in this monorepo it might help adding it to this array
 const BUILD_SERIALLY = [
-  ['packages/@sanity/components'],
-  ['packages/@sanity/mutator', 'packages/@sanity/base']
+  [
+    'packages/@sanity/components',
+    'packages/@sanity/base',
+    'packages/@sanity/default-layout',
+    'packages/@sanity/form-builder',
+    'packages/@sanity/mutator'
+  ]
 ]
 const TS_PROJECTS = BUILD_SERIALLY.concat(
   PACKAGE_PATHS.filter(isTSProject).filter(

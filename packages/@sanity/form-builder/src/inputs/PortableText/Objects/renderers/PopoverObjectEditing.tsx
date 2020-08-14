@@ -5,7 +5,7 @@ import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {Overlay as PresenceOverlay} from '@sanity/components/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'

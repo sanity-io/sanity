@@ -52,7 +52,7 @@ function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
 
 interface Props {
   projectId: string
-  maxAvatars: number
+  maxAvatars?: number
   presence: GlobalPresenceItem[]
 }
 

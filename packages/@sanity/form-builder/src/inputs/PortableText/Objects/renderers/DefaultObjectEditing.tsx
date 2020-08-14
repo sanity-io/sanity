@@ -5,7 +5,7 @@ import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
-import {Overlay as PresenceOverlay} from '@sanity/components/presence'
+import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'

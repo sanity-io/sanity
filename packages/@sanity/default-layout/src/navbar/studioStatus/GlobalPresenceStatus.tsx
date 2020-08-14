@@ -1,4 +1,4 @@
-import {GlobalPresence} from '@sanity/components/presence'
+import {GlobalPresence} from '@sanity/components/lib/presence'
 import {useGlobalPresence} from '@sanity/base/hooks'
 import client from 'part:@sanity/base/client'
 import React from 'react'

@@ -20,4 +20,4 @@ function OverlayDisabled(props: Props) {
   return props.children
 }
 
-export const Overlay = DISABLE_OVERLAY ? OverlayDisabled : OverlayEnabled
+export const PresenceOverlay = DISABLE_OVERLAY ? OverlayDisabled : OverlayEnabled

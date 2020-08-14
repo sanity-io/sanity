@@ -1,7 +1,7 @@
 // todo: revisit later when (or if) we want to support custom rendering of presence indicators
 import React from 'react'
 import {range, sample} from 'lodash'
-import {PresenceRegion} from '@sanity/components/presence'
+// import {PresenceRegion} from '@sanity/base/presence'
 import {PatchEvent, set} from 'part:@sanity/form-builder/patch-event'
 
 const animals = [

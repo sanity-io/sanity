@@ -1,5 +1,5 @@
 import React from 'react'
-import {Overlay as PresenceOverlay, FieldPresence} from '@sanity/components/presence'
+import {PresenceOverlay, FieldPresence} from '@sanity/base/presence'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import Button from 'part:@sanity/components/buttons/default'
