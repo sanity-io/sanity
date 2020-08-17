@@ -110,10 +110,13 @@ export type TypeChangeDiff<A> = {
   annotation: A
 }
 
-export type ObjectDiff<A, T = Record<string, unknown>> = FullDiff<
+export type ObjectDiff<A, T extends object = Record<string, any>> = FullDiff<
   A,
   T,
-  {type: 'object'; fields: Record<string, Diff<A>>}
+  {
+    type: 'object'
+    fields: Record<keyof T, Diff<A>>
+  }
 >
 export type ArrayDiff<A, V = unknown> = FullDiff<A, V[], {type: 'array'; items: ItemDiff<A>[]}>
 export type NullDiff<A> = FullDiff<A, null, {type: 'null'}>
