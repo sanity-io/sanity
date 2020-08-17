@@ -1,13 +1,13 @@
 import * as React from 'react'
-import {ArrayDiff} from '@sanity/diff'
-import {GeopointSchemaType, Geopoint, Annotation} from '../types'
+import {ArrayDiff, ObjectDiff, Diff} from '@sanity/field/diff'
+import {GeopointSchemaType, Geopoint} from '../types'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {GeopointMove} from './GeopointMove'
 import styles from './GeopointFieldDiff.css'
 
 export interface DiffProps {
-  diff: ArrayDiff<Annotation, Geopoint>
+  diff: ArrayDiff<Geopoint>
   schemaType: GeopointSchemaType
 }
 
@@ -39,10 +39,12 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
     >
       {map => (
         <>
-          {diff.items
-            .filter(item => item.diff.action !== 'unchanged' && item.diff.type === 'object')
-            .map(({toIndex, diff: pointDiff}) => (
-              // @todo revisit diff type with holm
+          {diff.items.map(({toIndex, diff: pointDiff}) => {
+            if (!isChangeDiff(pointDiff)) {
+              return null
+            }
+
+            return (
               <GeopointMove
                 key={toIndex}
                 api={api}
@@ -50,11 +52,16 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
                 diff={pointDiff}
                 label={`${toIndex}`}
               />
-            ))}
+            )
+          })}
         </>
       )}
     </GoogleMap>
   )
+}
+
+function isChangeDiff(diff: Diff): diff is ObjectDiff<Geopoint> {
+  return diff.action !== 'unchanged' && diff.type === 'object'
 }
 
 function getBounds(

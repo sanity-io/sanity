@@ -1,22 +1,22 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import {ObjectDiff} from '@sanity/diff'
-import {useUserColorManager} from '@sanity/base'
+import {ObjectDiff, Annotation} from '@sanity/field/diff'
+//import {useUserColorManager} from '@sanity/base'
 import {useUser} from '@sanity/react-hooks'
 import {UserAvatar} from '@sanity/components/presence'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
-import {Geopoint, Annotation} from '../types'
+import {Geopoint} from '../types'
 
 interface Props {
   api: typeof window.google.maps
   map: google.maps.Map
-  diff: ObjectDiff<Annotation, Geopoint>
+  diff: ObjectDiff<Geopoint>
   label?: string
 }
 
 export function GeopointMove({diff, api, map, label}: Props) {
-  const userColorManager = useUserColorManager()
+  //const userColorManager = useUserColorManager()
   const {fromValue: from, toValue: to} = diff
   const annotation = diff.isChanged ? diff.annotation : undefined
   const fromRef = React.useRef<google.maps.Marker>()
@@ -61,7 +61,7 @@ export function GeopointMove({diff, api, map, label}: Props) {
           from={from}
           to={to}
           zIndex={1}
-          color={annotation ? userColorManager.get(annotation.author) : undefined}
+          //color={annotation ? userColorManager.get(annotation.author) : undefined}
         />
       )}
       {to && (
@@ -101,5 +101,5 @@ function UserItem(props: {userId: string}) {
 }
 
 function AnnotationInfo({annotation}: {annotation: Annotation}) {
-  return <UserItem userId={annotation.author} />
+  return annotation && <UserItem userId={annotation.author} />
 }
