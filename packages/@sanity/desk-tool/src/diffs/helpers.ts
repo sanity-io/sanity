@@ -1,4 +1,4 @@
-import {UserColorManager} from '@sanity/base'
+import {UserColorManager} from '@sanity/base/user-color'
 import {Annotation} from '@sanity/field/diff'
 
 // interface RGB {
@@ -44,13 +44,6 @@ export function getAnnotationColor(
     return {bg: '#fcc', fg: '#f00'}
   }
 
-  let hueKey
-  colorManager
-    .get(annotation.author)
-    .subscribe(userColor => {
-      hueKey = userColor
-    })
-    .unsubscribe()
-
+  const hueKey = colorManager.get(annotation.author)
   return color[hueKey]
 }
