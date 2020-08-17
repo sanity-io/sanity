@@ -2,7 +2,9 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import {ObjectDiff, Annotation} from '@sanity/field/diff'
 import {useUser, useUserColor} from '@sanity/react-hooks'
-import {UserAvatar} from '@sanity/components/presence'
+// @todo THIS IS NOT RELEASABLE AS-IS
+import UserAvatar from '@sanity/components/lib/presence/UserAvatar'
+// @todo ^FIX ME^
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
 import {Geopoint} from '../types'
