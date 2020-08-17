@@ -95,6 +95,7 @@ export type DiffProps<T extends Diff = Diff> = {
 export interface BaseSchemaType {
   name: string
   title?: string
+  description?: string
   type?: SchemaType
   diffComponent?: DiffComponent<any>
 }
