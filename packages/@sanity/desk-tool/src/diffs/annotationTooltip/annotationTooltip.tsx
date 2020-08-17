@@ -1,8 +1,8 @@
 import React from 'react'
-import {useUser} from '@sanity/react-hooks'
 import {Tooltip} from 'react-tippy'
-import {UserAvatar} from '@sanity/components/presence'
+import {useUser} from '@sanity/react-hooks'
 import {Annotation, AnnotationDetails} from '@sanity/field/diff'
+import UserAvatar from '@sanity/components/lib/presence/UserAvatar'
 
 import styles from './annotationTooltip.css'
 
