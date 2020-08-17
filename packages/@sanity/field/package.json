@@ -25,12 +25,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@sanity/diff": "1.150.1",
-    "@sanity/react-hooks": "1.150.1",
-    "diff-match-patch": "^1.0.4"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@sanity/diff": "1.150.1",
+    "react": "16.9.0",
     "rimraf": "^2.7.1",
     "typescript": "^3.7.3"
   },
