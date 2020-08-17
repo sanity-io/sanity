@@ -12,6 +12,8 @@ declare module 'all:part:@sanity/base/diff-resolver' {
 }
 
 declare module '@sanity/base' {
+  import {Observable} from 'rxjs'
+
   export type UserColorHue =
     | 'blue'
     | 'cyan'
@@ -22,7 +24,7 @@ declare module '@sanity/base' {
     | 'magenta'
     | 'purple'
   export interface UserColorManager {
-    get: (userId: string) => UserColorHue
+    get: (userId: string) => Observable<UserColorHue>
   }
   export const useUserColorManager: () => UserColorManager
 }
