@@ -88,13 +88,7 @@ function buildTypeScript(packageDir) {
   const project = ts.createProject(path.join(packageDir, 'tsconfig.json'))
   return withDisplayName(compileTaskName('dts', packageDir), () => {
     const compilation = project.src().pipe(project())
-    return compilation.dts
-      .pipe(
-        changed(DEST_DIR, {
-          cwd: packageDir
-        })
-      )
-      .pipe(dest(project.options.outDir))
+    return compilation.dts.pipe(dest(project.options.outDir))
   })
 }
 
