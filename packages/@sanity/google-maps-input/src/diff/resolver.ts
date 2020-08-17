@@ -1,4 +1,5 @@
-import {GeopointSchemaType, ArraySchemaType} from '../types'
+import {ArraySchemaType} from '@sanity/field/diff'
+import {GeopointSchemaType} from '../types'
 import {GeopointFieldDiff} from './GeopointFieldDiff'
 import {GeopointArrayDiff} from './GeopointArrayDiff'
 
