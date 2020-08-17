@@ -101,13 +101,15 @@ fixablePackages.forEach(pkg => {
       ? path.join(rootPath, 'package.json')
       : path.join(rootPath, 'packages', pkg, 'package.json')
 
+  // eslint-disable-next-line import/no-dynamic-require
   const manifest = require(manifestPath)
   toFix.forEach(dep => {
     const depSection = (manifest.dependencies || {})[dep.depName]
       ? manifest.dependencies
       : manifest.devDependencies
 
-    depSection[dep.depName] = dep.version
+    depSection[dep.depName] =
+      dep.depName.indexOf('@sanity/') === 0 ? dep.version.replace(/^[~^]/, '') : dep.version
   })
 
   const json = `${JSON.stringify(manifest, null, 2)}\n`
