@@ -44,7 +44,7 @@
     "moment": "^2.19.1",
     "nano-pubsub": "^1.0.2",
     "object-inspect": "^1.6.0",
-    "popper.js": "1.14.1",
+    "popper.js": "^1.16.1",
     "react-click-outside": "^3.0.0",
     "react-container-query": "^0.11.0",
     "react-datepicker": "^1.8.0",
