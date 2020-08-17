@@ -1,13 +1,13 @@
 import * as React from 'react'
-import {ObjectDiff} from '@sanity/diff'
-import {GeopointSchemaType, Geopoint, Annotation} from '../types'
+import {ObjectDiff} from '@sanity/field/diff'
+import {GeopointSchemaType, Geopoint} from '../types'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {GeopointMove} from './GeopointMove'
 import styles from './GeopointFieldDiff.css'
 
 export interface DiffProps {
-  diff: ObjectDiff<Annotation, Geopoint>
+  diff: ObjectDiff<Geopoint>
   schemaType: GeopointSchemaType
 }
 

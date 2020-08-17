@@ -26,6 +26,7 @@
     "@sanity/check": "1.149.16",
     "@sanity/components": "1.149.16",
     "@sanity/diff": "1.149.17",
+    "@sanity/field": "1.149.17",
     "@types/googlemaps": "^3.39.11",
     "lodash": "^4.17.15",
     "rimraf": "^2.7.1"
