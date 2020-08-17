@@ -1,6 +1,6 @@
 {
   "name": "@sanity/field",
-  "version": "1.149.17",
+  "version": "1.149.19",
   "description": "",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

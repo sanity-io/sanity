@@ -26,6 +26,7 @@
     "@sanity/components": "1.149.19",
     "@sanity/data-aspects": "1.149.18",
     "@sanity/diff": "1.149.19",
+    "@sanity/field": "1.149.19",
     "@sanity/form-builder": "1.149.19",
     "@sanity/generate-help-url": "1.149.16",
     "@sanity/mutator": "1.149.18",
