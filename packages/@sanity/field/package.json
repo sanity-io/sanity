@@ -26,8 +26,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/diff": "1.149.17",
-    "@sanity/react-hooks": "1.149.16",
+    "@sanity/diff": "1.149.19",
+    "@sanity/react-hooks": "1.149.19",
     "diff-match-patch": "^1.0.4"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "sanity-design-studio",
+  "name": "design-studio",
   "version": "1.149.16",
   "description": "Sanity Design Studio",
   "main": "package.json",
@@ -14,12 +14,12 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/base": "1.149.16",
-    "@sanity/components": "1.149.16",
-    "@sanity/core": "1.149.17",
-    "@sanity/default-layout": "1.149.16",
-    "@sanity/default-login": "1.149.16",
-    "@sanity/desk-tool": "1.149.16",
+    "@sanity/base": "1.149.19",
+    "@sanity/components": "1.149.19",
+    "@sanity/core": "1.149.19",
+    "@sanity/default-layout": "1.149.19",
+    "@sanity/default-login": "1.149.18",
+    "@sanity/desk-tool": "1.149.19",
     "@sanity/google-maps-input": "1.149.16",
     "@sanity/vision": "1.149.16",
     "prop-types": "^15.6.0",
