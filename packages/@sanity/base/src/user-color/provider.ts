@@ -19,7 +19,5 @@ export function useUserColorManager(): UserColorManager {
 }
 
 export function UserColorManagerProvider({children, manager}: ProviderProps) {
-  return (
-    <UserColorManagerContext.Provider value={manager}>{children}</UserColorManagerContext.Provider>
-  )
+  return React.createElement(UserColorManagerContext.Provider, {value: manager}, children)
 }

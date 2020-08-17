@@ -1,6 +1,6 @@
 import React from 'react'
-import {useUserColorManager} from '@sanity/base'
-import {DiffComponent, ArrayDiff, ItemDiff} from '@sanity/field/diff'
+import {useUserColorManager} from '@sanity/base/user-color'
+import {DiffComponent as SanityDiffComponent, ArrayDiff, ItemDiff} from '@sanity/field/diff'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../resolveDiffComponent'
 import {getAnnotationColor} from '../helpers'
@@ -8,7 +8,7 @@ import {isPTSchemaType, PTDiff} from '../portableText'
 
 import styles from './arrayFieldDiff.css'
 
-export const ArrayFieldDiff: DiffComponent<ArrayDiff> = function ArrayFieldDiff(props) {
+export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFieldDiff(props) {
   const userColorManager = useUserColorManager()
 
   if (isPTSchemaType(props.schemaType)) {

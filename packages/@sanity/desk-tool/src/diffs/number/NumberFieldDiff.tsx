@@ -1,5 +1,5 @@
 import React from 'react'
-import {useUserColorManager} from '@sanity/base'
+import {useUserColorManager} from '@sanity/base/user-color'
 import {DiffComponent, NumberDiff} from '@sanity/field/diff'
 import {AnnotationTooltip} from '../annotationTooltip'
 import {getAnnotationColor} from '../helpers'

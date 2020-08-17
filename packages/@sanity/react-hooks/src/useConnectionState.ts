@@ -1,7 +1,7 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {toObservable, useObservable} from './utils/use-observable'
-import {distinctUntilChanged, map, switchMap, mapTo} from 'rxjs/operators'
 import {Observable, of, timer} from 'rxjs'
+import {distinctUntilChanged, map, switchMap, mapTo} from 'rxjs/operators'
+import {toObservable, useObservable} from './utils/useObservable'
 
 type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
@@ -13,8 +13,8 @@ export function useConnectionState(publishedId, typeName): ConnectionState {
       props$.pipe(
         distinctUntilChanged((curr, next) => curr.publishedId === next.publishedId),
         switchMap(
-          ({publishedId, typeName}): Observable<ConnectionState> => {
-            return documentStore.pair.documentEvents(publishedId, typeName).pipe(
+          ({publishedId: publishedDocId, typeName: docTypeName}): Observable<ConnectionState> => {
+            return documentStore.pair.documentEvents(publishedDocId, docTypeName).pipe(
               map((ev: {type: string}) => ev.type),
               map(eventType => eventType !== 'reconnect'),
               switchMap(isConnected =>

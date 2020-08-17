@@ -11,7 +11,8 @@ export type UserColorHue =
   | 'purple'
 
 export interface UserColorManager {
-  get: (userId: string) => Observable<UserColorHue>
+  get: (userId: string) => UserColorHue
+  listen: (userId: string) => Observable<UserColorHue>
 }
 
 export interface ManagerOptions {

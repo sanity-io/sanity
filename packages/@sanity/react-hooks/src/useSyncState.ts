@@ -1,7 +1,7 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {toObservable, useObservable} from './utils/use-observable'
-import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
 import {Observable} from 'rxjs'
+import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
+import {toObservable, useObservable} from './utils/useObservable'
 
 interface SyncState {
   isSyncing: boolean
@@ -10,15 +10,15 @@ interface SyncState {
 const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
-export function useSyncState(publishedId, typeName): SyncState {
+export function useSyncState(publishedId: string): SyncState {
   return useObservable<SyncState>(
     toObservable(publishedId, props$ =>
       props$.pipe(
         distinctUntilChanged(),
         switchMap(
-          (publishedId): Observable<SyncState> => {
+          (publishedDocId): Observable<SyncState> => {
             return documentStore.pair
-              .consistencyStatus(publishedId)
+              .consistencyStatus(publishedDocId)
               .pipe(map(isConsistent => (isConsistent ? NOT_SYNCING : SYNCING)))
           }
         )

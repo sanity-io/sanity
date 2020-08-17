@@ -1,13 +1,15 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {toObservable, useObservable} from './utils/use-observable'
 import {switchMap, distinctUntilChanged} from 'rxjs/operators'
+import {toObservable, useObservable} from './utils/useObservable'
 
-export function useEditState(publishedId, typeName) {
+export function useEditState(publishedId: string, typeName: string) {
   return useObservable(
     toObservable({publishedId, typeName}, props$ =>
       props$.pipe(
         distinctUntilChanged((curr, next) => curr.publishedId === next.publishedId),
-        switchMap(({publishedId, typeName}) => documentStore.pair.editState(publishedId, typeName))
+        switchMap(({publishedId: publishedDocId, typeName: docTypeName}) =>
+          documentStore.pair.editState(publishedDocId, docTypeName)
+        )
       )
     )
   )
