@@ -12,6 +12,7 @@ const log = require('fancy-log')
 const chalk = require('chalk')
 const babel = require('gulp-babel')
 const through = require('through2')
+const {getPackagesOrderedByTopology} = require('./scripts/utils/getPackagesOrderedByTopology')
 
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
 const {runSanityStart} = require('./scripts/utils/runSanityStart')
@@ -110,34 +111,12 @@ const isTSProject = packageDir => {
   return fs.existsSync(tsConfigPath)
 }
 
-// Some TypeScript packages needs to be compiled first in order for their dependencies to compile
-// successfully.
-// Ideally this should have been taken care of by a dependency resolution, but for now the packages
-// that needs to be built serially is listed below.
-// Note: If you run into problems with packages that errors during TS compile due to issues with
-// another package in this monorepo it might help adding it to this array
-const BUILD_SERIALLY = [
-  [
-    'packages/@sanity/components',
-    'packages/@sanity/base',
-    'packages/@sanity/default-layout',
-    'packages/@sanity/form-builder',
-    'packages/@sanity/mutator'
-  ]
-]
-const TS_PROJECTS = BUILD_SERIALLY.concat(
-  PACKAGE_PATHS.filter(isTSProject).filter(
-    packagePath => !BUILD_SERIALLY.some(entry => entry.some(pkgPath => pkgPath === packagePath))
-  )
-)
+// We the list of packages ordered by topology to make sure we compile in the correct order
+const ORDERED_PACKAGES = getPackagesOrderedByTopology().map(pkgName => `packages/${pkgName}`)
 
-const buildTS = parallel(
-  TS_PROJECTS.map(projectPath =>
-    Array.isArray(projectPath)
-      ? series(projectPath.map(buildTypeScript))
-      : buildTypeScript(projectPath)
-  )
-)
+const TS_PROJECTS = ORDERED_PACKAGES.filter(isTSProject)
+
+const buildTS = series(TS_PROJECTS.map(buildTypeScript))
 
 const watchTS = parallel(
   flatten(TS_PROJECTS).map(packageDir =>
@@ -163,15 +142,19 @@ const watchJSAndAssets = parallel(
 function studioTask(name, port) {
   return series(
     buildJSAndAssets,
-    parallel(buildTS, watchJSAndAssets, watchTS, function runStudio() {
-      log(`Starting ${name}…`)
-      runSanityStart(path.join(__dirname, 'packages', name), port).pipe(
-        through((data, enc, cb) => {
-          log(data.toString())
-          cb()
-        })
-      )
-    })
+    parallel(
+      watchJSAndAssets,
+      function runStudio() {
+        log(`Starting ${name}…`)
+        runSanityStart(path.join(__dirname, 'packages', name), port).pipe(
+          through((data, enc, cb) => {
+            log(data.toString())
+            cb()
+          })
+        )
+      },
+      series(buildTS, watchTS)
+    )
   )
 }
 
