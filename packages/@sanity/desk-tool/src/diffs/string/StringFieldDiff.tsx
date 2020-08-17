@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp, react/prop-types */
 
-import {useUserColorManager} from '@sanity/base'
+import {useUserColorManager} from '@sanity/base/user-color'
 import {StringDiffSegment, StringDiff, DiffComponent} from '@sanity/field/diff'
 import React from 'react'
 import {AnnotationTooltip} from '../annotationTooltip'

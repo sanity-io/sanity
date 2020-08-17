@@ -1,14 +1,14 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {toObservable, useObservable} from './utils/use-observable'
 import {distinctUntilChanged, switchMap} from 'rxjs/operators'
+import {toObservable, useObservable} from './utils/useObservable'
 
-export function useDocumentOperationEvent(publishedId, typeName) {
+export function useDocumentOperationEvent(publishedId: string, typeName: string) {
   return useObservable(
     toObservable({publishedId, typeName}, props$ =>
       props$.pipe(
         distinctUntilChanged((curr, next) => curr.publishedId === next.publishedId),
-        switchMap(({publishedId, typeName}) =>
-          documentStore.pair.operationEvents(publishedId, typeName)
+        switchMap(({publishedId: publishedDocId, typeName: docTypeName}) =>
+          documentStore.pair.operationEvents(publishedDocId, docTypeName)
         ),
         distinctUntilChanged()
       )
