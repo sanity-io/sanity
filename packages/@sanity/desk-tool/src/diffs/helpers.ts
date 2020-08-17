@@ -1,5 +1,5 @@
 import {UserColorManager} from '@sanity/base'
-import {Annotation} from '../panes/documentPane/history/types'
+import {Annotation} from '@sanity/field/diff'
 
 // interface RGB {
 //   red: number

@@ -16,25 +16,6 @@ export type MendozaEffectPair = {
 
 export {RemoteMutationWithVersion} from '@sanity/base/lib/datastores/document/document-pair/remoteMutations'
 
-export type ChunkType = 'create' | 'editDraft' | 'delete' | 'publish' | 'unpublish' | 'discardDraft'
-
-export type Chunk = {
-  id: string
-  type: ChunkType
-  start: number
-  end: number
-  startTimestamp: Date
-  endTimestamp: Date
-  authors: Set<string>
-}
-
-export type AnnotationDetails = {
-  chunk: Chunk
-  author: string
-}
-
-export type Annotation = AnnotationDetails | null
-
 export type Transaction = {
   id: string
   author: string
