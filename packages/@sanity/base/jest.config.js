@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 module.exports = {
-  testRegex: 'test\\/.*\\.test\\.js$',
+  testRegex: 'test\\/.*\\.test\\.(js|ts)$',
   testURL: 'http://localhost/',
   moduleNameMapper: {
     '^part:@sanity/base/schema?': '<rootDir>/test/mocks/schema.js',
