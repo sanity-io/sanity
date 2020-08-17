@@ -1,5 +1,5 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {useObservable} from './utils/use-observable'
+import {useObservable} from './utils/useObservable'
 import React from 'react'
 
 interface Marker {
@@ -14,11 +14,11 @@ interface ValidationStatus {
 
 const INITIAL: ValidationStatus = {markers: [], isValidating: false}
 
-export function useValidationStatus(publishedId, typeName): ValidationStatus {
+export function useValidationStatus(publishedDocId, docTypeName): ValidationStatus {
   return useObservable(
-    React.useMemo(() => documentStore.pair.validation(publishedId, typeName), [
-      publishedId,
-      typeName
+    React.useMemo(() => documentStore.pair.validation(publishedDocId, docTypeName), [
+      publishedDocId,
+      docTypeName
     ]),
     INITIAL
   )

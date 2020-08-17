@@ -1,5 +1,5 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {useObservable} from './utils/use-observable'
+import {useObservable} from './utils/useObservable'
 import {map} from 'rxjs/operators'
 import React from 'react'
 
@@ -10,14 +10,14 @@ interface SyncState {
 const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
-export function useSyncState(publishedId, typeName): SyncState {
+export function useSyncState(publishedDocId): SyncState {
   return useObservable<SyncState>(
     React.useMemo(
       () =>
         documentStore.pair
-          .consistencyStatus(publishedId)
+          .consistencyStatus(publishedDocId)
           .pipe(map(isConsistent => (isConsistent ? NOT_SYNCING : SYNCING))),
-      [publishedId]
+      [publishedDocId]
     ),
     NOT_SYNCING
   )
