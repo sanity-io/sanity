@@ -44,6 +44,13 @@ export function getAnnotationColor(
     return {bg: '#fcc', fg: '#f00'}
   }
 
-  const hueKey = colorManager.get(annotation.author)
+  let hueKey
+  colorManager
+    .get(annotation.author)
+    .subscribe(userColor => {
+      hueKey = userColor
+    })
+    .unsubscribe()
+
   return color[hueKey]
 }
