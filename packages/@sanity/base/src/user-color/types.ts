@@ -1,3 +1,5 @@
+import {Observable} from 'rxjs'
+
 export type UserColorHue =
   | 'blue'
   | 'cyan'
@@ -9,5 +11,11 @@ export type UserColorHue =
   | 'purple'
 
 export interface UserColorManager {
-  get: (userId: string) => UserColorHue
+  get: (userId: string) => Observable<UserColorHue>
+}
+
+export interface ManagerOptions {
+  userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user: {id: string} | null}>}
+  colors: UserColorHue[]
+  currentUserColor: UserColorHue
 }
