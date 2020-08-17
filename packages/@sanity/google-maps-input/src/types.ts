@@ -1,3 +1,5 @@
+import {ObjectSchemaType} from '@sanity/field/diff'
+
 export interface LatLng {
   lat: number
   lng: number
@@ -11,16 +13,6 @@ export interface Geopoint {
   alt?: number
 }
 
-export interface GeopointSchemaType {
+export interface GeopointSchemaType extends ObjectSchemaType {
   name: 'geopoint'
-  title?: string
-  description?: string
 }
-
-export interface ArraySchemaType {
-  name: 'array'
-  of: {name: string}[]
-}
-
-// @todo replace
-export type Annotation = {author: string}
