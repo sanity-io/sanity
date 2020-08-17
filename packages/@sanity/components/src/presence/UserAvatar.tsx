@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import Avatar from './Avatar'
-import {Position, Size, Status, PresentUser} from './types'
-import {User} from './types'
+import {Position, Size, Status, User} from './types'
 
 export type Props = {
   user: User
