@@ -1,9 +1,8 @@
 import * as React from 'react'
-import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
-import TimeAgo from '../components/TimeAgo'
-import {useSyncState} from '@sanity/react-hooks'
+import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import PublishIcon from 'part:@sanity/base/publish-icon'
+import TimeAgo from '../components/TimeAgo'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -22,6 +21,7 @@ function getDisabledReason(reason, publishedAt) {
   return DISABLED_REASON_TITLE[reason]
 }
 
+// eslint-disable-next-line complexity
 export function PublishAction(props) {
   const {id, type, liveEdit, draft, published} = props
 
@@ -38,7 +38,7 @@ export function PublishAction(props) {
 
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
+  const syncState = useSyncState(id)
 
   const hasValidationErrors = validationStatus.markers.some(marker => marker.level === 'error')
 
