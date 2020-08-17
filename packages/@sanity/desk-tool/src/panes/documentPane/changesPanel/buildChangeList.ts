@@ -1,15 +1,13 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {ObjectDiff, Path} from '@sanity/diff'
+import {ObjectDiff, ObjectSchemaType, Path} from '@sanity/field/diff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
-import {Annotation} from '../history/types'
-import {SchemaType} from '../types'
 import {getArrayDiffItemTypes, getDiffAtPath} from './helpers'
 import {ChangeNode} from './types'
 
 // eslint-disable-next-line complexity
 export function buildChangeList(
-  schemaType: SchemaType,
-  diff: ObjectDiff<Annotation>,
+  schemaType: ObjectSchemaType,
+  diff: ObjectDiff,
   path: Path = [],
   titlePath: string[] = []
 ): ChangeNode[] {

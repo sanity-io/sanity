@@ -1,8 +1,8 @@
+import {Chunk, Annotation} from '@sanity/field/diff'
 import {Input, ArrayInput, ObjectInput, StringInput, wrap, Diff, diffInput} from '@sanity/diff'
 import {Value, ArrayContent, ObjectContent, StringContent} from 'mendoza/lib/incremental-patcher'
-import {Chunk, Annotation} from './types'
 import {Timeline} from './timeline'
-import {isSameAnnotation} from './utilts'
+import {isSameAnnotation} from './utils'
 
 export type Meta = {chunk: Chunk; chunkIndex: number; transactionIndex: number} | null
 
