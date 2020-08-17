@@ -1,20 +1,18 @@
-import {useUserColorManager} from '@sanity/base'
-import {ItemDiff} from '@sanity/diff'
 import React from 'react'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {useUserColorManager} from '@sanity/base'
+import {DiffComponent, ArrayDiff, ItemDiff} from '@sanity/field/diff'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
+import {resolveDiffComponent} from '../resolveDiffComponent'
 import {getAnnotationColor} from '../helpers'
 import {isPTSchemaType, PTDiff} from '../portableText'
-import {resolveDiffComponent} from '../resolveDiffComponent'
-import {ArrayDiffProps} from './types'
 
 import styles from './arrayFieldDiff.css'
 
-export function ArrayFieldDiff(props: ArrayDiffProps) {
+export const ArrayFieldDiff: DiffComponent<ArrayDiff> = function ArrayFieldDiff(props) {
   const userColorManager = useUserColorManager()
 
   if (isPTSchemaType(props.schemaType)) {
-    return <PTDiff diff={props.diff} items={props.items} schemaType={props.schemaType} />
+    return <PTDiff diff={props.diff} schemaType={props.schemaType} />
   }
 
   return (
@@ -36,7 +34,7 @@ export function ArrayFieldDiff(props: ArrayDiffProps) {
               <div className={styles.diffItemBox}>
                 <ArrayFieldDiffItem
                   itemDiff={diffItem}
-                  metadata={props.items && props.items[diffItemIndex]}
+                  //metadata={props.items && props.items[diffItemIndex]}
                 />
               </div>
             </div>
@@ -102,12 +100,11 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
 
 // eslint-disable-next-line complexity
 function ArrayFieldDiffItem(props: {
-  itemDiff: ItemDiff<Annotation>
+  itemDiff: ItemDiff
   metadata?: {fromType?: {name: string}; toType?: {name: string}}
 }) {
-  const {itemDiff} = props
+  const {itemDiff, metadata = {}} = props
   const diff = itemDiff.diff
-  const metadata = props.metadata || {fromType: undefined, toType: undefined}
 
   if (diff.action === 'added') {
     const schemaType: any = metadata.toType
