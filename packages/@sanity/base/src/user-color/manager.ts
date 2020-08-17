@@ -1,10 +1,10 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
-import {UserColorHue, ManagerOptions} from './types'
+import {UserColorHue, ManagerOptions, UserColorManager} from './types'
 
 type UserId = string
 
-const defaultCurrentUserColor = 'yellow'
+const defaultCurrentUserColor = 'blue'
 const defaultColors: UserColorHue[] = [
   'blue',
   'cyan',
@@ -16,7 +16,7 @@ const defaultColors: UserColorHue[] = [
   'purple'
 ]
 
-export function createUserColorManager(options?: ManagerOptions) {
+export function createUserColorManager(options?: ManagerOptions): UserColorManager {
   const colors = (options && options.colors) || defaultColors
   const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserColor
   if (!colors.includes(currentUserColor)) {
@@ -42,15 +42,20 @@ export function createUserColorManager(options?: ManagerOptions) {
       .subscribe(evt => setCurrentUser(evt.user ? evt.user.id : null))
   }
 
-  return {get}
+  return {get, listen}
 
-  function get(userId: string): Observable<UserColorHue> {
-    if (subscriptions.has(userId)) {
-      return subscriptions.get(userId)
+  function get(userId: string): UserColorHue {
+    return getUserColor(userId)
+  }
+
+  function listen(userId: string): Observable<UserColorHue> {
+    let subscription = subscriptions.get(userId)
+    if (subscription) {
+      return subscription
     }
 
     const color = getUserColor(userId)
-    const subscription = getObservableColor(userId, color)
+    subscription = getObservableColor(userId, color)
     subscriptions.set(userId, subscription)
     return subscription
   }
@@ -60,8 +65,9 @@ export function createUserColorManager(options?: ManagerOptions) {
       return currentUserColor
     }
 
-    if (assigned.has(userId)) {
-      return assigned.get(userId)
+    const assignedColor = assigned.get(userId)
+    if (assignedColor) {
+      return assignedColor
     }
 
     // Prefer to reuse the color previously assigned, BUT:

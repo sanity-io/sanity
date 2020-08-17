@@ -1,12 +1,12 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {useObservable} from './utils/use-observable'
+import {useObservable} from './utils/useObservable'
 import React from 'react'
 
-export function useDocumentOperationEvent(publishedId, typeName) {
+export function useDocumentOperationEvent(publishedDocId, docTypeName) {
   return useObservable(
-    React.useMemo(() => documentStore.pair.operationEvents(publishedId, typeName), [
-      publishedId,
-      typeName
+    React.useMemo(() => documentStore.pair.operationEvents(publishedDocId, docTypeName), [
+      publishedDocId,
+      docTypeName
     ])
   )
 }
