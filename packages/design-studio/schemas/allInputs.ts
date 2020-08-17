@@ -80,6 +80,7 @@ const dateExample = {
   type: 'date',
   name: 'dateExample',
   title: 'Date example',
+  fieldset: 'dates',
   options: {
     // calendarTodayLabel: 'Today'
   }
@@ -89,6 +90,7 @@ const datetimeExample = {
   type: 'datetime',
   name: 'datetimeExample',
   title: 'Datetime example',
+  fieldset: 'dates',
   options: {
     calendarTodayLabel: 'Now'
   }
@@ -213,6 +215,7 @@ export default {
   type: 'document',
   name: 'allInputs',
   title: 'All inputs',
+  fieldsets: [{name: 'dates', title: 'Date types'}],
   fields: [
     // @todo: array
     // @todo: array[block[span]]
