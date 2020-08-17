@@ -1,5 +1,4 @@
-import {Diff, ObjectDiff, Path, ArrayDiff} from '@sanity/diff'
-import {Annotation} from '../history/types'
+import {Diff, ObjectDiff, Path, ArrayDiff} from '@sanity/field/diff'
 import {SchemaType} from '../types'
 import {ArrayItemMetadata} from './types'
 
@@ -62,8 +61,8 @@ export function resolveTypeName(value) {
   return (jsType === 'object' && '_type' in value && value._type) || jsType
 }
 
-export function getDiffAtPath(diff: ObjectDiff<Annotation>, path: Path): Diff<Annotation> | null {
-  let node: Diff<Annotation> = diff
+export function getDiffAtPath(diff: ObjectDiff, path: Path): Diff | null {
+  let node: Diff = diff
 
   for (const pathSegment of path) {
     if (node.type === 'object' && typeof pathSegment === 'string') {
@@ -87,10 +86,7 @@ function resolveArrayOfType(field: any, value: any): any | null {
   return field.type.of.find(t => t.name === typeName) || null
 }
 
-export function getArrayDiffItemTypes(
-  diff: ArrayDiff<Annotation>,
-  field: SchemaType
-): ArrayItemMetadata[] {
+export function getArrayDiffItemTypes(diff: ArrayDiff, field: SchemaType): ArrayItemMetadata[] {
   return diff.items.map(diffItem => {
     if (diffItem.diff.action === 'added') {
       return {

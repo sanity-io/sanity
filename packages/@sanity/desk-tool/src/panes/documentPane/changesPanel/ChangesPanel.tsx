@@ -1,20 +1,19 @@
 /* eslint-disable max-depth */
 import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {Diff} from '@sanity/diff'
+//import {useUserColorManager} from '@sanity/base'
+import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
-import {Annotation} from '../history/types'
-import {SchemaType} from '../types'
+import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {buildChangeList} from './buildChangeList'
 import {OperationsAPI, ChangeNode, ArrayChangeNode, FieldChangeNode, GroupChangeNode} from './types'
 import {undoChange} from './undoChange'
 import styles from './ChangesPanel.css'
-import {DiffErrorBoundary} from './DiffErrorBoundary'
 
 type Props = {
-  diff: Diff<Annotation>
-  schemaType: SchemaType
+  diff: ObjectDiff
+  schemaType: ObjectSchemaType
   documentId: string
 }
 
@@ -79,7 +78,7 @@ function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: numbe
       </div>
 
       <DiffErrorBoundary>
-        <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
+        <DiffComponent diff={change.diff} schemaType={change.schemaType} />
       </DiffErrorBoundary>
     </div>
   )

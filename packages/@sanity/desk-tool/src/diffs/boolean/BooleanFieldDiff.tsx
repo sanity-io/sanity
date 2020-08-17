@@ -1,14 +1,12 @@
 import {useUserColorManager} from '@sanity/base'
-import {BooleanDiff} from '@sanity/diff'
 import React from 'react'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {DiffComponent, BooleanDiff} from '@sanity/field/diff'
 import {AnnotationTooltip} from '../annotationTooltip'
 import {getAnnotationColor} from '../helpers'
-import {DiffComponent} from '../types'
 
 import styles from './BooleanFieldDiff.css'
 
-export const BooleanFieldDiff: DiffComponent<BooleanDiff<Annotation>> = ({diff}) => {
+export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff}) => {
   const userColorManager = useUserColorManager()
   const {fromValue, toValue} = diff
   const annotation = diff.isChanged ? diff.annotation : null

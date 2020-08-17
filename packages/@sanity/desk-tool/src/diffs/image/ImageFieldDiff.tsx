@@ -1,11 +1,16 @@
 import * as React from 'react'
 import {useUserColorManager} from '@sanity/base'
-import {ObjectDiff, StringSegmentChanged, StringDiff} from '@sanity/diff'
+import {
+  Annotation,
+  DiffComponent,
+  ObjectDiff,
+  ReferenceDiff,
+  StringDiff,
+  StringSegmentChanged
+} from '@sanity/field/diff'
 import Preview from 'part:@sanity/base/preview?'
-import {Annotation} from '../../panes/documentPane/history/types'
 import {AnnotationTooltip} from '../annotationTooltip'
 import {getAnnotationColor} from '../helpers'
-import {DiffComponent} from '../types'
 
 import styles from './ImageFieldDiff.css'
 
@@ -33,18 +38,19 @@ interface Image {
  * - Show diffs for metadata fields
  */
 
-export const ImageFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff, schemaType}) => {
-  if (diff.action !== 'changed')
+export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
+  if (diff.action !== 'changed') {
     return (
       <div>
         Image was <pre>{diff.action}</pre>
       </div>
     )
+  }
 
   const userColorManager = useUserColorManager()
   const {fromValue, toValue} = diff
-  const prev = (fromValue?.asset as any)?._ref
-  const next = (toValue?.asset as any)?._ref
+  const prev = fromValue?.asset?._ref
+  const next = toValue?.asset?._ref
   const annotation = getRefFieldAnnotation(diff)
 
   let color = {bg: '#fcc', fg: '#f00'}
@@ -73,27 +79,29 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff, sch
   )
 }
 
-function getStringFieldAnnotation(diff: StringDiff<Annotation>): Annotation | null {
+function getStringFieldAnnotation(diff: StringDiff): Annotation | null {
   const changed = diff.segments.find(
-    (segment): segment is StringSegmentChanged<Annotation> =>
+    (segment): segment is StringSegmentChanged =>
       (segment.type === 'added' || segment.type === 'removed') && Boolean(segment.annotation)
   )
 
   return changed ? changed.annotation : null
 }
 
-function getRefFieldAnnotation(diff: ObjectDiff<Annotation>): Annotation | null {
-  const assetFieldDiff = diff.fields.asset
+function getRefFieldAnnotation(diff: ObjectDiff<Image>): Annotation | null {
+  const assetFieldDiff = diff.fields.asset as ReferenceDiff
   if (!assetFieldDiff || assetFieldDiff.action === 'unchanged') {
     return null
   }
 
-  // TODO: How to deal with incorrect types?
-
-  if (assetFieldDiff.type !== 'object') return null
+  if (assetFieldDiff.type !== 'object') {
+    return null
+  }
 
   const refField = assetFieldDiff.fields._ref
-  if (!refField || refField.type !== 'string') return null
+  if (!refField || refField.type !== 'string') {
+    return null
+  }
 
   return getStringFieldAnnotation(refField)
 }
