@@ -1,19 +1,20 @@
 import * as React from 'react'
 import {useUserColorManager} from '@sanity/base'
-import {ObjectDiff, StringSegmentChanged, StringDiff} from '@sanity/diff'
 import Preview from 'part:@sanity/base/preview?'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {
+  Annotation,
+  DiffComponent,
+  ReferenceDiff,
+  StringDiff,
+  StringSegmentChanged,
+  StringDiffSegment
+} from '@sanity/field/diff'
 import {AnnotationTooltip} from '../annotationTooltip'
 import {getAnnotationColor} from '../helpers'
-import {DiffComponent} from '../types'
 
 import styles from './ReferenceFieldDiff.css'
 
-interface Reference {
-  _ref?: string
-}
-
-export const ReferenceFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff, schemaType}) => {
+export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaType}) => {
   const userColorManager = useUserColorManager()
   const {fromValue, toValue} = diff
   const prev = fromValue && fromValue._ref
@@ -46,7 +47,7 @@ export const ReferenceFieldDiff: DiffComponent<ObjectDiff<Annotation>> = ({diff,
   )
 }
 
-function getAnnotation(diff: ObjectDiff<Annotation>): Annotation {
+function getAnnotation(diff: ReferenceDiff): Annotation {
   const refChange = diff.fields._ref
   if (refChange && refChange.type === 'string') {
     return getStringFieldAnnotation(refChange)
@@ -57,14 +58,14 @@ function getAnnotation(diff: ObjectDiff<Annotation>): Annotation {
     fieldDiff => fieldDiff.action !== 'unchanged' && fieldDiff.type === 'string'
   )
 
-  return modified ? getStringFieldAnnotation(modified as StringDiff<Annotation>) : null
+  return modified ? getStringFieldAnnotation(modified as StringDiff) : null
 }
 
-function getStringFieldAnnotation(diff: StringDiff<Annotation>): Annotation | null {
-  const changed = diff.segments.find(
-    (segment): segment is StringSegmentChanged<Annotation> =>
-      (segment.type === 'added' || segment.type === 'removed') && Boolean(segment.annotation)
-  )
+function isStringChangedSegment(segment: StringDiffSegment): segment is StringSegmentChanged {
+  return segment.type === 'added' || segment.type === 'unchanged'
+}
 
+function getStringFieldAnnotation(diff: StringDiff): Annotation | null {
+  const changed = diff.segments.find(isStringChangedSegment)
   return changed ? changed.annotation : null
 }

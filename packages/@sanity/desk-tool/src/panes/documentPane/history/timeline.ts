@@ -1,8 +1,9 @@
 /* eslint-disable max-depth, complexity */
 import {Diff} from '@sanity/diff'
+import {Chunk} from '@sanity/field/diff'
 import {applyPatch, incremental, RawPatch} from 'mendoza'
 import {Value} from 'mendoza/lib/incremental-patcher'
-import {Transaction, TransactionLogEvent, Chunk, Doc, RemoteMutationWithVersion} from './types'
+import {Transaction, TransactionLogEvent, Doc, RemoteMutationWithVersion} from './types'
 import {diffValue, Meta} from './mendozaDiffer'
 import {TwoEndedArray} from './twoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'

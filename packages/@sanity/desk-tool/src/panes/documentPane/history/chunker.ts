@@ -1,4 +1,5 @@
-import {ChunkType, Chunk, Transaction, MendozaPatch} from './types'
+import {ChunkType, Chunk} from '@sanity/field/diff'
+import {Transaction, MendozaPatch} from './types'
 
 function didDeleteDraft(type: ChunkType) {
   return type === 'delete' || type === 'discardDraft'
@@ -28,9 +29,9 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
     right.type === 'editDraft' &&
     isWithinMergeWindow(left.endTimestamp, right.startTimestamp)
   ) {
-    let authors = new Set<string>()
-    for (let author of left.authors) authors.add(author)
-    for (let author of right.authors) authors.add(author)
+    const authors = new Set<string>()
+    for (const author of left.authors) authors.add(author)
+    for (const author of right.authors) authors.add(author)
 
     return {
       id: left.id,
@@ -47,11 +48,11 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
 }
 
 export function chunkFromTransaction(transaction: Transaction, pos: number): Chunk {
-  let modifedDraft = transaction.draftEffect != null
-  let modifedPublished = transaction.publishedEffect != null
+  const modifedDraft = transaction.draftEffect != null
+  const modifedPublished = transaction.publishedEffect != null
 
-  let draftDeleted = modifedDraft && isDeletePatch(transaction.draftEffect!.apply)
-  let publishedDeleted = modifedPublished && isDeletePatch(transaction.publishedEffect!.apply)
+  const draftDeleted = modifedDraft && isDeletePatch(transaction.draftEffect!.apply)
+  const publishedDeleted = modifedPublished && isDeletePatch(transaction.publishedEffect!.apply)
 
   let type: ChunkType = 'editDraft'
 
@@ -74,7 +75,7 @@ export function chunkFromTransaction(transaction: Transaction, pos: number): Chu
     end: pos + 1,
     startTimestamp: transaction.timestamp,
     endTimestamp: transaction.timestamp,
-    authors: new Set([transaction.author]),
+    authors: new Set([transaction.author])
   }
 }
 
