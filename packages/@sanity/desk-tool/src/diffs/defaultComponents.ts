@@ -1,4 +1,4 @@
-import {DiffComponent} from './types'
+import {DiffComponent} from '@sanity/field/diff'
 import {ArrayFieldDiff} from './array'
 import {NumberFieldDiff} from './number'
 import {StringFieldDiff} from './string'

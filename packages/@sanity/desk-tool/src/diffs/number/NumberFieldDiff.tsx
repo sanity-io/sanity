@@ -1,14 +1,12 @@
-import {useUserColorManager} from '@sanity/base'
-import {NumberDiff} from '@sanity/diff'
 import React from 'react'
-import {Annotation} from '../../panes/documentPane/history/types'
+import {useUserColorManager} from '@sanity/base'
+import {DiffComponent, NumberDiff} from '@sanity/field/diff'
 import {AnnotationTooltip} from '../annotationTooltip'
 import {getAnnotationColor} from '../helpers'
-import {DiffComponent} from '../types'
 
 import styles from './NumberFieldDiff.css'
 
-export const NumberFieldDiff: DiffComponent<NumberDiff<Annotation>> = ({diff}) => {
+export const NumberFieldDiff: DiffComponent<NumberDiff> = ({diff}) => {
   const userColorManager = useUserColorManager()
   const {fromValue, toValue} = diff
   const annotation = diff.isChanged ? diff.annotation : null

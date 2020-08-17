@@ -1,6 +1,4 @@
-import {ArrayDiff, Diff, Path} from '@sanity/diff'
-import {Annotation} from '../history/types'
-import {SchemaType} from '../types'
+import {ArrayDiff, Diff, Path, SchemaType} from '@sanity/field/diff'
 
 export interface OperationsAPI {
   patch: {
@@ -42,7 +40,7 @@ export interface ArrayItemMetadata {
 
 export interface FieldChangeNode {
   type: 'field'
-  diff: Diff<Annotation>
+  diff: Diff
   key: string
   path: Path
   titlePath: string[]
@@ -51,7 +49,7 @@ export interface FieldChangeNode {
 
 export interface ArrayChangeNode {
   type: 'array'
-  diff: ArrayDiff<Annotation>
+  diff: ArrayDiff
   key: string
   path: Path
   titlePath: string[]
