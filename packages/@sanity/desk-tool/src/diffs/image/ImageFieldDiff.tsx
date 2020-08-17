@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useUserColorManager} from '@sanity/base'
+import {useUserColorManager} from '@sanity/base/user-color'
 import {
   Annotation,
   DiffComponent,

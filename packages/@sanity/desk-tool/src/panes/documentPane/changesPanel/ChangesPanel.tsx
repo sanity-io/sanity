@@ -1,7 +1,7 @@
 /* eslint-disable max-depth */
 import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-//import {useUserColorManager} from '@sanity/base'
+//import {useUserColorManager} from '@sanity/base/user-color'
 import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
