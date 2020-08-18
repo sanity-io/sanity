@@ -103,9 +103,10 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     }
   }, [])
 
+  // Memoized patch stream
+  const patche$: Subject<EditorPatch> = useMemo(() => new Subject(), [])
+
   // Handle incoming patches from withPatchSubscriber HOC
-  let incoming: PatchWithOrigin[] = []
-  const patche$: Subject<EditorPatch> = new Subject()
   function handleDocumentPatches({
     patches
   }: {
@@ -115,7 +116,6 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     const patchSelection =
       patches && patches.length > 0 && patches.filter(patch => patch.origin !== 'local')
     if (patchSelection) {
-      incoming = incoming.concat(patchSelection)
       patchSelection.map(patch => patche$.next(patch))
     }
   }
