@@ -234,6 +234,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   return (
     <>
       {editorErrorNotification && (
+        // Display intended editor errors to the user
         <Snackbar
           kind={editorErrorNotification.level}
           isPersisted
