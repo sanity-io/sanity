@@ -24,21 +24,11 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/block-content-to-react": "^2.0.7",
-    "@sanity/image-url": "^0.140.19",
-    "lodash": "^4.17.15",
-    "next": "^9.1.3",
-    "react-copy-to-clipboard": "^5.0.2",
-    "react-icons": "^2.2.7",
-    "react-refractor": "^1.0.1",
-    "react-youtube": "^7.9.0",
-    "refractor": "^2.10.0",
-    "url-parse": "^1.4.7"
+    "react-icons": "^2.2.7"
   },
   "devDependencies": {
     "@sanity/base": "1.149.19",
     "@sanity/check": "1.149.16",
-    "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
