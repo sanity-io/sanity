@@ -10,7 +10,8 @@ import {
   PortableTextEditor,
   Type,
   usePortableTextEditor,
-  usePortableTextEditorSelection
+  usePortableTextEditorSelection,
+  HotkeyOptions
 } from '@sanity/portable-text-editor'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
@@ -34,6 +35,7 @@ import PortableTextSanityEditor from './Editor'
 type Props = {
   focusPath: Path
   hasFocus: boolean
+  hotkeys: HotkeyOptions
   isFullscreen: boolean
   markers: Array<Marker>
   onBlur: () => void
@@ -55,6 +57,7 @@ export default function PortableTextInput(props: Props) {
   const {
     focusPath,
     hasFocus,
+    hotkeys,
     isFullscreen,
     markers,
     onBlur,
@@ -314,6 +317,7 @@ export default function PortableTextInput(props: Props) {
 
   const ptEditor = (
     <PortableTextSanityEditor
+      hotkeys={hotkeys}
       initialSelection={initialSelection}
       isFullscreen={isFullscreen}
       markers={markers}

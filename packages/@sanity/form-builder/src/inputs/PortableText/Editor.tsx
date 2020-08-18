@@ -9,7 +9,6 @@ import {
   RenderBlockFunction,
   RenderChildFunction,
   RenderDecoratorFunction,
-  Type,
   EditorSelection,
   OnPasteFn,
   OnCopyFn
@@ -30,6 +29,7 @@ type Props = {
   initialSelection?: EditorSelection
   isFullscreen: boolean
   markers: Array<Marker>
+  hotkeys: HotkeyOptions
   onBlur: () => void
   onCopy?: OnCopyFn
   onCloseValidationResults: () => void
@@ -56,15 +56,23 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
 // eslint-disable-next-line complexity
 function PortableTextSanityEditor(props: Props) {
   const {value, showValidationTooltip, markers, readOnly, isFullscreen} = props
-  const hotkeys: HotkeyOptions = {
+  const customFromProps: HotkeyOptions = {
+    custom: {
+      'mod+enter': props.onToggleFullscreen,
+      ...(props.hotkeys || {}).custom
+    }
+  }
+  const marksFromProps: HotkeyOptions = {
     marks: {
       'mod+b': 'strong',
       'mod+i': 'em',
-      'mod+´': 'code'
-    },
-    custom: {
-      'mod+enter': props.onToggleFullscreen
+      'mod+´': 'code',
+      ...(props.hotkeys || {}).marks
     }
+  }
+  const hotkeys: HotkeyOptions = {
+    ...marksFromProps,
+    ...customFromProps
   }
   const {
     initialSelection,

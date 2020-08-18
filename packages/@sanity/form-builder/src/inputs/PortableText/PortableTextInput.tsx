@@ -9,7 +9,8 @@ import {
   Patch as EditorPatch,
   PortableTextBlock,
   PortableTextEditor,
-  Type
+  Type,
+  HotkeyOptions
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {Patch} from '../../typedefs/patch'
@@ -28,6 +29,7 @@ export type PatchWithOrigin = Patch & {
 
 type Props = {
   focusPath: Path
+  hotkeys: HotkeyOptions
   level: number
   markers: Array<Marker>
   onBlur: () => void
@@ -47,6 +49,7 @@ type Props = {
 export default withPatchSubscriber(function PortableTextInput(props: Props) {
   const {
     focusPath,
+    hotkeys,
     level,
     markers,
     onBlur,
@@ -204,6 +207,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
         <Input
           focusPath={focusPath}
           hasFocus={hasFocus}
+          hotkeys={hotkeys}
           isFullscreen={isFullscreen}
           markers={markers}
           onBlur={onBlur}
