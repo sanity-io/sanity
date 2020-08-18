@@ -1,15 +1,8 @@
 import {pick} from 'lodash'
 import primitivePreview from '../preview/primitivePreview'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const STRING_CORE = {
   name: 'string',

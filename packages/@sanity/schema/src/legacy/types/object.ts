@@ -3,20 +3,13 @@ import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import resolveSearchConfig from '../resolveSearchConfig'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 const OVERRIDABLE_FIELDS = [
-  'jsonType',
+  ...DEFAULT_OVERRIDEABLE_FIELDS,
   'orderings',
-  'type',
-  'name',
-  'title',
-  'readOnly',
-  'hidden',
-  'description',
   '__experimental_search',
-  'options',
   'inputComponent',
-  'validation',
   'icon'
 ]
 

@@ -1,6 +1,7 @@
 import {pick} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 export const ASSET_FIELD = {
   name: 'asset',
@@ -8,16 +9,7 @@ export const ASSET_FIELD = {
   to: {type: 'sanity.fileAsset'}
 }
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets',
-  'validation'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const FILE_CORE = {
   name: 'file',

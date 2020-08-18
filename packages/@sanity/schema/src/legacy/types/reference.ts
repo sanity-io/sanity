@@ -1,6 +1,7 @@
 import arrify from 'arrify'
 import {pick} from 'lodash'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 export const REF_FIELD = {
   name: '_ref',
@@ -16,7 +17,7 @@ export const WEAK_FIELD = {
 
 const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const REFERENCE_CORE = {
   name: 'reference',

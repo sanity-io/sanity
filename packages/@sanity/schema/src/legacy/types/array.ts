@@ -1,16 +1,8 @@
 import {pick} from 'lodash'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets',
-  'validation'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const ARRAY_CORE = {
   name: 'array',
