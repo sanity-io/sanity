@@ -14,3 +14,6 @@ dist
 # Plugin config
 config/@sanity/default-login.json
 config/.checksums
+
+# Typescript build output
+/lib
