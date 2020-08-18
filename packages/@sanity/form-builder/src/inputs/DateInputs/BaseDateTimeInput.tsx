@@ -56,7 +56,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   handleDialogChange = (nextMoment?: Moment) => {
     const {onChange} = this.props
     onChange(nextMoment)
-    this.setState({inputValue: null, isDialogOpen: false})
+    this.setState({inputValue: null})
   }
   handleSetNow = event => {
     this.handleDialogChange(moment())
