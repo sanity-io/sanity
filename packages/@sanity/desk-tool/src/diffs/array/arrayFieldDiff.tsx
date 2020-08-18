@@ -29,7 +29,11 @@ export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFiel
                 className={styles.diffItemIndexes}
                 style={color ? {background: color.bg, color: color.fg} : {}}
               >
-                <ArrayDiffIndexes fromIndex={diffItem.fromIndex} toIndex={diffItem.toIndex} />
+                <ArrayDiffIndexes
+                  fromIndex={diffItem.fromIndex}
+                  toIndex={diffItem.toIndex}
+                  hasMoved={diffItem.hasMoved}
+                />
               </div>
               <div className={styles.diffItemBox}>
                 <ArrayFieldDiffItem
@@ -46,7 +50,23 @@ export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFiel
 }
 
 // eslint-disable-next-line complexity
-function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: number}) {
+function ArrayDiffIndexes({
+  fromIndex,
+  toIndex,
+  hasMoved
+}: {
+  fromIndex?: number
+  toIndex?: number
+  hasMoved: boolean
+}) {
+  if (!hasMoved) {
+    return (
+      <span className={styles.arrayDiffIndexes}>
+        <span>{toIndex}</span>
+      </span>
+    )
+  }
+
   if (fromIndex === undefined && toIndex === undefined) {
     // neither `fromIndex` nor `toIndex`
     return <span className={styles.arrayDiffIndexes} />
@@ -61,15 +81,6 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
     )
   }
 
-  if (fromIndex === undefined && toIndex !== undefined) {
-    // `toIndex` only
-    return (
-      <span className={styles.arrayDiffIndexes}>
-        <span>{toIndex}</span>
-      </span>
-    )
-  }
-
   if (fromIndex === toIndex) {
     // unchanged
     return (
@@ -79,17 +90,17 @@ function ArrayDiffIndexes({fromIndex, toIndex}: {fromIndex?: number; toIndex?: n
     )
   }
 
-  if (fromIndex !== undefined && toIndex !== undefined && fromIndex < toIndex) {
-    return (
-      <span className={styles.arrayDiffIndexes}>
-        <span>{fromIndex}</span>
-        <span>&darr;</span>
-        <span>{toIndex}</span>
-      </span>
-    )
+  if (typeof fromIndex === 'undefined' || typeof toIndex === 'undefined') {
+    return null
   }
 
-  return (
+  return fromIndex < toIndex ? (
+    <span className={styles.arrayDiffIndexes}>
+      <span>{fromIndex}</span>
+      <span>&darr;</span>
+      <span>{toIndex}</span>
+    </span>
+  ) : (
     <span className={styles.arrayDiffIndexes}>
       <span>{toIndex}</span>
       <span>&uarr;</span>
