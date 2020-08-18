@@ -126,7 +126,10 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   function handleEditorChange(change: EditorChange): void {
     switch (change.type) {
       case 'mutation':
-        onChange(PatchEvent.from(change.patches))
+        // Don't wait for the result
+        setTimeout(() => {
+          onChange(PatchEvent.from(change.patches))
+        })
         break
       case 'focus':
         setHasFocus(true)
