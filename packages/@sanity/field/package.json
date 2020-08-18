@@ -10,8 +10,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "jest",
-    "posttest": "tsc --noEmit",
+    "test": "tsc --noEmit",
     "clean": "rimraf lib coverage"
   },
   "keywords": [
@@ -39,26 +38,5 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/",
-  "jest": {
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json",
-      "node"
-    ],
-    "testPathIgnorePatterns": [
-      "/lib/"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/",
-      "/lib/"
-    ]
-  }
+  "homepage": "https://www.sanity.io/"
 }
