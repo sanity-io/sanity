@@ -1,9 +1,14 @@
 import React from 'react'
 import {useUserColorManager} from '@sanity/base/user-color'
-import {DiffComponent as SanityDiffComponent, ArrayDiff, ItemDiff} from '@sanity/field/diff'
+import {
+  DiffComponent as SanityDiffComponent,
+  ArrayDiff,
+  ItemDiff,
+  SchemaType
+} from '@sanity/field/diff'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../resolveDiffComponent'
-import {getAnnotationColor} from '../helpers'
+import {getAnnotationColor, getObjectKey} from '../helpers'
 import {isPTSchemaType, PTDiff} from '../portableText'
 
 import styles from './arrayFieldDiff.css'
@@ -12,19 +17,20 @@ export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFiel
   const userColorManager = useUserColorManager()
 
   if (isPTSchemaType(props.schemaType)) {
-    return <PTDiff diff={props.diff} schemaType={props.schemaType} />
+    return <PTDiff diff={props.diff} schemaType={props.schemaType} items={props.items} />
   }
 
   return (
     <div className={styles.root}>
       <div className={styles.itemList}>
         {props.diff.items.map((diffItem, diffItemIndex) => {
+          const key = getObjectKey(diffItem.diff.toValue || diffItem.diff.fromValue, diffItemIndex)
           const color = diffItem.diff.isChanged
             ? getAnnotationColor(userColorManager, diffItem.diff.annotation)
             : null
 
           return (
-            <div className={styles.diffItemContainer} key={diffItemIndex}>
+            <div className={styles.diffItemContainer} key={key}>
               <div
                 className={styles.diffItemIndexes}
                 style={color ? {background: color.bg, color: color.fg} : {}}
@@ -38,7 +44,7 @@ export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFiel
               <div className={styles.diffItemBox}>
                 <ArrayFieldDiffItem
                   itemDiff={diffItem}
-                  //metadata={props.items && props.items[diffItemIndex]}
+                  metadata={props.items && props.items[diffItemIndex]}
                 />
               </div>
             </div>
@@ -112,27 +118,27 @@ function ArrayDiffIndexes({
 // eslint-disable-next-line complexity
 function ArrayFieldDiffItem(props: {
   itemDiff: ItemDiff
-  metadata?: {fromType?: {name: string}; toType?: {name: string}}
+  metadata?: {fromType?: SchemaType; toType?: SchemaType}
 }) {
   const {itemDiff, metadata = {}} = props
   const diff = itemDiff.diff
 
   if (diff.action === 'added') {
-    const schemaType: any = metadata.toType
+    const schemaType = metadata.toType as SchemaType
     const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
 
     return <DiffComponent diff={diff} schemaType={schemaType} />
   }
 
   if (diff.action === 'changed') {
-    const schemaType: any = metadata.toType
+    const schemaType = metadata.toType as SchemaType
     const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
 
     return <DiffComponent diff={diff} schemaType={schemaType} />
   }
 
   if (diff.action === 'removed') {
-    const schemaType: any = metadata.fromType || metadata.toType
+    const schemaType = (metadata.fromType || metadata.toType) as SchemaType
     const DiffComponent = (schemaType && resolveDiffComponent(schemaType)) || FallbackDiff
 
     return <DiffComponent diff={diff} schemaType={schemaType} />
