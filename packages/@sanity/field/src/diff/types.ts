@@ -68,6 +68,14 @@ export type StringSegmentUnchanged = AgnosticStringSegmentUnchanged
 export type ItemDiff = AgnosticItemDiff<Annotation>
 
 /**
+ * Diff extensions for presentational concerns
+ */
+export interface ArrayItemMetadata {
+  fromType?: SchemaType
+  toType?: SchemaType
+}
+
+/**
  * Diff components
  */
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
@@ -85,6 +93,7 @@ export type DiffProps<T extends Diff = Diff> = {
     : T extends NumberDiff
     ? NumberSchemaType
     : SchemaType
+  items?: T extends ArrayDiff ? ArrayItemMetadata[] : undefined
 }
 
 /**
@@ -112,10 +121,10 @@ export interface BooleanSchemaType extends BaseSchemaType {
   jsonType: 'boolean'
 }
 
-export interface ArraySchemaType<T = unknown> extends BaseSchemaType {
+export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: Exclude<SchemaType, ArraySchemaType>[]
-  diffComponent?: DiffComponent<ArrayDiff<T>>
+  diffComponent?: DiffComponent<ArrayDiff<V>>
 }
 
 export interface ObjectField<T extends SchemaType = SchemaType> {
