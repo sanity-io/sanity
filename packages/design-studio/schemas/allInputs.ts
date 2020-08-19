@@ -46,6 +46,19 @@ const booleanExample = {
   title: 'Boolean example'
 }
 
+const arrayGridOfFlatImages = {
+  type: 'array',
+  name: 'arrayGridOfFlatImages',
+  title: 'Array grid of (flat) images with caption',
+  of: [
+    {
+      type: 'image',
+      fields: [{name: 'caption', title: 'Caption', type: 'string', options: {isHighlighted: true}}]
+    }
+  ],
+  options: {layout: 'grid'}
+}
+
 const arrayGridOfImages = {
   type: 'array',
   name: 'arrayGridOfImages',
@@ -223,6 +236,7 @@ export default {
     arrayOfReferences,
     arrayOfPrimitives,
     arrayGridOfImages,
+    arrayGridOfFlatImages,
     arrayOfGeopoints,
 
     // boolean
