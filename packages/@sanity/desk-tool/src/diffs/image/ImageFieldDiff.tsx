@@ -52,14 +52,10 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const prev = fromValue?.asset?._ref
   const next = toValue?.asset?._ref
   const annotation = getRefFieldAnnotation(diff)
-
-  let color = {bg: '#fcc', fg: '#f00'}
-  if (annotation) {
-    color = getAnnotationColor(userColorManager, annotation)
-  }
+  const color = getAnnotationColor(userColorManager, annotation)
 
   const content = (
-    <div className={styles.root} style={{background: color.bg, color: color.fg}}>
+    <div className={styles.root} style={{background: color.background, color: color.text}}>
       {prev && (
         <div className={styles.removed}>
           <Preview type={schemaType} value={fromValue} layout="card" />

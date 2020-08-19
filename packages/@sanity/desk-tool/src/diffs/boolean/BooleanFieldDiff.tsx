@@ -14,7 +14,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff}) => {
 
   return (
     <AnnotationTooltip annotation={annotation}>
-      <div className={styles.root} style={{background: color.bg, color: color.fg}}>
+      <div className={styles.root} style={{background: color.background, color: color.text}}>
         {fromValue !== undefined && fromValue !== null && (
           <input type="checkbox" checked={fromValue} readOnly />
         )}
