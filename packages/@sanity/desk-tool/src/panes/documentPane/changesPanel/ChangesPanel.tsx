@@ -2,7 +2,7 @@
 import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 //import {useUserColorManager} from '@sanity/base/user-color'
-import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
+import {ObjectDiff, SchemaType, ObjectSchemaType, ArrayDiff} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
@@ -51,7 +51,7 @@ export function ChangesPanel({diff, schemaType, documentId}: Props) {
 }
 
 function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: number}) {
-  const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
+  const DiffComponent = resolveDiffComponent<ArrayDiff>(change.schemaType) || FallbackDiff
   const {documentId, schemaType} = useContext(DocumentContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const handleUndoChange = useCallback(() => undoChange(change.diff, change.path, docOperations), [
@@ -78,7 +78,7 @@ function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: numbe
       </div>
 
       <DiffErrorBoundary>
-        <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+        <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
       </DiffErrorBoundary>
     </div>
   )
