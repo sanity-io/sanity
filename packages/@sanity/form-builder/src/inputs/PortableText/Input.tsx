@@ -138,12 +138,12 @@ export default function PortableTextInput(props: Props) {
     }
   }, [focusPath])
 
-  // Set as active whenever we have a focusPath inside the editor.
+  // Set as active whenever we have focus inside the editor.
   useEffect(() => {
-    if (focusPath && focusPath.length > 1) {
+    if (hasFocus) {
       setIsActive(true)
     }
-  }, [focusPath])
+  }, [hasFocus])
 
   // Update the FormBuilder focusPath as we get a new selection from the editor
   // This will also set presence on that path
