@@ -2,6 +2,9 @@
 
 .root {
   display: flex;
+}
+
+.root[data-tone='navbar'] {
   margin-right: -4px;
 }
 
