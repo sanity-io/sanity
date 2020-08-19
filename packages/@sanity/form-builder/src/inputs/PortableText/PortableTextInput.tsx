@@ -21,6 +21,7 @@ import {Path} from '../../typedefs/path'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import RespondToInvalidContent from './InvalidValue'
+import styles from './PortableTextInput.css'
 
 export type PatchWithOrigin = Patch & {
   origin: 'local' | 'remote' | 'internal'
@@ -46,7 +47,10 @@ type Props = {
   value: PortableTextBlock[] | undefined
 }
 
-export default withPatchSubscriber(function PortableTextInput(props: Props) {
+const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
+  props: Props,
+  ref: React.RefObject<PortableTextEditor>
+) {
   const {
     focusPath,
     hotkeys,
@@ -164,6 +168,12 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     setIgnoreValidationError(true)
   }
 
+  const handleFocusSkipper = () => {
+    if (ref.current) {
+      PortableTextEditor.focus(ref.current)
+    }
+  }
+
   const formField = useMemo(
     () => (
       <FormField
@@ -198,6 +208,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   const editorInput = useMemo(
     () => (
       <PortableTextEditor
+        ref={ref}
         incomingPatche$={patche$.asObservable()}
         onChange={handleEditorChange}
         maxBlocks={undefined} // TODO: from schema?
@@ -206,6 +217,16 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
         value={valueTouchedByMarkers}
       >
         {formField}
+        {!readOnly && (
+          <button
+            type="button"
+            tabIndex={0}
+            className={styles.focusSkipper}
+            onClick={handleFocusSkipper}
+          >
+            Jump to editor
+          </button>
+        )}
         <Input
           focusPath={focusPath}
           hasFocus={hasFocus}
@@ -246,3 +267,24 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
     </>
   )
 })
+
+export default withPatchSubscriber(
+  class PortableTextInputWithFocusAndBlur extends React.Component<
+    Props & {children: React.ReactNode}
+  > {
+    editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    focus() {
+      if (this.editorRef.current) {
+        PortableTextEditor.focus(this.editorRef.current)
+      }
+    }
+    blur() {
+      if (this.editorRef.current) {
+        PortableTextEditor.blur(this.editorRef.current)
+      }
+    }
+    render() {
+      return <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
+    }
+  }
+)
