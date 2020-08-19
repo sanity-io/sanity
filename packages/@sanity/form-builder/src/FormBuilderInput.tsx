@@ -43,7 +43,7 @@ export class FormBuilderInput extends React.Component<Props> {
   scrollTimeout: number
   _element: HTMLDivElement | null
   static contextTypes = {
-    presence: PresenceContext,
+    presence: ENABLE_CONTEXT,
     formBuilder: ENABLE_CONTEXT,
     getValuePath: ENABLE_CONTEXT
   }
