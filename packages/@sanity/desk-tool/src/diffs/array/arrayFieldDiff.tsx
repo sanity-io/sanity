@@ -33,7 +33,7 @@ export const ArrayFieldDiff: SanityDiffComponent<ArrayDiff> = function ArrayFiel
             <div className={styles.diffItemContainer} key={key}>
               <div
                 className={styles.diffItemIndexes}
-                style={color ? {background: color.bg, color: color.fg} : {}}
+                style={color ? {background: color.background, color: color.text} : {}}
               >
                 <ArrayDiffIndexes
                   fromIndex={diffItem.fromIndex}
