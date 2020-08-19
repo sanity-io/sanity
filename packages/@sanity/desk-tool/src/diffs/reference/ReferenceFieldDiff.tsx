@@ -21,13 +21,10 @@ export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaTy
   const next = toValue && toValue._ref
   const annotation = getAnnotation(diff)
 
-  let color = {bg: '#fcc', fg: '#f00'}
-  if (annotation) {
-    color = getAnnotationColor(userColorManager, annotation)
-  }
+  const color = getAnnotationColor(userColorManager, annotation)
 
   const content = (
-    <div className={styles.root} style={{background: color.bg, color: color.fg}}>
+    <div className={styles.root} style={{background: color.background, color: color.text}}>
       {prev && (
         <div className={styles.removed}>
           <Preview type={schemaType} value={fromValue} layout="default" />
