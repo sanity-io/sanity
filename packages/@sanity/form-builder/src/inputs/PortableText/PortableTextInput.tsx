@@ -249,7 +249,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         />
       </PortableTextEditor>
     ),
-    [focusPath, hasFocus, isFullscreen, readOnly, valueTouchedByMarkers]
+    [focusPath, hasFocus, isFullscreen, presence, readOnly, valueTouchedByMarkers]
   )
   return (
     <>
