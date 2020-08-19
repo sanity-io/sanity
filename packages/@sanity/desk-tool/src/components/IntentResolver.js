@@ -43,7 +43,7 @@ const IntentResolver = React.memo(function IntentResolver({params, payload}) {
   const documentId = id || FALLBACK_ID
   const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
   const paneSegments = documentType
-    ? [[{id: documentType, params: {}}], [{id: documentId, params: otherParams, payload}]]
+    ? [[{id: documentType, params: otherParams}], [{id: documentId, params: otherParams, payload}]]
     : undefined
 
   const {structure, error} = useStructure(paneSegments, {silent: true})
@@ -54,7 +54,7 @@ const IntentResolver = React.memo(function IntentResolver({params, payload}) {
 
   if (!documentType) {
     return isLoaded ? (
-      <Redirect panes={[[{id: `__edit__${id || UUID()}`, params: {}}]]} />
+      <Redirect panes={[[{id: `__edit__${id || UUID()}`, params: otherParams}]]} />
     ) : (
       <Spinner center message="Resolving document type…" delay={600} />
     )
@@ -83,10 +83,10 @@ function getNewRouterState({structure, documentType, params, payload, documentId
   const lastSibling = lastGroup[lastGroup.length - 1]
   const terminatesInDocument = lastChild.type === 'document' && lastChild.options.id === documentId
 
-  const isTemplateCreate = params.template
+  const {template: isTemplateCreate, ...otherParams} = params
   const template = isTemplateCreate && getTemplateById(params.template)
   const type = (template && template.schemaType) || documentType
-  const fallbackParameters = {type, template: params.template}
+  const fallbackParameters = {...otherParams, type, template: params.template}
   const newDocumentId = documentId === FALLBACK_ID ? UUID() : removeDraftPrefix(documentId)
 
   return terminatesInDocument
