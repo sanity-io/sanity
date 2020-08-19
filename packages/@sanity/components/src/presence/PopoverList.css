@@ -26,13 +26,7 @@
 
 .inner {
   position: relative;
-  max-height: 300px;
-  max-width: 250px;
   outline: none;
-}
-
-.isGlobalInner {
-  max-height: calc(100vh - 200px);
 }
 
 .header {
@@ -57,11 +51,11 @@
   margin: 0;
   padding: var(--extra-small-padding) 0;
   overflow-x: auto;
-  max-height: 200px;
+  max-height: calc(100vh - 400px);
 }
 
-.isGlobalUserList {
-  max-height: calc(100vh - 400px);
+.globalUserList {
+  min-height: 43px;
 }
 
 .userList::-webkit-scrollbar {
@@ -73,7 +67,7 @@
   padding: var(--extra-small-padding) 0;
   position: sticky;
   bottom: 0;
-  min-width: 200px;
+  min-width: 180px;
 }
 
 .manageLink {

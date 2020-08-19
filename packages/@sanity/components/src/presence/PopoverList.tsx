@@ -44,7 +44,7 @@ export default function PopoverList<Item extends {user: User}>({
 
   const html = (
     <div
-      className={`${styles.inner} ${isGlobal ? styles.isGlobalInner : ''}`}
+      className={styles.inner}
       role="menu"
       id={elementId}
       aria-label="Online users"
@@ -59,7 +59,7 @@ export default function PopoverList<Item extends {user: User}>({
         </div>
       )}
       {items.length > 0 && (
-        <ul className={`${styles.userList} ${isGlobal ? styles.isGlobalUserList : ''}`}>
+        <ul className={`${styles.userList} ${isGlobal ? styles.globalUserList : ''}`}>
           {items.map(item => (
             <li key={item.user.id}>{renderItem(item, handleCloseList)}</li>
           ))}
@@ -99,6 +99,9 @@ export default function PopoverList<Item extends {user: User}>({
           modifiers: {
             preventOverflow: {
               boundariesElement: 'window'
+            },
+            flip: {
+              enabled: false
             }
           }
         }}
