@@ -12,13 +12,11 @@ export function StringSegment({segment}: {segment: StringDiffSegment}): React.Re
   const userColorManager = useUserColorManager()
 
   if (segment.type === 'added') {
-    const color = segment.annotation
-      ? getAnnotationColor(userColorManager, segment.annotation)
-      : {bg: '#fcc', fg: '#f00'}
+    const color = getAnnotationColor(userColorManager, segment.annotation)
 
     return (
       <AnnotationTooltip annotation={segment.annotation}>
-        <ins className={styles.add} style={{background: color.bg, color: color.fg}}>
+        <ins className={styles.add} style={{background: color.background, color: color.text}}>
           {segment.text}
         </ins>
       </AnnotationTooltip>
@@ -26,13 +24,11 @@ export function StringSegment({segment}: {segment: StringDiffSegment}): React.Re
   }
 
   if (segment.type === 'removed') {
-    const color = segment.annotation
-      ? getAnnotationColor(userColorManager, segment.annotation)
-      : {bg: '#fcc', fg: '#f00'}
+    const color = getAnnotationColor(userColorManager, segment.annotation)
 
     return (
       <AnnotationTooltip annotation={segment.annotation}>
-        <del className={styles.remove} style={{background: color.bg, color: color.fg}}>
+        <del className={styles.remove} style={{background: color.background, color: color.text}}>
           {segment.text}
         </del>
       </AnnotationTooltip>

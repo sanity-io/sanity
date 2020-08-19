@@ -13,8 +13,8 @@ export const NumberFieldDiff: DiffComponent<NumberDiff> = ({diff}) => {
   const color = getAnnotationColor(userColorManager, annotation)
 
   const inlineStyle = {
-    background: color.bg,
-    color: color.fg
+    background: color.background,
+    color: color.text
   }
 
   return (

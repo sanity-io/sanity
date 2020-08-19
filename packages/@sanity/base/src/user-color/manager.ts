@@ -1,31 +1,34 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
-import {UserColorHue, ManagerOptions, UserColorManager} from './types'
+import {color as SanityColor, ColorHueKey, COLOR_HUES} from '@sanity/color'
+import {UserColorHue, ManagerOptions, UserColorManager, UserColor} from './types'
 
 type UserId = string
 
-const defaultCurrentUserColor = 'blue'
-const defaultColors: UserColorHue[] = [
-  'blue',
-  'cyan',
-  // 'green',
-  'yellow',
-  'orange',
-  // 'red',
-  'magenta',
-  'purple'
-]
+const defaultCurrentUserHue = 'blue'
+
+// Remove green and red because they can be confused with "add" and "remove"
+const defaultHues: ColorHueKey[] = COLOR_HUES.filter(hue => hue !== 'green' && hue !== 'red')
+const defaultColors = defaultHues.reduce((colors, hue) => {
+  colors[hue] = {
+    background: SanityColor[hue][100].hex,
+    border: SanityColor[hue][300].hex,
+    text: SanityColor[hue][700].hex
+  }
+  return colors
+}, {} as Record<ColorHueKey, UserColor>)
 
 export function createUserColorManager(options?: ManagerOptions): UserColorManager {
   const colors = (options && options.colors) || defaultColors
-  const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserColor
-  if (!colors.includes(currentUserColor)) {
+  const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserHue
+  if (!colors.hasOwnProperty(currentUserColor)) {
     throw new Error(`'colors' must contain 'currentUserColor' (${currentUserColor})`)
   }
 
-  const subscriptions = new Map<UserId, Observable<UserColorHue>>()
+  const colorHues: UserColorHue[] = Object.keys(colors)
+  const subscriptions = new Map<UserId, Observable<UserColor>>()
   const previouslyAssigned = new Map<UserId, UserColorHue>()
-  const assignedCounts: Record<UserColorHue, number> = colors.reduce((counts, color) => {
+  const assignedCounts: Record<UserColorHue, number> = colorHues.reduce((counts, color) => {
     counts[color] = 0
     return counts
   }, {} as Record<UserColorHue, number>)
@@ -44,75 +47,75 @@ export function createUserColorManager(options?: ManagerOptions): UserColorManag
 
   return {get, listen}
 
-  function get(userId: string): UserColorHue {
-    return getUserColor(userId)
+  function get(userId: string): UserColor {
+    return colors[getUserHue(userId)]
   }
 
-  function listen(userId: string): Observable<UserColorHue> {
+  function getUserHue(userId: string): UserColorHue {
+    if (userId === currentUserId) {
+      return currentUserColor
+    }
+
+    const assignedHue = assigned.get(userId)
+    if (assignedHue) {
+      return assignedHue
+    }
+
+    // Prefer to reuse the color previously assigned, BUT:
+    // ONLY if it's unused -or- there are no other unused colors
+    const prevHue = previouslyAssigned.get(userId)
+    if (prevHue && (assignedCounts[prevHue] === 0 || !hasUnusedColor())) {
+      return assignHue(userId, prevHue)
+    }
+
+    // Prefer "static" color based on user ID if unused
+    const preferredHue = getPreferredHue(userId)
+    if (assignedCounts[preferredHue] === 0) {
+      return assignHue(userId, preferredHue)
+    }
+
+    // Fall back to least used color, with a preference on the previous
+    // used color if there are ties for least used
+    return assignHue(userId, getLeastUsedHue(prevHue))
+  }
+
+  function listen(userId: string): Observable<UserColor> {
     let subscription = subscriptions.get(userId)
     if (subscription) {
       return subscription
     }
 
-    const color = getUserColor(userId)
-    subscription = getObservableColor(userId, color)
+    const hue = getUserHue(userId)
+    subscription = getObservableColor(userId, hue)
     subscriptions.set(userId, subscription)
     return subscription
   }
 
-  function getUserColor(userId: string): UserColorHue {
-    if (userId === currentUserId) {
-      return currentUserColor
-    }
-
-    const assignedColor = assigned.get(userId)
-    if (assignedColor) {
-      return assignedColor
-    }
-
-    // Prefer to reuse the color previously assigned, BUT:
-    // ONLY if it's unused -or- there are no other unused colors
-    const prevColor = previouslyAssigned.get(userId)
-    if (prevColor && (assignedCounts[prevColor] === 0 || !hasUnusedColor())) {
-      return assignColor(userId, prevColor)
-    }
-
-    // Prefer "static" color based on user ID if unused
-    const preferredColor = getPreferredColor(userId)
-    if (assignedCounts[preferredColor] === 0) {
-      return assignColor(userId, preferredColor)
-    }
-
-    // Fall back to least used color, with a preference on the previous
-    // used color if there are ties for least used
-    return assignColor(userId, getLeastUsedColor(prevColor))
+  function assignHue(userId: string, hue: UserColorHue): UserColorHue {
+    assigned.set(userId, hue)
+    previouslyAssigned.set(userId, hue)
+    assignedCounts[hue]++
+    return hue
   }
 
-  function assignColor(userId: string, color: UserColorHue): UserColorHue {
-    assigned.set(userId, color)
-    previouslyAssigned.set(userId, color)
-    assignedCounts[color]++
-    return color
-  }
-
-  function unassignColor(userId: string, color: UserColorHue) {
+  function unassignHue(userId: string, hue: UserColorHue) {
     assigned.delete(userId)
-    assignedCounts[color]--
+    assignedCounts[hue]--
   }
 
   function getUnusedColor(): UserColorHue | undefined {
-    return colors.find(color => assignedCounts[color] === 0)
+    return colorHues.find(color => assignedCounts[color] === 0)
   }
 
   function hasUnusedColor(): boolean {
     return Boolean(getUnusedColor())
   }
 
-  function getLeastUsedColor(tieBreakerPreference?: UserColorHue): UserColorHue {
+  function getLeastUsedHue(tieBreakerPreference?: UserColorHue): UserColorHue {
     let leastUses = +Infinity
     let leastUsed: UserColorHue[] = []
 
-    colors.forEach(color => {
+    colorHues.forEach(color => {
       const uses = assignedCounts[color]
       if (uses === leastUses) {
         leastUsed.push(color)
@@ -127,12 +130,13 @@ export function createUserColorManager(options?: ManagerOptions): UserColorManag
       : leastUsed[0]
   }
 
-  function getObservableColor(userId: string, color: UserColorHue): Observable<UserColorHue> {
-    return new Observable<UserColorHue>(subscriber => {
+  function getObservableColor(userId: string, hue: UserColorHue): Observable<UserColor> {
+    return new Observable<UserColor>(subscriber => {
+      const color = colors[hue]
       subscriber.next(color)
       return () => {
         subscriptions.delete(userId)
-        unassignColor(userId, color)
+        unassignHue(userId, hue)
       }
     }).pipe(shareReplay({refCount: true}))
   }
@@ -142,12 +146,12 @@ export function createUserColorManager(options?: ManagerOptions): UserColorManag
     assignedCounts[currentUserColor] += userId ? 1 : -1
   }
 
-  function getPreferredColor(userId: string): UserColorHue {
+  function getPreferredHue(userId: string): UserColorHue {
     let hash = 0
     for (let i = 0; i < userId.length; i++) {
       // eslint-disable-next-line no-bitwise
       hash = ((hash << 5) - hash + userId.charCodeAt(i)) | 0
     }
-    return colors[Math.abs(hash) % colors.length]
+    return colorHues[Math.abs(hash) % colorHues.length]
   }
 }

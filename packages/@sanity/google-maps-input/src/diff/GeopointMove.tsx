@@ -56,7 +56,14 @@ export function GeopointMove({diff, api, map, label}: Props) {
         />
       )}
       {from && to && (
-        <Arrow api={api} map={map} from={from} to={to} zIndex={1} color={userColor || undefined} />
+        <Arrow
+          api={api}
+          map={map}
+          from={from}
+          to={to}
+          zIndex={1}
+          color={userColor ? userColor.text : undefined}
+        />
       )}
       {to && (
         <Marker
