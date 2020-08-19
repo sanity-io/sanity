@@ -191,7 +191,7 @@ function PortableTextSanityEditor(props: Props) {
                 renderChild={renderChild}
                 renderDecorator={renderDecorator}
                 selection={initialSelection}
-                spellCheck={false} // TODO: from schema?
+                spellCheck
               />
             </div>
             <div className={styles.blockExtras}>{renderBlockExtras()}</div>
