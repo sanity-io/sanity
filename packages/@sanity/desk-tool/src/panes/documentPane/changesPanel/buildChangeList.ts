@@ -1,5 +1,5 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {ObjectDiff, ObjectSchemaType, Path} from '@sanity/field/diff'
+import {ObjectDiff, ObjectSchemaType, Path, ArraySchemaType, ObjectField} from '@sanity/field/diff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {getArrayDiffItemTypes, getDiffAtPath} from './helpers'
 import {ChangeNode} from './types'
@@ -60,7 +60,7 @@ export function buildChangeList(
           path: fieldPath,
           titlePath: fieldTitlePath,
           schemaType: field.type,
-          items: getArrayDiffItemTypes(fieldDiff, field as any)
+          items: getArrayDiffItemTypes(fieldDiff, field as ObjectField<ArraySchemaType>)
         })
       }
     } else {
