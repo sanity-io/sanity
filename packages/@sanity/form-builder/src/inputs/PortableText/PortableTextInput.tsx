@@ -68,8 +68,7 @@ export default withPatchSubscriber(function PortableTextInput(props: Props) {
   // The PortableTextEditor will not re-render unless the value is changed (which is good).
   // But, we want to re-render it when the markers changes too,
   // (we render error indicators directly in the editor nodes)
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const validationHash = validation
+  const validationHash = markers
     .map(marker =>
       JSON.stringify(marker.path)
         .concat(marker.type)
