@@ -29,6 +29,7 @@
   "dependencies": {
     "@sanity/bifur-client": "^0.0.5",
     "@sanity/client": "1.150.1",
+    "@sanity/color": "^1.0.0",
     "@sanity/components": "1.150.3",
     "@sanity/generate-help-url": "1.150.1",
     "@sanity/image-url": "^0.140.19",
