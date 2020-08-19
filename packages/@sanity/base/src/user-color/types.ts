@@ -16,7 +16,7 @@ export interface UserColorManager {
 }
 
 export interface ManagerOptions {
-  userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user: {id: string} | null}>}
-  colors: Readonly<Record<UserColorHue, UserColor>>
-  currentUserColor: UserColorHue
+  userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user?: {id: string} | null}>}
+  colors?: Readonly<Record<UserColorHue, UserColor>>
+  currentUserColor?: UserColorHue
 }
