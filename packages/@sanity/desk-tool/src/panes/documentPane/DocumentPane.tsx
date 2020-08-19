@@ -384,7 +384,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   getInitialFocusPath() {
     const {urlParams} = this.props
-    return urlParams.path ? PathUtils.fromString(urlParams.path) : []
+    return urlParams.path ? PathUtils.fromString(urlParams.path) : null
   }
 
   dispose() {
