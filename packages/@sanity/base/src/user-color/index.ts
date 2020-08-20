@@ -1,4 +1,5 @@
 export {createUserColorManager} from './manager'
 export {useUserColorManager, UserColorManagerProvider} from './provider'
 export {userColorManager} from './singleton'
+export {useUserColor} from './useUserColor'
 export * from './types'

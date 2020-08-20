@@ -70,7 +70,7 @@ export const mock$ = defer(() => from(USERIDS)).pipe(
           lastActiveAt: new Date().toISOString(),
           path: sample(PATHS)
         }
-      ]
+      ] as any
     })
   ),
   shareReplay()

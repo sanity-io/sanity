@@ -34,7 +34,14 @@ import {createBifurTransport} from './message-transports/bifurTransport'
 import {nanoid} from 'nanoid'
 
 import userStore from '../user'
-import {PresenceLocation, Session, User} from './types'
+import {
+  PresenceLocation,
+  Session,
+  User,
+  UserSessionPair,
+  DocumentPresence,
+  GlobalPresence
+} from './types'
 import {bifur} from '../../client/bifur'
 import {
   DisconnectEvent,
@@ -162,17 +169,19 @@ const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, us
   )
 )
 
-const allSessions$: Observable<{user: User; session: Session}[]> = connectionChange$.pipe(
+const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
   switchMap(status => (status === 'connected' ? merge(states$, reportLocation$) : NEVER)),
   map(keyedSessions => Object.values(keyedSessions)),
   switchMap(sessions => {
     const userIds = uniq(sessions.map(sess => sess.userId))
     return from(userStore.getUsers(userIds)).pipe(
       map(users =>
-        sessions.map((session): {user: User; session: Session} => ({
-          user: users.find(res => res.id === session.userId),
-          session: session
-        }))
+        sessions.map(
+          (session): UserSessionPair => ({
+            user: users.find(res => res.id === session.userId) as User,
+            session: session
+          })
+        )
       )
     )
   }),
@@ -182,9 +191,7 @@ const allSessions$: Observable<{user: User; session: Session}[]> = connectionCha
   shareReplay({refCount: true, bufferSize: 1})
 )
 
-const concatValues = <T>(prev: T[], curr: T): T[] => prev.concat(curr)
-
-export const globalPresence$ = allSessions$.pipe(
+export const globalPresence$: Observable<GlobalPresence[]> = allSessions$.pipe(
   map((sessions): {user: User; sessions: Session[]}[] => {
     const grouped = groupBy(
       sessions.map(s => s.session),
@@ -192,7 +199,7 @@ export const globalPresence$ = allSessions$.pipe(
     )
 
     return Object.keys(grouped).map((userId): {user: User; sessions: Session[]} => ({
-      user: sessions.find(s => s.user.id === userId).user,
+      user: sessions.find(s => s.user.id === userId)?.user as User,
       sessions: grouped[userId]
     }))
   }),
@@ -217,12 +224,12 @@ export const globalPresence$ = allSessions$.pipe(
           path: location.path,
           lastActiveAt: location.lastActiveAt
         }))
-        .reduce(concatValues, [])
+        .reduce((prev, curr) => prev.concat(curr), [] as PresenceLocation[])
     }))
   )
 )
 
-export const documentPresence = (documentId: string) => {
+export const documentPresence = (documentId: string): Observable<DocumentPresence[]> => {
   return allSessions$.pipe(
     withLatestFrom(debugIntrospect$),
     switchMap(([userAndSessions, debugIntrospect]) =>
