@@ -1,21 +1,16 @@
 import React, {createContext, useContext} from 'react'
 import {UserColorManager} from './types'
+import {userColorManager} from './singleton'
 
 interface ProviderProps {
   children: React.ReactNode
   manager: UserColorManager
 }
 
-const UserColorManagerContext = createContext<UserColorManager | null>(null)
+const UserColorManagerContext = createContext<UserColorManager>(userColorManager)
 
 export function useUserColorManager(): UserColorManager {
-  const manager = useContext(UserColorManagerContext)
-
-  if (!manager) {
-    throw new Error(`missing user color manager in context`)
-  }
-
-  return manager
+  return useContext(UserColorManagerContext)
 }
 
 export function UserColorManagerProvider({children, manager}: ProviderProps) {
