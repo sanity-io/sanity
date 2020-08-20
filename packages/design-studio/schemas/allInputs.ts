@@ -1,3 +1,11 @@
+const title = {
+  type: 'string',
+  name: 'title',
+  title: 'Title'
+}
+
+// example fields
+
 const arrayOfObjects = {
   type: 'array',
   name: 'arrayOfObjects',
@@ -156,6 +164,32 @@ const numberRadioExample = {
   }
 }
 
+const object = {
+  type: 'object',
+  name: 'object',
+  title: 'Object',
+  fields: [{type: 'string', name: 'title', title: 'Title'}]
+}
+
+const objectWithNestedValues = {
+  type: 'object',
+  name: 'objectWithNestedValues',
+  title: 'Object with nested values',
+  fields: [
+    {type: 'string', name: 'title', title: 'Title'},
+    {type: 'string', name: 'description', title: 'Description'},
+    {
+      type: 'object',
+      name: 'metadata',
+      title: 'Metadata',
+      fields: [
+        {type: 'string', name: 'title', title: 'Title'},
+        {type: 'string', name: 'description', title: 'Description'}
+      ]
+    }
+  ]
+}
+
 const portableText = {
   type: 'array',
   name: 'portableText',
@@ -175,7 +209,7 @@ const slugExample = {
   name: 'slugExample',
   title: 'Slug example',
   options: {
-    source: 'stringExample',
+    source: 'title',
     maxLength: 10
     // slugify: () => ...
     // isUnique: () => ...
@@ -230,8 +264,10 @@ export default {
   title: 'All inputs',
   fieldsets: [{name: 'dates', title: 'Date types'}],
   fields: [
-    // @todo: array
-    // @todo: array[block[span]]
+    // metadata
+    title,
+
+    // array
     arrayOfObjects,
     arrayOfReferences,
     arrayOfPrimitives,
@@ -263,7 +299,9 @@ export default {
     numberDropdownExample,
     numberRadioExample,
 
-    // @todo: object
+    // object
+    object,
+    objectWithNestedValues,
 
     // portableText
     portableText,
