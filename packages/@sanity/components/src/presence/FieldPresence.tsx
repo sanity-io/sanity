@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define,react/no-multi-comp */
 import React, {useContext} from 'react'
-import {splitRight} from './utils'
 import {sortBy, uniqBy} from 'lodash'
 import {
   AVATAR_DISTANCE,
@@ -8,13 +7,14 @@ import {
   DEFAULT_MAX_AVATARS_FIELDS,
   DISABLE_OVERLAY
 } from './constants'
-import {PopoverList, StackCounter} from './index'
+import {splitRight} from './utils'
 import styles from './FieldPresence.css'
-import UserAvatar from './UserAvatar'
 import {PresenceRegion} from './overlay/PresenceOverlayRegion'
+import UserAvatar from './UserAvatar'
 import {FormFieldPresence, Position} from './types'
 import {PresenceListItem} from './PresenceListItem'
 import {Context} from './context'
+import {PopoverList, StackCounter} from './index'
 
 export interface FieldPresenceProps {
   presence: FormFieldPresence[]
@@ -66,10 +66,7 @@ export function FieldPresenceInner({
   stack = true
 }: InnerProps) {
   const uniquePresence = uniqBy(presence || [], item => item.user.id)
-  const sorted = sortBy(
-    uniquePresence,
-    presence => presence.lastActiveAt
-  )
+  const sorted = sortBy(uniquePresence, presence => presence.lastActiveAt)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [

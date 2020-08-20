@@ -1,4 +1,4 @@
-import {User} from '../user/createUserStore'
+import {User} from '../user/types'
 
 export type Status = 'online' | 'editing' | 'inactive'
 export type PathElement = string | number | {_key: string}
@@ -23,18 +23,21 @@ type LastActiveAt = string // iso date
 
 // These are the data prepared and made ready for different types of UI components to use
 // Presence data prepared for a single document
-interface DocumentPresence {
-  userId: string
-  sessionId: string
+export interface DocumentPresence {
+  user: User
   path: PathElement[]
   lastActiveAt: LastActiveAt
 }
 
+export interface UserSessionPair {
+  user: User
+  session: Session
+}
+
 export {User}
 
-export type GlobalPresence = {
-  userId: string
-  status: Status
+export interface GlobalPresence {
+  user: User
   lastActiveAt: LastActiveAt
   locations: PresenceLocation[]
 }

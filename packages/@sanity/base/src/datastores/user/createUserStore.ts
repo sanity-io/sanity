@@ -5,7 +5,7 @@ import DataLoader from 'dataloader'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import client from 'part:@sanity/base/client'
-import createActions from '../utils/createActions'
+import {User, CurrentUser, CurrentUserEvent} from './types'
 
 const userCache: Record<string, User | null> = {}
 
@@ -13,8 +13,8 @@ const userChannel = pubsub()
 const errorChannel = pubsub()
 
 let _initialFetched = false
-let _currentUser = null
-let _currentError = null
+let _currentUser: CurrentUser | null = null
+let _currentError: Error | null = null
 
 userChannel.subscribe((val: CurrentUser | null) => {
   _currentUser = val
@@ -30,39 +30,14 @@ errorChannel.subscribe(val => {
   _currentError = val
 })
 
-export interface CurrentUser {
-  id: string
-  name: string
-  profileImage?: string
-  role: string
-}
-
-export interface CurrentUserError {
-  type: 'error'
-  error: Error
-}
-
-export interface CurrentUserSnapshot {
-  type: 'snapshot'
-  user: CurrentUser | null
-}
-
-export type CurrentUserEvent = CurrentUserError | CurrentUserSnapshot
-
-export interface User {
-  id: string
-  displayName?: string
-  imageUrl?: string
-}
-
-function fetchInitial() {
+function fetchInitial(): Promise<CurrentUser> {
   return authenticationFetcher.getCurrentUser().then(
     user => userChannel.publish(user),
     err => errorChannel.publish(err)
   )
 }
 
-function logout() {
+function logout(): Promise<null> {
   return authenticationFetcher.logout().then(
     () => userChannel.publish(null),
     err => errorChannel.publish(err)
@@ -102,7 +77,7 @@ const userLoader = new DataLoader(loadUsers, {
 
 async function loadUsers(userIds: readonly string[]): Promise<(User | null)[]> {
   const missingIds = userIds.filter(userId => !(userId in userCache))
-  let users = []
+  let users: User[] = []
   if (missingIds.length > 0) {
     users = await client
       .request({
@@ -133,11 +108,15 @@ function getUser(userId: string): Promise<User | null> {
 
 async function getUsers(ids: string[]): Promise<User[]> {
   const users = await userLoader.loadMany(ids)
-  return users.filter((user): user is User => user && !(user instanceof Error))
+  return users.filter(isUser)
 }
 
 function arrayify(users: User | User[]): User[] {
   return Array.isArray(users) ? users : [users]
+}
+
+function isUser(thing: unknown): thing is User {
+  return thing && thing !== null && typeof (thing as User).id === 'string'
 }
 
 function normalizeOwnUser(user: CurrentUser): User {
@@ -157,14 +136,14 @@ const observableApi = {
   getUsers: (userIds: string[]): Observable<User[]> => {
     const missingIds = userIds.filter(userId => !(userId in userCache))
     return missingIds.length === 0
-      ? of(userIds.map(userId => userCache[userId]).filter(Boolean))
+      ? of(userIds.map(userId => userCache[userId]).filter(isUser))
       : from(getUsers(userIds))
   }
 }
 
 export default function createUserStore() {
   return {
-    actions: createActions({logout, retry: fetchInitial}),
+    actions: {logout, retry: fetchInitial},
     currentUser,
     getUser,
     getUsers,
