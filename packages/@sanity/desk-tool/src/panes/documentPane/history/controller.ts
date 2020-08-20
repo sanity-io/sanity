@@ -140,24 +140,25 @@ export class Controller {
   }
 }
 
-export type ControllerState = {controller: Controller; error?: undefined} | {error: Error}
-
 export function createObservableController(
   options: Omit<Options, 'handler'>
-): Observable<ControllerState> {
-  return fromEventPattern(
-    handler => {
-      const controller = new Controller({handler, ...options})
-
-      // TODO: How to handle unsubscription?
-      remoteMutations({
-        publishedId: options.documentId,
-        draftId: `drafts.${options.documentId}`
-      }).subscribe(ev => {
-        controller.handleRemoteMutation(ev)
-      })
-    },
-    undefined,
-    (error, controller) => (error ? {error} : {controller})
-  )
+): Observable<Controller> {
+  return new Observable(observer => {
+    const controller = new Controller({
+      ...options,
+      handler: (err, innerController) => {
+        if (err) {
+          observer.error(err)
+        } else {
+          observer.next(innerController)
+        }
+      }
+    })
+    return remoteMutations({
+      publishedId: options.documentId,
+      draftId: `drafts.${options.documentId}`
+    }).subscribe(ev => {
+      controller.handleRemoteMutation(ev)
+    })
+  })
 }
