@@ -1,5 +1,6 @@
 import React, {useMemo, useCallback} from 'react'
 import {Tooltip} from 'react-tippy'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {
   HotkeyOptions,
   PortableTextBlock,
@@ -11,7 +12,8 @@ import {
   RenderDecoratorFunction,
   EditorSelection,
   OnPasteFn,
-  OnCopyFn
+  OnCopyFn,
+  PortableTextEditor
 } from '@sanity/portable-text-editor'
 import ErrorCircleIcon from 'part:@sanity/base/error-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -76,9 +78,40 @@ function PortableTextSanityEditor(props: Props) {
     value
   } = props
 
+  const handleOpenObjectHotkey = (
+    event: React.BaseSyntheticEvent,
+    ptEditor: PortableTextEditor
+  ) => {
+    const selection = PortableTextEditor.getSelection(ptEditor)
+    if (selection) {
+      event.preventDefault()
+      event.stopPropagation()
+      const {focus} = selection
+      const activeAnnotations = PortableTextEditor.activeAnnotations(ptEditor)
+      const focusBlock = PortableTextEditor.focusBlock(ptEditor)
+      const focusChild = PortableTextEditor.focusChild(ptEditor)
+      if (activeAnnotations.length > 0) {
+        onFocus([
+          ...focus.path.slice(0, 1),
+          'markDefs',
+          {_key: activeAnnotations[0]._key},
+          FOCUS_TERMINATOR
+        ])
+        return
+      }
+      if (focusChild && PortableTextEditor.isVoid(ptEditor, focusChild)) {
+        onFocus([...focus.path, FOCUS_TERMINATOR])
+        return
+      }
+      if (focusBlock && PortableTextEditor.isVoid(ptEditor, focusBlock)) {
+        onFocus([...focus.path.slice(0, 1), FOCUS_TERMINATOR])
+      }
+    }
+  }
   const customFromProps: HotkeyOptions = {
     custom: {
       'mod+enter': props.onToggleFullscreen,
+      // 'mod+o': handleOpenObjectHotkey, // TODO: disabled for now, enable when we agree on the hotkey
       ...(props.hotkeys || {}).custom
     }
   }
