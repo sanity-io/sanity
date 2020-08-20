@@ -1,10 +1,8 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import {ObjectDiff, Annotation} from '@sanity/field/diff'
-import {useUser, useUserColor} from '@sanity/react-hooks'
-// @todo THIS IS NOT RELEASABLE AS-IS
-import UserAvatar from '@sanity/components/lib/presence/UserAvatar'
-// @todo ^FIX ME^
+import {useUser, useUserColor} from '@sanity/base/hooks'
+import {UserAvatar} from '@sanity/base/components'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
 import {Geopoint} from '../types'
@@ -53,17 +51,11 @@ export function GeopointMove({diff, api, map, label}: Props) {
           opacity={0.75}
           onClick={openInfoOnFrom}
           markerRef={fromRef}
+          color={userColor || undefined}
         />
       )}
       {from && to && (
-        <Arrow
-          api={api}
-          map={map}
-          from={from}
-          to={to}
-          zIndex={1}
-          color={userColor ? userColor.text : undefined}
-        />
+        <Arrow api={api} map={map} from={from} to={to} zIndex={1} color={userColor || undefined} />
       )}
       {to && (
         <Marker
@@ -74,6 +66,7 @@ export function GeopointMove({diff, api, map, label}: Props) {
           onClick={openInfoOnTo}
           markerRef={toRef}
           label={label}
+          color={userColor || undefined}
         />
       )}
       {annotation &&
