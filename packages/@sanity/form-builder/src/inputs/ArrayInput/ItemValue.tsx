@@ -230,7 +230,6 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         title={title}
         actions={actions}
         onAction={this.handleDialogAction}
-        showCloseButton={false}
       >
         <PresenceOverlay>
           <DialogContent size="medium">{content}</DialogContent>
