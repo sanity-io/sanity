@@ -100,17 +100,13 @@ function DocumentPane(props: Props) {
       })
   )
 
-  const historyState = useObservable(
+  const historyController = useObservable(
     createObservableController({
       timeline,
       documentId,
       client
-    }),
-    {error: new Error('should not happen')}
-  )
-
-  if (historyState.error) throw historyState.error
-  const historyController = historyState.controller
+    })
+  )! // note: this emits sync so can never be null
 
   // TODO: Fetch only when open
   React.useEffect(() => {
