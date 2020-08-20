@@ -6,7 +6,7 @@ interface Props {
   map: google.maps.Map
   from: LatLng
   to: LatLng
-  color?: string
+  color?: {background: string; border: string; text: string}
   zIndex?: number
   arrowRef?: React.MutableRefObject<google.maps.Polyline | undefined>
   onClick?: (event: google.maps.MouseEvent) => void
@@ -31,7 +31,7 @@ export class Arrow extends React.Component<Props> {
       path: [from, to],
       icons: [{icon: lineSymbol, offset: '50%'}],
       strokeOpacity: 0.8,
-      strokeColor: color || 'black'
+      strokeColor: color ? color.text : 'black'
     })
 
     if (onClick) {

@@ -1,8 +1,9 @@
 import {useState, useEffect} from 'react'
 import {globalPresence$} from './presence-store'
+import {GlobalPresence} from './types'
 
-export function useGlobalPresence() {
-  const [presence, setPresence] = useState([])
+export function useGlobalPresence(): GlobalPresence[] {
+  const [presence, setPresence] = useState<GlobalPresence[]>([])
   useEffect(() => {
     const subscription = globalPresence$.subscribe(setPresence)
     return () => {

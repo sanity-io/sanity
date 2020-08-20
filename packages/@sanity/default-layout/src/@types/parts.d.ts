@@ -54,11 +54,9 @@ declare module 'all:part:@sanity/base/absolutes' {
 }
 
 declare module 'part:@sanity/base/user' {
-  type UserEvent = {user: {email: string; name?: string}}
-  const userStore: {
-    actions: {logout: () => void}
-    currentUser: Observable<UserEvent>
-  }
+  import {UserStore} from '@sanity/base'
+
+  const userStore: UserStore
   export default userStore
 }
 
@@ -348,9 +346,7 @@ declare module 'part:@sanity/base/new-document-structure?' {
 }
 
 declare module 'part:@sanity/base/client' {
-  const client: {
-    config: (api?: {}) => {projectId: string; dataset: string}
-  }
+  const client: any
   export default client
 }
 
@@ -362,4 +358,9 @@ declare module 'part:@sanity/base/error-icon' {
 declare module 'part:@sanity/base/warning-icon' {
   const WarningIcon: React.ComponentType<{}>
   export default WarningIcon
+}
+
+declare module 'part:@sanity/base/authentication-fetcher' {
+  const fetcher: any
+  export default fetcher
 }
