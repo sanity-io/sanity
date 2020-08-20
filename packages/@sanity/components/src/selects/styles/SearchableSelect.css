@@ -8,7 +8,7 @@
   composes: selectContainer from 'part:@sanity/components/selects/default-style';
 
   @nest & input {
-    padding-right: 4em;
+    padding-right: 5.5em;
   }
 }
 
