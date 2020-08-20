@@ -16,5 +16,5 @@ export interface Tool {
 export interface User {
   email: string
   name?: string
-  profileImage: string
+  profileImage?: string
 }
