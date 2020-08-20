@@ -1,6 +1,6 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
-import {useUser} from '@sanity/react-hooks'
+import {useUser} from '@sanity/base/hooks'
 import {Annotation, AnnotationDetails} from '@sanity/field/diff'
 import UserAvatar from '@sanity/components/lib/presence/UserAvatar'
 
@@ -18,6 +18,7 @@ export function AnnotationTooltip(props: AnnotationTooltipProps) {
 
   return (
     <Tooltip
+      useContext
       arrow
       html={<AnnotationTooltipContent annotation={props.annotation} />}
       position="top"
@@ -49,7 +50,10 @@ function UserItem(props: {userId: string}) {
       {isLoading && 'Loading…'}
       {user && (
         <>
-          <UserAvatar user={user} /> {user.displayName}
+          <span>
+            <UserAvatar user={user} />
+          </span>
+          <span>{user.displayName}</span>
         </>
       )}
     </div>
