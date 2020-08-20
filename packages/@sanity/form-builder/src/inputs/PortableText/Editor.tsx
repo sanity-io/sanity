@@ -53,9 +53,29 @@ const renderDecorator: RenderDecoratorFunction = (mark, mType, attributes, defau
   return <Decorator mark={mark}>{defaultRender()}</Decorator>
 }
 
-// eslint-disable-next-line complexity
 function PortableTextSanityEditor(props: Props) {
-  const {value, showValidationTooltip, markers, readOnly, isFullscreen} = props
+  const {
+    initialSelection,
+    isFullscreen,
+    markers,
+    onCloseValidationResults,
+    onCopy,
+    onFocus,
+    onFormBuilderChange,
+    onPaste,
+    onToggleFullscreen,
+    onToggleValidationResults,
+    portableTextFeatures,
+    readOnly,
+    renderAnnotation,
+    renderBlock,
+    renderBlockActions,
+    renderChild,
+    renderCustomMarkers,
+    showValidationTooltip,
+    value
+  } = props
+
   const customFromProps: HotkeyOptions = {
     custom: {
       'mod+enter': props.onToggleFullscreen,
@@ -74,22 +94,6 @@ function PortableTextSanityEditor(props: Props) {
     ...marksFromProps,
     ...customFromProps
   }
-  const {
-    initialSelection,
-    onCloseValidationResults,
-    onCopy,
-    onFocus,
-    onFormBuilderChange,
-    onPaste,
-    onToggleFullscreen,
-    onToggleValidationResults,
-    portableTextFeatures,
-    renderAnnotation,
-    renderBlock,
-    renderBlockActions,
-    renderChild,
-    renderCustomMarkers
-  } = props
 
   const hasMarkers = markers.length > 0
   const scClassNames = [
