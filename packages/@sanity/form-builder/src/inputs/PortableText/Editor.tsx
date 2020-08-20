@@ -86,7 +86,8 @@ function PortableTextSanityEditor(props: Props) {
     marks: {
       'mod+b': 'strong',
       'mod+i': 'em',
-      'mod+´': 'code',
+      'mod+u': 'underline',
+      "mod+'": 'code',
       ...(props.hotkeys || {}).marks
     }
   }
