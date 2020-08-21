@@ -1,0 +1,74 @@
+.root {
+  background: #fff;
+  height: 100%;
+  overflow: auto;
+}
+
+.header {
+  padding: 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.mainNav {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 700;
+}
+
+.closeButtonContainer {
+  padding: 4px;
+}
+
+.body {
+  padding: 1em;
+}
+
+.changeList {
+  display: grid;
+  grid-gap: 2.25em;
+}
+
+.group {
+}
+
+.change {
+  border-left: 1px solid #ccc;
+  padding-left: 0.75em;
+}
+
+.change__header {
+  margin: 0 0 0.5em;
+  display: flex;
+}
+
+.change__breadcrumb {
+  flex: 1;
+  font-size: 13px;
+
+  @nest & strong {
+    font-weight: 600;
+  }
+}
+
+.change__revertButton {
+  font-size: 12px;
+  padding: 0.25em;
+}
+
+.arrayChange {
+  composes: change;
+}
+
+.fieldChange {
+  composes: change;
+}
+
+.groupChange {
+  composes: change;
+}
