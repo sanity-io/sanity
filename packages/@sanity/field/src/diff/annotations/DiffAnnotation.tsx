@@ -14,7 +14,7 @@ export interface AnnotatedDiffProps {
 }
 
 interface BaseAnnotationProps {
-  as?: string
+  as?: React.ElementType | keyof JSX.IntrinsicElements
   className?: string
   children: React.ReactNode
 }
