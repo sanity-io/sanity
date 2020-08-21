@@ -21,6 +21,7 @@
     "@sanity/default-login": "1.150.1",
     "@sanity/desk-tool": "1.150.4",
     "@sanity/google-maps-input": "1.150.1",
+    "@sanity/react-hooks": "1.150.4",
     "@sanity/vision": "1.150.1",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
