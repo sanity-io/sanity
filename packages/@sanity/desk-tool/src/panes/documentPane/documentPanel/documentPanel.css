@@ -1,0 +1,22 @@
+.root {
+  background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerContainer {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.documentViewerContainer {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.footerContainer {
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
