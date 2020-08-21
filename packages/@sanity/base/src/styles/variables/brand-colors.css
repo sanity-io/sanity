@@ -5,7 +5,7 @@
   --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
   --brand-lightest: var(--white);
   --brand-primary: #2276fc;
-  --brand-primary--inverted: var(--brand-lightest);
+  --brand-primary--inverted: color(var(--brand-primary) contrast(80%));
   --brand-secondary: #f03e2f;
   --brand-secondary--inverted: var(--brand-lightest);
 
