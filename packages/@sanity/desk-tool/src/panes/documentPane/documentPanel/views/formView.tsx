@@ -27,7 +27,6 @@ interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   markers: Array<{path: any[]}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  presence: any
   initialFocusPath: unknown[] | null
 }
 
@@ -109,7 +108,7 @@ export class FormView extends React.PureComponent<Props> {
   }
 
   render() {
-    const {id, value, initialValue, markers, presence, schemaType} = this.props
+    const {id, value, initialValue, markers, schemaType} = this.props
     const {focusPath, filterField} = this.state
     const readOnly = this.isReadOnly()
     const documentId = value && value._id && value._id.replace(/^drafts\./, '')
@@ -142,7 +141,6 @@ export class FormView extends React.PureComponent<Props> {
             readOnly={readOnly}
             schema={schema}
             type={schemaType}
-            presence={presence}
           />
         </PresenceOverlay>
 
