@@ -1,2 +1,2 @@
-export * from './DocumentActionShortcuts'
+export * from './documentActionShortcuts'
 export * from './helpers'
