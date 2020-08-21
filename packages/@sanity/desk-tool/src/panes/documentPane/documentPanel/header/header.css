@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   /* display: block; */
 }
@@ -22,9 +24,8 @@
 }
 
 .viewNav {
+  margin-top: calc(0 - var(--small-padding));
   display: flex;
-  margin-top: -8px;
-  padding-right: 1em;
 }
 
 .tabsContainer {
@@ -32,11 +33,42 @@
 }
 
 .versionSelectContainer {
-  border: 1px solid #ccc;
-  margin: 4px 0;
-  margin-left: auto;
+  margin: 4px 1em 4px auto;
 }
 
 .viewActions {
-  margin-left: 8px;
+  padding: 0 var(--small-padding) 0 0;
+
+  @nest & button {
+    vertical-align: top;
+    -webkit-appearance: none;
+    -webkit-font-smoothing: inherit;
+    border: 0;
+    padding: var(--extra-small-padding);
+    border-radius: var(--border-radius-small);
+    background: none;
+    color: var(--text-muted);
+    outline: none;
+
+    @nest & svg {
+      display: block;
+      font-size: calc(25 / 16 * 1rem); /* 25px */
+    }
+
+    /* Focus wrapper */
+    @nest & > div {
+      outline: none;
+    }
+
+    @media (hover: hover) {
+      @nest &:hover {
+        color: inherit;
+      }
+    }
+
+    @nest &:focus {
+      background: var(--selectable-item-color-hover);
+      color: inherit;
+    }
+  }
 }
