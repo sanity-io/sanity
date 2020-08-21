@@ -39,7 +39,8 @@ export class Marker extends React.Component<Props> {
         fillColor: color.background,
         strokeColor: color.border,
         strokeWeight: 2,
-        anchor: new api.Point(10, 35)
+        anchor: new api.Point(10, 35),
+        labelOrigin: new api.Point(10, 11)
       }
     }
 
