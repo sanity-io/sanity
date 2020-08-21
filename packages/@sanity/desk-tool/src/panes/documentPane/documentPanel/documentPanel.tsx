@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {createElement, useCallback, useMemo, useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
@@ -26,6 +27,8 @@ interface DocumentPanelProps {
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
   onCloseView: () => void
+  onCollapse?: () => void
+  onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
   paneTitle?: string
@@ -87,7 +90,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
   )
 
   return (
-    <div className={styles.root}>
+    <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
       <div className={styles.headerContainer}>
         <DocumentPanelHeader
           activeViewId={props.activeViewId}
@@ -98,7 +101,9 @@ export function DocumentPanel(props: DocumentPanelProps) {
           menuItemGroups={props.menuItemGroups}
           menuItems={menuItems}
           onCloseView={props.onCloseView}
+          onCollapse={props.onCollapse}
           onContextMenuAction={handleContextMenuAction}
+          onExpand={props.onExpand}
           onSetActiveView={props.onSetActiveView}
           onSplitPane={props.onSplitPane}
           schemaType={props.schemaType}
