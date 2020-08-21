@@ -1,25 +1,19 @@
 import * as React from 'react'
-import {ObjectDiff, DiffComponent, DiffAnnotation} from '@sanity/field/diff'
+import {DiffComponent, ObjectDiff, DiffAnnotation} from '@sanity/field/diff'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
 import {resolveDiffComponent} from '../resolveDiffComponent'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {getRefValue} from '../hooks'
-import styles from './ImageFieldDiff.css'
-import ImagePreview from './ImagePreview'
+import styles from './FileFieldDiff.css'
+import FilePreview from './FilePreview'
 
-/* TODO:
-  - Correct annotation for hotspot/crop changes
-  - Visualising hotspott/crop changes
-*/
-
-export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
+export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
   const prev = getRefValue(fromAsset?._ref)
   const next = getRefValue(toAsset?._ref)
 
-  // Get all the changed fields within this image field
   const changedFields = Object.keys(fields)
     .map(field => ({
       name: field,
@@ -27,35 +21,21 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
     }))
     .filter(field => field.isChanged && field.name !== '_type')
 
-  // An array of names of the fields that changed
   const changedFieldNames = changedFields.map(f => f.name)
-
   const didAssetChange = changedFieldNames.some(field => field === 'asset')
-  const imageMeta = ['crop', 'hotspot']
-  const didMetaChange = changedFieldNames.some(field => imageMeta.includes(field))
 
-  const showImageDiff = didAssetChange || didMetaChange
-
-  // Resolve nested fields to the right diff components
   const nestedFields = schemaType.fields
     .filter(
-      field =>
-        changedFields.some(f => f.name === field.name) &&
-        !['asset', ...imageMeta].includes(field.name)
+      field => changedFields.some(f => f.name === field.name) && !['asset'].includes(field.name)
     )
-    .map(field => ({name: field.name, schemaType: field.type, diff: diff.fields[field.name]}))
+    .map(field => ({name: field.name, schemaType: field.type, diff: fields[field.name]}))
   return (
     <div className={styles.root}>
-      {showImageDiff && (
-        <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
+      {didAssetChange && (
+        <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
           {prev && (
             <DiffAnnotation diff={diff} path="asset._ref">
-              <ImagePreview
-                value={prev}
-                action={didAssetChange ? 'removed' : 'changed'}
-                hotspot={didMetaChange && fromValue!.hotspot}
-                crop={didMetaChange && fromValue!.crop}
-              />
+              <FilePreview value={prev} action={didAssetChange ? 'removed' : 'changed'} />
             </DiffAnnotation>
           )}
           {prev && next && (
@@ -65,17 +45,11 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
           )}
           {next && (
             <DiffAnnotation diff={diff} path="asset._ref">
-              <ImagePreview
-                value={next}
-                action={didAssetChange ? 'added' : 'changed'}
-                hotspot={didMetaChange && toValue!.hotspot}
-                crop={didMetaChange && toValue!.crop}
-              />
+              <FilePreview value={next} action={didAssetChange ? 'added' : 'changed'} />
             </DiffAnnotation>
           )}
         </div>
       )}
-
       {nestedFields.length > 0 && (
         <div className={styles.nestedFields}>
           {nestedFields.map(field => {
