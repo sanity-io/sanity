@@ -37,6 +37,7 @@ interface DocumentPaneProps {
 // eslint-disable-next-line complexity
 export function DocumentPane(props: DocumentPaneProps) {
   const {
+    connectionState,
     documentId,
     documentIdRaw,
     documentType,
@@ -47,10 +48,8 @@ export function DocumentPane(props: DocumentPaneProps) {
     markers,
     menuItemGroups = [],
     onChange,
-    // onCollapse,
-    connectionState,
-    // onExpand,
-    // options,
+    onCollapse,
+    onExpand,
     paneKey,
     title: paneTitle,
     schemaType,
@@ -143,6 +142,8 @@ export function DocumentPane(props: DocumentPaneProps) {
           menuItemGroups={menuItemGroups}
           onChange={onChange}
           onCloseView={handleClosePane}
+          onCollapse={onCollapse}
+          onExpand={onExpand}
           onSetActiveView={handleSetActiveView}
           onSplitPane={handleSplitPane}
           paneTitle={paneTitle}
@@ -153,7 +154,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         />
       </div>
 
-      {isHistoryOpen && (
+      {!isCollapsed && isHistoryOpen && (
         <div className={styles.changesContainer}>
           <ChangesPanel documentId={documentId} schemaType={schemaType} />
         </div>
