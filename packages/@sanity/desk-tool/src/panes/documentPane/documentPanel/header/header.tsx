@@ -1,5 +1,6 @@
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
@@ -112,15 +113,23 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           />
         </div>
 
-        {props.onSplitPane && props.isClosable && (
-          <div className={styles.viewActions}>
+        <div className={styles.viewActions}>
+          {props.onSplitPane && props.views.length > 1 && (
+            <button type="button" onClick={props.onSplitPane} title="Split pane right">
+              <div tabIndex={-1}>
+                <SplitHorizontalIcon />
+              </div>
+            </button>
+          )}
+
+          {props.onSplitPane && props.isClosable && (
             <button type="button" onClick={props.onCloseView} title="Close pane">
               <div tabIndex={-1}>
                 <CloseIcon />
               </div>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
