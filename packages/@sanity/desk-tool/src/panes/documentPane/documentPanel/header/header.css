@@ -13,6 +13,10 @@
   line-height: 17px;
 }
 
+.paneFunctions {
+  padding: 8px;
+}
+
 .contextMenuContainer {
   padding: 8px;
 }
