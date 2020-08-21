@@ -67,13 +67,14 @@ export default class ImageToolInput extends React.Component<Props, ImageToolInpu
         : value.hotspot
       onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
     }
-    this.setState({value: this.props.value})
   }
   handleChange = (nextValue: Value) => {
     this.setState({value: nextValue})
   }
   UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState({value: nextProps.value})
+    if (nextProps.value !== this.props.value) {
+      this.setState({value: nextProps.value})
+    }
   }
   render() {
     const {imageUrl, level, readOnly} = this.props
