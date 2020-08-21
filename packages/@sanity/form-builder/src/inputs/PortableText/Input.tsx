@@ -80,7 +80,7 @@ export default function PortableTextInput(props: Props) {
 
   // States
   const [isActive, setIsActive] = useState(false)
-  const [objectEditData, setobjectEditData] = useState(null) as [ObjectEditData, any]
+  const [objectEditData, setObjectEditData]: [ObjectEditData, any] = useState(null)
   const [showValidationTooltip, setShowValidationTooltip] = useState(false)
   const [initialSelection, setInitialSelection] = useState(undefined)
 
@@ -109,7 +109,7 @@ export default function PortableTextInput(props: Props) {
               focus: {path: spanPath, offset: 0},
               anchor: {path: spanPath, offset: 0}
             })
-            setobjectEditData({
+            setObjectEditData({
               editorPath: spanPath,
               formBuilderPath: focusPath.slice(0, 3),
               kind: 'annotation'
@@ -133,7 +133,7 @@ export default function PortableTextInput(props: Props) {
           focus: {path, offset: 0},
           anchor: {path, offset: 0}
         })
-        setobjectEditData({editorPath: path, formBuilderPath: path, kind})
+        setObjectEditData({editorPath: path, formBuilderPath: path, kind})
       }
     }
   }, [focusPath])
@@ -296,7 +296,7 @@ export default function PortableTextInput(props: Props) {
     }
     const handleClose = () => {
       const {editorPath} = objectEditData
-      setobjectEditData(null)
+      setObjectEditData(null)
       const sel = {
         focus: {path: editorPath, offset: 0},
         anchor: {path: editorPath, offset: 0}
