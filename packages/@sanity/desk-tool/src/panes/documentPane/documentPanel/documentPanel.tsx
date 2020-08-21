@@ -77,6 +77,15 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [toggleHistory, toggleInspect]
   )
 
+  const setFocusPath = useCallback(
+    (path: any) => {
+      if (formRef.current) {
+        formRef.current.handleFocus(path)
+      }
+    },
+    [formRef.current]
+  )
+
   return (
     <div className={styles.root}>
       <div className={styles.headerContainer}>
@@ -85,12 +94,15 @@ export function DocumentPanel(props: DocumentPanelProps) {
           idPrefix={props.idPrefix}
           isClosable={props.isClosable}
           isCollapsed={props.isCollapsed}
+          markers={props.markers}
           menuItemGroups={props.menuItemGroups}
           menuItems={menuItems}
           onCloseView={props.onCloseView}
           onContextMenuAction={handleContextMenuAction}
           onSetActiveView={props.onSetActiveView}
           onSplitPane={props.onSplitPane}
+          schemaType={props.schemaType}
+          setFocusPath={setFocusPath}
           title={
             <DocumentHeaderTitle
               documentType={props.documentType}
