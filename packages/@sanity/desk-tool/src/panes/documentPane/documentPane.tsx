@@ -7,7 +7,7 @@ import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel, getProductionPreviewItem} from './documentPanel'
 import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
-import {Doc, DocumentViewType, MenuAction, MenuItemGroup} from './types'
+import {Doc, DocumentViewType, MenuItemGroup} from './types'
 
 import styles from './documentPane.css'
 
@@ -22,14 +22,12 @@ interface DocumentPaneProps {
   isSelected: boolean
   markers: any[]
   menuItemGroups: MenuItemGroup[]
-  menuItems: MenuAction[]
   onChange: (patches: any[]) => void
   onExpand?: () => void
   onCollapse?: () => void
   paneKey: string
   schemaType: any
   title?: string
-  type: any
   views: DocumentViewType[]
   value: Doc | null
 }
