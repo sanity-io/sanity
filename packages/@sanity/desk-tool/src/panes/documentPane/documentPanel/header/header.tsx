@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
@@ -21,6 +22,8 @@ export interface DocumentPanelHeaderProps {
   menuItemGroups: MenuItemGroup[]
   onCloseView: () => void
   onContextMenuAction: (action: MenuAction) => void
+  onCollapse?: () => void
+  onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
   schemaType: any
@@ -58,10 +61,15 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     setValidationOpen(!isValidationOpen)
   }, [isValidationOpen])
 
+  const handleTitleClick = useCallback(() => {
+    if (props.isCollapsed && props.onExpand) props.onExpand()
+    if (!props.isCollapsed && props.onCollapse) props.onCollapse()
+  }, [props.isCollapsed, props.onExpand, props.onCollapse])
+
   return (
-    <div className={styles.root}>
+    <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
       <div className={styles.mainNav}>
-        <div className={styles.title}>
+        <div className={styles.title} onClick={handleTitleClick}>
           <strong>{props.title}</strong>
         </div>
 
