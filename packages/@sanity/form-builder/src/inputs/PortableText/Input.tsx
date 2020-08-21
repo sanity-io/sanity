@@ -350,7 +350,7 @@ export default function PortableTextInput(props: Props) {
 
   const editObject = useMemo(() => {
     return renderEditObject()
-  }, [focusPath, markers, presence, value])
+  }, [focusPath, markers, objectEditData, presence, value])
 
   const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
   const fullscreenToggledEditor = (
