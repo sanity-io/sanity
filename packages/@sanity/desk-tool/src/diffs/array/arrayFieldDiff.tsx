@@ -4,11 +4,12 @@ import {
   DiffComponent as SanityDiffComponent,
   ArrayDiff,
   ItemDiff,
-  SchemaType
+  SchemaType,
+  getAnnotationColor
 } from '@sanity/field/diff'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../resolveDiffComponent'
-import {getAnnotationColor, getObjectKey} from '../helpers'
+import {getObjectKey} from '../helpers'
 import {isPTSchemaType, PTDiff} from '../portableText'
 
 import styles from './arrayFieldDiff.css'

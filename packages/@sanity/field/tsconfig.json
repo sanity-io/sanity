@@ -1,11 +1,12 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
-  "exclude": ["src/**/*.test.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["test/**/*.ts"],
   "compilerOptions": {
-    "outDir": "./lib",
-    "strict": true,
+    "rootDir": "src",
+    "strict": false,
     "jsx": "react",
+    "outDir": "./lib",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
