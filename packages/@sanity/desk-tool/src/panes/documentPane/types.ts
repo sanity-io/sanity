@@ -1,5 +1,20 @@
 import {ComponentType} from 'react'
 
+export interface DocumentPaneOptions {
+  id: string
+  type: string
+  template?: string
+}
+
+export interface DocumentView {
+  type: string
+  id: string
+  title: string
+  options: {}
+  component: ComponentType<any>
+  icon?: ComponentType<any>
+}
+
 export interface Doc {
   _id?: string
   _type?: string
@@ -15,6 +30,10 @@ export interface MenuAction {
   isDisabled?: boolean
   title: React.ReactNode
   url?: string
+}
+
+export interface MenuItemGroup {
+  id: string
 }
 
 export interface DocumentViewType {
