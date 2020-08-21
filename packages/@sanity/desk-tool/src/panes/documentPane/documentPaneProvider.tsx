@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {useDocumentPresence} from '@sanity/base/hooks'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -50,7 +49,6 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {patch}: any = useDocumentOperation(documentIdRaw, documentTypeName)
   const editState: any = useEditState(documentIdRaw, documentTypeName)
   const {markers} = useValidationStatus(documentIdRaw, documentTypeName)
-  const presence = useDocumentPresence(documentIdRaw)
   const connectionState = useConnectionState(documentIdRaw, documentTypeName)
   const schemaType = schema.get(documentTypeName)
 
@@ -118,7 +116,6 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         initialValue={initialValue}
         markers={markers}
         onChange={onChange}
-        presence={presence}
         schemaType={schemaType}
         value={value}
       />

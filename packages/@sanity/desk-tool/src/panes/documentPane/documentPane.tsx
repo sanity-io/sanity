@@ -27,7 +27,6 @@ interface DocumentPaneProps {
   onExpand?: () => void
   onCollapse?: () => void
   paneKey: string
-  presence: any
   schemaType: any
   title?: string
   type: any
@@ -54,7 +53,6 @@ export function DocumentPane(props: DocumentPaneProps) {
     // options,
     paneKey,
     title: paneTitle,
-    presence,
     schemaType,
     value,
     views = []
@@ -148,7 +146,6 @@ export function DocumentPane(props: DocumentPaneProps) {
           onSetActiveView={handleSetActiveView}
           onSplitPane={handleSplitPane}
           paneTitle={paneTitle}
-          presence={presence}
           schemaType={schemaType}
           toggleInspect={toggleInspect}
           value={value}
