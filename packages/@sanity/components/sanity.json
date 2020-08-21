@@ -746,15 +746,15 @@
     },
     {
       "implements": "part:@sanity/components/toggles/switch-style",
-      "path": "toggles/styles/Switch.css"
+      "path": "toggles/Switch.css"
     },
     {
       "implements": "part:@sanity/components/toggles/checkbox-style",
-      "path": "toggles/styles/Checkbox.css"
+      "path": "toggles/Checkbox.css"
     },
     {
       "implements": "part:@sanity/components/radiobutton/default-style",
-      "path": "radiobutton/styles/RadioButtonDefault.css"
+      "path": "radiobutton/RadioButtonDefault.css"
     },
     {
       "implements": "part:@sanity/components/toggles/buttons-style",
