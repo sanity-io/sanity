@@ -1,5 +1,6 @@
 {
   "rules": {
+    "react/jsx-handler-names": "off",
     "react/require-default-props": "off"
   }
 }
