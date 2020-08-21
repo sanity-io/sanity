@@ -37,7 +37,7 @@
     "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",
     "react-props-stream": "^1.0.0",
-    "react-tippy": "^1.2.3",
+    "react-tippy": "1.4.0",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
@@ -47,8 +47,7 @@
     "mocha": "^5.0.1",
     "nyc": "^11.0.3",
     "prop-types": "^15.6.0",
-    "rimraf": "^2.7.1",
-    "typescript": "^3.7.3"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "@sanity/base": "^0.147.0",
