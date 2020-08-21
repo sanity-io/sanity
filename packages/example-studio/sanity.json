@@ -35,6 +35,10 @@
     {
       "implements": "part:@sanity/form-builder/input-resolver",
       "path": "./parts/inputResolver.js"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "./themes/none.css"
     }
   ],
   "env": {
@@ -46,7 +50,13 @@
     "development": {
       "api": {
         "projectId": "q2r21cu7"
-      }
+      },
+      "parts": [
+        {
+          "implements": "part:@sanity/base/tool",
+          "path": "tools/css-variables/tool"
+        }
+      ]
     }
   }
 }
