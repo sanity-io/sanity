@@ -47,12 +47,12 @@ export type ArrayDiff<V = unknown> = AgnosticArrayDiff<Annotation, V>
 export type BooleanDiff = AgnosticBooleanDiff<Annotation>
 export type NullDiff = AgnosticNullDiff<Annotation>
 export type NumberDiff = AgnosticNumberDiff<Annotation>
-export type ObjectDiff<T extends object = object> = AgnosticObjectDiff<Annotation, T>
+export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
 export type StringDiff = AgnosticStringDiff<Annotation>
 export type ReferenceDiff = ObjectDiff<Reference>
 export type TypeChangeDiff = AgnosticTypeChangeDiff<Annotation>
 
-export type Diff<A = unknown, O extends object = object> =
+export type Diff<A = unknown, O extends object = Record<string, any>> =
   | ArrayDiff<A>
   | BooleanDiff
   | NullDiff
@@ -133,7 +133,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
   type: T
 }
 
-export interface ObjectSchemaType<T extends object = object> extends BaseSchemaType {
+export interface ObjectSchemaType<T extends object = Record<string, any>> extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
   diffComponent?: DiffComponent<ObjectDiff<T>>
@@ -147,7 +147,7 @@ export interface Reference {
 
 export type ReferenceSchemaType = ObjectSchemaType<Reference>
 
-export type SchemaType<A = unknown, O extends object = object> =
+export type SchemaType<A = unknown, O extends object = Record<string, any>> =
   | ArraySchemaType<A>
   | BooleanSchemaType
   | NumberSchemaType
@@ -157,5 +157,6 @@ export type SchemaType<A = unknown, O extends object = object> =
 /**
  * Paths
  */
-export declare type PathSegment = string | number | {_key: string}
-export declare type Path = PathSegment[]
+export type KeyedSegment = {_key: string}
+export type PathSegment = string | number | KeyedSegment
+export type Path = PathSegment[]
