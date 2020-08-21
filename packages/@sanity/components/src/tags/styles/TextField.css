@@ -24,6 +24,8 @@
   display: flex;
   margin: 0;
   padding: 0; 
+  flex-wrap: wrap;
+  gap: var(--small-padding);
 }
 
 .tag {
@@ -33,7 +35,6 @@
   color: var(--gray-dark);
   border: 1px solid var(--gray-light);
   box-sizing: border-box;
-  margin-right: 0.25em;
   padding: 0 0.5em;
   font-size: 1em;
   line-height: 1.45em;

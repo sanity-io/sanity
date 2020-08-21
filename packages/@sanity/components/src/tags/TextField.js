@@ -15,7 +15,8 @@ export default class TagsTextField extends React.Component {
     onBlur: PropTypes.func,
     readOnly: PropTypes.bool,
     markers: PropTypes.array,
-    value: PropTypes.arrayOf(PropTypes.string)
+    value: PropTypes.arrayOf(PropTypes.string),
+    inputId: PropTypes.string
   }
 
   static defaultProps = {
@@ -91,7 +92,7 @@ export default class TagsTextField extends React.Component {
 
   render() {
     const {inputValue} = this.state
-    const {onChange, value, readOnly, markers, ...rest} = this.props
+    const {onChange, value, readOnly, markers, inputId, ...rest} = this.props
 
     return (
       <div className={readOnly ? styles.rootReadOnly : styles.root}>
@@ -125,6 +126,7 @@ export default class TagsTextField extends React.Component {
                 onBlur={this.handleBlur}
                 ref={this.setInput}
                 autoComplete="off"
+                id={inputId}
               />
             </ul>
           </div>
