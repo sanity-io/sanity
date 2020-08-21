@@ -24,6 +24,10 @@
     {
       "name": "part:@sanity/base/schema",
       "path": "./schemas"
+    },
+    {
+      "name": "part:@sanity/desk-tool/structure",
+      "path": "./structure"
     }
   ]
 }
