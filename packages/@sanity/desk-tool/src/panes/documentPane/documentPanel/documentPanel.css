@@ -7,16 +7,27 @@
 
 .headerContainer {
   background: #fff;
-  border-bottom: 1px solid #ddd;
+
+  @nest .root:not(.isCollapsed) & {
+    border-bottom: 1px solid #ddd;
+  }
 }
 
 .documentViewerContainer {
   flex: 1;
   min-height: 0;
   overflow: auto;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .footerContainer {
   background: #fff;
   border-top: 1px solid #ddd;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
