@@ -1,0 +1,39 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  height: 100%;
+  outline: none;
+  position: relative;
+}
+
+.isDisabled {
+  display: none; /* hide on mobile */
+
+  @media (--screen-medium) {
+    display: flex;
+  }
+}
+
+.isActive {
+  display: flex;
+}
+
+.isCollapsed {
+  @media (--screen-medium) {
+    composes: root;
+    flex-direction: row;
+    width: 49px;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.documentContainer {
+  flex: 3;
+}
+
+.changesContainer {
+  flex: 2;
+  border-left: 1px solid #ddd;
+}

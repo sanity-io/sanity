@@ -1,0 +1,38 @@
+.root {
+  /* display: block; */
+}
+
+.mainNav {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  padding: 1em;
+  line-height: 17px;
+}
+
+.contextMenuContainer {
+  padding: 8px;
+}
+
+.viewNav {
+  display: flex;
+  margin-top: -8px;
+  padding-right: 1em;
+}
+
+.tabsContainer {
+  flex: 1;
+}
+
+.versionSelectContainer {
+  border: 1px solid #ccc;
+  margin: 4px 0;
+  margin-left: auto;
+}
+
+.viewActions {
+  margin-left: 8px;
+}
