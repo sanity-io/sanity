@@ -108,16 +108,21 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
       value={value}
     >
       <DocumentPane
-        {...props}
         connectionState={connectionState}
         documentId={documentId}
         documentIdRaw={documentIdRaw}
         documentType={documentTypeName}
         initialValue={initialValue}
+        isClosable={props.isClosable}
+        isCollapsed={props.isCollapsed}
+        isSelected={props.isSelected}
         markers={markers}
+        menuItemGroups={props.menuItemGroups}
         onChange={onChange}
+        paneKey={props.paneKey}
         schemaType={schemaType}
         value={value}
+        views={props.views}
       />
     </DocumentHistoryProvider>
   )
