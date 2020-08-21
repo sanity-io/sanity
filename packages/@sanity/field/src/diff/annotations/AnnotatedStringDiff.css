@@ -1,0 +1,15 @@
+.segment {
+  position: relative;
+}
+
+.add {
+  composes: segment;
+  text-decoration: none;
+  mix-blend-mode: multiply;
+}
+
+.remove {
+  composes: segment;
+  text-decoration: line-through;
+  mix-blend-mode: multiply;
+}
