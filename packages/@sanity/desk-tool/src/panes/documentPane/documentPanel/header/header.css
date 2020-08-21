@@ -13,19 +13,38 @@
   min-width: 0;
   padding: 1em;
   line-height: 17px;
+  cursor: default;
+
+  @nest .isCollapsed & {
+    transform: rotate(90deg);
+    transform-origin: calc(49px / 2) calc(49px / 2);
+    min-width: 100vh;
+  }
 }
 
 .paneFunctions {
   padding: 8px;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .contextMenuContainer {
   padding: 8px;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .viewNav {
   margin-top: calc(0 - var(--small-padding));
   display: flex;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .tabsContainer {
