@@ -24,12 +24,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@sanity/base": "1.150.3",
+    "@sanity/diff": "1.150.1"
+  },
   "devDependencies": {
-    "@sanity/diff": "1.150.1",
     "react": "16.9.0",
     "rimraf": "^2.7.1",
     "typescript": "^3.7.3"
+  },
+  "peerDependencies": {
+    "react": "^16.2.0"
   },
   "repository": {
     "type": "git",

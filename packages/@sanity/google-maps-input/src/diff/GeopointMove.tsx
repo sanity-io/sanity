@@ -1,8 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import {ObjectDiff, Annotation} from '@sanity/field/diff'
-import {useUser, useUserColor} from '@sanity/base/hooks'
-import {UserAvatar} from '@sanity/base/components'
+import {ObjectDiff, DiffAnnotationTooltipContent} from '@sanity/field/diff'
+import {useUserColor} from '@sanity/base/hooks'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'
 import {Geopoint} from '../types'
@@ -70,30 +69,10 @@ export function GeopointMove({diff, api, map, label}: Props) {
         />
       )}
       {annotation &&
-        ReactDOM.createPortal(<AnnotationInfo annotation={annotation} />, infoEl.current)}
+        ReactDOM.createPortal(
+          <DiffAnnotationTooltipContent annotation={annotation} />,
+          infoEl.current
+        )}
     </>
   )
-}
-
-function UserItem(props: {userId: string}) {
-  const {isLoading, error, value: user} = useUser(props.userId)
-
-  // @todo handle?
-  if (error) {
-    return null
-  }
-
-  if (isLoading) {
-    return <em>Loading…</em>
-  }
-
-  return user ? (
-    <>
-      <UserAvatar user={user} /> {user.displayName}
-    </>
-  ) : null
-}
-
-function AnnotationInfo({annotation}: {annotation: Annotation}) {
-  return annotation && <UserItem userId={annotation.author} />
 }

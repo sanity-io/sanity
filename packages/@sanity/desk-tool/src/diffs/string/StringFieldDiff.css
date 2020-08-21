@@ -6,20 +6,3 @@
   border-radius: 4px;
   white-space: pre-line;
 }
-
-.segment {
-  position: relative;
-  /* white-space: pre-wrap; */
-}
-
-.add {
-  composes: segment;
-  text-decoration: none;
-  mix-blend-mode: multiply;
-}
-
-.remove {
-  composes: segment;
-  text-decoration: line-through;
-  mix-blend-mode: multiply;
-}
