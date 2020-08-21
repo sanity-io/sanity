@@ -1,10 +1,12 @@
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {TimelineDropdown} from './timelineDropdown'
+import {ValidationMenu} from './validationMenu'
 
 import styles from './header.css'
 
@@ -13,12 +15,15 @@ export interface DocumentPanelHeaderProps {
   idPrefix: string
   isClosable: boolean
   isCollapsed: boolean
+  markers: any
   menuItems: MenuAction[]
   menuItemGroups: MenuItemGroup[]
   onCloseView: () => void
   onContextMenuAction: (action: MenuAction) => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
+  schemaType: any
+  setFocusPath: (path: any) => void
   title: React.ReactNode
   views: DocumentView[]
 }
@@ -30,6 +35,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const contextMenuItems = props.menuItems.filter(isMenuButton)
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
+  const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
 
   const handleCloseContextMenu = useCallback(() => {
     setContextMenuOpen(false)
@@ -43,11 +49,31 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     setVersionSelectOpen(!isVersionSelectOpen)
   }, [isVersionSelectOpen])
 
+  const handleCloseValidationResults = useCallback(() => {
+    setValidationOpen(false)
+  }, [])
+
+  const handleToggleValidationResults = useCallback(() => {
+    setValidationOpen(!isValidationOpen)
+  }, [isValidationOpen])
+
   return (
     <div className={styles.root}>
       <div className={styles.mainNav}>
         <div className={styles.title}>
           <strong>{props.title}</strong>
+        </div>
+
+        <div className={styles.paneFunctions}>
+          {LanguageFilter && <LanguageFilter />}
+          <ValidationMenu
+            isOpen={isValidationOpen}
+            markers={props.markers}
+            onClose={handleCloseValidationResults}
+            onToggle={handleToggleValidationResults}
+            schemaType={props.schemaType}
+            setFocusPath={props.setFocusPath}
+          />
         </div>
 
         <div className={styles.contextMenuContainer}>
