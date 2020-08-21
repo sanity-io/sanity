@@ -24,7 +24,6 @@ interface DocumentPanelProps {
   isHistoryOpen: boolean
   markers: any
   menuItemGroups: MenuItemGroup[]
-  presence?: any
   onChange: (patches: any[]) => void
   onCloseView: () => void
   onSetActiveView: (id: string | null) => void
@@ -111,7 +110,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
             initialValue={props.initialValue}
             markers={props.markers}
             onChange={props.onChange}
-            presence={props.presence}
             readOnly={historyDisplayed === 'from'}
             ref={formRef}
             schemaType={props.schemaType}
