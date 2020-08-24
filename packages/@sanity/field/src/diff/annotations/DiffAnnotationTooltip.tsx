@@ -4,24 +4,39 @@ import {Annotation} from '../types'
 import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
 
 export interface AnnotationTooltipProps {
+  as?: React.ElementType | keyof JSX.IntrinsicElements
+  style?: React.CSSProperties
+  className?: string
   annotation: Annotation
   children: React.ReactNode
 }
 
-export function DiffAnnotationTooltip(props: AnnotationTooltipProps) {
-  if (!props.annotation) {
-    return <>{props.children}</>
+export function DiffAnnotationTooltip({
+  annotation,
+  className,
+  as = 'div',
+  children,
+  style
+}: AnnotationTooltipProps) {
+  if (!annotation) {
+    return React.createElement(as, {className, style}, children)
   }
 
+  // Tippy is missing `tag` in property list
+  const TippyTooltip = Tooltip as any
+
   return (
-    <Tooltip
+    <TippyTooltip
+      tag={as}
+      className={className}
+      style={style}
       useContext
       arrow
-      html={<DiffAnnotationTooltipContent annotation={props.annotation} />}
+      html={<DiffAnnotationTooltipContent annotation={annotation} />}
       position="top"
       theme="light"
     >
-      {props.children}
-    </Tooltip>
+      {children}
+    </TippyTooltip>
   )
 }
