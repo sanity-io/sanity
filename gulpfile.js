@@ -123,7 +123,9 @@ const isTSProject = (packageDir) => {
 }
 
 // We the list of packages ordered by topology to make sure we compile in the correct order
-const ORDERED_PACKAGES = getPackagesOrderedByTopology().map((pkgName) => `packages/${pkgName}`)
+const ORDERED_PACKAGES = getPackagesOrderedByTopology().map(pkgName =>
+  path.resolve(__dirname, `packages/${pkgName}`)
+)
 
 const TS_PROJECTS = ORDERED_PACKAGES.filter(isTSProject)
 
