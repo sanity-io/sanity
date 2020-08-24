@@ -5,8 +5,8 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import {partition, debounce} from 'lodash'
-import {Portal} from '../utilities/Portal'
+import {Portal} from 'part:@sanity/components/portal'
+import {partition} from 'lodash'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
@@ -123,6 +123,7 @@ export default class DefaultDialog extends React.PureComponent {
     return (
       <Portal>
         <Stacked>
+          {/* eslint-disable-next-line complexity */}
           {isActive => (
             <div className={className}>
               <div className={styles.overlay} />
