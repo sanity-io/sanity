@@ -4,9 +4,9 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import {Portal} from 'part:@sanity/components/portal'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {Portal} from '../utilities/Portal'
 import StackedEscapable from '../utilities/StackedEscapable'
 
 const noop = () => {}
@@ -82,6 +82,7 @@ export default class FullScreenDialog extends React.PureComponent {
     )
   }
 
+  // eslint-disable-next-line complexity
   render() {
     const {title, cardClassName, className, onClose, onEscape, isOpen, actions} = this.props
 
