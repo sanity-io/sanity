@@ -34,8 +34,8 @@ export function DiffAnnotation(props: DiffAnnotationProps) {
   const color = getAnnotationColor(colorManager, annotation)
   const style = {background: color.background, color: color.text}
   return (
-    <DiffAnnotationTooltip annotation={annotation}>
-      {React.createElement(as, {className, style}, children)}
+    <DiffAnnotationTooltip as={as} className={className} annotation={annotation} style={style}>
+      {children}
     </DiffAnnotationTooltip>
   )
 }
