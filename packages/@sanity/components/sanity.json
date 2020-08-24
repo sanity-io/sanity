@@ -1100,6 +1100,14 @@
     {
       "implements": "part:@sanity/components/tabs/tab-panel",
       "path": "tabs/TabPanel.js"
+    },
+    {
+      "implements": "part:@sanity/components/portal",
+      "path": "portal"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "portal/story"
     }
   ]
 }
