@@ -15,7 +15,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
-import {Portal} from 'part:@sanity/components/utilities/portal'
+import {Portal} from 'part:@sanity/components/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
