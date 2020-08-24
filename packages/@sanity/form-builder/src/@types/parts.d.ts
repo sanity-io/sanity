@@ -5,6 +5,11 @@ declare module 'part:@sanity/components/*' {
   }
   export default SanityInputComponent
 }
+
+declare module 'part:@sanity/components/portal' {
+  export const Portal: React.Component<any>
+}
+
 declare module 'part:@sanity/components/selects/*' {
   class SanitySelectComponent extends React.Component<any> {
     focus() {}
@@ -32,7 +37,6 @@ declare module 'part:@sanity/components/textareas/*' {
   }
   export default SanityTextareaComponent
 }
-
 
 declare module 'config:@sanity/form-builder'
 declare module 'all:part:@sanity/form-builder/input/image/asset-source'
