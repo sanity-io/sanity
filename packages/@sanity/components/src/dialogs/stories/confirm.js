@@ -4,8 +4,9 @@ import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select} from 'part:@sanity/storybook/addons/knobs'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
+import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
 
 const chance = new Chance()
 
@@ -41,7 +42,7 @@ export function ConfirmStory() {
   const contentTest = select('content', dialogTestContent, 'minimal')
   return (
     <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
-      <ConfirmDialog
+      <DialogExample
         color={select(
           'color',
           ['default', 'danger', 'success', 'info', 'warning'],
@@ -57,7 +58,24 @@ export function ConfirmStory() {
         title={text('title', 'Confirm', 'props')}
       >
         {contentTest && renderContent(contentTest)}
-      </ConfirmDialog>
+      </DialogExample>
     </Sanity>
+  )
+}
+
+function DialogExample(props) {
+  const {children, ...restProps} = props
+  const portalRef = useRef(document.createElement('div'))
+
+  useEffect(() => {
+    portalRef.current.setAttribute('data-portal', '')
+    document.body.appendChild(portalRef.current)
+    return () => document.body.removeChild(portalRef.current)
+  }, [])
+
+  return (
+    <PortalProvider element={portalRef.current}>
+      <ConfirmDialog {...restProps}>{children}</ConfirmDialog>
+    </PortalProvider>
   )
 }
