@@ -9,6 +9,8 @@ const ts = require('gulp-typescript')
 const filter = require('gulp-filter')
 const {flatten} = require('lodash')
 const log = require('fancy-log')
+const notify = require('gulp-notify')
+const plumber = require('gulp-plumber')
 const chalk = require('chalk')
 const babel = require('gulp-babel')
 const through = require('through2')
@@ -84,11 +86,26 @@ function copyAssets(packageDir) {
   )
 }
 
+function notifyErrors(title) {
+  return plumber({
+    errorHandler: notify.onError({
+      title,
+      error: '<%= error.message %>',
+      // Sound can be one of these: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink.
+      // See https://github.com/mikaelbr/node-notifier#all-notification-options-with-their-defaults
+      sound: process.env.TS_ERROR_SOUND === 'off' ? false : process.env.TS_ERROR_SOUND || 'Purr'
+    })
+  })
+}
+
 function buildTypeScript(packageDir) {
-  const project = ts.createProject(path.join(packageDir, 'tsconfig.json'))
   return withDisplayName(compileTaskName('dts', packageDir), () => {
-    const compilation = project.src().pipe(project())
-    return compilation.dts.pipe(dest(project.options.outDir))
+    const project = ts.createProject(path.join(packageDir, 'tsconfig.json'))
+    return project
+      .src()
+      .pipe(notifyErrors(`Error in ${path.relative('packages', packageDir)}`))
+      .pipe(project())
+      .dts.pipe(dest(project.options.outDir))
   })
 }
 

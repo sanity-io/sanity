@@ -76,6 +76,7 @@
     "gulp-changed": "^4.0.2",
     "gulp-filter": "^6.0.0",
     "gulp-newer": "^1.4.0",
+    "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
