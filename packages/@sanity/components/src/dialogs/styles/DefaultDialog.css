@@ -30,7 +30,8 @@
 
 .root {
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-  position: fixed;
+  /* position: fixed; */
+  position: absolute;
   z-index: var(--zindex-portal);
   top: 0;
   left: 0;
@@ -299,7 +300,7 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 
   @nest &::before {
     content: '';
