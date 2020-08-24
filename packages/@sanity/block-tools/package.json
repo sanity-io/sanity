@@ -1,6 +1,6 @@
 {
   "name": "@sanity/block-tools",
-  "version": "1.150.1",
+  "version": "1.150.3",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@sanity/schema": "1.150.1",
+    "@sanity/schema": "1.150.3",
     "assert": "^1.4.1",
     "jest": "^24.9.0",
     "jsdom": "^12.0.0",
