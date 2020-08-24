@@ -182,7 +182,7 @@
 
   /* :disabled */
   --color-button-disabled-bg: var(--gray-lightest);
-  --color-button-disabled-text: var(--color-button-text);
+  --color-button-disabled-text: var(--gray-lighter);
   --color-button-simple-disabled-bg: transparent;
   --color-button-simple-disabled-text: var(--gray-lighter);
 }

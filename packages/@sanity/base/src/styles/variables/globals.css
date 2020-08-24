@@ -11,7 +11,10 @@
 
   /* Main navigation */
   --main-navigation-color: var(--gray-darkest);
-  --main-navigation-color--inverted: var(--gray-lightest);
+  --main-navigation-color--inverted: color(var(--main-navigation-color) contrast(80%));
+  --main-navigation-color--inverted-muted: color(
+    var(--main-navigation-color) blend(var(--main-navigation-color--inverted) 70%)
+  );
 
   /* Dialog */
   --dialog-header-color: var(--component-bg);
@@ -34,13 +37,13 @@
 
   /* "Default" button */
   --default-button-primary-color: var(--brand-primary);
-  --default-button-primary-color--inverted: var(--white);
-  --default-button-danger-color: var(--state-danger-color);
-  --default-button-danger-color--inverted: var(--white);
+  --default-button-primary-color--inverted: var(--brand-primary--inverted);
   --default-button-success-color: var(--state-success-color);
-  --default-button-success-color--inverted: var(--white);
+  --default-button-success-color--inverted: var(--state-success-color--inverted);
   --default-button-warning-color: var(--state-warning-color);
   --default-button-warning-color--inverted: var(--state-warning-color--inverted);
+  --default-button-danger-color: var(--state-danger-color);
+  --default-button-danger-color--inverted: var(--state-danger-color--inverted);
 
   /* Shadows */
   --shadow-base: var(--gray-darkest);

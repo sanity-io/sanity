@@ -4,7 +4,7 @@
   position: relative;
 
   @media (hover: hover) {
-    color: var(--gray);
+    color: var(--main-navigation-color--inverted-muted);
 
     @nest &:hover {
       color: inherit;
@@ -32,7 +32,14 @@
   }
 
   @nest &[data-tone='navbar'] > select {
-    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
+    background: color(
+      var(--main-navigation-color) blend(var(--main-navigation-color--inverted) 10%)
+    );
+    color: var(--main-navigation-color--inverted-muted);
+
+    @nest &:hover {
+      color: inherit;
+    }
   }
 
   @nest & > svg {

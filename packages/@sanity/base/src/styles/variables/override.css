@@ -24,7 +24,9 @@
   --gray-dark: #66758d;
   --gray: #7b8ca8;
   --gray-light: #95a3b9;
+  /* @todo: deprecate */
   --gray-ligther: #cad1dc;
+  --gray-lighter: #cad1dc;
   --gray-lightest: #e4e8ed;
 
   /* Navbar */
