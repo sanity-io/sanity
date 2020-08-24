@@ -1,4 +1,5 @@
-/* eslint-disable react/no-multi-comp, @typescript-eslint/no-empty-function*/
+/* eslint-disable @typescript-eslint/no-empty-function, class-methods-use-this, no-undef*/
+
 declare module 'part:@sanity/components/*' {
   class SanityInputComponent extends React.Component<any> {
     focus() {}
@@ -7,7 +8,8 @@ declare module 'part:@sanity/components/*' {
 }
 
 declare module 'part:@sanity/components/portal' {
-  export const Portal: React.Component<any>
+  // export const Portal: ComponentType<{}>
+  export const Portal: any
 }
 
 declare module 'part:@sanity/components/selects/*' {
