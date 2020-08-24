@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "1.150.3",
+  "version": "1.150.4",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -28,7 +28,7 @@
     "@sanity/form-builder": "1.150.3",
     "@sanity/generate-help-url": "1.150.1",
     "@sanity/mutator": "1.150.1",
-    "@sanity/react-hooks": "1.150.1",
+    "@sanity/react-hooks": "1.150.4",
     "@sanity/structure": "1.150.1",
     "@sanity/util": "1.150.1",
     "@sanity/uuid": "1.150.1",
