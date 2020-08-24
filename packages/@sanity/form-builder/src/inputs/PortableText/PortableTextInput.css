@@ -3,7 +3,7 @@
 /* The fullscreen editor renders in a portal element */
 .fullscreenPortal {
   z-index: var(--zindex-portal);
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
