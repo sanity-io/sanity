@@ -54,7 +54,8 @@ export default class DropDownButton extends React.PureComponent {
     className: PropTypes.string,
     renderItem: PropTypes.func,
     placement: PropTypes.string,
-    showArrow: PropTypes.bool
+    showArrow: PropTypes.bool,
+    tabIndex: PropTypes.number
   }
 
   static defaultProps = {
@@ -71,7 +72,8 @@ export default class DropDownButton extends React.PureComponent {
       return <div>{item.title}</div>
     },
     showArrow: true,
-    placement: 'bottom-start'
+    placement: 'bottom-start',
+    tabIndex: 0
   }
 
   firstItemElement = React.createRef()
@@ -151,7 +153,7 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, renderItem, children, kind, className, placement, showArrow, ...rest} = omit(
+    const {items, renderItem, children, kind, placement, showArrow, tabIndex, ...rest} = omit(
       this.props,
       'onAction'
     )
@@ -170,6 +172,7 @@ export default class DropDownButton extends React.PureComponent {
           onKeyDown={this.handleButtonKeyDown}
           onBlur={this.handleButtonBlur}
           ref={this.buttonElement}
+          tabIndex={tabIndex}
         >
           {(showArrow || children) && (
             <div className={styles.inner}>
@@ -210,7 +213,7 @@ export default class DropDownButton extends React.PureComponent {
                         onClick={event => this.handleItemClick(event, item)} //eslint-disable-line react/jsx-no-bind
                         onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
                         item={item}
-                        tabIndex={0}
+                        tabIndex={tabIndex}
                         ref={i === 0 && this.firstItemElement}
                       >
                         {renderItem(item)}
@@ -219,7 +222,7 @@ export default class DropDownButton extends React.PureComponent {
                   })}
                 </ArrowKeyNavigation>
               </List>
-              <div tabIndex={0} onFocus={this.handleMenuBlur} />
+              <div tabIndex={tabIndex} onFocus={this.handleMenuBlur} />
             </>
           )}
         </Poppable>

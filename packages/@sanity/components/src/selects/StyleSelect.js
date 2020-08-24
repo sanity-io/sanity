@@ -62,7 +62,8 @@ class StyleSelect extends React.PureComponent {
       })
     ),
     padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
-    transparent: PropTypes.bool
+    transparent: PropTypes.bool,
+    tabIndex: PropTypes.number
   }
 
   static defaultProps = {
@@ -74,6 +75,7 @@ class StyleSelect extends React.PureComponent {
     padding: 'default',
     placeholder: undefined,
     transparent: false,
+    tabIndex: 0,
     value: undefined
   }
 
@@ -173,7 +175,8 @@ class StyleSelect extends React.PureComponent {
       padding,
       placeholder,
       renderItem,
-      transparent
+      transparent,
+      tabIndex
     } = this.props
     const {showList} = this.state
     const className = classNames(
@@ -191,7 +194,12 @@ class StyleSelect extends React.PureComponent {
         onKeyPress={this.handleButtonKeyDown}
         tabIndex={0}
       >
-        <button className={styles.button} disabled={disabled} ref={this.buttonElement}>
+        <button
+          type="button"
+          className={styles.button}
+          disabled={disabled}
+          ref={this.buttonElement}
+        >
           <div className={styles.buttonInner}>
             <span className={styles.title}>
               {value && value.length > 1 && 'Multiple'}
@@ -216,7 +224,7 @@ class StyleSelect extends React.PureComponent {
                 {items.map((item, index) => {
                   const isSemiSelected = value && value.length > 1 && value.includes(item)
                   const isSelected = value && value.length === 1 && value[0].key == item.key
-                  const classNames = `
+                  const itemClassNames = `
                         ${isSelected ? styles.itemSelected : styles.item}
                         ${isSemiSelected ? styles.itemSemiSelected : ''}
                       `
@@ -226,7 +234,8 @@ class StyleSelect extends React.PureComponent {
                         title={item.title}
                         data-index={index}
                         onClick={this.handleSelect}
-                        className={classNames}
+                        className={itemClassNames}
+                        tabIndex={0}
                         onKeyPress={this.handleItemKeyPress} //eslint-disable-line react/jsx-no-bind
                         ref={index === 0 && this.firstItemElement}
                       >
@@ -241,7 +250,7 @@ class StyleSelect extends React.PureComponent {
                 })}
               </ArrowKeyNavigation>
 
-              <div tabIndex={0} onFocus={this.handleMenuBlur} />
+              <div tabIndex={tabIndex} onFocus={this.handleMenuBlur} />
             </>
           )}
         </Poppable>
