@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import styles from './styles/ConfirmDialog.css'
-import Button from 'part:@sanity/components/buttons/default'
 
 export default class ConfirmDialog extends React.PureComponent {
   static propTypes = {

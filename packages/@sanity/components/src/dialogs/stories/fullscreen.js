@@ -4,8 +4,9 @@ import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
 
 const chance = new Chance()
 
@@ -55,7 +56,7 @@ export function FullscreenStory() {
   const contentTest = select('content', dialogTestContent, 'minimal')
   return (
     <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
-      <FullscreenDialog
+      <DialogExample
         title={text('title', undefined, 'props')}
         onClose={boolean('Has onClose', false, 'test') && action('onClose')}
         centered={boolean('centered', false, 'props')}
@@ -69,7 +70,24 @@ export function FullscreenStory() {
         onAction={action('onAction')}
       >
         {contentTest && renderFullscreenContent(contentTest)}
-      </FullscreenDialog>
+      </DialogExample>
     </Sanity>
+  )
+}
+
+function DialogExample(props) {
+  const {children, ...restProps} = props
+  const portalRef = useRef(document.createElement('div'))
+
+  useEffect(() => {
+    portalRef.current.setAttribute('data-portal', '')
+    document.body.appendChild(portalRef.current)
+    return () => document.body.removeChild(portalRef.current)
+  }, [])
+
+  return (
+    <PortalProvider element={portalRef.current}>
+      <FullscreenDialog {...restProps}>{children}</FullscreenDialog>
+    </PortalProvider>
   )
 }
