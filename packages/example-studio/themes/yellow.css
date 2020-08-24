@@ -11,8 +11,8 @@
   */
   --text-color: #222;
   /* Main Navigation */
-  --main-navigation-color: black;
-  --main-navigation-color--inverted: white;
+  --main-navigation-color: purple;
+  /* --main-navigation-color--inverted: white; */
 
   --gray-base: #777;
 }

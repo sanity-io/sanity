@@ -6,16 +6,28 @@
 
 .root {
   position: relative;
+  color: var(--main-navigation-color--inverted-muted);
 
   @nest &:not(.isBleeding) {
-    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
+    background: color(
+      var(--main-navigation-color) blend(var(--main-navigation-color--inverted) 10%)
+    );
     border-radius: var(--border-radius-base);
     height: 33px;
   }
 
+  @nest &.isBleeding {
+    color: var(--text-color);
+  }
+
   @nest &.isFocused:not(.isBleeding) {
     background: var(--component-bg);
-    color: var(--text-muted);
+    color: var(--text-color);
+  }
+
+  @nest &.isFocused.isBleeding {
+    background: var(--component-bg);
+    color: var(--text-color);
   }
 
   @nest &.isOpen:not(.isBleeding) {
@@ -63,7 +75,6 @@
   justify-content: center;
 
   @nest & > svg {
-    color: var(--gray);
     font-size: calc(25 / 16 * 1rem);
   }
 
@@ -90,7 +101,17 @@
   white-space: nowrap;
 
   @nest &::placeholder {
-    color: var(--gray);
+    @nest .root.isBleeding & {
+      color: var(--text-muted);
+    }
+
+    @nest .root:not(.isBleeding) & {
+      color: var(--main-navigation-color--inverted-muted);
+    }
+
+    @nest .root:not(.isBleeding).isFocused & {
+      color: transparent;
+    }
   }
 
   @nest .isBleeding & {
@@ -111,7 +132,6 @@
   align-items: center;
   justify-content: center;
   min-width: 33px;
-  /* opacity: 0.6; */
 
   & > svg {
     font-size: 1.5625em;
@@ -145,7 +165,6 @@
   box-sizing: border-box;
   font-size: var(--font-size-tiny);
   align-items: center;
-  /* opacity: 0.6; */
 
   @nest .root:not(.isBleeding):not(.hasValue) & {
     padding-right: 0.75em;

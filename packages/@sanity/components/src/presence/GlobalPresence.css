@@ -40,7 +40,7 @@
   }
 
   @media (hover: hover) {
-    color: var(--gray);
+    color: var(--main-navigation-color--inverted-muted);
 
     @nest &:hover {
       color: inherit;
