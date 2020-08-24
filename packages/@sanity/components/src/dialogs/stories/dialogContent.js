@@ -2,8 +2,9 @@ import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
+import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
 
 export function DialogContentStory() {
   const actions = [
@@ -29,7 +30,7 @@ export function DialogContentStory() {
 
   return (
     <Sanity part="part:@sanity/components/dialogs/default" propTables={[DefaultDialog]}>
-      <DefaultDialog
+      <DialogExample
         title={text('title', undefined, 'dialog props')}
         color={select(
           'color',
@@ -56,7 +57,24 @@ export function DialogContentStory() {
         >
           {text('content', 'This is the raw content. use DialogContent to size it', 'props')}
         </DialogContent>
-      </DefaultDialog>
+      </DialogExample>
     </Sanity>
+  )
+}
+
+function DialogExample(props) {
+  const {children, ...restProps} = props
+  const portalRef = useRef(document.createElement('div'))
+
+  useEffect(() => {
+    portalRef.current.setAttribute('data-portal', '')
+    document.body.appendChild(portalRef.current)
+    return () => document.body.removeChild(portalRef.current)
+  }, [])
+
+  return (
+    <PortalProvider element={portalRef.current}>
+      <DefaultDialog {...restProps}>{children}</DefaultDialog>
+    </PortalProvider>
   )
 }
