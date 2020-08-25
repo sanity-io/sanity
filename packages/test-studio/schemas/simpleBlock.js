@@ -23,7 +23,11 @@ export default {
           },
           of: [
             {type: 'image', name: 'image'},
-            {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]},
+            {
+              type: 'object',
+              name: 'test',
+              fields: [{type: 'string', name: 'mystring', validation: Rule => Rule.required()}]
+            },
             {
               type: 'reference',
               name: 'strongAuthorRef',
@@ -33,7 +37,11 @@ export default {
           ]
         },
         {type: 'image', name: 'image'},
-        {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
+        {
+          type: 'object',
+          name: 'test',
+          fields: [{type: 'string', name: 'mystring', validation: Rule => Rule.required()}]
+        }
       ]
     },
     {
