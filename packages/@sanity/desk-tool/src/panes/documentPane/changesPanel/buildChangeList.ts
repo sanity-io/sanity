@@ -8,6 +8,7 @@ import {
   SchemaType,
   Diff
 } from '@sanity/field/diff'
+import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {ChangeNode, ChangeTitlePath} from './types'
 import {getArrayDiffItemType} from './helpers'
 
@@ -24,22 +25,25 @@ export function buildChangeList(
   path: Path = [],
   titlePath: ChangeTitlePath = []
 ): ChangeNode[] {
-  if (schemaType.jsonType === 'object' && diff.type === 'object') {
+  const diffComponent = resolveDiffComponent(schemaType)
+
+  if (!diffComponent && schemaType.jsonType === 'object' && diff.type === 'object') {
     return buildObjectChangeList(schemaType, diff, path, titlePath)
   }
 
-  if (schemaType.jsonType === 'array' && diff.type === 'array') {
+  if (!diffComponent && schemaType.jsonType === 'array' && diff.type === 'array') {
     return buildArrayChangeList(schemaType, diff, path, titlePath)
   }
 
   return [
     {
       type: 'field',
-      diff: diff,
+      diff,
+      path,
+      titlePath,
+      schemaType,
       key: pathToString(path),
-      path: path,
-      titlePath: titlePath,
-      schemaType: schemaType
+      diffComponent
     }
   ]
 }
