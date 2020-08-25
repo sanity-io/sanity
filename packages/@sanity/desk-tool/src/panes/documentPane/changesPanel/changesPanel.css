@@ -38,14 +38,6 @@
   grid-gap: 2.25em;
 }
 
-.group {
-}
-
-.change {
-  border-left: 1px solid #ccc;
-  padding-left: 0.75em;
-}
-
 .change__header {
   margin: 0 0 0.5em;
   display: flex;
@@ -60,19 +52,30 @@
   }
 }
 
+.change__breadcrumb__index_group:not(:first-child) {
+  /* @todo coder styling, fix me  */
+  margin-left: 5px;
+}
+
+.change__breadcrumb__index {
+  /* @todo coder styling, fix me  */
+  padding: 0.25em 0.5em;
+  background: #ddd;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
 .change__revertButton {
   font-size: 12px;
   padding: 0.25em;
 }
 
-.arrayChange {
-  composes: change;
+.groupChange > .changeList {
+  border-left: 1px solid #ccc;
+  padding-left: 0.75em;
 }
 
-.fieldChange {
-  composes: change;
-}
-
-.groupChange {
-  composes: change;
+.diffComponent {
+  border-left: 1px solid #ccc;
+  padding-left: 0.75em;
 }
