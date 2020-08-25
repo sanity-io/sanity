@@ -16,11 +16,16 @@
 .documentViewerContainer {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  position: relative;
 
   @nest .isCollapsed & {
     display: none;
   }
+}
+
+.documentScroller {
+  height: 100%;
+  overflow: auto;
 }
 
 .footerContainer {
