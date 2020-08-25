@@ -64,7 +64,7 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
         <DocumentContext.Provider value={documentContext}>
           <div className={styles.changeList}>
             {changes.map(change => (
-              <ChangeResolver change={change} key={change.key} level={0} />
+              <ChangeResolver change={change} key={change.key} />
             ))}
           </div>
         </DocumentContext.Provider>
@@ -93,12 +93,12 @@ function ChangeHeader({change, titlePath}: {change: FieldChangeNode; titlePath: 
   )
 }
 
-function FieldChange({change, level = 0}: {change: FieldChangeNode; level: number}) {
+function FieldChange({change}: {change: FieldChangeNode}) {
   const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
 
   return (
     <div className={styles.fieldChange}>
-      <ChangeHeader change={change} titlePath={change.titlePath.slice(level)} />
+      <ChangeHeader change={change} titlePath={change.titlePath} />
 
       <div className={styles.diffComponent}>
         <DiffErrorBoundary>
@@ -123,16 +123,16 @@ function GroupChange({change: group}: {change: GroupChangeNode}) {
 
       <div className={styles.changeList}>
         {changes.map(change => (
-          <ChangeResolver key={change.key} change={change} level={change.titlePath.length - 1} />
+          <ChangeResolver key={change.key} change={change} />
         ))}
       </div>
     </div>
   )
 }
 
-function ChangeResolver({change, level = 0}: {change: ChangeNode; level: number}) {
+function ChangeResolver({change}: {change: ChangeNode}) {
   if (change.type === 'field') {
-    return <FieldChange change={change} level={level} />
+    return <FieldChange change={change} />
   }
 
   if (change.type === 'group') {
@@ -147,7 +147,9 @@ function ChangeBreadcrumb({titlePath}: {titlePath: ChangeTitlePath}) {
     <div className={styles.change__breadcrumb}>
       {titlePath.map((titleSegment, idx) => (
         <Fragment key={idx}>
-          {idx > 0 && typeof titleSegment === 'string' && <em> / </em>}
+          {idx > 0 && typeof titleSegment === 'string' && (
+            <em className={styles.change__breadcrumb__separator}> / </em>
+          )}
           <TitleSegment segment={titleSegment} />
         </Fragment>
       ))}
@@ -157,7 +159,11 @@ function ChangeBreadcrumb({titlePath}: {titlePath: ChangeTitlePath}) {
 
 function TitleSegment({segment}: {segment: string | FromToIndex}) {
   if (typeof segment === 'string') {
-    return <strong>{segment}</strong>
+    return (
+      <strong className={styles.change__breadcrumb__segment} title={segment}>
+        {segment}
+      </strong>
+    )
   }
 
   const {hasMoved, fromIndex, toIndex} = segment
