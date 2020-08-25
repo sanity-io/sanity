@@ -70,7 +70,8 @@ export default React.forwardRef(function Checkbox(
           <path d="M0.0799561 1.5H8.91996" stroke="currentColor" strokeWidth="2" />
         </svg>
       </div>
-      <div>
+      {label && (
+      <div className={sharedStyles.label}>
         <div className={sharedStyles.titleWrapper}>
           <label className={sharedStyles.title} htmlFor={`checkbox-${elementId}-input`}>
             {label}
@@ -83,6 +84,7 @@ export default React.forwardRef(function Checkbox(
           </div>
         )}
       </div>
+      )}
     </div>
   )
 })

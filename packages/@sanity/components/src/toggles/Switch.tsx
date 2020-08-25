@@ -45,7 +45,8 @@ export default React.forwardRef(function Switch(
         <div className={styles.track} />
         <div className={styles.thumb} />
       </div>
-      <div>
+      {label && (
+      <div className={sharedStyles.label}>
         <div className={sharedStyles.titleWrapper}>
           <label className={sharedStyles.title} htmlFor={`switch-${elementId}-input`}>
             {label}
@@ -58,6 +59,7 @@ export default React.forwardRef(function Switch(
           </div>
         )}
       </div>
+      )}
     </div>
   )
 })
