@@ -88,9 +88,8 @@ export function FieldPresenceInner({
     <div className={styles.root}>
       <PopoverList
         items={uniquePresence}
-        position="top-end"
-        trigger="mouseenter"
-        distance={10}
+        mode="tooltip"
+        placement="top-end"
         renderItem={item => <PresenceListItem status="online" user={item.user} />}
       >
         <div className={styles.inner} style={{minWidth}}>

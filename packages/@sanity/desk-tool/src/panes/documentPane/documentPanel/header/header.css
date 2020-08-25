@@ -56,7 +56,7 @@
 }
 
 .viewActions {
-  padding: 0 var(--small-padding) 0 0;
+  /* padding: 0 var(--small-padding) 0 0; */
 
   @nest & button {
     vertical-align: top;
