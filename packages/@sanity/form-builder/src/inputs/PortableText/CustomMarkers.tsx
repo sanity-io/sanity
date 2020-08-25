@@ -1,7 +1,8 @@
 import React from 'react'
-import {Tooltip} from 'react-tippy'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import CommentIcon from 'part:@sanity/base/comment-icon'
 import {Marker} from '../../typedefs'
+
 type Props = {
   markers: Marker[]
 }
@@ -11,27 +12,22 @@ export default class Markers extends React.Component<Props, {}> {
   static defaultProps = {
     markers: []
   }
+
   handleCustomMarkerClick = (event: React.MouseEvent) => {
     event.preventDefault()
     event.stopPropagation()
     const {markers} = this.props
     console.log(markers) // eslint-disable-line no-console
   }
+
   render() {
     const {markers} = this.props
     const text = `${markers.length === 1 ? 'One' : markers.length} custom ${
       markers.length > 1 ? 'markers' : 'marker'
     }, click to log to console.`
+
     return (
-      <Tooltip
-        title={text}
-        trigger="mouseenter"
-        animation="fade"
-        arrow
-        theme="light"
-        distance={2}
-        duration={50}
-      >
+      <Tooltip content={<>{text}</>}>
         <CommentIcon onClick={this.handleCustomMarkerClick} />
       </Tooltip>
     )

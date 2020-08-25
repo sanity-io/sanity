@@ -1,5 +1,5 @@
 import React from 'react'
-import {Tooltip} from 'react-tippy'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, number, select} from 'part:@sanity/storybook/addons/knobs'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
@@ -67,14 +67,8 @@ export function ExampleStory() {
           </a>
           <button className={NavbarStyles.createButton} onClick={noop} type="button">
             <Tooltip
+              content={<>Create new document</>}
               disabled={'ontouchstart' in document.documentElement}
-              title="Create new document"
-              arrow
-              inertia
-              theme="dark"
-              distance="7"
-              sticky
-              size="small"
             >
               <div className={NavbarStyles.createButtonInner} tabIndex={-1}>
                 <div className={NavbarStyles.createButtonIcon}>

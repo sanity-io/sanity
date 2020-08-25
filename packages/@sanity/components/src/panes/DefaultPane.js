@@ -7,9 +7,9 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
+import {Popover} from 'part:@sanity/components/popover'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
-import {Tooltip} from 'react-tippy'
 import S from '@sanity/base/structure-builder'
 import Styleable from '../utilities/Styleable'
 
@@ -224,36 +224,30 @@ class Pane extends React.PureComponent {
           />
         )}
         {action.action === 'toggleTemplateSelectionMenu' && (
-          <Tooltip
-            arrow
-            className={styles.initialValueMenuTooltip}
-            distance={13}
-            theme="light"
-            trigger="click focus"
-            position="bottom"
-            interactive
+          <Popover
+            placement="bottom"
             open={this.state.isInitialValueMenuOpen}
-            onRequestClose={this.handleToggleInitialValueTemplateMenu}
-            useContext
-            html={
+            content={
               <div className={styles.initialValueTemplateMenu}>
                 {items.map(item => this.renderActionMenuItem(item))}
               </div>
             }
           >
-            <Button
-              aria-label="Menu"
-              aria-haspopup="menu"
-              aria-expanded={this.state.isInitialValueMenuOpen}
-              aria-controls={this.templateMenuId}
-              icon={Icon}
-              kind="simple"
-              onClick={this.handleToggleInitialValueTemplateMenu}
-              padding="small"
-              selected={this.state.isInitialValueMenuOpen}
-              title="Create new document"
-            />
-          </Tooltip>
+            <div>
+              <Button
+                aria-label="Menu"
+                aria-haspopup="menu"
+                aria-expanded={this.state.isInitialValueMenuOpen}
+                aria-controls={this.templateMenuId}
+                icon={Icon}
+                kind="simple"
+                onClick={this.handleToggleInitialValueTemplateMenu}
+                padding="small"
+                selected={this.state.isInitialValueMenuOpen}
+                title="Create new document"
+              />
+            </div>
+          </Popover>
         )}
       </div>
     )
@@ -283,17 +277,10 @@ class Pane extends React.PureComponent {
 
     return (
       <div className={styles.headerToolContainer}>
-        <Tooltip
-          arrow
-          distance={13}
-          theme="light"
-          trigger="click focus"
-          position="bottom"
-          interactive
+        <Popover
+          placement="bottom-end"
           open={isMenuOpen}
-          onRequestClose={this.handleCloseMenu}
-          useContext
-          html={
+          content={
             <Menu
               id={this.paneMenuId}
               items={items}
@@ -305,20 +292,22 @@ class Pane extends React.PureComponent {
             />
           }
         >
-          <Button
-            aria-label="Menu"
-            aria-haspopup="menu"
-            aria-expanded={isMenuOpen}
-            aria-controls={this.paneMenuId}
-            className={styles.menuOverflowButton}
-            icon={IconMoreVert}
-            kind="simple"
-            onClick={this.handleToggleMenu}
-            padding="small"
-            selected={isMenuOpen}
-            title="Show menu"
-          />
-        </Tooltip>
+          <div>
+            <Button
+              aria-label="Menu"
+              aria-haspopup="menu"
+              aria-expanded={isMenuOpen}
+              aria-controls={this.paneMenuId}
+              className={styles.menuOverflowButton}
+              icon={IconMoreVert}
+              kind="simple"
+              onClick={this.handleToggleMenu}
+              padding="small"
+              selected={isMenuOpen}
+              title="Show menu"
+            />
+          </div>
+        </Popover>
       </div>
     )
   }

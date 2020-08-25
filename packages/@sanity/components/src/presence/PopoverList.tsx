@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, {useState} from 'react'
-import {Tooltip, Position} from 'react-tippy'
+import {Popover} from 'part:@sanity/components/popover'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import {useId} from '@reach/auto-id'
 import styles from './PopoverList.css'
@@ -9,24 +10,23 @@ import {User} from './types'
 type Props<Item> = {
   items: Item[]
   renderItem: (item: Item, onClose?: (event: any) => void) => React.ReactNode
-  position?: Position
-  trigger?: 'mouseenter' | 'click' | 'manual'
+  placement?: string
   children?: React.ReactNode
-  distance?: number
   disabled?: boolean
   isGlobal?: boolean
+  mode?: 'tooltip'
   projectId?: string
 }
 
+// eslint-disable-next-line complexity
 export default function PopoverList<Item extends {user: User}>({
   items = [],
-  position = 'bottom-end',
-  distance = 0,
-  trigger,
+  placement = 'bottom-end',
   renderItem,
   children,
   disabled = false,
   isGlobal = false,
+  mode,
   projectId
 }: Props<Item>) {
   const elementId = useId()
@@ -75,51 +75,48 @@ export default function PopoverList<Item extends {user: User}>({
             onClick={handleCloseList}
           >
             <span>Manage members</span>
-            <CogIcon />
+            <span className={styles.manageIconContainer}>
+              <CogIcon />
+            </span>
           </a>
         </div>
       )}
     </div>
   )
+
+  const popoverChildren = (
+    <div>
+      <button
+        aria-label={isOpen ? 'Hide online collaborators' : 'Show online collaborators'}
+        type="button"
+        className={isGlobal ? styles.globalButton : styles.button}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        aria-controls={elementId}
+        onKeyDown={handleToggleList}
+        onClick={handleToggleList}
+        style={isGlobal ? {height: '100%'} : {}}
+      >
+        {children}
+      </button>
+    </div>
+  )
+
+  if (mode === 'tooltip') {
+    return (
+      <div className={styles.root}>
+        <Tooltip content={html} disabled={disabled} placement={placement}>
+          {popoverChildren}
+        </Tooltip>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.root}>
-      <Tooltip
-        useContext
-        html={html}
-        disabled={disabled}
-        interactive
-        position={position}
-        trigger={trigger}
-        arrow
-        theme="light"
-        distance={distance}
-        open={isOpen}
-        onRequestClose={handleCloseList}
-        popperOptions={{
-          modifiers: {
-            preventOverflow: {
-              boundariesElement: 'window'
-            },
-            flip: {
-              enabled: false
-            }
-          }
-        }}
-      >
-        <button
-          aria-label={isOpen ? 'Hide online collaborators' : 'Show online collaborators'}
-          type="button"
-          className={isGlobal ? styles.globalButton : styles.button}
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-          aria-controls={elementId}
-          onKeyDown={handleToggleList}
-          onClick={handleToggleList}
-          style={isGlobal ? {height: '100%'} : {}}
-        >
-          {children}
-        </button>
-      </Tooltip>
+      <Popover content={html} disabled={disabled} placement={placement} open={isOpen}>
+        {popoverChildren}
+      </Popover>
     </div>
   )
 }
