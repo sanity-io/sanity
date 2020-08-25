@@ -15,6 +15,8 @@ interface DocumentHistoryProviderProps {
   value: Doc | null
 }
 
+const START_TIME_PARAM_KEY = 'version'
+
 declare const __DEV__: boolean
 
 export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
@@ -31,24 +33,30 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     []
   )
 
+  // note: this emits sync so can never be null
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const historyController = useObservable(
-    createObservableController({
-      timeline,
-      documentId: props.documentId,
-      client
-    })
-  )! // note: this emits sync so can never be null
+    useMemo(
+      () =>
+        createObservableController({
+          timeline,
+          documentId: props.documentId,
+          client
+        }),
+      [props.documentId]
+    )
+  )!
 
   const historyDisplayed: 'from' | 'to' =
     paneRouter.params.historyDisplayed === 'from' ? 'from' : 'to'
 
   const startTime = useMemo(() => {
-    if (paneRouter.params.startTime) {
-      return timeline.parseTimeId(paneRouter.params.startTime)
+    if (paneRouter.params[START_TIME_PARAM_KEY]) {
+      return timeline.parseTimeId(paneRouter.params[START_TIME_PARAM_KEY])
     }
 
     return null
-  }, [paneRouter.params.startTime, historyController.version])
+  }, [paneRouter.params[START_TIME_PARAM_KEY], historyController.version])
 
   if (startTime) {
     timeline.setRange(startTime, null)
@@ -70,9 +78,9 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   const toggleHistory = useCallback(
     (newStartTime: string | null = startTime ? null : '-') => {
-      const {startTime: oldStartTime, ...params} = paneRouter.params
+      const {[START_TIME_PARAM_KEY]: _, ...params} = paneRouter.params
       if (newStartTime) {
-        paneRouter.setParams({startTime: newStartTime, ...params})
+        paneRouter.setParams({[START_TIME_PARAM_KEY]: newStartTime, ...params})
       } else {
         paneRouter.setParams(params)
       }
@@ -81,9 +89,13 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
   )
 
   const closeHistory = useCallback(() => {
-    const {startTime: oldStartTime, ...params} = paneRouter.params
+    const {[START_TIME_PARAM_KEY]: _, ...params} = paneRouter.params
     paneRouter.setParams(params)
   }, [paneRouter])
+
+  const toggleHistoryDisplayed = useCallback((value: 'from' | 'to') => {
+    paneRouter.setParams({...paneRouter.params, historyDisplayed: value})
+  }, [])
 
   return (
     <DocumentHistoryContext.Provider
@@ -94,7 +106,8 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
         historyController,
         historyDisplayed,
         startTime,
-        toggleHistory
+        toggleHistory,
+        toggleHistoryDisplayed
       }}
     >
       {props.children}
