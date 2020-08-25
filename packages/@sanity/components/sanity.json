@@ -1124,6 +1124,14 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "tooltip/story"
+    },
+    {
+      "implements": "part:@sanity/components/click-outside",
+      "path": "clickOutside"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "clickOutside/story"
     }
   ]
 }
