@@ -1,5 +1,5 @@
-import React from 'react'
-import {Tooltip} from 'react-tippy'
+import {Tooltip} from 'part:@sanity/components/tooltip'
+import React, {createElement} from 'react'
 import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
 import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
 import {getAnnotationForPath} from './helpers'
@@ -20,24 +20,12 @@ export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps) {
     'diff' in props ? getAnnotationForPath(props.diff, props.path || []) : props.annotation
 
   if (!annotation) {
-    return React.createElement(as, {className, style}, children)
+    return createElement(as, {className, style}, children)
   }
 
-  // Tippy is missing `tag` in property list
-  const TippyTooltip = Tooltip as any
-
   return (
-    <TippyTooltip
-      tag={as}
-      className={className}
-      style={style}
-      useContext
-      arrow
-      html={<DiffAnnotationTooltipContent annotation={annotation} />}
-      position="top"
-      theme="light"
-    >
-      {children}
-    </TippyTooltip>
+    <Tooltip content={<DiffAnnotationTooltipContent annotation={annotation} />} position="top">
+      {createElement(as, {className, style}, children)}
+    </Tooltip>
   )
 }

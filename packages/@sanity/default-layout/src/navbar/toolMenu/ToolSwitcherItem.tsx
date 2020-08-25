@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
-import {Tooltip} from '../tooltip'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import styles from './ToolSwitcherItem.css'
 
 interface Props {
@@ -16,16 +16,17 @@ interface Props {
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 function ToolSwitcherItem(props: Props) {
-  const {selected, title, icon, showIcon, showLabel} = props
+  const {selected, title, icon, showIcon, showLabel, tone} = props
   const Icon = icon || PluginIcon
 
   return (
     <Tooltip
       className={classNames(styles.root, selected && styles.selected)}
-      content={title}
+      content={<span className={styles.tooltipContent}>{title}</span>}
       disabled={TOUCH_DEVICE || showLabel}
       key={showLabel ? 'tippy' : 'tippy-disabled'}
       title={showLabel ? '' : title}
+      tone={tone}
     >
       <div className={styles.inner} tabIndex={-1}>
         <div>
@@ -39,13 +40,6 @@ function ToolSwitcherItem(props: Props) {
       </div>
     </Tooltip>
   )
-}
-
-ToolSwitcherItem.defaultProps = {
-  selected: false,
-  showIcon: true,
-  showLabel: true,
-  direction: 'horizontal'
 }
 
 export default ToolSwitcherItem

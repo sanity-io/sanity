@@ -10,14 +10,14 @@
   }
 }
 
-.tooltip {
+.popover {
   display: flex;
   max-width: 210px;
   text-align: left;
   padding: var(--medium-padding);
 }
 
-.tooltipText {
+.popoverText {
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
   margin: -3px 0 -2px var(--small-padding);
@@ -40,7 +40,7 @@
     }
   }
 
-  @nest .tooltip & {
+  @nest .popover & {
     margin: -3px 0 -3px -3px;
   }
 }

@@ -71,16 +71,24 @@
 }
 
 .manageLink {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: block;
   padding: var(--medium-padding);
   line-height: 1;
   color: inherit;
   text-decoration: none;
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   outline: none;
-  
+  white-space: nowrap;
+
+  @nest & > span {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+.manageIconContainer {
+  margin-left: 0.75em;
+
   @nest & > svg {
     color: var(--gray);
     font-size: calc(17 / 16 * 1em); /* 17px */

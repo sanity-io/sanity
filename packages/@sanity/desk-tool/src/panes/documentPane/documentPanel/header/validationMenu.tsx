@@ -2,7 +2,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import React from 'react'
-import {Tooltip} from 'react-tippy'
+import {Popover} from 'part:@sanity/components/popover'
 
 interface ValidationMenuProps {
   isOpen: boolean
@@ -24,10 +24,8 @@ export function ValidationMenu(props: ValidationMenuProps) {
   }
 
   return (
-    <Tooltip
-      arrow
-      distance={13}
-      html={
+    <Popover
+      content={
         <ValidationList
           documentType={schemaType}
           markers={validationMarkers}
@@ -37,23 +35,20 @@ export function ValidationMenu(props: ValidationMenuProps) {
           showLink
         />
       }
-      inertia={false}
-      interactive
-      onRequestClose={onClose}
       open={isOpen}
-      position="bottom"
-      theme="light"
-      trigger="click"
+      placement="bottom-end"
     >
-      <Button
-        color={validationErrorMarkers.length > 0 ? 'danger' : 'warning'}
-        kind="simple"
-        icon={ErrorOutlineIcon}
-        onClick={onToggle}
-        padding="small"
-        selected={isOpen}
-        title="Show validation issues"
-      />
-    </Tooltip>
+      <div>
+        <Button
+          color={validationErrorMarkers.length > 0 ? 'danger' : 'warning'}
+          kind="simple"
+          icon={ErrorOutlineIcon}
+          onClick={onToggle}
+          padding="small"
+          selected={isOpen}
+          title="Show validation issues"
+        />
+      </div>
+    </Popover>
   )
 }
