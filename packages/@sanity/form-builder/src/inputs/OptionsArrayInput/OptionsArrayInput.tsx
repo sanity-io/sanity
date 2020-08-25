@@ -123,7 +123,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
               }
               const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
               return (
-                <div key={option._key || index}>
+                <div className={styles.item} key={option._key || index}>
                   <Item
                     type={optionType}
                     readOnly={readOnly}

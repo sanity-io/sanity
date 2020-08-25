@@ -44,7 +44,6 @@
 .switchWrapper {
   flex-shrink: 0;
   position: relative;
-  margin-right: var(--small-padding);
   height: var(--track-height);
   width: var(--track-width);
   border-radius: var(--track-height);
