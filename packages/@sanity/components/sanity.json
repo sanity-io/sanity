@@ -1108,6 +1108,22 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "portal/story"
+    },
+    {
+      "implements": "part:@sanity/components/popover",
+      "path": "popover"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "popover/story"
+    },
+    {
+      "implements": "part:@sanity/components/tooltip",
+      "path": "tooltip"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "tooltip/story"
     }
   ]
 }

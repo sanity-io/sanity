@@ -1,5 +1,5 @@
 import React, {useMemo, useCallback} from 'react'
-import {Tooltip} from 'react-tippy'
+import {Popover} from 'part:@sanity/components/popover'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {
   HotkeyOptions,
@@ -186,26 +186,17 @@ function PortableTextSanityEditor(props: Props) {
           </div>
           {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
             <div className={styles.validationContainer}>
-              <Tooltip
-                arrow
-                duration={100}
-                html={validationList}
-                interactive
-                onRequestClose={onCloseValidationResults}
-                open={showValidationTooltip}
-                position="bottom"
-                style={{padding: 0}}
-                theme="light"
-                trigger="click"
-              >
-                <Button
-                  color="danger"
-                  icon={ErrorCircleIcon}
-                  kind="simple"
-                  onClick={onToggleValidationResults}
-                  padding="small"
-                />
-              </Tooltip>
+              <Popover content={validationList} open={showValidationTooltip} placement="bottom">
+                <div>
+                  <Button
+                    color="danger"
+                    icon={ErrorCircleIcon}
+                    kind="simple"
+                    onClick={onToggleValidationResults}
+                    padding="small"
+                  />
+                </div>
+              </Popover>
             </div>
           )}
 
