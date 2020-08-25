@@ -42,13 +42,17 @@ export default class ValidationList extends React.PureComponent<Props> {
 
     if (element) {
       element.scrollIntoView({behavior: 'smooth', inline: 'center'})
+      if (this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout)
+      }
       this.scrollTimeout = setTimeout(() => {
         onFocus(path)
+        onClose()
       }, 300)
     } else {
       onFocus(path)
+      onClose()
     }
-    onClose()
   }
 
   resolvePathTitle(path) {
