@@ -4,11 +4,14 @@ import shallowEquals from 'shallow-equals'
 import {Path, PathSegment} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
-import * as PathUtils from '@sanity/util/paths.js'
+import * as PathUtils from '@sanity/util/paths'
 import {Type, Marker, Presence} from './typedefs'
 import {Context as PresenceContext} from '@sanity/components/lib/presence'
+import {emptyArray, emptyObject} from './utils/empty'
 
-const NO_MARKERS: Marker[] = []
+const EMPTY_MARKERS: Marker[] = emptyArray()
+const EMPTY_PATH: Path = emptyArray()
+const EMPTY_PRESENCE: Presence[] = emptyArray()
 
 interface Props {
   value: any
@@ -36,7 +39,7 @@ function getDisplayName(component) {
 }
 
 function trimChildPath(path, childPath) {
-  return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : []
+  return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : EMPTY_PATH
 }
 
 export class FormBuilderInput extends React.Component<Props> {
@@ -51,9 +54,9 @@ export class FormBuilderInput extends React.Component<Props> {
     getValuePath: ENABLE_CONTEXT
   }
   static defaultProps = {
-    focusPath: [],
-    path: [],
-    markers: NO_MARKERS
+    focusPath: EMPTY_PATH,
+    path: EMPTY_PATH,
+    markers: EMPTY_MARKERS
   }
   _input: FormBuilderInput | HTMLDivElement | null
   getValuePath = () => {
@@ -201,7 +204,7 @@ export class FormBuilderInput extends React.Component<Props> {
         </div>
       )
     }
-    const rootProps = isRoot ? {isRoot} : {}
+
     let childMarkers = markers
     if (!isRoot) {
       childMarkers = markers
@@ -213,28 +216,32 @@ export class FormBuilderInput extends React.Component<Props> {
     }
     const childFocusPath = this.getChildFocusPath()
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
+
+    const childPresenceInfo =
+      readOnly || presence.length === 0
+        ? EMPTY_PRESENCE
+        : presence
+        ? presence
+            .filter(presence => {
+              return PathUtils.startsWith(path, presence.path)
+            })
+            .map(presence => ({
+              ...presence,
+              path: trimChildPath(path, presence.path)
+            }))
+        : EMPTY_PRESENCE
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
-    const childPresenceInfo = readOnly
-      ? []
-      : (presence || [])
-          .filter(presence => {
-            return PathUtils.startsWith(path, presence.path)
-          })
-          .map(presence => ({
-            ...presence,
-            path: trimChildPath(path, presence.path)
-          }))
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <PresenceContext.Provider value={childPresenceInfo}>
           <InputComponent
             {...rest}
-            {...rootProps}
             {...leafProps}
+            isRoot={isRoot}
             value={value}
             readOnly={readOnly || type.readOnly}
-            markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+            markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
             type={type}
             presence={childPresenceInfo}
             onChange={this.handleChange}
