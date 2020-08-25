@@ -1,4 +1,4 @@
-import {Diff, Path, SchemaType} from '@sanity/field/diff'
+import {Diff, Path, SchemaType, DiffComponent} from '@sanity/field/diff'
 
 export interface OperationsAPI {
   patch: {
@@ -41,6 +41,7 @@ export interface FieldChangeNode {
   path: Path
   titlePath: ChangeTitlePath
   schemaType: SchemaType
+  diffComponent?: DiffComponent
 }
 
 export type ChangeNode = GroupChangeNode | FieldChangeNode
