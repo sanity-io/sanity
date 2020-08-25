@@ -230,13 +230,15 @@ export class FormBuilderInput extends React.Component<Props> {
               path: trimChildPath(path, presence.path)
             }))
         : EMPTY_PRESENCE
+    const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
+
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <PresenceContext.Provider value={childPresenceInfo}>
           <InputComponent
             {...rest}
+            {...leafProps}
             isRoot={isRoot}
-            focusPath={isLeaf ? childFocusPath : EMPTY_PATH}
             value={value}
             readOnly={readOnly || type.readOnly}
             markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
