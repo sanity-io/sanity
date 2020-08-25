@@ -6,13 +6,18 @@ declare module 'part:@sanity/components/*' {
   export default SanityInputComponent
 }
 
+declare module 'part:@sanity/components/click-outside' {
+  // export const ClickOutside: ComponentType<{}>
+  export const ClickOutside: any
+}
+
 declare module 'part:@sanity/components/popover' {
-  // export const Portal: ComponentType<{}>
+  // export const Popover: ComponentType<{}>
   export const Popover: any
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  // export const Portal: ComponentType<{}>
+  // export const Tooltip: ComponentType<{}>
   export const Tooltip: any
 }
 
