@@ -3,7 +3,6 @@ import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
-import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {useDocumentHistory} from '../documentHistory'
 import {buildDocumentChangeList} from './buildChangeList'
 import {DiffErrorBoundary} from './diffErrorBoundary'
@@ -94,7 +93,7 @@ function ChangeHeader({change, titlePath}: {change: FieldChangeNode; titlePath: 
 }
 
 function FieldChange({change}: {change: FieldChangeNode}) {
-  const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
+  const DiffComponent = change.diffComponent || FallbackDiff
 
   return (
     <div className={styles.fieldChange}>
