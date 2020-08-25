@@ -3,6 +3,7 @@ import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
@@ -52,8 +53,16 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   }, [isContextMenuOpen])
 
   const handleVersionsSelectClick = useCallback(() => {
-    setVersionSelectOpen(!isVersionSelectOpen)
+    if (!isVersionSelectOpen) {
+      setVersionSelectOpen(true)
+    }
   }, [isVersionSelectOpen])
+
+  const handleVersionsClose = useCallback(() => {
+    setTimeout(() => {
+      setVersionSelectOpen(false)
+    }, 0)
+  }, [])
 
   const handleCloseValidationResults = useCallback(() => {
     setValidationOpen(false)
@@ -116,7 +125,15 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
         <div className={styles.versionSelectContainer}>
           <Popover
-            content={<Timeline onSelect={handleTimelineSelect} />}
+            content={
+              <ClickOutside onClickOutside={handleVersionsClose}>
+                {ref => (
+                  <div ref={ref}>
+                    <Timeline onSelect={handleTimelineSelect} />
+                  </div>
+                )}
+              </ClickOutside>
+            }
             open={isVersionSelectOpen}
             placement="bottom-end"
           >
