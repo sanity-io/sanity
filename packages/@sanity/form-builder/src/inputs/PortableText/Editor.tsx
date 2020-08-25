@@ -1,5 +1,5 @@
 import React, {useMemo, useCallback} from 'react'
-import {Popover} from 'part:@sanity/components/popover'
+// import {Popover} from 'part:@sanity/components/popover'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {
   HotkeyOptions,
@@ -15,9 +15,6 @@ import {
   OnCopyFn,
   PortableTextEditor
 } from '@sanity/portable-text-editor'
-import ErrorCircleIcon from 'part:@sanity/base/error-icon'
-import Button from 'part:@sanity/components/buttons/default'
-import ValidationList from 'part:@sanity/components/validation/list'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import styles from './PortableTextInput.css'
@@ -34,12 +31,10 @@ type Props = {
   hotkeys: HotkeyOptions
   onBlur: () => void
   onCopy?: OnCopyFn
-  onCloseValidationResults: () => void
   onFocus: (Path) => void
   onFormBuilderChange: (change: PatchEvent) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
-  onToggleValidationResults: () => void
   portableTextFeatures: PortableTextFeatures
   readOnly: boolean | null
   renderAnnotation: RenderAnnotationFunction
@@ -47,7 +42,6 @@ type Props = {
   renderBlockActions?: RenderBlockActions
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
-  showValidationTooltip: boolean
   value: PortableTextBlock[] | undefined
 }
 
@@ -60,21 +54,17 @@ function PortableTextSanityEditor(props: Props) {
     initialSelection,
     isFullscreen,
     markers,
-    onCloseValidationResults,
     onCopy,
     onFocus,
     onFormBuilderChange,
     onPaste,
     onToggleFullscreen,
-    onToggleValidationResults,
-    portableTextFeatures,
     readOnly,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
     renderChild,
     renderCustomMarkers,
-    showValidationTooltip,
     value
   } = props
 
@@ -140,23 +130,6 @@ function PortableTextSanityEditor(props: Props) {
     ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
   ].join(' ')
 
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const errors = validation.filter(marker => marker.level === 'error')
-  const warnings = validation.filter(marker => marker.level === 'warning')
-
-  const validationList = useMemo(
-    () => (
-      <ValidationList
-        markers={validation}
-        showLink
-        isOpen={showValidationTooltip}
-        documentType={portableTextFeatures.types.portableText}
-        onClose={onCloseValidationResults}
-        onFocus={onFocus}
-      />
-    ),
-    [validation, showValidationTooltip]
-  )
   const renderBlockExtras = useCallback(
     () => (
       <BlockExtrasOverlay
@@ -184,22 +157,6 @@ function PortableTextSanityEditor(props: Props) {
               readOnly={readOnly}
             />
           </div>
-          {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
-            <div className={styles.validationContainer}>
-              <Popover content={validationList} open={showValidationTooltip} placement="bottom">
-                <div>
-                  <Button
-                    color="danger"
-                    icon={ErrorCircleIcon}
-                    kind="simple"
-                    onClick={onToggleValidationResults}
-                    padding="small"
-                  />
-                </div>
-              </Popover>
-            </div>
-          )}
-
           <div className={styles.fullscreenButtonContainer}>
             <ExpandCollapseButton
               isFullscreen={isFullscreen}
@@ -228,7 +185,7 @@ function PortableTextSanityEditor(props: Props) {
         </div>
       </div>
     ),
-    [initialSelection, isFullscreen, value, markers, readOnly, errors]
+    [initialSelection, isFullscreen, value, markers, readOnly]
   )
   return editor
 }
