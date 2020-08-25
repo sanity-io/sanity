@@ -72,7 +72,7 @@ function buildObjectChangeList(
         key: pathToString(path),
         path,
         titlePath,
-        changes: changes
+        changes: reduceTitlePaths(changes, titlePath.length)
       }
     ]
   }
@@ -124,13 +124,17 @@ function buildArrayChangeList(
         key: pathToString(path),
         path,
         titlePath,
-        changes: changes.map(change => {
-          change.titlePath = change.titlePath.slice(titlePath.length)
-          return change
-        })
+        changes: reduceTitlePaths(changes, titlePath.length)
       }
     ]
   }
 
   return changes
+}
+
+function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
+  return changes.map(change => {
+    change.titlePath = change.titlePath.slice(byLength)
+    return change
+  })
 }
