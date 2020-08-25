@@ -1,13 +1,20 @@
 /* eslint-disable max-depth */
 import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {ObjectDiff, SchemaType, ObjectSchemaType, ArrayDiff} from '@sanity/field/diff'
+import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
 import {useDocumentHistory} from '../documentHistory'
-import {buildChangeList} from './buildChangeList'
+import {buildDocumentChangeList} from './buildChangeList'
 import {DiffErrorBoundary} from './diffErrorBoundary'
-import {OperationsAPI, ChangeNode, ArrayChangeNode, FieldChangeNode, GroupChangeNode} from './types'
+import {
+  OperationsAPI,
+  ChangeNode,
+  FieldChangeNode,
+  GroupChangeNode,
+  FromToIndex,
+  ChangeTitlePath
+} from './types'
 import {undoChange} from './undoChange'
 
 import styles from './changesPanel.css'
@@ -33,7 +40,8 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
   }
 
   const documentContext = {documentId, schemaType}
-  const changes = buildChangeList(schemaType, diff)
+  const changes = buildDocumentChangeList(schemaType, diff)
+
   return (
     <div className={styles.root}>
       <header className={styles.header}>
@@ -65,8 +73,7 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
   )
 }
 
-function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: number}) {
-  const DiffComponent = resolveDiffComponent<ArrayDiff>(change.schemaType) || FallbackDiff
+function ChangeHeader({change, titlePath}: {change: FieldChangeNode; titlePath: ChangeTitlePath}) {
   const {documentId, schemaType} = useContext(DocumentContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const handleUndoChange = useCallback(() => undoChange(change.diff, change.path, docOperations), [
@@ -76,59 +83,28 @@ function ArrayChange({change, level = 0}: {change: ArrayChangeNode; level: numbe
   ])
 
   return (
-    <div className={styles.arrayChange}>
-      <div className={styles.change__header}>
-        <div className={styles.change__breadcrumb}>
-          {change.titlePath.slice(level).map((titleSegment, idx) => (
-            <Fragment key={idx}>
-              {idx > 0 && <> › </>}
-              <strong>{titleSegment}</strong>
-            </Fragment>
-          ))}
-        </div>
+    <div className={styles.change__header}>
+      <ChangeBreadcrumb titlePath={titlePath} />
 
-        <button type="button" className={styles.change__revertButton} onClick={handleUndoChange}>
-          Revert changes
-        </button>
-      </div>
-
-      <DiffErrorBoundary>
-        <DiffComponent diff={change.diff} schemaType={change.schemaType} items={change.items} />
-      </DiffErrorBoundary>
+      <button type="button" className={styles.change__revertButton} onClick={handleUndoChange}>
+        Revert changes
+      </button>
     </div>
   )
 }
 
 function FieldChange({change, level = 0}: {change: FieldChangeNode; level: number}) {
   const DiffComponent = resolveDiffComponent(change.schemaType) || FallbackDiff
-  const {documentId, schemaType} = useContext(DocumentContext)
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
-  const handleUndoChange = useCallback(() => undoChange(change.diff, change.path, docOperations), [
-    documentId,
-    change.key,
-    change.diff
-  ])
 
   return (
     <div className={styles.fieldChange}>
-      <div className={styles.change__header}>
-        <div className={styles.change__breadcrumb}>
-          {change.titlePath.slice(level).map((titleSegment, idx) => (
-            <Fragment key={idx}>
-              {idx > 0 && <> › </>}
-              <strong>{titleSegment}</strong>
-            </Fragment>
-          ))}
-        </div>
+      <ChangeHeader change={change} titlePath={change.titlePath.slice(level)} />
 
-        <button type="button" className={styles.change__revertButton} onClick={handleUndoChange}>
-          Revert changes
-        </button>
+      <div className={styles.diffComponent}>
+        <DiffErrorBoundary>
+          <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+        </DiffErrorBoundary>
       </div>
-
-      <DiffErrorBoundary>
-        <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-      </DiffErrorBoundary>
     </div>
   )
 }
@@ -138,14 +114,7 @@ function GroupChange({change: group}: {change: GroupChangeNode}) {
   return (
     <div className={styles.groupChange}>
       <div className={styles.change__header}>
-        <div className={styles.change__breadcrumb}>
-          {titlePath.map((titleSegment, idx) => (
-            <Fragment key={idx}>
-              {idx > 0 && <> › </>}
-              <strong>{titleSegment}</strong>
-            </Fragment>
-          ))}
-        </div>
+        <ChangeBreadcrumb titlePath={titlePath} />
 
         <button type="button" className={styles.change__revertButton}>
           Revert changes
@@ -162,10 +131,6 @@ function GroupChange({change: group}: {change: GroupChangeNode}) {
 }
 
 function ChangeResolver({change, level = 0}: {change: ChangeNode; level: number}) {
-  if (change.type === 'array') {
-    return <ArrayChange change={change} level={level} />
-  }
-
   if (change.type === 'field') {
     return <FieldChange change={change} level={level} />
   }
@@ -175,4 +140,32 @@ function ChangeResolver({change, level = 0}: {change: ChangeNode; level: number}
   }
 
   return <div>Unknown change type: {(change as any).type}</div>
+}
+
+function ChangeBreadcrumb({titlePath}: {titlePath: ChangeTitlePath}) {
+  return (
+    <div className={styles.change__breadcrumb}>
+      {titlePath.map((titleSegment, idx) => (
+        <Fragment key={idx}>
+          {idx > 0 && typeof titleSegment === 'string' && <em> / </em>}
+          <TitleSegment segment={titleSegment} />
+        </Fragment>
+      ))}
+    </div>
+  )
+}
+
+function TitleSegment({segment}: {segment: string | FromToIndex}) {
+  if (typeof segment === 'string') {
+    return <strong>{segment}</strong>
+  }
+
+  const {hasMoved, fromIndex, toIndex} = segment
+  return (
+    <span className={styles.change__breadcrumb__index_group}>
+      {hasMoved && <span className={styles.change__breadcrumb__index}>{fromIndex}</span>}
+      {hasMoved && ' → '}
+      <span className={styles.change__breadcrumb__index}>{toIndex}</span>
+    </span>
+  )
 }
