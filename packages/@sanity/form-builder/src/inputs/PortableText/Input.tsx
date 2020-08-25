@@ -133,7 +133,8 @@ export default function PortableTextInput(props: Props) {
           focus: {path, offset: 0},
           anchor: {path, offset: 0}
         })
-        setObjectEditData({editorPath: path, formBuilderPath: path, kind})
+        // Make it go to selection first, then load  the editing interface
+        setTimeout(() => setObjectEditData({editorPath: path, formBuilderPath: path, kind}))
       }
     }
   }, [focusPath])
