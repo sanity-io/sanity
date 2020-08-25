@@ -1,8 +1,9 @@
-export function isPTSchemaType(schemaType: any) {
+import {SchemaType} from '@sanity/field/diff'
+
+export function isPTSchemaType(schemaType: SchemaType) {
   return (
-    schemaType.name === 'array' &&
+    schemaType.jsonType === 'array' &&
     schemaType.of &&
-    schemaType.of.length === 1 &&
-    schemaType.of.filter(t => t.name === 'block').length
+    schemaType.of.some(candidate => candidate.name === 'block')
   )
 }
