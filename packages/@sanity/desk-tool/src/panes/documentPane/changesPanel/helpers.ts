@@ -1,13 +1,4 @@
-import {
-  ArrayDiff,
-  ArrayItemMetadata,
-  ArraySchemaType,
-  Diff,
-  ObjectDiff,
-  ObjectField,
-  Path,
-  SchemaType
-} from '@sanity/field/diff'
+import {ArraySchemaType, Diff, ObjectDiff, Path, SchemaType} from '@sanity/field/diff'
 import {isTypedObject} from '../../../diffs/helpers'
 
 function resolveJSType(val: unknown) {
@@ -44,42 +35,41 @@ export function getDiffAtPath(diff: ObjectDiff, path: Path): Diff | null {
   return node
 }
 
-function resolveArrayOfType(
-  field: ObjectField<ArraySchemaType>,
+function resolveArrayMemberType(
+  schemaType: ArraySchemaType,
   value: unknown
 ): SchemaType | undefined {
   const typeName = resolveTypeName(value)
-  const declared = field.type.of.find(candidate => candidate.name === typeName)
+  const declared = schemaType.of.find(candidate => candidate.name === typeName)
   if (declared) {
     return declared
   }
 
-  return field.type.of.length === 1 ? field.type.of[0] : undefined
+  return schemaType.of.length === 1 ? schemaType.of[0] : undefined
 }
 
-export function getArrayDiffItemTypes(
-  diff: ArrayDiff,
-  field: ObjectField<ArraySchemaType>
-): ArrayItemMetadata[] {
-  return diff.items.map(diffItem => {
-    if (diffItem.diff.action === 'added') {
-      return {
-        toType: resolveArrayOfType(field, diffItem.diff.toValue)
-      }
-    } else if (diffItem.diff.action === 'changed') {
-      return {
-        fromType: resolveArrayOfType(field, diffItem.diff.fromValue),
-        toType: resolveArrayOfType(field, diffItem.diff.toValue)
-      }
-    } else if (diffItem.diff.action === 'removed') {
-      return {
-        fromType: resolveArrayOfType(field, diffItem.diff.fromValue)
-      }
-    }
-
-    // unchanged
+export function getArrayDiffItemType(diff: Diff, schemaType: ArraySchemaType) {
+  if (diff.action === 'added') {
     return {
-      toType: resolveArrayOfType(field, diffItem.diff.toValue)
+      toType: resolveArrayMemberType(schemaType, diff.toValue)
     }
-  })
+  }
+
+  if (diff.action === 'changed') {
+    return {
+      fromType: resolveArrayMemberType(schemaType, diff.fromValue),
+      toType: resolveArrayMemberType(schemaType, diff.toValue)
+    }
+  }
+
+  if (diff.action === 'removed') {
+    return {
+      fromType: resolveArrayMemberType(schemaType, diff.fromValue)
+    }
+  }
+
+  // unchanged
+  return {
+    toType: resolveArrayMemberType(schemaType, diff.toValue)
+  }
 }
