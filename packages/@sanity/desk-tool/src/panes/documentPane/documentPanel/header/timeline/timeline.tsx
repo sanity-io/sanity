@@ -1,12 +1,14 @@
 import React, {useCallback} from 'react'
 import {format} from 'date-fns'
 import {useDocumentHistory} from '../../../documentHistory'
+import {SelectHistoryDisplayed} from './selectDisplayed'
+import {SelectPublishedButton} from './selectPublished'
 
 import styles from './timeline.css'
 
 export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void}) {
   const {historyDisplayed, startTime, timeline, toggleHistory} = useDocumentHistory()
-  const handleTimelineSelect = useCallback(
+  const handleSelect = useCallback(
     (time: string | null) => {
       toggleHistory(time)
       if (onSelect) onSelect(time)
@@ -20,6 +22,9 @@ export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void
 
   return (
     <div className={styles.root}>
+      <SelectPublishedButton timeId={timeline.publishedTimeId()} onSelect={handleSelect} />
+      <SelectHistoryDisplayed value={historyDisplayed} />
+
       {timeline.mapChunks((chunk, idx) => {
         const isStartTime = Boolean(startTime && startTime.chunk === chunk)
         const isEndTime = Boolean(startTime && isFirst)
@@ -35,7 +40,7 @@ export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void
             isSelected={isSelected}
             isWithinSelection={isWithinSelection}
             key={chunk.id}
-            onSelect={handleTimelineSelect}
+            onSelect={handleSelect}
             startTimestamp={chunk.startTimestamp}
             timeId={timeline.createTimeId(idx, chunk)}
             title={chunk.id}
