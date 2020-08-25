@@ -68,7 +68,6 @@ export function GlobalPresence({projectId, presence, maxAvatars = MAX_AVATARS_GL
         )}
         isGlobal
         projectId={projectId}
-        trigger="click"
       >
         <div className={styles.inner} tabIndex={-1}>
           {/* Only show this on mobile */}

@@ -5,6 +5,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool, User} from '../types'
@@ -14,7 +15,6 @@ import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {GlobalPresenceStatus} from './studioStatus/GlobalPresenceStatus'
 import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
-import {Tooltip} from './tooltip'
 
 import styles from './Navbar.css'
 
@@ -91,7 +91,11 @@ function Navbar(props: Props) {
         </div>
       )}
       <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
-        <Tooltip disabled={TOUCH_DEVICE} content={<>Create new document</>}>
+        <Tooltip
+          disabled={TOUCH_DEVICE}
+          content={<span className={styles.createButtonTooltipContent}>Create new document</span>}
+          tone="navbar"
+        >
           <div className={styles.createButtonInner} tabIndex={-1}>
             <div className={styles.createButtonIcon}>
               <ComposeIcon />

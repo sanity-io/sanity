@@ -1,6 +1,6 @@
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import React from 'react'
-import {Tooltip} from 'react-tippy'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
@@ -24,13 +24,6 @@ interface Props {
   onMenuClose: () => void
 }
 
-function ConditionalTooltip(
-  props: React.ComponentProps<typeof Tooltip> & {children: any; show: boolean}
-) {
-  const {show, ...rest} = props
-  return props.show ? <Tooltip {...rest} /> : rest.children
-}
-
 // eslint-disable-next-line complexity
 function DocumentStatusBarActionsInner(props: Props) {
   const {states, showMenu} = props
@@ -40,14 +33,10 @@ function DocumentStatusBarActionsInner(props: Props) {
     <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
       {firstActionState && (
         <div className={styles.mainAction}>
-          <ConditionalTooltip
-            show={firstActionState.title || firstActionState.shortcut}
-            arrow
-            theme="light"
-            hideOnClick={false}
-            disabled={TOUCH_SUPPORT}
+          <Tooltip
+            disabled={TOUCH_SUPPORT || !(firstActionState.title || firstActionState.shortcut)}
             className={styles.tooltip}
-            html={
+            content={
               <div className={styles.tooltipBox}>
                 {firstActionState.title && (
                   <span className={styles.tooltipTitle}>{firstActionState.title}</span>
@@ -59,23 +48,28 @@ function DocumentStatusBarActionsInner(props: Props) {
                 )}
               </div>
             }
+            placement="top"
           >
-            <Button
-              className={
-                showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
-              }
-              icon={firstActionState.icon}
-              color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
-              disabled={props.disabled || Boolean(firstActionState.disabled)}
-              aria-label={firstActionState.title}
-              onClick={firstActionState.onHandle}
-            >
-              {firstActionState.label}
-            </Button>
-          </ConditionalTooltip>
+            <div>
+              <Button
+                className={
+                  showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
+                }
+                icon={firstActionState.icon}
+                color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
+                disabled={props.disabled || Boolean(firstActionState.disabled)}
+                aria-label={firstActionState.title}
+                onClick={firstActionState.onHandle}
+              >
+                {firstActionState.label}
+              </Button>
+            </div>
+          </Tooltip>
+
           {firstActionState.dialog && <ActionStateDialog dialog={firstActionState.dialog} />}
         </div>
       )}
+
       {showMenu && menuActionStates.length > 0 && (
         <ActionMenu
           actionStates={menuActionStates}

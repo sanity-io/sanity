@@ -5,8 +5,12 @@
 .userItem {
   padding: 0.5em 0.75em;
   display: flex;
-}
 
-.userItem :first-child {
-  margin-right: 5px;
+  @nest & span {
+    display: block;
+  }
+
+  @nest & span:first-child {
+    margin-right: 0.5em;
+  }
 }

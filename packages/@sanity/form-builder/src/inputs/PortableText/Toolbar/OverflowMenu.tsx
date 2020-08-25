@@ -2,7 +2,7 @@
 
 import classNames from 'classnames'
 import React, {useEffect, useRef, useState} from 'react'
-import {Tooltip} from 'react-tippy'
+import {Popover} from 'part:@sanity/components/popover'
 import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
 import Button from 'part:@sanity/components/buttons/default'
 
@@ -112,18 +112,11 @@ export function OverflowMenu(props: Props) {
         ))}
       </div>
       <div className={styles.overflowButton} hidden={!showOverflowButton}>
-        <Tooltip
-          arrow
-          className={styles.initialValueMenuTooltip}
-          distance={13}
-          theme="light"
-          trigger={'click'}
-          position="bottom"
-          interactive
+        <Popover
+          className={styles.initialValueMenuPopover}
+          placement="bottom"
           open={open}
-          onRequestClose={handleClose}
-          useContext
-          html={
+          content={
             <div className={styles.overflowMenu}>
               {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
                 const action = actions[hiddenAction.index]
@@ -143,19 +136,21 @@ export function OverflowMenu(props: Props) {
             </div>
           }
         >
-          <Button
-            aria-label="Menu"
-            aria-haspopup="menu"
-            aria-expanded={open}
-            aria-controls={'insertmenu'}
-            icon={EllipsisIcon}
-            kind="simple"
-            onClick={handleOpen}
-            padding="small"
-            selected={open}
-            title="More actions"
-          />
-        </Tooltip>
+          <div>
+            <Button
+              aria-label="Menu"
+              aria-haspopup="menu"
+              aria-expanded={open}
+              aria-controls={'insertmenu'}
+              icon={EllipsisIcon}
+              kind="simple"
+              onClick={handleOpen}
+              padding="small"
+              selected={open}
+              title="More actions"
+            />
+          </div>
+        </Popover>
       </div>
     </div>
   )

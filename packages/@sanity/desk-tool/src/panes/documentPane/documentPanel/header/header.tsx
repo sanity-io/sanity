@@ -2,12 +2,14 @@ import classNames from 'classnames'
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
+import Button from 'part:@sanity/components/buttons/default'
+import {Popover} from 'part:@sanity/components/popover'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
-import {TimelineDropdown} from './timelineDropdown'
+import {Timeline} from './timeline'
 import {ValidationMenu} from './validationMenu'
 
 import styles from './header.css'
@@ -66,6 +68,8 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     if (!props.isCollapsed && props.onCollapse) props.onCollapse()
   }, [props.isCollapsed, props.onExpand, props.onCollapse])
 
+  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [setContextMenuOpen])
+
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
       <div className={styles.mainNav}>
@@ -111,14 +115,22 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         )}
 
         <div className={styles.versionSelectContainer}>
-          <TimelineDropdown
-            isOpen={isVersionSelectOpen}
-            refNode={
-              <button onClick={handleVersionsSelectClick} type="button">
+          <Popover
+            content={<Timeline onSelect={handleTimelineSelect} />}
+            open={isVersionSelectOpen}
+            placement="bottom-end"
+          >
+            <div>
+              <Button
+                kind="simple"
+                onClick={handleVersionsSelectClick}
+                padding="small"
+                type="button"
+              >
                 Current draft &darr;
-              </button>
-            }
-          />
+              </Button>
+            </div>
+          </Popover>
         </div>
 
         <div className={styles.viewActions}>

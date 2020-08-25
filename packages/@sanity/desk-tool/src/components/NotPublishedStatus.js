@@ -1,18 +1,10 @@
 import React from 'react'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
-import {Tooltip} from 'react-tippy'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import styles from './ItemStatus.css'
 
 const NotPublishedStatus = () => (
-  <Tooltip
-    className={styles.itemStatus}
-    title="Not published"
-    arrow
-    theme="light"
-    distance="2"
-    sticky
-    size="small"
-  >
+  <Tooltip className={styles.itemStatus} content={<>Not published</>}>
     <i>
       <VisibilityOffIcon />
     </i>

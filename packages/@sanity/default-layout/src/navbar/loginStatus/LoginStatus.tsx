@@ -1,9 +1,10 @@
+import classNames from 'classnames'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
 import Menu from 'part:@sanity/components/menus/default'
+import {Popover} from 'part:@sanity/components/popover'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import styles from './LoginStatus.css'
-import {Tooltip} from 'react-tippy'
 
 interface Props {
   className: string
@@ -15,42 +16,46 @@ interface Props {
   }
 }
 
-class LoginStatus extends React.PureComponent<Props> {
+interface State {
+  isOpen: boolean
+}
+
+class LoginStatus extends React.PureComponent<Props, State> {
   static defaultProps = {
     className: undefined,
     onLogout: undefined,
     user: undefined
   }
 
-  constructor(props: Props) {
-    super(props)
-  }
+  state = {isOpen: false}
 
   handleUserMenuItemClick = item => {
-    const {onLogout} = this.props
     if (item.action === 'signOut') {
-      onLogout()
+      this.props.onLogout()
     }
+
+    this.setState({isOpen: false})
+  }
+
+  handleAvatarClick = () => {
+    if (!this.state.isOpen) {
+      this.setState({isOpen: true})
+    }
+  }
+
+  handleUserMenuClickOutside = () => {
+    this.setState({isOpen: false})
   }
 
   render() {
     const {user} = this.props
 
-    if (!user) {
-      return null
-    }
+    if (!user) return null
 
-    let className = styles.root
-    if (this.props.className) className += this.props.className
     return (
-      <div className={className}>
-        <Tooltip
-          trigger="click"
-          interactive
-          arrow
-          distance={1}
-          theme="light"
-          html={
+      <div className={classNames(styles.root, this.props.className)}>
+        <Popover
+          content={
             <div className={styles.menuWrapper}>
               <Menu
                 onAction={this.handleUserMenuItemClick}
@@ -62,12 +67,19 @@ class LoginStatus extends React.PureComponent<Props> {
                   }
                 ]}
                 origin="top-right"
-                onClickOutside={() => {}}
+                onClickOutside={this.handleUserMenuClickOutside}
               />
             </div>
           }
+          open={this.state.isOpen}
+          placement="bottom-end"
         >
-          <button className={styles.button} title="Show user menu" type="button">
+          <button
+            className={styles.button}
+            onClick={this.handleAvatarClick}
+            title="Show user menu"
+            type="button"
+          >
             <div className={styles.inner} tabIndex={-1}>
               {user.profileImage ? (
                 <img
@@ -83,7 +95,7 @@ class LoginStatus extends React.PureComponent<Props> {
               )}
             </div>
           </button>
-        </Tooltip>
+        </Popover>
       </div>
     )
   }
