@@ -119,6 +119,9 @@ export interface NumberSchemaType extends BaseSchemaType {
 
 export interface BooleanSchemaType extends BaseSchemaType {
   jsonType: 'boolean'
+  options?: {
+    layout: 'checkbox' | 'switch'
+  }
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {

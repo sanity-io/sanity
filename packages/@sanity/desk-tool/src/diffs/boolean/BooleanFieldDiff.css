@@ -1,2 +1,28 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
+  display: flex;
+  padding: var(--small-padding);
+}
+
+.arrow {
+  display: flex;
+  align-self: flex-start;
+  padding: 0 var(--small-padding);
+  flex: 0;
+  font-size: var(--font-size-large);
+}
+
+/* TODO: find less hacky solution to prevent focus styles */
+
+.input:focus-within {
+  @nest & div[class*="switchWrapper"] {
+    border-color: transparent;
+  }
+  @nest & div[class*="Checkbox_checkbox"] {
+    border-color: var(--gray-light);
+    @nest &::before {
+      content: unset;
+    }
+  }
 }
