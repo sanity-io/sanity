@@ -97,6 +97,13 @@ export type DiffProps<T extends Diff = Diff> = {
 }
 
 /**
+ * Resolvers
+ */
+export type DiffComponentResolver = (options: {
+  schemaType: SchemaType
+}) => React.ComponentType<any> | undefined | void
+
+/**
  * Schema
  */
 
