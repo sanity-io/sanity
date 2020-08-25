@@ -1,8 +1,8 @@
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import Menu from 'part:@sanity/components/menus/default'
-import React, {useMemo} from 'react'
-import {Tooltip} from 'react-tippy'
+import {Popover} from 'part:@sanity/components/popover'
+import React, {useCallback, useMemo} from 'react'
 import {MenuAction, MenuItemGroup} from '../../types'
 
 import styles from './contextMenu.css'
@@ -28,42 +28,45 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
     []
   )
 
+  const handleAction = useCallback(
+    (action: MenuAction) => {
+      onAction(action)
+      onCloseMenu()
+    },
+    [onAction, onCloseMenu]
+  )
+
   return (
-    <Tooltip
-      arrow
-      distance={13}
-      theme="light"
-      trigger="click"
-      position="bottom"
-      interactive
+    <Popover
+      placement="bottom-end"
       open={isOpen}
-      onRequestClose={onCloseMenu}
-      useContext
-      html={
+      content={
         <Menu
           id={id}
           items={items}
           groups={itemGroups}
           origin={isCollapsed ? 'top-left' : 'top-right'}
-          onAction={onAction}
+          onAction={handleAction}
           onClose={onCloseMenu}
           onClickOutside={onCloseMenu}
         />
       }
     >
-      <Button
-        aria-label="Menu"
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        aria-controls={id}
-        className={styles.menuOverflowButton}
-        icon={IconMoreVert}
-        kind="simple"
-        onClick={onToggleMenu}
-        padding="small"
-        selected={isOpen}
-        title="Show menu"
-      />
-    </Tooltip>
+      <div>
+        <Button
+          aria-label="Menu"
+          aria-haspopup="menu"
+          aria-expanded={isOpen}
+          aria-controls={id}
+          className={styles.menuOverflowButton}
+          icon={IconMoreVert}
+          kind="simple"
+          onClick={onToggleMenu}
+          padding="small"
+          selected={isOpen}
+          title="Show menu"
+        />
+      </div>
+    </Popover>
   )
 }

@@ -49,7 +49,6 @@
     "react-container-query": "^0.11.0",
     "react-datepicker": "^1.8.0",
     "react-measure": "^2.3.0",
-    "react-tippy": "1.4.0",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^13.0.0"

@@ -336,6 +336,16 @@ declare module 'part:@sanity/components/dialogs/fullscreen-message' {
   export default FullscreenMessageDialog
 }
 
+declare module 'part:@sanity/components/popover' {
+  // export const Portal: ComponentType<{}>
+  export const Popover: any
+}
+
+declare module 'part:@sanity/components/tooltip' {
+  // export const Portal: ComponentType<{}>
+  export const Tooltip: any
+}
+
 declare module 'part:@sanity/base/util/document-action-utils' {
   export const isActionEnabled: (schema: Schema, actionName: string) => boolean
 }

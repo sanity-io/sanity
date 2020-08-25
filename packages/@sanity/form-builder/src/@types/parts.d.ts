@@ -7,6 +7,11 @@ declare module 'part:@sanity/components/*' {
   export default SanityInputComponent
 }
 
+declare module 'part:@sanity/components/popover' {
+  // export const Portal: ComponentType<{}>
+  export const Popover: any
+}
+
 declare module 'part:@sanity/components/portal' {
   // export const Portal: ComponentType<{}>
   export const Portal: any
@@ -17,13 +22,6 @@ declare module 'part:@sanity/components/selects/*' {
     focus() {}
   }
   export default SanitySelectComponent
-}
-
-declare module 'part:@sanity/components/toggles/*' {
-  class SanityToggleComponent extends React.Component<any> {
-    focus() {}
-  }
-  export default SanityToggleComponent
 }
 
 declare module 'part:@sanity/components/tags/*' {
@@ -38,6 +36,18 @@ declare module 'part:@sanity/components/textareas/*' {
     focus() {}
   }
   export default SanityTextareaComponent
+}
+
+declare module 'part:@sanity/components/toggles/*' {
+  class SanityToggleComponent extends React.Component<any> {
+    focus() {}
+  }
+  export default SanityToggleComponent
+}
+
+declare module 'part:@sanity/components/tooltip' {
+  // export const Portal: ComponentType<{}>
+  export const Tooltip: any
 }
 
 declare module 'config:@sanity/form-builder'
