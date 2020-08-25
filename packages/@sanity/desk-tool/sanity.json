@@ -44,6 +44,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "components/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/diff-resolver",
+      "path": "diffs/portableTextDiffResolver"
     }
   ]
 }
