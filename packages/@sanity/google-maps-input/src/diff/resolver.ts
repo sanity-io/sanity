@@ -1,19 +1,14 @@
-import {ArraySchemaType} from '@sanity/field/diff'
-import {GeopointSchemaType} from '../types'
+import {DiffComponentResolver} from '@sanity/field/diff'
 import {GeopointFieldDiff} from './GeopointFieldDiff'
 import {GeopointArrayDiff} from './GeopointArrayDiff'
 
-export default function diffResolver({
-  schemaType
-}: {
-  schemaType: GeopointSchemaType | ArraySchemaType
-}) {
+const diffResolver: DiffComponentResolver = function diffResolver({schemaType}) {
   if (schemaType.name === 'geopoint') {
     return GeopointFieldDiff
   }
 
   if (
-    schemaType.name === 'array' &&
+    schemaType.jsonType === 'array' &&
     schemaType.of.length === 1 &&
     schemaType.of[0].name === 'geopoint'
   ) {
@@ -22,3 +17,5 @@ export default function diffResolver({
 
   return undefined
 }
+
+export default diffResolver
