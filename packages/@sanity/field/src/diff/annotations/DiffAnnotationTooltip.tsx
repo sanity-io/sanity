@@ -1,23 +1,24 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
-import {Annotation} from '../types'
 import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
+import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
+import {getAnnotationForPath} from './helpers'
 
-export interface AnnotationTooltipProps {
+interface BaseAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   style?: React.CSSProperties
   className?: string
-  annotation: Annotation
   children: React.ReactNode
 }
 
-export function DiffAnnotationTooltip({
-  annotation,
-  className,
-  as = 'div',
-  children,
-  style
-}: AnnotationTooltipProps) {
+export type DiffAnnotationTooltipProps = (AnnotationProps | AnnotatedDiffProps) &
+  BaseAnnotationProps
+
+export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps) {
+  const {className, as = 'div', children, style} = props
+  const annotation =
+    'diff' in props ? getAnnotationForPath(props.diff, props.path || []) : props.annotation
+
   if (!annotation) {
     return React.createElement(as, {className, style}, children)
   }
