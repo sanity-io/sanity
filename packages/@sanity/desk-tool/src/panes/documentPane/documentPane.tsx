@@ -1,7 +1,6 @@
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
-import {PortalProvider} from 'part:@sanity/components/portal'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {useCallback} from 'react'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {ChangesPanel} from './changesPanel'
 import {useDocumentHistory} from './documentHistory'
@@ -55,8 +54,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     value,
     views = []
   } = props
-  const portalContainerRef = useRef<HTMLDivElement | null>(null)
-  const portalRef = useRef(document.createElement('div'))
+
   const {startTime} = useDocumentHistory()
   const [showValidationTooltip, setShowValidationTooltip] = React.useState<boolean>(false)
   const paneRouter = usePaneRouter()
@@ -114,18 +112,6 @@ export function DocumentPane(props: DocumentPaneProps) {
     paneRouter.duplicateCurrent()
   }, [paneRouter])
 
-  useEffect(() => {
-    if (portalContainerRef.current) {
-      portalContainerRef.current.appendChild(portalRef.current)
-    }
-
-    return () => {
-      if (portalContainerRef.current) {
-        portalContainerRef.current.removeChild(portalRef.current)
-      }
-    }
-  }, [])
-
   return (
     <DocumentActionShortcuts
       id={documentIdRaw}
@@ -140,35 +126,31 @@ export function DocumentPane(props: DocumentPaneProps) {
       <div className={styles.documentContainer}>
         {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
 
-        <PortalProvider element={portalRef.current}>
-          <DocumentPanel
-            activeViewId={activeViewId}
-            connectionState={connectionState}
-            documentId={documentId}
-            documentType={documentType}
-            idPrefix={paneKey}
-            initialFocusPath={initialFocusPath}
-            initialValue={initialValue}
-            isClosable={isClosable}
-            isCollapsed={isCollapsed}
-            isHistoryOpen={isHistoryOpen}
-            markers={markers}
-            menuItemGroups={menuItemGroups}
-            onChange={onChange}
-            onCloseView={handleClosePane}
-            onCollapse={onCollapse}
-            onExpand={onExpand}
-            onSetActiveView={handleSetActiveView}
-            onSplitPane={handleSplitPane}
-            paneTitle={paneTitle}
-            schemaType={schemaType}
-            toggleInspect={toggleInspect}
-            value={value}
-            views={views}
-          />
-        </PortalProvider>
-
-        <div data-portal-container ref={portalContainerRef} />
+        <DocumentPanel
+          activeViewId={activeViewId}
+          connectionState={connectionState}
+          documentId={documentId}
+          documentType={documentType}
+          idPrefix={paneKey}
+          initialFocusPath={initialFocusPath}
+          initialValue={initialValue}
+          isClosable={isClosable}
+          isCollapsed={isCollapsed}
+          isHistoryOpen={isHistoryOpen}
+          markers={markers}
+          menuItemGroups={menuItemGroups}
+          onChange={onChange}
+          onCloseView={handleClosePane}
+          onCollapse={onCollapse}
+          onExpand={onExpand}
+          onSetActiveView={handleSetActiveView}
+          onSplitPane={handleSplitPane}
+          paneTitle={paneTitle}
+          schemaType={schemaType}
+          toggleInspect={toggleInspect}
+          value={value}
+          views={views}
+        />
       </div>
 
       {!isCollapsed && isHistoryOpen && (
