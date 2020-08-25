@@ -74,6 +74,7 @@ export class FormView extends React.PureComponent<Props> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleFocus = (path: any[]) => {
     this.setState({focusPath: path})
+    this.reportFocusPath(path)
   }
 
   reportFocusPath(path) {
