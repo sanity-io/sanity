@@ -172,7 +172,7 @@ function studioTask(name, port) {
 }
 
 ;[
-  ['test-studio', '3333'],
+  ['test-studio', '3334'],
   ['movies-studio', '3334'],
   ['example-studio', '3335'],
   ['blog-studio', '3336'],
