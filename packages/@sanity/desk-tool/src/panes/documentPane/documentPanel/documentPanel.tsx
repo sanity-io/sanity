@@ -1,6 +1,7 @@
 import classNames from 'classnames'
+import {PortalProvider} from 'part:@sanity/components/portal'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import React, {createElement, useCallback, useMemo, useRef} from 'react'
+import React, {createElement, useCallback, useEffect, useMemo, useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView, MenuItemGroup} from '../types'
 import {DocumentOperationResults} from './documentOperationResults'
@@ -39,6 +40,8 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
+  const portalContainerRef = useRef<HTMLDivElement | null>(null)
+  const portalRef = useRef(document.createElement('div'))
   const {displayed, historyDisplayed, startTime, toggleHistory} = useDocumentHistory()
   const {toggleInspect} = props
   const formRef = useRef<any>()
@@ -89,6 +92,18 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [formRef.current]
   )
 
+  useEffect(() => {
+    if (portalContainerRef.current) {
+      portalContainerRef.current.appendChild(portalRef.current)
+    }
+
+    return () => {
+      if (portalContainerRef.current) {
+        portalContainerRef.current.removeChild(portalRef.current)
+      }
+    }
+  }, [])
+
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
       <div className={styles.headerContainer}>
@@ -119,28 +134,34 @@ export function DocumentPanel(props: DocumentPanelProps) {
         />
       </div>
 
-      <div className={styles.documentViewerContainer}>
-        {activeView.type === 'form' && (
-          <FormView
-            id={props.documentId}
-            initialFocusPath={props.initialFocusPath}
-            initialValue={props.initialValue}
-            markers={props.markers}
-            onChange={props.onChange}
-            readOnly={historyDisplayed === 'from'}
-            ref={formRef}
-            schemaType={props.schemaType}
-            value={displayed}
-          />
-        )}
+      <PortalProvider element={portalRef.current}>
+        <div className={styles.documentViewerContainer}>
+          <div className={styles.documentScroller}>
+            {activeView.type === 'form' && (
+              <FormView
+                id={props.documentId}
+                initialFocusPath={props.initialFocusPath}
+                initialValue={props.initialValue}
+                markers={props.markers}
+                onChange={props.onChange}
+                readOnly={historyDisplayed === 'from'}
+                ref={formRef}
+                schemaType={props.schemaType}
+                value={displayed}
+              />
+            )}
 
-        {activeView.type === 'component' &&
-          createElement(activeView.component, {
-            documentId: props.documentId,
-            options: activeView.options,
-            schemaType: props.schemaType
-          })}
-      </div>
+            {activeView.type === 'component' &&
+              createElement(activeView.component, {
+                documentId: props.documentId,
+                options: activeView.options,
+                schemaType: props.schemaType
+              })}
+          </div>
+
+          <div data-portal-container ref={portalContainerRef} />
+        </div>
+      </PortalProvider>
 
       <div className={styles.footerContainer}>
         <DocumentStatusBar
