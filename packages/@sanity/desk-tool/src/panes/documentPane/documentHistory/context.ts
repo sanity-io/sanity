@@ -11,6 +11,7 @@ export interface HistoryContextInstance {
   historyDisplayed: 'from' | 'to'
   startTime: TimeRef | null
   toggleHistory: (startTimeId: string | null) => void
+  toggleHistoryDisplayed: (value: 'from' | 'to') => void
 }
 
 export const DocumentHistoryContext = createContext<HistoryContextInstance | null>(null)
