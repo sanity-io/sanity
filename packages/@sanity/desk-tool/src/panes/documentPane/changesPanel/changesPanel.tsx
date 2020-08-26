@@ -1,10 +1,10 @@
 /* eslint-disable max-depth */
-import {MenuButton} from 'part:@sanity/components/menu-button'
-import React, {useCallback, Fragment, useContext, useState} from 'react'
+
+import Button from 'part:@sanity/components/buttons/default'
+import React, {useCallback, Fragment, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
-import {Timeline} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
 import {buildDocumentChangeList} from './buildChangeList'
 import {DiffErrorBoundary} from './diffErrorBoundary'
@@ -21,7 +21,9 @@ import {undoChange} from './undoChange'
 import styles from './changesPanel.css'
 
 interface ChangesPanelProps {
+  changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
   documentId: string
+  onTimelineOpen: (mode: 'version' | 'changesSince') => void
   schemaType: ObjectSchemaType
 }
 
@@ -32,9 +34,13 @@ type DocumentContextProps = {
 
 const DocumentContext = React.createContext<DocumentContextProps>({} as any)
 
-export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
+export function ChangesPanel({
+  changesSinceSelectRef,
+  documentId,
+  onTimelineOpen,
+  schemaType
+}: ChangesPanelProps) {
   const {closeHistory, timeline} = useDocumentHistory()
-  const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
   const diff: ObjectDiff = timeline.currentDiff() as any
 
   if (diff.type !== 'object') {
@@ -44,9 +50,9 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
   const documentContext = {documentId, schemaType}
   const changes = buildDocumentChangeList(schemaType, diff)
 
-  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [
-    setVersionSelectOpen
-  ])
+  const handleMenuOpen = useCallback(() => {
+    onTimelineOpen('changesSince')
+  }, [onTimelineOpen])
 
   return (
     <div className={styles.root}>
@@ -61,15 +67,11 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
         </div>
         <div>
           <div className={styles.versionSelectContainer}>
-            <MenuButton
-              buttonProps={{kind: 'simple', padding: 'small'}}
-              menu={<Timeline onSelect={handleTimelineSelect} />}
-              open={isVersionSelectOpen}
-              placement="bottom-start"
-              setOpen={setVersionSelectOpen}
-            >
-              Since last published &darr;
-            </MenuButton>
+            <div ref={changesSinceSelectRef} style={{display: 'inline-block'}}>
+              <Button kind="simple" onClick={handleMenuOpen} padding="small">
+                Since last published &darr;
+              </Button>
+            </div>
           </div>
         </div>
       </header>

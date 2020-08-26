@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, forwardRef} from 'react'
 import {format} from 'date-fns'
 import {useDocumentHistory} from '../documentHistory'
 import {SelectHistoryDisplayed} from './selectDisplayed'
@@ -6,7 +6,12 @@ import {SelectPublishedButton} from './selectPublished'
 
 import styles from './timeline.css'
 
-export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void}) {
+interface TimelineProps {
+  onModeChange: (mode: 'version' | 'changesSince') => void
+  onSelect?: (timeId: string | null) => void
+}
+
+export const Timeline = forwardRef(({onModeChange, onSelect}: TimelineProps, ref: any) => {
   const {historyDisplayed, startTime, timeline, toggleHistory} = useDocumentHistory()
   const handleSelect = useCallback(
     (time: string | null) => {
@@ -20,8 +25,21 @@ export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void
   let isFirst = true
   let isSelected = false
 
+  const handleSetVersionMode = useCallback(() => onModeChange('version'), [onModeChange])
+  const handleSetChangesSinceMode = useCallback(() => onModeChange('changesSince'), [onModeChange])
+
   return (
-    <div className={styles.root}>
+    <div className={styles.root} ref={ref}>
+      <div style={{display: 'none'}}>
+        <button onClick={handleSetVersionMode} type="button">
+          version
+        </button>
+        <button onClick={handleSetChangesSinceMode} type="button">
+          {' '}
+          changes since
+        </button>
+      </div>
+
       <SelectPublishedButton timeId={timeline.publishedTimeId()} onSelect={handleSelect} />
       <SelectHistoryDisplayed value={historyDisplayed} />
 
@@ -58,7 +76,9 @@ export function Timeline({onSelect}: {onSelect?: (timeId: string | null) => void
       })}
     </div>
   )
-}
+})
+
+Timeline.displayName = 'Timeline'
 
 function TimelineItem(props: {
   isSelected: boolean
