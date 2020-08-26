@@ -7,6 +7,7 @@ import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
+import {useDeskToolFeatures} from '../../../../features'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
@@ -38,7 +39,9 @@ export interface DocumentPanelHeaderProps {
 const isActionButton = (item: MenuAction) => (item as any).showAsAction
 const isMenuButton = negate(isActionButton)
 
+// eslint-disable-next-line complexity
 export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
+  const features = useDeskToolFeatures()
   const contextMenuItems = props.menuItems.filter(isMenuButton)
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
@@ -112,7 +115,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
       </div>
 
       <div className={styles.viewNav}>
-        {props.views.length > 1 && (
+        {features.splitViews && props.views.length > 1 && (
           <div className={styles.tabsContainer}>
             <DocumentHeaderTabs
               activeViewId={props.activeViewId}
@@ -150,23 +153,25 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           </Popover>
         </div>
 
-        <div className={styles.viewActions}>
-          {props.onSplitPane && props.views.length > 1 && (
-            <button type="button" onClick={props.onSplitPane} title="Split pane right">
-              <div tabIndex={-1}>
-                <SplitHorizontalIcon />
-              </div>
-            </button>
-          )}
+        {features.splitViews && (
+          <div className={styles.viewActions}>
+            {props.onSplitPane && props.views.length > 1 && (
+              <button type="button" onClick={props.onSplitPane} title="Split pane right">
+                <div tabIndex={-1}>
+                  <SplitHorizontalIcon />
+                </div>
+              </button>
+            )}
 
-          {props.onSplitPane && props.isClosable && (
-            <button type="button" onClick={props.onCloseView} title="Close pane">
-              <div tabIndex={-1}>
-                <CloseIcon />
-              </div>
-            </button>
-          )}
-        </div>
+            {props.onSplitPane && props.isClosable && (
+              <button type="button" onClick={props.onCloseView} title="Close pane">
+                <div tabIndex={-1}>
+                  <CloseIcon />
+                </div>
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
