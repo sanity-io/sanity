@@ -8,12 +8,14 @@ import PublicIcon from 'part:@sanity/base/public-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
+import {DeskToolFeatures} from '../../../../features'
 import {Doc, MenuAction} from '../../types'
 
 import styles from './menuItems.css'
 
 interface Params {
   canShowHistoryList?: boolean
+  features: DeskToolFeatures
   isHistoryOpen?: boolean
   isHistoryEnabled?: boolean
   isLiveEditEnabled?: boolean
@@ -22,7 +24,14 @@ interface Params {
 }
 
 const getHistoryMenuItem = (params: Params): MenuAction | null => {
-  const {value, isLiveEditEnabled, isHistoryEnabled, isHistoryOpen, canShowHistoryList} = params
+  const {
+    features,
+    value,
+    isLiveEditEnabled,
+    isHistoryEnabled,
+    isHistoryOpen,
+    canShowHistoryList
+  } = params
 
   if (isLiveEditEnabled || !canShowHistoryList) {
     return null
@@ -33,7 +42,7 @@ const getHistoryMenuItem = (params: Params): MenuAction | null => {
       action: 'browseHistory',
       title: 'Browse history',
       icon: HistoryIcon,
-      isDisabled: isHistoryOpen || !value
+      isDisabled: !features.reviewChanges || isHistoryOpen || !value
     }
   }
 

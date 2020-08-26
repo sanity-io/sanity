@@ -2,6 +2,7 @@ import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import React, {useCallback} from 'react'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
+import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
 import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel, getProductionPreviewItem} from './documentPanel'
@@ -55,6 +56,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     views = []
   } = props
 
+  const features = useDeskToolFeatures()
   const {startTime} = useDocumentHistory()
   const [showValidationTooltip, setShowValidationTooltip] = React.useState<boolean>(false)
   const paneRouter = usePaneRouter()
@@ -65,26 +67,30 @@ export function DocumentPane(props: DocumentPaneProps) {
   const isInspectOpen = paneRouter.params.inspect === 'on'
   const isHistoryOpen = Boolean(startTime)
 
-  const handleKeyUp = useCallback((event: any) => {
-    if (event.key === 'Escape' && showValidationTooltip) {
-      setShowValidationTooltip(false)
-    }
-
-    if (isInspectHotkey(event)) {
-      toggleInspect()
-    }
-
-    if (isPreviewHotkey(event)) {
-      const item = getProductionPreviewItem({
-        value,
-        rev: null
-      })
-
-      if (item && item.url) {
-        window.open(item.url)
+  const handleKeyUp = useCallback(
+    (event: any) => {
+      if (event.key === 'Escape' && showValidationTooltip) {
+        setShowValidationTooltip(false)
       }
-    }
-  }, [])
+
+      if (isInspectHotkey(event)) {
+        toggleInspect()
+      }
+
+      if (isPreviewHotkey(event)) {
+        const item = getProductionPreviewItem({
+          features,
+          value,
+          rev: null
+        })
+
+        if (item && item.url) {
+          window.open(item.url)
+        }
+      }
+    },
+    [features]
+  )
 
   const toggleInspect = useCallback(
     (toggle = !isInspectOpen) => {
@@ -153,7 +159,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         />
       </div>
 
-      {!isCollapsed && isHistoryOpen && (
+      {features.reviewChanges && !isCollapsed && isHistoryOpen && (
         <div className={styles.changesContainer}>
           <ChangesPanel documentId={documentId} schemaType={schemaType} />
         </div>
