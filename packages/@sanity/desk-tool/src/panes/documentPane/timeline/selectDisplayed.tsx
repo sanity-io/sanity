@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {useDocumentHistory} from '../../../documentHistory'
+import {useDocumentHistory} from '../documentHistory'
 
 export function SelectHistoryDisplayed({
   value
