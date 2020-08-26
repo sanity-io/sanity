@@ -33,10 +33,12 @@ interface DocumentPanelProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
+  onTimelineOpen: (mode: 'version' | 'changesSince') => void
   paneTitle?: string
   schemaType: any
   toggleInspect: (val: boolean) => void
   value: any
+  versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
 }
 
@@ -124,6 +126,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           onExpand={props.onExpand}
           onSetActiveView={props.onSetActiveView}
           onSplitPane={props.onSplitPane}
+          onTimelineOpen={props.onTimelineOpen}
           schemaType={props.schemaType}
           setFocusPath={setFocusPath}
           title={
@@ -133,6 +136,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
               value={props.value}
             />
           }
+          versionSelectRef={props.versionSelectRef}
           views={props.views}
         />
       </div>
