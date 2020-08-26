@@ -1,0 +1,35 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cardHeader {
+  padding: var(--medium-padding);
+}
+
+.cardTitle {
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  text-align: center;
+}
+
+.cardContent {
+  padding: var(--medium-padding);
+}
+
+.stack {
+  max-width: 720px;
+  margin: 0 auto;
+
+  @nest & pre {
+    border: 1px solid #ccc;
+    padding: var(--medium-padding);
+    background: var(--pre-bg);
+    color: var(--pre-color);
+    font-family: var(--font-family-monospace);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    overflow: auto;
+  }
+}

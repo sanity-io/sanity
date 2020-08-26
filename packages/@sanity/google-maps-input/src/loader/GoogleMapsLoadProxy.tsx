@@ -1,53 +1,49 @@
 import React from 'react'
-import {loadGoogleMapsApi} from './loadGoogleMapsApi'
+import {Subscription} from 'rxjs'
+import {loadGoogleMapsApi, GoogleLoadState} from './loadGoogleMapsApi'
+import {LoadError} from './LoadError'
 
 interface LoadProps {
   children: (api: typeof window.google.maps) => React.ReactElement
 }
 
-interface LoadState {
-  loading: boolean
-  error?: Error
-  api?: typeof window.google.maps
-}
+export class GoogleMapsLoadProxy extends React.Component<LoadProps, GoogleLoadState> {
+  loadSubscription: Subscription | undefined
 
-export class GoogleMapsLoadProxy extends React.Component<LoadProps, LoadState> {
   constructor(props: LoadProps) {
     super(props)
 
-    const api =
-      typeof window !== 'undefined' && window.google && window.google.maps
-        ? window.google.maps
-        : undefined
+    this.state = {loadState: 'loading'}
 
-    this.state = {loading: !api, api}
+    let sync = true
+    this.loadSubscription = loadGoogleMapsApi().subscribe(loadState => {
+      if (sync) {
+        this.state = loadState
+      } else {
+        this.setState(loadState)
+      }
+    })
+    sync = false
   }
 
-  componentDidMount() {
-    if (this.state.api) {
-      // Already loaded
-      return
+  componentWillUnmount() {
+    if (this.loadSubscription) {
+      this.loadSubscription.unsubscribe()
     }
-
-    loadGoogleMapsApi()
-      .then(api => this.setState({loading: false, api}))
-      .catch(error => this.setState({error}))
   }
 
   render() {
-    const {error, loading, api} = this.state
-    if (error) {
-      return <div>Load error: {error.stack}</div>
+    switch (this.state.loadState) {
+      case 'loadError':
+        return <LoadError error={this.state.error} isAuthError={false} />
+      case 'authError':
+        return <LoadError isAuthError />
+      case 'loading':
+        return <div>Loading Google Maps API</div>
+      case 'loaded':
+        return this.props.children(this.state.api) || null
+      default:
+        return null
     }
-
-    if (loading) {
-      return <div>Loading Google Maps API</div>
-    }
-
-    if (api) {
-      return this.props.children(api) || null
-    }
-
-    return null
   }
 }
