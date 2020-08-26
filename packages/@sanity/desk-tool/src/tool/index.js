@@ -7,7 +7,8 @@ import {route, useRouterState} from 'part:@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from '../utils/parsePanesSegment'
 import IntentResolver from '../components/IntentResolver'
 import {EMPTY_PARAMS} from '../constants'
-import DeskTool from './DeskTool'
+import {DeskToolFeaturesProvider} from '../features'
+import DeskToolRoot from './DeskTool'
 
 function toState(pathSegment) {
   return parsePanesSegment(decodeURIComponent(pathSegment))
@@ -48,7 +49,7 @@ function DeskToolPaneStateSyncer(props) {
   return intent ? (
     <IntentResolver intent={intent} params={params} payload={payload} />
   ) : (
-    <DeskTool {...props} onPaneChange={setActivePanes} />
+    <DeskToolRoot {...props} onPaneChange={setActivePanes} />
   )
 }
 
@@ -102,6 +103,14 @@ function MasterDetailIcon() {
   )
 }
 
+function DeskTool() {
+  return (
+    <DeskToolFeaturesProvider>
+      <DeskToolPaneStateSyncer />
+    </DeskToolFeaturesProvider>
+  )
+}
+
 export default {
   router: route('/', [
     // "Asynchronous intent resolving" route
@@ -136,5 +145,5 @@ export default {
   title: 'Desk',
   name: 'desk',
   icon: MasterDetailIcon,
-  component: DeskToolPaneStateSyncer
+  component: DeskTool
 }
