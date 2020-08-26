@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {negate} from 'lodash'
 import classNames from 'classnames'
+import {MenuButton} from 'part:@sanity/components/menu-button'
 import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
-import {Popover} from 'part:@sanity/components/popover'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import S from '@sanity/base/structure-builder'
@@ -123,17 +123,30 @@ class Pane extends React.PureComponent {
   }
 
   // Triggered by clicking "outside" of the menu when open, or after triggering action
-  handleCloseMenu = () => {
+  handleCloseContextMenu = () => {
     this.setState({isMenuOpen: false})
   }
 
   // Triggered by pane menu button
-  handleToggleMenu = () => {
-    this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
+  // handleToggleMenu = () => {
+  //   this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
+  // }
+
+  setContextMenuOpen = val => {
+    this.setState({isMenuOpen: val})
   }
 
-  handleToggleInitialValueTemplateMenu = () => {
-    this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
+  setInitialValueMenuOpen = val => {
+    this.setState({isInitialValueMenuOpen: val})
+    // this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
+  }
+
+  // handleToggleInitialValueTemplateMenu = () => {
+  //   this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
+  // }
+
+  handleCloseTemplateMenu = () => {
+    this.setState({isInitialValueMenuOpen: false})
   }
 
   handleRootClick = event => {
@@ -151,7 +164,9 @@ class Pane extends React.PureComponent {
   }
 
   handleMenuAction = item => {
-    this.handleCloseMenu()
+    this.setContextMenuOpen(false)
+
+    // this.handleCloseContextMenu()
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
@@ -190,7 +205,12 @@ class Pane extends React.PureComponent {
     const params = item.intent.params
     const Icon = item.icon
     return (
-      <IntentLink className={styles.initialValueTemplateMenuItem} intent="create" params={params}>
+      <IntentLink
+        className={styles.initialValueTemplateMenuItem}
+        intent="create"
+        onClick={this.handleCloseTemplateMenu}
+        params={params}
+      >
         <div>
           <div>{item.title}</div>
           <div className={styles.initialValueTemplateSubtitle}>{params.type}</div>
@@ -223,31 +243,30 @@ class Pane extends React.PureComponent {
             onClick={this.handleMenuAction.bind(this, action)}
           />
         )}
+
         {action.action === 'toggleTemplateSelectionMenu' && (
-          <Popover
-            placement="bottom"
-            open={this.state.isInitialValueMenuOpen}
-            content={
+          <MenuButton
+            buttonProps={{
+              'aria-label': 'Menu',
+              'aria-haspopup': 'menu',
+              'aria-expanded': this.state.isInitialValueMenuOpen,
+              'aria-controls': this.templateMenuId,
+              icon: Icon,
+              kind: 'simple',
+              // onClick: this.handleToggleInitialValueTemplateMenu,
+              padding: 'small',
+              selected: this.state.isInitialValueMenuOpen,
+              title: 'Create new document'
+            }}
+            menu={
               <div className={styles.initialValueTemplateMenu}>
                 {items.map(item => this.renderActionMenuItem(item))}
               </div>
             }
-          >
-            <div>
-              <Button
-                aria-label="Menu"
-                aria-haspopup="menu"
-                aria-expanded={this.state.isInitialValueMenuOpen}
-                aria-controls={this.templateMenuId}
-                icon={Icon}
-                kind="simple"
-                onClick={this.handleToggleInitialValueTemplateMenu}
-                padding="small"
-                selected={this.state.isInitialValueMenuOpen}
-                title="Create new document"
-              />
-            </div>
-          </Popover>
+            open={this.state.isInitialValueMenuOpen}
+            placement="bottom-end"
+            setOpen={this.setInitialValueMenuOpen}
+          />
         )}
       </div>
     )
@@ -277,37 +296,33 @@ class Pane extends React.PureComponent {
 
     return (
       <div className={styles.headerToolContainer}>
-        <Popover
-          placement="bottom-end"
-          open={isMenuOpen}
-          content={
+        <MenuButton
+          buttonProps={{
+            'aria-label': 'Menu',
+            'aria-haspopup': 'menu',
+            'aria-expanded': isMenuOpen,
+            'aria-controls': this.paneMenuId,
+            className: styles.menuOverflowButton,
+            icon: IconMoreVert,
+            kind: 'simple',
+            padding: 'small',
+            selected: isMenuOpen,
+            title: 'Show menu'
+          }}
+          menu={
             <Menu
               id={this.paneMenuId}
               items={items}
               groups={menuItemGroups}
               origin={isCollapsed ? 'top-left' : 'top-right'}
               onAction={this.handleMenuAction}
-              onClose={this.handleCloseMenu}
-              onClickOutside={this.handleCloseMenu}
+              onClose={this.handleCloseContextMenu}
             />
           }
-        >
-          <div>
-            <Button
-              aria-label="Menu"
-              aria-haspopup="menu"
-              aria-expanded={isMenuOpen}
-              aria-controls={this.paneMenuId}
-              className={styles.menuOverflowButton}
-              icon={IconMoreVert}
-              kind="simple"
-              onClick={this.handleToggleMenu}
-              padding="small"
-              selected={isMenuOpen}
-              title="Show menu"
-            />
-          </div>
-        </Popover>
+          open={isMenuOpen}
+          placement="bottom-end"
+          setOpen={this.setContextMenuOpen}
+        />
       </div>
     )
   }
