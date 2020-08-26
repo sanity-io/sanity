@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import {format} from 'date-fns'
-import {useDocumentHistory} from '../../../documentHistory'
+import {useDocumentHistory} from '../documentHistory'
 import {SelectHistoryDisplayed} from './selectDisplayed'
 import {SelectPublishedButton} from './selectPublished'
 
