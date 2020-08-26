@@ -37,6 +37,10 @@ class CookieTest extends PureComponent {
     super(props)
     this.state = {isLoading: true}
     checkCookies().then(isCookieError => {
+      if (!this._isMounted) {
+        return
+      }
+
       this.setState({
         isCookieError: !isCookieError,
         isLoading: false
@@ -47,12 +51,14 @@ class CookieTest extends PureComponent {
   }
 
   componentDidMount() {
+    this._isMounted = true
     this.popupUrl = `${hostname}/auth/views/cookie/interact?redirectTo=${encodeURIComponent(
       window.location.toString()
     )}`
   }
 
   componentWillUnmount() {
+    this._isMounted = false
     if (this.popupSubscription) {
       this.popupSubscription.unsubscribe()
     }
