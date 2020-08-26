@@ -7,12 +7,25 @@ import {getRefValue} from '../hooks'
 import styles from './FileFieldDiff.css'
 import FilePreview from './FilePreview'
 
+function getSizeDiff(prev, next) {
+  if (!prev || !next) {
+    return 0
+  }
+  const increase = next - prev
+  const pct = Math.round((increase / prev) * 100)
+  return pct
+}
+
 export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
-  const prev = getRefValue(fromAsset?._ref)
-  const next = getRefValue(toAsset?._ref)
+  const prev: any = getRefValue(fromAsset?._ref)
+  const next: any = getRefValue(toAsset?._ref)
+
+  // Size in MB TODO: improve
+  const prevSize = prev?.size && Math.round(prev.size / 1024)
+  const nextSize = next?.size && Math.round(next.size / 1024)
 
   const changedFields = Object.keys(fields)
     .map(field => ({
@@ -45,7 +58,11 @@ export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => 
           )}
           {next && (
             <DiffAnnotation diff={diff} path="asset._ref">
-              <FilePreview value={next} action={didAssetChange ? 'added' : 'changed'} />
+              <FilePreview
+                value={next}
+                action={didAssetChange ? 'added' : 'changed'}
+                pctDiff={getSizeDiff(prevSize, nextSize)}
+              />
             </DiffAnnotation>
           )}
         </div>
