@@ -2,15 +2,15 @@ import React from 'react'
 import config from 'config:@sanity/google-maps-input'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import FormField from 'part:@sanity/components/formfields/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
-import styles from './GeopointInput.css'
 import {GeopointSelect} from './GeopointSelect'
+import styles from './GeopointInput.css'
 
 const getStaticImageUrl = value => {
   const loc = `${value.lat},${value.lng}`
@@ -32,9 +32,17 @@ const getStaticImageUrl = value => {
 
 interface InputProps {
   markers: unknown[]
+  level?: number
   value?: Geopoint
   type: GeopointSchemaType
+  readOnly?: boolean
+  onFocus: (path: unknown[]) => void
+  onBlur: () => void
   onChange: (patchEvent: unknown) => void
+}
+
+interface Focusable {
+  focus: () => void
 }
 
 interface InputState {
@@ -46,6 +54,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     markers: []
   }
 
+  editButton: Focusable | undefined
+
   constructor(props) {
     super(props)
 
@@ -54,8 +64,28 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
   }
 
+  setEditButton = (el: Focusable) => {
+    this.editButton = el
+  }
+
+  focus() {
+    if (this.editButton) {
+      this.editButton.focus()
+    }
+  }
+
   handleToggleModal = () => {
-    this.setState(prevState => ({modalOpen: !prevState.modalOpen}))
+    const {onFocus, onBlur} = this.props
+    this.setState(
+      prevState => ({modalOpen: !prevState.modalOpen}),
+      () => {
+        if (this.state.modalOpen) {
+          onFocus([])
+        } else {
+          onBlur()
+        }
+      }
+    )
   }
 
   handleCloseModal = () => {
@@ -81,7 +111,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   render() {
-    const {value, type, markers} = this.props
+    const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
+    const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
       return (
@@ -106,13 +137,16 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
 
     return (
-      <Fieldset
-        legend={type.title}
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
         description={type.description}
         className={styles.root}
-        markers={markers}
+        onFocus={onFocus}
+        onBlur={onBlur}
       >
-        <div>
+        <>
           {value && (
             <div className={styles.map}>
               <img
@@ -125,7 +159,12 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
           <div className={styles.functions}>
             <ButtonGrid>
-              <Button inverted onClick={this.handleToggleModal} icon={value && EditIcon}>
+              <Button
+                inverted
+                onClick={this.handleToggleModal}
+                icon={value && EditIcon}
+                ref={this.setEditButton}
+              >
                 {value ? 'Edit' : 'Set location'}
               </Button>
 
@@ -137,13 +176,13 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             </ButtonGrid>
           </div>
 
-          {this.state.modalOpen && (
+          {modalOpen && (
             <Dialog
               title="Place on map"
               onClose={this.handleCloseModal}
               onCloseClick={this.handleCloseModal}
               message="Select location by dragging the marker or search for a place"
-              isOpen={this.state.modalOpen}
+              isOpen={modalOpen}
             >
               <div className={styles.dialogInner}>
                 <GoogleMapsLoadProxy>
@@ -151,7 +190,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                     <GeopointSelect
                       api={api}
                       value={value}
-                      onChange={this.handleChange}
+                      onChange={readOnly ? undefined : this.handleChange}
                       defaultLocation={config.defaultLocation}
                       defaultZoom={config.defaultZoom}
                     />
@@ -160,8 +199,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
               </div>
             </Dialog>
           )}
-        </div>
-      </Fieldset>
+        </>
+      </FormField>
     )
   }
 }
