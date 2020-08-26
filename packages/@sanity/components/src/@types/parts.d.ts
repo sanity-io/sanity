@@ -11,6 +11,17 @@ declare module 'part:@sanity/components/click-outside' {
   export const ClickOutside: any
 }
 
+declare module 'part:@sanity/components/menu-button' {
+  export const MenuButton: ComponentType<{
+    // @todo: typings
+    buttonProps?: any
+    menu?: React.ReactNode
+    placement?: string
+    open?: boolean
+    setOpen?: (val: boolean) => void
+  }>
+}
+
 declare module 'part:@sanity/components/popover' {
   // export const Popover: ComponentType<{}>
   export const Popover: any
