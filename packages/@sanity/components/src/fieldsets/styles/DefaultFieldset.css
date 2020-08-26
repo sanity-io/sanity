@@ -125,7 +125,7 @@
   vertical-align: middle;
   transition: transform 0.1s linear;
   transform: rotate(-90deg);
-  margin-top: -0.1em;
+  margin-top: 1px;
 
   @nest &.isOpen {
     transform: rotate(0);
