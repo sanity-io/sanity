@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {LatLng} from '../types'
+import {latLngAreEqual} from './util'
 
 interface Props {
   api: typeof window.google.maps
@@ -12,7 +13,7 @@ interface Props {
   onClick?: (event: google.maps.MouseEvent) => void
 }
 
-export class Arrow extends React.Component<Props> {
+export class Arrow extends React.PureComponent<Props> {
   line: google.maps.Polyline | undefined
 
   eventHandlers: {
@@ -49,7 +50,7 @@ export class Arrow extends React.Component<Props> {
     }
 
     const {from, to, map} = this.props
-    if (prevProps.from !== from || prevProps.to !== to) {
+    if (!latLngAreEqual(prevProps.from, from) || !latLngAreEqual(prevProps.to, to)) {
       this.line.setPath([from, to])
     }
 
