@@ -1,11 +1,14 @@
+/* eslint-disable react/require-default-props */
+
 import classNames from 'classnames'
-import React, {cloneElement, useState} from 'react'
+import React, {cloneElement, useState, useEffect} from 'react'
 import {usePopper} from 'react-popper'
 import {PopoverArrow} from './arrow'
 
 import styles from './popover.css'
 
 interface PopoverProps {
+  targetElement?: HTMLElement | null
   children: JSX.Element
   className?: string
   content: React.ReactNode
@@ -27,8 +30,8 @@ interface PopoverProps {
   tone?: 'navbar'
 }
 
-export function Popover(props: PopoverProps) {
-  const {className, disabled, placement = 'bottom'} = props
+export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
+  const {className, disabled, placement = 'bottom', style, targetElement, ...restProps} = props
   const [referenceElement, setReferenceElement] = useState(null)
   const [popperElement, setPopperElement] = useState(null)
   const {styles: popperStyles, attributes} = usePopper(referenceElement, popperElement, {
@@ -55,15 +58,27 @@ export function Popover(props: PopoverProps) {
     return props.children
   }
 
+  useEffect(() => {
+    if (targetElement) {
+      setReferenceElement(targetElement)
+    }
+  }, [targetElement])
+
+  const children =
+    targetElement === undefined
+      ? cloneElement(props.children, {ref: setReferenceElement})
+      : props.children
+
   return (
     <>
-      {cloneElement(props.children, {ref: setReferenceElement})}
+      {children}
 
       {props.open && (
         <div
+          {...restProps}
           className={classNames(styles.root, className)}
           ref={setPopperElement as any}
-          style={popperStyles.popper}
+          style={{...popperStyles.popper, ...(style || {})}}
           {...attributes.popper}
         >
           <div className={styles.card}>{props.content}</div>
