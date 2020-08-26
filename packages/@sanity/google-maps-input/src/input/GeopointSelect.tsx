@@ -15,7 +15,7 @@ interface SelectProps {
   defaultZoom?: number
 }
 
-export class GeopointSelect extends React.Component<SelectProps> {
+export class GeopointSelect extends React.PureComponent<SelectProps> {
   static defaultProps = {
     defaultZoom: 8,
     defaultLocation: {lng: 10.74609, lat: 59.91273}
