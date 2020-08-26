@@ -50,3 +50,19 @@
     text-decoration: line-through;
   }
 }
+
+.sizeDiff {
+  font-size: 13px;
+  padding: 1px 4px;
+  background: var(--component-bg);
+  border-radius: 2px;
+  margin: 0 var(--small-padding);
+
+  @nest &[data-number="positive"] {
+    color: var(--state-success-color);
+  }
+
+  @nest &[data-number="negative"] {
+    color: var(--state-danger-color);
+  }
+}
