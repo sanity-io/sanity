@@ -22,7 +22,7 @@ export function diffObject<A>(
       fields[key] = fieldDiff
       if (fieldDiff.isChanged) isChanged = true
     } else {
-      fields[key] = removedInput(fromInput, undefined, options)
+      fields[key] = removedInput(fromField, undefined, options)
       isChanged = true
     }
   }
