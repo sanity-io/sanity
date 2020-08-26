@@ -49,7 +49,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
       {showImageDiff && (
         <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
           {prev && (
-            <DiffAnnotation diff={diff} path="asset._ref">
+            <DiffAnnotation as="div" diff={diff} path="asset._ref">
               <ImagePreview
                 value={prev}
                 action={didAssetChange ? 'removed' : 'changed'}
@@ -64,7 +64,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
             </div>
           )}
           {next && (
-            <DiffAnnotation diff={diff} path="asset._ref">
+            <DiffAnnotation as="div" diff={diff} path="asset._ref">
               <ImagePreview
                 value={next}
                 action={didAssetChange ? 'added' : 'changed'}
