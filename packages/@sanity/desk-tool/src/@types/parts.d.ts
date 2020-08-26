@@ -1,6 +1,17 @@
 declare module 'part:*'
 declare module 'all:part:*'
 
+declare module 'part:@sanity/components/menu-button' {
+  export const MenuButton: ComponentType<{
+    // @todo: typings
+    buttonProps?: any
+    menu?: React.ReactNode
+    placement?: string
+    open?: boolean
+    setOpen?: (val: boolean) => void
+  }>
+}
+
 declare module 'all:part:@sanity/base/diff-resolver' {
   import {ComponentType} from 'react'
 

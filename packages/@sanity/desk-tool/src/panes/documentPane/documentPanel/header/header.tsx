@@ -2,9 +2,7 @@ import classNames from 'classnames'
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
-import Button from 'part:@sanity/components/buttons/default'
-import {ClickOutside} from 'part:@sanity/components/click-outside'
-import {Popover} from 'part:@sanity/components/popover'
+import {MenuButton} from 'part:@sanity/components/menu-button'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
@@ -47,26 +45,6 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
 
-  const handleCloseContextMenu = useCallback(() => {
-    setContextMenuOpen(false)
-  }, [])
-
-  const handleToggleContextMenu = useCallback(() => {
-    setContextMenuOpen(!isContextMenuOpen)
-  }, [isContextMenuOpen])
-
-  const handleVersionsSelectClick = useCallback(() => {
-    if (!isVersionSelectOpen) {
-      setVersionSelectOpen(true)
-    }
-  }, [isVersionSelectOpen])
-
-  const handleVersionsClose = useCallback(() => {
-    setTimeout(() => {
-      setVersionSelectOpen(false)
-    }, 0)
-  }, [])
-
   const handleCloseValidationResults = useCallback(() => {
     setValidationOpen(false)
   }, [])
@@ -104,12 +82,11 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         <div className={styles.contextMenuContainer}>
           <DocumentPanelContextMenu
             isCollapsed={props.isCollapsed}
-            isOpen={isContextMenuOpen}
             itemGroups={props.menuItemGroups}
             items={contextMenuItems}
             onAction={props.onContextMenuAction}
-            onCloseMenu={handleCloseContextMenu}
-            onToggleMenu={handleToggleContextMenu}
+            open={isContextMenuOpen}
+            setOpen={setContextMenuOpen}
           />
         </div>
       </div>
@@ -127,30 +104,15 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         )}
 
         <div className={styles.versionSelectContainer}>
-          <Popover
-            content={
-              <ClickOutside onClickOutside={handleVersionsClose}>
-                {ref => (
-                  <div ref={ref}>
-                    <Timeline onSelect={handleTimelineSelect} />
-                  </div>
-                )}
-              </ClickOutside>
-            }
+          <MenuButton
+            buttonProps={{kind: 'simple', padding: 'small'}}
+            menu={<Timeline onSelect={handleTimelineSelect} />}
             open={isVersionSelectOpen}
             placement="bottom-end"
+            setOpen={setVersionSelectOpen}
           >
-            <div>
-              <Button
-                kind="simple"
-                onClick={handleVersionsSelectClick}
-                padding="small"
-                type="button"
-              >
-                Current draft &darr;
-              </Button>
-            </div>
-          </Popover>
+            Current draft &darr;
+          </MenuButton>
         </div>
 
         {features.splitViews && (
