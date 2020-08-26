@@ -41,7 +41,7 @@ interface InputState {
   modalOpen: boolean
 }
 
-class GeopointInput extends React.Component<InputProps, InputState> {
+class GeopointInput extends React.PureComponent<InputProps, InputState> {
   static defaultProps = {
     markers: []
   }
