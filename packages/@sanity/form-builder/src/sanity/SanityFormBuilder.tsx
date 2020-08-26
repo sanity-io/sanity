@@ -4,11 +4,13 @@ import {FormBuilderInput} from '../FormBuilderInput'
 import {Presence, Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import {EMPTY_PATH} from '../utils/empty'
 
 type PatchChannel = {
   subscribe: () => () => {}
   receivePatches: (patches: Array<any>) => void
 }
+
 type Props = {
   value: any | null
   schema: any
@@ -24,8 +26,6 @@ type Props = {
   focusPath: Path
   presence: Presence[]
 }
-
-const EMPTY = []
 
 export default class SanityFormBuilder extends React.Component<Props, {}> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
@@ -76,7 +76,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
           readOnly={readOnly}
           filterField={filterField}
           ref={this.setInput}
-          path={EMPTY}
+          path={EMPTY_PATH}
           presence={presence}
         />
       </SanityFormBuilderContext>

@@ -4,6 +4,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
+import {EMPTY_PATH} from '../../utils/empty'
 
 type FieldProps = {
   field: any
@@ -24,7 +25,7 @@ export default class Field extends React.PureComponent<FieldProps> {
   _input: any
   static defaultProps = {
     level: 0,
-    focusPath: []
+    focusPath: EMPTY_PATH
   }
   handleChange = event => {
     const {field, onChange} = this.props

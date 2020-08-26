@@ -7,11 +7,7 @@ import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths'
 import {Type, Marker, Presence} from './typedefs'
 import {Context as PresenceContext} from '@sanity/components/lib/presence'
-import {emptyArray, emptyObject} from './utils/empty'
-
-const EMPTY_MARKERS: Marker[] = emptyArray()
-const EMPTY_PATH: Path = emptyArray()
-const EMPTY_PRESENCE: Presence[] = emptyArray()
+import {EMPTY_PATH, noop, EMPTY_MARKERS, EMPTY_PRESENCE} from './utils/empty'
 
 interface Props {
   value: any
@@ -31,8 +27,7 @@ interface Props {
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const ENABLE_CONTEXT = () => {}
+const ENABLE_CONTEXT = noop
 
 function getDisplayName(component) {
   return component.displayName || component.name || 'Unknown'

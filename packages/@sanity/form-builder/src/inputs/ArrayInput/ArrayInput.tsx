@@ -22,8 +22,8 @@ import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
 
 import styles from './styles/ArrayInput.css'
+import {EMPTY_PATH, EMPTY_PRESENCE, EMPTY_MARKERS} from '../../utils/empty'
 
-const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 function createProtoValue(type: Type): ItemValue {
@@ -64,7 +64,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     [name: string]: Subscription
   } = {}
   static defaultProps = {
-    focusPath: []
+    focusPath: EMPTY_PATH
   }
   state = {
     isMoving: false
@@ -188,7 +188,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const childMarkers = markers.filter(isChildMarker)
           const isChildPresence = pItem =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
-          const childPresence = isGrid ? [] : presence.filter(isChildPresence)
+          const childPresence =
+            isGrid || presence.length === 0 ? EMPTY_PRESENCE : presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -200,7 +201,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 type={type}
                 value={item}
                 level={level}
-                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
                 focusPath={focusPath}

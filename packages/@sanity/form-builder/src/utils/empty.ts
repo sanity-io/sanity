@@ -1,5 +1,8 @@
-export const EMPTY_OBJECT: any = Object.freeze({})
-export const EMPTY_ARRAY: any = Object.freeze([])
-export const emptyObject = <T>() => EMPTY_OBJECT as T
+import {Marker, Presence} from '../typedefs'
+import {Path} from '../typedefs/path'
+import {emptyArray, emptyObject, noop} from '@sanity/util/lib/empty'
 
-export const emptyArray = <T>() => EMPTY_ARRAY as T
+export {emptyArray, emptyObject, noop}
+export const EMPTY_MARKERS: Marker[] = emptyArray()
+export const EMPTY_PATH: Path = emptyArray()
+export const EMPTY_PRESENCE: Presence[] = emptyArray()

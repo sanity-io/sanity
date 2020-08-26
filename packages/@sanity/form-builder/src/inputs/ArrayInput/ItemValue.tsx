@@ -22,6 +22,7 @@ import {Presence, Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import {EMPTY_MARKERS, EMPTY_PATH, EMPTY_PRESENCE, emptyArray} from '../../utils/empty'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -75,7 +76,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
   _focusArea: HTMLDivElement | null
   static defaultProps = {
     level: 0,
-    markers: []
+    markers: emptyArray()
   }
   componentDidMount() {
     const {focusPath, value} = this.props
@@ -131,9 +132,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
     return memberType.title ? `Edit ${memberType.title}` : 'Edit'
   }
-  setFocus(path: Path = []) {
+  setFocus(path: Path = EMPTY_PATH) {
     const {value, onFocus} = this.props
-    onFocus([{_key: value._key}, ...path])
+    onFocus(path.length === 0 ? path : [{_key: value._key}, ...path])
   }
   focus() {
     if (this._focusArea) {
@@ -159,8 +160,11 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
-    const childMarkers = markers.filter(marker => marker.path.length > 1)
-    const childPresence = presence.filter(presence => presence.path.length > 1)
+    const childMarkers =
+      markers.length === 0 ? EMPTY_MARKERS : markers.filter(marker => marker.path.length > 1)
+    const childPresence =
+      presence.length === 0 ? EMPTY_PRESENCE : presence.filter(presence => presence.path.length > 1)
+
     const content = (
       <FormBuilderInput
         type={memberType}
@@ -283,7 +287,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-          <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+          <FieldPresence presence={hasItemFocus ? EMPTY_PRESENCE : presence} maxAvatars={1} />
           {value._ref && (
             <IntentButton
               className={styles.linkToReference}

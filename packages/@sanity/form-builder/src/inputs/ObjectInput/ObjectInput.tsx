@@ -8,6 +8,7 @@ import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
 import styles from './styles/ObjectInput.css'
+import {EMPTY_PATH, EMPTY_PRESENCE, noop} from '../../utils/empty'
 
 function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
   // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"
@@ -49,9 +50,9 @@ type ObjectInputProps = {
 export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
   _firstField: any
   static defaultProps = {
-    onChange() {},
+    onChange: noop,
     level: 0,
-    focusPath: [],
+    focusPath: EMPTY_PATH,
     isRoot: false,
     filterField: () => true
   }
@@ -124,9 +125,10 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     const isExpanded =
       focusPath.length > 0 && fieldset.fields.some(field => focusPath[0] === field.name)
     const fieldNames = fieldset.fields.map(f => f.name)
-    const childPresence = presence.filter(
-      item => fieldNames.includes(item.path[0]) || item.path[0] === '$'
-    )
+    const childPresence =
+      presence.length > 0
+        ? presence.filter(item => fieldNames.includes(item.path[0]) || item.path[0] === '$')
+        : EMPTY_PRESENCE
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
@@ -137,7 +139,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
           isCollapsed={isCollapsed}
-          presence={isCollapsed ? childPresence : []}
+          presence={isCollapsed ? childPresence : EMPTY_PRESENCE}
           onFocus={onFocus}
         >
           {fieldset.fields.map((field, fieldIndex) => {

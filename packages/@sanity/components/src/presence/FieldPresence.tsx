@@ -65,6 +65,10 @@ export function FieldPresenceInner({
   maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
   stack = true
 }: InnerProps) {
+  if (presence.length === 0) {
+    return null
+  }
+
   const uniquePresence = uniqBy(presence || [], item => item.user.id)
   const sorted = sortBy(
     uniquePresence,
@@ -87,6 +91,7 @@ export function FieldPresenceInner({
       : null
   ].filter(Boolean)
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * maxAvatars
+
   return (
     <div className={styles.root}>
       <PopoverList

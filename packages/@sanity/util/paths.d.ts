@@ -1,6 +1,6 @@
-type KeyedSegment = {_key: string}
-type PathSegment = string | number | KeyedSegment
-type Path = PathSegment[]
+export type KeyedSegment = {_key: string}
+export type PathSegment = string | number | KeyedSegment
+export type Path = PathSegment[]
 
 export declare const FOCUS_TERMINATOR: string
 export declare function get(obj: any, path: Path | string, defaultVal?: any): any

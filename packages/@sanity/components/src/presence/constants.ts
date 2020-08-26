@@ -1,4 +1,7 @@
 // disable overlay rendering entirely and only display presence in fields
+import {FormFieldPresence, PathSegment} from './types'
+import {emptyArray} from '@sanity/util/empty'
+
 export const DISABLE_OVERLAY = false
 
 // number of avatars to display on each fields (will be stacked and have a counter if more than 3 users in a field)
@@ -35,3 +38,6 @@ export const SLIDE_RIGHT_THRESHOLD_BOTTOM = 22
 
 // Switch on debug mode (will display regions)
 export const DEBUG = false
+
+export const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
+export const EMPTY_PATH: PathSegment[] = emptyArray()

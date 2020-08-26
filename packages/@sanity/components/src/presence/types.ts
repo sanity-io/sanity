@@ -1,3 +1,5 @@
+import {PathSegment} from '@sanity/util/paths'
+
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
@@ -28,7 +30,7 @@ type Data = {
 }
 
 export type Status = 'online' | 'editing' | 'inactive'
-export type PathElement = string | number | {_key: string}
+export {PathSegment}
 
 export interface User {
   id: string
@@ -49,12 +51,12 @@ export interface Session {
 
 export interface Location {
   documentId: string
-  path: PathElement[]
+  path: PathSegment[]
 }
 
 export interface FormFieldPresence {
   user: User
-  path: PathElement[]
+  path: PathSegment[]
   sessionId: string
   lastActiveAt: string
 }
@@ -63,7 +65,7 @@ export interface FormFieldPresence {
 export interface PresenceLocation {
   type: 'document'
   documentId: string
-  path: PathElement[]
+  path: PathSegment[]
   data: PresenceData
   lastActiveAt: string
 }

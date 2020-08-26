@@ -1,6 +1,9 @@
 /* eslint-disable */
 import getRandomValues from 'get-random-values'
 import {KeyedSegment, Path, PathSegment} from './typedefs/path'
+import {emptyArray} from './empty'
+
+export {Path, PathSegment, KeyedSegment}
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
@@ -87,7 +90,10 @@ export function startsWith(prefix: Path, path: Path): boolean {
 }
 
 export function trimLeft(prefix: Path, path: Path): Path {
-  if (prefix.length === 0 || path.length === 0) {
+  if (path.length === 0) {
+    return emptyArray()
+  }
+  if (prefix.length === 0) {
     return path
   }
   const [prefixHead, ...prefixTail] = prefix

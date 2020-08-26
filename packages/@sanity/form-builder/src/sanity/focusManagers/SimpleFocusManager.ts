@@ -2,6 +2,7 @@
 
 import React from 'react'
 import {Path} from '../../typedefs/path'
+import {EMPTY_PATH} from '../../utils/empty'
 
 type Props = {
   path: any | null
@@ -16,7 +17,7 @@ type State = {
 
 export default class SimpleFocusManager extends React.Component<Props, State> {
   state = {
-    focusPath: []
+    focusPath: EMPTY_PATH
   }
 
   handleFocus = (path: Path) => {
