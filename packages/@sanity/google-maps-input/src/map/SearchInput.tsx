@@ -7,7 +7,7 @@ interface Props {
   onChange: (result: google.maps.places.PlaceResult) => void
 }
 
-export class SearchInput extends React.Component<Props> {
+export class SearchInput extends React.PureComponent<Props> {
   searchInputRef = React.createRef<HTMLInputElement>()
   autoComplete: google.maps.places.Autocomplete | undefined
 
