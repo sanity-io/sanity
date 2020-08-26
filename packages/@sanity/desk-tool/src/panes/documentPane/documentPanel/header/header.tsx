@@ -2,11 +2,10 @@ import classNames from 'classnames'
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
-import {MenuButton} from 'part:@sanity/components/menu-button'
+import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
-import {Timeline} from '../../timeline'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
@@ -28,9 +27,11 @@ export interface DocumentPanelHeaderProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
+  onTimelineOpen: (mode: 'version' | 'changesSince') => void
   schemaType: any
   setFocusPath: (path: any) => void
   title: React.ReactNode
+  versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
 }
 
@@ -42,7 +43,6 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const features = useDeskToolFeatures()
   const contextMenuItems = props.menuItems.filter(isMenuButton)
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
-  const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
 
   const handleCloseValidationResults = useCallback(() => {
@@ -58,8 +58,8 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     if (!props.isCollapsed && props.onCollapse) props.onCollapse()
   }, [props.isCollapsed, props.onExpand, props.onCollapse])
 
-  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [
-    setVersionSelectOpen
+  const handleVersionMenuOpen = useCallback(() => props.onTimelineOpen('version'), [
+    props.onTimelineOpen
   ])
 
   return (
@@ -105,16 +105,10 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           </div>
         )}
 
-        <div className={styles.versionSelectContainer}>
-          <MenuButton
-            buttonProps={{kind: 'simple', padding: 'small'}}
-            menu={<Timeline onSelect={handleTimelineSelect} />}
-            open={isVersionSelectOpen}
-            placement="bottom-end"
-            setOpen={setVersionSelectOpen}
-          >
-            Current draft &darr;
-          </MenuButton>
+        <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
+          <Button kind="simple" onClick={handleVersionMenuOpen} padding="small">
+            Select version &darr;
+          </Button>
         </div>
 
         {features.splitViews && (
