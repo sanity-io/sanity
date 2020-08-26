@@ -5,9 +5,10 @@ import styles from './FilePreview.css'
 interface Props {
   value: any // TODO
   action: 'changed' | 'added' | 'removed'
+  pctDiff?: number
 }
 
-export default function FilePreview({value, action = 'changed'}: Props) {
+export default function FilePreview({value, action = 'changed', pctDiff}: Props) {
   const title = value.originalFilename || 'Untitled'
   return (
     <div className={styles.root}>
@@ -21,7 +22,12 @@ export default function FilePreview({value, action = 'changed'}: Props) {
           </h3>
           <div>
             <span>{action}</span>
-            {action === 'changed' && <span>{value.size}</span>}
+            {pctDiff && pctDiff !== 0 && (
+              <span className={styles.sizeDiff} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
+                {pctDiff > 0 && '+'}
+                {pctDiff}%
+              </span>
+            )}
           </div>
         </div>
       </div>
