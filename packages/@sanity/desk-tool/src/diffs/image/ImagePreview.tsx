@@ -1,6 +1,8 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import sanityClient from 'part:@sanity/base/client'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import ImageIcon from 'part:@sanity/base/image-icon'
 import styles from './ImagePreview.css'
 import {ImagePreviewProps} from './types'
 
@@ -15,6 +17,7 @@ export default function ImagePreview({
   const title = value.originalFilename || 'Untitled'
   const dimensions = value?.metadata?.dimensions
   const imageSource = imageBuilder.image(value).height(300)
+  const Icon = action === 'removed' ? TrashIcon : ImageIcon
   return (
     <div className={styles.root}>
       <div className={styles.imageWrapper}>
@@ -26,6 +29,9 @@ export default function ImagePreview({
         />
       </div>
       <div className={styles.meta} data-action={action}>
+        <div className={styles.icon}>
+          <Icon />
+        </div>
         <div className={styles.info}>
           <h3 className={styles.title} title={title}>
             {title}
