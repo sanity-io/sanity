@@ -1,8 +1,10 @@
 /* eslint-disable max-depth */
-import React, {useCallback, Fragment, useContext} from 'react'
+import {MenuButton} from 'part:@sanity/components/menu-button'
+import React, {useCallback, Fragment, useContext, useState} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ObjectDiff, SchemaType, ObjectSchemaType} from '@sanity/field/diff'
 import {FallbackDiff} from '../../../diffs/_fallback/FallbackDiff'
+import {Timeline} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
 import {buildDocumentChangeList} from './buildChangeList'
 import {DiffErrorBoundary} from './diffErrorBoundary'
@@ -32,6 +34,7 @@ const DocumentContext = React.createContext<DocumentContextProps>({} as any)
 
 export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
   const {closeHistory, timeline} = useDocumentHistory()
+  const [isVersionSelectOpen, setVersionSelectOpen] = useState(false)
   const diff: ObjectDiff = timeline.currentDiff() as any
 
   if (diff.type !== 'object') {
@@ -40,6 +43,10 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
 
   const documentContext = {documentId, schemaType}
   const changes = buildDocumentChangeList(schemaType, diff)
+
+  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [
+    setVersionSelectOpen
+  ])
 
   return (
     <div className={styles.root}>
@@ -53,8 +60,16 @@ export function ChangesPanel({documentId, schemaType}: ChangesPanelProps) {
           </div>
         </div>
         <div>
-          <div style={{display: 'inline-block', border: '1px solid #ccc'}}>
-            Since last published &darr;
+          <div className={styles.versionSelectContainer}>
+            <MenuButton
+              buttonProps={{kind: 'simple', padding: 'small'}}
+              menu={<Timeline onSelect={handleTimelineSelect} />}
+              open={isVersionSelectOpen}
+              placement="bottom-start"
+              setOpen={setVersionSelectOpen}
+            >
+              Since last published &darr;
+            </MenuButton>
           </div>
         </div>
       </header>

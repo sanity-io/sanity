@@ -6,7 +6,6 @@
 }
 
 .header {
-  padding: 1em;
   border-bottom: 1px solid #ddd;
 }
 
@@ -19,11 +18,17 @@
   min-width: 0;
   margin: 0;
   font: inherit;
+  line-height: 17px;
   font-weight: 700;
+  padding: 1em 1em 0.5em;
 }
 
 .closeButtonContainer {
   padding: 4px;
+}
+
+.versionSelectContainer {
+  padding: 0.25em 0.5em;
 }
 
 .body {

@@ -6,10 +6,10 @@ import {MenuButton} from 'part:@sanity/components/menu-button'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
+import {Timeline} from '../../timeline'
 import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
-import {Timeline} from './timeline'
 import {ValidationMenu} from './validationMenu'
 
 import styles from './header.css'
@@ -58,7 +58,9 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     if (!props.isCollapsed && props.onCollapse) props.onCollapse()
   }, [props.isCollapsed, props.onExpand, props.onCollapse])
 
-  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [setContextMenuOpen])
+  const handleTimelineSelect = useCallback(() => setVersionSelectOpen(false), [
+    setVersionSelectOpen
+  ])
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
