@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import {PortalProvider} from 'part:@sanity/components/portal'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {createElement, useCallback, useEffect, useMemo, useRef} from 'react'
+import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView, MenuItemGroup} from '../types'
 import {DocumentOperationResults} from './documentOperationResults'
@@ -40,6 +41,7 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
+  const features = useDeskToolFeatures()
   const portalContainerRef = useRef<HTMLDivElement | null>(null)
   const portalRef = useRef(document.createElement('div'))
   const {displayed, historyDisplayed, startTime, toggleHistory} = useDocumentHistory()
@@ -52,6 +54,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
     return (
       getMenuItems({
         canShowHistoryList: true,
+        features,
         isHistoryEnabled: true,
         isHistoryOpen: props.isHistoryOpen,
         isLiveEditEnabled: props.schemaType.liveEdit === true,
