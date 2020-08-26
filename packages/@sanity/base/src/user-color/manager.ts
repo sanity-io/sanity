@@ -5,7 +5,7 @@ import {UserColorHue, ManagerOptions, UserColorManager, UserColor} from './types
 
 type UserId = string
 
-const defaultCurrentUserHue = 'blue'
+const defaultCurrentUserHue = 'magenta'
 
 // Remove green and red because they can be confused with "add" and "remove"
 const defaultHues: ColorHueKey[] = COLOR_HUES.filter(hue => hue !== 'green' && hue !== 'red')
