@@ -1,6 +1,7 @@
 import React from 'react'
 import {LatLng} from '../types'
 import styles from './Map.css'
+import {latLngAreEqual} from './util'
 
 interface MapProps {
   api: typeof window.google.maps
@@ -17,7 +18,7 @@ interface MapState {
   map: google.maps.Map | undefined
 }
 
-export class GoogleMap extends React.Component<MapProps, MapState> {
+export class GoogleMap extends React.PureComponent<MapProps, MapState> {
   static defaultProps = {
     defaultZoom: 8
   }
@@ -31,7 +32,7 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
     this.attachClickHandler()
   }
 
-  attachClickHandler() {
+  attachClickHandler = () => {
     const map = this.state.map
     if (!map) {
       return
@@ -61,11 +62,11 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
       this.attachClickHandler()
     }
 
-    if (prevProps.location !== location) {
+    if (!latLngAreEqual(prevProps.location, location)) {
       map.panTo(this.getCenter())
     }
 
-    if (prevProps.bounds !== bounds && bounds) {
+    if (bounds && (!prevProps.bounds || !bounds.equals(prevProps.bounds))) {
       map.fitBounds(bounds)
     }
   }
@@ -102,7 +103,7 @@ export class GoogleMap extends React.Component<MapProps, MapState> {
   setMapElement = (element: HTMLDivElement | null) => {
     if (element && element !== this.mapEl) {
       const map = this.constructMap(element)
-      this.setState({map})
+      this.setState({map}, this.attachClickHandler)
     }
 
     this.mapEl = element
