@@ -1,2 +1,61 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
+  @nest &[data-diff-layout="double"] {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+
+.arrow {
+  display: flex;
+  padding: 0 var(--small-padding);
+  flex: 0;
+  align-items: center;
+  font-size: var(--font-size-large);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-small);
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  display: grid;
+  grid-template-areas: 'icon meta';
+  grid-template-columns: auto 1fr;
+
+  @nest & .info {
+    overflow: hidden;
+    line-height: 1.5;
+    padding-left: var(--small-padding);
+  }
+
+  @nest & .title {
+    font-size: inherit;
+    font-weight: 600;
+    margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  @nest & .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--font-size-large) + 16px);
+  }
+}
+
+.meta[data-action="added"] {
+  /*  */
+}
+
+.meta[data-action="removed"] {
+  
+  @nest & .title {
+    text-decoration: line-through;
+  }
 }
