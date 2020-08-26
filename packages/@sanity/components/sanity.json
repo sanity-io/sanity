@@ -1132,6 +1132,14 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "clickOutside/story"
+    },
+    {
+      "implements": "part:@sanity/components/menu-button",
+      "path": "menuButton"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "menuButton/story"
     }
   ]
 }
