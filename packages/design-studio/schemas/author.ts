@@ -13,6 +13,16 @@ export default {
           .max(80)
     },
     {
+      type: 'string',
+      name: 'role',
+      title: 'Role',
+      options: {
+        layout: 'radio',
+        list: ['developer', 'designer', 'manager'],
+        direction: 'horizontal' // | 'vertical'
+      }
+    },
+    {
       type: 'image',
       name: 'avatar',
       title: 'Avatar',
