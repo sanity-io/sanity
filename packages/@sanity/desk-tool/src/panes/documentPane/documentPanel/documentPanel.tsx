@@ -13,6 +13,7 @@ import {FormView} from './views'
 import {DocumentStatusBar} from './statusBar'
 
 import styles from './documentPanel.css'
+import {Chunk} from '@sanity/field/diff'
 
 interface DocumentPanelProps {
   activeViewId: string
@@ -33,7 +34,7 @@ interface DocumentPanelProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
-  onTimelineOpen: (mode: 'version' | 'changesSince') => void
+  onTimelineOpen: () => void
   paneTitle?: string
   schemaType: any
   toggleInspect: (val: boolean) => void
@@ -46,11 +47,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const features = useDeskToolFeatures()
   const portalContainerRef = useRef<HTMLDivElement | null>(null)
   const portalRef = useRef(document.createElement('div'))
-  const {displayed, historyDisplayed, startTime, toggleHistory} = useDocumentHistory()
-  const {toggleInspect} = props
+  const {displayed, historyController, open: openHistory} = useDocumentHistory()
+  const {toggleInspect, isHistoryOpen} = props
   const formRef = useRef<any>()
   const activeView = props.views.find(view => view.id === props.activeViewId) ||
     props.views[0] || {type: 'form'}
+
+  const {revTime} = historyController
 
   const menuItems = useMemo(() => {
     return (
@@ -60,11 +63,11 @@ export function DocumentPanel(props: DocumentPanelProps) {
         isHistoryEnabled: true,
         isHistoryOpen: props.isHistoryOpen,
         isLiveEditEnabled: props.schemaType.liveEdit === true,
-        rev: startTime ? startTime.chunk.id : null,
+        rev: revTime ? revTime.id : null,
         value: props.value
       }) || []
     )
-  }, [props.isHistoryOpen, props.schemaType, startTime, props.value])
+  }, [props.isHistoryOpen, props.schemaType, revTime, props.value])
 
   const handleContextMenuAction = useCallback(
     item => {
@@ -79,13 +82,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
       }
 
       if (item.action === 'browseHistory') {
-        toggleHistory('-')
+        openHistory()
         return true
       }
 
       return false
     },
-    [toggleHistory, toggleInspect]
+    [openHistory, toggleInspect]
   )
 
   const setFocusPath = useCallback(
@@ -138,6 +141,8 @@ export function DocumentPanel(props: DocumentPanelProps) {
           }
           versionSelectRef={props.versionSelectRef}
           views={props.views}
+          rev={revTime}
+          isHistoryOpen={isHistoryOpen}
         />
       </div>
 
@@ -151,7 +156,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 initialValue={props.initialValue}
                 markers={props.markers}
                 onChange={props.onChange}
-                readOnly={historyDisplayed === 'from'}
+                readOnly={revTime !== null}
                 ref={formRef}
                 schemaType={props.schemaType}
                 value={displayed}

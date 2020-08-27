@@ -10,8 +10,10 @@ import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {ValidationMenu} from './validationMenu'
+import {Chunk} from '@sanity/field/diff'
 
 import styles from './header.css'
+import {format} from 'date-fns'
 
 export interface DocumentPanelHeaderProps {
   activeViewId?: string
@@ -27,12 +29,14 @@ export interface DocumentPanelHeaderProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
-  onTimelineOpen: (mode: 'version' | 'changesSince') => void
+  onTimelineOpen: () => void
   schemaType: any
   setFocusPath: (path: any) => void
   title: React.ReactNode
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
+  rev: Chunk | null
+  isHistoryOpen: boolean
 }
 
 const isActionButton = (item: MenuAction) => (item as any).showAsAction
@@ -44,6 +48,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const contextMenuItems = props.menuItems.filter(isMenuButton)
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
+  const {rev} = props
 
   const handleCloseValidationResults = useCallback(() => {
     setValidationOpen(false)
@@ -58,9 +63,11 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     if (!props.isCollapsed && props.onCollapse) props.onCollapse()
   }, [props.isCollapsed, props.onExpand, props.onCollapse])
 
-  const handleVersionMenuOpen = useCallback(() => props.onTimelineOpen('version'), [
-    props.onTimelineOpen
-  ])
+  // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
+  // as an outside-click.
+  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLDivElement>) => {
+    evt.stopPropagation()
+  }, [])
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
@@ -137,11 +144,18 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           </div>
         )}
 
-        <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
-          <Button kind="simple" onClick={handleVersionMenuOpen} padding="small">
-            Select version &darr;
-          </Button>
-        </div>
+        {props.isHistoryOpen && (
+          <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
+            <Button
+              kind="simple"
+              onMouseUp={ignoreClickOutside}
+              onClick={props.onTimelineOpen}
+              padding="small"
+            >
+              Showing {rev ? `version at ${format(rev.endTimestamp)}` : 'latest version'} &darr;
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

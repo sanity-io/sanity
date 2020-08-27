@@ -1,22 +1,30 @@
 .root {
   padding: 0.25em 0;
+  overflow: auto;
+  height: 100%;
 }
 
 .item {
   padding: 1em;
+}
 
+.enabled {
   @nest &:hover {
     background: rgba(0, 0, 0, 0.1);
   }
+}
 
-  @nest &[data-selected='true'] {
-    background: #a6c8fd;
-  }
+.disabled {
+  color: gray;
+}
 
-  @nest &[data-selection-displayed='true'] {
-    background: #06f;
-    color: #fff;
-  }
+.withinSelection {
+  background: #a6c8fd;
+}
+
+.selected {
+  background: #06f;
+  color: #fff;
 }
 
 .item__typeName {

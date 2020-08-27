@@ -4,21 +4,24 @@ export type Merger<T> = (left: T, right: T) => T | [T, T]
  * The two ended array supports pushing both at the beginning and
  * at the end while preserving indicies.
  */
-export class TwoEndedArray<T> {
+export class TwoEndedArray<T extends {index: number}> {
   private _postive: T[] = []
   private _negative: T[] = []
 
   addToEnd(elem: T) {
+    elem.index = this._postive.length
     this._postive.push(elem)
   }
 
   addToBeginning(elem: T) {
     // Prefer to place things at the positive side if possible.
     if (this.length == 0) {
-      this._postive.push(elem)
-    } else {
-      this._negative.push(elem)
+      this.addToEnd(elem)
+      return
     }
+
+    elem.index = -(this._negative.length + 1)
+    this._negative.push(elem)
   }
 
   mergeAtEnd(value: T, merger: Merger<T>) {
@@ -79,8 +82,10 @@ export class TwoEndedArray<T> {
 
   set(idx: number, value: T) {
     if (idx >= 0) {
+      value.index = idx
       this._postive[idx] = value
     } else {
+      value.index = idx
       this._negative[-(idx + 1)] = value
     }
   }
