@@ -17,6 +17,7 @@ export type MendozaEffectPair = {
 export {RemoteMutationWithVersion} from '@sanity/base/lib/datastores/document/document-pair/remoteMutations'
 
 export type Transaction = {
+  index: number
   id: string
   author: string
   timestamp: Date

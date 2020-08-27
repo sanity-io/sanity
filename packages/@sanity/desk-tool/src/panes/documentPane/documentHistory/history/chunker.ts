@@ -34,6 +34,7 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
     for (const author of right.authors) authors.add(author)
 
     return {
+      index: 0,
       id: left.id,
       type: left.type,
       start: left.start,
@@ -47,7 +48,7 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   return [left, right]
 }
 
-export function chunkFromTransaction(transaction: Transaction, pos: number): Chunk {
+export function chunkFromTransaction(transaction: Transaction): Chunk {
   const modifedDraft = transaction.draftEffect != null
   const modifedPublished = transaction.publishedEffect != null
 
@@ -69,10 +70,11 @@ export function chunkFromTransaction(transaction: Transaction, pos: number): Chu
   }
 
   return {
+    index: 0,
     id: transaction.id,
     type,
-    start: pos,
-    end: pos + 1,
+    start: transaction.index,
+    end: transaction.index + 1,
     startTimestamp: transaction.timestamp,
     endTimestamp: transaction.timestamp,
     authors: new Set([transaction.author])

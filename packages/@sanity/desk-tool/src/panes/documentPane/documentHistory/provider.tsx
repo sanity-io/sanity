@@ -1,6 +1,6 @@
 import {useObservable} from '@sanity/react-hooks'
 import client from 'part:@sanity/base/client'
-import React, {useEffect, useMemo, useCallback} from 'react'
+import React, {useMemo, useCallback} from 'react'
 import {usePaneRouter} from '../../../contexts/PaneRouterContext'
 import {Doc} from '../types'
 import {DocumentHistoryContext} from './context'
@@ -14,8 +14,6 @@ interface DocumentHistoryProviderProps {
   published: Doc | null
   value: Doc | null
 }
-
-const START_TIME_PARAM_KEY = 'version'
 
 declare const __DEV__: boolean
 
@@ -35,7 +33,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   // note: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const historyController = useObservable(
+  const {historyController} = useObservable(
     useMemo(
       () =>
         createObservableController({
@@ -47,66 +45,43 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     )
   )!
 
-  const historyDisplayed: 'from' | 'to' =
-    paneRouter.params.historyDisplayed === 'from' ? 'from' : 'to'
+  const {since, rev} = paneRouter.params as Record<string, string | undefined>
+  historyController.setRange(since || null, rev || null)
 
-  const startTime = useMemo(() => {
-    if (paneRouter.params[START_TIME_PARAM_KEY]) {
-      return timeline.parseTimeId(paneRouter.params[START_TIME_PARAM_KEY])
-    }
+  const close = useCallback(() => {
+    paneRouter.setParams({...paneRouter.params, rev: undefined, since: undefined})
+  }, [paneRouter])
 
-    return null
-  }, [paneRouter.params[START_TIME_PARAM_KEY], historyController.version])
+  const open = useCallback(() => {
+    paneRouter.setParams({...paneRouter.params, since: '@lastPublished', rev: undefined})
+  }, [paneRouter])
 
-  if (startTime) {
-    timeline.setRange(startTime, null)
-  }
-
-  let displayed = props.value
-
-  if (startTime && historyDisplayed == 'from') {
-    displayed = timeline.startAttributes()
-  }
-
-  // TODO: Fetch only when open
-  useEffect(() => {
-    historyController.update({
-      fetchAtLeast: 5
-    })
-  })
-
-  const toggleHistory = useCallback(
-    (newStartTime: string | null = startTime ? null : '-') => {
-      const {[START_TIME_PARAM_KEY]: _, ...params} = paneRouter.params
-      if (newStartTime) {
-        paneRouter.setParams({[START_TIME_PARAM_KEY]: newStartTime, ...params})
-      } else {
-        paneRouter.setParams(params)
-      }
+  const setRange = useCallback(
+    (newSince: string, newRev: string | null) => {
+      paneRouter.setParams({
+        ...paneRouter.params,
+        since: newSince,
+        rev: newRev ? newRev : undefined
+      })
     },
     [paneRouter]
   )
 
-  const closeHistory = useCallback(() => {
-    const {[START_TIME_PARAM_KEY]: _, ...params} = paneRouter.params
-    paneRouter.setParams(params)
-  }, [paneRouter])
+  let displayed = props.value
 
-  const toggleHistoryDisplayed = useCallback((value: 'from' | 'to') => {
-    paneRouter.setParams({...paneRouter.params, historyDisplayed: value})
-  }, [])
+  if (historyController.selectionState === 'active' && historyController.revTime !== null) {
+    displayed = timeline.endAttributes()
+  }
 
   return (
     <DocumentHistoryContext.Provider
       value={{
-        closeHistory,
         displayed,
         timeline,
         historyController,
-        historyDisplayed,
-        startTime,
-        toggleHistory,
-        toggleHistoryDisplayed
+        setRange,
+        close,
+        open
       }}
     >
       {props.children}
