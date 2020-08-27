@@ -1,6 +1,6 @@
 import {diffItem} from 'sanity-diff-patch'
 import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI, Diff, Path} from '../types'
-import {pathToString} from '../paths/helpers'
+import {pathToString} from '../../paths/helpers'
 
 export function undoChange(diff: Diff, path: Path, documentOperations: OperationsAPI) {
   const patches = diffItem(diff.toValue, diff.fromValue, {diffMatchPatch: {enabled: false}}, path)

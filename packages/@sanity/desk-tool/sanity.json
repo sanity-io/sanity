@@ -47,11 +47,7 @@
     },
     {
       "implements": "part:@sanity/base/diff-resolver",
-      "path": "diffs/portableTextDiffResolver"
-    },
-    {
-      "implements": "part:@sanity/base/diff-resolver",
-      "path": "diffs/diffResolver"
+      "path": "diffResolver"
     }
   ]
 }
