@@ -1,21 +1,58 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   display: flex;
+  align-items: center;
+  padding: var(--small-padding) 0;
+  box-sizing: border-box;
 
-  @nest & > span {
-    display: inline-block;
-    padding: 0.75em 0.125em;
-  }
+  @nest &:hover .segment {
+    border-bottom: 1px solid var(--component-bg);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 
-  @nest & del {
-    display: inline-block;
-    padding: 0.75em;
-    border-radius: 4px;
+    @nest &::after {
+      border-bottom-left-radius: 1px;
+      border-bottom-right-radius: 1px;
+      background: currentColor;
+      transform: translate3d(0, 1px, 0);
+      opacity: 1;
+    }
   }
+}
 
-  @nest & ins {
-    display: inline-block;
-    padding: 0.75em;
-    border-radius: 4px;
-    text-decoration: none;
+.segment {
+  position: relative;
+  padding: 2px 7px;
+  border-radius: 1px;
+  margin: 3px 0;
+  border-bottom: 1px solid transparent;
+
+  @nest &::after {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    content: '';
+    width: 100%;
+    height: 2px;
+    transition: all 0.2s ease-in-out;
+    opacity: 0;
   }
+}
+
+.add {
+  /*  */
+}
+
+.remove {
+  text-decoration: none;
+}
+
+.arrow {
+  display: flex;
+  padding: 0 var(--small-padding);
+  flex: 0;
+  align-items: stretch;
+  font-size: var(--font-size-large);
+  height: 100%;
 }
