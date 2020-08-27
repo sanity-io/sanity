@@ -1,6 +1,6 @@
 import {UserColorManager, UserColor} from '@sanity/base/user-color'
 import {Annotation, Diff, Path, KeyedSegment, ItemDiff} from '../types'
-import {stringToPath, pathToString, isIndexSegment, isKeySegment} from '../paths/helpers'
+import {stringToPath, pathToString, isIndexSegment, isKeySegment} from '../../paths/helpers'
 import {FALLBACK_DIFF_COLOR} from './contants'
 
 export function getAnnotationColor(

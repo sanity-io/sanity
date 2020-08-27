@@ -1,14 +1,8 @@
 /* eslint-disable max-depth */
 import React, {useCallback} from 'react'
-import {
-  ObjectDiff,
-  ObjectSchemaType,
-  ChangeResolver,
-  DocumentChangeContext
-} from '@sanity/field/diff'
+import {ObjectDiff, ObjectSchemaType, DocumentChangeContext, ChangeList} from '@sanity/field/diff'
 import Button from 'part:@sanity/components/buttons/default'
 import {useDocumentHistory} from '../documentHistory'
-import {buildDocumentChangeList} from './buildChangeList'
 
 import styles from './changesPanel.css'
 
@@ -32,9 +26,7 @@ export function ChangesPanel({
     return null
   }
 
-  const documentContext = {documentId, schemaType}
-  const changes = buildDocumentChangeList(schemaType, diff)
-
+  const documentContext = React.useMemo(() => ({documentId, schemaType}), [documentId, schemaType])
   const handleMenuOpen = useCallback(() => {
     onTimelineOpen('changesSince')
   }, [onTimelineOpen])
@@ -64,9 +56,7 @@ export function ChangesPanel({
       <div className={styles.body}>
         <DocumentChangeContext.Provider value={documentContext}>
           <div className={styles.changeList}>
-            {changes.map(change => (
-              <ChangeResolver change={change} key={change.key} />
-            ))}
+            <ChangeList diff={diff} schemaType={schemaType} />
           </div>
         </DocumentChangeContext.Provider>
       </div>
