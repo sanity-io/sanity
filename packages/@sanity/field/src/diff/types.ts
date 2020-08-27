@@ -14,6 +14,7 @@ import {
   StringSegmentChanged as AgnosticStringSegmentChanged,
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged
 } from '@sanity/diff'
+import {Path} from '../paths'
 
 /**
  * History timeline / chunking
@@ -82,6 +83,7 @@ export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
 
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
+  childChanges?: any
   schemaType: T extends ObjectDiff
     ? ObjectSchemaType
     : T extends ArrayDiff
@@ -93,7 +95,6 @@ export type DiffProps<T extends Diff = Diff> = {
     : T extends NumberDiff
     ? NumberSchemaType
     : SchemaType
-  items?: T extends ArrayDiff ? ArrayItemMetadata[] : undefined
 }
 
 /**
@@ -101,7 +102,7 @@ export type DiffProps<T extends Diff = Diff> = {
  */
 export type DiffComponentResolver = (options: {
   schemaType: SchemaType
-}) => React.ComponentType<any> | undefined | void
+}) => React.ComponentType<any> | undefined
 
 /**
  * Schema
@@ -167,9 +168,7 @@ export type SchemaType<A = unknown, O extends object = Record<string, any>> =
 /**
  * Paths
  */
-export type KeyedSegment = {_key: string}
-export type PathSegment = string | number | KeyedSegment
-export type Path = PathSegment[]
+export * from '../paths/types'
 
 /**
  * "Changes" (presentation-oriented grouping of diffs)
