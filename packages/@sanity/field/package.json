@@ -28,6 +28,7 @@
     "@sanity/base": "1.150.3",
     "@sanity/diff": "1.150.1",
     "@sanity/react-hooks": "1.150.4",
+    "date-fns": "^1.29.0",
     "sanity-diff-patch": "^1.0.7"
   },
   "devDependencies": {
