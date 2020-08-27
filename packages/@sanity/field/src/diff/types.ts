@@ -19,9 +19,18 @@ import {Path} from '../paths'
 /**
  * History timeline / chunking
  */
-export type ChunkType = 'create' | 'editDraft' | 'delete' | 'publish' | 'unpublish' | 'discardDraft'
+export type ChunkType =
+  | 'initial'
+  | 'create'
+  | 'editDraft'
+  | 'delete'
+  | 'publish'
+  | 'unpublish'
+  | 'discardDraft'
 
 export type Chunk = {
+  index: number
+
   id: string
   type: ChunkType
   start: number

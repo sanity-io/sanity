@@ -1,115 +1,121 @@
-import React, {useCallback, forwardRef} from 'react'
+/* eslint-disable react/prop-types */
+import React, {useCallback, forwardRef, useRef} from 'react'
 import {format} from 'date-fns'
-import {useDocumentHistory} from '../documentHistory'
-import {SelectHistoryDisplayed} from './selectDisplayed'
-import {SelectPublishedButton} from './selectPublished'
+import {Chunk} from '@sanity/field/diff'
+import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
+import VisibilityContainer from './visibilityContainer'
 
 import styles from './timeline.css'
 
 interface TimelineProps {
-  onModeChange: (mode: 'version' | 'changesSince') => void
-  onSelect?: (timeId: string | null) => void
+  timeline: TimelineModel
+  onSelect: (chunk: Chunk) => void
+  onLoadMore: (state: boolean) => void
+
+  /** Are the chunks above the topSelection enabled? */
+  disabledBeforeSelection?: boolean
+  /** The first chunk of the selection. */
+  topSelection: Chunk
+  /** The final chunk of the selection. */
+  bottomSelection: Chunk
 }
 
-export const Timeline = forwardRef(({onModeChange, onSelect}: TimelineProps, ref: any) => {
-  const {historyDisplayed, startTime, timeline, toggleHistory} = useDocumentHistory()
-  const handleSelect = useCallback(
-    (time: string | null) => {
-      toggleHistory(time)
-      if (onSelect) onSelect(time)
-    },
-    [toggleHistory]
-  )
+export function sinceTimelineProps(since: Chunk, rev: Chunk) {
+  return {
+    topSelection: rev,
+    bottomSelection: since,
+    disabledBeforeSelection: true
+  }
+}
 
-  // @todo
-  let isFirst = true
-  let isSelected = false
+export function revTimelineProps(rev: Chunk) {
+  return {
+    topSelection: rev,
+    bottomSelection: rev
+  }
+}
 
-  const handleSetVersionMode = useCallback(() => onModeChange('version'), [onModeChange])
-  const handleSetChangesSinceMode = useCallback(() => onModeChange('changesSince'), [onModeChange])
+export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
+  (
+    {timeline, disabledBeforeSelection, topSelection, bottomSelection, onSelect, onLoadMore},
+    ref
+  ) => {
+    const visibilityContainerRef = useRef<VisibilityContainer | null>(null)
 
-  return (
-    <div className={styles.root} ref={ref}>
-      <div style={{display: 'none'}}>
-        <button onClick={handleSetVersionMode} type="button">
-          version
-        </button>
-        <button onClick={handleSetChangesSinceMode} type="button">
-          {' '}
-          changes since
-        </button>
+    const handleScroll = useCallback(() => {
+      visibilityContainerRef.current?.recalculate()
+    }, [visibilityContainerRef.current])
+
+    let state: ItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
+
+    return (
+      <div className={styles.root} ref={ref} onScroll={handleScroll}>
+        {timeline.mapChunks(chunk => {
+          if (topSelection === chunk) {
+            state = 'withinSelection'
+          }
+
+          if (bottomSelection === chunk) {
+            state = 'selected'
+          }
+
+          const item = (
+            <TimelineItem
+              key={chunk.id}
+              chunk={chunk}
+              state={state}
+              onSelect={onSelect}
+              title={chunk.id}
+              type={chunk.type}
+              timestamp={chunk.endTimestamp}
+            />
+          )
+
+          // Flip it back to normal after we've rendered the active one.
+          if (state === 'selected') {
+            state = 'enabled'
+          }
+
+          return item
+        })}
+
+        {!timeline.reachedEarliestEntry && (
+          <VisibilityContainer ref={visibilityContainerRef} padding={20} setVisibility={onLoadMore}>
+            <div>Loading...</div>
+          </VisibilityContainer>
+        )}
       </div>
-
-      <SelectPublishedButton timeId={timeline.publishedTimeId()} onSelect={handleSelect} />
-      <SelectHistoryDisplayed value={historyDisplayed} />
-
-      {timeline.mapChunks((chunk, idx) => {
-        const isStartTime = Boolean(startTime && startTime.chunk === chunk)
-        const isEndTime = Boolean(startTime && isFirst)
-
-        if (isEndTime) {
-          isSelected = true
-        }
-
-        const isWithinSelection = historyDisplayed === 'from' ? isStartTime : isEndTime
-
-        const item = (
-          <TimelineItem
-            isSelected={isSelected}
-            isWithinSelection={isWithinSelection}
-            key={chunk.id}
-            onSelect={handleSelect}
-            startTimestamp={chunk.startTimestamp}
-            timeId={timeline.createTimeId(idx, chunk)}
-            title={chunk.id}
-            type={chunk.type}
-          />
-        )
-
-        if (isStartTime) {
-          isSelected = false
-        }
-
-        isFirst = false
-
-        return item
-      })}
-    </div>
-  )
-})
+    )
+  }
+)
 
 Timeline.displayName = 'Timeline'
 
+type ItemState = 'enabled' | 'disabled' | 'withinSelection' | 'selected'
+
 function TimelineItem(props: {
-  isSelected: boolean
-  isWithinSelection: boolean
-  onSelect: (timeId: string | null) => void
+  state: ItemState
   title: string
-  timeId: string
-  startTimestamp: Date
+  onSelect: (chunk: Chunk) => void
+  chunk: Chunk
+  timestamp: Date
   type: string
 }) {
-  const {isSelected, isWithinSelection, onSelect, startTimestamp, timeId, title, type} = props
+  const {state, onSelect, timestamp, chunk, title, type} = props
 
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLDivElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
-      onSelect(timeId)
+      onSelect(chunk)
     },
-    [onSelect, timeId]
+    [onSelect, chunk]
   )
 
   return (
-    <div
-      className={styles.item}
-      data-selected={isSelected}
-      data-selection-displayed={isWithinSelection}
-      title={title}
-      onClick={handleClick}
-    >
+    <div className={`${styles.item} ${styles[state]}`} title={title} onClick={handleClick}>
       <div className={styles.item__typeName}>{type}</div>
-      <div className={styles.item__timestamp}>{format(startTimestamp)}</div>
+      <div className={styles.item__timestamp}>{format(timestamp)}</div>
     </div>
   )
 }
