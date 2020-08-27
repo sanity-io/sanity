@@ -28,6 +28,10 @@
     {
       "name": "part:@sanity/desk-tool/structure",
       "path": "./structure"
+    },
+    {
+      "name": "part:@sanity/base/initial-value-templates",
+      "path": "./documentInitialValueTemplates"
     }
   ]
 }
