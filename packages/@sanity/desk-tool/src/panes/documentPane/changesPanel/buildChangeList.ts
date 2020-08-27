@@ -1,4 +1,3 @@
-import {toString as pathToString} from '@sanity/util/paths'
 import {
   ObjectDiff,
   ObjectSchemaType,
@@ -6,10 +5,12 @@ import {
   ArraySchemaType,
   ArrayDiff,
   SchemaType,
-  Diff
+  Diff,
+  ChangeNode,
+  ChangeTitlePath
 } from '@sanity/field/diff'
+import {toString as pathToString} from '@sanity/util/paths'
 import {resolveDiffComponent} from '../../../diffs/resolveDiffComponent'
-import {ChangeNode, ChangeTitlePath} from './types'
 import {getArrayDiffItemType} from './helpers'
 
 export function buildDocumentChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff) {

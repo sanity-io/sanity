@@ -1,4 +1,4 @@
-import {TypedObject, KeyedObject} from '../panes/documentPane/changesPanel/types'
+import {TypedObject, KeyedObject} from '@sanity/field/diff'
 
 export function getObjectKey(obj: unknown, fallback: string | number) {
   if (isKeyedObject(obj)) {

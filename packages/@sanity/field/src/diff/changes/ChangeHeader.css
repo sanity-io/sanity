@@ -1,0 +1,9 @@
+.root {
+  margin: 0 0 0.5em;
+  display: flex;
+}
+
+.revertButton {
+  font-size: 12px;
+  padding: 0.25em;
+}
