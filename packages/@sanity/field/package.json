@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "@sanity/base": "1.150.3",
-    "@sanity/diff": "1.150.1"
+    "@sanity/diff": "1.150.1",
+    "@sanity/react-hooks": "1.150.4",
+    "sanity-diff-patch": "^1.0.7"
   },
   "devDependencies": {
     "react": "16.9.0",

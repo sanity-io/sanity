@@ -1,0 +1,21 @@
+/* @todo coder styling, fix me  */
+.text:not(:only-child) {
+  max-width: 100px;
+  text-overflow: ellipsis;
+}
+
+.indexGroup {
+  padding: 0;
+}
+
+.indexGroup:not(:first-child) {
+  margin-left: 5px;
+}
+
+.index {
+  display: inline-block;
+  background: #ddd;
+  border-radius: 3px;
+  font-weight: bold;
+  padding: 0.2em 0.5em;
+}
