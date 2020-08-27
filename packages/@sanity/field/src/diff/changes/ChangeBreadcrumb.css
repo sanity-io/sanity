@@ -1,0 +1,20 @@
+/* @todo coder styling, fix me  */
+.crumb {
+  flex: 1;
+  font-size: 13px;
+
+  @nest & strong {
+    font-weight: 600;
+  }
+}
+
+.crumb > * {
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.2em 0;
+}
+
+.change__breadcrumb__separator {
+  margin: 0 2.5px;
+}

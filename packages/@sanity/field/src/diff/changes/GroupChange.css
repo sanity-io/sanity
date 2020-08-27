@@ -1,0 +1,14 @@
+.groupChange {
+}
+.changeList {
+}
+
+.changeHeader {
+  margin: 0 0 0.5em;
+  display: flex;
+}
+
+.groupChange > .changeList {
+  border-left: 1px solid #ccc;
+  padding-left: 0.75em;
+}
