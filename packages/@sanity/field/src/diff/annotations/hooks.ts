@@ -9,7 +9,7 @@ export function useAnnotationColor(annotation: Annotation): Readonly<UserColor> 
 
 export function useDiffAnnotationColor(
   diff: Diff,
-  path: string | Path
+  path: string | Path = []
 ): Readonly<UserColor> | undefined {
   const userColorManager = useUserColorManager()
   const annotation = getAnnotationForPath(diff, path)
