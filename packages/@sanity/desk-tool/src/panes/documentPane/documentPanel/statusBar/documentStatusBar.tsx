@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import React, {useCallback} from 'react'
+import React from 'react'
 import TimeAgo from '../../../../components/TimeAgo'
 import {useDocumentHistory} from '../../documentHistory'
 import styles from './documentStatusBar.css'
@@ -15,8 +15,7 @@ interface Props {
 }
 
 export function DocumentStatusBar(props: Props) {
-  const {toggleHistory} = useDocumentHistory()
-  const handleToggleHistory = useCallback(() => toggleHistory('-'), [toggleHistory])
+  const {open: openHistory} = useDocumentHistory()
 
   return (
     <div className={styles.root}>
@@ -25,7 +24,7 @@ export function DocumentStatusBar(props: Props) {
           <DocumentStatusBarBadges id={props.id} type={props.type} />
         </div>
         <div className={styles.statusDetails}>
-          <button className={styles.lastUpdatedButton} onClick={handleToggleHistory} type="button">
+          <button className={styles.lastUpdatedButton} onClick={openHistory} type="button">
             {props.lastUpdated ? (
               <>
                 Updated <TimeAgo time={props.lastUpdated} />

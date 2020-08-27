@@ -9,17 +9,7 @@ import {TwoEndedArray} from './twoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'
 import {TraceEvent} from './tracer'
 
-/**
- * TimeRef represents a resolved point in the history. The ID contains both a timestamp and a chunk ID.
- * This means that even if the chunking changes we're able to recover another chunk which is roughly
- * at the same place. If we have a partially loaded history we can use the timestamp to figure out
- * how much history to fetch.
- */
-export type TimeRef = {
-  id: string
-  chunkIdx: number
-  chunk: Chunk
-}
+export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
 type Attributes = Record<string, unknown>
 
@@ -138,6 +128,7 @@ export class Timeline {
     const transaction: Transaction = pending
       ? pending.transaction
       : {
+          index: 0,
           id: entry.transactionId,
           timestamp: entry.timestamp,
           author: entry.author
@@ -175,6 +166,7 @@ export class Timeline {
     if (this._trace) this._trace.push({type: 'addTranslogEntry', event})
 
     this._transactions.addToBeginning({
+      index: 0,
       id: event.id,
       author: event.author,
       timestamp: new Date(event.timestamp),
@@ -193,11 +185,17 @@ export class Timeline {
   /**
    * updateChunks synchronizes the chunks to match the current state
    * of the transactions array. After calling this method you need
-   * to invalidate all TimeRefs.
+   * to invalidate all Chunks.
    */
   updateChunks() {
     if (this._trace) this._trace.push({type: 'updateChunks'})
 
+    this._removeInvalidatedChunks()
+    this._addChunksFromTransactions()
+    this._createInitialChunk()
+  }
+
+  private _removeInvalidatedChunks() {
     if (this._recreateTransactionsFrom) {
       while (this._chunks.length > 0) {
         const chunk = this._chunks.last
@@ -209,7 +207,9 @@ export class Timeline {
       }
       this._recreateTransactionsFrom = undefined
     }
+  }
 
+  private _addChunksFromTransactions() {
     const firstIdx = this._transactions.firstIdx
     const lastIdx = this._transactions.lastIdx
 
@@ -217,7 +217,7 @@ export class Timeline {
     const nextTransactionToChunk = this._chunks.length > 0 ? this._chunks.last.end : firstIdx
     for (let idx = nextTransactionToChunk; idx <= lastIdx; idx++) {
       const transaction = this._transactions.get(idx)
-      this._chunks.mergeAtEnd(chunkFromTransaction(transaction, idx), mergeChunk)
+      this._chunks.mergeAtEnd(chunkFromTransaction(transaction), mergeChunk)
     }
 
     // Add transactions at the beginning:
@@ -227,7 +227,7 @@ export class Timeline {
 
     for (let idx = firstTransactionChunked - 1; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
-      this._chunks.mergeAtBeginning(chunkFromTransaction(transaction, idx), mergeChunk)
+      this._chunks.mergeAtBeginning(chunkFromTransaction(transaction), mergeChunk)
     }
   }
 
@@ -237,66 +237,84 @@ export class Timeline {
     }
   }
 
+  private _createInitialChunk() {
+    if (this.reachedEarliestEntry) {
+      if (this._chunks.first?.type === 'initial') return
+
+      const firstTx = this._transactions.first
+      if (!firstTx) return
+      const initialChunk = chunkFromTransaction(firstTx)
+      initialChunk.type = 'initial'
+      initialChunk.id = '@initial'
+      this._chunks.addToBeginning(initialChunk)
+    }
+  }
+
   /**
    * Resolves a time reference.
    *
    * Note that the chunk returned is only valid if the timeline stays constant.
    * Once the timeline is updated, you must re-parse all references.
    */
-  parseTimeId(id: string): TimeRef | null {
-    // TODO: Return ("loadable" | "missing") to distinguish between
-    // "might be available in not-yet-loaded-entries" and "completely invalid".
+  parseTimeId(id: string): ParsedTimeRef {
+    if (this._chunks.length === 0) {
+      return this.reachedEarliestEntry ? 'invalid' : 'loading'
+    }
 
-    if (this._chunks.length === 0) return null
+    if (id === '@lastPublished') {
+      const chunk = this.findMaybeLastPublishedBefore(this._chunks.lastIdx)
+      if (chunk) return chunk
 
-    if (id === '-') return this.createTimeRef(this._chunks.lastIdx)
+      return this.reachedEarliestEntry ? this._chunks.first : 'loading'
+    }
 
     const [timestampStr, chunkId] = id.split('/', 2)
-    const timestamp = Number(timestampStr)
+    const timestamp = new Date(Number(timestampStr))
 
-    // TODO: Use the chunkId for something
-
-    const firstIdx = this._chunks.firstIdx
-    const lastIdx = this._chunks.lastIdx
-    for (let idx = lastIdx; idx >= firstIdx; idx--) {
+    for (let idx = this._chunks.lastIdx; idx >= this._chunks.firstIdx; idx--) {
       const chunk = this._chunks.get(idx)
-      if (
-        timestamp >= chunk.startTimestamp.valueOf() &&
-        timestamp <= chunk.endTimestamp.valueOf()
-      ) {
-        return this.createTimeRef(idx, chunk)
+      if (chunk.id === chunkId) {
+        return chunk
+      }
+
+      if (chunk.endTimestamp.valueOf() + 60 * 60 * 1000 < timestamp.valueOf()) {
+        // The chunk ended _before_ the timestamp we're asking for. This means that there
+        // is no point in looking further and the chunk is invalid.
+
+        // We add 1 hour to allow some slack since transactions are not guaranteed to be in order.
+        return 'invalid'
       }
     }
 
-    return null
+    return this.reachedEarliestEntry ? 'invalid' : 'loading'
   }
 
-  createTimeId(chunkIdx: number, chunk = this._chunks.get(chunkIdx)) {
-    return this.createTimeRef(chunkIdx, chunk).id
+  findLastPublishedBefore(chunkIdx: number) {
+    return this.findMaybeLastPublishedBefore(chunkIdx) || this._chunks.first
   }
 
-  publishedTimeId(): string | null {
-    for (let chunkIdx = this._chunks.lastIdx; chunkIdx >= this._chunks.firstIdx; chunkIdx--) {
+  findMaybeLastPublishedBefore(chunkIdx: number) {
+    for (; chunkIdx >= this._chunks.firstIdx; chunkIdx--) {
       const chunk = this._chunks.get(chunkIdx)
-      if (chunk.type === 'publish') {
-        return this.createTimeId(chunkIdx, chunk)
+      if (chunk.type === 'publish' || chunk.type === 'initial') {
+        return chunk
       }
     }
 
     return null
   }
 
-  /** Creates a time reference from a chunk. */
-  private createTimeRef(chunkIdx: number, chunk = this._chunks.get(chunkIdx)): TimeRef {
-    const timestamp = Math.round(
-      (chunk.startTimestamp.valueOf() + chunk.endTimestamp.valueOf()) / 2
-    )
+  isLatestChunk(chunk: Chunk) {
+    return chunk === this._chunks.last
+  }
 
-    return {
-      id: `${timestamp}/${chunk.id}`,
-      chunkIdx,
-      chunk
-    }
+  // eslint-disable-next-line class-methods-use-this
+  createTimeId(chunk: Chunk): string {
+    return `${chunk.endTimestamp.valueOf()}/${chunk.id}`
+  }
+
+  lastChunk(): Chunk {
+    return this._chunks.last
   }
 
   transactionByIndex(idx: number): Transaction | null {
@@ -330,25 +348,19 @@ export class Timeline {
    * equal (using object identity) to the previous range, so feel free to call
    * this often rather seldom.
    */
-  setRange(startRef: TimeRef, endRef: TimeRef | null) {
-    const startIdx = startRef.chunkIdx
-    const start = startRef.chunk
-    const endIdx = endRef ? endRef.chunkIdx : this._chunks.lastIdx
-    const end = endRef ? endRef.chunk : this._chunks.get(endIdx)
-
+  setRange(start: Chunk, end: Chunk) {
     const current = this._reconstruction
     if (current && current.start === start) {
       if (current.end !== end) {
         current.diff = undefined
         current.endDocument = undefined
         current.end = end
-        current.endIdx = endIdx
       }
 
       return
     }
 
-    this._reconstruction = {start, startIdx, end, endIdx}
+    this._reconstruction = {start, end}
   }
 
   /** Returns the attributes as seen at the end of the range. */
@@ -427,7 +439,7 @@ export class Timeline {
       return current.diff
     }
 
-    if (!current.startDocument) {
+    if (!current.startDocument || !current.endDocument) {
       this.calculateAttributes(current)
     }
 
@@ -440,7 +452,7 @@ export class Timeline {
     const initialAttributes = getAttrs(doc)
 
     let chunk = current.start
-    let chunkIdx = current.startIdx
+    let chunkIdx = chunk.index
 
     // Loop over all of the chunks:
     for (;;) {
@@ -482,7 +494,7 @@ export class Timeline {
       }
 
       // We reached the final chunk
-      if (chunkIdx == current.endIdx) {
+      if (chunk === current.end) {
         break
       }
 
@@ -512,9 +524,7 @@ type CombinedDocument = {
 }
 
 type Reconstruction = {
-  startIdx: number
   start: Chunk
-  endIdx: number
   end: Chunk
   startDocument?: CombinedDocument
   endDocument?: CombinedDocument

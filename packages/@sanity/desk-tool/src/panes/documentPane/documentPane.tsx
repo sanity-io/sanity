@@ -3,6 +3,7 @@ import {Popover} from 'part:@sanity/components/popover'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import React, {useCallback, useRef, useState} from 'react'
+import {Chunk} from '@sanity/field/diff'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
@@ -10,7 +11,7 @@ import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel, getProductionPreviewItem} from './documentPanel'
 import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
-import {Timeline} from './timeline'
+import {Timeline, sinceTimelineProps, revTimelineProps} from './timeline'
 import {Doc, DocumentViewType, MenuItemGroup} from './types'
 
 import styles from './documentPane.css'
@@ -60,17 +61,16 @@ export function DocumentPane(props: DocumentPaneProps) {
   } = props
 
   const features = useDeskToolFeatures()
-  const {startTime} = useDocumentHistory()
+  const {setRange, timeline, historyController} = useDocumentHistory()
+  const historyState = historyController.selectionState
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
-  const [isTimelineOpen, setTimelineOpen] = useState(false)
-  const [timelineMode, setTimelineMode] = useState<'version' | 'changesSince'>('version')
+  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   const activeViewId = paneRouter.params.view || (views[0] && views[0].id)
   const initialFocusPath = paneRouter.params.path
     ? PathUtils.fromString(paneRouter.params.path)
     : []
   const isInspectOpen = paneRouter.params.inspect === 'on'
-  const isHistoryOpen = Boolean(startTime)
 
   const handleKeyUp = useCallback(
     (event: any) => {
@@ -126,29 +126,75 @@ export function DocumentPane(props: DocumentPaneProps) {
   const changesSinceSelectRef = useRef<HTMLDivElement | null>(null)
   const versionSelectRef = useRef<HTMLDivElement | null>(null)
 
-  const handleTimelineOpen = useCallback((mode: 'version' | 'changesSince') => {
-    setTimelineMode(mode)
-    setTimelineOpen(true)
+  const selectRev = useCallback(
+    (revChunk: Chunk) => {
+      const [sinceId, revId] = historyController.findRangeForNewRev(revChunk)
+      setTimelineMode('closed')
+      setRange(sinceId, revId)
+    },
+    [historyController, setRange, setTimelineMode]
+  )
+
+  const selectSince = useCallback(
+    (sinceChunk: Chunk) => {
+      const [sinceId, revId] = historyController.findRangeForNewSince(sinceChunk)
+      setTimelineMode('closed')
+      setRange(sinceId, revId)
+    },
+    [historyController, setRange, setTimelineMode]
+  )
+
+  const loadMoreHistory = useCallback((state: boolean) => {
+    historyController.setLoadMore(state)
   }, [])
 
   const handleTimelineClose = useCallback(() => {
-    setTimelineOpen(false)
-  }, [])
+    setTimelineMode('closed')
+  }, [setTimelineMode])
+
+  const handleTimelineSince = useCallback(() => {
+    setTimelineMode(timelineMode === 'since' ? 'closed' : 'since')
+  }, [timelineMode, setTimelineMode])
+
+  const handleTimelineRev = useCallback(() => {
+    setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
+  }, [timelineMode, setTimelineMode])
+
+  const isChangesOpen = historyState === 'active' || historyState === 'loading'
+  const isTimelineOpen = timelineMode !== 'closed' && historyState === 'active'
 
   return (
     <Popover
       content={
         <ClickOutside onClickOutside={handleTimelineClose}>
-          {ref => (
-            <Timeline onModeChange={setTimelineMode} onSelect={handleTimelineClose} ref={ref} />
-          )}
+          {ref =>
+            timelineMode === 'rev' ? (
+              <Timeline
+                ref={ref}
+                timeline={timeline}
+                onSelect={selectRev}
+                onLoadMore={loadMoreHistory}
+                {...revTimelineProps(historyController.realRevChunk)}
+              />
+            ) : (
+              <Timeline
+                ref={ref}
+                timeline={timeline}
+                onSelect={selectSince}
+                onLoadMore={loadMoreHistory}
+                {...sinceTimelineProps(
+                  historyController.sinceTime!,
+                  historyController.realRevChunk
+                )}
+              />
+            )
+          }
         </ClickOutside>
       }
       open={isTimelineOpen}
       placement="bottom"
-      style={{transition: isTimelineOpen ? 'transform 200ms' : undefined}}
       targetElement={
-        timelineMode === 'version' ? versionSelectRef.current : changesSinceSelectRef.current
+        timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
       }
     >
       <DocumentActionShortcuts
@@ -174,7 +220,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             initialValue={initialValue}
             isClosable={isClosable}
             isCollapsed={isCollapsed}
-            isHistoryOpen={isHistoryOpen}
+            isHistoryOpen={isChangesOpen}
             markers={markers}
             menuItemGroups={menuItemGroups}
             onChange={onChange}
@@ -183,7 +229,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             onExpand={onExpand}
             onSetActiveView={handleSetActiveView}
             onSplitPane={handleSplitPane}
-            onTimelineOpen={handleTimelineOpen}
+            onTimelineOpen={handleTimelineRev}
             paneTitle={paneTitle}
             schemaType={schemaType}
             toggleInspect={toggleInspect}
@@ -193,12 +239,14 @@ export function DocumentPane(props: DocumentPaneProps) {
           />
         </div>
 
-        {features.reviewChanges && !isCollapsed && isHistoryOpen && (
+        {features.reviewChanges && !isCollapsed && isChangesOpen && (
           <div className={styles.changesContainer}>
             <ChangesPanel
+              loading={historyState === 'loading'}
+              since={historyController.sinceTime}
               documentId={documentId}
               changesSinceSelectRef={changesSinceSelectRef}
-              onTimelineOpen={handleTimelineOpen}
+              onTimelineOpen={handleTimelineSince}
               schemaType={schemaType}
             />
           </div>
