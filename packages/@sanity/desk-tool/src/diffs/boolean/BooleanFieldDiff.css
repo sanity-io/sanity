@@ -2,7 +2,7 @@
 
 .root {
   display: flex;
-  padding: var(--small-padding);
+  padding: var(--small-padding) 0;
 }
 
 .arrow {
