@@ -13,16 +13,13 @@
   font-size: var(--font-size-large);
 }
 
-/* TODO: find less hacky solution to prevent focus styles */
+.label {
+  display: flex;
+  align-items: center;
+}
 
-.input:focus-within {
-  @nest & div[class*="switchWrapper"] {
-    border-color: transparent;
-  }
-  @nest & div[class*="Checkbox_checkbox"] {
-    border-color: var(--gray-light);
-    @nest &::before {
-      content: unset;
-    }
-  }
+.title {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+  margin-left: var(--small-padding);
+  line-height: 1;
 }

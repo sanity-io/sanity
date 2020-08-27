@@ -1,27 +1,30 @@
-import React, {useRef} from 'react'
-import {DiffComponent, BooleanDiff, DiffAnnotationTooltip} from '@sanity/field/diff'
-import SwitchInput from 'part:@sanity/components/toggles/switch'
-import CheckboxInput from 'part:@sanity/components/toggles/checkbox'
+import React from 'react'
+import {
+  DiffComponent,
+  BooleanDiff,
+  DiffAnnotationTooltip,
+  useAnnotationColor
+} from '@sanity/field/diff'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
+import {Checkbox, Switch} from './BooleanInput'
 import styles from './BooleanFieldDiff.css'
 
-export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
-  const {fromValue, toValue} = diff
-  const inputRefFrom = useRef<any>(fromValue)
+export const BooleanFieldDiff /* : DiffComponent<BooleanDiff> */ = ({diff, schemaType}) => {
+  const {fromValue, toValue, annotation} = diff
   const {title, options} = schemaType
-  const Input = options?.layout === 'checkbox' ? CheckboxInput : SwitchInput
+  const Input = options?.layout === 'checkbox' ? Checkbox : Switch
+  const userColor = useAnnotationColor(annotation)
   return (
     <DiffAnnotationTooltip as="div" className={styles.root} diff={diff}>
-      <div className={styles.input}>
-        <Input checked={fromValue} ref={inputRefFrom} />
-      </div>
+      <Input checked={fromValue} color={userColor} />
       {toValue !== undefined && toValue !== null && (
         <>
           <div className={styles.arrow}>
             <ArrowIcon />
           </div>
-          <div className={styles.input}>
-            <Input checked={toValue} label={title} />
+          <div className={styles.label}>
+            <Input checked={toValue} color={userColor} />
+            {title && <div className={styles.title}>{title}</div>}
           </div>
         </>
       )}
