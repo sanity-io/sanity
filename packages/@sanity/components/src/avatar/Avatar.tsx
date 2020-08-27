@@ -59,7 +59,7 @@ export default function Avatar({
           <svg viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M6.67948 1.50115L11 7L0 7L4.32052 1.50115C4.92109 0.736796 6.07891 0.736795 6.67948 1.50115Z"
-              fill="currentColor"
+              fill={borderColor}
             />
           </svg>
         </div>
