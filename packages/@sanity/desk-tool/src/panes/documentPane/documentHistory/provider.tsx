@@ -64,9 +64,8 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   let displayed = props.value
 
-  if (startTime) {
-    // timeline.setRange(startTime, null)
-    displayed = historyDisplayed === 'from' ? timeline.startAttributes() : timeline.endAttributes()
+  if (startTime && historyDisplayed == 'from') {
+    displayed = timeline.startAttributes()
   }
 
   // TODO: Fetch only when open
