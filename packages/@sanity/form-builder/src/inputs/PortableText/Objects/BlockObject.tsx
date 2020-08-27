@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, SyntheticEvent} from 'react'
+import React, {FunctionComponent, SyntheticEvent, useMemo} from 'react'
 import classNames from 'classnames'
 import {
   PortableTextEditor,
@@ -66,19 +66,23 @@ export const BlockObject: FunctionComponent<Props> = ({
     )
     PortableTextEditor.focus(editor)
   }
-
+  const blockPreview = useMemo(() => {
+    return (
+      <BlockObjectPreview
+        type={type}
+        value={value}
+        path={path}
+        readOnly={readOnly}
+        onFocus={onFocus}
+        onClickingDelete={handleDelete}
+        onClickingEdit={handleEdit}
+      />
+    )
+  }, [value, readOnly])
   return (
     <div className={classnames} onDoubleClick={handleClickToOpen}>
       <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
-        <BlockObjectPreview
-          type={type}
-          value={value}
-          path={path}
-          readOnly={readOnly}
-          onFocus={onFocus}
-          onClickingDelete={handleDelete}
-          onClickingEdit={handleEdit}
-        />
+        {blockPreview}
       </div>
     </div>
   )
