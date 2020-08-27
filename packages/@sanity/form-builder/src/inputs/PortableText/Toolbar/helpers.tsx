@@ -109,8 +109,7 @@ function getPTEListActions(
   const focusBlock = PortableTextEditor.focusBlock(editor)
 
   return features.lists.map((listItem: PortableTextFeature) => {
-    const active = focusBlock ? focusBlock.listItem === listItem.value : false
-
+    const active = PortableTextEditor.hasListStyle(editor, listItem.value)
     return {
       active,
       key: listItem.value,
@@ -122,6 +121,7 @@ function getPTEListActions(
   })
 }
 
+// eslint-disable-next-line complexity
 function getAnnotationIcon(item: PortableTextFeature, active: boolean): React.ComponentType {
   let Icon: React.ComponentType
 
