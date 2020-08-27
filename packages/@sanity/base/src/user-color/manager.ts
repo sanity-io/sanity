@@ -8,7 +8,10 @@ type UserId = string
 const defaultCurrentUserHue = 'magenta'
 
 // Remove green and red because they can be confused with "add" and "remove"
-const defaultHues: ColorHueKey[] = COLOR_HUES.filter(hue => hue !== 'green' && hue !== 'red')
+// Remove gray because it looks like "color not found"
+const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
+  hue => hue !== 'green' && hue !== 'red' && hue !== 'gray'
+)
 const defaultColors = defaultHues.reduce((colors, hue) => {
   colors[hue] = {
     background: SanityColor[hue][100].hex,
