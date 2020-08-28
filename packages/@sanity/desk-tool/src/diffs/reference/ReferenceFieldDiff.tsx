@@ -1,54 +1,50 @@
 import React from 'react'
-import {DiffComponent, ReferenceDiff, DiffAnnotation} from '@sanity/field/diff'
+import {
+  DiffComponent,
+  ReferenceDiff,
+  DiffAnnotationTooltip,
+  useDiffAnnotationColor
+} from '@sanity/field/diff'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import ArrowIcon from 'part:@sanity/base/arrow-right'
 import {useRefPreview} from '../hooks'
 import styles from './ReferenceFieldDiff.css'
+import {DiffLayout, MetaInfo as ReferenceDetails} from '../shared'
 
-const ReferenceDetails = ({diff, title, action}) => {
-  return (
-    <DiffAnnotation as="div" diff={diff} path="_ref" className={styles.meta} data-action={action}>
-      <div className={styles.icon}>
-        <LinkIcon />
-      </div>
-      <div className={styles.info}>
-        <h3 className={styles.title} title={title}>
-          {title}
-        </h3>
-        <div>{action}</div>
-      </div>
-    </DiffAnnotation>
-  )
-}
+// TODO: fix hooks error
 
 export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
   const prev = fromValue && useRefPreview(fromValue, schemaType)
   const next = toValue && useRefPreview(toValue, schemaType)
-
+  const color = useDiffAnnotationColor(diff, '_ref')
+  const style = color ? {background: color.background, color: color.text} : {}
   return (
-    <div className={styles.root} data-diff-layout={prev && next ? 'double' : 'single'}>
-      {prev && (
-        <ReferenceDetails
-          diff={diff}
-          title={prev.title || 'Untitled'}
-          action={prev && next ? 'changed' : 'removed'}
-        />
-      )}
-
-      {prev && next && (
-        <div className={styles.arrow}>
-          <ArrowIcon />
-        </div>
-      )}
-
-      {next && (
-        <ReferenceDetails
-          diff={diff}
-          title={next.title || 'Untitled'}
-          action={prev && next ? 'changed' : 'added'}
-        />
-      )}
-    </div>
+    <DiffAnnotationTooltip as="div" diff={diff} path="_ref">
+      <DiffLayout
+        layout={prev && next ? 'grid' : 'inline'}
+        renderFrom={
+          prev && (
+            <div className={styles.annotation} style={style}>
+              <ReferenceDetails
+                title={prev.title || 'Untitled'}
+                action={prev && next ? 'changed' : 'removed'}
+                icon={LinkIcon}
+              />
+            </div>
+          )
+        }
+        renderTo={
+          next && (
+            <div className={styles.annotation} style={style}>
+              <ReferenceDetails
+                title={next.title || 'Untitled'}
+                action={prev && next ? 'changed' : 'added'}
+                icon={LinkIcon}
+              />
+            </div>
+          )
+        }
+      />
+    </DiffAnnotationTooltip>
   )
 }
