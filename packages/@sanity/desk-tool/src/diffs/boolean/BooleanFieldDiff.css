@@ -5,14 +5,6 @@
   padding: var(--small-padding) 0;
 }
 
-.arrow {
-  display: flex;
-  align-self: flex-start;
-  padding: 0 var(--small-padding);
-  flex: 0;
-  font-size: var(--font-size-large);
-}
-
 .label {
   display: flex;
   align-items: center;
