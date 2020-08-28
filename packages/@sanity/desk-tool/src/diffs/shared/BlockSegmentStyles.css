@@ -18,10 +18,11 @@
 
 .segment {
   position: relative;
-  padding: 2px 7px;
+  padding: 3px 7px;
   border-radius: 1px;
   margin: 3px 0;
   border-bottom: 1px solid transparent;
+  word-break: break-all;
 
   @nest &::after {
     position: absolute;
