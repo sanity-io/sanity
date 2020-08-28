@@ -4,8 +4,12 @@
   /*  */
 }
 
+.annotation {
+  border-radius: var(--border-radius-small);
+}
+
 .imageDiff {
-  @nest &[data-diff-layout="double"] {
+  @nest &[data-diff-layout='double'] {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
   }
@@ -24,12 +28,4 @@
     font-weight: 600;
     margin-bottom: var(--small-padding);
   }
-}
-
-.arrow {
-  display: flex;
-  padding: 0 var(--small-padding);
-  flex: 0;
-  align-items: center;
-  font-size: var(--font-size-large);
 }

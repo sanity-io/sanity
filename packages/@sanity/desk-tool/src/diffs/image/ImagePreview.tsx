@@ -5,6 +5,7 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 import ImageIcon from 'part:@sanity/base/image-icon'
 import styles from './ImagePreview.css'
 import {ImagePreviewProps} from './types'
+import {MetaInfo} from '../shared'
 
 const imageBuilder = imageUrlBuilder(sanityClient)
 
@@ -28,28 +29,20 @@ export default function ImagePreview({
           data-action={action}
         />
       </div>
-      <div className={styles.meta} data-action={action}>
-        <div className={styles.icon}>
-          <Icon />
-        </div>
-        <div className={styles.info}>
-          <h3 className={styles.title} title={title}>
-            {title}
-          </h3>
-          {dimensions && action !== 'changed' && (
-            <div>
-              {['added', 'removed'].includes(action)
-                ? action
-                : `${dimensions.height}x${dimensions.width}`}
-            </div>
-          )}
-          {action === 'changed' && (
-            <div>
-              <span>{action} hotspot/crop</span>
-            </div>
-          )}
-        </div>
-      </div>
+      <MetaInfo title={title} icon={Icon}>
+        {dimensions && action !== 'changed' && (
+          <div>
+            {['added', 'removed'].includes(action)
+              ? action
+              : `${dimensions.height}x${dimensions.width}`}
+          </div>
+        )}
+        {action === 'changed' && (
+          <div>
+            <span>{action} hotspot/crop</span>
+          </div>
+        )}
+      </MetaInfo>
     </div>
   )
 }
