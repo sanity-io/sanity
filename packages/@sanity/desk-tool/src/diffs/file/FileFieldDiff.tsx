@@ -1,11 +1,16 @@
 import * as React from 'react'
-import {DiffComponent, ObjectDiff, DiffAnnotation} from '@sanity/field/diff'
-import ArrowIcon from 'part:@sanity/base/arrow-right'
+import {
+  DiffComponent,
+  ObjectDiff,
+  DiffAnnotationTooltip,
+  useDiffAnnotationColor
+} from '@sanity/field/diff'
 import {resolveDiffComponent} from '../resolveDiffComponent'
 import {FallbackDiff} from '../_fallback/FallbackDiff'
 import {getRefValue} from '../hooks'
 import styles from './FileFieldDiff.css'
-import FilePreview from './FilePreview'
+import {DiffArrow, MetaInfo} from '../shared'
+import FileIcon from 'part:@sanity/base/file-icon'
 
 function getSizeDiff(prev, next) {
   if (!prev || !next) {
@@ -42,30 +47,42 @@ export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => 
       field => changedFields.some(f => f.name === field.name) && !['asset'].includes(field.name)
     )
     .map(field => ({name: field.name, schemaType: field.type, diff: fields[field.name]}))
+  const color = useDiffAnnotationColor(diff, 'asset._ref')
+  const style = color ? {background: color.background, color: color.text} : {}
+  const pctDiff = getSizeDiff(prevSize, nextSize)
   return (
     <div className={styles.root}>
       {didAssetChange && (
-        <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
-          {prev && (
-            <DiffAnnotation diff={diff} path="asset._ref">
-              <FilePreview value={prev} action={didAssetChange ? 'removed' : 'changed'} />
-            </DiffAnnotation>
-          )}
-          {prev && next && (
-            <div className={styles.arrow}>
-              <ArrowIcon />
-            </div>
-          )}
-          {next && (
-            <DiffAnnotation diff={diff} path="asset._ref">
-              <FilePreview
-                value={next}
-                action={didAssetChange ? 'added' : 'changed'}
-                pctDiff={getSizeDiff(prevSize, nextSize)}
-              />
-            </DiffAnnotation>
-          )}
-        </div>
+        <DiffAnnotationTooltip as="div" diff={diff} path="asset._ref" className={styles.tooltip}>
+          <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
+            {prev && (
+              <div className={styles.annotation} style={style}>
+                <MetaInfo
+                  title={prev.originalFilename || 'Untitled'}
+                  icon={FileIcon}
+                  action={didAssetChange ? 'removed' : 'changed'}
+                ></MetaInfo>
+              </div>
+            )}
+            {prev && next && <DiffArrow />}
+            {next && (
+              <div className={styles.annotation} style={style}>
+                <MetaInfo title={next.originalFilename || 'Untitled'} icon={FileIcon}>
+                  <span>{didAssetChange ? 'added' : 'changed'}</span>
+                  {pctDiff !== 0 && (
+                    <div
+                      className={styles.sizeDiff}
+                      data-number={pctDiff > 0 ? 'positive' : 'negative'}
+                    >
+                      {pctDiff > 0 && '+'}
+                      {pctDiff}%
+                    </div>
+                  )}
+                </MetaInfo>
+              </div>
+            )}
+          </div>
+        </DiffAnnotationTooltip>
       )}
       {nestedFields.length > 0 && (
         <div className={styles.nestedFields}>

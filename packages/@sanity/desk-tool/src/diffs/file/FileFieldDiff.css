@@ -4,10 +4,32 @@
   /*  */
 }
 
+.annotation {
+  border-radius: var(--border-radius-small);
+}
+
 .fileDiff {
-  @nest &[data-diff-layout="double"] {
+  @nest &[data-diff-layout='double'] {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
+  }
+}
+
+.sizeDiff {
+  display: inline-block;
+  font-size: 13px;
+  padding: 0 4px;
+  background: var(--component-bg);
+  border-radius: 2px;
+  margin: 0 var(--small-padding);
+  margin-top: 2px;
+
+  @nest &[data-number='positive'] {
+    color: var(--state-success-color);
+  }
+
+  @nest &[data-number='negative'] {
+    color: var(--state-danger-color);
   }
 }
 
@@ -24,12 +46,4 @@
     font-weight: 600;
     margin-bottom: var(--small-padding);
   }
-}
-
-.arrow {
-  display: flex;
-  padding: 0 var(--small-padding);
-  flex: 0;
-  align-items: center;
-  font-size: var(--font-size-large);
 }
