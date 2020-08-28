@@ -1,17 +1,39 @@
 import React from 'react'
-import {DiffComponent, ObjectDiff, StringSchemaType} from '@sanity/field/diff'
-import {StringFieldDiff} from '../string/StringFieldDiff'
+import {
+  DiffComponent,
+  // StringDiff,
+  DiffAnnotationTooltip,
+  useDiffAnnotationColor
+} from '@sanity/field/diff'
+import styles from '../shared/BlockSegmentStyles.css'
+import {DiffLayout} from '../shared'
 
-interface Slug {
-  current?: string
-}
+// TODO slug diff type
 
-export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff, schemaType}) => {
-  const currentField = schemaType.fields.find(field => field.name === 'current')
-  const currentDiff = diff.fields.current
-  if (!currentField || currentDiff?.type !== 'string') {
-    return null
-  }
+export const SlugFieldDiff /* : DiffComponent<StringDiff> */ = ({diff}) => {
+  const {fromValue, toValue} = diff
+  const color = useDiffAnnotationColor(diff, [])
+  const style = color ? {background: color.background, color: color.text} : {}
 
-  return <StringFieldDiff diff={currentDiff} schemaType={currentField as StringSchemaType} />
+  return (
+    <DiffAnnotationTooltip diff={diff}>
+      <DiffLayout
+        layout="grid"
+        renderFrom={
+          fromValue && (
+            <del className={`${styles.segment} ${styles.add}`} style={style}>
+              {fromValue.current}
+            </del>
+          )
+        }
+        renderTo={
+          toValue && (
+            <ins className={`${styles.segment} ${styles.remove}`} style={style}>
+              {toValue.current}
+            </ins>
+          )
+        }
+      />
+    </DiffAnnotationTooltip>
+  )
 }
