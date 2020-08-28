@@ -8,6 +8,7 @@ import {
 import ArrowIcon from 'part:@sanity/base/arrow-right'
 import {Checkbox, Switch} from './BooleanInput'
 import styles from './BooleanFieldDiff.css'
+import {DiffArrow} from '../shared'
 
 export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
@@ -19,9 +20,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
       <Input checked={fromValue} color={userColor} />
       {toValue !== undefined && toValue !== null && (
         <>
-          <div className={styles.arrow}>
-            <ArrowIcon />
-          </div>
+          <DiffArrow />
           <div className={styles.label}>
             <Input checked={toValue} color={userColor} />
             {title && <div className={styles.title}>{title}</div>}

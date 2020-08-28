@@ -1,0 +1,23 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--small-padding) 0;
+
+  @nest &[data-layout='inline'] {
+    display: flex;
+    align-items: center;
+  }
+
+  @nest &[data-layout='grid'] {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+
+.arrow {
+  display: flex;
+  padding: 0 var(--small-padding);
+  flex: 0;
+  align-items: center;
+  font-size: var(--font-size-large);
+}

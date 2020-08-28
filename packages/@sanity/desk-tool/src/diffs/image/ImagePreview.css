@@ -1,75 +1,33 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: var(--small-padding);
-  border-radius: var(--border-radius-small);
   overflow: hidden;
   max-height: 190px;
   height: 100%;
+  display: grid;
+  grid-template-areas: 'image' 'meta';
+  grid-template-rows: 1fr auto;
 }
 
 .imageWrapper {
   display: flex;
   flex: 1;
   overflow: hidden;
-  padding-bottom: var(--small-padding);
+  padding: var(--small-padding) var(--small-padding) 0;
 
   @nest & .image {
     background-color: color(var(--gray-lightest) alpha(50%));
     background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
+      linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0;
     object-fit: contain;
     width: 100%;
 
-    @nest &[data-action="removed"] {
+    @nest &[data-action='removed'] {
       opacity: 0.5;
     }
-  }
-}
-
-.meta {
-  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
-  display: grid;
-  grid-template-areas: 'image image' 'icon meta';
-  grid-template-columns: auto 1fr;
-
-  @nest & .info {
-    overflow: hidden;
-    line-height: 1.5;
-    padding-left: var(--small-padding);
-  }
-
-  @nest & .title {
-    font-size: inherit;
-    font-weight: 600;
-    margin: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  @nest & .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(var(--font-size-large) + 5px);
-  }
-}
-
-.meta[data-action="added"] {
-  /*  */
-}
-
-.meta[data-action="removed"] {
-  
-  @nest & .title {
-    text-decoration: line-through;
   }
 }
