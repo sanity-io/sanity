@@ -11,15 +11,15 @@ import debug from '../../debug'
 import clientWrapper from '../../util/clientWrapper'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
-import createProject from '../project/createProject'
 import login from '../login/login'
 import dynamicRequire from '../../util/dynamicRequire'
-import promptForDatasetName from './promptForDatasetName'
+import getOrCreateProject from './getOrCreateProject'
+import getOrCreateDataset from './getOrCreateDataset'
 import bootstrapTemplate from './bootstrapTemplate'
 import templates from './templates'
+import prepareFlags from './prepareFlags'
 
 /* eslint-disable no-process-env */
-const isCI = process.env.CI
 const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
@@ -31,9 +31,8 @@ export default async function initSanity(args, context) {
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
+  const useDefaultDatasetConfig = cliFlags['dataset-default']
   let reconfigure = cliFlags.reconfigure
-  let defaultConfig = cliFlags['dataset-default']
-  let showDefaultConfigPrompt = !defaultConfig
 
   // Check if we have a project manifest already
   const manifestPath = path.join(workDir, 'sanity.json')
@@ -102,11 +101,17 @@ export default async function initSanity(args, context) {
     await getOrCreateUser()
   }
 
-  const flags = await prepareFlags(cliFlags)
+  const flags = await prepareFlags(cliFlags, {apiClient, output})
 
   // We're authenticated, now lets select or create a project
   debug('Prompting user to select or create a project')
-  const {projectId, displayName, isFirstProject} = await getOrCreateProject()
+  const {projectId, displayName, isFirstProject} = await getOrCreateProject({
+    apiClient,
+    unattended,
+    flags,
+    prompt
+  })
+
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9]/g, '')
@@ -115,16 +120,15 @@ export default async function initSanity(args, context) {
 
   // Now let's pick or create a dataset
   debug('Prompting user to select or create a dataset')
-  const {datasetName} = await getOrCreateDataset(
-    {
-      projectId,
-      displayName,
-      dataset: flags.dataset,
-      aclMode: flags.visibility,
-      defaultConfig: flags['dataset-default']
-    },
-    context
-  )
+  const {datasetName} = await getOrCreateDataset({
+    dataset: flags.dataset,
+    useDefaultConfig: useDefaultDatasetConfig,
+    aclMode: flags.visibility,
+    client: apiClient({api: {projectId}}),
+    unattended,
+    prompt,
+    output
+  })
 
   debug(`Dataset with name ${datasetName} selected`)
 
@@ -300,195 +304,6 @@ export default async function initSanity(args, context) {
     print('datasets and collaborators safe and snug.')
   }
 
-  async function getOrCreateProject() {
-    let projects
-    try {
-      projects = await apiClient({requireProject: false}).projects.list()
-    } catch (err) {
-      if (unattended) {
-        return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
-      }
-
-      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
-    }
-
-    if (projects.length === 0 && unattended) {
-      throw new Error('No projects found for current user')
-    }
-
-    if (flags.project) {
-      const project = projects.find(proj => proj.id === flags.project)
-      if (!project && !unattended) {
-        throw new Error(
-          `Given project ID (${flags.project}) not found, or you do not have access to it`
-        )
-      }
-
-      return {
-        projectId: flags.project,
-        displayName: project ? project.displayName : 'Unknown project',
-        isFirstProject: false
-      }
-    }
-
-    const isUsersFirstProject = projects.length === 0
-    if (isUsersFirstProject) {
-      debug('No projects found for user, prompting for name')
-      const projectName = await prompt.single({message: 'Project name'})
-      return createProject(apiClient, {displayName: projectName}).then(response => ({
-        ...response,
-        isFirstProject: isUsersFirstProject
-      }))
-    }
-
-    debug(`User has ${projects.length} project(s) already, showing list of choices`)
-
-    const projectChoices = projects.map(project => ({
-      value: project.id,
-      name: `${project.displayName} [${project.id}]`
-    }))
-
-    const selected = await prompt.single({
-      message: 'Select project to use',
-      type: 'list',
-      choices: [
-        {value: 'new', name: 'Create new project'},
-        new prompt.Separator(),
-        ...projectChoices
-      ]
-    })
-
-    if (selected === 'new') {
-      debug('User wants to create a new project, prompting for name')
-      return createProject(apiClient, {
-        displayName: await prompt.single({
-          message: 'Your project name:',
-          default: 'My Sanity Project'
-        })
-      }).then(response => ({
-          ...response,
-          isFirstProject: isUsersFirstProject
-      }))
-    }
-
-    debug(`Returning selected project (${selected})`)
-    return {
-      projectId: selected,
-      displayName: projects.find(proj => proj.id === selected).displayName,
-      isFirstProject: isUsersFirstProject
-    }
-  }
-
-  async function getOrCreateDataset(opts) {
-    if (opts.dataset && isCI) {
-      return {datasetName: opts.dataset}
-    }
-
-    const client = apiClient({api: {projectId: opts.projectId}})
-    const [datasets, projectFeatures] = await Promise.all([
-      client.datasets.list(),
-      client.request({uri: '/features'})
-    ])
-
-    const privateDatasetsAllowed = projectFeatures.includes('privateDataset')
-    const allowedModes = privateDatasetsAllowed ? ['public', 'private'] : ['public']
-
-    if (opts.aclMode && !allowedModes.includes(opts.aclMode)) {
-      throw new Error(`Visibility mode "${opts.aclMode}" not allowed`)
-    }
-
-    // Getter in order to present prompts in a more logical order
-    const getAclMode = () => {
-      if (opts.aclMode) {
-        return opts.aclMode
-      }
-
-      if (unattended || !privateDatasetsAllowed || defaultConfig) {
-        return 'public'
-      } else if (privateDatasetsAllowed) {
-        return promptForAclMode(prompt, output)
-      }
-
-      return opts.aclMode
-    }
-
-    if (opts.dataset) {
-      debug('User has specified dataset through a flag (%s)', opts.dataset)
-      const existing = datasets.find(ds => ds.name === opts.dataset)
-
-      if (!existing) {
-        debug('Specified dataset not found, creating it')
-        const aclMode = await getAclMode()
-        const spinner = context.output.spinner('Creating dataset').start()
-        await client.datasets.create(opts.dataset, {aclMode})
-        spinner.succeed()
-      }
-
-      return {datasetName: opts.dataset}
-    }
-
-    const datasetInfo =
-      'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
-
-    if (datasets.length === 0) {
-      debug('No datasets found for project, prompting for name')
-      if (showDefaultConfigPrompt) {
-        output.print(datasetInfo)
-        defaultConfig = await promptForDefaultConfig(prompt)
-      }
-      const name = defaultConfig
-        ? 'production'
-        : await promptForDatasetName(prompt, {
-            message: 'Name of your first dataset:'
-          })
-      const aclMode = await getAclMode()
-      const spinner = context.output.spinner('Creating dataset').start()
-      await client.datasets.create(name, {aclMode})
-      spinner.succeed()
-      return {datasetName: name}
-    }
-
-    debug(`User has ${datasets.length} dataset(s) already, showing list of choices`)
-    const datasetChoices = datasets.map(dataset => ({value: dataset.name}))
-
-    const selected = await prompt.single({
-      message: 'Select dataset to use',
-      type: 'list',
-      choices: [
-        {value: 'new', name: 'Create new dataset'},
-        new prompt.Separator(),
-        ...datasetChoices
-      ]
-    })
-
-    if (selected === 'new') {
-      const existingDatasetNames = datasets.map(ds => ds.name)
-      debug('User wants to create a new dataset, prompting for name')
-      if (showDefaultConfigPrompt && !existingDatasetNames.includes('production')) {
-        output.print(datasetInfo)
-        defaultConfig = await promptForDefaultConfig(prompt)
-      }
-
-      const newDatasetName = defaultConfig
-        ? 'production'
-        : await promptForDatasetName(
-            prompt,
-            {
-              message: 'Dataset name:'
-            },
-            existingDatasetNames
-          )
-      const aclMode = await getAclMode()
-      const spinner = context.output.spinner('Creating dataset').start()
-      await client.datasets.create(newDatasetName, {aclMode})
-      spinner.succeed()
-      return {datasetName: newDatasetName}
-    }
-
-    debug(`Returning selected dataset (${selected})`)
-    return {datasetName: selected}
-  }
-
   function promptForDatasetImport(message) {
     return prompt.single({
       type: 'confirm',
@@ -554,74 +369,6 @@ export default async function initSanity(args, context) {
         }))
     }
   }
-
-  async function prepareFlags() {
-    const createProjectName = cliFlags['create-project']
-    if (cliFlags.dataset || cliFlags.visibility || cliFlags['dataset-default'] || unattended) {
-      showDefaultConfigPrompt = false
-    }
-
-    if (cliFlags.project && createProjectName) {
-      throw new Error(
-        'Both `--project` and `--create-project` specified, only a single is supported'
-      )
-    }
-
-    if (createProjectName === true) {
-      throw new Error('Please specify a project name (`--create-project <name>`)')
-    }
-
-    if (typeof createProjectName === 'string' && createProjectName.trim().length === 0) {
-      throw new Error('Please specify a project name (`--create-project <name>`)')
-    }
-
-    if (unattended) {
-      debug('Unattended mode, validating required options')
-      const requiredForUnattended = ['dataset', 'output-path']
-      requiredForUnattended.forEach(flag => {
-        if (!cliFlags[flag]) {
-          throw new Error(`\`--${flag}\` must be specified in unattended mode`)
-        }
-      })
-
-      if (!cliFlags.project && !createProjectName) {
-        throw new Error(
-          '`--project <id>` or `--create-project <name>` must be specified in unattended mode'
-        )
-      }
-    }
-
-    if (createProjectName) {
-      debug('--create-project specified, creating a new project')
-      const createdProject = await createProject(apiClient, {
-        displayName: createProjectName.trim()
-      })
-      debug('Project with ID %s created', createdProject.projectId)
-
-      if (cliFlags.dataset) {
-        debug('--dataset specified, creating dataset (%s)', cliFlags.dataset)
-        const client = apiClient({api: {projectId: createdProject.projectId}})
-        const spinner = context.output.spinner('Creating dataset').start()
-        await client.datasets.create(cliFlags.dataset)
-        spinner.succeed()
-      }
-
-      const newFlags = Object.assign({}, cliFlags, {project: createdProject.projectId})
-      delete newFlags['create-project']
-
-      return newFlags
-    }
-
-    return cliFlags
-  }
-}
-
-function promptForDefaultConfig(prompt) {
-  return prompt.single({
-    type: 'confirm',
-    message: 'Use the default dataset configuration?',
-    default: true
-  })
 }
 
 function promptImplicitReconfigure(prompt) {
@@ -669,31 +416,6 @@ function expandHome(filePath) {
 function absolutify(dir) {
   const pathName = expandHome(dir)
   return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
-}
-
-async function promptForAclMode(prompt, output) {
-  const mode = await prompt.single({
-    type: 'list',
-    message: 'Choose dataset visibility – this can be changed later',
-    choices: [
-      {
-        value: 'public',
-        name: 'Public (world readable)'
-      },
-      {
-        value: 'private',
-        name: 'Private (authenticated requests only)'
-      }
-    ]
-  })
-
-  if (mode === 'private') {
-    output.print(
-      'Please note that while documents are private, assets (files and images) are still public\n'
-    )
-  }
-
-  return mode
 }
 
 async function doDatasetImport(options) {

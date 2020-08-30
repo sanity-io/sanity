@@ -1,5 +1,6 @@
 import initProject from '../../actions/init-project/initProject'
 import initPlugin from '../../actions/init-plugin/initPlugin'
+import initBareProject from '../../actions/init-bare/initBareProject'
 
 const helpText = `
 Options
@@ -12,6 +13,7 @@ Options
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
   --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
+  --bare Do not create any studio files, only sanity.json/package.json
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -30,6 +32,9 @@ Examples
   # template to the given path
   sanity init -y --project abc123 --dataset staging --template moviedb --output-path .
 
+  # Initialize a "bare" project, only creating sanity.json and package.json
+  sanity init --bare
+
   # Create a brand new project with name "Movies Unlimited"
   sanity init -y \\
     --create-project "Movies Unlimited" \\
@@ -46,6 +51,11 @@ export default {
   helpText,
   action: (args, context) => {
     const [type] = args.argsWithoutOptions
+    const {bare} = args.extOptions
+
+    if (bare) {
+      return initBareProject(args, context)
+    }
 
     if (!type) {
       return initProject(args, context)
