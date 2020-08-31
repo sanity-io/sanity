@@ -13,7 +13,7 @@ Options
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
   --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
-  --bare Do not create any studio files, only sanity.json/package.json
+  --bare Create a project without a studio, only sanity.json and package.json
 
 Examples
   # Initialize a new project, prompt for required information along the way
