@@ -8,7 +8,7 @@ import DialogContent from 'part:@sanity/components/dialogs/content'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker, Presence} from '../../../../typedefs'
+import {Marker, Presence, Type as FormBuilderType} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -57,17 +57,17 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           <DialogContent size="small" padding="none">
             <PresenceOverlay>
               <FormBuilderInput
-                type={type}
+                focusPath={focusPath}
                 level={0}
-                readOnly={readOnly || type.readOnly}
-                value={object}
+                markers={markers}
+                onBlur={onBlur}
                 onChange={handleChange}
                 onFocus={onFocus}
-                onBlur={onBlur}
-                focusPath={focusPath}
                 path={path}
                 presence={presence}
-                markers={markers}
+                readOnly={readOnly || type.readOnly}
+                type={type as FormBuilderType}
+                value={object}
               />
             </PresenceOverlay>
           </DialogContent>

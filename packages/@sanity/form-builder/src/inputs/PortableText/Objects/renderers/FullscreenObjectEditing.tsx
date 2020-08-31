@@ -6,7 +6,7 @@ import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-
 import {PresenceOverlay} from '@sanity/base/presence'
 
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker, Presence} from '../../../../typedefs'
+import {Marker, Presence, Type as FormBuilderType} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -53,17 +53,17 @@ export const FullscreenObjectEditing: FunctionComponent<Props> = ({
             <div>
               <PresenceOverlay>
                 <FormBuilderInput
-                  type={type}
+                  focusPath={focusPath}
                   level={0}
-                  readOnly={readOnly || type.readOnly}
-                  value={object}
-                  presence={presence}
+                  markers={markers}
+                  onBlur={onBlur}
                   onChange={handleChange}
                   onFocus={onFocus}
-                  onBlur={onBlur}
-                  focusPath={focusPath}
                   path={path}
-                  markers={markers}
+                  presence={presence}
+                  readOnly={readOnly || type.readOnly}
+                  type={type as FormBuilderType}
+                  value={object}
                 />
               </PresenceOverlay>
             </div>
