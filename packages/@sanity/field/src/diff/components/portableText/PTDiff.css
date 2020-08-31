@@ -1,0 +1,12 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.diffedSpan {
+}
+
+.summary {
+  font-size: var(--font-size-xsmall);
+  color: var(--text-muted);
+}
+
+.summary li {
+}
