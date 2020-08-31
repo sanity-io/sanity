@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  AnnotatedStringDiff,
-  ArrayDiff,
-  ObjectDiff,
-  ObjectSchemaType,
-  StringDiff
-} from '@sanity/field/diff'
+import {AnnotatedStringDiff, ArrayDiff, ObjectDiff, ObjectSchemaType, StringDiff} from '../../index'
 import {startCase} from 'lodash'
 import {ChildMap, PortableTextBlock, PortableTextChild} from './types'
 
