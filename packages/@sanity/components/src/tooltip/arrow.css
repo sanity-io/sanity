@@ -4,102 +4,55 @@
   position: absolute;
   pointer-events: none;
   width: 15px;
-  height: 6px;
-  transform-origin: 0 0;
+  height: 15px;
+  fill: none;
 
-  & > svg {
+  @nest :empty + & {
+    display: none;
+  }
+
+  @nest & > svg {
     display: block;
-    color: var(--component-bg);
+    transform-origin: 7.5px 7.5px;
+  }
 
-    @nest [data-tone='navbar'] & {
-      color: var(--main-navigation-color);
+  @nest [data-popper-placement^='top'] > & {
+    bottom: -15px;
+  }
+
+  @nest [data-popper-placement^='right'] > & {
+    left: -15px;
+
+    @nest & > svg {
+      transform: rotate(90deg);
     }
   }
 
-  @nest &[data-placement='top'] {
-    transform-origin: left bottom;
-    bottom: 0;
-    left: 50%;
-    transform: rotate(180deg) translate(-50%);
+  @nest [data-popper-placement^='left'] > & {
+    right: -15px;
+
+    @nest & > svg {
+      transform: rotate(-90deg);
+    }
   }
 
-  @nest &[data-placement='top-end'] {
-    transform-origin: left bottom;
-    bottom: 0;
-    right: 4px;
-    transform: rotate(180deg) translateX(-100%);
-  }
+  @nest [data-popper-placement^='bottom'] > & {
+    top: -15px;
 
-  @nest &[data-placement='top-start'] {
-    transform-origin: left bottom;
-    bottom: 0;
-    left: 4px;
-    transform: rotate(180deg) translateX(-100%);
-  }
-
-  @nest &[data-placement='right'] {
-    transform-origin: left bottom;
-    transform: rotate(-90deg) translateX(-50%);
-    bottom: 50%;
-    left: 0;
-  }
-
-  @nest &[data-placement='right-end'] {
-    transform-origin: left bottom;
-    transform: rotate(-90deg);
-    bottom: 4px;
-    left: 0;
-  }
-
-  @nest &[data-placement='right-start'] {
-    transform-origin: left bottom;
-    transform: rotate(-90deg) translateX(-50%);
-    top: 4px;
-    left: 0;
-  }
-
-  @nest &[data-placement='left'] {
-    transform-origin: right bottom;
-    right: 0;
-    transform: rotate(90deg);
-    top: 50%;
-  }
-
-  @nest &[data-placement='left-start'] {
-    transform-origin: right bottom;
-    right: 0;
-    transform: rotate(90deg) translateX(50%);
-    top: 4px;
-  }
-
-  @nest &[data-placement='left-end'] {
-    transform-origin: right bottom;
-    right: 0;
-    transform: rotate(90deg);
-    bottom: 4px;
-  }
-
-  @nest &[data-placement='bottom'] {
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -100%);
-  }
-
-  @nest &[data-placement='bottom-end'] {
-    top: 0;
-    right: 4px;
-    transform: translate(0, -100%);
-  }
-
-  @nest &[data-placement='bottom-start'] {
-    top: 0;
-    left: 4px;
-    transform: translateY(-100%);
+    @nest & > svg {
+      transform: rotate(180deg);
+    }
   }
 }
 
-.outlineGroup {
-  & > path {
-    fill: var(--hairline-color);
+.border {
+  fill: var(--hairline-color);
+}
+
+.shape {
+  fill: var(--component-bg);
+
+  @nest .root[data-tone='navbar'] & {
+    fill: var(--main-navigation-color);
   }
 }
