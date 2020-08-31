@@ -1,10 +1,11 @@
 import {Popover} from 'part:@sanity/components/popover'
-import {boolean, select} from 'part:@sanity/storybook/addons/knobs'
+import {boolean, select, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 
 export function DefaultStory() {
+  const children = text('Children', 'Content', 'Props')
   const open = boolean('Open', true, 'Props')
   const placement = select(
     'Placement',
@@ -30,7 +31,7 @@ export function DefaultStory() {
     <CenteredContainer>
       <Sanity part="part:@sanity/components/dialogs/default" propTables={[Popover]}>
         <Popover
-          content={<div style={{padding: '1em'}}>popover content</div>}
+          content={children ? <div style={{padding: '1em'}}>{children}</div> : null}
           open={open}
           placement={placement}
         >
@@ -41,7 +42,7 @@ export function DefaultStory() {
               background: 'rgba(127, 127, 127, 0.5)'
             }}
           >
-            reference
+            Reference
           </span>
         </Popover>
       </Sanity>
