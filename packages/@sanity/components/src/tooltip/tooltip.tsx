@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Arrow} from './arrow'
 
@@ -26,13 +26,21 @@ export interface TooltipProps {
   tone?: 'navbar'
 }
 
-export function Tooltip(props: TooltipProps) {
-  const {className, disabled, placement = 'bottom', tone} = props
+export function Tooltip(props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
+  const {children, className, content, disabled, placement = 'bottom', tone, ...restProps} = props
   const [referenceElement, setReferenceElement] = useState(null)
   const [popperElement, setPopperElement] = useState(null)
-  const {styles: popperStyles, attributes} = usePopper(referenceElement, popperElement, {
+  const [arrowElement, setArrowElement] = useState(null)
+  const popper = usePopper(referenceElement, popperElement, {
     placement,
     modifiers: [
+      {
+        name: 'arrow',
+        options: {
+          element: arrowElement,
+          padding: 4
+        }
+      },
       {
         name: 'preventOverflow',
         options: {
@@ -52,24 +60,28 @@ export function Tooltip(props: TooltipProps) {
   const onMouseEnter = () => setIsOpen(() => true)
   const onMouseLeave = () => setIsOpen(() => false)
 
+  useEffect(() => {
+    if (popper.forceUpdate) popper.forceUpdate()
+  }, [content])
+
   if (disabled) {
-    return props.children
+    return children
   }
 
   return (
     <>
-      {React.cloneElement(props.children, {onMouseEnter, onMouseLeave, ref: setReferenceElement})}
+      {React.cloneElement(children, {onMouseEnter, onMouseLeave, ref: setReferenceElement})}
       {isOpen && (
         <div
+          {...restProps}
           className={classNames(styles.root, className)}
           data-tone={tone}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ref={setPopperElement as any}
-          style={popperStyles.popper}
-          {...attributes.popper}
+          ref={setPopperElement}
+          style={popper.styles.popper}
+          {...popper.attributes.popper}
         >
-          {props.content}
-          <Arrow data-placement={placement} style={popperStyles.arrow} tone={tone} />
+          <div className={styles.card}>{content}</div>
+          <Arrow ref={setArrowElement} style={popper.styles.arrow} tone={tone} />
         </div>
       )}
     </>

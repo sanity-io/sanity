@@ -31,12 +31,28 @@ interface PopoverProps {
 }
 
 export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
-  const {className, disabled, placement = 'bottom', style, targetElement, ...restProps} = props
+  const {
+    className,
+    content,
+    disabled,
+    placement = 'bottom',
+    style,
+    targetElement,
+    ...restProps
+  } = props
   const [referenceElement, setReferenceElement] = useState(null)
   const [popperElement, setPopperElement] = useState(null)
-  const {styles: popperStyles, attributes} = usePopper(referenceElement, popperElement, {
+  const [arrowElement, setArrowElement] = useState(null)
+  const popper = usePopper(referenceElement, popperElement, {
     placement,
     modifiers: [
+      {
+        name: 'arrow',
+        options: {
+          element: arrowElement,
+          padding: 4
+        }
+      },
       {
         name: 'preventOverflow',
         options: {
@@ -64,6 +80,10 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
     }
   }, [targetElement])
 
+  useEffect(() => {
+    if (popper.forceUpdate) popper.forceUpdate()
+  }, [content])
+
   const children =
     targetElement === undefined
       ? cloneElement(props.children, {ref: setReferenceElement})
@@ -77,12 +97,12 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
         <div
           {...restProps}
           className={classNames(styles.root, className)}
-          ref={setPopperElement as any}
-          style={{...popperStyles.popper, ...(style || {})}}
-          {...attributes.popper}
+          ref={setPopperElement}
+          style={{...popper.styles.popper, ...(style || {})}}
+          {...popper.attributes.popper}
         >
-          <div className={styles.card}>{props.content}</div>
-          <PopoverArrow data-placement={placement} style={popperStyles.arrow} />
+          <div className={styles.card}>{content}</div>
+          <PopoverArrow ref={setArrowElement} style={popper.styles.arrow} />
         </div>
       )}
     </>
