@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.diffedSpan {
+.spanDiff {
 }
 
 .summary {
@@ -9,4 +9,9 @@
 }
 
 .summary li {
+}
+
+.inlineObjectDiff {
+  border: 1px solid #999;
+  padding: 3px;
 }
