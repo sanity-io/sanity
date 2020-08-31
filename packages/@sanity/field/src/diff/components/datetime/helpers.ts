@@ -1,7 +1,7 @@
 import formatDate from 'date-fns/format'
-import {DateTimeSchemaType} from '../../types'
+import {StringSchemaType} from '../../types'
 
-export function getDateFormat(value: string, type: string, options: DateTimeSchemaType['options']) {
+export function getDateFormat(value: string, type: string, options: StringSchemaType['options']) {
   let format = 'YYYY-MM-DD'
   if (options && options.dateFormat) {
     format = options.dateFormat
