@@ -1,5 +1,5 @@
-import {ArrayDiff, ObjectDiff} from '@sanity/field/diff'
-import {ReactElement} from 'react'
+import {ArrayDiff, ObjectDiff} from '../../index'
+import {ReactNode} from 'react'
 
 export type PortableTextBlock = {
   _key: string
@@ -18,9 +18,9 @@ export type PortableTextChild = {
 export type ChildMap = Record<
   string,
   {
-    annotation: React.ReactNode | undefined
+    annotation: ReactNode | undefined
     child: PortableTextChild
     diffs: ObjectDiff[] | ArrayDiff[]
-    summary: React.ReactNode[]
+    summary: ReactNode[]
   }
 >

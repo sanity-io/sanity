@@ -1,6 +1,6 @@
 import React from 'react'
 import PortableText from '@sanity/block-content-to-react'
-import {DiffComponent, ObjectDiff, ObjectSchemaType} from '@sanity/field/diff'
+import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../index'
 
 import Blockquote from './previews/Blockquote'
 import Decorator from './previews/Decorator'
