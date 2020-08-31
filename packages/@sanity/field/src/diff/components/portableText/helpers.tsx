@@ -50,7 +50,7 @@ export function createChildMap(block: PortableTextBlock, blockDiff: ObjectDiff) 
     childMap[child._key] = {
       annotation,
       diffs: childDiffs,
-      child,
+      node: child,
       summary
     }
   })

@@ -1,6 +1,7 @@
 import React from 'react'
 import PortableText from '@sanity/block-content-to-react'
 import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../index'
+import {ChangeList} from '../../changes'
 
 import Blockquote from './previews/Blockquote'
 import Decorator from './previews/Decorator'
@@ -60,10 +61,10 @@ function createSerializers(schemaType: ObjectSchemaType, childMap: ChildMap) {
     // Find child that has no marks, and a text similar to what is in the childMap.
     const fromMap = Object.keys(childMap)
       .map(key => childMap[key])
-      .filter(entry => (entry.child.marks || []).length === 0)
-      .find(entry => entry.child.text === text.children)
+      .filter(child => (child.node.marks || []).length === 0)
+      .find(child => child.node.text === text.children)
     if (fromMap && fromMap.annotation) {
-      return <span className={styles.diffedSpan}>{fromMap.annotation}</span>
+      return <span className={styles.spanDiff}>{fromMap.annotation}</span>
     }
     return text.children
   }
@@ -75,20 +76,46 @@ function createSerializers(schemaType: ObjectSchemaType, childMap: ChildMap) {
         node: {...props.node, children: fromMap.annotation}
       }
       return (
-        <span className={styles.diffedSpan}>
+        <span className={styles.spanDiff}>
           {PortableText.defaultSerializers.span(annotatedProps)}
         </span>
       )
     }
     return PortableText.defaultSerializers.span(props)
   }
+  const renderInlineObject = (props: {node: PortableTextChild}): React.ReactNode => {
+    let returned = <span className={styles.inlineObjectDiff}>{props.node._type}</span>
+    return returned
+    // TODO: restore this when we have the inline object schema type
+    // const childMapEntry = childMap[props.node._key]
+    // if (childMapEntry && childMapEntry.diffs.length > 0) {
+    //   returned = null
+    //   childMapEntry.diffs.forEach(iDiff => {
+    //     returned = <ChangeList diff={iDiff} schemaType={schemaType} />
+    //   })
+    // }
+    // return returned
+  }
+
+  const otherTypes = {}
+  const inlineObjects = Object.keys(childMap)
+    .map(key => childMap[key])
+    .map(child => {
+      const span = typeof child === 'object' && (child.node as PortableTextChild)
+      const type = typeof child === 'object' && (child.node._type as string)
+      const isSpan = typeof span._type === 'string' && span._type === 'span'
+      if (!isSpan) {
+        otherTypes[type] = renderInlineObject
+      }
+    })
   // TODO: create serializers according to schemaType (marks etc)
   return {
     marks: {strong: renderDecorator, italic: renderDecorator},
     span: renderSpan,
     text: renderText,
     types: {
-      block: renderBlock
+      block: renderBlock,
+      ...otherTypes
     }
   }
 }
