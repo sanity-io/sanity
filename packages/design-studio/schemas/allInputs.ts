@@ -195,7 +195,7 @@ const portableTextExample = {
   type: 'array',
   name: 'portableTextExample',
   title: 'Portable text',
-  of: [{type: 'block'}]
+  of: [{type: 'block', of: [object]}, imageExample]
 }
 
 const referenceExample = {
