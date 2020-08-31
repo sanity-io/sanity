@@ -1,9 +1,10 @@
 import React from 'react'
-import {AnnotatedStringDiff, ArrayDiff, ObjectDiff, ObjectSchemaType, StringDiff} from '../../index'
+import {AnnotatedStringDiff, ArrayDiff, ObjectDiff, StringDiff} from '../../index'
 import {startCase} from 'lodash'
 import {ChildMap, PortableTextBlock, PortableTextChild} from './types'
+import {SchemaType} from '../../types'
 
-export function isPTSchemaType(schemaType: ObjectSchemaType) {
+export function isPTSchemaType(schemaType: SchemaType) {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
 }
 export function isHeader(node: PortableTextBlock) {
