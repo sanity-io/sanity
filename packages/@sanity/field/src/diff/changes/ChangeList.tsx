@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {ObjectDiff, ObjectSchemaType} from '../types'
-import {buildDocumentChangeList} from './buildChangeList'
+import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../types'
+import {buildObjectChangeList} from './buildChangeList'
 import {ChangeResolver} from './ChangeResolver'
 
 interface Props {
@@ -14,11 +14,15 @@ export function ChangeList({diff, fields, schemaType}: Props) {
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
 
-  const changes = React.useMemo(() => buildDocumentChangeList(schemaType, diff), [
+  const changes = React.useMemo(() => getFlatChangeList(schemaType, diff, fields), [
     schemaType,
     fields,
     diff
   ])
+
+  if (changes.length === 0) {
+    return null
+  }
 
   return (
     <>
@@ -27,4 +31,18 @@ export function ChangeList({diff, fields, schemaType}: Props) {
       ))}
     </>
   )
+}
+
+function getFlatChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff, fields?: string[]) {
+  if (fields && fields.length === 0) {
+    return []
+  }
+
+  return maybeFlatten(buildObjectChangeList(schemaType, diff, [], [], {fieldFilter: fields}))
+}
+
+function maybeFlatten(changes: ChangeNode[]) {
+  return changes.length === 1 && changes[0].type === 'group' && changes[0].path.length === 0
+    ? changes[0].changes
+    : changes
 }
