@@ -12,11 +12,11 @@ export function diffTypeChange<A>(
     isChanged: true,
 
     fromType: fromInput.type,
-    fromValue: fromInput,
+    fromValue: fromInput.value,
     fromDiff: removedInput(fromInput, undefined, options),
 
     toType: toInput.type,
-    toValue: toInput,
+    toValue: toInput.value,
     toDiff: addedInput(toInput, undefined, options),
 
     annotation: toInput.annotation
