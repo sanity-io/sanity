@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  text-decoration: none;
+  display: inline;
+  position: relative;
+  background: red;
+  border-bottom: 2px dotted color(var(--text-color) a(100%));
+}
+
