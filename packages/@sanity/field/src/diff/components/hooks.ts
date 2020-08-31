@@ -1,37 +1,39 @@
 import {useState, useEffect} from 'react'
 import client from 'part:@sanity/base/client'
 import {observeForPreview} from 'part:@sanity/base/preview'
+import {Reference, SchemaType} from '../types'
 
-type PreviewSnapshot =
-  | {
-      title: string
-    }
-  | undefined
+interface PreviewSnapshot {
+  title: string
+}
 
-export function getRefValue(refId: string | undefined) {
-  const [value, setValue] = useState(undefined)
+export function getRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
+  const [value, setValue] = useState<T | undefined>(undefined)
   useEffect(() => {
-    if (refId) {
-      const subscription = client.observable.getDocument(refId).subscribe(document => {
-        setValue(document)
-      })
-      return () => {
-        subscription.unsubscribe()
-      }
+    if (!refId) {
+      return () => {}
     }
-    return () => {}
+
+    const subscription = client.observable.getDocument(refId).subscribe(setValue)
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [refId])
   return value
 }
 
-export function useRefPreview(value, schemaType): PreviewSnapshot {
+export function useRefPreview(
+  value: Reference,
+  schemaType: SchemaType
+): PreviewSnapshot | undefined {
   const [preview, setPreview] = useState(undefined)
   useEffect(() => {
     let subscription
     if (value && schemaType) {
-      subscription = observeForPreview(value, schemaType).subscribe(result => {
+      subscription = observeForPreview(value, schemaType).subscribe(result =>
         setPreview(result.snapshot)
-      })
+      )
     }
 
     return () => {

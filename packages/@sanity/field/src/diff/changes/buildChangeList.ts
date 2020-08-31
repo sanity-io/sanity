@@ -44,10 +44,6 @@ export function buildChangeList(
     }
   }
 
-  if (childChanges.length === 1 && childChanges[0].type === 'group') {
-    console.log(childChanges[0].path, path)
-  }
-
   return [
     {
       type: 'field',
@@ -65,7 +61,7 @@ export function buildChangeList(
   ]
 }
 
-function buildObjectChangeList(
+export function buildObjectChangeList(
   schemaType: ObjectSchemaType,
   diff: ObjectDiff,
   path: Path = [],

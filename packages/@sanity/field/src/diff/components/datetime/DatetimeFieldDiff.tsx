@@ -1,12 +1,11 @@
 import React from 'react'
+import {DiffComponent, DateTimeDiff} from '../../types'
 import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
-import styles from '../shared/BlockSegmentStyles.css'
 import {DiffLayout} from '../shared'
 import {getDateFormat} from './helpers'
+import styles from '../shared/BlockSegmentStyles.css'
 
-// @TODO: fix DatetimeDiff
-
-export const DatetimeFieldDiff /* : DiffComponent<DatetimeDiff> */ = ({diff, schemaType}) => {
+export const DatetimeFieldDiff: DiffComponent<DateTimeDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
