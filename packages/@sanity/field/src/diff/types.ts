@@ -52,7 +52,6 @@ export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectD
 export type StringDiff = AgnosticStringDiff<Annotation>
 export type ReferenceDiff = ObjectDiff<Reference>
 export type TypeChangeDiff = AgnosticTypeChangeDiff<Annotation>
-export type DateTimeDiff = StringDiff
 
 export type Diff<A = unknown, O extends object = Record<string, any>> =
   | ArrayDiff<A>
@@ -91,8 +90,6 @@ export type DiffProps<T extends Diff = Diff> = {
     ? ArraySchemaType
     : T extends BooleanDiff
     ? BooleanSchemaType
-    : T extends DateTimeDiff
-    ? DateTimeSchemaType
     : T extends StringDiff
     ? StringSchemaType
     : T extends NumberDiff
@@ -126,11 +123,8 @@ export interface StringSchemaType extends BaseSchemaType {
     list?: {title?: string; value: string}[]
     layout?: 'radio' | 'dropdown'
     direction?: 'horizontal' | 'vertical'
-  }
-}
 
-export interface DateTimeSchemaType extends StringSchemaType {
-  options?: StringSchemaType['options'] & {
+    // Actually just part of date time, but can't find a good way to differentiate
     dateFormat?: string
     timeFormat?: string
   }
