@@ -1,11 +1,10 @@
 import React from 'react'
+import {StringDiff, DiffComponent} from '../../types'
 import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
-import styles from '../shared/BlockSegmentStyles.css'
 import {DiffLayout} from '../shared'
+import styles from '../shared/BlockSegmentStyles.css'
 
-// @todo TODO add url diff type
-
-export const UrlFieldDiff /* : DiffComponent<UrlDiff> */ = ({diff}) => {
+export const UrlFieldDiff: DiffComponent<StringDiff> = ({diff}) => {
   const {fromValue, toValue} = diff
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}

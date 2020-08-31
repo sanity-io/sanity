@@ -1,11 +1,14 @@
 import React from 'react'
-import styles from '../shared/BlockSegmentStyles.css'
-import {DiffLayout} from '../shared'
 import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
+import {DiffComponent, ObjectDiff} from '../../types'
+import {DiffLayout} from '../shared'
+import styles from '../shared/BlockSegmentStyles.css'
 
-// @todo TODO slug diff type
+interface Slug {
+  current?: string
+}
 
-export const SlugFieldDiff /* : DiffComponent<StringDiff> */ = ({diff}) => {
+export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff}) => {
   const {fromValue, toValue} = diff
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
