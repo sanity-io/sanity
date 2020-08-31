@@ -18,7 +18,7 @@ export const diffResolver: DiffComponentResolver = function diffResolver({schema
     return SlugFieldDiff
   }
 
-  if (isPTSchemaType(schemaType)) {
+  if (schemaType.jsonType === 'object' && isPTSchemaType(schemaType)) {
     return PTDiff
   }
 
