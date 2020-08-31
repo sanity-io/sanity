@@ -1,5 +1,5 @@
 {
   "rules": {
-    "complexity": [15, "warn"]
+    "complexity": ["warn", 15]
   }
 }
