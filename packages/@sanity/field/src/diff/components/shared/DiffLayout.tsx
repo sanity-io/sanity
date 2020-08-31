@@ -1,9 +1,9 @@
 import React from 'react'
-import styles from './DiffLayout.css'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
+import styles from './DiffLayout.css'
 
 // TODO: typings
-type DiffLayoutProps = {
+interface DiffLayoutProps {
   layout?: 'grid' | 'inline'
   renderFrom: any
   renderTo: any

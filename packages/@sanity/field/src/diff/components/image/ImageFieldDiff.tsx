@@ -1,17 +1,22 @@
 import * as React from 'react'
 import {DiffComponent, ObjectDiff} from '../../types'
+import {DiffAnnotationTooltip, useDiffAnnotationColor} from '../../annotations'
 import {DiffArrow} from '../shared'
 import {getRefValue} from '../hooks'
 import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
-import {DiffAnnotationTooltip, useDiffAnnotationColor} from '../../annotations'
+import {Image} from './types'
+import {ChangeList} from '../../changes'
 
 /* TODO:
   - Correct annotation for hotspot/crop changes
-  - Visualising hotspott/crop changes
+  - Visualising hotspot/crop changes
 */
 
-export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
+const IMAGE_META_FIELDS = ['crop', 'hotspot']
+const BASE_IMAGE_FIELDS = ['asset', ...IMAGE_META_FIELDS]
+
+export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
@@ -19,19 +24,16 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
   const next = getRefValue(toAsset?._ref)
 
   // Get all the changed fields within this image field
-  const changedFields = Object.keys(fields)
-    .map(field => ({
-      name: field,
-      ...diff.fields[field]
-    }))
-    .filter(field => field.isChanged && field.name !== '_type')
+  const changedFields = Object.keys(fields).filter(
+    name => fields[name].isChanged && name !== '_type'
+  )
 
-  // An array of names of the fields that changed
-  const changedFieldNames = changedFields.map(f => f.name)
+  const nestedFields = schemaType.fields
+    .filter(field => !BASE_IMAGE_FIELDS.includes(field.name) && changedFields.includes(field.name))
+    .map(field => field.name)
 
-  const didAssetChange = changedFieldNames.some(field => field === 'asset')
-  const imageMeta = ['crop', 'hotspot']
-  const didMetaChange = changedFieldNames.some(field => imageMeta.includes(field))
+  const didAssetChange = changedFields.includes('asset')
+  const didMetaChange = changedFields.some(field => IMAGE_META_FIELDS.includes(field))
   const showImageDiff = didAssetChange || didMetaChange
 
   const color = useDiffAnnotationColor(diff, 'asset._ref')
@@ -66,20 +68,12 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) =>
           </div>
         </DiffAnnotationTooltip>
       )}
+
+      {nestedFields.length > 0 && (
+        <div className={styles.nestedFields}>
+          <ChangeList diff={diff} schemaType={schemaType} fields={nestedFields} />
+        </div>
+      )}
     </div>
   )
 }
-
-/* {nestedFields.length > 0 && (
-  <div className={styles.nestedFields}>
-    {nestedFields.map(field => {
-      const MetaDiffComponent = resolveDiffComponent(field.schemaType) || FallbackDiff
-      return (
-        <div className={styles.field} key={field.name}>
-          <div className={styles.title}>{field.schemaType.title}</div>
-          <MetaDiffComponent diff={field.diff} schemaType={field.schemaType} />
-        </div>
-      )
-    })}
-  </div>
-)} */
