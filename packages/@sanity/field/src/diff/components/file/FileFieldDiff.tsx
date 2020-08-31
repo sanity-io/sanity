@@ -34,10 +34,8 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const pctDiff = getSizeDiff(prevSize, nextSize)
 
-  const roundedPrevSize = Math.round(prevSize * 10) / 10
-  const roundedNextSize = Math.round(nextSize * 10) / 10
-
-  console.log(`${prevSize} -> ${roundedPrevSize}`, `${nextSize} -> ${roundedNextSize}`)
+  const roundedPrevSize = prevSize ? Math.round(prevSize * 10) / 10 : undefined
+  const roundedNextSize = nextSize ? Math.round(nextSize * 10) / 10 : undefined
 
   return (
     <div className={styles.root}>
