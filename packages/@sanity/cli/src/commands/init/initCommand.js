@@ -32,7 +32,7 @@ Examples
   # template to the given path
   sanity init -y --project abc123 --dataset staging --template moviedb --output-path .
 
-  # Initialize a "bare" project, only creating sanity.json and package.json
+  # Initialize a project without Sanity Studio, only creating sanity.json and package.json
   sanity init --bare
 
   # Create a brand new project with name "Movies Unlimited"
