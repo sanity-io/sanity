@@ -9,8 +9,8 @@ export const DatetimeFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType})
   const {fromValue, toValue} = diff
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
-  const fromDate = getDateFormat(fromValue, schemaType.name, schemaType.options)
-  const toDate = getDateFormat(toValue, schemaType.name, schemaType.options)
+  const fromDate = fromValue && getDateFormat(fromValue, schemaType.name, schemaType.options)
+  const toDate = toValue && getDateFormat(toValue, schemaType.name, schemaType.options)
   return (
     <DiffAnnotationTooltip className={styles.root} diff={diff}>
       <DiffLayout

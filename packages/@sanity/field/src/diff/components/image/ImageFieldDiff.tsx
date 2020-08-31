@@ -49,8 +49,8 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
                 <ImagePreview
                   value={prev}
                   action={didAssetChange ? 'removed' : 'changed'}
-                  hotspot={didMetaChange && fromValue!.hotspot}
-                  crop={didMetaChange && fromValue!.crop}
+                  hotspot={didMetaChange ? fromValue!.hotspot : undefined}
+                  crop={didMetaChange ? fromValue!.crop : undefined}
                 />
               </div>
             )}
@@ -60,8 +60,8 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
                 <ImagePreview
                   value={next}
                   action={didAssetChange ? 'added' : 'changed'}
-                  hotspot={didMetaChange && toValue!.hotspot}
-                  crop={didMetaChange && toValue!.crop}
+                  hotspot={didMetaChange ? toValue!.hotspot : undefined}
+                  crop={didMetaChange ? toValue!.crop : undefined}
                 />
               </div>
             )}
