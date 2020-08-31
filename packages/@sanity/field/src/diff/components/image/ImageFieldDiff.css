@@ -6,6 +6,9 @@
 
 .annotation {
   border-radius: var(--border-radius-small);
+  @nest &[data-action='removed'] {
+    text-decoration: line-through;
+  }
 }
 
 .imageDiff {
