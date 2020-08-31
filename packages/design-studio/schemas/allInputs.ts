@@ -120,7 +120,8 @@ const datetimeExample = {
 const fileExample = {
   type: 'file',
   name: 'fileExample',
-  title: 'File example'
+  title: 'File example',
+  fields: [{name: 'vanityFilename', title: 'Vanity filename', type: 'string'}]
 }
 
 const geopointExample = {
