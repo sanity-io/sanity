@@ -6,8 +6,8 @@ import DialogContent from 'part:@sanity/components/dialogs/content'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {PresenceOverlay} from '@sanity/base/presence'
+import {Marker, Presence, Type as FormBuilderType} from '../../../../typedefs'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -62,7 +62,7 @@ export function DefaultObjectEditing(props: Props) {
                 path={path}
                 presence={presence}
                 readOnly={readOnly || type.readOnly}
-                type={type}
+                type={type as FormBuilderType}
                 value={object}
               />
             </PresenceOverlay>
