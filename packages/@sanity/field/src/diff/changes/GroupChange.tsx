@@ -2,7 +2,6 @@ import * as React from 'react'
 import {GroupChangeNode} from '../types'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
-import {RevertChangesButton} from './RevertChangesButton'
 
 import styles from './GroupChange.css'
 
@@ -18,10 +17,6 @@ export function GroupChange({change: group}: {change: GroupChangeNode}) {
         {changes.map(change => (
           <ChangeResolver key={change.key} change={change} />
         ))}
-      </div>
-
-      <div>
-        <RevertChangesButton />
       </div>
     </div>
   )
