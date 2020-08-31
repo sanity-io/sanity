@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import PlusIcon from 'part:@sanity/base/plus-icon'
 import React from 'react'
 import PatchEvent from '../../PatchEvent'
 import {ItemValue} from './typedefs'
@@ -46,19 +45,37 @@ export default class ArrayFunctions extends React.Component<ArrayFunctionsProps>
         isReferenceSchemaType(memberDef) &&
         (memberDef.to || []).length === 1 &&
         memberDef.to[0].icon
-
-      const icon = memberDef.icon || memberDef.type.icon || referenceIcon || PlusIcon
+      const icon = memberDef?.icon || memberDef?.type?.icon || referenceIcon
       return {
-        title: memberDef.title || memberDef.type.name,
+        title: memberDef.title || memberDef?.type?.name,
         type: memberDef,
         icon
       }
     })
 
     return (
-      <DropDownButton inverted items={items} onAction={this.handleDropDownAction}>
+      <DropDownButton
+        inverted
+        items={items}
+        onAction={this.handleDropDownAction}
+        renderItem={this.renderDropDownItem}
+      >
         Add
       </DropDownButton>
+    )
+  }
+
+  renderDropDownItem(item) {
+    const Icon = item.icon
+    return (
+      <div className={styles.dropdownItem}>
+        {item.icon && (
+          <div className={styles.icon} aria-role="img" aria-hidden="true">
+            <Icon />
+          </div>
+        )}
+        <div>{item.title}</div>
+      </div>
     )
   }
 

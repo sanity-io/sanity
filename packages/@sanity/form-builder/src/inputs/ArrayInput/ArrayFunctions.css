@@ -1,3 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+
+  @nest & .icon {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    margin-right: var(--small-padding);
+
+    @nest & svg {
+      display: block;
+      font-size: calc(17 / 16 * 1em);
+
+      @nest &[data-sanity-icon] {
+        font-size: calc(25 / 16 * 1em);
+        margin: calc(4 / 25 * -1em);
+      }
+    }
+  }
 }

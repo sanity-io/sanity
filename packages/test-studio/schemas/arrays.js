@@ -48,7 +48,8 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'image'
+          type: 'image',
+          icon: icon
         },
         {
           type: 'book'
