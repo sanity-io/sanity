@@ -6,6 +6,10 @@
 
 .annotation {
   border-radius: var(--border-radius-small);
+
+  @nest &[data-action='removed'] {
+    text-decoration: line-through;
+  }
 }
 
 .fileDiff {
@@ -30,20 +34,5 @@
 
   @nest &[data-number='negative'] {
     color: var(--state-danger-color);
-  }
-}
-
-.nestedFields {
-  margin-top: var(--medium-padding);
-
-  @nest & .field {
-    margin-bottom: var(--medium-padding);
-  }
-
-  @nest & .title {
-    flex: 1;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: var(--small-padding);
   }
 }

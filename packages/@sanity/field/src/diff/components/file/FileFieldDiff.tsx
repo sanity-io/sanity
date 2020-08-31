@@ -15,10 +15,6 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const prev = getRefValue<FileAsset>(fromAsset?._ref)
   const next = getRefValue<FileAsset>(toAsset?._ref)
 
-  // Size in MB TODO: improve
-  const prevSize = prev?.size && Math.round(prev.size / 1024)
-  const nextSize = next?.size && Math.round(next.size / 1024)
-
   const changedFields = Object.keys(fields).filter(
     name => fields[name].isChanged && name !== '_type'
   )
@@ -31,7 +27,17 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const color = useDiffAnnotationColor(diff, 'asset._ref')
   const style = color ? {background: color.background, color: color.text} : {}
+
+  // Sizes in MB TODO: improve. Apple uses 1000^2
+  const prevSize = prev?.size && prev.size / 1000 / 1000
+  const nextSize = next?.size && next.size / 1000 / 1000
+
   const pctDiff = getSizeDiff(prevSize, nextSize)
+
+  const roundedPrevSize = Math.round(prevSize * 10) / 10
+  const roundedNextSize = Math.round(nextSize * 10) / 10
+
+  console.log(`${prevSize} -> ${roundedPrevSize}`, `${nextSize} -> ${roundedNextSize}`)
 
   return (
     <div className={styles.root}>
@@ -39,19 +45,25 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         <DiffAnnotationTooltip as="div" diff={diff} path="asset._ref" className={styles.tooltip}>
           <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
             {prev && (
-              <div className={styles.annotation} style={style}>
-                <MetaInfo
-                  title={prev.originalFilename || 'Untitled'}
-                  icon={FileIcon}
-                  action={didAssetChange ? 'removed' : 'changed'}
-                />
+              <div
+                className={styles.annotation}
+                style={style}
+                data-action={didAssetChange ? 'removed' : 'changed'}
+              >
+                <MetaInfo title={prev.originalFilename || 'Untitled'} icon={FileIcon}>
+                  <span>{`${roundedPrevSize}MB`}</span>
+                </MetaInfo>
               </div>
             )}
             {prev && next && <DiffArrow />}
             {next && (
-              <div className={styles.annotation} style={style}>
+              <div
+                className={styles.annotation}
+                style={style}
+                data-action={didAssetChange ? 'added' : 'changed'}
+              >
                 <MetaInfo title={next.originalFilename || 'Untitled'} icon={FileIcon}>
-                  <span>{didAssetChange ? 'added' : 'changed'}</span>
+                  <span>{`${roundedNextSize}MB`}</span>
                   {pctDiff !== 0 && (
                     <div
                       className={styles.sizeDiff}
