@@ -1,40 +1,33 @@
 import * as React from 'react'
 import FileIcon from 'part:@sanity/base/file-icon'
+import {ChangeList} from '../../changes'
+import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
 import {DiffComponent, ObjectDiff} from '../../types'
 import {DiffArrow, MetaInfo} from '../shared'
 import {getRefValue} from '../hooks'
+import {File, FileAsset} from './types'
 import styles from './FileFieldDiff.css'
-import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
 
-function getSizeDiff(prev, next) {
-  if (!prev || !next) {
-    return 0
-  }
-  const increase = next - prev
-  const pct = Math.round((increase / prev) * 100)
-  return pct
-}
-
-export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
+export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
-  const prev: any = getRefValue(fromAsset?._ref)
-  const next: any = getRefValue(toAsset?._ref)
+  const prev = getRefValue<FileAsset>(fromAsset?._ref)
+  const next = getRefValue<FileAsset>(toAsset?._ref)
 
   // Size in MB TODO: improve
   const prevSize = prev?.size && Math.round(prev.size / 1024)
   const nextSize = next?.size && Math.round(next.size / 1024)
 
-  const changedFields = Object.keys(fields)
-    .map(field => ({
-      name: field,
-      ...diff.fields[field]
-    }))
-    .filter(field => field.isChanged && field.name !== '_type')
+  const changedFields = Object.keys(fields).filter(
+    name => fields[name].isChanged && name !== '_type'
+  )
 
-  const changedFieldNames = changedFields.map(f => f.name)
-  const didAssetChange = changedFieldNames.some(field => field === 'asset')
+  const nestedFields = schemaType.fields
+    .filter(field => field.name !== 'asset' && changedFields.includes(field.name))
+    .map(field => field.name)
+
+  const didAssetChange = changedFields.includes('asset')
 
   const color = useDiffAnnotationColor(diff, 'asset._ref')
   const style = color ? {background: color.background, color: color.text} : {}
@@ -51,7 +44,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => 
                   title={prev.originalFilename || 'Untitled'}
                   icon={FileIcon}
                   action={didAssetChange ? 'removed' : 'changed'}
-                ></MetaInfo>
+                />
               </div>
             )}
             {prev && next && <DiffArrow />}
@@ -74,21 +67,22 @@ export const FileFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => 
           </div>
         </DiffAnnotationTooltip>
       )}
+
+      {nestedFields.length > 0 && (
+        <div className={styles.nestedFields}>
+          <ChangeList diff={diff} schemaType={schemaType} fields={nestedFields} />
+        </div>
+      )}
     </div>
   )
 }
 
-/*
-{nestedFields.length > 0 && (
-        <div className={styles.nestedFields}>
-          {nestedFields.map(field => {
-            const MetaDiffComponent = resolveDiffComponent(field.schemaType) || FallbackDiff
-            return (
-              <div className={styles.field} key={field.name}>
-                <div className={styles.title}>{field.schemaType.title}</div>
-                <MetaDiffComponent diff={field.diff} schemaType={field.schemaType} />
-              </div>
-            )
-          })}
-        </div>
-      )}*/
+function getSizeDiff(prev: number | undefined, next: number | undefined): number {
+  if (!prev || !next) {
+    return 0
+  }
+
+  const increase = next - prev
+  const pct = Math.round((increase / prev) * 100)
+  return pct
+}

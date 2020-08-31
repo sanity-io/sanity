@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './MetaInfo.css'
 
-type MetaInfoProps = {
+interface MetaInfoProps {
   title: string
   action?: string
   icon?: any

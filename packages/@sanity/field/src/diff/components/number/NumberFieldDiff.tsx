@@ -1,8 +1,8 @@
 import React from 'react'
 import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
 import {DiffComponent, NumberDiff} from '../../types'
-import styles from '../shared/BlockSegmentStyles.css'
 import {DiffLayout} from '../shared'
+import styles from '../shared/BlockSegmentStyles.css'
 
 export const NumberFieldDiff: DiffComponent<NumberDiff> = ({diff}) => {
   const {fromValue, toValue} = diff
