@@ -37,7 +37,7 @@ export const RegionReporter = React.memo(function RegionReporter<Data>(props: {
   const Component = component
   return (
     // note the wrapper here must be a block element for ResizeObserver to work properly
-    <div ref={ref} style={{display: 'inline-block', visibility: 'hidden', ...props.style}}>
+    <div ref={ref} style={{display: 'block', visibility: 'hidden', ...props.style}}>
       <Component {...data} />
     </div>
   )

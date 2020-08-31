@@ -20,7 +20,7 @@ import {
   RegionReporterUnmountEvent,
   RegionReporterUpdateEvent
 } from './context'
-import {OverlayItem, Rect} from './types'
+import {ReportedRegion, Rect} from './types'
 
 function isId<T extends {id: string}>(id: string) {
   return (event: T) => event.id === id
@@ -46,10 +46,10 @@ function getRelativeRect(element, parent): Rect {
   }
 }
 
-type TrackerProps<ComponentProps> = {
+type TrackerProps<ComponentProps, RegionData> = {
   component: React.ComponentType<
     ComponentProps & {
-      regions: OverlayItem[]
+      regions: ReportedRegion<RegionData>[]
       children: React.ReactNode
       trackerRef: React.RefObject<HTMLElement>
     }
@@ -59,9 +59,10 @@ type TrackerProps<ComponentProps> = {
   componentProps: ComponentProps
 }
 
-export const Tracker = React.memo(function Tracker<ComponentProps extends {}>(
-  props: TrackerProps<ComponentProps>
-) {
+export const Tracker = React.memo(function Tracker<
+  ComponentProps extends {},
+  RegionData extends {}
+>(props: TrackerProps<ComponentProps, RegionData>) {
   const trackerRef = React.useRef<HTMLElement>()
   const [items, setItems] = React.useState([])
 

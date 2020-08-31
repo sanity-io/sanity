@@ -3,7 +3,7 @@ import {useId} from '@reach/auto-id'
 import React from 'react'
 
 import {FormFieldPresence} from '../types'
-import {RegionReporter} from '../overlay-reporter'
+import {RegionReporter} from '../../utilities/region-tracker'
 import {DISABLE_OVERLAY} from '../constants'
 import {FieldPresenceProps} from '../FieldPresence'
 

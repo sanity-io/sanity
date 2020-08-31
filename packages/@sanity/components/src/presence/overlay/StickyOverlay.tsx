@@ -12,9 +12,9 @@ import {
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
-import {RegionWithIntersectionDetails} from '../types'
+import {FieldPresenceData, RegionWithIntersectionDetails} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
-import {OverlayItem} from '../overlay-reporter'
+import {ReportedRegion} from '../../utilities/region-tracker'
 
 const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',
@@ -99,7 +99,7 @@ const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
 )
 
 type Props = {
-  regions: OverlayItem[]
+  regions: ReportedRegion<FieldPresenceData>[]
   children: React.ReactElement
   trackerRef: React.RefObject<any>
   margins: Margins

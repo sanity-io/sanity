@@ -1,3 +1,5 @@
+import {ReportedRegion} from '../utilities/region-tracker'
+
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
@@ -5,23 +7,10 @@ export type RegionWithIntersectionDetails = {
   distanceTop: number
   distanceBottom: number
   position: 'top' | 'bottom' | 'inside'
-  region: Region
+  region: ReportedRegion<FieldPresenceData>
 }
 
-export type Region = {
-  id: string
-  data: Data
-  rect: {
-    top: number
-    left: number
-    height: number
-    width: number
-  }
-  component: React.ComponentType<Data>
-  spacerHeight?: number
-}
-
-type Data = {
+export type FieldPresenceData = {
   presence: FormFieldPresence[]
   maxAvatars: number
   avatarComponent: React.ComponentType
