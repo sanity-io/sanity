@@ -1,3 +1,7 @@
+import {pathToString} from '../../paths'
+import {getValueError} from '../../validation'
+import {getArrayDiffItemType} from '../../schema/helpers'
+import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 import {
   ObjectSchemaType,
   ObjectDiff,
@@ -9,9 +13,7 @@ import {
   ArraySchemaType,
   ArrayDiff
 } from '../types'
-import {getArrayDiffItemType} from '../../schema/helpers'
-import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
-import {pathToString} from '../../paths'
+import {ValueError} from './ValueError'
 
 export function buildDocumentChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff) {
   const changes = buildChangeList(schemaType, diff)
@@ -44,6 +46,15 @@ export function buildChangeList(
     }
   }
 
+  let error
+  if (typeof diff.fromValue !== 'undefined') {
+    error = getValueError(diff.fromValue, schemaType)
+  }
+
+  if (!error && typeof diff.toValue !== 'undefined') {
+    error = getValueError(diff.toValue, schemaType)
+  }
+
   return [
     {
       type: 'field',
@@ -52,7 +63,7 @@ export function buildChangeList(
       titlePath,
       schemaType,
       key: pathToString(path),
-      diffComponent,
+      diffComponent: error ? ValueError : diffComponent,
       childChanges:
         childChanges.length === 1 && childChanges[0].type === 'group'
           ? childChanges[0].changes
