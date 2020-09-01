@@ -1,6 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+}
+
 .spanDiff {
+}
+
+.inlineObjectDiff {
+  border: 1px solid #999;
+  padding: 3px;
+  @nest & .removed {
+    opacity: 0.5;
+  }
+}
+
+.removed {
+  text-decoration: line-through;
+  opacity: 0.5;
 }
 
 .summary {
@@ -9,9 +25,4 @@
 }
 
 .summary li {
-}
-
-.inlineObjectDiff {
-  border: 1px solid #999;
-  padding: 3px;
 }

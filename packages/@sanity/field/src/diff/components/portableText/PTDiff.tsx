@@ -1,17 +1,13 @@
 import React from 'react'
-import PortableText from '@sanity/block-content-to-react'
-import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../index'
-import {ChangeList} from '../../changes'
+// import PortableText from '@sanity/block-content-to-react'
+import classNames from 'classnames'
+import {DiffComponent, ObjectDiff, ObjectSchemaType, useDiffAnnotationColor} from '../../index'
 
-import Blockquote from './previews/Blockquote'
-import Decorator from './previews/Decorator'
-import Header from './previews/Header'
-import Paragraph from './previews/Paragraph'
+import {PortableText} from './PortableText'
 
-import {createChildMap, isHeader} from './helpers'
+import {createChildMap} from './helpers'
 
 import styles from './PTDiff.css'
-import {ChildMap, PortableTextBlock, PortableTextChild} from './types'
 
 export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff,
@@ -20,102 +16,28 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff: ObjectDiff
   schemaType: ObjectSchemaType
 }) {
-  const block = (diff.toValue ? diff.toValue : diff.fromValue) as PortableTextBlock
-  const blocks = [block] as PortableTextBlock[]
-  const childMap = createChildMap(block, diff)
-  const serializers = createSerializers(schemaType, childMap)
+  const isRemoved = diff.action === 'removed'
+  const isAdded = diff.action === 'added'
+  const childMap = createChildMap(diff, schemaType)
   return (
-    <div className={styles.root}>
-      <PortableText blocks={blocks} serializers={serializers} />
+    <>
+      {/* Preview */}
+      <div className={styles.root}>
+        <PortableText blockDiff={diff} childMap={childMap} />
+      </div>
+
+      {/* Summary */}
       <ul className={styles.summary}>
-        {block.children.map(child => {
-          return childMap[child._key].summary.map((line, i) => (
-            <li key={`summary-${child._key.concat(i.toString())}`}>{line}</li>
-          ))
-        })}
+        {isRemoved && <li>Removed portable text block</li>}
+        {isAdded && <li>Added portable text block</li>}
+        {Object.keys(childMap)
+          .map(key => childMap[key])
+          .map(mapEntry => {
+            return mapEntry.summary.map((line, i) => (
+              <li key={`summary-${mapEntry.child._key.concat(i.toString())}`}>{line}</li>
+            ))
+          })}
       </ul>
-    </div>
+    </>
   )
-}
-
-function createSerializers(schemaType: ObjectSchemaType, childMap: ChildMap) {
-  const renderDecorator = ({mark, children}: {mark: string; children: React.ReactNode}) => {
-    return <Decorator mark={mark}>{children}</Decorator>
-  }
-  const renderBlock = ({node, children}: {node: PortableTextBlock; children: React.ReactNode}) => {
-    let returned: React.ReactNode = children
-    if (node.style === 'blockquote') {
-      returned = <Blockquote>{returned}</Blockquote>
-    } else if (node.style && isHeader(node)) {
-      returned = <Header style={node.style}>{returned}</Header>
-    } else {
-      returned = <Paragraph>{returned}</Paragraph>
-    }
-    return returned
-  }
-  const renderText = (text: {children: string}) => {
-    // With '@sanity/block-content-to-react', spans without marks doesn't run through the renderSpan function.
-    // They are sent directly to the 'text' serializer. This is a hack to render those with annotations from childMap
-    // The _key for the child is not known at this point.
-
-    // Find child that has no marks, and a text similar to what is in the childMap.
-    const fromMap = Object.keys(childMap)
-      .map(key => childMap[key])
-      .filter(child => (child.node.marks || []).length === 0)
-      .find(child => child.node.text === text.children)
-    if (fromMap && fromMap.annotation) {
-      return <span className={styles.spanDiff}>{fromMap.annotation}</span>
-    }
-    return text.children
-  }
-  const renderSpan = (props: {node: PortableTextChild}): React.ReactNode => {
-    const fromMap = childMap[props.node._key]
-    if (fromMap && fromMap.annotation) {
-      const annotatedProps = {
-        ...props,
-        node: {...props.node, children: fromMap.annotation}
-      }
-      return (
-        <span className={styles.spanDiff}>
-          {PortableText.defaultSerializers.span(annotatedProps)}
-        </span>
-      )
-    }
-    return PortableText.defaultSerializers.span(props)
-  }
-  const renderInlineObject = (props: {node: PortableTextChild}): React.ReactNode => {
-    let returned = <span className={styles.inlineObjectDiff}>{props.node._type}</span>
-    return returned
-    // TODO: restore this when we have the inline object schema type
-    // const childMapEntry = childMap[props.node._key]
-    // if (childMapEntry && childMapEntry.diffs.length > 0) {
-    //   returned = null
-    //   childMapEntry.diffs.forEach(iDiff => {
-    //     returned = <ChangeList diff={iDiff} schemaType={schemaType} />
-    //   })
-    // }
-    // return returned
-  }
-
-  const otherTypes = {}
-  const inlineObjects = Object.keys(childMap)
-    .map(key => childMap[key])
-    .map(child => {
-      const span = typeof child === 'object' && (child.node as PortableTextChild)
-      const type = typeof child === 'object' && (child.node._type as string)
-      const isSpan = typeof span._type === 'string' && span._type === 'span'
-      if (!isSpan) {
-        otherTypes[type] = renderInlineObject
-      }
-    })
-  // TODO: create serializers according to schemaType (marks etc)
-  return {
-    marks: {strong: renderDecorator, italic: renderDecorator},
-    span: renderSpan,
-    text: renderText,
-    types: {
-      block: renderBlock,
-      ...otherTypes
-    }
-  }
 }
