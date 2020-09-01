@@ -2,15 +2,6 @@
 @import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
-  /* Default button */
-  --default-button-color: var(--gray);
-  --default-button-color--inverted: var(--white);
-  --default-button-color--hover: var(--gray);
-  --default-button-color--active: var(--gray);
-
-  /* Button */
-  --button-border-radius: var(--border-radius-medium);
-
   /* Input */
   --input-bg: var(--component-bg);
   --input-bg-focus: var(--input-bg);

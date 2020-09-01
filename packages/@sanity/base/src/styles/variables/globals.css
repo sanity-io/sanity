@@ -35,7 +35,14 @@
   --component-text-color: var(--gray-darkest);
   --component-border-color: var(--hairline-color);
 
+  /* Button */
+  --button-border-radius: var(--border-radius-medium);
+
   /* "Default" button */
+  --default-button-color: var(--gray);
+  --default-button-color--inverted: var(--white);
+  --default-button-color--hover: var(--gray); /* not in use */
+  --default-button-color--active: var(--gray); /* not in use */
   --default-button-primary-color: var(--brand-primary);
   --default-button-primary-color--inverted: var(--brand-primary--inverted);
   --default-button-success-color: var(--state-success-color);
