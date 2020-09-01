@@ -36,7 +36,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const didCropChange = changedFields.includes('crop')
   const didHotspotChange = changedFields.includes('hotspot')
   const didMetaChange = didCropChange || didHotspotChange
-  const showImageDiff = didAssetChange || didMetaChange
+  const showImageDiff = (didAssetChange || didMetaChange) && toAsset
 
   const annotationPath = getAnnotationPath({didAssetChange, didCropChange, didHotspotChange})
   const color = useDiffAnnotationColor(diff, annotationPath)
@@ -44,7 +44,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
 
   return (
     <div className={styles.root}>
-      {showImageDiff && (
+      {showImageDiff ? (
         <DiffAnnotationTooltip diff={diff} path={annotationPath}>
           <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
             {prev && (
@@ -78,6 +78,8 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
             )}
           </div>
         </DiffAnnotationTooltip>
+      ) : (
+        <div>Image not set</div>
       )}
 
       {nestedFields.length > 0 && (
