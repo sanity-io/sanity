@@ -1,0 +1,13 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius-medium);
+  margin: 0 2px;
+  padding: 0 2px;
+}
+
+.removed {
+  opacity: 0.5;
+  text-decoration: line-through;
+}

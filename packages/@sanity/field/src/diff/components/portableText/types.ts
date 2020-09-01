@@ -1,5 +1,6 @@
 import {ArrayDiff, ObjectDiff} from '../../index'
 import {ReactNode} from 'react'
+import {SchemaType} from '../../types'
 
 export type PortableTextBlock = {
   _key: string
@@ -19,8 +20,9 @@ export type ChildMap = Record<
   string,
   {
     annotation: ReactNode | undefined
-    node: PortableTextChild
+    child: PortableTextChild
     diffs: ObjectDiff[] | ArrayDiff[]
     summary: ReactNode[]
+    schemaType?: SchemaType // May not be there anymore
   }
 >
