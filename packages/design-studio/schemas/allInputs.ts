@@ -6,9 +6,9 @@ const title = {
 
 // example fields
 
-const arrayOfObjects = {
+const arrayOfObjectsExample = {
   type: 'array',
-  name: 'arrayOfObjects',
+  name: 'arrayOfObjectsExample',
   title: 'Array of objects',
   of: [
     {
@@ -22,9 +22,9 @@ const arrayOfObjects = {
   }
 }
 
-const arrayOfReferences = {
+const arrayOfReferencesExample = {
   type: 'array',
-  name: 'arrayOfReferences',
+  name: 'arrayOfReferencesExample',
   title: 'Array of references',
   of: [
     {
@@ -34,16 +34,16 @@ const arrayOfReferences = {
   ]
 }
 
-const arrayOfPrimitives = {
+const arrayOfPrimitivesExample = {
   type: 'array',
-  name: 'arrayOfPrimitives',
+  name: 'arrayOfPrimitivesExample',
   title: 'Array of primitives',
   of: [{type: 'string'}]
 }
 
-const arrayOfGeopoints = {
+const arrayOfGeopointsExample = {
   type: 'array',
-  name: 'arrayOfGeopoints',
+  name: 'arrayOfGeopointsExample',
   title: 'Array of geopoints',
   of: [{type: 'geopoint'}]
 }
@@ -54,9 +54,9 @@ const booleanExample = {
   title: 'Boolean example'
 }
 
-const arrayGridOfFlatImages = {
+const arrayGridOfFlatImagesExample = {
   type: 'array',
-  name: 'arrayGridOfFlatImages',
+  name: 'arrayGridOfFlatImagesExample',
   title: 'Array grid of (flat) images with caption',
   of: [
     {
@@ -67,9 +67,9 @@ const arrayGridOfFlatImages = {
   options: {layout: 'grid'}
 }
 
-const arrayGridOfImages = {
+const arrayGridOfImagesExample = {
   type: 'array',
-  name: 'arrayGridOfImages',
+  name: 'arrayGridOfImagesExample',
   title: 'Array grid of images',
   of: [
     {
@@ -165,14 +165,14 @@ const numberRadioExample = {
   }
 }
 
-const object = {
+const objectExample = {
   type: 'object',
-  name: 'object',
+  name: 'objectExample',
   title: 'Object',
   fields: [{type: 'string', name: 'title', title: 'Title'}]
 }
 
-const objectWithNestedValues = {
+const objectWithNestedValuesExample = {
   type: 'object',
   name: 'objectWithNestedValues',
   title: 'Object with nested values',
@@ -191,9 +191,9 @@ const objectWithNestedValues = {
   ]
 }
 
-const portableText = {
+const portableTextExample = {
   type: 'array',
-  name: 'portableText',
+  name: 'portableTextExample',
   title: 'Portable text',
   of: [{type: 'block'}]
 }
@@ -269,12 +269,12 @@ export default {
     title,
 
     // array
-    arrayOfObjects,
-    arrayOfReferences,
-    arrayOfPrimitives,
-    arrayGridOfImages,
-    arrayGridOfFlatImages,
-    arrayOfGeopoints,
+    arrayOfObjectsExample,
+    arrayOfReferencesExample,
+    arrayOfPrimitivesExample,
+    arrayGridOfImagesExample,
+    arrayGridOfFlatImagesExample,
+    arrayOfGeopointsExample,
 
     // boolean
     booleanExample,
@@ -301,11 +301,11 @@ export default {
     numberRadioExample,
 
     // object
-    object,
-    objectWithNestedValues,
+    objectExample,
+    objectWithNestedValuesExample,
 
     // portableText
-    portableText,
+    portableTextExample,
 
     // reference
     referenceExample,
