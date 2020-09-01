@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.inputWrapper {
+  padding-right: 4px;
+  border-right: 2px solid #ccc;
+  transition: border-color 100ms;
+  @nest &:hover {
+    border-right-color: #B89B23;
+  }
+}

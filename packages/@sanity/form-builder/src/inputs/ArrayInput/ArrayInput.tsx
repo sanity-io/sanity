@@ -22,6 +22,7 @@ import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
 
 import styles from './styles/ArrayInput.css'
+import {ArrayDiff} from '@sanity/diff'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
@@ -50,6 +51,7 @@ export type Props = {
   onFocus: (path: Path) => void
   onBlur: () => void
   focusPath: Path
+  diff?: ArrayDiff<unknown>
   readOnly: boolean
   filterField: (field: any) => boolean
   resolveUploader?: (type: Type, file: File) => Uploader
@@ -161,6 +163,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       onBlur,
       onFocus,
       level,
+      diff,
       filterField,
       presence
     } = this.props
@@ -200,6 +203,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 type={type}
                 value={item}
                 level={level}
+                diff={diff}
                 markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}

@@ -13,12 +13,14 @@ import {Doc} from '../../types'
 import {EditForm} from './editForm'
 
 import styles from './formView.css'
+import {Diff} from '@sanity/diff'
 
 interface Props {
   id: string
   readOnly?: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: Doc | null
+  diff: Diff<unknown> | null
   initialValue: Doc
   isConnected: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,7 +111,7 @@ export class FormView extends React.PureComponent<Props> {
   }
 
   render() {
-    const {id, value, initialValue, markers, schemaType} = this.props
+    const {id, value, initialValue, markers, diff, schemaType} = this.props
     const {focusPath, filterField} = this.state
     const readOnly = this.isReadOnly()
     const documentId = value && value._id && value._id.replace(/^drafts\./, '')
@@ -133,6 +135,7 @@ export class FormView extends React.PureComponent<Props> {
           <EditForm
             id={id}
             value={value || initialValue}
+            diff={diff}
             filterField={filterField}
             focusPath={focusPath}
             markers={markers}

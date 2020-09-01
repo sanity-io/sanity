@@ -7,7 +7,32 @@ import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths'
 import {Type, Marker, Presence} from './typedefs'
 import {Context as PresenceContext} from '@sanity/components/lib/presence'
-import {emptyArray, emptyObject} from './utils/empty'
+import {Context as ChangeConnectorContext} from '@sanity/components/lib/change-indicators'
+import {emptyArray} from './utils/empty'
+import {ArrayDiff, Diff, ObjectDiff} from '@sanity/diff'
+
+function isObjectDiff<T>(diff: Diff<T>): diff is ObjectDiff<T> {
+  return diff.type === 'object'
+}
+
+function isArrayDiff<T>(diff: Diff<T>): diff is ArrayDiff<T> {
+  return diff.type === 'array'
+}
+
+function getDiffForPath(diff: Diff<unknown> | undefined, path: Path) {
+  if (!diff || path.length === 0) {
+    return diff
+  }
+  const [head, ...tail] = path
+  if (typeof head === 'string' && isObjectDiff(diff)) {
+    return getDiffForPath(diff.fields[head], tail)
+  }
+  if (typeof head === 'object' && isArrayDiff(diff)) {
+    const item = diff.items.find(item => (item.diff.toValue as any)._key === head._key)
+    return getDiffForPath(item?.diff, tail)
+  }
+  throw new Error('Invalid access for path on diff')
+}
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -23,6 +48,7 @@ interface Props {
   presence?: Presence[]
   focusPath: Path
   markers: Marker[]
+  diff?: Diff<unknown>
   level: number
   isRoot?: boolean
   path: Array<PathSegment>
@@ -193,6 +219,7 @@ export class FormBuilderInput extends React.Component<Props> {
       level,
       presence = this.context.presence,
       focusPath,
+      diff,
       isRoot,
       ...rest
     } = this.props
@@ -216,7 +243,7 @@ export class FormBuilderInput extends React.Component<Props> {
     }
     const childFocusPath = this.getChildFocusPath()
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
-
+    const hasFocus = PathUtils.hasFocus(focusPath, path)
     const childPresenceInfo =
       readOnly || presence.length === 0
         ? EMPTY_PRESENCE
@@ -232,24 +259,29 @@ export class FormBuilderInput extends React.Component<Props> {
         : EMPTY_PRESENCE
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
+    const childDiff = getDiffForPath(diff, path)
+
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <PresenceContext.Provider value={childPresenceInfo}>
-          <InputComponent
-            {...rest}
-            {...leafProps}
-            isRoot={isRoot}
-            value={value}
-            readOnly={readOnly || type.readOnly}
-            markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
-            type={type}
-            presence={childPresenceInfo}
-            onChange={this.handleChange}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            level={level}
-            ref={this.setInput}
-          />
+          <ChangeConnectorContext.Provider value={{isChanged: childDiff?.isChanged || false}}>
+            <InputComponent
+              {...rest}
+              {...leafProps}
+              isRoot={isRoot}
+              value={value}
+              diff={childDiff}
+              readOnly={readOnly || type.readOnly}
+              markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
+              type={type}
+              presence={childPresenceInfo}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              level={level}
+              ref={this.setInput}
+            />
+          </ChangeConnectorContext.Provider>
         </PresenceContext.Provider>
       </div>
     )

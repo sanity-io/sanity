@@ -7,6 +7,7 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import FieldStatus from '../fieldsets/FieldStatus'
 import {FieldPresence} from '../presence'
+import {ChangeIndicator} from '../change-indicators'
 
 export default class DefaultFormField extends React.PureComponent {
   static propTypes = {
@@ -84,7 +85,9 @@ export default class DefaultFormField extends React.PureComponent {
           )}
         </label>
 
-        <div className={styles.content}>{children}</div>
+        <div className={styles.content}>
+          <ChangeIndicator>{children}</ChangeIndicator>
+        </div>
       </div>
     )
   }

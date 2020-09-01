@@ -8,6 +8,7 @@ import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
 import styles from './styles/ObjectInput.css'
+import {ObjectDiff} from '@sanity/diff'
 
 function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
   // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"
@@ -35,6 +36,7 @@ function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
 type ObjectInputProps = {
   type?: any
   value?: {[key: string]: any}
+  diff?: ObjectDiff<unknown>
   onChange?: (...args: any[]) => any
   onFocus: (...args: any[]) => any
   focusPath?: any[]
@@ -92,6 +94,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
       focusPath,
       onFocus,
       onBlur,
+      diff,
       filterField,
       presence
     } = this.props
@@ -107,6 +110,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         onChange={this.handleFieldChange}
         onFocus={onFocus}
         onBlur={onBlur}
+        diff={diff}
         markers={markers}
         focusPath={focusPath}
         level={level}

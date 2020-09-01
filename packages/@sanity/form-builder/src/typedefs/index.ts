@@ -21,4 +21,5 @@ export type Marker = {
   item: any
 }
 
+export {Diff} from '@sanity/diff'
 export {FormFieldPresence as Presence} from '@sanity/components/lib/presence/types'

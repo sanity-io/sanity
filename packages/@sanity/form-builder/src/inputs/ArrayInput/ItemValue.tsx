@@ -22,6 +22,7 @@ import {Presence, Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import {ArrayDiff, Diff} from '@sanity/diff'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -59,6 +60,7 @@ type Props = {
   readOnly: boolean | null
   focusPath: Path
   presence: Presence[]
+  diff?: ArrayDiff<any>
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}
@@ -156,7 +158,17 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
   }
   renderEditItemForm(item: ItemValue) {
-    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
+    const {
+      type,
+      markers,
+      focusPath,
+      onFocus,
+      onBlur,
+      readOnly,
+      filterField,
+      presence,
+      diff
+    } = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
@@ -166,6 +178,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         type={memberType}
         level={0}
         value={isEmpty(item) ? undefined : item}
+        diff={diff}
         onChange={this.handleChange}
         onFocus={onFocus}
         onBlur={onBlur}

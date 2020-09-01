@@ -9,6 +9,7 @@ import FieldStatus from './FieldStatus'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {FieldPresence} from '../presence'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import {ChangeIndicator} from '../change-indicators'
 
 export default class Fieldset extends React.PureComponent {
   static propTypes = {
@@ -197,7 +198,9 @@ export default class Fieldset extends React.PureComponent {
 
             {!isCollapsible && (
               <div className={styles.content}>
-                <div className={styles.fieldWrapper}>{children}</div>
+                <ChangeIndicator>
+                  <div className={styles.fieldWrapper}>{children}</div>
+                </ChangeIndicator>
               </div>
             )}
           </div>

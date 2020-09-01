@@ -46,7 +46,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const features = useDeskToolFeatures()
   const portalContainerRef = useRef<HTMLDivElement | null>(null)
   const portalRef = useRef(document.createElement('div'))
-  const {displayed, historyDisplayed, startTime, toggleHistory} = useDocumentHistory()
+  const {displayed, timeline, historyDisplayed, startTime, toggleHistory} = useDocumentHistory()
   const {toggleInspect} = props
   const formRef = useRef<any>()
   const activeView = props.views.find(view => view.id === props.activeViewId) ||
@@ -150,6 +150,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 initialFocusPath={props.initialFocusPath}
                 initialValue={props.initialValue}
                 markers={props.markers}
+                diff={timeline.currentDiff()}
                 onChange={props.onChange}
                 readOnly={historyDisplayed === 'from'}
                 ref={formRef}

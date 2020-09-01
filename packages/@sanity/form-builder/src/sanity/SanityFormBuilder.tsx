@@ -15,6 +15,7 @@ type Props = {
   type: Type
   markers: Array<Marker>
   patchChannel: PatchChannel
+  diff: any
   onFocus: (arg0: Path) => void
   readOnly: boolean
   onChange: (patches: any[]) => void
@@ -59,6 +60,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       onBlur,
       focusPath,
       filterField,
+      diff,
       presence
     } = this.props
     return (
@@ -69,6 +71,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
           level={0}
           value={value}
           onFocus={onFocus}
+          diff={diff}
           onBlur={onBlur}
           markers={markers}
           focusPath={focusPath}

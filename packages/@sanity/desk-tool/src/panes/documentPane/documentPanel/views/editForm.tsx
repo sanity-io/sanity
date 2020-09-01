@@ -6,6 +6,7 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import React, {FormEvent, useEffect, useMemo, useRef, memo} from 'react'
 import {Subscription} from 'rxjs'
 import {tap} from 'rxjs/operators'
+import {Diff} from '@sanity/diff'
 
 const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
@@ -16,6 +17,7 @@ type SchemaType = any
 interface Props {
   id: string
   value: Doc
+  diff: Diff<unknown> | null
 
   filterField: () => boolean
   focusPath: any[]
@@ -60,6 +62,7 @@ export const EditForm = memo((props: Props) => {
     onBlur,
     onFocus,
     onChange,
+    diff,
     readOnly,
     schema,
     type
@@ -69,6 +72,7 @@ export const EditForm = memo((props: Props) => {
     <form onSubmit={preventDefault}>
       <FormBuilder
         schema={schema}
+        diff={diff}
         patchChannel={patchChannel}
         value={value || {_type: type}}
         type={type}
