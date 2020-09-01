@@ -3,9 +3,22 @@
 import classNames from 'classnames'
 import React, {cloneElement, useState, useEffect} from 'react'
 import {usePopper} from 'react-popper'
+import {Modifier} from '@popperjs/core'
+import maxSize from 'popper-max-size-modifier'
 import {PopoverArrow} from './arrow'
 
 import styles from './popover.css'
+
+const applyModifer: Modifier<'applyMaxSize', {}> = {
+  name: 'applyMaxSize',
+  enabled: true,
+  phase: 'beforeWrite',
+  requires: ['maxSize'],
+  fn({state}) {
+    const {height} = state.modifiersData.maxSize
+    state.styles.popper.maxHeight = `${height}px`
+  }
+}
 
 interface PopoverProps {
   targetElement?: HTMLElement | null
@@ -66,7 +79,14 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
         options: {
           offset: [0, 4]
         }
-      }
+      },
+      {
+        ...maxSize,
+        options: {
+          padding: 8
+        }
+      },
+      applyModifer
     ]
   })
 
