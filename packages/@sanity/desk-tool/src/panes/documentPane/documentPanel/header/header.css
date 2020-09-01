@@ -30,8 +30,13 @@
   }
 }
 
-.contextMenuContainer {
+.paneActions {
   padding: 8px;
+  display: flex;
+
+  @nest & > div + div {
+    margin-left: 4px;
+  }
 
   @nest .isCollapsed & {
     display: none;
@@ -52,42 +57,5 @@
 }
 
 .versionSelectContainer {
-  margin: 4px 1em 4px auto;
-}
-
-.viewActions {
-  /* padding: 0 var(--small-padding) 0 0; */
-
-  @nest & button {
-    vertical-align: top;
-    -webkit-appearance: none;
-    -webkit-font-smoothing: inherit;
-    border: 0;
-    padding: var(--extra-small-padding);
-    border-radius: var(--border-radius-small);
-    background: none;
-    color: var(--text-muted);
-    outline: none;
-
-    @nest & svg {
-      display: block;
-      font-size: calc(25 / 16 * 1rem); /* 25px */
-    }
-
-    /* Focus wrapper */
-    @nest & > div {
-      outline: none;
-    }
-
-    @media (hover: hover) {
-      @nest &:hover {
-        color: inherit;
-      }
-    }
-
-    @nest &:focus {
-      background: var(--selectable-item-color-hover);
-      color: inherit;
-    }
-  }
+  margin: 4px 0.5em 4px auto;
 }
