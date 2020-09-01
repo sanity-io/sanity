@@ -63,7 +63,7 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
         />
       }
       open={open}
-      placement="bottom-end"
+      placement="bottom"
       setOpen={setOpen}
     />
   )
