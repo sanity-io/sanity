@@ -4,7 +4,7 @@
 :root {
   --text-color: var(--body-text);
   --text-color-secondary: var(--gray-darker);
-  --text-muted: var(--gray);
+  --text-muted: var(--gray-dark);
   --link-color: var(--brand-primary);
   --link-hover-color: color(var(--state-info-color) saturation(+5%) lightness(-4%));
 

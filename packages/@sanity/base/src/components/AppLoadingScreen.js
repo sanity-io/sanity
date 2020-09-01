@@ -7,7 +7,7 @@ const AppLoadingScreenStyles = `
   -webkit-font-smoothing: antialiased;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: #e4e8ed;
-  color: #7b8ca8;
+  color: #66758d;
   display: block;
   width: 100vw;
   height: 100vh;

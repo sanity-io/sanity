@@ -23,7 +23,9 @@
   --color-button-inverted-border: color(var(--color-button-bg) alpha(35%));
   --color-button-inverted-spinner-bg: color(var(--color-button-text) alpha(80%));
   /* simple={true} */
-  --color-button-simple-color: var(--color-button-bg);
+  /* :enabled */
+  --color-button-simple-enabled-bg: transparent;
+  --color-button-simple-enabled-text: color(var(--color-button-bg) lightness(- 20%));
   /* :focus */
   --color-button-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
   --color-button-simple-focus-text: color(var(--color-button-bg) lightness(- 20%));
@@ -57,7 +59,11 @@
   --color-button-primary-inverted-focus-bg: var(--color-button-primary-bg);
   --color-button-primary-inverted-focus-color: var(--color-button-primary-text);
   /* simple={true} */
-  --color-button-primary-simple-color: var(--color-button-primary-bg);
+  /* :enabled */
+  --color-button-primary-simple-enabled-bg: transparent;
+  --color-button-primary-simple-enabled-text: color(
+    var(--color-button-primary-bg) lightness(- 20%)
+  );
   /* :focus */
   --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) alpha(10%));
   --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 20%));
@@ -93,7 +99,11 @@
   --color-button-success-inverted-focus-bg: var(--color-button-success-bg);
   --color-button-success-inverted-focus-color: var(--color-button-success-text);
   /* simple={true} */
-  --color-button-success-simple-color: var(--color-button-success-bg);
+  /* :enabled */
+  --color-button-success-simple-enabled-bg: transparent;
+  --color-button-success-simple-enabled-text: color(
+    var(--color-button-success-bg) lightness(- 20%)
+  );
   /* :focus */
   --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) alpha(10%));
   --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 20%));
@@ -129,7 +139,11 @@
   --color-button-warning-inverted-focus-bg: var(--color-button-warning-bg);
   --color-button-warning-inverted-focus-color: var(--color-button-warning-text);
   /* simple={true} */
-  --color-button-warning-simple-color: var(--color-button-warning-bg);
+  /* :enabled */
+  --color-button-warning-simple-enabled-bg: transparent;
+  --color-button-warning-simple-enabled-text: color(
+    var(--color-button-warning-bg) lightness(- 20%)
+  );
   /* :focus */
   --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) alpha(10%));
   --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 20%));
@@ -165,7 +179,9 @@
   --color-button-danger-inverted-focus-bg: var(--color-button-danger-bg);
   --color-button-danger-inverted-focus-color: var(--color-button-danger-text);
   /* simple={true} */
-  --color-button-danger-simple-color: var(--color-button-danger-bg);
+  /* :enabled */
+  --color-button-danger-simple-enabled-bg: transparent;
+  --color-button-danger-simple-enabled-text: color(var(--color-button-danger-bg) lightness(- 20%));
   /* :focus */
   --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) alpha(10%));
   --color-button-danger-simple-focus-text: color(var(--color-button-danger-bg) lightness(- 20%));
@@ -245,8 +261,8 @@
 
     @nest &.simple {
       @nest & > .inner {
-        background-color: transparent;
-        color: var(--color-button-simple-color);
+        background-color: var(--color-button-simple-enabled-bg);
+        color: var(--color-button-simple-enabled-text);
       }
 
       @nest & .spinner {
@@ -431,8 +447,8 @@
 
   @nest &.simple {
     @nest & > .inner {
-      background-color: transparent;
-      color: var(--color-button-primary-simple-color);
+      background-color: var(--color-button-primary-simple-enabled-bg);
+      color: var(--color-button-primary-simple-enabled-text);
     }
 
     @media (hover: hover) {
@@ -488,8 +504,8 @@
 
   @nest &.simple {
     @nest & > .inner {
-      background-color: transparent;
-      color: var(--color-button-success-simple-color);
+      background-color: var(--color-button-success-simple-enabled-bg);
+      color: var(--color-button-success-simple-enabled-text);
     }
 
     @media (hover: hover) {
@@ -545,8 +561,8 @@
 
   @nest &.simple {
     @nest & > .inner {
-      background-color: transparent;
-      color: var(--color-button-warning-simple-color);
+      background-color: var(--color-button-warning-simple-enabled-bg);
+      color: var(--color-button-warning-simple-enabled-text);
     }
 
     @media (hover: hover) {
@@ -602,8 +618,8 @@
 
   @nest &.simple {
     @nest & > .inner {
-      background-color: transparent;
-      color: var(--color-button-danger-simple-color);
+      background-color: var(--color-button-danger-simple-enabled-bg);
+      color: var(--color-button-danger-simple-enabled-text);
     }
 
     @media (hover: hover) {
