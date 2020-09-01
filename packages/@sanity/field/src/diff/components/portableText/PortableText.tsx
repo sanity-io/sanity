@@ -9,7 +9,7 @@ import Header from './previews/Header'
 import Paragraph from './previews/Paragraph'
 
 import styles from './PTDiff.css'
-import {ArrayDiff, ObjectDiff} from '../../index'
+import {ObjectDiff} from '../../index'
 
 type Props = {
   blockDiff: ObjectDiff
@@ -78,12 +78,13 @@ export const PortableText = (props: Props): JSX.Element => {
   }
 
   // Do the final render
-  let block = blockDiff.toValue
+  let block = blockDiff.toValue as PortableTextBlock
   if (somethingIsRemoved(blockDiff)) {
-    block = blockDiff.fromValue
+    block = blockDiff.fromValue as PortableTextBlock
   }
+  const children = block.children || []
   return renderBlock({
-    block: block as PortableTextBlock,
-    children: block.children.map(child => renderChild(child))
+    block,
+    children: children.map(child => renderChild(child))
   })
 }
