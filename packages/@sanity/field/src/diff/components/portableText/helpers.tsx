@@ -14,9 +14,12 @@ export function isHeader(node: PortableTextBlock) {
 
 export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaType) {
   // Create a map from span to diff
-  const block = somethingIsRemoved(blockDiff) ? blockDiff.fromValue : blockDiff.toValue
+  const block = (somethingIsRemoved(blockDiff)
+    ? blockDiff.fromValue
+    : blockDiff.toValue) as PortableTextBlock
   const childMap: ChildMap = {}
-  block.children.forEach(child => {
+  const children = block.children || []
+  children.forEach(child => {
     // Fallback for renderer
     if (child) {
       child._type = child._type || 'undefined' // string
