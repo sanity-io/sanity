@@ -81,15 +81,47 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           />
         </div>
 
-        <div className={styles.contextMenuContainer}>
-          <DocumentPanelContextMenu
-            isCollapsed={props.isCollapsed}
-            itemGroups={props.menuItemGroups}
-            items={contextMenuItems}
-            onAction={props.onContextMenuAction}
-            open={isContextMenuOpen}
-            setOpen={setContextMenuOpen}
-          />
+        <div className={styles.paneActions}>
+          <div>
+            <DocumentPanelContextMenu
+              isCollapsed={props.isCollapsed}
+              itemGroups={props.menuItemGroups}
+              items={contextMenuItems}
+              onAction={props.onContextMenuAction}
+              open={isContextMenuOpen}
+              setOpen={setContextMenuOpen}
+            />
+          </div>
+
+          {features.splitViews && (
+            <>
+              {props.onSplitPane && props.views.length > 1 && (
+                <div>
+                  <Button
+                    icon={SplitHorizontalIcon}
+                    kind="simple"
+                    onClick={props.onSplitPane}
+                    padding="small"
+                    title="Split pane right"
+                    type="button"
+                  />
+                </div>
+              )}
+
+              {props.onSplitPane && props.isClosable && (
+                <div>
+                  <Button
+                    icon={CloseIcon}
+                    kind="simple"
+                    onClick={props.onCloseView}
+                    padding="small"
+                    title="Close pane"
+                    type="button"
+                  />
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
 
@@ -110,26 +142,6 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             Select version &darr;
           </Button>
         </div>
-
-        {features.splitViews && (
-          <div className={styles.viewActions}>
-            {props.onSplitPane && props.views.length > 1 && (
-              <button type="button" onClick={props.onSplitPane} title="Split pane right">
-                <div tabIndex={-1}>
-                  <SplitHorizontalIcon />
-                </div>
-              </button>
-            )}
-
-            {props.onSplitPane && props.isClosable && (
-              <button type="button" onClick={props.onCloseView} title="Close pane">
-                <div tabIndex={-1}>
-                  <CloseIcon />
-                </div>
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )
