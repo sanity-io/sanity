@@ -1,6 +1,7 @@
 /* eslint-disable max-depth */
 import React, {useCallback} from 'react'
 import {ObjectDiff, ObjectSchemaType, DocumentChangeContext, ChangeList} from '@sanity/field/diff'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {useDocumentHistory} from '../documentHistory'
 
@@ -37,9 +38,14 @@ export function ChangesPanel({
         <div className={styles.mainNav}>
           <h2 className={styles.title}>Changes</h2>
           <div className={styles.closeButtonContainer}>
-            <button onClick={closeHistory} type="button">
-              Close
-            </button>
+            <Button
+              icon={CloseIcon}
+              kind="simple"
+              onClick={closeHistory}
+              padding="small"
+              title="Hide changes panel"
+              type="button"
+            />
           </div>
         </div>
         <div>
