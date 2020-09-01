@@ -22,13 +22,13 @@ function UserItem(props: {userId: string}) {
 
   return (
     <div className={styles.userItem}>
-      {isLoading && 'Loading…'}
+      {isLoading && <span className={styles.loadingText}>Loading…</span>}
       {user && (
         <>
-          <span>
+          <span className={styles.avatarContainer}>
             <UserAvatar user={user} />
           </span>
-          <span>{user.displayName}</span>
+          <span className={styles.displayName}>{user.displayName}</span>
         </>
       )}
     </div>
