@@ -1,16 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  padding: 0.25em 0;
+  padding: var(--extra-small-padding) 0;
 }
 
 .userItem {
-  padding: 0.5em 0.75em;
+  padding: var(--extra-small-padding) var(--small-padding);
   display: flex;
+  align-items: center;
+}
 
-  @nest & span {
-    display: block;
-  }
+.avatarContainer {
+  display: block;
+  margin-right: var(--small-padding);
+}
 
-  @nest & span:first-child {
-    margin-right: 0.5em;
-  }
+.displayName {
+  display: block;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  margin-top: -1px;
+}
+
+.loadingText {
+  color: var(--text-muted);
 }
