@@ -5,11 +5,11 @@ import {DiffAnnotationTooltip, ObjectDiff, useDiffAnnotationColor} from '../../.
 
 type Props = {
   diff?: ObjectDiff
-  node: PortableTextChild
+  object: PortableTextChild
   children?: React.ReactNode
 }
 export default function InlineObject(props: Props) {
-  const children = props.children || props.node._type
+  const children = props.children || props.object._type
   const {diff} = props
   let returned = <span className={styles.root}>{children}</span>
   if (diff) {

@@ -10,5 +10,9 @@ type Props = {
 }
 
 export default function Annotation(props: Props) {
-  return <span className={styles.root}>{props.children}</span>
+  return (
+    <span key={`annotation-${props.markDefKey}-${props.span._key}`} className={styles.root}>
+      {props.children}
+    </span>
+  )
 }

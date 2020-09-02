@@ -60,7 +60,7 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
       }
       if (isAddInlineObject(cDiff) || isChangeInlineObject(cDiff) || isRemoveInlineObject(cDiff)) {
         summary.push(`${startCase(cDiff.action)} inline object`)
-        annotation = <InlineObject node={child} diff={cDiff} />
+        annotation = <InlineObject object={child} diff={cDiff} />
       }
     })
 
