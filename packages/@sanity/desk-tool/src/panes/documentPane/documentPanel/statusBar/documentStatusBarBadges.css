@@ -1,13 +1,68 @@
 @import 'part:@sanity/base/theme/variables-style';
+:root {
+  --size: 1.8rem;
+}
 
 .statusBadges {
+  position: relative;
   display: flex;
   flex-wrap: nowrap;
   white-space: nowrap;
   font-size: var(--font-size-xsmall--uppercase);
   line-height: 1;
+  margin-right: var(--small-padding);
 
-  @nest & > div + div {
-    margin-left: var(--extra-small-padding);
+  @nest & > div + div:not(:last-child) {
+    margin-left: var(--small-padding);
+  }
+
+  @nest &[data-disabled='true'] {
+    @nest & .badge {
+      background: var(--gray-lightest); /* TODO */
+      color: var(--gray-lighter); /* TODO */
+    }
+  }
+}
+
+.sparkline {
+  position: absolute;
+  top: calc((100% - 1px) / 2);
+  height: 1px;
+  width: 100%;
+  background: var(--gray-lighter);
+  z-index: 0;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: default;
+  flex: 1;
+  background-color: var(--gray);
+  border: 1px solid var(--white);
+  color: var(--white);
+  border-radius: var(--size);
+  height: var(--size);
+  width: var(--size);
+  z-index: 10;
+  font-size: var(--font-size-large);
+  cursor: inherit;
+
+  @nest &[data-color='success'] {
+    background-color: var(--state-success-color);
+    color: var(--state-success-color--inverted);
+  }
+
+  @nest &[data-color='warning'] {
+    background-color: #ffeea0; /* TODO */
+    color: #896f00; /* TODO */
+  }
+
+  @nest &[data-color='danger'] {
+    font-size: var(--font-size-tiny);
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
   }
 }

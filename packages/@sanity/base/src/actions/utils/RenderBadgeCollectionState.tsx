@@ -6,6 +6,7 @@ export interface Badge {
   label: string
   title: string
   color: 'success' | 'failure' | 'warning'
+  icon?: React.ReactNode
 }
 
 interface RenderBadgeCollectionProps {
