@@ -1,5 +1,5 @@
 import React from 'react'
-import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
+import {DiffAnnotationCard, DiffAnnotationTooltip} from '../../annotations'
 import {DiffComponent, ObjectDiff} from '../../types'
 import {DiffLayout} from '../shared'
 import styles from '../shared/BlockSegmentStyles.css'
@@ -10,8 +10,6 @@ interface Slug {
 
 export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff}) => {
   const {fromValue, toValue} = diff
-  const color = useDiffAnnotationColor(diff, [])
-  const style = color ? {background: color.background, color: color.text} : {}
 
   return (
     <DiffAnnotationTooltip diff={diff}>
@@ -19,16 +17,20 @@ export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff}) => {
         layout="grid"
         renderFrom={
           fromValue && (
-            <del className={`${styles.segment} ${styles.add}`} style={style}>
+            <DiffAnnotationCard as="del" className={`${styles.segment} ${styles.add}`} diff={diff}>
               {fromValue.current}
-            </del>
+            </DiffAnnotationCard>
           )
         }
         renderTo={
           toValue && (
-            <ins className={`${styles.segment} ${styles.remove}`} style={style}>
+            <DiffAnnotationCard
+              as="ins"
+              className={`${styles.segment} ${styles.remove}`}
+              diff={diff}
+            >
               {toValue.current}
-            </ins>
+            </DiffAnnotationCard>
           )
         }
       />
