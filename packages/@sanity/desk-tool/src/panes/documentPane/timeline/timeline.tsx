@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
+
 import React, {useCallback, forwardRef, useRef} from 'react'
-import {format} from 'date-fns'
 import {Chunk} from '@sanity/field/diff'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import VisibilityContainer from './visibilityContainer'
+import {TimelineItem} from './timelineItem'
+import {TimelineItemState} from './types'
 
 import styles from './timeline.css'
 
@@ -46,7 +48,7 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
       visibilityContainerRef.current?.recalculate()
     }, [visibilityContainerRef.current])
 
-    let state: ItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
+    let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
 
     return (
       <div className={styles.root} ref={ref} onScroll={handleScroll}>
@@ -90,32 +92,3 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
 )
 
 Timeline.displayName = 'Timeline'
-
-type ItemState = 'enabled' | 'disabled' | 'withinSelection' | 'selected'
-
-function TimelineItem(props: {
-  state: ItemState
-  title: string
-  onSelect: (chunk: Chunk) => void
-  chunk: Chunk
-  timestamp: Date
-  type: string
-}) {
-  const {state, onSelect, timestamp, chunk, title, type} = props
-
-  const handleClick = useCallback(
-    (evt: React.MouseEvent<HTMLDivElement>) => {
-      evt.preventDefault()
-      evt.stopPropagation()
-      onSelect(chunk)
-    },
-    [onSelect, chunk]
-  )
-
-  return (
-    <div className={`${styles.item} ${styles[state]}`} title={title} onClick={handleClick}>
-      <div className={styles.item__typeName}>{type}</div>
-      <div className={styles.item__timestamp}>{format(timestamp)}</div>
-    </div>
-  )
-}
