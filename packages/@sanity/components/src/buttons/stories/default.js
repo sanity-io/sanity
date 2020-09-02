@@ -39,7 +39,13 @@ export function DefaultStory() {
     icon: boolean('Icon', undefined, 'props') ? TrashIcon : undefined,
     padding: select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props'),
     bleed: boolean('Bleed', false, 'props'),
-    selected: boolean('Selected', false, 'props')
+    selected: boolean('Selected', false, 'props'),
+    size: select(
+      'Size',
+      [undefined, 'extra-small', 'small', 'medium', 'large', 'extra-large'],
+      undefined,
+      'props'
+    )
   }
 
   const children = text('Text', 'Touch Me!', 'props')
