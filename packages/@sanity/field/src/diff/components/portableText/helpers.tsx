@@ -5,6 +5,8 @@ import {ChildMap, PortableTextBlock, PortableTextChild} from './types'
 import {SchemaType, ObjectSchemaType} from '../../types'
 import InlineObject from './previews/InlineObject'
 
+export const MISSING_TYPE_NAME = 'MISSING_TYPE'
+
 export function isPTSchemaType(schemaType: SchemaType) {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
 }
@@ -21,8 +23,8 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
   const children = block.children || []
   children.forEach(child => {
     // Fallback for renderer
-    if (child) {
-      child._type = child._type || 'undefined' // string
+    if (typeof child !== 'object' || typeof child._type !== 'string') {
+      child._type = MISSING_TYPE_NAME
     }
     const childDiffs = findChildDiffs(blockDiff, child)
     let summary: React.ReactNode[] = []
