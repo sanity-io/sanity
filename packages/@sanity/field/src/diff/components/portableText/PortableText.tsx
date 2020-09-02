@@ -1,6 +1,6 @@
 import React from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap} from './types'
-import {isHeader, somethingIsRemoved} from './helpers'
+import {isHeader, somethingIsRemoved, MISSING_TYPE_NAME} from './helpers'
 
 import Decorator from './previews/Decorator'
 import InlineObject from './previews/InlineObject'
@@ -57,7 +57,7 @@ export const PortableText = (props: Props): JSX.Element => {
       } else {
         // This should not happen. But have a fallback for missing types anyway.
         // 'undefined' key is set when building the childMap (helpers) when there is no schema found for this object
-        otherTypes['undefined'] = props => invalidInlineObjectType(props)
+        otherTypes[MISSING_TYPE_NAME] = props => invalidInlineObjectType(props)
       }
     })
 
