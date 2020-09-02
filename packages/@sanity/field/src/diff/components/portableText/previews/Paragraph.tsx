@@ -1,7 +1,9 @@
 import React from 'react'
 import styles from './Paragraph.css'
+import {PortableTextBlock} from '../types'
 
 interface Props {
+  block: PortableTextBlock
   children: React.ReactNode
 }
 

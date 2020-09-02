@@ -30,17 +30,21 @@ export const PortableText = (props: Props): JSX.Element => {
   }): JSX.Element => {
     let returned: React.ReactNode = children
     if (block.style === 'blockquote') {
-      returned = <Blockquote>{returned}</Blockquote>
+      returned = <Blockquote block={block}>{returned}</Blockquote>
     } else if (block.style && isHeader(block)) {
-      returned = <Header style={block.style}>{returned}</Header>
+      returned = (
+        <Header block={block} style={block.style}>
+          {returned}
+        </Header>
+      )
     } else {
-      returned = <Paragraph>{returned}</Paragraph>
+      returned = <Paragraph block={block}>{returned}</Paragraph>
     }
     return <>{returned}</>
   }
   const renderInlineObject = (props: {child: PortableTextChild}): React.ReactNode => {
     const {child} = props
-    return <InlineObject node={child} />
+    return <InlineObject object={child} />
   }
 
   const invalidInlineObjectType = (props: any) => {
@@ -68,8 +72,7 @@ export const PortableText = (props: Props): JSX.Element => {
     const fromMap = childMap[child._key]
     // Render span or inline object?
     const inlineObject = otherTypes[child._type]
-    const renderInlineObject = inlineObject && inlineObject(child)
-    const renderSpanOrInline = renderInlineObject ? renderInlineObject : () => child.text
+    const renderSpanOrInline = inlineObject ? inlineObject : () => child.text
     let returned: React.ReactNode =
       fromMap && fromMap.annotation ? fromMap.annotation : renderSpanOrInline({child})
     // Render decorators
@@ -78,7 +81,11 @@ export const PortableText = (props: Props): JSX.Element => {
       (
         child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
       ).map(mark => {
-        returned = <Decorator mark={mark}>{returned}</Decorator>
+        returned = (
+          <Decorator block={block} mark={mark} span={child}>
+            {returned}
+          </Decorator>
+        )
       })
     // Render annotations
     !inlineObject &&
