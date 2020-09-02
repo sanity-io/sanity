@@ -13,6 +13,7 @@ import {useDocumentHistory} from '../documentHistory'
 
 import styles from './changesPanel.css'
 import {format} from 'date-fns'
+import {formatTimelineEventDate, formatTimelineEventLabel} from '../timeline'
 
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -94,11 +95,9 @@ export function ChangesPanel({
 }
 
 function sinceText(since: Chunk | null) {
-  if (!since) return 'Since unknown version'
+  if (!since) return `Since unknown version`
 
-  if (since.type === 'publish') {
-    return `Since version published at ${format(since.endTimestamp)}`
-  }
-
-  return `Since version at ${format(since.endTimestamp)}`
+  return `Since ${formatTimelineEventLabel(since.type)} ${formatTimelineEventDate(
+    since.endTimestamp
+  )}`
 }
