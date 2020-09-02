@@ -1,10 +1,7 @@
 import React from 'react'
-// import PortableText from '@sanity/block-content-to-react'
-import classNames from 'classnames'
-import {DiffComponent, ObjectDiff, ObjectSchemaType, useDiffAnnotationColor} from '../../index'
 
+import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../index'
 import {PortableText} from './PortableText'
-
 import {createChildMap} from './helpers'
 
 import styles from './PTDiff.css'

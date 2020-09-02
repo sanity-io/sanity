@@ -23,6 +23,6 @@ export type ChildMap = Record<
     child: PortableTextChild
     diffs: ObjectDiff[] | ArrayDiff[]
     summary: ReactNode[]
-    schemaType?: SchemaType // May not be there anymore
+    schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
   }
 >
