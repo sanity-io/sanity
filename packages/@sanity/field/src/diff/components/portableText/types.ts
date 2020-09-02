@@ -6,6 +6,7 @@ export type PortableTextBlock = {
   _key: string
   _type: string
   children: PortableTextChild[]
+  markDefs?: {_key: string; _type: string}[]
   style?: string
 }
 
@@ -26,3 +27,5 @@ export type ChildMap = Record<
     schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
   }
 >
+
+export type SpanTypeSchema = SchemaType & {decorators?: {title: string; value: string}[]}

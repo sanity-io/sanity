@@ -1,7 +1,7 @@
 import React from 'react'
 import {AnnotatedStringDiff, ArrayDiff, ObjectDiff, StringDiff} from '../../index'
 import {startCase} from 'lodash'
-import {ChildMap, PortableTextBlock, PortableTextChild} from './types'
+import {ChildMap, PortableTextBlock, PortableTextChild, SpanTypeSchema} from './types'
 import {SchemaType, ObjectSchemaType} from '../../types'
 import InlineObject from './previews/InlineObject'
 
@@ -16,7 +16,7 @@ export function isHeader(node: PortableTextBlock) {
 
 export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaType) {
   // Create a map from span to diff
-  const block = (somethingIsRemoved(blockDiff)
+  const block = (diffDidRemove(blockDiff)
     ? blockDiff.fromValue
     : blockDiff.toValue) as PortableTextBlock
   const childMap: ChildMap = {}
@@ -48,9 +48,15 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
         }
         annotation = <AnnotatedStringDiff diff={textDiff} />
       }
-      if (isAddMark(cDiff)) {
+      if (isAddMark(cDiff, cSchemaType)) {
         const marks = cDiff.fields.marks.toValue
         summary.push(`Added mark ${(Array.isArray(marks) ? marks : []).join(', ')}`)
+      }
+      if (isAddAnnotation(cDiff, cSchemaType) || isRemoveAnnotation(cDiff, cSchemaType)) {
+        const mark =
+          (Array.isArray(cDiff.fields.marks.toValue) && cDiff.fields.marks.toValue[0]) || ''
+        const type = (block.markDefs || []).find(def => def._key === mark)
+        summary.push(`Added annotation to text '${child.text}' (${type ? type._type : 'unknown'})`)
       }
       if (isAddInlineObject(cDiff) || isChangeInlineObject(cDiff) || isRemoveInlineObject(cDiff)) {
         summary.push(`${startCase(cDiff.action)} inline object`)
@@ -128,13 +134,54 @@ function isRemoveInlineObject(cDiff: ObjectDiff) {
   )
 }
 
-function isAddMark(cDiff: ObjectDiff) {
+function isAddMark(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
+  if (!cSchemaType) {
+    return false
+  }
   return (
     cDiff.fields.marks &&
     cDiff.fields.marks.isChanged &&
     cDiff.fields.marks.action === 'added' &&
     Array.isArray(cDiff.fields.marks.toValue) &&
-    cDiff.fields.marks.toValue.length > 0
+    cDiff.fields.marks.toValue.length > 0 &&
+    cSchemaType.jsonType === 'object' &&
+    cDiff.fields.marks.toValue.every(
+      mark => typeof mark === 'string' && cSchemaType && isDecorator(mark, cSchemaType)
+    )
+  )
+}
+
+function isAddAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
+  if (!cSchemaType) {
+    return false
+  }
+  return (
+    cDiff.fields.marks &&
+    cDiff.fields.marks.isChanged &&
+    cDiff.fields.marks.action === 'added' &&
+    Array.isArray(cDiff.fields.marks.toValue) &&
+    cDiff.fields.marks.toValue.length > 0 &&
+    cSchemaType.jsonType === 'object' &&
+    cDiff.fields.marks.toValue.every(
+      mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
+    )
+  )
+}
+
+function isRemoveAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
+  if (!cSchemaType) {
+    return false
+  }
+  return (
+    cDiff.fields.marks &&
+    cDiff.fields.marks.isChanged &&
+    cDiff.fields.marks.action === 'removed' &&
+    cSchemaType.jsonType === 'object' &&
+    cDiff.fields.marks.fromValue &&
+    Array.isArray(cDiff.fields.marks.fromValue) &&
+    cDiff.fields.marks.fromValue.every(
+      mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
+    )
   )
 }
 
@@ -149,10 +196,21 @@ function getChildSchemaType(fields: any[], child: PortableTextChild) {
   return cSchemaType
 }
 
-export function somethingIsRemoved(blockDiff: ObjectDiff) {
+export function diffDidRemove(blockDiff: ObjectDiff) {
   const childrenDiff = blockDiff.fields.children as ArrayDiff
   return (
     blockDiff.action === 'removed' ||
     (childrenDiff && childrenDiff.items.some(item => item.diff.action === 'removed'))
   )
+}
+
+export function getDecorators(spanSchemaType: SpanTypeSchema) {
+  if (spanSchemaType.decorators) {
+    return spanSchemaType.decorators
+  }
+  return []
+}
+
+export function isDecorator(name: string, schemaType: SpanTypeSchema) {
+  return getDecorators(schemaType).some(dec => dec.value === name)
 }
