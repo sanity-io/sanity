@@ -1,37 +1,6 @@
 .root {
-  padding: 0.25em 0;
+  padding: 0.25em;
   overflow: auto;
   height: 100%;
-}
-
-.item {
-  padding: 1em;
-}
-
-.enabled {
-  @nest &:hover {
-    background: rgba(0, 0, 0, 0.1);
-  }
-}
-
-.disabled {
-  color: gray;
-}
-
-.withinSelection {
-  background: #a6c8fd;
-}
-
-.selected {
-  background: #06f;
-  color: #fff;
-}
-
-.item__typeName {
-  /* display: block; */
-}
-
-.item__timestamp {
-  font-size: 13px;
-  line-height: 16px;
+  box-sizing: border-box;
 }
