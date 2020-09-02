@@ -71,6 +71,7 @@ export function ChangesPanel({
                 onMouseUp={ignoreClickOutside}
                 onClick={onTimelineOpen}
                 padding="small"
+                size="small"
               >
                 {sinceText(since)} &darr;
               </Button>
