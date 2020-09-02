@@ -13,9 +13,9 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff: ObjectDiff
   schemaType: ObjectSchemaType
 }) {
-  const isRemoved = diff.action === 'removed'
-  const isAdded = diff.action === 'added'
   const childMap = createChildMap(diff, schemaType)
+  // const isRemoved = diff.action === 'removed'
+  // const isAdded = diff.action === 'added'
   return (
     <>
       {/* Preview */}
