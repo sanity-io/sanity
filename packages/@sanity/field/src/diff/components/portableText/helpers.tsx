@@ -101,10 +101,7 @@ function isAddInlineObject(cDiff: ObjectDiff) {
     cDiff.isChanged &&
     cDiff.action === 'added' &&
     cDiff.fromValue === undefined &&
-    cDiff.toValue &&
-    typeof cDiff.toValue === 'object' &&
-    typeof cDiff.toValue._type === 'string' &&
-    cDiff.toValue._type !== 'span'
+    !childIsSpan(cDiff.toValue as PortableTextChild)
   )
 }
 
@@ -114,10 +111,7 @@ function isChangeInlineObject(cDiff: ObjectDiff) {
     cDiff.isChanged &&
     cDiff.action === 'changed' &&
     cDiff.fromValue !== undefined &&
-    cDiff.toValue &&
-    typeof cDiff.toValue === 'object' &&
-    typeof cDiff.toValue._type === 'string' &&
-    cDiff.toValue._type !== 'span'
+    !childIsSpan(cDiff.toValue as PortableTextChild)
   )
 }
 
@@ -126,11 +120,8 @@ function isRemoveInlineObject(cDiff: ObjectDiff) {
     cDiff.type === 'object' &&
     cDiff.isChanged &&
     cDiff.action === 'removed' &&
-    cDiff.fromValue &&
     cDiff.toValue === undefined &&
-    typeof cDiff.fromValue === 'object' &&
-    typeof cDiff.fromValue._type === 'string' &&
-    cDiff.fromValue._type !== 'span'
+    !childIsSpan(cDiff.fromValue as PortableTextChild)
   )
 }
 
@@ -213,4 +204,9 @@ export function getDecorators(spanSchemaType: SpanTypeSchema) {
 
 export function isDecorator(name: string, schemaType: SpanTypeSchema) {
   return getDecorators(schemaType).some(dec => dec.value === name)
+}
+
+export function childIsSpan(child: PortableTextChild) {
+  const isObject = typeof child === 'object'
+  return isObject && typeof child._type === 'string' && child._type === 'span'
 }
