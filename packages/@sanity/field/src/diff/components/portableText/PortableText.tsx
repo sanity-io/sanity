@@ -1,7 +1,8 @@
 import React from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap} from './types'
-import {isHeader, somethingIsRemoved, MISSING_TYPE_NAME} from './helpers'
+import {isDecorator, isHeader, diffDidRemove, MISSING_TYPE_NAME} from './helpers'
 
+import Annotation from './previews/Annotation'
 import Decorator from './previews/Decorator'
 import InlineObject from './previews/InlineObject'
 import Blockquote from './previews/Blockquote'
@@ -10,6 +11,7 @@ import Paragraph from './previews/Paragraph'
 
 import styles from './PTDiff.css'
 import {ObjectDiff} from '../../index'
+import {ObjectSchemaType} from '../../types'
 
 type Props = {
   blockDiff: ObjectDiff
@@ -57,6 +59,7 @@ export const PortableText = (props: Props): JSX.Element => {
       } else {
         // This should not happen. But have a fallback for missing types anyway.
         // 'undefined' key is set when building the childMap (helpers) when there is no schema found for this object
+        // TODO: remove this when diffs don't have references to leftover types.
         otherTypes[MISSING_TYPE_NAME] = props => invalidInlineObjectType(props)
       }
     })
@@ -71,17 +74,36 @@ export const PortableText = (props: Props): JSX.Element => {
       fromMap && fromMap.annotation ? fromMap.annotation : renderSpanOrInline({child})
     // Render decorators
     !inlineObject &&
-      (child.marks || []).map(mark => {
+      child.marks &&
+      (
+        child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
+      ).map(mark => {
         returned = <Decorator mark={mark}>{returned}</Decorator>
+      })
+    // Render annotations
+    !inlineObject &&
+      child.marks &&
+      (
+        child.marks.filter(mark => !isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
+      ).map(markDefKey => {
+        returned = (
+          <Annotation span={child} block={block} markDefKey={markDefKey}>
+            {returned}
+          </Annotation>
+        )
       })
     return returned
   }
 
   // Do the final render
   let block = blockDiff.toValue as PortableTextBlock
-  if (somethingIsRemoved(blockDiff)) {
+
+  // If something is removed, we should show the beforeValue?
+  // TODO: check up on this!
+  if (diffDidRemove(blockDiff)) {
     block = blockDiff.fromValue as PortableTextBlock
   }
+
   const children = block.children || []
   return renderBlock({
     block,

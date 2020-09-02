@@ -1,10 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  text-decoration: none;
-  display: inline;
-  position: relative;
-  background: red;
+  background-color: color(var(--text-color) a(10%));
+  border-color: color(var(--text-color) a(100%));
   border-bottom: 2px dotted color(var(--text-color) a(100%));
-}
 
+  @nest &:hover {
+    background-color: color(var(--text-color) a(20%));
+    border-color: color(var(--text-color) a(100%));
+  }
+}
