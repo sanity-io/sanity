@@ -1,9 +1,7 @@
-import React from 'react'
-import {AnnotatedStringDiff, ArrayDiff, ObjectDiff, StringDiff} from '../../index'
+import {ArrayDiff, ObjectDiff, StringDiff} from '../../index'
 import {startCase} from 'lodash'
 import {ChildMap, PortableTextBlock, PortableTextChild, SpanTypeSchema} from './types'
 import {SchemaType, ObjectSchemaType} from '../../types'
-import InlineObject from './previews/InlineObject'
 
 export const MISSING_TYPE_NAME = 'MISSING_TYPE'
 
@@ -29,7 +27,6 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
     const childDiffs = findChildDiffs(blockDiff, child)
     let summary: React.ReactNode[] = []
     const cSchemaType = getChildSchemaType(schemaType.fields, child)
-    let annotation
 
     // Summarize all diffs to this child
     // eslint-disable-next-line complexity
@@ -46,7 +43,6 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
             }`
           )
         }
-        annotation = <AnnotatedStringDiff diff={textDiff} />
       }
       if (isAddMark(cDiff, cSchemaType)) {
         const marks = cDiff.fields.marks.toValue
@@ -60,22 +56,14 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
       }
       if (isAddInlineObject(cDiff) || isChangeInlineObject(cDiff) || isRemoveInlineObject(cDiff)) {
         summary.push(`${startCase(cDiff.action)} inline object`)
-        annotation = <InlineObject object={child} diff={cDiff} />
       }
     })
 
     if (childDiffs.length !== 0 && summary.length === 0) {
-      summary.push(
-        <span>
-          Uknown diff:
-          <br />
-          <pre>{JSON.stringify(childDiffs, null, 2)}</pre>
-        </span>
-      )
+      summary.push(`Uknown diff: ${JSON.stringify(childDiffs, null, 2)}`)
     }
 
     childMap[child._key] = {
-      annotation,
       diffs: childDiffs,
       child,
       schemaType: cSchemaType,
