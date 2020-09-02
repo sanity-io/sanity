@@ -3,6 +3,7 @@ export function LiveEditBadge(props) {
     ? {
         label: 'Live',
         color: 'danger'
+        // icon: ?
       }
     : null
 }

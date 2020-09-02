@@ -10,37 +10,34 @@
 
 .status {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  color: var(--text-muted);
+
+  @nest &[data-historyState='active'] {
+    color: var(--gray-lighter);
+  }
 }
 
 .statusBadgesContainer {
   /* container for <StatusBadges /> */
+  display: flex;
+}
+
+.sparklineContainer {
+  /*  */
 }
 
 .statusDetails {
-  font-size: var(--font-size-small);
-  line-height: var(--line-height-small);
-  font-weight: 500;
-  color: var(--text-color-secondary);
   white-space: nowrap;
   margin: -2px 0 -1px;
-
-  @nest .statusBadgesContainer + & {
-    margin-top: var(--small-padding);
-  }
 }
 
 .lastUpdatedButton {
-  color: var(--text-muted);
-  vertical-align: top;
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
   font: inherit;
-  font-size: var(--font-size-tiny);
-  line-height: var(--line-height-tiny);
-  font-weight: 500;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   border: 0;
   border-radius: 0;
   background: none;
@@ -49,11 +46,16 @@
   padding: 4px;
   margin: -5px 0 -4px -4px;
   outline: none;
+  color: inherit;
+  font-size: var(--font-size-tiny);
+  line-height: var(--line-height-tiny);
 
-  @media (hover: hover) {
-    @nest &:hover {
-      text-decoration: underline;
-    }
+  @nest &:disabled {
+    cursor: unset;
+  }
+
+  @nest & .lastStatus {
+    font-weight: 500;
   }
 }
 
