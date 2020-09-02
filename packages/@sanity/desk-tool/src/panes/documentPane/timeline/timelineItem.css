@@ -1,0 +1,129 @@
+.root {
+  position: relative;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  font: inherit;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  background: none;
+  border: 0;
+  text-align: left;
+  min-width: 244px;
+
+  @nest &[data-state='enabled'] {
+    @nest &:hover {
+      background: #f1f3f6;
+    }
+  }
+
+  @nest &[data-state='disabled'] {
+    color: gray;
+  }
+
+  @nest &[data-state='withinSelection'] {
+    background: #a6c8fd;
+  }
+
+  @nest &[data-state='selected'] {
+    background: #06f;
+  }
+
+  @nest &::before, &::after {
+    content: '';
+    position: absolute;
+    left: 24px;
+    border-left: 1px solid #cad1dc;
+  }
+
+  @nest &[data-state='selected']::before, &[data-state='selected']::after {
+    border-color: #fff;
+  }
+
+  @nest &::before {
+    top: 0;
+    bottom: 50%;
+    z-index: 1;
+  }
+
+  @nest &::after {
+    top: 50%;
+    bottom: 0;
+    z-index: 2;
+  }
+
+  @nest &:first-child::before {
+    display: none;
+  }
+
+  @nest &:last-child::after {
+    display: none;
+  }
+}
+
+.wrapper {
+  position: relative;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  z-index: 3;
+}
+
+.iconContainer {
+  width: 33px;
+  height: 33px;
+  border-radius: calc(33px / 2);
+  padding: 0.25em;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px #fff;
+
+  @nest & > svg {
+    display: block;
+    font-size: 25px;
+  }
+
+  @nest [data-type='editDraft'] & {
+    background: #fdefb6;
+    color: #978023;
+  }
+
+  @nest [data-type='publish'] & {
+    background: #3ab667;
+    color: #fff;
+  }
+
+  @nest [data-type='unpublish'] & {
+    background: #f03e2f;
+    color: #fff;
+  }
+
+  @nest [data-type='initial'] & {
+    background: #7b8ca8;
+    color: #fff;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  margin-left: 0.75em;
+  color: #66758d;
+
+  @nest .root[data-state='selected'] & {
+    color: #fff;
+  }
+}
+
+.typeName {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.timestamp {
+  font-size: 13px;
+  line-height: 16px;
+}
