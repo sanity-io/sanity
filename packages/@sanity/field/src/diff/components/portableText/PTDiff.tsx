@@ -24,7 +24,7 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
       </div>
 
       {/* Summary */}
-      <ul className={styles.summary}>
+      {/* <ul className={styles.summary}>
         {isRemoved && <li>Removed portable text block</li>}
         {isAdded && <li>Added portable text block</li>}
         {Object.keys(childMap)
@@ -34,7 +34,7 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
               <li key={`summary-${mapEntry.child._key.concat(i.toString())}`}>{line}</li>
             ))
           })}
-      </ul>
+      </ul> */}
     </>
   )
 }
