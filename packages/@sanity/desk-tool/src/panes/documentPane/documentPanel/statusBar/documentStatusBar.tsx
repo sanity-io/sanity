@@ -6,7 +6,10 @@ import {useDocumentHistory} from '../../documentHistory'
 import styles from './documentStatusBar.css'
 import {DocumentStatusBarActions} from './documentStatusBarActions'
 import {DocumentStatusBarBadges} from './documentStatusBarBadges'
-import {SyncState} from './syncState'
+// import {SyncState} from './syncState'
+import {useEditState} from '@sanity/react-hooks'
+import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
+import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 
 interface Props {
   id: string
@@ -15,27 +18,37 @@ interface Props {
 }
 
 export function DocumentStatusBar(props: Props) {
-  const {open: openHistory} = useDocumentHistory()
-
+  const {open: openHistory, historyController} = useDocumentHistory()
+  const editState = useEditState(props.id, props.type)
+  const badges = editState ? resolveDocumentBadges(editState) : []
   return (
     <div className={styles.root}>
-      <div className={styles.status}>
-        <div className={styles.statusBadgesContainer}>
-          <DocumentStatusBarBadges id={props.id} type={props.type} />
-        </div>
-        <div className={styles.statusDetails}>
-          <button className={styles.lastUpdatedButton} onClick={openHistory} type="button">
+      <div className={styles.status} data-historyState={historyController.selectionState}>
+        <button
+          className={styles.lastUpdatedButton}
+          onClick={openHistory}
+          type="button"
+          disabled={historyController.selectionState === 'active'}
+        >
+          <DocumentStatusBarBadges
+            editState={editState}
+            badges={badges}
+            disabled={historyController.selectionState === 'active'}
+          />
+          <div className={styles.statusDetails}>
+            {/* TODO */}
+            <div className={styles.lastStatus}>Todo</div>
             {props.lastUpdated ? (
-              <>
-                Updated <TimeAgo time={props.lastUpdated} />
-              </>
+              <div>
+                <TimeAgo time={props.lastUpdated} />
+              </div>
             ) : (
               'Empty'
             )}
-          </button>
-          <SyncState id={props.id} type={props.type} />
-        </div>
+          </div>
+        </button>
       </div>
+
       <div className={styles.actions}>
         <div className={styles.actionsWrapper}>
           <DocumentStatusBarActions id={props.id} type={props.type} />
