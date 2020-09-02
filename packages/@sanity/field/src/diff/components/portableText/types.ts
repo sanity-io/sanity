@@ -20,7 +20,6 @@ export type PortableTextChild = {
 export type ChildMap = Record<
   string,
   {
-    annotation: ReactNode | undefined
     child: PortableTextChild
     diffs: ObjectDiff[] | ArrayDiff[]
     summary: ReactNode[]

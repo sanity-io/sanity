@@ -9,4 +9,5 @@
     background-color: color(var(--text-color) a(20%));
     border-color: color(var(--text-color) a(100%));
   }
+  cursor: pointer;
 }
