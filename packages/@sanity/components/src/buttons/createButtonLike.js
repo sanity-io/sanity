@@ -28,7 +28,8 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       tabIndex: PropTypes.number,
       padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
       bleed: PropTypes.bool,
-      selected: PropTypes.bool
+      selected: PropTypes.bool,
+      size: PropTypes.oneOf(['extra-small', 'small', 'medium', 'large', 'extra-large'])
     }
 
     static defaultProps = {
@@ -82,6 +83,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         padding,
         bleed,
         selected,
+        size,
         ...rest
       } = this.props
 
@@ -90,7 +92,8 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         styles[kind],
         styles[`padding_${padding}`],
         inverted && styles.inverted,
-        color && styles[`color__${color}`],
+        styles[`color__${color}`],
+        styles[`size__${size}`],
         bleed && styles.bleed,
         disabled && styles.disabled,
         selected && styles.selected,

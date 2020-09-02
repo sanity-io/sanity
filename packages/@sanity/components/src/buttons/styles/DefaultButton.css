@@ -318,6 +318,32 @@
   @nest &.loading > .inner {
     overflow: hidden;
   }
+
+  @nest &.size__extra-small {
+    font-size: var(--font-size-xsmall);
+    line-height: var(--line-height-xsmall);
+  }
+
+  @nest &.size__small {
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-small);
+  }
+
+  @nest &.size__medium {
+    /* default */
+    /* font-size: var(--font-size-base); */
+    /* line-height: var(--line-height-base); */
+  }
+
+  @nest &.size__large {
+    font-size: var(--font-size-large);
+    line-height: var(--line-height-large);
+  }
+
+  @nest &.size__extra-large {
+    font-size: var(--font-size-huge);
+    line-height: var(--line-height-huge);
+  }
 }
 
 .inner {
