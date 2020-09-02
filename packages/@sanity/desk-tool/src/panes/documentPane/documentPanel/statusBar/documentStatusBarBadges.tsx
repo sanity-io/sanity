@@ -2,11 +2,8 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/no-array-index-key */
 
-import {useEditState} from '@sanity/react-hooks'
 import React from 'react'
 import Badge from 'part:@sanity/components/badges/default'
-
-import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 
 import styles from './documentStatusBarBadges.css'
@@ -15,10 +12,12 @@ export interface Badge {
   label: string
   title: string
   color: 'success' | 'failure' | 'warning'
+  icon?: any
 }
 
 interface Props {
   states: Badge[]
+  disabled: boolean
 }
 
 function DocumentStatusBarBadgesInner(props: Props) {
@@ -26,28 +25,38 @@ function DocumentStatusBarBadgesInner(props: Props) {
     return null
   }
   return (
-    <div className={styles.statusBadges}>
-      {props.states.map((badge, badgeIndex) => (
-        <div key={String(badgeIndex)}>
-          <Badge color={badge.color} title={badge.title}>
-            {badge.label}
-          </Badge>
-        </div>
-      ))}
+    <div className={styles.statusBadges} data-disabled={props.disabled}>
+      {props.states.map((badge, badgeIndex) => {
+        const Icon = badge.icon
+        return (
+          <div
+            key={String(badgeIndex)}
+            className={styles.badge}
+            data-color={badge.color}
+            title={badge.title}
+          >
+            {Icon ? <Icon /> : badge.label}
+            {/* <Badge color={badge.color} title={badge.title}>
+            </Badge> */}
+          </div>
+        )
+      })}
+      <div className={styles.sparkline} />
     </div>
   )
 }
 
-export function DocumentStatusBarBadges(props: {id: string; type: string}) {
-  const editState = useEditState(props.id, props.type)
-
-  const badges = editState ? resolveDocumentBadges(editState) : null
-
-  return badges ? (
+export function DocumentStatusBarBadges(props: {
+  badges: Badge[]
+  editState: any
+  disabled: boolean
+}) {
+  return props.badges ? (
     <RenderBadgeCollectionState
       component={DocumentStatusBarBadgesInner}
-      badges={badges}
-      badgeProps={editState}
+      badges={props.badges}
+      badgeProps={props.editState}
+      disabled={props.disabled}
     />
   ) : null
 }
