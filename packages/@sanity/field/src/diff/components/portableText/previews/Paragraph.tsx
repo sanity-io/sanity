@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './Paragraph.css'
 import {PortableTextBlock} from '../types'
 
-interface Props {
+type Props = {
   block: PortableTextBlock
   children: React.ReactNode
 }
