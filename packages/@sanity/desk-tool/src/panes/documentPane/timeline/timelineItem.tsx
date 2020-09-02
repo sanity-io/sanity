@@ -1,27 +1,13 @@
-import EditIcon from 'part:@sanity/base/edit-icon'
-import PlusIcon from 'part:@sanity/base/plus-icon'
-import PublishIcon from 'part:@sanity/base/publish-icon'
-import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 import React, {useCallback, createElement} from 'react'
-import {Chunk} from '@sanity/field/diff'
-import {formatDate} from './helpers'
+import {Chunk, ChunkType} from '@sanity/field/diff'
+import {
+  formatTimelineEventDate,
+  formatTimelineEventLabel,
+  getTimelineEventIconComponent
+} from './helpers'
 import {TimelineItemState} from './types'
 
 import styles from './timelineItem.css'
-
-const ICON_COMPONENTS: {[key: string]: React.ComponentType<{}>} = {
-  initial: PlusIcon,
-  editDraft: EditIcon,
-  publish: PublishIcon,
-  unpublish: UnpublishIcon
-}
-
-const LABELS: {[key: string]: string} = {
-  initial: 'Created',
-  editDraft: 'Edited',
-  publish: 'Published',
-  unpublish: 'Unpublished'
-}
 
 export function TimelineItem(props: {
   state: TimelineItemState
@@ -29,11 +15,10 @@ export function TimelineItem(props: {
   onSelect: (chunk: Chunk) => void
   chunk: Chunk
   timestamp: Date
-  type: string
+  type: ChunkType
 }) {
   const {state, onSelect, timestamp, chunk, title, type} = props
-  const iconComponent = ICON_COMPONENTS[type]
-  const label = LABELS[type] || <code>{type}</code>
+  const iconComponent = getTimelineEventIconComponent(type)
 
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLButtonElement>) => {
@@ -56,8 +41,10 @@ export function TimelineItem(props: {
       <div className={styles.wrapper}>
         <div className={styles.iconContainer}>{iconComponent && createElement(iconComponent)}</div>
         <div className={styles.text}>
-          <div className={styles.typeName}>{label}</div>
-          <div className={styles.timestamp}>{formatDate(timestamp)}</div>
+          <div className={styles.typeName}>
+            {formatTimelineEventLabel(type) || <code>{type}</code>}
+          </div>
+          <div className={styles.timestamp}>{formatTimelineEventDate(timestamp)}</div>
         </div>
       </div>
     </button>
