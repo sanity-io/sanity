@@ -1,13 +1,11 @@
 import React from 'react'
 import {StringDiff, DiffComponent} from '../../types'
-import {useDiffAnnotationColor, DiffAnnotationTooltip} from '../../annotations'
+import {DiffAnnotationCard, DiffAnnotationTooltip} from '../../annotations'
 import {DiffLayout} from '../shared'
 import styles from '../shared/BlockSegmentStyles.css'
 
 export const UrlFieldDiff: DiffComponent<StringDiff> = ({diff}) => {
   const {fromValue, toValue} = diff
-  const color = useDiffAnnotationColor(diff, [])
-  const style = color ? {background: color.background, color: color.text} : {}
 
   return (
     <DiffAnnotationTooltip diff={diff}>
@@ -15,16 +13,20 @@ export const UrlFieldDiff: DiffComponent<StringDiff> = ({diff}) => {
         layout="grid"
         renderFrom={
           fromValue && (
-            <del className={`${styles.segment} ${styles.add}`} style={style}>
+            <DiffAnnotationCard as="del" className={`${styles.segment} ${styles.add}`} diff={diff}>
               {fromValue}
-            </del>
+            </DiffAnnotationCard>
           )
         }
         renderTo={
           toValue && (
-            <ins className={`${styles.segment} ${styles.remove}`} style={style}>
+            <DiffAnnotationCard
+              as="ins"
+              className={`${styles.segment} ${styles.remove}`}
+              diff={diff}
+            >
               {toValue}
-            </ins>
+            </DiffAnnotationCard>
           )
         }
       />

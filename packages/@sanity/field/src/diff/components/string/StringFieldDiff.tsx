@@ -1,14 +1,13 @@
 import React from 'react'
 import {DiffComponent, StringDiff} from '../../types'
-import {AnnotatedStringDiff, DiffAnnotationTooltip, useDiffAnnotationColor} from '../../annotations'
+import {AnnotatedStringDiff, DiffAnnotationCard, DiffAnnotationTooltip} from '../../annotations'
 import styles from '../shared/BlockSegmentStyles.css'
 import {DiffLayout} from '../shared'
 
 export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
   const {options} = schemaType
-  const color = useDiffAnnotationColor(diff, [])
-  const style = color ? {background: color.background, color: color.text} : {}
+
   return (
     <div className={styles.root}>
       {options?.list ? (
@@ -16,16 +15,24 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
           <DiffLayout
             renderFrom={
               fromValue && (
-                <del className={`${styles.segment} ${styles.add}`} style={style}>
+                <DiffAnnotationCard
+                  as="del"
+                  className={`${styles.segment} ${styles.add}`}
+                  diff={diff}
+                >
                   {fromValue}
-                </del>
+                </DiffAnnotationCard>
               )
             }
             renderTo={
               toValue && (
-                <ins className={`${styles.segment} ${styles.remove}`} style={style}>
+                <DiffAnnotationCard
+                  as="ins"
+                  className={`${styles.segment} ${styles.remove}`}
+                  diff={diff}
+                >
                   {toValue}
-                </ins>
+                </DiffAnnotationCard>
               )
             }
           />
