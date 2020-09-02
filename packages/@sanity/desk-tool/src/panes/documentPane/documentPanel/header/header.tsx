@@ -152,6 +152,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
               onMouseUp={ignoreClickOutside}
               onClick={props.onTimelineOpen}
               padding="small"
+              size="small"
             >
               <TimelineButtonLabel rev={rev} /> &darr;
             </Button>
