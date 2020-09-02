@@ -14,6 +14,7 @@ import {Chunk} from '@sanity/field/diff'
 
 import styles from './header.css'
 import {format} from 'date-fns'
+import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
 
 export interface DocumentPanelHeaderProps {
   activeViewId?: string
@@ -152,11 +153,21 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
               onClick={props.onTimelineOpen}
               padding="small"
             >
-              Showing {rev ? `version at ${format(rev.endTimestamp)}` : 'latest version'} &darr;
+              <TimelineButtonLabel rev={rev} /> &darr;
             </Button>
           </div>
         )}
       </div>
     </div>
+  )
+}
+
+function TimelineButtonLabel({rev}: {rev: Chunk | null}) {
+  if (!rev) return <>Current version</>
+
+  return (
+    <>
+      {formatTimelineEventLabel(rev.type)} {formatTimelineEventDate(rev.endTimestamp)}
+    </>
   )
 }
