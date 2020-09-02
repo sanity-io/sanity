@@ -20,6 +20,7 @@
 }
 
 .summary {
+  display: none;
   font-size: var(--font-size-xsmall);
   color: var(--text-muted);
 }

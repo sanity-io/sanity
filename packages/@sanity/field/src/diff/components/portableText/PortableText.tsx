@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {SyntheticEvent} from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap} from './types'
 import {isDecorator, isHeader, childIsSpan, diffDidRemove, MISSING_TYPE_NAME} from './helpers'
 
@@ -8,6 +8,7 @@ import InlineObject from './previews/InlineObject'
 import Blockquote from './previews/Blockquote'
 import Header from './previews/Header'
 import Paragraph from './previews/Paragraph'
+import Span from './previews/Span'
 
 import styles from './PTDiff.css'
 import {ObjectDiff} from '../../index'
@@ -20,6 +21,10 @@ type Props = {
 
 export const PortableText = (props: Props): JSX.Element => {
   const {blockDiff, childMap} = props
+
+  const handleObjectClick = (event: SyntheticEvent<HTMLSpanElement>) => {
+    alert('Focus object here!')
+  }
 
   const renderBlock = ({
     block,
@@ -45,12 +50,14 @@ export const PortableText = (props: Props): JSX.Element => {
 
   const renderChild = (child: PortableTextChild) => {
     const fromMap = childMap[child._key]
+    const diff = fromMap.diffs[0] as ObjectDiff
     // Render span or inline object?
     const renderInlineObject = renderObjectTypes[child._type]
-    const renderSpanOrInline = renderInlineObject ? renderInlineObject : () => child.text
+    const renderSpanOrInline = renderInlineObject
+      ? props => renderInlineObject({child, diff})
+      : props => renderSpan({child, diff})
     const isSpan = childIsSpan(child)
-    let returned: React.ReactNode =
-      fromMap && fromMap.annotation ? fromMap.annotation : renderSpanOrInline({child})
+    let returned = renderSpanOrInline({child})
     // Render decorators
     isSpan &&
       child.marks &&
@@ -70,7 +77,12 @@ export const PortableText = (props: Props): JSX.Element => {
         child.marks.filter(mark => !isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
       ).map(markDefKey => {
         returned = (
-          <Annotation span={child} block={block} markDefKey={markDefKey}>
+          <Annotation
+            span={child}
+            block={block}
+            markDefKey={markDefKey}
+            onClick={handleObjectClick}
+          >
             {returned}
           </Annotation>
         )
@@ -78,10 +90,19 @@ export const PortableText = (props: Props): JSX.Element => {
     return returned
   }
 
-  // Set up renderers for object types (inlines and annotations)
-  const renderInlineObject = (props: {child: PortableTextChild}): React.ReactNode => {
-    const {child} = props
-    return <InlineObject object={child} />
+  const renderSpan = (props: {child: PortableTextChild; diff: ObjectDiff}): React.ReactNode => {
+    const {child, diff} = props
+    return <Span span={child} diff={diff} />
+  }
+
+  // Set up renderers for inline object types
+  // TODO: previews from schema
+  const renderInlineObject = (props: {
+    child: PortableTextChild
+    diff: ObjectDiff
+  }): React.ReactNode => {
+    const {child, diff} = props
+    return <InlineObject object={child} diff={diff} onClick={handleObjectClick} />
   }
   const renderInvalidInlineObjectType = () => {
     return <span className={styles.inlineObjectDiff}>Invalid inline object type</span>
@@ -91,10 +112,8 @@ export const PortableText = (props: Props): JSX.Element => {
     .map(key => childMap[key])
     .forEach(mapEntry => {
       const {child} = mapEntry
-      const type = typeof child === 'object' && (child._type as string)
-      const isSpan = childIsSpan(child)
-      if (!isSpan && type) {
-        renderObjectTypes[type] = renderInlineObject
+      if (!childIsSpan(child) && child._type) {
+        renderObjectTypes[child._type] = renderInlineObject
       } else {
         // This should not happen. But have a fallback for rendering missing types anyway.
         renderObjectTypes[MISSING_TYPE_NAME] = renderInvalidInlineObjectType
