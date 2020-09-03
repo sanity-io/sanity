@@ -1,5 +1,5 @@
 import React, {createElement} from 'react'
-import {Diff, Path} from '../types'
+import {Diff, Path} from '../../types'
 import {useDiffAnnotationColor} from './hooks'
 
 interface DiffAnnotationCardProps {

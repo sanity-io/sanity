@@ -1,5 +1,5 @@
 import React from 'react'
-import {ChangeTitlePath} from '../types'
+import {ChangeTitlePath} from '../../types'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import styles from './ChangeHeader.css'
 

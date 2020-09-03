@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {FromToIndex} from '../types'
+import {FromToIndex} from '../../types'
 import styles from './ChangeTitleSegment.css'
 
 export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {

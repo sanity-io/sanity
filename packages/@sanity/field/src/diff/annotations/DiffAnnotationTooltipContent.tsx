@@ -1,7 +1,7 @@
 import React from 'react'
 import {useUser} from '@sanity/base/hooks'
 import {UserAvatar} from '@sanity/base/components'
-import {AnnotationDetails} from '../types'
+import {AnnotationDetails} from '../../types'
 import styles from './DiffAnnotationTooltipContent.css'
 
 export function DiffAnnotationTooltipContent(props: {annotation: AnnotationDetails}) {

@@ -1,4 +1,4 @@
-import {ObjectDiff, Diff, Path} from './types'
+import {ObjectDiff, Diff, Path} from '../types'
 
 export function getDiffAtPath(diff: ObjectDiff, path: Path): Diff | null {
   let node: Diff = diff

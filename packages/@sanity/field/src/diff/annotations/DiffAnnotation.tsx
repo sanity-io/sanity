@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {useUserColorManager} from '@sanity/base/user-color'
-import {Annotation, Diff, Path} from '../types'
+import {Annotation, Diff, Path} from '../../types'
 import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
 import {getAnnotationForPath, getAnnotationColor} from './helpers'
 

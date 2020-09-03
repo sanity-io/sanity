@@ -2,7 +2,7 @@ import React from 'react'
 import {Path} from '../../paths'
 import {PreviewComponent} from '../../preview/types'
 import {DiffAnnotationTooltip, DiffAnnotationCard} from '../annotations'
-import {Diff as DiffType, SchemaType} from '../types'
+import {Diff as DiffType, SchemaType} from '../../types'
 import {DiffLayout} from './DiffLayout'
 import styles from './Change.css'
 

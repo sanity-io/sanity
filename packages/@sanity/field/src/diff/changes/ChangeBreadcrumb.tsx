@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react'
-import {ChangeTitlePath} from '../types'
+import {ChangeTitlePath} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
 import styles from './ChangeBreadcrumb.css'
 

@@ -1,4 +1,4 @@
-import {DiffComponent} from '../types'
+import {DiffComponent} from '../../types'
 import {NumberFieldDiff} from '../../types/number/diff'
 import {StringFieldDiff} from '../../types/string/diff'
 import {ReferenceFieldDiff} from '../../types/reference/diff'

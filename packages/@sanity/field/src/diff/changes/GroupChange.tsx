@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {GroupChangeNode} from '../types'
+import {GroupChangeNode} from '../../types'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 

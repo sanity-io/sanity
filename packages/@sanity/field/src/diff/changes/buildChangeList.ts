@@ -12,7 +12,7 @@ import {
   ChangeNode,
   ArraySchemaType,
   ArrayDiff
-} from '../types'
+} from '../../types'
 import {ValueError} from './ValueError'
 
 export function buildDocumentChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff) {
