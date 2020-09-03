@@ -18,19 +18,23 @@ import {formatTimelineEventDate, formatTimelineEventLabel} from '../timeline'
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
   documentId: string
+  isTimelineOpen: boolean
+  loading: boolean
   onTimelineOpen: () => void
   schemaType: ObjectSchemaType
-  loading: boolean
   since: Chunk | null
+  timelineMode: 'rev' | 'since' | 'closed'
 }
 
 export function ChangesPanel({
   changesSinceSelectRef,
   documentId,
-  onTimelineOpen,
+  isTimelineOpen,
   loading,
+  onTimelineOpen,
   since,
-  schemaType
+  schemaType,
+  timelineMode
 }: ChangesPanelProps) {
   const {close: closeHistory, timeline} = useDocumentHistory()
   const diff: ObjectDiff = timeline.currentDiff() as any
@@ -70,9 +74,15 @@ export function ChangesPanel({
               onMouseUp={ignoreClickOutside}
               onClick={onTimelineOpen}
               padding="small"
+              selected={isTimelineOpen && timelineMode === 'since'}
               size="small"
             >
-              {sinceText(since)} &darr;
+              {isTimelineOpen && timelineMode === 'since' ? (
+                <>Review changes since</>
+              ) : (
+                sinceText(since)
+              )}{' '}
+              &darr;
             </Button>
           </div>
         </div>

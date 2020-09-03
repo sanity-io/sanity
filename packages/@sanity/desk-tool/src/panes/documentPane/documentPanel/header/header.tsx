@@ -20,6 +20,7 @@ export interface DocumentPanelHeaderProps {
   idPrefix: string
   isClosable: boolean
   isCollapsed: boolean
+  isTimelineOpen: boolean
   markers: any
   menuItems: MenuAction[]
   menuItemGroups: MenuItemGroup[]
@@ -32,6 +33,7 @@ export interface DocumentPanelHeaderProps {
   onTimelineOpen: () => void
   schemaType: any
   setFocusPath: (path: any) => void
+  timelineMode: 'rev' | 'since' | 'closed'
   title: React.ReactNode
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
@@ -155,9 +157,15 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                 onMouseUp={ignoreClickOutside}
                 onClick={props.onTimelineOpen}
                 padding="small"
+                selected={props.isTimelineOpen && props.timelineMode === 'rev'}
                 size="small"
               >
-                <TimelineButtonLabel rev={rev} /> &darr;
+                {props.isTimelineOpen && props.timelineMode === 'rev' ? (
+                  <>Select version</>
+                ) : (
+                  <TimelineButtonLabel rev={rev} />
+                )}{' '}
+                &darr;
               </Button>
             </div>
           )}
