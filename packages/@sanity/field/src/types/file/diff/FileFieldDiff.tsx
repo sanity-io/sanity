@@ -1,7 +1,7 @@
 import * as React from 'react'
 import FileIcon from 'part:@sanity/base/file-icon'
 import {getRefValue} from '../../../diff/hooks'
-import {MetaInfo, DiffArrow} from '../../../diff/components'
+import {MetaInfo, ChangeArrow} from '../../../diff/components'
 import {
   DiffComponent,
   ObjectDiff,
@@ -57,7 +57,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
                 </MetaInfo>
               </div>
             )}
-            {prev && next && <DiffArrow />}
+            {prev && next && <ChangeArrow />}
             {next && (
               <div
                 className={styles.annotation}
