@@ -63,19 +63,17 @@ export function ChangesPanel({
             />
           </div>
         </div>
-        <div>
-          <div className={styles.versionSelectContainer}>
-            <div ref={changesSinceSelectRef} style={{display: 'inline-block'}}>
-              <Button
-                kind="simple"
-                onMouseUp={ignoreClickOutside}
-                onClick={onTimelineOpen}
-                padding="small"
-                size="small"
-              >
-                {sinceText(since)} &darr;
-              </Button>
-            </div>
+        <div className={styles.versionSelectContainer}>
+          <div ref={changesSinceSelectRef} style={{display: 'inline-block'}}>
+            <Button
+              kind="simple"
+              onMouseUp={ignoreClickOutside}
+              onClick={onTimelineOpen}
+              padding="small"
+              size="small"
+            >
+              {sinceText(since)} &darr;
+            </Button>
           </div>
         </div>
       </header>
