@@ -10,7 +10,7 @@ interface DiffAnnotationCardProps {
 
 export function DiffAnnotationCard(
   props: DiffAnnotationCardProps & React.HTMLProps<HTMLDivElement>
-) {
+): React.ReactElement {
   const {as = 'div', children, diff, path, style = {}, ...restProps} = props
   const color = useDiffAnnotationColor(diff, path)
   const colorStyle = color ? {background: color.background, color: color.text} : {}
