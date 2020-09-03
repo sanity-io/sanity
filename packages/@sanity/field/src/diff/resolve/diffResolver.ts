@@ -1,7 +1,7 @@
-import {DatetimeFieldDiff} from '../components/datetime'
-import {UrlFieldDiff} from '../components/url'
-import {SlugFieldDiff} from '../components/slug'
-import {isPTSchemaType, PTDiff} from '../components/portableText'
+import {DatetimeFieldDiff} from '../../types/datetime/diff'
+import {UrlFieldDiff} from '../../types/url/diff'
+import {SlugFieldDiff} from '../../types/slug/diff'
+import {isPTSchemaType, PTDiff} from '../../types/portableText/diff'
 import {DiffComponentResolver} from '../types'
 
 export const diffResolver: DiffComponentResolver = function diffResolver({schemaType}) {

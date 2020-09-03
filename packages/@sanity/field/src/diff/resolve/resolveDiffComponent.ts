@@ -1,7 +1,7 @@
 import {ComponentType} from 'react'
 import diffResolvers from 'all:part:@sanity/base/diff-resolver'
-import {defaultComponents} from '../components/defaultComponents'
 import {SchemaType, DiffComponent, Diff, DiffComponentResolver} from '../types'
+import {defaultComponents} from './defaultComponents'
 
 function tryResolve(schemaType: SchemaType): DiffComponent<any> | undefined {
   const resolvers = diffResolvers as DiffComponentResolver[]
