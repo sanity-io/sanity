@@ -1,94 +1,49 @@
-import React from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
+import {MenuButton} from 'part:@sanity/components/menu-button'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import PopOver from 'part:@sanity/components/dialogs/popover'
+
 import styles from './styles/ConfirmButton.css'
 
-type ConfirmButtonProps = {
-  kind?: 'simple'
-  onConfirm?: () => void
-  title: string
-}
+// @todo
+type DefaultButtonInstance = any
+type DefaultButtonProps = Record<string, any>
 
-type ConfirmButtonState = {
-  showConfirmDialog: boolean
-}
+export default function ConfirmButton(props: {onConfirm: () => void} & DefaultButtonProps) {
+  const {onConfirm, ...restProps} = props
+  const [open, setOpen] = useState(false)
+  const buttonRef = useRef<DefaultButtonInstance>(null)
 
-export default class ConfirmButton extends React.Component<ConfirmButtonProps, ConfirmButtonState> {
-  _button: Button | null
-  _confirmButton: Button | null
-  state = {
-    showConfirmDialog: false
-  }
-  close() {
-    this.setState({
-      showConfirmDialog: false
-    })
-  }
-  open() {
-    this.setState({
-      showConfirmDialog: true
-    })
-  }
-  handleClick = event => {
-    this.open()
-  }
-  handleClickOutside = event => {
-    this.close()
-  }
-  handleConfirmPopoverClose = event => {
-    this.close()
-  }
-  setButton = (button: Button | null) => {
-    this._button = button
-  }
-  setConfirmButton = (button: Button | null) => {
-    this._confirmButton = button
-  }
-  componentDidUpdate(prevProps, prevState) {
-    const wasOpen = prevState.showConfirmDialog
-    const isOpen = this.state.showConfirmDialog
-    if (!wasOpen && isOpen) {
-      this._confirmButton.focus()
-    } else if (wasOpen && !isOpen) {
-      this._button.focus()
-    }
-  }
-  render() {
-    const {showConfirmDialog} = this.state
-    const {onConfirm, ...rest} = this.props
-    return (
-      <div className={styles.root}>
-        <Button
-          {...rest}
-          icon={TrashIcon}
-          onClick={this.handleClick}
-          padding="small"
-          ref={this.setButton}
-        />
-        {showConfirmDialog && (
-          <PopOver
+  useEffect(() => {
+    if (open && buttonRef.current) buttonRef.current.focus()
+  }, [open])
+
+  const handleBlur = useCallback(() => setOpen(false), [])
+
+  return (
+    <MenuButton
+      buttonProps={{
+        ...restProps,
+        icon: TrashIcon,
+        padding: 'small'
+      }}
+      menu={
+        <div className={styles.wrapper}>
+          <Button
             color="danger"
-            useOverlay={false}
-            onEscape={this.handleConfirmPopoverClose}
-            onClickOutside={this.handleClickOutside}
-            padding="none"
+            onClick={onConfirm}
+            kind="simple"
+            padding="small"
+            onBlur={handleBlur}
+            ref={buttonRef}
           >
-            <div className={styles.wrapper}>
-              <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
-              <Button
-                color="danger"
-                onClick={onConfirm}
-                icon={TrashIcon}
-                ref={this.setConfirmButton}
-              >
-                Remove?
-              </Button>
-              <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
-            </div>
-          </PopOver>
-        )}
-      </div>
-    )
-  }
+            Confirm delete
+          </Button>
+        </div>
+      }
+      open={open}
+      placement="left"
+      setOpen={setOpen}
+    />
+  )
 }
