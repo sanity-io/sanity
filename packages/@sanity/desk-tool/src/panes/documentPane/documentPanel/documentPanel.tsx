@@ -26,6 +26,7 @@ interface DocumentPanelProps {
   isClosable: boolean
   isCollapsed: boolean
   isHistoryOpen: boolean
+  isTimelineOpen: boolean
   markers: any
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
@@ -37,6 +38,7 @@ interface DocumentPanelProps {
   onTimelineOpen: () => void
   paneTitle?: string
   schemaType: any
+  timelineMode: 'rev' | 'since' | 'closed'
   toggleInspect: (val: boolean) => void
   value: any
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -120,6 +122,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           idPrefix={props.idPrefix}
           isClosable={props.isClosable}
           isCollapsed={props.isCollapsed}
+          isTimelineOpen={props.isTimelineOpen}
           markers={props.markers}
           menuItemGroups={props.menuItemGroups}
           menuItems={menuItems}
@@ -132,6 +135,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           onTimelineOpen={props.onTimelineOpen}
           schemaType={props.schemaType}
           setFocusPath={setFocusPath}
+          timelineMode={props.timelineMode}
           title={
             <DocumentHeaderTitle
               documentType={props.documentType}

@@ -221,6 +221,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             isClosable={isClosable}
             isCollapsed={isCollapsed}
             isHistoryOpen={isChangesOpen}
+            isTimelineOpen={isTimelineOpen}
             markers={markers}
             menuItemGroups={menuItemGroups}
             onChange={onChange}
@@ -232,6 +233,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             onTimelineOpen={handleTimelineRev}
             paneTitle={paneTitle}
             schemaType={schemaType}
+            timelineMode={timelineMode}
             toggleInspect={toggleInspect}
             value={value}
             versionSelectRef={versionSelectRef}
@@ -242,12 +244,14 @@ export function DocumentPane(props: DocumentPaneProps) {
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
           <div className={styles.changesContainer}>
             <ChangesPanel
-              loading={historyState === 'loading'}
-              since={historyController.sinceTime}
-              documentId={documentId}
               changesSinceSelectRef={changesSinceSelectRef}
+              documentId={documentId}
+              isTimelineOpen={isTimelineOpen}
+              loading={historyState === 'loading'}
               onTimelineOpen={handleTimelineSince}
               schemaType={schemaType}
+              since={historyController.sinceTime}
+              timelineMode={timelineMode}
             />
           </div>
         )}
