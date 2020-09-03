@@ -1,15 +1,17 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  background: #fff;
+  background: var(--component-bg);
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .headerContainer {
-  background: #fff;
+  background: var(--component-bg);
 
   @nest .root:not(.isCollapsed) & {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--hairline-color);
   }
 }
 
@@ -29,8 +31,8 @@
 }
 
 .footerContainer {
-  background: #fff;
-  border-top: 1px solid #ddd;
+  background: var(--component-bg);
+  border-top: 1px solid var(--hairline-color);
 
   @nest .isCollapsed & {
     display: none;
