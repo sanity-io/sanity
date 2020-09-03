@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {DiffComponent} from '../types'
+import {DiffComponent} from '../../types'
 
 import styles from './FallbackDiff.css'
 

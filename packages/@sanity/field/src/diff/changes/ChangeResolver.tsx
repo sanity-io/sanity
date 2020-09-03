@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {ChangeNode} from '../types'
+import {ChangeNode} from '../../types'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 

@@ -1,11 +1,11 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext} from 'react'
+import {FieldChangeNode, OperationsAPI} from '../../types'
 import {ChangeHeader} from './ChangeHeader'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {RevertChangesButton} from './RevertChangesButton'
 import {undoChange} from './undoChange'
-import {FieldChangeNode, OperationsAPI} from '../types'
 
 import styles from './FieldChange.css'
 

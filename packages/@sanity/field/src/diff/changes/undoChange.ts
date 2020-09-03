@@ -1,5 +1,5 @@
 import {diffItem} from 'sanity-diff-patch'
-import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI, Diff, Path} from '../types'
+import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI, Diff, Path} from '../../types'
 import {pathToString} from '../../paths/helpers'
 
 export function undoChange(diff: Diff, path: Path, documentOperations: OperationsAPI) {
