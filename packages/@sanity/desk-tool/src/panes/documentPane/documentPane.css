@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  background: var(--component-bg);
   display: flex;
   flex-direction: column;
   height: 100%;
