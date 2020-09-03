@@ -2,7 +2,7 @@
 
 .root {
   display: inline-block;
-  position: relative;
+  /* position: relative; */
   margin-left: var(--small-padding);
 }
 
