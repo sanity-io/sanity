@@ -21,7 +21,7 @@ const applyModifer: Modifier<'applyMaxSize', {}> = {
 }
 
 interface PopoverProps {
-  targetElement?: HTMLElement | null
+  boundaryElement?: HTMLElement | null
   children: JSX.Element
   className?: string
   content: React.ReactNode
@@ -40,11 +40,13 @@ interface PopoverProps {
     | 'bottom'
     | 'bottom-start'
     | 'bottom-end'
+  targetElement?: HTMLElement | null
   tone?: 'navbar'
 }
 
 export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
   const {
+    boundaryElement,
     className,
     content,
     disabled,
@@ -70,7 +72,7 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
         name: 'preventOverflow',
         options: {
           altAxis: true,
-          rootBoundary: 'viewport',
+          boundary: boundaryElement || undefined,
           padding: 8
         }
       },

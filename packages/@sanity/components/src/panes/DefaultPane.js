@@ -101,6 +101,8 @@ class Pane extends React.PureComponent {
 
   actionHandlers = {}
 
+  rootElement = null
+
   scrollFrameId = null
 
   constructor(props) {
@@ -127,23 +129,13 @@ class Pane extends React.PureComponent {
     this.setState({isMenuOpen: false})
   }
 
-  // Triggered by pane menu button
-  // handleToggleMenu = () => {
-  //   this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
-  // }
-
   setContextMenuOpen = val => {
     this.setState({isMenuOpen: val})
   }
 
   setInitialValueMenuOpen = val => {
     this.setState({isInitialValueMenuOpen: val})
-    // this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
   }
-
-  // handleToggleInitialValueTemplateMenu = () => {
-  //   this.setState(prevState => ({isInitialValueMenuOpen: !prevState.isInitialValueMenuOpen}))
-  // }
 
   handleCloseTemplateMenu = () => {
     this.setState({isInitialValueMenuOpen: false})
@@ -166,7 +158,6 @@ class Pane extends React.PureComponent {
   handleMenuAction = item => {
     this.setContextMenuOpen(false)
 
-    // this.handleCloseContextMenu()
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
@@ -246,6 +237,7 @@ class Pane extends React.PureComponent {
 
         {action.action === 'toggleTemplateSelectionMenu' && (
           <MenuButton
+            boundaryElement={this.rootElement}
             buttonProps={{
               'aria-label': 'Menu',
               'aria-haspopup': 'menu',
@@ -253,7 +245,6 @@ class Pane extends React.PureComponent {
               'aria-controls': this.templateMenuId,
               icon: Icon,
               kind: 'simple',
-              // onClick: this.handleToggleInitialValueTemplateMenu,
               padding: 'small',
               selected: this.state.isInitialValueMenuOpen,
               title: 'Create new document'
@@ -264,7 +255,7 @@ class Pane extends React.PureComponent {
               </div>
             }
             open={this.state.isInitialValueMenuOpen}
-            placement="bottom-end"
+            placement="bottom"
             setOpen={this.setInitialValueMenuOpen}
           />
         )}
@@ -297,6 +288,7 @@ class Pane extends React.PureComponent {
     return (
       <div className={styles.headerToolContainer}>
         <MenuButton
+          boundaryElement={this.rootElement}
           buttonProps={{
             'aria-label': 'Menu',
             'aria-haspopup': 'menu',
@@ -320,7 +312,7 @@ class Pane extends React.PureComponent {
             />
           }
           open={isMenuOpen}
-          placement="bottom-end"
+          placement="bottom"
           setOpen={this.setContextMenuOpen}
         />
       </div>
@@ -342,6 +334,10 @@ class Pane extends React.PureComponent {
         {this.renderHeaderToolsOverflowMenu()}
       </>
     )
+  }
+
+  setRootElement = el => {
+    this.rootElement = el
   }
 
   // eslint-disable-next-line complexity
@@ -378,6 +374,7 @@ class Pane extends React.PureComponent {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
         onClick={this.handleRootClick}
+        ref={this.setRootElement}
       >
         <div className={styles.header}>
           <div className={styles.headerContent}>
