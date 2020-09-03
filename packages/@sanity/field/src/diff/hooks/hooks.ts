@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import client from 'part:@sanity/base/client'
 import {observeForPreview} from 'part:@sanity/base/preview'
-import {Reference, SchemaType} from '../types'
+import {Reference, SchemaType} from '../../types'
 
 interface PreviewSnapshot {
   title: string
