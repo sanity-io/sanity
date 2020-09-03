@@ -3,7 +3,7 @@ import {Path} from '../../paths'
 import {PreviewComponent} from '../../preview/types'
 import {DiffAnnotationTooltip, DiffAnnotationCard} from '../annotations'
 import {Diff as DiffType, SchemaType} from '../../types'
-import {DiffLayout} from './DiffLayout'
+import {ChangeLayout} from './ChangeLayout'
 import styles from './Change.css'
 
 interface ChangeProps {
@@ -43,7 +43,7 @@ export function Change({
 
   return (
     <DiffAnnotationTooltip className={containerClassName} diff={diff}>
-      <DiffLayout from={from} to={to} layout={layout} />
+      <ChangeLayout from={from} to={to} layout={layout} />
     </DiffAnnotationTooltip>
   )
 }
