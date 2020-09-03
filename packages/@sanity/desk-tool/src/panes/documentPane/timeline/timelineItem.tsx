@@ -10,6 +10,8 @@ import {TimelineItemState} from './types'
 import styles from './timelineItem.css'
 
 export function TimelineItem(props: {
+  isSelectionBottom: boolean
+  isSelectionTop: boolean
   state: TimelineItemState
   title: string
   onSelect: (chunk: Chunk) => void
@@ -17,7 +19,7 @@ export function TimelineItem(props: {
   timestamp: Date
   type: ChunkType
 }) {
-  const {state, onSelect, timestamp, chunk, title, type} = props
+  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, title, type} = props
   const iconComponent = getTimelineEventIconComponent(type)
 
   const handleClick = useCallback(
@@ -33,7 +35,10 @@ export function TimelineItem(props: {
     <button
       className={styles.root}
       data-state={state}
+      data-selection-bottom={isSelectionBottom}
+      data-selection-top={isSelectionTop}
       data-type={type}
+      disabled={state === 'disabled' || state === 'selected'}
       onClick={handleClick}
       title={title}
       type="button"
