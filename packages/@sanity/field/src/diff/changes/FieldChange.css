@@ -1,4 +1,15 @@
-.diffComponent {
-  border-left: 1px solid #ccc;
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  border-left: 1px solid var(--hairline-color);
   padding-left: 0.75em;
+  margin-bottom: 1em;
+}
+
+.diffComponent {
+}
+
+.revertChangesButtonContainer {
+  margin-left: -0.25em;
+  margin-top: 0.25em;
 }
