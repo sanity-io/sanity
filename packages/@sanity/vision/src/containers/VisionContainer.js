@@ -8,25 +8,20 @@ import LoadingContainer from './LoadingContainer'
 class VisionContainer extends LoadingContainer {
   getSubscriptions() {
     return {
-      datasets: {uri: '/datasets'}
+      datasets: { uri: '/datasets' }
     }
   }
 
   render() {
+    const datasets = this.state.datasets || []
     if (this.state.error) {
-      return (
-        <ErrorDialog
-          heading="An error occured while loading project data"
-          error={this.state.error}
-        />
-      )
-    }
-
-    if (!this.hasAllData()) {
+      const defaultDataset = this.context.client.config().dataset
+      datasets[0] = { name: defaultDataset }
+    } else if (!this.hasAllData()) {
       return <DelayedSpinner />
     }
 
-    return <VisionGui {...this.state} {...this.props} />
+    return <VisionGui {...this.state} {...this.props} datasets={datasets} />
   }
 }
 
