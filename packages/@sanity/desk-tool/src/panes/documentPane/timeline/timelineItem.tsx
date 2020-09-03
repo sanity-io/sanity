@@ -6,6 +6,7 @@ import {
   getTimelineEventIconComponent
 } from './helpers'
 import {TimelineItemState} from './types'
+import {UserAvatarStack} from './userAvatarStack'
 
 import styles from './timelineItem.css'
 
@@ -21,6 +22,7 @@ export function TimelineItem(props: {
 }) {
   const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, title, type} = props
   const iconComponent = getTimelineEventIconComponent(type)
+  const authorUserIds = Array.from(chunk.authors)
 
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLButtonElement>) => {
@@ -45,11 +47,14 @@ export function TimelineItem(props: {
     >
       <div className={styles.wrapper}>
         <div className={styles.iconContainer}>{iconComponent && createElement(iconComponent)}</div>
-        <div className={styles.text}>
+        <div className={styles.textContainer}>
           <div className={styles.typeName}>
             {formatTimelineEventLabel(type) || <code>{type}</code>}
           </div>
           <div className={styles.timestamp}>{formatTimelineEventDate(timestamp)}</div>
+        </div>
+        <div className={styles.avatarStackContainer}>
+          <UserAvatarStack maxLength={3} userIds={authorUserIds} />
         </div>
       </div>
     </button>
