@@ -23,7 +23,6 @@
   display: flex;
   align-items: center;
   margin-bottom: var(--small-padding);
-  padding: var(--extra-small-padding) 0;
 }
 
 .headerMain {
