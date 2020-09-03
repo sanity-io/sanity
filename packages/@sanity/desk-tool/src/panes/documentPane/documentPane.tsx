@@ -1,5 +1,6 @@
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import React, {useCallback, useRef, useState} from 'react'
@@ -9,8 +10,10 @@ import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
 import {useDocumentHistory} from './documentHistory'
 import {DocumentPanel, getProductionPreviewItem} from './documentPanel'
+import {DocumentOperationResults} from './documentOperationResults'
 import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
+import {DocumentStatusBar} from './statusBar'
 import {Timeline, sinceTimelineProps, revTimelineProps} from './timeline'
 import {Doc, DocumentViewType, MenuItemGroup} from './types'
 
@@ -207,54 +210,70 @@ export function DocumentPane(props: DocumentPaneProps) {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
       >
-        <div className={styles.documentContainer}>
-          {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
+        <div className={styles.documentAndChangesContainer}>
+          <div className={styles.documentContainer}>
+            {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
 
-          <DocumentPanel
-            activeViewId={activeViewId}
-            connectionState={connectionState}
-            documentId={documentId}
-            documentType={documentType}
-            idPrefix={paneKey}
-            initialFocusPath={initialFocusPath}
-            initialValue={initialValue}
-            isClosable={isClosable}
-            isCollapsed={isCollapsed}
-            isHistoryOpen={isChangesOpen}
-            isTimelineOpen={isTimelineOpen}
-            markers={markers}
-            menuItemGroups={menuItemGroups}
-            onChange={onChange}
-            onCloseView={handleClosePane}
-            onCollapse={onCollapse}
-            onExpand={onExpand}
-            onSetActiveView={handleSetActiveView}
-            onSplitPane={handleSplitPane}
-            onTimelineOpen={handleTimelineRev}
-            paneTitle={paneTitle}
-            schemaType={schemaType}
-            timelineMode={timelineMode}
-            toggleInspect={toggleInspect}
-            value={value}
-            versionSelectRef={versionSelectRef}
-            views={views}
+            <DocumentPanel
+              activeViewId={activeViewId}
+              connectionState={connectionState}
+              documentId={documentId}
+              documentType={documentType}
+              idPrefix={paneKey}
+              initialFocusPath={initialFocusPath}
+              initialValue={initialValue}
+              isClosable={isClosable}
+              isCollapsed={isCollapsed}
+              isHistoryOpen={isChangesOpen}
+              isTimelineOpen={isTimelineOpen}
+              markers={markers}
+              menuItemGroups={menuItemGroups}
+              onChange={onChange}
+              onCloseView={handleClosePane}
+              onCollapse={onCollapse}
+              onExpand={onExpand}
+              onSetActiveView={handleSetActiveView}
+              onSplitPane={handleSplitPane}
+              onTimelineOpen={handleTimelineRev}
+              paneTitle={paneTitle}
+              schemaType={schemaType}
+              timelineMode={timelineMode}
+              toggleInspect={toggleInspect}
+              value={value}
+              versionSelectRef={versionSelectRef}
+              views={views}
+            />
+          </div>
+
+          {features.reviewChanges && !isCollapsed && isChangesOpen && (
+            <div className={styles.changesContainer}>
+              <ChangesPanel
+                changesSinceSelectRef={changesSinceSelectRef}
+                documentId={documentId}
+                isTimelineOpen={isTimelineOpen}
+                loading={historyState === 'loading'}
+                onTimelineOpen={handleTimelineSince}
+                schemaType={schemaType}
+                since={historyController.sinceTime}
+                timelineMode={timelineMode}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className={styles.footerContainer}>
+          <DocumentStatusBar
+            id={documentId}
+            type={documentType}
+            lastUpdated={value && value._updatedAt}
           />
         </div>
 
-        {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <div className={styles.changesContainer}>
-            <ChangesPanel
-              changesSinceSelectRef={changesSinceSelectRef}
-              documentId={documentId}
-              isTimelineOpen={isTimelineOpen}
-              loading={historyState === 'loading'}
-              onTimelineOpen={handleTimelineSince}
-              schemaType={schemaType}
-              since={historyController.sinceTime}
-              timelineMode={timelineMode}
-            />
-          </div>
+        {connectionState === 'reconnecting' && (
+          <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
         )}
+
+        <DocumentOperationResults id={documentId} type={documentType} />
       </DocumentActionShortcuts>
     </Popover>
   )
