@@ -38,5 +38,5 @@
 .changesContainer {
   flex: 2;
   min-width: 0;
-  border-left: 1px solid #ddd;
+  border-left: 1px solid var(--hairline-color);
 }
