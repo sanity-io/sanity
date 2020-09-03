@@ -1,6 +1,4 @@
 import blockContentTypeFeatures from './util/blockContentTypeFeatures'
-import _blocksToEditorValue from './converters/blocksToEditorValue'
-import _editorValueToBlocks from './converters/editorValueToBlocks'
 import HtmlDeserializer from './HtmlDeserializer'
 import {SLATE_DEFAULT_BLOCK} from './constants'
 import _normalizeBlock from './util/normalizeBlock'
@@ -32,29 +30,6 @@ const blockContentFunctions = {
     const deserializer = new HtmlDeserializer(blockContentType, options)
     return deserializer.deserialize(html).map(_normalizeBlock)
   },
-
-  /**
-   * Convert a serialized editor value to blocks
-   *
-   * @param {Object} An object representing the structure of the editor value.
-   * @param {Object} blockContentType
-   * @returns {Array} Blocks
-   */
-  editorValueToBlocks(value, blockContentType, options = {}) {
-    return _editorValueToBlocks(value, blockContentType, options)
-  },
-
-  /**
-   * Convert blocks to a serialized editor value
-   *
-   * @param {Array} blocks
-   * @param {Object} blockContentType
-   * @returns {Object} An object representing the serialized editor value.
-   */
-  blocksToEditorValue(blocks, blockContentType, options = {}) {
-    return _blocksToEditorValue(blocks, blockContentType, options)
-  },
-
   /**
    * Returns the feature-set of a compiled block content type.
    *
@@ -74,8 +49,6 @@ export default blockContentFunctions
 
 export const EDITOR_DEFAULT_BLOCK_TYPE = SLATE_DEFAULT_BLOCK
 export const htmlToBlocks = blockContentFunctions.htmlToBlocks
-export const editorValueToBlocks = blockContentFunctions.editorValueToBlocks
-export const blocksToEditorValue = blockContentFunctions.blocksToEditorValue
 export const getBlockContentFeatures = blockContentFunctions.getBlockContentFeatures
 export const normalizeBlock = _normalizeBlock
 export const randomKey = _randomKey
