@@ -1,6 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  white-space: pre-line;
-  padding: var(--small-padding) 0;
-}
