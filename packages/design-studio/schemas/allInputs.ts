@@ -6,6 +6,26 @@ const title = {
 
 // example fields
 
+const arrayListOfOptionsExample = {
+  type: 'array',
+  name: 'arrayListOfOptionsExample',
+  title: 'Array of list options',
+  of: [
+    {
+      type: 'string'
+    }
+  ],
+  options: {
+    list: [
+      {value: 'foo', title: 'Foo'},
+      {value: 'bar', title: 'Bar'},
+      {value: 'baz', title: 'Baz'},
+      {value: 'qux', title: 'Qux'},
+      {value: 'nux', title: 'Nux'}
+    ]
+  }
+}
+
 const arrayOfObjectsExample = {
   type: 'array',
   name: 'arrayOfObjectsExample',
@@ -48,12 +68,6 @@ const arrayOfGeopointsExample = {
   of: [{type: 'geopoint'}]
 }
 
-const booleanExample = {
-  type: 'boolean',
-  name: 'booleanExample',
-  title: 'Boolean example'
-}
-
 const arrayGridOfFlatImagesExample = {
   type: 'array',
   name: 'arrayGridOfFlatImagesExample',
@@ -86,6 +100,12 @@ const arrayGridOfImagesExample = {
   options: {
     layout: 'grid'
   }
+}
+
+const booleanExample = {
+  type: 'boolean',
+  name: 'booleanExample',
+  title: 'Boolean example'
 }
 
 const booleanCheckboxExample = {
@@ -269,6 +289,7 @@ export default {
     title,
 
     // array
+    arrayListOfOptionsExample,
     arrayOfObjectsExample,
     arrayOfReferencesExample,
     arrayOfPrimitivesExample,
