@@ -89,6 +89,10 @@ export interface ArrayItemMetadata {
  * Diff components
  */
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
+export type DiffComponentOptions<T extends Diff = Diff> = {
+  component: DiffComponent<T>
+  renderHeader: boolean
+}
 
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
@@ -111,7 +115,7 @@ export type DiffProps<T extends Diff = Diff> = {
  */
 export type DiffComponentResolver = (options: {
   schemaType: SchemaType
-}) => React.ComponentType<any> | undefined
+}) => React.ComponentType<any> | DiffComponentOptions<any> | undefined
 
 /**
  * Schema
@@ -123,7 +127,7 @@ export interface BaseSchemaType {
   title?: string
   description?: string
   type?: SchemaType
-  diffComponent?: DiffComponent<any>
+  diffComponent?: DiffComponent<any> | DiffComponentOptions<any>
 }
 
 export interface StringSchemaType extends BaseSchemaType {
@@ -153,7 +157,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: Exclude<SchemaType, ArraySchemaType>[]
-  diffComponent?: DiffComponent<ArrayDiff<V>>
+  diffComponent?: DiffComponent<ArrayDiff<V>> | DiffComponentOptions<ArrayDiff<V>>
 }
 
 export interface ObjectField<T extends SchemaType = SchemaType> {
@@ -165,7 +169,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 export interface ObjectSchemaType<T extends object = Record<string, any>> extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
-  diffComponent?: DiffComponent<ObjectDiff<T>>
+  diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
 }
 
 export interface Reference {
@@ -207,6 +211,7 @@ export interface FieldChangeNode {
   path: Path
   titlePath: ChangeTitlePath
   schemaType: SchemaType
+  renderHeader: boolean
   diffComponent?: DiffComponent
   childChanges?: ChangeNode[]
 }

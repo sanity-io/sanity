@@ -11,7 +11,8 @@ import {
   ChangeTitlePath,
   ChangeNode,
   ArraySchemaType,
-  ArrayDiff
+  ArrayDiff,
+  DiffComponent
 } from '../../types'
 import {ValueError} from './ValueError'
 
@@ -55,6 +56,13 @@ export function buildChangeList(
     error = getValueError(diff.toValue, schemaType)
   }
 
+  let renderHeader = true
+  let component: DiffComponent | undefined = undefined
+  if (diffComponent) {
+    renderHeader = typeof diffComponent === 'function' ? true : diffComponent.renderHeader
+    component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
+  }
+
   return [
     {
       type: 'field',
@@ -62,8 +70,9 @@ export function buildChangeList(
       path,
       titlePath,
       schemaType,
+      renderHeader,
       key: pathToString(path),
-      diffComponent: error ? ValueError : diffComponent,
+      diffComponent: error ? ValueError : component,
       childChanges:
         childChanges.length === 1 && childChanges[0].type === 'group'
           ? childChanges[0].changes
