@@ -10,9 +10,14 @@ export function getAnnotationColor(
   return annotation ? colorManager.get(annotation.author) : FALLBACK_DIFF_COLOR
 }
 
-export function getAnnotationForPath(diff: Diff, diffPath: string | Path): Annotation | undefined {
+export function getAnnotationAtPath(diff: Diff, diffPath: string | Path): Annotation | undefined {
   const path: Path = Array.isArray(diffPath) ? diffPath : stringToPath(diffPath)
   return getAnnotationAt(diff, path)
+}
+
+export function getDiffAtPath(diff: Diff, diffPath: string | Path): Diff | undefined {
+  const path: Path = Array.isArray(diffPath) ? diffPath : stringToPath(diffPath)
+  return getDiffAt(diff, path)
 }
 
 function getAnnotationAt(diff: Diff, path: Path): Annotation | undefined {
