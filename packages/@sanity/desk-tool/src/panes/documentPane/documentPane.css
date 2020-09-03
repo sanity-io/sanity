@@ -2,9 +2,25 @@
 
 .root {
   display: flex;
+  flex-direction: column;
   height: 100%;
   outline: none;
+}
+
+.documentAndChangesContainer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
   position: relative;
+}
+
+.footerContainer {
+  background: var(--component-bg);
+  border-top: 1px solid var(--hairline-color);
+
+  @nest .isCollapsed & {
+    display: none;
+  }
 }
 
 .isDisabled {

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {useDocumentOperationEvent} from '@sanity/react-hooks'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React from 'react'

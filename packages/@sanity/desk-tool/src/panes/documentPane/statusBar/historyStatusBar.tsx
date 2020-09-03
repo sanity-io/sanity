@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 import React from 'react'
-import TimeAgo from '../../../../components/TimeAgo'
+import TimeAgo from '../../../components/TimeAgo'
 import {HistoryStatusBarActions} from './documentStatusBarActions'
 
 import styles from './documentStatusBar.css'

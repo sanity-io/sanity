@@ -6,7 +6,7 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 
-import {HistoryRestoreAction} from '../../../../actions/HistoryRestoreAction'
+import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import styles from './documentStatusBarActions.css'
 import {ActionMenu} from './actionMenu'
 import {ActionStateDialog} from './actionStateDialog'
