@@ -53,11 +53,14 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
     return (
       <div className={styles.root} ref={ref} onScroll={handleScroll}>
         {timeline.mapChunks(chunk => {
-          if (topSelection === chunk) {
+          const isSelectionTop = topSelection === chunk
+          const isSelectionBottom = bottomSelection === chunk
+
+          if (isSelectionTop) {
             state = 'withinSelection'
           }
 
-          if (bottomSelection === chunk) {
+          if (isSelectionBottom) {
             state = 'selected'
           }
 
@@ -65,6 +68,8 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
             <TimelineItem
               key={chunk.id}
               chunk={chunk}
+              isSelectionBottom={isSelectionBottom}
+              isSelectionTop={isSelectionTop}
               state={state}
               onSelect={onSelect}
               title={chunk.id}
