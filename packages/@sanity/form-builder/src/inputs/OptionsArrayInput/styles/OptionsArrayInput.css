@@ -4,6 +4,10 @@
   display: block;
 }
 
+.itemVertical {
+  margin-bottom: var(--small-padding);
+}
+
 .itemWrapperHorizontal {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

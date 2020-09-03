@@ -13,7 +13,6 @@
 .root {
   position: relative;
   display: flex;
-  margin-bottom: var(--small-padding);
 }
 
 .input {
