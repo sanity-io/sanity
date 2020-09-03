@@ -43,5 +43,5 @@
 
 .changeList {
   display: grid;
-  grid-gap: 2.25em;
+  grid-gap: 1em;
 }
