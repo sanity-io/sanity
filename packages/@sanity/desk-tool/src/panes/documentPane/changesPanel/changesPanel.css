@@ -1,12 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  background: #fff;
+  background: var(--component-bg);
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--hairline-color);
 }
 
 .mainNav {
@@ -29,6 +31,7 @@
 
 .versionSelectContainer {
   padding: 0.25em 0.5em;
+  margin-top: calc(0 - var(--small-padding));
 }
 
 .body {
