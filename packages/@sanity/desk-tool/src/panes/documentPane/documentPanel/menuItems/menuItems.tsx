@@ -39,8 +39,8 @@ const getHistoryMenuItem = (params: Params): MenuAction | null => {
 
   if (isHistoryEnabled) {
     return {
-      action: 'browseHistory',
-      title: 'Browse history',
+      action: 'reviewChanges',
+      title: 'Review changes',
       icon: HistoryIcon,
       isDisabled: !features.reviewChanges || isHistoryOpen || !value
     }
