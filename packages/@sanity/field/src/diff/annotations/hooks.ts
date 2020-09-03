@@ -1,17 +1,14 @@
 import {UserColor, useUserColorManager} from '@sanity/base/user-color'
 import {Annotation, Diff, Path} from '../../types'
-import {getAnnotationColor, getAnnotationForPath} from './helpers'
+import {getAnnotationColor, getAnnotationAtPath} from './helpers'
 
 export function useAnnotationColor(annotation?: Annotation | null): Readonly<UserColor> {
   const userColorManager = useUserColorManager()
   return getAnnotationColor(userColorManager, annotation)
 }
 
-export function useDiffAnnotationColor(
-  diff: Diff,
-  path: string | Path = []
-): Readonly<UserColor> | undefined {
+export function useDiffAnnotationColor(diff: Diff, path: string | Path = []): Readonly<UserColor> {
   const userColorManager = useUserColorManager()
-  const annotation = getAnnotationForPath(diff, path)
+  const annotation = getAnnotationAtPath(diff, path)
   return getAnnotationColor(userColorManager, annotation)
 }

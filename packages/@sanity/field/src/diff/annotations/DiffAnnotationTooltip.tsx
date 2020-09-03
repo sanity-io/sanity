@@ -2,7 +2,7 @@ import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {createElement} from 'react'
 import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
 import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
-import {getAnnotationForPath} from './helpers'
+import {getAnnotationAtPath} from './helpers'
 
 interface BaseAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
@@ -17,7 +17,7 @@ export type DiffAnnotationTooltipProps = (AnnotationProps | AnnotatedDiffProps) 
 export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps) {
   const {className, as = 'div', children, style} = props
   const annotation =
-    'diff' in props ? getAnnotationForPath(props.diff, props.path || []) : props.annotation
+    'diff' in props ? getAnnotationAtPath(props.diff, props.path || []) : props.annotation
 
   if (!annotation) {
     return createElement(as, {className, style}, children)
