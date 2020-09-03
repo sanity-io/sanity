@@ -10,7 +10,7 @@ import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
 import {Image} from './types'
 import {getRefValue} from '../../../diff/hooks'
-import {DiffArrow} from '../../../diff/components'
+import {ChangeArrow} from '../../../diff/components'
 
 /* TODO:
   - Correct annotation for hotspot/crop changes
@@ -64,7 +64,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
                 />
               </DiffAnnotationCard>
             )}
-            {prev && next && <DiffArrow />}
+            {prev && next && <ChangeArrow />}
             {next && (
               <DiffAnnotationCard
                 className={styles.annotation}

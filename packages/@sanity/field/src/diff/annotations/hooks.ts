@@ -2,7 +2,7 @@ import {UserColor, useUserColorManager} from '@sanity/base/user-color'
 import {Annotation, Diff, Path} from '../../types'
 import {getAnnotationColor, getAnnotationForPath} from './helpers'
 
-export function useAnnotationColor(annotation: Annotation): Readonly<UserColor> {
+export function useAnnotationColor(annotation?: Annotation | null): Readonly<UserColor> {
   const userColorManager = useUserColorManager()
   return getAnnotationColor(userColorManager, annotation)
 }

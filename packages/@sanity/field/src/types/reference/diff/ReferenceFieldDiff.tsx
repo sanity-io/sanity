@@ -8,7 +8,7 @@ import {
 } from '../../../diff'
 import styles from './ReferenceFieldDiff.css'
 import {useRefPreview} from '../../../diff/hooks'
-import {DiffLayout, MetaInfo} from '../../../diff/components'
+import {ChangeLayout, MetaInfo} from '../../../diff/components'
 
 // TODO: fix hooks error
 
@@ -19,7 +19,7 @@ export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaTy
 
   return (
     <DiffAnnotationTooltip as="div" diff={diff} path="_ref">
-      <DiffLayout
+      <ChangeLayout
         layout={prev && next ? 'grid' : 'inline'}
         from={
           prev && (
