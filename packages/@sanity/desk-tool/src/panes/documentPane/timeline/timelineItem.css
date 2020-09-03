@@ -8,6 +8,10 @@
   --timeline-event-enabled-hover-fg: #66758d;
   --timeline-event-enabled-icon-created-bg: #2276fc;
   --timeline-event-enabled-icon-created-fg: #fff;
+  --timeline-event-enabled-icon-deleted-bg: #f03e2f;
+  --timeline-event-enabled-icon-deleted-fg: #fff;
+  --timeline-event-enabled-icon-discarded-draft-bg: #f03e2f;
+  --timeline-event-enabled-icon-discarded-draft-fg: #fff;
   --timeline-event-enabled-icon-edited-bg: #fdefb6;
   --timeline-event-enabled-icon-edited-fg: #978023;
   --timeline-event-enabled-icon-published-bg: #3ab667;
@@ -152,6 +156,21 @@
   @nest & > svg {
     display: block;
     font-size: calc(25 / 16 * 1em);
+  }
+
+  @nest .root[data-type='create'] & {
+    background-color: var(--timeline-event-enabled-icon-created-bg);
+    color: var(--timeline-event-enabled-icon-created-fg);
+  }
+
+  @nest .root[data-type='delete'] & {
+    background-color: var(--timeline-event-enabled-icon-deleted-bg);
+    color: var(--timeline-event-enabled-icon-deleted-fg);
+  }
+
+  @nest .root[data-type='discardDraft'] & {
+    background-color: var(--timeline-event-enabled-icon-discarded-draft-bg);
+    color: var(--timeline-event-enabled-icon-discarded-draft-fg);
   }
 
   @nest .root[data-type='editDraft'] & {
