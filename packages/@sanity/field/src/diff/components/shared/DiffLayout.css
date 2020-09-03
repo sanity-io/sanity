@@ -1,8 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--small-padding) 0;
-
   @nest &[data-layout='inline'] {
     display: flex;
     align-items: center;

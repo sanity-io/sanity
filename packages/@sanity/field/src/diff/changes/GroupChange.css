@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .groupChange {
 }
 .changeList {
@@ -9,6 +11,6 @@
 }
 
 .groupChange > .changeList {
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--hairline-color);
   padding-left: 0.75em;
 }
