@@ -11,10 +11,9 @@ import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {ValidationMenu} from './validationMenu'
 import {Chunk} from '@sanity/field/diff'
+import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
 
 import styles from './header.css'
-import {format} from 'date-fns'
-import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
 
 export interface DocumentPanelHeaderProps {
   activeViewId?: string
@@ -69,6 +68,9 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLDivElement>) => {
     evt.stopPropagation()
   }, [])
+
+  const showTabs = features.splitViews && props.views.length > 1
+  const showVersionMenu = true // props.isHistoryOpen
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
@@ -133,32 +135,34 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         </div>
       </div>
 
-      <div className={styles.viewNav}>
-        {features.splitViews && props.views.length > 1 && (
-          <div className={styles.tabsContainer}>
-            <DocumentHeaderTabs
-              activeViewId={props.activeViewId}
-              idPrefix={props.idPrefix}
-              onSetActiveView={props.onSetActiveView}
-              views={props.views}
-            />
-          </div>
-        )}
+      {(showTabs || showVersionMenu) && (
+        <div className={styles.viewNav}>
+          {showTabs && (
+            <div className={styles.tabsContainer}>
+              <DocumentHeaderTabs
+                activeViewId={props.activeViewId}
+                idPrefix={props.idPrefix}
+                onSetActiveView={props.onSetActiveView}
+                views={props.views}
+              />
+            </div>
+          )}
 
-        {props.isHistoryOpen && (
-          <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
-            <Button
-              kind="simple"
-              onMouseUp={ignoreClickOutside}
-              onClick={props.onTimelineOpen}
-              padding="small"
-              size="small"
-            >
-              <TimelineButtonLabel rev={rev} /> &darr;
-            </Button>
-          </div>
-        )}
-      </div>
+          {showVersionMenu && (
+            <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
+              <Button
+                kind="simple"
+                onMouseUp={ignoreClickOutside}
+                onClick={props.onTimelineOpen}
+                padding="small"
+                size="small"
+              >
+                <TimelineButtonLabel rev={rev} /> &darr;
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
