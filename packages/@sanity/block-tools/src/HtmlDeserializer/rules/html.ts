@@ -30,12 +30,15 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
   return [
     // Text nodes
     {
+      // eslint-disable-next-line complexity
       deserialize(el) {
         const isValidWhiteSpace =
           el.nodeType === 3 &&
           el.textContent.replace(/[\r\n]/g, ' ').replace(/\s\s+/g, ' ') === ' ' &&
-          el.nextSibling && el.nextSibling.nodeType !== 3 &&
-          el.previousSibling && el.previousSibling.nodeType !== 3
+          el.nextSibling &&
+          el.nextSibling.nodeType !== 3 &&
+          el.previousSibling &&
+          el.previousSibling.nodeType !== 3
         const isValidText =
           (isValidWhiteSpace || el.textContent !== ' ') && tagName(el.parentNode) !== 'body'
         if (el.nodeName === '#text' && isValidText) {

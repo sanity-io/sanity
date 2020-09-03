@@ -1,10 +1,9 @@
 [
   {
     "_key": "randomKey0",
-    "_type": "block",
+    "_type": "customBlock",
     "children": [
       {
-        "_key": "randomKey00",
         "_type": "span",
         "marks": [],
         "text": "A heading that is not allowed"
