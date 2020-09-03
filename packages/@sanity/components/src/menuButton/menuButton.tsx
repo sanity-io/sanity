@@ -1,11 +1,13 @@
+/* eslint-disable react/require-default-props */
+
 import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback} from 'react'
 
 interface MenuButtonProps {
-  // @todo: typings
-  buttonProps?: any
+  boundaryElement?: HTMLElement | null
+  buttonProps?: any // @todo: button typings
   menu?: React.ReactNode
   placement?: string
   open?: boolean
@@ -13,7 +15,17 @@ interface MenuButtonProps {
 }
 
 export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivElement>) {
-  const {buttonProps, children, menu, open, placement, setOpen, ...restProps} = props
+  const {
+    boundaryElement,
+    buttonProps,
+    children,
+    menu,
+    open,
+    placement,
+    setOpen,
+    ...restProps
+  } = props
+
   const handleClickOutside = useCallback(() => {
     if (!setOpen) return
     setOpen(false)
@@ -28,7 +40,12 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
     <ClickOutside onClickOutside={handleClickOutside}>
       {ref => (
         <div {...restProps} ref={ref}>
-          <Popover content={menu} open={open} placement={placement}>
+          <Popover
+            boundaryElement={boundaryElement}
+            content={menu}
+            open={open}
+            placement={placement}
+          >
             <div>
               <Button {...buttonProps} onClick={handleButtonClick}>
                 {children}
