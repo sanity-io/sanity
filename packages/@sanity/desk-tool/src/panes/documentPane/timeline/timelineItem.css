@@ -199,7 +199,7 @@
   }
 }
 
-.text {
+.textContainer {
   flex: 1;
   min-width: 0;
   margin-left: 0.75em;
@@ -214,4 +214,8 @@
 .timestamp {
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
+}
+
+.avatarStackContainer {
+  /* */
 }
