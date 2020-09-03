@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../types'
+import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../../types'
 import {buildObjectChangeList} from './buildChangeList'
 import {ChangeResolver} from './ChangeResolver'
 

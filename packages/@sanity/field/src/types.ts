@@ -14,7 +14,7 @@ import {
   StringSegmentChanged as AgnosticStringSegmentChanged,
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged
 } from '@sanity/diff'
-import {Path} from '../paths'
+import {Path} from './paths'
 
 /**
  * History timeline / chunking
@@ -186,7 +186,7 @@ export type SchemaType<A = unknown, O extends object = Record<string, any>> =
 /**
  * Paths
  */
-export * from '../paths/types'
+export * from './paths/types'
 
 /**
  * "Changes" (presentation-oriented grouping of diffs)

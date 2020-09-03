@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {StringDiffSegment, StringDiff} from '../types'
+import {StringDiffSegment, StringDiff} from '../../types'
 import {DiffAnnotation} from '../annotations'
 import styles from './AnnotatedStringDiff.css'
 
