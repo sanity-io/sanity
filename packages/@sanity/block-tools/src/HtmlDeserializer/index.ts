@@ -1,5 +1,6 @@
 import {flatten} from 'lodash'
 import resolveJsType from '../util/resolveJsType'
+import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -22,6 +23,7 @@ let _markDefs = []
  *
  */
 export default class HtmlDeserializer {
+  blockContentType: any
   rules: any[]
   parseHtml: (html: string) => any
   /**
@@ -44,6 +46,7 @@ export default class HtmlDeserializer {
     const standardRules = createRules(blockContentType, createRuleOptions(blockContentType))
     this.rules = [...rules, ...standardRules]
     const parseHtml = options.parseHtml || defaultParseHtml()
+    this.blockContentType = blockContentType
     this.parseHtml = html => {
       const doc = preprocess(html, parseHtml)
       return doc.body
@@ -61,6 +64,7 @@ export default class HtmlDeserializer {
     const {parseHtml} = this
     const fragment = parseHtml(html)
     const children = Array.from(fragment.childNodes)
+    // Ensure that there are no blocks within blocks, and trim whitespace
     const blocks = trimWhitespace(
       flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
     )
@@ -76,8 +80,14 @@ export default class HtmlDeserializer {
           )
         })
     }
-    // Ensure that there are no blocks within blocks, and trim whitespace
-    return blocks
+    // Set back the potentially hoisted block type
+    const type = this.blockContentType.of.find(findBlockType)
+    return blocks.map(block => {
+      if (block._type === 'block') {
+        block._type = type.name
+      }
+      return block
+    })
   }
 
   /**
@@ -256,4 +266,16 @@ export default class HtmlDeserializer {
       return children
     }, [])
   }
+}
+
+function findBlockType(type) {
+  if (type.type) {
+    return findBlockType(type.type)
+  }
+
+  if (type.name === 'block') {
+    return type
+  }
+
+  return null
 }

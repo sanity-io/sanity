@@ -10,7 +10,7 @@ export default function blockContentFeatures(blockContentType) {
   const ofType = blockType.fields.find(field => field.name === 'children').type.of
   const spanType = ofType.find(memberType => memberType.name === 'span')
   const inlineObjectTypes = ofType.filter(memberType => memberType.name !== 'span')
-  const blockObjectTypes = blockContentType.of.filter(field => field.name !== 'block')
+  const blockObjectTypes = blockContentType.of.filter(field => field.name !== blockType.name)
   return {
     styles: resolveEnabledStyles(blockType),
     decorators: resolveEnabledDecorators(spanType),
@@ -71,12 +71,12 @@ function resolveEnabledListItems(blockType) {
 }
 
 function findBlockType(type) {
-  if (type.name === 'block') {
-    return type
-  }
-
   if (type.type) {
     return findBlockType(type.type)
+  }
+
+  if (type.name === 'block') {
+    return type
   }
 
   return null
