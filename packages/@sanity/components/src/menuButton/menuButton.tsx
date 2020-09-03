@@ -11,7 +11,7 @@ interface MenuButtonProps {
   menu?: React.ReactNode
   placement?: string
   open?: boolean
-  setOpen?: (val: boolean) => void
+  setOpen: (val: boolean) => void
 }
 
 export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivElement>) {
@@ -26,15 +26,8 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
     ...restProps
   } = props
 
-  const handleClickOutside = useCallback(() => {
-    if (!setOpen) return
-    setOpen(false)
-  }, [setOpen])
-
-  const handleButtonClick = useCallback(() => {
-    if (!setOpen) return
-    setOpen(!open)
-  }, [open, setOpen])
+  const handleClickOutside = useCallback(() => setOpen(false), [setOpen])
+  const handleButtonClick = useCallback(() => setOpen(!open), [open, setOpen])
 
   return (
     <ClickOutside onClickOutside={handleClickOutside}>
