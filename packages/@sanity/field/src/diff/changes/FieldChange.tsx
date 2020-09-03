@@ -23,7 +23,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
 
   return (
     <div className={styles.root}>
-      <ChangeHeader titlePath={change.titlePath} />
+      {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
 
       <div className={styles.diffComponent}>
         <DiffErrorBoundary>
