@@ -5,10 +5,12 @@ describe('normalizeBlock', () => {
   it('will normalize a block', () => {
     const block = {
       _type: 'block',
-      markDefs: [{
-        _key: '123123',
-        something: 'bogus'
-      }],
+      markDefs: [
+        {
+          _key: '123123',
+          something: 'bogus'
+        }
+      ],
       children: [
         {
           _type: 'span',
