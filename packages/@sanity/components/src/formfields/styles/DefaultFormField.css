@@ -58,8 +58,7 @@
 .header {
   display: flex;
   align-items: center;
-  padding: var(--extra-small-padding) 0;
-  margin-bottom: var(--small-padding);
+  padding: 0 0 var(--small-padding);
 }
 
 .headerMain {

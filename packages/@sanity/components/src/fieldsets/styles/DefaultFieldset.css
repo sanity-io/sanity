@@ -9,10 +9,6 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-gap: var(--large-padding) var(--medium-padding);
-
-  @media (--screen-medium) {
-    grid-gap: var(--extra-large-padding) var(--medium-padding);
-  }
 }
 
 .fieldset {
@@ -27,7 +23,6 @@
   display: flex;
   align-items: center;
   margin-bottom: var(--small-padding);
-  padding: var(--extra-small-padding) 0;
 }
 
 .headerMain {
