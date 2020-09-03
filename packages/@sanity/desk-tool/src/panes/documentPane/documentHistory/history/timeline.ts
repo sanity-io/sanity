@@ -348,9 +348,16 @@ export class Timeline {
    * equal (using object identity) to the previous range, so feel free to call
    * this often rather seldom.
    */
-  setRange(start: Chunk, end: Chunk) {
+  setRange(start: Chunk | null, end: Chunk) {
     const current = this._reconstruction
-    if (current && current.start === start) {
+
+    if (current) {
+      if (current.start !== start) {
+        current.diff = undefined
+        current.startDocument = undefined
+        current.start = start
+      }
+
       if (current.end !== end) {
         current.diff = undefined
         current.endDocument = undefined
@@ -371,10 +378,15 @@ export class Timeline {
     }
 
     if (!current.endDocument) {
-      this.calculateAttributes(current)
+      const draft: any = this._draftVersion ? this._draftVersion.attributes : null
+      const published: any = this._publishedVersion ? this._publishedVersion.attributes : null
+      current.endDocument = this._replayBackwards(current.end.end, this._transactions.lastIdx, {
+        draft,
+        published
+      })
     }
 
-    return getAttrs(current.endDocument!)
+    return getAttrs(current.endDocument)
   }
 
   /** Returns the attributes as seen at the end of the range. */
@@ -384,34 +396,31 @@ export class Timeline {
       throw new Error('range required')
     }
 
+    if (!current.start) throw new Error('start required')
+
     if (!current.startDocument) {
-      this.calculateAttributes(current)
+      // Ensure that endDocument is generated
+      this.endAttributes()
+
+      current.startDocument = this._replayBackwards(
+        current.start.end,
+        current.end.end - 1,
+        current.endDocument!
+      )
     }
 
-    return getAttrs(current.startDocument!)
+    return getAttrs(current.startDocument)
   }
 
-  /** Uses the current draft and the revert patches to construct the start and the end of the range. */
-  private calculateAttributes(current: Reconstruction) {
-    let draft: any = this._draftVersion ? this._draftVersion.attributes : null
-    let published: any = this._publishedVersion ? this._publishedVersion.attributes : null
-
-    const firstIdx = this._transactions.firstIdx
-    const lastIdx = this._transactions.lastIdx
-
-    // Iterate backwards over the transactions and apply revert effects.
-
+  private _replayBackwards(
+    firstIdx: number,
+    lastIdx: number,
+    doc: CombinedDocument
+  ): CombinedDocument {
+    let draft = doc.draft
+    let published = doc.published
     for (let idx = lastIdx; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
-
-      // The end-index points to the transaction which is _not_
-      // included in the chunk. By subtracting 1 we get the transaction
-      // which is inside the chunk, and by assigning before the effects
-      // are applied we get the state after the chunk.
-
-      if (idx === current.end.end - 1) {
-        current.endDocument = {draft, published}
-      }
 
       if (transaction.draftEffect) {
         draft = applyPatch(draft, transaction.draftEffect.revert)
@@ -420,18 +429,15 @@ export class Timeline {
       if (transaction.publishedEffect) {
         published = applyPatch(published, transaction.publishedEffect.revert)
       }
-
-      if (idx === current.start.start) {
-        current.startDocument = {draft, published}
-        break
-      }
     }
+
+    return {draft, published}
   }
 
   /** Returns the diff between the start and the end range. */
   currentDiff() {
     const current = this._reconstruction
-    if (!current) {
+    if (!current || current.start === null) {
       return null
     }
 
@@ -439,9 +445,9 @@ export class Timeline {
       return current.diff
     }
 
-    if (!current.startDocument || !current.endDocument) {
-      this.calculateAttributes(current)
-    }
+    // Make sure that start/endDocument is populated
+    this.startAttributes()
+    this.endAttributes()
 
     const doc = current.startDocument!
 
@@ -451,11 +457,10 @@ export class Timeline {
     const initialValue = getValue(draftValue, publishedValue)
     const initialAttributes = getAttrs(doc)
 
-    let chunk = current.start
-    let chunkIdx = chunk.index
-
     // Loop over all of the chunks:
-    for (;;) {
+    for (let chunkIdx = current.start.index + 1; chunkIdx <= current.end.index; chunkIdx++) {
+      const chunk = this._chunks.get(chunkIdx)
+
       for (let idx = chunk.start; idx < chunk.end; idx++) {
         const transaction = this._transactions.get(idx)
 
@@ -492,14 +497,6 @@ export class Timeline {
           draftValue = incremental.rebaseValue(prePublishedValue, draftValue)
         }
       }
-
-      // We reached the final chunk
-      if (chunk === current.end) {
-        break
-      }
-
-      chunkIdx++
-      chunk = this._chunks.get(chunkIdx)
     }
 
     const finalValue = incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
@@ -524,7 +521,7 @@ type CombinedDocument = {
 }
 
 type Reconstruction = {
-  start: Chunk
+  start: Chunk | null
   end: Chunk
   startDocument?: CombinedDocument
   endDocument?: CombinedDocument
