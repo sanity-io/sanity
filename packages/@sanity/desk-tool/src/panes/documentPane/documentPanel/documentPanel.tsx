@@ -1,19 +1,15 @@
 import classNames from 'classnames'
 import {PortalProvider} from 'part:@sanity/components/portal'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {createElement, useCallback, useEffect, useMemo, useRef} from 'react'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView, MenuItemGroup} from '../types'
-import {DocumentOperationResults} from './documentOperationResults'
 import {DocumentHeaderTitle} from './header/title'
 import {DocumentPanelHeader} from './header/header'
 import {getMenuItems} from './menuItems'
 import {FormView} from './views'
-import {DocumentStatusBar} from './statusBar'
 
 import styles from './documentPanel.css'
-import {Chunk} from '@sanity/field/diff'
 
 interface DocumentPanelProps {
   activeViewId: string
@@ -178,20 +174,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
           <div data-portal-container ref={portalContainerRef} />
         </div>
       </PortalProvider>
-
-      <div className={styles.footerContainer}>
-        <DocumentStatusBar
-          id={props.documentId}
-          type={props.documentType}
-          lastUpdated={props.value && props.value._updatedAt}
-        />
-      </div>
-
-      {props.connectionState === 'reconnecting' && (
-        <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-      )}
-
-      <DocumentOperationResults id={props.documentId} type={props.documentType} />
     </div>
   )
 }
