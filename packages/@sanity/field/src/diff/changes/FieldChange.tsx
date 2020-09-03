@@ -22,7 +22,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
   )
 
   return (
-    <div>
+    <div className={styles.root}>
       <ChangeHeader titlePath={change.titlePath} />
 
       <div className={styles.diffComponent}>
@@ -31,7 +31,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
         </DiffErrorBoundary>
       </div>
 
-      <div>
+      <div className={styles.revertChangesButtonContainer}>
         <RevertChangesButton onClick={handleRevertChanges} />
       </div>
     </div>
