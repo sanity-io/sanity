@@ -7,8 +7,13 @@ declare module 'part:@sanity/components/*' {
   export default SanityInputComponent
 }
 
+declare module 'part:@sanity/components/menu-button' {
+  // export const MenuButton: ComponentType<{}>
+  export const MenuButton: any
+}
+
 declare module 'part:@sanity/components/popover' {
-  // export const Portal: ComponentType<{}>
+  // export const Popover: ComponentType<{}>
   export const Popover: any
 }
 
