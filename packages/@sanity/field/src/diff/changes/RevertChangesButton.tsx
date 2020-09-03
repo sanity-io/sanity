@@ -1,11 +1,11 @@
 import React from 'react'
-
-import styles from './RevertChangesButton.css'
+import Button from 'part:@sanity/components/buttons/default'
+import UndoIcon from 'part:@sanity/base/undo-icon'
 
 export function RevertChangesButton({onClick}: {onClick?: () => void}) {
   return (
-    <button className={styles.root} onClick={onClick} type="button">
+    <Button onClick={onClick} kind="simple" padding="small" size="small" icon={UndoIcon}>
       Revert changes
-    </button>
+    </Button>
   )
 }
