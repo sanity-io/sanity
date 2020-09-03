@@ -79,7 +79,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
         return true
       }
 
-      if (item.action === 'browseHistory') {
+      if (item.action === 'reviewChanges') {
         openHistory()
         return true
       }
