@@ -2,12 +2,15 @@ import {isEqual} from 'lodash'
 import randomKey from './randomKey'
 
 // For a block with _type 'block' (text), join spans where possible
-export default function normalizeBlock(block, options: {allowedDecorators?: string[]} = {}) {
+export default function normalizeBlock(
+  block,
+  options: {allowedDecorators?: string[]; blockTypeName?: string} = {}
+) {
   let newIndex = 0
   if (!block._key) {
     block._key = randomKey(12)
   }
-  if (block._type !== 'block') {
+  if (block._type !== (options.blockTypeName || 'block')) {
     return block
   }
   if (!block.children) {
