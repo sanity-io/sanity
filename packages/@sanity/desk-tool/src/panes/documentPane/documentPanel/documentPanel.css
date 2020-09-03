@@ -29,12 +29,3 @@
   height: 100%;
   overflow: auto;
 }
-
-.footerContainer {
-  background: var(--component-bg);
-  border-top: 1px solid var(--hairline-color);
-
-  @nest .isCollapsed & {
-    display: none;
-  }
-}

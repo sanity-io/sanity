@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import React from 'react'
-import TimeAgo from '../../../../components/TimeAgo'
-import {useDocumentHistory} from '../../documentHistory'
+import TimeAgo from '../../../components/TimeAgo'
+import {useDocumentHistory} from '../documentHistory'
 import styles from './documentStatusBar.css'
 import {DocumentStatusBarActions} from './documentStatusBarActions'
 import {DocumentStatusBarBadges} from './documentStatusBarBadges'
@@ -14,7 +14,7 @@ import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 interface Props {
   id: string
   type: string
-  lastUpdated?: string
+  lastUpdated?: string | null
 }
 
 export function DocumentStatusBar(props: Props) {

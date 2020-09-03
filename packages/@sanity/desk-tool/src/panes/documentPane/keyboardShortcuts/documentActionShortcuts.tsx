@@ -8,7 +8,7 @@ import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
-import {ActionStateDialog} from '../documentPanel/statusBar'
+import {ActionStateDialog} from '../statusBar'
 
 interface ResponderProps extends React.ComponentProps<'div'> {
   states: any[]
