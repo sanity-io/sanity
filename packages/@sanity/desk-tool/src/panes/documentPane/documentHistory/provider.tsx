@@ -49,11 +49,11 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
   historyController.setRange(since || null, rev || null)
 
   const close = useCallback(() => {
-    paneRouter.setParams({...paneRouter.params, rev: undefined, since: undefined})
+    paneRouter.setParams({...paneRouter.params, since: undefined})
   }, [paneRouter])
 
   const open = useCallback(() => {
-    paneRouter.setParams({...paneRouter.params, since: '@lastPublished', rev: undefined})
+    paneRouter.setParams({...paneRouter.params, since: '@lastPublished'})
   }, [paneRouter])
 
   const setRange = useCallback(
@@ -69,7 +69,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   let displayed = props.value
 
-  if (historyController.selectionState === 'active' && historyController.revTime !== null) {
+  if (historyController.onOlderRevision()) {
     displayed = timeline.endAttributes()
   }
 

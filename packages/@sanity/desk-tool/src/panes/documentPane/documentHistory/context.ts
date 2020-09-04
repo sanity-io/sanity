@@ -9,7 +9,7 @@ export interface HistoryContextInstance {
   displayed: Doc | null
   open(): void
   close(): void
-  setRange(since: string, rev: string | null): void
+  setRange(since: string | null, rev: string | null): void
 }
 
 export const DocumentHistoryContext = createContext<HistoryContextInstance | null>(null)

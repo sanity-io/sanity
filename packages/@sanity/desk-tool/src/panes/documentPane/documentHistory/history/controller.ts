@@ -32,11 +32,12 @@ export class Controller {
   /**
    * The selection state represents the  different states of the current selection:
    * - inactive: No selection is active.
-   * - active: A selection is active and we have all the data needed to render it.
+   * - rev: A selection is active for a single revision.
+   * - range: A selection is active for a range and we have all the data needed to render it.
    * - loading: A selection is active, but we don't have the entries yet.
    * - invalid: The selection picked is invalid.
    */
-  selectionState: 'inactive' | 'active' | 'loading' | 'invalid' = 'inactive'
+  selectionState: 'inactive' | 'rev' | 'range' | 'loading' | 'invalid' = 'inactive'
 
   constructor(options: Options) {
     this.timeline = options.timeline
@@ -61,15 +62,8 @@ export class Controller {
   }
 
   setRange(since: string | null, rev: string | null) {
-    if (since !== this._since) {
-      this._since = since
-      this._sinceTime = since ? this.timeline.parseTimeId(since) : null
-    }
-
-    if (rev !== this._rev) {
-      this._rev = rev
-      this._revTime = rev ? this.timeline.parseTimeId(rev) : null
-    }
+    if (rev !== this._rev) this.setRevTime(rev)
+    if (since !== this._since) this.setSinceTime(since)
 
     let _fetchAtLeast = 10
 
@@ -78,7 +72,7 @@ export class Controller {
     } else if (this._sinceTime === 'invalid' || this._revTime === 'invalid') {
       this.selectionState = 'invalid'
     } else if (this._sinceTime) {
-      this.selectionState = 'active'
+      this.selectionState = 'range'
 
       const rev = this._revTime || this.timeline.lastChunk()
 
@@ -88,6 +82,9 @@ export class Controller {
       } else {
         this.timeline.setRange(this._sinceTime, rev)
       }
+    } else if (this._revTime) {
+      this.selectionState = 'rev'
+      this.timeline.setRange(null, this._revTime)
     } else {
       this.selectionState = 'inactive'
       _fetchAtLeast = 0
@@ -115,15 +112,28 @@ export class Controller {
     return this.revTime || this.timeline.lastChunk()
   }
 
-  findRangeForNewRev(rev: Chunk): [string, string | null] {
+  /** Returns true when there's an older revision we want to render. */
+  onOlderRevision() {
+    return Boolean(this._rev) && (this.selectionState === 'range' || this.selectionState === 'rev')
+  }
+
+  /** Returns true when the changes panel should be active. */
+  changesPanelActive() {
+    return Boolean(this._since) && this.selectionState !== 'invalid'
+  }
+
+  findRangeForNewRev(rev: Chunk): [string | null, string | null] {
     const revTimeId = this.timeline.isLatestChunk(rev) ? null : this.timeline.createTimeId(rev)
 
-    const sinceChunk = this.sinceTime
-    if (sinceChunk && sinceChunk.index < rev.index) {
-      return [this._since!, revTimeId]
+    if (this._since) {
+      const sinceChunk = this.sinceTime
+      if (sinceChunk && sinceChunk.index < rev.index) {
+        return [this._since, revTimeId]
+      } else {
+        return ['@lastPublished', revTimeId]
+      }
     } else {
-      const sinceChunk = this.timeline.findLastPublishedBefore(rev.index - 1)
-      return [this.timeline.createTimeId(sinceChunk), revTimeId]
+      return [null, revTimeId]
     }
   }
 
@@ -138,6 +148,31 @@ export class Controller {
     } else {
       return [this.timeline.createTimeId(since), null]
     }
+  }
+
+  setRevTime(rev: string | null) {
+    this._rev = rev
+    this._revTime = rev ? this.timeline.parseTimeId(rev) : null
+
+    if (this._since === '@lastPublished') {
+      // Make sure we invalidate it since this depends on the _rev.
+      this._since = null
+      this._sinceTime = null
+    }
+  }
+
+  setSinceTime(since: string | null) {
+    if (since === '@lastPublished') {
+      if (typeof this._revTime === 'string') {
+        this._sinceTime = this._revTime
+      } else {
+        this._sinceTime = this.timeline.findLastPublishedBefore(this._revTime)
+      }
+    } else {
+      this._sinceTime = since ? this.timeline.parseTimeId(since) : null
+    }
+
+    this._since = since
   }
 
   displayed() {
@@ -229,13 +264,8 @@ export class Controller {
   }
 
   private markChange() {
-    if (this._rev) {
-      this._revTime = this.timeline.parseTimeId(this._rev)
-    }
-
-    if (this._since) {
-      this._sinceTime = this.timeline.parseTimeId(this._since)
-    }
+    this.setRevTime(this._rev)
+    this.setSinceTime(this._rev)
 
     this.version++
     this.handler(null, this)
