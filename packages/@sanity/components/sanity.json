@@ -1140,6 +1140,14 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "menuButton/story"
+    },
+    {
+      "implements": "part:@sanity/components/avatar",
+      "path": "avatar"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "avatar/story"
     }
   ]
 }

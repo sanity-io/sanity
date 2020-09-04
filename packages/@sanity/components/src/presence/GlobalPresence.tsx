@@ -4,18 +4,19 @@ import UsersIcon from 'part:@sanity/base/users-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import * as PathUtils from '@sanity/util/paths'
 import {orderBy} from 'lodash'
+import {AvatarSize} from '../avatar'
 import styles from './GlobalPresence.css'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
 import StackCounter from './StackCounter'
-import {GlobalPresenceItem, Size} from './types'
+import {GlobalPresenceItem} from './types'
 import UserAvatar from './UserAvatar'
 import {PresenceListItem} from './PresenceListItem'
 import {MAX_AVATARS_GLOBAL} from './constants'
 
 type GlobalPresenceListItemProps = {
   presence: GlobalPresenceItem
-  size?: Size
+  size?: AvatarSize
   onClose?: (event) => void
 }
 

@@ -1,14 +1,16 @@
+/* eslint-disable react/require-default-props */
+
 import React, {useState} from 'react'
 import {useUser, useUserColor} from '@sanity/base/hooks'
 import {User} from '../presence/types'
-import Avatar from './Avatar'
-import {Position, Size} from './types'
+import {Avatar} from './Avatar'
+import {AvatarPosition, AvatarSize, AvatarStatus} from './types'
 
 interface BaseProps {
-  isAnimating?: boolean
-  position?: Position
-  animateArrowFrom?: Position
-  size?: Size
+  position?: AvatarPosition | null
+  animateArrowFrom?: AvatarPosition | null
+  size?: AvatarSize
+  status?: AvatarStatus
   tone?: 'navbar'
 }
 
@@ -26,44 +28,46 @@ type UserProps = LoadedUserProps | UnloadedUserProps
 
 function nameToInitials(fullName: string) {
   const namesArray = fullName.split(' ')
-  if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`
+
+  if (namesArray.length === 1) {
+    return `${namesArray[0].charAt(0)}`
+  }
+
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
 export function UserAvatar(props: Props) {
-  return isLoaded(props) ? <StaticUserAvatar {...props} /> : <UserAvatarLoader {...props} />
+  if (isLoaded(props)) {
+    return <StaticUserAvatar {...props} />
+  }
+
+  return <UserAvatarLoader {...props} />
 }
 
-function StaticUserAvatar({
-  user,
-  isAnimating,
-  animateArrowFrom,
-  position,
-  size,
-  tone
-}: LoadedUserProps) {
+function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}: LoadedUserProps) {
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? null : user?.imageUrl
+
   return (
     <Avatar
-      imageUrl={imageUrl}
       animateArrowFrom={animateArrowFrom}
-      isAnimating={isAnimating}
-      position={position}
-      size={size}
-      label={user?.displayName}
-      borderColor={userColor.border}
+      arrowPosition={position}
+      color={userColor.border}
+      initials={user?.displayName && nameToInitials(user.displayName)}
+      src={imageUrl}
       onImageLoadError={setImageLoadError}
+      size={size}
+      status={status}
+      title={user?.displayName}
       tone={tone}
-    >
-      {!imageUrl && user?.displayName && nameToInitials(user.displayName)}
-    </Avatar>
+    />
   )
 }
 
 function UserAvatarLoader({userId, ...loadedProps}: UnloadedUserProps) {
   const {isLoading, error, value: user} = useUser(userId)
+
   if (isLoading || error) {
     // @todo How do we handle this?
     return null
@@ -74,5 +78,6 @@ function UserAvatarLoader({userId, ...loadedProps}: UnloadedUserProps) {
 
 function isLoaded(props: Props): props is LoadedUserProps {
   const loadedProps = props as LoadedUserProps
+
   return typeof loadedProps.user !== 'undefined' && typeof loadedProps.user.id === 'string'
 }

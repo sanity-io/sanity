@@ -8,6 +8,6 @@ export type Props = UserAvatarProps & {
 
 export default function PresenceUserAvatar({status = 'online', position, ...rest}: Props) {
   // Decide whether the avatar border should animate
-  const isAnimating = !position && status === 'editing'
-  return <UserAvatar {...rest} position={position} isAnimating={isAnimating} />
+  // const isAnimating = !position && status === 'editing'
+  return <UserAvatar {...rest} position={position} status={status} />
 }

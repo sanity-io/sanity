@@ -1,13 +1,14 @@
 import React from 'react'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import {AvatarSize} from '../avatar'
 import styles from './PresenceListItem.css'
 import UserAvatar from './UserAvatar'
-import {Size, Status, User} from './types'
+import {Status, User} from './types'
 
 type Props = {
   user: User
   status: Status
-  size?: Size
+  size?: AvatarSize
   hasLink?: string | undefined
 }
 
