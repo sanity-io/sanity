@@ -1,7 +1,7 @@
 import React, {SyntheticEvent} from 'react'
-import {ObjectDiff, useDiffAnnotationColor, DiffAnnotationTooltip} from '../../../../diff'
-import {PortableTextChild} from '../types'
 import styles from './InlineObject.css'
+import {PortableTextChild} from '../types'
+import {DiffAnnotationTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../../diff'
 
 type Props = {
   diff?: ObjectDiff
