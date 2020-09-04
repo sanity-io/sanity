@@ -65,7 +65,7 @@ export default function Block(props: Props): JSX.Element {
         child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
       ).map(mark => {
         returned = (
-          <Decorator block={block} mark={mark} span={child}>
+          <Decorator key={`decorator-${child._key}-${mark}`} block={block} mark={mark} span={child}>
             {returned}
           </Decorator>
         )
@@ -79,6 +79,7 @@ export default function Block(props: Props): JSX.Element {
         returned = (
           <Annotation
             block={block}
+            key={`annotation-${child._key}-${markDefKey}`}
             markDefKey={markDefKey}
             onClick={handleObjectFocus}
             span={child}
@@ -92,7 +93,7 @@ export default function Block(props: Props): JSX.Element {
 
   const renderSpan = (props: {child: PortableTextChild; diff: ObjectDiff}): React.ReactNode => {
     const {child, diff} = props
-    return <Span block={block} diff={diff} span={child} />
+    return <Span key={`span-${child._key}`} block={block} diff={diff} span={child} />
   }
 
   // Set up renderers for inline object types
@@ -102,7 +103,14 @@ export default function Block(props: Props): JSX.Element {
     diff: ObjectDiff
   }): React.ReactNode => {
     const {child, diff} = props
-    return <InlineObject object={child} diff={diff} onClick={handleObjectFocus} />
+    return (
+      <InlineObject
+        key={`inline-object-${child._key}`}
+        object={child}
+        diff={diff}
+        onClick={handleObjectFocus}
+      />
+    )
   }
   const renderInvalidInlineObjectType = () => {
     return <span>Invalid inline object type</span>

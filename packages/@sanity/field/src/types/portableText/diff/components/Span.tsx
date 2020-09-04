@@ -20,5 +20,5 @@ export default function Span(props: Props) {
       returned = <AnnotatedStringDiff diff={textDiff} />
     }
   }
-  return <span key={`span-${span._key}`} className={styles.root}>{returned}</span>
+  return <span className={styles.root}>{returned}</span>
 }

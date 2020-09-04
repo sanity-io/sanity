@@ -21,11 +21,7 @@ export default function Annotation(props: Props) {
     : () => {}
 
   return (
-    <span
-      className={styles.root}
-      key={`annotation-${props.markDefKey}-${props.span._key}`}
-      onClick={handleClick}
-    >
+    <span className={styles.root} onClick={handleClick}>
       {props.children}
     </span>
   )

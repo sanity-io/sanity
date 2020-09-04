@@ -10,7 +10,7 @@ type Props = {
 }
 export default function Decorator(props: Props) {
   return (
-    <span key={`decorator-${props.span._key}-${props.mark}`} className={`${styles[props.mark]}`}>
+    <span className={`${styles[props.mark]}`}>
       {props.children}
     </span>
   )
