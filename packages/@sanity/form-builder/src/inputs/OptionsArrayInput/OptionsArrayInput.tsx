@@ -124,7 +124,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
               const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
               return (
                 <div
-                  className={direction === 'vertical' && styles.itemVertical}
+                  className={direction === 'vertical' ? styles.itemVertical : undefined}
                   key={option._key || index}
                 >
                   <Item
