@@ -372,6 +372,10 @@ export class Timeline {
 
   /** Returns the attributes as seen at the end of the range. */
   endAttributes() {
+    return getAttrs(this.endDocument())
+  }
+
+  endDocument(): CombinedDocument {
     const current = this._reconstruction
     if (!current) {
       throw new Error('range required')
@@ -386,11 +390,15 @@ export class Timeline {
       })
     }
 
-    return getAttrs(current.endDocument)
+    return current.endDocument
   }
 
   /** Returns the attributes as seen at the end of the range. */
   startAttributes() {
+    return getAttrs(this.startDocument())
+  }
+
+  startDocument(): CombinedDocument {
     const current = this._reconstruction
     if (!current) {
       throw new Error('range required')
@@ -409,7 +417,7 @@ export class Timeline {
       )
     }
 
-    return getAttrs(current.startDocument)
+    return current.startDocument
   }
 
   private _replayBackwards(
@@ -445,11 +453,8 @@ export class Timeline {
       return current.diff
     }
 
-    // Make sure that start/endDocument is populated
-    this.startAttributes()
-    this.endAttributes()
-
-    const doc = current.startDocument!
+    const doc = this.startDocument()
+    const finalAttributes = this.endAttributes()
 
     let draftValue = incremental.wrap<Meta>(doc.draft, null)
     let publishedValue = incremental.wrap<Meta>(doc.published, null)
@@ -500,7 +505,6 @@ export class Timeline {
     }
 
     const finalValue = incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
-    const finalAttributes = getAttrs(current.endDocument!)
     current.diff = diffValue(this, initialValue, initialAttributes, finalValue, finalAttributes)
     return current.diff
   }
