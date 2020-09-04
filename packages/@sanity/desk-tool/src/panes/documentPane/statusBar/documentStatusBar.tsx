@@ -25,12 +25,12 @@ export function DocumentStatusBar(props: Props) {
           className={styles.lastUpdatedButton}
           onClick={openHistory}
           type="button"
-          disabled={historyController.selectionState === 'active'}
+          disabled={historyController.changesPanelActive()}
         >
           <DocumentStatusBarSparkline
             editState={editState}
             badges={badges}
-            disabled={historyController.selectionState === 'active'}
+            disabled={historyController.changesPanelActive()}
           />
         </button>
       </div>

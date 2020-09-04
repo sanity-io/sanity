@@ -163,8 +163,10 @@ export function DocumentPane(props: DocumentPaneProps) {
     setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
   }, [timelineMode, setTimelineMode])
 
-  const isChangesOpen = historyState === 'active' || historyState === 'loading'
-  const isTimelineOpen = timelineMode !== 'closed' && historyState === 'active'
+  console.log(historyController.selectionState)
+
+  const isChangesOpen = historyController.changesPanelActive()
+  const isTimelineOpen = timelineMode !== 'closed'
 
   return (
     <Popover
