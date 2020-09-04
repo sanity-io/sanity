@@ -45,7 +45,6 @@
     position: absolute;
     top: calc((100% - var(--checkbox-button-size)) / 2);
     left: calc((100% - var(--checkbox-button-size)) / 2);
-    transform: scale(0.5);
     opacity: 0;
     flex: 1;
     height: var(--checkbox-button-size);
@@ -81,7 +80,6 @@
 .input:checked + .checkbox {
   @nest & .checkmark {
     opacity: 1;
-    transform: scale(0.8);
   }
 }
 
