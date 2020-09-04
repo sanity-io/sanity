@@ -14,16 +14,8 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   schemaType: ObjectSchemaType
 }) {
   const childMap = useMemo(() => createChildMap(diff, schemaType), [diff])
-  const isRemoved = diff.action === 'removed'
-  const isAdded = diff.action === 'added'
-  const isChanged = diff.action === 'changed'
   const portableText = useMemo(() => <Block diff={diff} childMap={childMap} />, [diff])
-  const classNames = [
-    styles.root,
-    ...[isAdded ? styles.added : []],
-    ...[isRemoved ? styles.removed : []],
-    ...[isChanged ? styles.changed : []]
-  ].join(' ')
+  const classNames = [styles.root, styles[diff.action]].join(' ')
   return (
     <div className={classNames}>
       {/* Diff */}
