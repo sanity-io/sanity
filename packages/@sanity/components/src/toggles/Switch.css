@@ -3,18 +3,18 @@
 
 :root {
   --switch-color: var(--brand-primary);
-  --focus-color: var(--brand-primary);
+  --focus-color: color(var(--brand-primary) alpha(50%));
 
   /* Thumb */
-  --thumb-size: calc(var(--track-height) * 0.7);
+  --thumb-size: 1rem;
   --thumb-color: var(--switch-color);
   --thumb-off-color: var(--white);
   --thumb-on-color: var(--white);
   --thumb-disabled-color: var(--input-color-disabled);
   --thumb-offset: 4px;
   /* Track */
-  --track-height: 1.4em;
-  --track-width: 2.5em;
+  --track-height: 1.5rem;
+  --track-width: 2.5rem;
   --track-disabled-color: var(--input-bg-disabled);
   --track-color: var(--gray-light);
   --track-off-color: var(--gray);
@@ -57,7 +57,7 @@
   top: calc((100% - var(--thumb-size)) / 2);
   height: var(--thumb-size);
   width: var(--thumb-size);
-  border-radius: var(--thumb-size);
+  border-radius: 50%;
   cursor: default;
   composes: animation-default from 'part:@sanity/base/theme/animation-style';
   transform-origin: left;
