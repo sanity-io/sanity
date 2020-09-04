@@ -3,7 +3,7 @@
 
 :root {
   --switch-color: var(--brand-primary);
-  --focus-color: color(var(--brand-primary) alpha(50%));
+  --focus-color: var(--brand-primary);
 
   /* Thumb */
   --thumb-size: 1rem;
