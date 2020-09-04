@@ -9,7 +9,8 @@ const title = {
 const arrayListOfOptionsExample = {
   type: 'array',
   name: 'arrayListOfOptionsExample',
-  title: 'Array of list options',
+  title: 'Array (1)',
+  description: 'List of options',
   of: [
     {
       type: 'string'
@@ -29,7 +30,8 @@ const arrayListOfOptionsExample = {
 const arrayOfObjectsExample = {
   type: 'array',
   name: 'arrayOfObjectsExample',
-  title: 'Array of objects',
+  title: 'Array (2)',
+  description: 'List of objects',
   of: [
     {
       type: 'object',
@@ -45,7 +47,8 @@ const arrayOfObjectsExample = {
 const arrayOfReferencesExample = {
   type: 'array',
   name: 'arrayOfReferencesExample',
-  title: 'Array of references',
+  title: 'Array (3)',
+  description: 'List of references',
   of: [
     {
       type: 'reference',
@@ -57,21 +60,16 @@ const arrayOfReferencesExample = {
 const arrayOfPrimitivesExample = {
   type: 'array',
   name: 'arrayOfPrimitivesExample',
-  title: 'Array of primitives',
+  title: 'Array (4)',
+  description: 'List of primitives',
   of: [{type: 'string'}]
-}
-
-const arrayOfGeopointsExample = {
-  type: 'array',
-  name: 'arrayOfGeopointsExample',
-  title: 'Array of geopoints',
-  of: [{type: 'geopoint'}]
 }
 
 const arrayGridOfFlatImagesExample = {
   type: 'array',
   name: 'arrayGridOfFlatImagesExample',
-  title: 'Array grid of (flat) images with caption',
+  title: 'Array (5)',
+  description: 'Grid of (flat) images with caption',
   of: [
     {
       type: 'image',
@@ -84,7 +82,8 @@ const arrayGridOfFlatImagesExample = {
 const arrayGridOfImagesExample = {
   type: 'array',
   name: 'arrayGridOfImagesExample',
-  title: 'Array grid of images',
+  title: 'Array (6)',
+  description: 'Grid of images',
   of: [
     {
       type: 'object',
@@ -100,6 +99,36 @@ const arrayGridOfImagesExample = {
   options: {
     layout: 'grid'
   }
+}
+
+const arrayOfImagesExample = {
+  type: 'array',
+  name: 'arrayOfImagesExample',
+  title: 'Array (7)',
+  description: 'List of images',
+  of: [
+    {
+      type: 'object',
+      title: 'Image',
+      fields: [{type: 'image', name: 'image', title: 'Image'}],
+      preview: {
+        select: {
+          media: 'image'
+        }
+      }
+    }
+  ],
+  options: {
+    // layout: 'list'
+  }
+}
+
+const arrayOfGeopointsExample = {
+  type: 'array',
+  name: 'arrayOfGeopointsExample',
+  title: 'Array (8)',
+  description: 'List of geopoints',
+  of: [{type: 'geopoint'}]
 }
 
 const booleanExample = {
@@ -188,14 +217,26 @@ const numberRadioExample = {
 const objectExample = {
   type: 'object',
   name: 'objectExample',
-  title: 'Object',
+  title: 'Object (1)',
   fields: [{type: 'string', name: 'title', title: 'Title'}]
+}
+
+const objectCollapsibleExample = {
+  type: 'object',
+  name: 'objectCollapsibleExample',
+  title: 'Object (2)',
+  description: 'Collapsible object',
+  fields: [{type: 'string', name: 'title', title: 'Title'}],
+  options: {
+    collapsible: true
+  }
 }
 
 const objectWithNestedValuesExample = {
   type: 'object',
   name: 'objectWithNestedValues',
-  title: 'Object with nested values',
+  title: 'Object (3)',
+  description: 'Nested fields',
   fields: [
     {type: 'string', name: 'title', title: 'Title'},
     {type: 'string', name: 'description', title: 'Description'},
@@ -293,8 +334,9 @@ export default {
     arrayOfObjectsExample,
     arrayOfReferencesExample,
     arrayOfPrimitivesExample,
-    arrayGridOfImagesExample,
     arrayGridOfFlatImagesExample,
+    arrayGridOfImagesExample,
+    arrayOfImagesExample,
     arrayOfGeopointsExample,
 
     // boolean
@@ -323,6 +365,7 @@ export default {
 
     // object
     objectExample,
+    objectCollapsibleExample,
     objectWithNestedValuesExample,
 
     // portableText
