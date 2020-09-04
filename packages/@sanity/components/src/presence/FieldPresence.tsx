@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define,react/no-multi-comp */
 import React, {useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
+import {AvatarPosition} from '../avatar'
 import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
@@ -11,7 +12,7 @@ import {splitRight} from './utils'
 import styles from './FieldPresence.css'
 import {PresenceRegion} from './overlay/PresenceOverlayRegion'
 import UserAvatar from './UserAvatar'
-import {FormFieldPresence, Position} from './types'
+import {FormFieldPresence} from './types'
 import {PresenceListItem} from './PresenceListItem'
 import {Context} from './context'
 import {PopoverList, StackCounter} from './index'
@@ -54,8 +55,8 @@ interface InnerProps {
   maxAvatars: number
   presence: FormFieldPresence[]
   stack?: boolean
-  position?: Position
-  animateArrowFrom?: Position
+  position?: AvatarPosition | null
+  animateArrowFrom?: AvatarPosition | null
 }
 
 export function FieldPresenceInner({
