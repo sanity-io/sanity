@@ -1,27 +1,28 @@
 import React, {SyntheticEvent} from 'react'
-import {PortableTextBlock, PortableTextChild, ChildMap} from './types'
-import {isDecorator, isHeader, childIsSpan, diffDidRemove, MISSING_TYPE_NAME} from './helpers'
+import {PortableTextBlock, PortableTextChild, ChildMap} from '../types'
+import {isDecorator, isHeader, childIsSpan, diffDidRemove, MISSING_TYPE_NAME} from '../helpers'
 
-import Annotation from './previews/Annotation'
-import Decorator from './previews/Decorator'
-import InlineObject from './previews/InlineObject'
-import Blockquote from './previews/Blockquote'
-import Header from './previews/Header'
-import Paragraph from './previews/Paragraph'
-import Span from './previews/Span'
+import Annotation from './Annotation'
+import Decorator from './Decorator'
+import InlineObject from './InlineObject'
+import Blockquote from './Blockquote'
+import Header from './Header'
+import Paragraph from './Paragraph'
+import Span from './Span'
 
-import styles from './PTDiff.css'
-import {ObjectSchemaType, ObjectDiff} from '../../../diff'
+import {ObjectDiff} from '../../../../diff'
+import {ObjectSchemaType} from '../../../../types'
 
 type Props = {
-  blockDiff: ObjectDiff
+  diff: ObjectDiff
   childMap: ChildMap
 }
 
-export const PortableText = (props: Props): JSX.Element => {
-  const {blockDiff, childMap} = props
+export default function Block(props: Props): JSX.Element {
+  const {diff, childMap} = props
 
-  const handleObjectClick = (event: SyntheticEvent<HTMLSpanElement>) => {
+  const handleObjectFocus = (event: SyntheticEvent<HTMLSpanElement>) => {
+    // TODO: implement this later on when we can do focus in the editor pane
     alert('Focus object here!')
   }
 
@@ -50,12 +51,12 @@ export const PortableText = (props: Props): JSX.Element => {
   const renderChild = (child: PortableTextChild) => {
     const fromMap = childMap[child._key]
     const diff = fromMap.diffs[0] as ObjectDiff
+    const isSpan = childIsSpan(child)
     // Render span or inline object?
     const renderInlineObject = renderObjectTypes[child._type]
     const renderSpanOrInline = renderInlineObject
-      ? props => renderInlineObject({child, diff})
-      : props => renderSpan({child, diff})
-    const isSpan = childIsSpan(child)
+      ? props => renderInlineObject({...props, child, diff})
+      : props => renderSpan({...props, child, diff})
     let returned = renderSpanOrInline({child})
     // Render decorators
     isSpan &&
@@ -77,10 +78,10 @@ export const PortableText = (props: Props): JSX.Element => {
       ).map(markDefKey => {
         returned = (
           <Annotation
-            span={child}
             block={block}
             markDefKey={markDefKey}
-            onClick={handleObjectClick}
+            onClick={handleObjectFocus}
+            span={child}
           >
             {returned}
           </Annotation>
@@ -91,7 +92,7 @@ export const PortableText = (props: Props): JSX.Element => {
 
   const renderSpan = (props: {child: PortableTextChild; diff: ObjectDiff}): React.ReactNode => {
     const {child, diff} = props
-    return <Span span={child} diff={diff} />
+    return <Span block={block} diff={diff} span={child} />
   }
 
   // Set up renderers for inline object types
@@ -101,10 +102,10 @@ export const PortableText = (props: Props): JSX.Element => {
     diff: ObjectDiff
   }): React.ReactNode => {
     const {child, diff} = props
-    return <InlineObject object={child} diff={diff} onClick={handleObjectClick} />
+    return <InlineObject object={child} diff={diff} onClick={handleObjectFocus} />
   }
   const renderInvalidInlineObjectType = () => {
-    return <span className={styles.inlineObjectDiff}>Invalid inline object type</span>
+    return <span>Invalid inline object type</span>
   }
   const renderObjectTypes = {}
   Object.keys(childMap)
@@ -114,17 +115,17 @@ export const PortableText = (props: Props): JSX.Element => {
       if (!childIsSpan(child) && child._type) {
         renderObjectTypes[child._type] = renderInlineObject
       } else {
-        // This should not happen. But have a fallback for rendering missing types anyway.
+        // This should not happen at this point. But have a fallback for rendering missing types anyway.
         renderObjectTypes[MISSING_TYPE_NAME] = renderInvalidInlineObjectType
       }
     })
 
-  let block = blockDiff.toValue as PortableTextBlock
+  let block = diff.toValue as PortableTextBlock
 
   // If something is removed, we should show the beforeValue?
   // TODO: check up on this!
-  if (diffDidRemove(blockDiff)) {
-    block = blockDiff.fromValue as PortableTextBlock
+  if (diffDidRemove(diff)) {
+    block = diff.fromValue as PortableTextBlock
   }
 
   return renderBlock({

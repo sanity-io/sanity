@@ -1,26 +1,36 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 
-import {PortableText} from './PortableText'
+import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../../diff'
+import Block from './components/Block'
 import {createChildMap} from './helpers'
 
 import styles from './PTDiff.css'
-import {DiffComponent, ObjectDiff} from '../../../diff'
 
-export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({diff, schemaType}) {
-  const childMap = createChildMap(diff, schemaType)
+export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
+  diff,
+  schemaType
+}: {
+  diff: ObjectDiff
+  schemaType: ObjectSchemaType
+}) {
+  const childMap = useMemo(() => createChildMap(diff, schemaType), [diff])
   const isRemoved = diff.action === 'removed'
   const isAdded = diff.action === 'added'
+  const isChanged = diff.action === 'changed'
+  const portableText = useMemo(() => <Block diff={diff} childMap={childMap} />, [diff])
+  const classNames = [
+    styles.root,
+    ...[isAdded ? styles.added : []],
+    ...[isRemoved ? styles.removed : []],
+    ...[isChanged ? styles.changed : []]
+  ].join(' ')
   return (
-    <>
-      {/* Preview */}
-      <div className={styles.root}>
-        <PortableText blockDiff={diff} childMap={childMap} />
-      </div>
+    <div className={classNames}>
+      {/* Diff */}
+      <div className={styles.block}>{portableText}</div>
 
-      {/* Summary */}
+      {/* Summarize changes */}
       <ul className={styles.summary}>
-        {isRemoved && <li>Removed portable text block</li>}
-        {isAdded && <li>Added portable text block</li>}
         {Object.keys(childMap)
           .map(key => childMap[key])
           .map(mapEntry => {
@@ -29,6 +39,6 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({diff, schemaTy
             ))
           })}
       </ul>
-    </>
+    </div>
   )
 }
