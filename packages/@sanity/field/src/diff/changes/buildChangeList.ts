@@ -147,7 +147,8 @@ function buildArrayChangeList(
     const itemTitlePath = titlePath.concat({
       hasMoved: itemDiff.hasMoved,
       toIndex: itemDiff.toIndex,
-      fromIndex: itemDiff.fromIndex
+      fromIndex: itemDiff.fromIndex,
+      annotation: itemDiff.diff.action === 'unchanged' ? undefined : itemDiff.diff.annotation
     })
 
     acc.push(...buildChangeList(memberType, itemDiff.diff, itemPath, itemTitlePath))

@@ -232,6 +232,7 @@ export interface FromToIndex {
   hasMoved: boolean
   fromIndex?: number
   toIndex?: number
+  annotation?: Annotation
 }
 
 export type ChangeTitlePath = (string | FromToIndex)[]
