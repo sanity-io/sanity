@@ -1,1 +1,3 @@
-export * as diff from './diff'
+import * as diff from './diff'
+
+export {diff}
