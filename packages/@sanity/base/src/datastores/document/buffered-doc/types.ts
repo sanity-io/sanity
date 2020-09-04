@@ -28,6 +28,7 @@ export interface CommittedEvent {
 
 export interface DocumentRemoteMutationEvent {
   type: 'remoteMutation'
+  head: SanityDocument
   transactionId: string
   author: string
   timestamp: Date
@@ -36,6 +37,8 @@ export interface DocumentRemoteMutationEvent {
     revert: unknown
   }
 }
+
+export type RemoteSnapshotEvent = DocumentRemoteMutationEvent | SnapshotEvent
 
 // HTTP API Mutation payloads
 // Note: this is *not* the same as the Mutation helper class exported by @sanity/mutator

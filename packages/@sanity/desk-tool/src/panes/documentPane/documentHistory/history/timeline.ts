@@ -1,13 +1,20 @@
 /* eslint-disable max-depth, complexity */
-import {Diff} from '@sanity/diff'
 import {Chunk} from '@sanity/field/diff'
 import {applyPatch, incremental, RawPatch} from 'mendoza'
 import {Value} from 'mendoza/lib/incremental-patcher'
-import {Transaction, TransactionLogEvent, Doc, RemoteMutationWithVersion} from './types'
+import {
+  Transaction,
+  TransactionLogEvent,
+  Doc,
+  DocumentRemoteMutationEvent,
+  DocumentRemoteMutationVersionEvent,
+  CombinedDocument
+} from './types'
 import {diffValue, Meta} from './mendozaDiffer'
 import {TwoEndedArray} from './twoEndedArray'
 import {mergeChunk, chunkFromTransaction} from './chunker'
 import {TraceEvent} from './tracer'
+import {getAttrs} from './utils'
 
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
@@ -15,35 +22,35 @@ type Attributes = Record<string, unknown>
 
 type Options = {
   publishedId: string
-  draft: Doc | null
-  published: Doc | null
   enableTrace?: boolean
 }
 
-type DocumentVersion = {
-  rev: string
-  attributes: Attributes
-}
+function createAttributes(
+  id: string,
+  document: Doc | null,
+  extraEvents?: DocumentRemoteMutationEvent[]
+): Attributes | null {
+  let attributes: Attributes | null = null
 
-function createVersion(document: Doc | null): DocumentVersion | null {
   if (document) {
-    const attributes = {...document} as Attributes
+    attributes = {...document}
     delete attributes._rev
-    if (!document._rev) throw new Error('document must have _rev')
-    return {rev: document._rev, attributes}
   }
 
-  return null
+  if (extraEvents) {
+    for (let evt of extraEvents) {
+      const effect = evt.effects[id].apply
+      if (effect) {
+        attributes = applyPatch(attributes, effect as RawPatch)
+      }
+    }
+  }
+
+  return attributes
 }
 
-function patchVersion(
-  version: DocumentVersion | null,
-  rev: string,
-  patch: RawPatch
-): DocumentVersion | null {
-  const attributes = version ? version.attributes : null
-  const newAttributes = applyPatch(attributes, patch)
-  return newAttributes === null ? null : {rev, attributes: newAttributes}
+type DocumentVersion = {
+  attributes: Attributes | null
 }
 
 /**
@@ -61,8 +68,6 @@ export class Timeline {
   draftId: string
   private _transactions = new TwoEndedArray<Transaction>()
   private _chunks = new TwoEndedArray<Chunk>()
-  private _draftVersion: DocumentVersion | null
-  private _publishedVersion: DocumentVersion | null
 
   // These two properties are here to handle the case
   private _possiblePendingTransactions = new Map<
@@ -78,16 +83,12 @@ export class Timeline {
   constructor(opts: Options) {
     this.publishedId = opts.publishedId
     this.draftId = `drafts.${opts.publishedId}`
-    this._draftVersion = createVersion(opts.draft)
-    this._publishedVersion = createVersion(opts.published)
 
     if (opts.enableTrace) {
       this._trace = []
       this._trace.push({
         type: 'initial',
-        publishedId: opts.publishedId,
-        draft: opts.draft,
-        published: opts.published
+        publishedId: opts.publishedId
       })
       ;(window as any).__sanityTimelineTrace = this._trace
     }
@@ -111,6 +112,10 @@ export class Timeline {
     return result
   }
 
+  reset() {
+    // TODO: Clear timeline
+  }
+
   /**
    * Adds a remote mutation to the timeline. This methods assumes that the remote mutations
    * come in correct order for their respective version, but has no ordering requirements
@@ -120,7 +125,7 @@ export class Timeline {
    * version in the same transaction) is a valid input. [P1, D2, D1] is _not_ valid since
    * the mutation for the draft is out of order.
    */
-  addRemoteMutation(entry: RemoteMutationWithVersion) {
+  addRemoteMutation(entry: DocumentRemoteMutationVersionEvent) {
     if (this._trace) this._trace.push({type: 'addRemoteMutation', event: entry})
 
     const pending = this._possiblePendingTransactions.get(entry.transactionId)
@@ -134,20 +139,10 @@ export class Timeline {
           author: entry.author
         }
 
-    if (entry.version === 'published') {
-      transaction.publishedEffect = entry.effects as any
-      this._publishedVersion = patchVersion(
-        this._publishedVersion,
-        entry.transactionId,
-        entry.effects.apply as RawPatch
-      )
-    } else {
+    if (entry.version === 'draft') {
       transaction.draftEffect = entry.effects as any
-      this._draftVersion = patchVersion(
-        this._draftVersion,
-        entry.transactionId,
-        entry.effects.apply as RawPatch
-      )
+    } else {
+      transaction.publishedEffect = entry.effects as any
     }
 
     if (pending) {
@@ -331,95 +326,14 @@ export class Timeline {
     }
   }
 
-  // We maintain a single "reconstruction" of a range in the history.
-  private _reconstruction?: Reconstruction
-
-  /**
-   * Sets the range for the current reconstruction.
-   *
-   * This method optimizes for the cases where `startRef` and/or `endRef` is
-   * equal (using object identity) to the previous range, so feel free to call
-   * this often rather seldom.
-   */
-  setRange(start: Chunk | null, end: Chunk) {
-    const current = this._reconstruction
-
-    if (current) {
-      if (current.start !== start) {
-        current.diff = undefined
-        current.startDocument = undefined
-        current.start = start
-      }
-
-      if (current.end !== end) {
-        current.diff = undefined
-        current.endDocument = undefined
-        current.end = end
-      }
-
-      return
-    }
-
-    this._reconstruction = {start, end}
-  }
-
-  /** Returns the attributes as seen at the end of the range. */
-  endAttributes() {
-    return getAttrs(this.endDocument())
-  }
-
-  endDocument(): CombinedDocument {
-    const current = this._reconstruction
-    if (!current) {
-      throw new Error('range required')
-    }
-
-    if (!current.endDocument) {
-      const draft: any = this._draftVersion ? this._draftVersion.attributes : null
-      const published: any = this._publishedVersion ? this._publishedVersion.attributes : null
-      current.endDocument = this._replayBackwards(current.end.end, this._transactions.lastIdx, {
-        draft,
-        published
-      })
-    }
-
-    return current.endDocument
-  }
-
-  /** Returns the attributes as seen at the end of the range. */
-  startAttributes() {
-    return getAttrs(this.startDocument())
-  }
-
-  startDocument(): CombinedDocument {
-    const current = this._reconstruction
-    if (!current) {
-      throw new Error('range required')
-    }
-
-    if (!current.start) throw new Error('start required')
-
-    if (!current.startDocument) {
-      // Ensure that endDocument is generated
-      this.endAttributes()
-
-      current.startDocument = this._replayBackwards(
-        current.start.end,
-        current.end.end - 1,
-        current.endDocument!
-      )
-    }
-
-    return current.startDocument
-  }
-
-  private _replayBackwards(
+  replayBackwardsBetween(
     firstIdx: number,
     lastIdx: number,
     doc: CombinedDocument
   ): CombinedDocument {
     let draft = doc.draft
     let published = doc.published
+
     for (let idx = lastIdx; idx >= firstIdx; idx--) {
       const transaction = this._transactions.get(idx)
 
@@ -435,28 +349,24 @@ export class Timeline {
     return {draft, published}
   }
 
-  /** Returns the diff between the start and the end range. */
-  currentDiff() {
-    const current = this._reconstruction
-    if (!current || current.start === null) {
-      return null
-    }
+  replayBackwardsUntil(firstIdx: number, doc: CombinedDocument): CombinedDocument {
+    return this.replayBackwardsBetween(firstIdx, this._transactions.lastIdx, doc)
+  }
 
-    if (current.diff) {
-      return current.diff
-    }
-
-    const doc = this.startDocument()
-    const finalAttributes = this.endAttributes()
-
-    let draftValue = incremental.wrap<Meta>(doc.draft, null)
-    let publishedValue = incremental.wrap<Meta>(doc.published, null)
+  calculateDiff(
+    initialDoc: CombinedDocument,
+    finalDoc: CombinedDocument,
+    firstIdx: number,
+    lastIdx: number
+  ) {
+    let draftValue = incremental.wrap<Meta>(initialDoc.draft, null)
+    let publishedValue = incremental.wrap<Meta>(initialDoc.published, null)
 
     const initialValue = getValue(draftValue, publishedValue)
-    const initialAttributes = getAttrs(doc)
+    const initialAttributes = getAttrs(initialDoc)
 
     // Loop over all of the chunks:
-    for (let chunkIdx = current.start.index + 1; chunkIdx <= current.end.index; chunkIdx++) {
+    for (let chunkIdx = firstIdx; chunkIdx <= lastIdx; chunkIdx++) {
       const chunk = this._chunks.get(chunkIdx)
 
       for (let idx = chunk.start; idx < chunk.end; idx++) {
@@ -498,29 +408,12 @@ export class Timeline {
     }
 
     const finalValue = incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
-    current.diff = diffValue(this, initialValue, initialAttributes, finalValue, finalAttributes)
-    return current.diff
-  }
-}
+    const finalAttributes = getAttrs(finalDoc)
 
-function getAttrs(doc: CombinedDocument) {
-  return doc.draft || doc.published
+    return diffValue(this, initialValue, initialAttributes, finalValue, finalAttributes)
+  }
 }
 
 function getValue(draftValue: Value<Meta>, publishedValue: Value<Meta>) {
   return incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
-}
-
-// The combined document stores information about both the draft and the published version.
-type CombinedDocument = {
-  draft: Attributes
-  published: Attributes
-}
-
-type Reconstruction = {
-  start: Chunk | null
-  end: Chunk
-  startDocument?: CombinedDocument
-  endDocument?: CombinedDocument
-  diff?: Diff<any>
 }

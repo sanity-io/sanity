@@ -1,4 +1,5 @@
 import {Annotation} from '@sanity/field/diff'
+import {CombinedDocument} from './types'
 
 export function isSameAnnotation(a: Annotation, b: Annotation): boolean {
   if (a && b) {
@@ -10,4 +11,8 @@ export function isSameAnnotation(a: Annotation, b: Annotation): boolean {
   }
 
   return false
+}
+
+export function getAttrs(doc: CombinedDocument) {
+  return doc.draft || doc.published
 }

@@ -1,5 +1,4 @@
-import {ChunkType, Chunk} from '@sanity/field/diff'
-import {Transaction, MendozaPatch} from './types'
+import {Transaction, MendozaPatch, ChunkType, Chunk} from './types'
 
 function didDeleteDraft(type: ChunkType) {
   return type === 'delete' || type === 'discardDraft'
@@ -81,6 +80,6 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
   }
 }
 
-function isDeletePatch(patch: MendozaPatch) {
+export function isDeletePatch(patch: MendozaPatch) {
   return patch[0] === 0 && patch[1] === null
 }

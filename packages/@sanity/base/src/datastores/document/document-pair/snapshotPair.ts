@@ -1,4 +1,4 @@
-import {IdPair, SanityDocument, Mutation} from '../types'
+import {IdPair, SanityDocument, Mutation, ReconnectEvent} from '../types'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 import {memoizedPair} from './memoizedPair'
 import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
@@ -9,7 +9,7 @@ import {DocumentVersion} from './checkoutPair'
 
 // return true if the event comes with a document snapshot
 function isSnapshotEvent(
-  event: BufferedDocumentEvent
+  event: BufferedDocumentEvent | ReconnectEvent
 ): event is SnapshotEvent & {
   version: 'published' | 'draft'
 } {
