@@ -40,8 +40,8 @@ export function ChangesPanel({
   schemaType,
   timelineMode
 }: ChangesPanelProps) {
-  const {close: closeHistory, timeline} = useDocumentHistory()
-  const diff: ObjectDiff = timeline.currentDiff() as any
+  const {close: closeHistory, historyController} = useDocumentHistory()
+  const diff: ObjectDiff = historyController.currentDiff() as any
 
   if (!loading && diff?.type !== 'object') {
     return null

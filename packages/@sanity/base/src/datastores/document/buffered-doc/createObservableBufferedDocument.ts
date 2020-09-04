@@ -20,7 +20,8 @@ import {
   DocumentRebaseEvent,
   MutationPayload,
   SnapshotEvent,
-  DocumentRemoteMutationEvent
+  DocumentRemoteMutationEvent,
+  RemoteSnapshotEvent
 } from './types'
 
 import {ListenerEvent, MutationEvent} from '../getPairListener'
@@ -81,7 +82,7 @@ export const createObservableBufferedDocument = (
   const rebase$ = new Subject<DocumentRebaseEvent>()
 
   // a stream of remote mutations with effetcs
-  const effects$ = new Subject<DocumentRemoteMutationEvent>();
+  const remoteMutations = new Subject<DocumentRemoteMutationEvent>()
 
   const createInitialBufferedDocument = initialSnapshot => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
@@ -97,9 +98,10 @@ export const createObservableBufferedDocument = (
       })
     }
 
-    bufferedDocument.onRemoteMutation = (mutation) => {
-      effects$.next({
+    bufferedDocument.onRemoteMutation = mutation => {
+      remoteMutations.next({
         type: 'remoteMutation',
+        head: bufferedDocument.document.HEAD,
         transactionId: mutation.transactionId,
         timestamp: mutation.timestamp,
         author: mutation.identity,
@@ -211,9 +213,18 @@ export const createObservableBufferedDocument = (
     snapshotAfterSync$
   ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
 
+  const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
+    currentBufferedDocument$.pipe(
+      map(bufferedDocument => bufferedDocument.document.HEAD),
+      map(toSnapshotEvent)
+    ),
+    remoteMutations
+  ).pipe(publishReplay(1), refCount())
+
   return {
-    updates$: merge(snapshot$, actionHandler$, mutations$, rebase$, effects$),
+    updates$: merge(snapshot$, actionHandler$, mutations$, rebase$),
     consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
+    remoteSnapshot$,
     addMutation,
     addMutations,
     commit
