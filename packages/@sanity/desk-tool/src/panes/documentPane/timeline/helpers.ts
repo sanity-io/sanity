@@ -53,7 +53,7 @@ export function formatTimelineEventDate(date: Date) {
     return `Yesterday at ${format(date, 'h:mma')}`
   }
 
-  return format(date, 'MMM d, YYYY')
+  return format(date, 'MMM D, YYYY')
 }
 
 export function formatTimelineEventLabel(type: ChunkType) {
