@@ -3,20 +3,16 @@
 .root {
 }
 
-.spanDiff {
-}
-
-.inlineObjectDiff {
-  border: 1px solid #999;
-  padding: 3px;
-  @nest & .removed {
-    opacity: 0.5;
+.block {
+  /* @nest .added & {
+    border: 1px solid green;
   }
-}
-
-.removed {
-  text-decoration: line-through;
-  opacity: 0.5;
+  @nest .changed & {
+    border: 1px solid blue;
+  }
+  @nest .removed & {
+    border: 1px solid red;
+  } */
 }
 
 .summary {

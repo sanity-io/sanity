@@ -5,7 +5,6 @@
   text-transform: none;
   white-space: wrap;
   overflow-wrap: anywhere;
-  /* color: red; */
 
   @nest div[class~='pt-list-item-inner'] > & {
     margin: 0;

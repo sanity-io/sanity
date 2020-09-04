@@ -1,6 +1,7 @@
+import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
 import {startCase} from 'lodash'
 import {ChildMap, PortableTextBlock, PortableTextChild, SpanTypeSchema} from './types'
-import {SchemaType, ObjectDiff, ObjectSchemaType, StringDiff, ArrayDiff} from '../../../diff'
+import {SchemaType, ObjectSchemaType} from '../../../types'
 
 export const MISSING_TYPE_NAME = 'MISSING_TYPE'
 
@@ -140,7 +141,7 @@ function isAddAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
     Array.isArray(cDiff.fields.marks.toValue) &&
     cDiff.fields.marks.toValue.length > 0 &&
     cSchemaType.jsonType === 'object' &&
-    cDiff.fields.marks.toValue.every(
+    cDiff.fields.marks.toValue.some(
       mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
     )
   )
@@ -157,7 +158,8 @@ function isRemoveAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
     cSchemaType.jsonType === 'object' &&
     cDiff.fields.marks.fromValue &&
     Array.isArray(cDiff.fields.marks.fromValue) &&
-    cDiff.fields.marks.fromValue.every(
+    typeof cDiff.fields.marks.toValue !== 'undefined' &&
+    cDiff.fields.marks.fromValue.some(
       mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
     )
   )

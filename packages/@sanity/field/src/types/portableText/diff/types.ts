@@ -1,5 +1,6 @@
+import {ArrayDiff, ObjectDiff} from '../../../diff'
 import {ReactNode} from 'react'
-import {SchemaType, ObjectDiff, ArrayDiff} from '../../../diff'
+import {SchemaType} from '../../../types'
 
 export type PortableTextBlock = {
   _key: string
