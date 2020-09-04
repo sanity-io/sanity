@@ -164,8 +164,6 @@ export function DocumentPane(props: DocumentPaneProps) {
     setTimelineMode(timelineMode === 'rev' ? 'closed' : 'rev')
   }, [timelineMode, setTimelineMode])
 
-  console.log(historyController.selectionState)
-
   const isChangesOpen = historyController.changesPanelActive()
   const isTimelineOpen = timelineMode !== 'closed'
 

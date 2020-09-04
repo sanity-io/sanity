@@ -1,14 +1,12 @@
-import {Doc, RemoteMutationWithVersion, TransactionLogEvent} from './types'
+import {Doc, DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
 import {Timeline} from './timeline'
 
 export type TraceEvent =
   | {
       type: 'initial'
       publishedId: string
-      draft: Doc | null
-      published: Doc | null
     }
-  | {type: 'addRemoteMutation'; event: RemoteMutationWithVersion}
+  | {type: 'addRemoteMutation'; event: DocumentRemoteMutationVersionEvent}
   | {type: 'addTranslogEntry'; event: TransactionLogEvent}
   | {type: 'didReachEarliestEntry'}
   | {type: 'updateChunks'}
@@ -18,9 +16,7 @@ export function replay(events: TraceEvent[]): Timeline {
   if (fst?.type !== 'initial') throw new Error('no initial event')
 
   const timeline = new Timeline({
-    publishedId: fst.publishedId,
-    draft: fst.draft,
-    published: fst.published
+    publishedId: fst.publishedId
   })
 
   console.log('Replaying')

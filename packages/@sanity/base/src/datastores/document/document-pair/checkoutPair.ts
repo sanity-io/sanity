@@ -1,9 +1,10 @@
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {filter, map, share} from 'rxjs/operators'
-import {IdPair, Mutation} from '../types'
+import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {merge, Observable} from 'rxjs'
 import client from 'part:@sanity/base/client'
+import {RemoteSnapshotEvent} from '../buffered-doc/types'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
@@ -15,10 +16,14 @@ function commitMutations(mutations) {
   })
 }
 
-export type DocumentVersionEvent = BufferedDocumentEvent & {version: 'published' | 'draft'}
+type WithVersion<T> = T & {version: 'published' | 'draft'}
+
+export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
+export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
 
 export interface DocumentVersion {
   consistency$: Observable<boolean>
+  remoteSnapshot$: Observable<RemoteSnapshotVersionEvent>
   events: Observable<DocumentVersionEvent>
 
   patch: (patches) => Mutation[]
@@ -36,8 +41,8 @@ export interface Pair {
   draft: DocumentVersion
 }
 
-function setVersion(version: 'draft' | 'published') {
-  return (ev: any): DocumentVersionEvent => ({...ev, version})
+function setVersion<T>(version: 'draft' | 'published') {
+  return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
 export function checkoutPair(idPair: IdPair): Pair {
@@ -45,7 +50,9 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(filter(ev => ev.type === 'reconnect'))
+  const reconnect$ = listenerEvents$.pipe(filter(ev => ev.type === 'reconnect')) as Observable<
+    ReconnectEvent
+  >
 
   const draft = createBufferedDocument(
     draftId,
@@ -63,12 +70,14 @@ export function checkoutPair(idPair: IdPair): Pair {
     draft: {
       ...draft,
       events: merge(reconnect$, draft.events).pipe(map(setVersion('draft'))),
-      consistency$: draft.consistency$
+      consistency$: draft.consistency$,
+      remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft')))
     },
     published: {
       ...published,
       events: merge(reconnect$, published.events).pipe(map(setVersion('published'))),
-      consistency$: published.consistency$
+      consistency$: published.consistency$,
+      remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published')))
     }
   }
 }

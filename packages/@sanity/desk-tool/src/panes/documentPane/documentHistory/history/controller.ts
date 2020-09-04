@@ -1,13 +1,12 @@
 /* eslint-disable complexity */
 import {SanityClient} from '@sanity/client'
 import {Observable} from 'rxjs'
-import {
-  remoteMutations,
-  RemoteMutationWithVersion
-} from '@sanity/base/lib/datastores/document/document-pair/remoteMutations'
-import {Chunk} from '@sanity/field/diff'
+import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'
 import {Timeline, ParsedTimeRef} from './timeline'
 import {getJsonStream} from './ndjsonStreamer'
+import {RemoteSnapshotVersionEvent, Chunk} from './types'
+import {Aligner} from './aligner'
+import {Reconstruction} from './reconstruction'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
@@ -43,12 +42,15 @@ export class Controller {
     this.timeline = options.timeline
     this.client = options.client
     this.handler = options.handler
+    this._aligner = new Aligner(this.timeline)
+
     this.markChange()
   }
 
+  private _aligner: Aligner
+
   private _fetchMore = false
   private _fetchAtLeast = 0
-  private _earliestTransactionId?: string
   private _isRunning = false
   private _didErr = false
 
@@ -67,7 +69,7 @@ export class Controller {
 
     let _fetchAtLeast = 10
 
-    if (this._sinceTime === 'loading' || this._revTime === 'loading') {
+    if (this._sinceTime === 'loading' || this._revTime === 'loading' || !this._aligner.isAligned) {
       this.selectionState = 'loading'
     } else if (this._sinceTime === 'invalid' || this._revTime === 'invalid') {
       this.selectionState = 'invalid'
@@ -80,11 +82,11 @@ export class Controller {
         this._revTime = 'invalid'
         this.selectionState = 'invalid'
       } else {
-        this.timeline.setRange(this._sinceTime, rev)
+        this.setReconstruction(this._sinceTime, rev)
       }
     } else if (this._revTime) {
       this.selectionState = 'rev'
-      this.timeline.setRange(null, this._revTime)
+      this.setReconstruction(null, this._revTime)
     } else {
       this.selectionState = 'inactive'
       _fetchAtLeast = 0
@@ -176,7 +178,31 @@ export class Controller {
   }
 
   displayed() {
-    return this._revTime ? this.timeline.endAttributes() : null
+    return this._revTime && this._reconstruction ? this._reconstruction.endAttributes() : null
+  }
+
+  private _reconstruction?: Reconstruction
+
+  setReconstruction(since: Chunk | null, rev: Chunk) {
+    if (this._reconstruction && this._reconstruction.same(since, rev)) return
+    this._reconstruction = new Reconstruction(
+      this.timeline,
+      this._aligner.currentDocument,
+      since,
+      rev
+    )
+  }
+
+  currentDiff() {
+    return this._reconstruction ? this._reconstruction.diff() : null
+  }
+
+  handleRemoteMutation(ev: RemoteSnapshotVersionEvent) {
+    this._aligner.appendRemoteSnapshotEvent(ev)
+    this.markChange()
+
+    // Make sure we fetch history as soon as possible.
+    if (this._aligner.acceptsHistory) this.start()
   }
 
   start() {
@@ -190,14 +216,9 @@ export class Controller {
     }
   }
 
-  handleRemoteMutation(ev: RemoteMutationWithVersion) {
-    this.timeline.addRemoteMutation(ev)
-    this.timeline.updateChunks() // TODO: A bit async?
-    this.markChange()
-  }
-
   private async tick() {
     const shouldFetchMore =
+      this._aligner.acceptsHistory &&
       !this.timeline.reachedEarliestEntry &&
       (this.selectionState === 'loading' ||
         this._fetchMore ||
@@ -225,8 +246,9 @@ export class Controller {
     const limit = TRANSLOG_ENTRY_LIMIT
 
     let queryParams = `effectFormat=mendoza&excludeContent=true&excludeMutations=true&includeIdentifiedDocumentsOnly=true&reverse=true&limit=${limit}`
-    if (this._earliestTransactionId) {
-      queryParams += `&toTransaction=${this._earliestTransactionId}`
+    let tid = this._aligner.earliestTransactionId
+    if (tid) {
+      queryParams += `&toTransaction=${tid}`
     }
 
     const url = `/data/history/${dataset}/transactions/${publishedId},${draftId}?${queryParams}`
@@ -246,24 +268,32 @@ export class Controller {
 
       count++
 
-      if (result.value.id === this._earliestTransactionId) {
+      if (result.value.id === tid) {
         // toTransaction is inclusive so we must ignore it when we fetch the next page
         continue
       }
 
-      this.timeline.addTranslogEntry(result.value)
-      this._earliestTransactionId = result.value.id
+      // For some reason, the aligner is now interested in a different set of entries.
+      // This can happen if a new snapshot comes in as we're streaming the translog.
+      // In this case it's safe to abort, and the run-loop will re-schedule it correctly.
+      if (this._aligner.earliestTransactionId !== tid || !this._aligner.acceptsHistory) {
+        return
+      }
+
+      this._aligner.prependHistoryEvent(result.value)
+      tid = this._aligner.earliestTransactionId
     }
 
     if (count < limit) {
       this.timeline.didReachEarliestEntry()
     }
 
-    this.timeline.updateChunks()
     this.markChange()
   }
 
   private markChange() {
+    this.timeline.updateChunks()
+
     this.setRevTime(this._rev)
     this.setSinceTime(this._rev)
 
@@ -286,7 +316,7 @@ export function createObservableController(
         }
       }
     })
-    return remoteMutations({
+    return remoteSnapshots({
       publishedId: options.documentId,
       draftId: `drafts.${options.documentId}`
     }).subscribe(ev => {

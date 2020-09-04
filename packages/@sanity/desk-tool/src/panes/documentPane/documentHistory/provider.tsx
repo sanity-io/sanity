@@ -24,11 +24,9 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     () =>
       new Timeline({
         publishedId: props.documentId,
-        draft: props.draft,
-        published: props.published,
         enableTrace: __DEV__
       }),
-    []
+    [props.documentId]
   )
 
   // note: this emits sync so can never be null
@@ -70,7 +68,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
   let displayed = props.value
 
   if (historyController.onOlderRevision()) {
-    displayed = timeline.endAttributes()
+    displayed = historyController.displayed()
   }
 
   return (

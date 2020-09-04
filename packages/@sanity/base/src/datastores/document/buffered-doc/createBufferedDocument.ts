@@ -4,9 +4,9 @@ import {
   CommitFunction,
   CommittedEvent,
   DocumentMutationEvent,
-  DocumentRemoteMutationEvent,
   DocumentRebaseEvent,
   SnapshotEvent,
+  RemoteSnapshotEvent
 } from './types'
 import {ListenerEvent} from '../getPairListener'
 import {Mutation} from '../types'
@@ -15,7 +15,6 @@ export type BufferedDocumentEvent =
   | SnapshotEvent
   | DocumentRebaseEvent
   | DocumentMutationEvent
-  | DocumentRemoteMutationEvent
   | CommittedEvent
 
 const prepare = id => document => {
@@ -25,6 +24,7 @@ const prepare = id => document => {
 
 export interface BufferedDocumentWrapper {
   consistency$: Observable<boolean>
+  remoteSnapshot$: Observable<RemoteSnapshotEvent>
   events: Observable<BufferedDocumentEvent>
   // helper functions
   patch: (patches) => Mutation[]
@@ -52,6 +52,8 @@ export const createBufferedDocument = (
   return {
     events: bufferedDocument.updates$,
     consistency$: bufferedDocument.consistency$,
+    remoteSnapshot$: bufferedDocument.remoteSnapshot$,
+
     patch: patches => patches.map(patch => ({patch: {...patch, id: documentId}})),
     create: document => ({create: prepareDoc(document)}),
     createIfNotExists: document => ({createIfNotExists: prepareDoc(document)}),
