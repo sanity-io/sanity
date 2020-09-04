@@ -23,7 +23,7 @@ export function DocumentStatusBar(props: Props) {
   const badges = editState ? resolveDocumentBadges(editState) : []
   return (
     <div className={styles.root}>
-      <div className={styles.status} data-historyState={historyController.selectionState}>
+      <div className={styles.status} data-history-state={historyController.selectionState}>
         <button
           className={styles.lastUpdatedButton}
           onClick={openHistory}
