@@ -261,14 +261,7 @@ export class Timeline {
       return this.reachedEarliestEntry ? 'invalid' : 'loading'
     }
 
-    if (id === '@lastPublished') {
-      const chunk = this.findMaybeLastPublishedBefore(this._chunks.lastIdx)
-      if (chunk) return chunk
-
-      return this.reachedEarliestEntry ? this._chunks.first : 'loading'
-    }
-
-    const [timestampStr, chunkId] = id.split('/', 2)
+    const [timestampStr, chunkId] = id.split('/', 3)
     const timestamp = new Date(Number(timestampStr))
 
     for (let idx = this._chunks.lastIdx; idx >= this._chunks.firstIdx; idx--) {
@@ -289,19 +282,19 @@ export class Timeline {
     return this.reachedEarliestEntry ? 'invalid' : 'loading'
   }
 
-  findLastPublishedBefore(chunkIdx: number) {
-    return this.findMaybeLastPublishedBefore(chunkIdx) || this._chunks.first
-  }
-
-  findMaybeLastPublishedBefore(chunkIdx: number) {
-    for (; chunkIdx >= this._chunks.firstIdx; chunkIdx--) {
+  findLastPublishedBefore(chunk: Chunk | null): ParsedTimeRef {
+    for (
+      let chunkIdx = (chunk ? chunk.index : this._chunks.lastIdx) - 1;
+      chunkIdx >= this._chunks.firstIdx;
+      chunkIdx--
+    ) {
       const chunk = this._chunks.get(chunkIdx)
       if (chunk.type === 'publish' || chunk.type === 'initial') {
         return chunk
       }
     }
 
-    return null
+    return this.reachedEarliestEntry ? 'invalid' : 'loading'
   }
 
   isLatestChunk(chunk: Chunk) {
