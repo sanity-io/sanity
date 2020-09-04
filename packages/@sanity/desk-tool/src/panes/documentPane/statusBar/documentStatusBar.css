@@ -13,7 +13,7 @@
   align-items: center;
   color: var(--text-muted);
 
-  @nest &[data-historyState='active'] {
+  @nest &[data-history-state='active'] {
     color: var(--gray-lighter);
   }
 }
