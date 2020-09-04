@@ -48,7 +48,7 @@
     }
 
     @nest &:focus, &:focus-within {
-      box-shadow: var(--input-box-shadow--focus);
+      box-shadow: var(--input-box-shadow-thin--focus);
       border-color: var(--input-border-color-focus);
     }
 

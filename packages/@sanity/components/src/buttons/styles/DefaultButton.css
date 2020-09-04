@@ -13,7 +13,7 @@
   /* :focus */
   --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
   --color-button-focus-shadow: 0 0 0 1px var(--component-bg),
-    0 0 0 3px color(var(--brand-primary) alpha(50%));
+    0 0 0 3px var(--brand-primary);
   /* :hover */
   --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
   /* :active */
