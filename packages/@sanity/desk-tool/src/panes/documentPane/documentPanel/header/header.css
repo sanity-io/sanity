@@ -14,6 +14,9 @@
   padding: 1em;
   line-height: 17px;
   cursor: default;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
   @nest .isCollapsed & {
     transform: rotate(90deg);
@@ -26,6 +29,10 @@
   padding: 8px;
 
   @nest .isCollapsed & {
+    display: none;
+  }
+
+  @nest &:empty {
     display: none;
   }
 }
