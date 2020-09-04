@@ -8,7 +8,7 @@ import {StateLink} from 'part:@sanity/base/router'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
-import {Router, Tool, User} from '../types'
+import {Router, Tool} from '../types'
 import Branding from './branding/Branding'
 import LoginStatus from './loginStatus/LoginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
@@ -32,7 +32,6 @@ interface Props {
   showLabel: boolean
   showToolSwitcher: boolean
   tools: Tool[]
-  user?: User
 }
 
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
@@ -57,7 +56,6 @@ function Navbar(props: Props) {
     onSetSearchElement,
     router,
     tools,
-    user,
     showLabel,
     showToolSwitcher
   } = props
@@ -138,7 +136,7 @@ function Navbar(props: Props) {
         </div>
       )}
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
-        <LoginStatus onLogout={onUserLogout} user={user} />
+        <LoginStatus onLogout={onUserLogout} />
       </div>
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <div className={styles.searchButtonInner} tabIndex={-1}>
@@ -150,13 +148,6 @@ function Navbar(props: Props) {
       </button>
     </div>
   )
-}
-
-Navbar.defaultProps = {
-  showLabel: true,
-  showToolSwitcher: true,
-  onSetLoginStatusElement: undefined,
-  onSetSearchElement: undefined
 }
 
 export default Navbar
