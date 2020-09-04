@@ -213,6 +213,10 @@ declare module 'part:@sanity/base/chevron-down-icon' {
   export default Icon
 }
 
+declare module 'part:@sanity/components/avatar' {
+  export const Avatar: any
+}
+
 declare module 'part:@sanity/components/menus/default' {
   const DefaultMenu: React.ComponentType<{
     items: {action: string; icon: React.ComponentType<{}>; title: string}[]

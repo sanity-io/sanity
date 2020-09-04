@@ -161,7 +161,6 @@ class DefaultLayout extends React.PureComponent<Props, State> {
             onToggleMenu={this.handleToggleMenu}
             onSwitchTool={this.handleSwitchTool}
             router={router}
-            user={this.state.user}
             searchIsOpen={searchIsOpen}
             /* eslint-disable-next-line react/jsx-handler-names */
             onUserLogout={userStore.actions.logout}

@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
+import {UserAvatar} from '@sanity/base/components'
 import Menu from 'part:@sanity/components/menus/default'
 import {Popover} from 'part:@sanity/components/popover'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
@@ -9,11 +10,6 @@ import styles from './LoginStatus.css'
 interface Props {
   className: string
   onLogout: () => void
-  user: {
-    email: string
-    name?: string
-    profileImage?: string
-  }
 }
 
 interface State {
@@ -23,8 +19,7 @@ interface State {
 class LoginStatus extends React.PureComponent<Props, State> {
   static defaultProps = {
     className: undefined,
-    onLogout: undefined,
-    user: undefined
+    onLogout: undefined
   }
 
   state = {isOpen: false}
@@ -48,10 +43,6 @@ class LoginStatus extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {user} = this.props
-
-    if (!user) return null
-
     return (
       <div className={classNames(styles.root, this.props.className)}>
         <Popover
@@ -81,18 +72,7 @@ class LoginStatus extends React.PureComponent<Props, State> {
             type="button"
           >
             <div className={styles.inner} tabIndex={-1}>
-              {user.profileImage ? (
-                <img
-                  src={user.profileImage}
-                  className={styles.userImage}
-                  alt={`${user.name}'s profile image`}
-                  data-initials={(user.name || user.email || '?').charAt(0)}
-                />
-              ) : (
-                <div className={styles.userImageMissing}>
-                  {user.name ? user.name.charAt(0) : user.email.charAt(0)}
-                </div>
-              )}
+              <UserAvatar size="medium" tone="navbar" userId="me" />
             </div>
           </button>
         </Popover>
