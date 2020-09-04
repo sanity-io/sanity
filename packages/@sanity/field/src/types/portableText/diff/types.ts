@@ -1,5 +1,4 @@
 import {ArrayDiff, ObjectDiff} from '../../../diff'
-import {ReactNode} from 'react'
 import {SchemaType} from '../../../types'
 
 export type PortableTextBlock = {
@@ -17,14 +16,14 @@ export type PortableTextChild = {
   text?: string
 }
 
+export type SpanTypeSchema = SchemaType & {decorators?: {title: string; value: string}[]}
+
 export type ChildMap = Record<
   string,
   {
     child: PortableTextChild
-    diffs: ObjectDiff[] | ArrayDiff[]
-    summary: ReactNode[]
+    diff: ObjectDiff | ArrayDiff
+    summary: string[]
     schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
   }
 >
-
-export type SpanTypeSchema = SchemaType & {decorators?: {title: string; value: string}[]}

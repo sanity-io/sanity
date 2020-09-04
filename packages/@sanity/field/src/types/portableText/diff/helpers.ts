@@ -3,7 +3,7 @@ import {startCase} from 'lodash'
 import {ChildMap, PortableTextBlock, PortableTextChild, SpanTypeSchema} from './types'
 import {SchemaType, ObjectSchemaType} from '../../../types'
 
-export const MISSING_TYPE_NAME = 'MISSING_TYPE'
+export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
 export function isPTSchemaType(schemaType: SchemaType) {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
@@ -20,17 +20,15 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
   const childMap: ChildMap = {}
   const children = block.children || []
   children.forEach(child => {
-    // Fallback for renderer
+    let summary: string[] = []
+    // Fallback type for renderer (unkown types)
     if (typeof child !== 'object' || typeof child._type !== 'string') {
-      child._type = MISSING_TYPE_NAME
+      child._type = UNKNOWN_TYPE_NAME
     }
-    const childDiffs = findChildDiffs(blockDiff, child)
-    let summary: React.ReactNode[] = []
     const cSchemaType = getChildSchemaType(schemaType.fields, child)
+    const cDiff = findChildDiff(blockDiff, child)
 
-    // Summarize all diffs to this child
-    // eslint-disable-next-line complexity
-    childDiffs.forEach(cDiff => {
+    if (cDiff) {
       const textDiff = cDiff.fields.text as StringDiff
       if (textDiff && textDiff.isChanged) {
         if (textDiff.action === 'changed') {
@@ -57,14 +55,13 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
       if (isAddInlineObject(cDiff) || isChangeInlineObject(cDiff) || isRemoveInlineObject(cDiff)) {
         summary.push(`${startCase(cDiff.action)} inline object`)
       }
-    })
-
-    if (childDiffs.length !== 0 && summary.length === 0) {
-      summary.push(`Uknown diff: ${JSON.stringify(childDiffs, null, 2)}`)
+    }
+    if (cDiff && summary.length === 0) {
+      summary.push(`Unkown diff ${JSON.stringify(cDiff)}`)
     }
 
     childMap[child._key] = {
-      diffs: childDiffs,
+      diff: cDiff,
       child,
       schemaType: cSchemaType,
       summary
@@ -73,14 +70,14 @@ export function createChildMap(blockDiff: ObjectDiff, schemaType: ObjectSchemaTy
   return childMap
 }
 
-export function findChildDiffs(diff: ObjectDiff, child: PortableTextChild): ObjectDiff[] {
+export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): ObjectDiff {
   const childrenDiff = diff.fields.children as ArrayDiff
   return childrenDiff.items
     .filter(
       item => item.diff.isChanged && (item.diff.toValue === child || item.diff.fromValue === child)
     )
     .map(item => item.diff)
-    .map(childDiff => childDiff as ObjectDiff)
+    .map(childDiff => childDiff as ObjectDiff)[0]
 }
 
 function isAddInlineObject(cDiff: ObjectDiff) {
@@ -124,7 +121,7 @@ function isAddMark(cDiff: ObjectDiff, cSchemaType?: SchemaType) {
     Array.isArray(cDiff.fields.marks.toValue) &&
     cDiff.fields.marks.toValue.length > 0 &&
     cSchemaType.jsonType === 'object' &&
-    cDiff.fields.marks.toValue.every(
+    cDiff.fields.marks.toValue.some(
       mark => typeof mark === 'string' && cSchemaType && isDecorator(mark, cSchemaType)
     )
   )

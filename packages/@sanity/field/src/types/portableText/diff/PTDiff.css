@@ -4,14 +4,15 @@
 }
 
 .block {
-  /* @nest .added & {
-    border: 1px solid green;
+  /* border: 1px solid #ccc;
+  @nest .added & {
+    border-color: green;
   }
   @nest .changed & {
-    border: 1px solid blue;
+   border-color: blue;
   }
   @nest .removed & {
-    border: 1px solid red;
+    border-color: red;
   } */
 }
 
@@ -19,7 +20,4 @@
   display: none;
   font-size: var(--font-size-xsmall);
   color: var(--text-muted);
-}
-
-.summary li {
 }

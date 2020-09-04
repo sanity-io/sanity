@@ -1,6 +1,6 @@
 import React, {SyntheticEvent} from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap} from '../types'
-import {isDecorator, isHeader, childIsSpan, diffDidRemove, MISSING_TYPE_NAME} from '../helpers'
+import {isDecorator, isHeader, childIsSpan, diffDidRemove, UNKNOWN_TYPE_NAME} from '../helpers'
 
 import Annotation from './Annotation'
 import Decorator from './Decorator'
@@ -50,7 +50,7 @@ export default function Block(props: Props): JSX.Element {
 
   const renderChild = (child: PortableTextChild) => {
     const fromMap = childMap[child._key]
-    const diff = fromMap.diffs[0] as ObjectDiff
+    const diff = fromMap.diff as ObjectDiff
     const isSpan = childIsSpan(child)
     // Render span or inline object?
     const renderInlineObject = renderObjectTypes[child._type]
@@ -124,7 +124,7 @@ export default function Block(props: Props): JSX.Element {
         renderObjectTypes[child._type] = renderInlineObject
       } else {
         // This should not happen at this point. But have a fallback for rendering missing types anyway.
-        renderObjectTypes[MISSING_TYPE_NAME] = renderInvalidInlineObjectType
+        renderObjectTypes[UNKNOWN_TYPE_NAME] = renderInvalidInlineObjectType
       }
     })
 
