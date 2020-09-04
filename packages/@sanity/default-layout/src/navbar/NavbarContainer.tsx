@@ -1,6 +1,6 @@
 import React from 'react'
+import {Router, Tool} from '../types'
 import Navbar from './Navbar'
-import {Router, Tool, User} from '../types'
 
 interface Props {
   onCreateButtonClick: () => void
@@ -12,7 +12,6 @@ interface Props {
   router: Router
   searchIsOpen: boolean
   tools: Tool[]
-  user?: User
 }
 
 interface NextState {
@@ -171,8 +170,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       onUserLogout,
       router,
       searchIsOpen,
-      tools,
-      user
+      tools
     } = this.props
     const {showLabel, showToolSwitcher} = this.state
 
@@ -191,7 +189,6 @@ class NavbarContainer extends React.PureComponent<Props, State> {
         showLabel={showLabel}
         showToolSwitcher={showToolSwitcher}
         tools={tools}
-        user={user}
       />
     )
   }

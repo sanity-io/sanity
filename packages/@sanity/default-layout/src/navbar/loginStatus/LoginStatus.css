@@ -26,22 +26,9 @@
 }
 
 .inner {
-  padding: 0.5em;
+  padding: var(--small-padding) var(--medium-padding) var(--small-padding) var(--small-padding);
   position: relative;
   outline: none;
-
-  @nest &::after {
-    content: '';
-    position: absolute;
-    display: block;
-    box-sizing: border-box;
-    top: 0.5em;
-    left: 1em;
-    right: 1em;
-    bottom: 0.5em;
-    border: 1px solid color(var(--white) alpha(15%));
-    border-radius: 50%;
-  }
 }
 
 .userImage {
