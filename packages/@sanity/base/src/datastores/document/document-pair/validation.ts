@@ -12,8 +12,8 @@ import {concat, from, Observable, of, timer} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
 import {validateDocument} from '@sanity/validation'
 import {memoize} from '../utils/createMemoizer'
-import {editState} from './editState'
 import {IdPair} from '../types'
+import {editState} from './editState'
 
 type Marker = any
 

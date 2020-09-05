@@ -1,8 +1,8 @@
+import client from 'part:@sanity/base/client'
+import {omit} from 'lodash'
 import {OperationArgs} from '../../types'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import client from 'part:@sanity/base/client'
-import {omit} from 'lodash'
 
 export const publish = {
   disabled: ({typeName, snapshots}: OperationArgs) => {
