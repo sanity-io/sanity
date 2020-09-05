@@ -179,6 +179,7 @@ function extractAnnotationForFromInput(timeline: Timeline, value: Value<Meta>): 
 
     return {
       chunk,
+      timestamp: tx.timestamp,
       author: tx.author
     }
   }
@@ -192,6 +193,7 @@ function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): An
 
     return {
       chunk: value.startMeta.chunk,
+      timestamp: tx.timestamp,
       author: tx.author
     }
   }
