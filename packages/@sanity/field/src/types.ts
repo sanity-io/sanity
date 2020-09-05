@@ -45,6 +45,7 @@ export type Chunk = {
  */
 export type AnnotationDetails = {
   chunk: Chunk
+  timestamp: Date
   author: string
 }
 
