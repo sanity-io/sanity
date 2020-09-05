@@ -20,5 +20,3 @@ export type Marker = {
   level?: string
   item: any
 }
-
-export {FormFieldPresence as Presence} from '@sanity/components/lib/presence/types'

@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-filename-extension */
 import PropTypes from 'prop-types'
 import React from 'react'
-import UserAvatar from '../presence/UserAvatar'
-import PopoverList from '../presence/PopoverList'
-import {PresenceListItem} from '../presence/PresenceListItem'
+// import UserAvatar from '../presence/UserAvatar'
+// import PopoverList from '../presence/PopoverList'
+// import {PresenceListItem} from '../presence/PresenceListItem'
 import EventIcon from './EventIcon'
 
 import styles from './styles/ListItem.modules.css'
@@ -102,14 +102,14 @@ export default class HistoryListItem extends React.PureComponent {
       status,
       isSelected,
       title,
-      users,
+      // users,
       children,
       isCurrentVersion,
       rev,
       tooltip,
       type
     } = this.props
-    const availableUsers = users.filter(Boolean)
+    // const availableUsers = users.filter(Boolean)
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
 
     const content = (
@@ -132,7 +132,7 @@ export default class HistoryListItem extends React.PureComponent {
             </p>
           </div>
         )}
-        {availableUsers && availableUsers.length > 0 && (
+        {/* {availableUsers && availableUsers.length > 0 && (
           <PopoverList
             items={availableUsers.map(user => ({locations: [], user}))}
             disabled={availableUsers.length < 2}
@@ -157,7 +157,7 @@ export default class HistoryListItem extends React.PureComponent {
               )}
             </div>
           </PopoverList>
-        )}
+        )} */}
         {children && <div className={styles.children}>{children}</div>}
       </>
     )

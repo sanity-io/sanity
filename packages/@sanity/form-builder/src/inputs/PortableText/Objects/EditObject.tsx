@@ -1,5 +1,6 @@
 /* eslint-disable react/no-find-dom-node */
 import React, {useState, useEffect} from 'react'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {
   PortableTextBlock,
   Type,
@@ -11,7 +12,7 @@ import {get, debounce} from 'lodash'
 
 import {applyAll} from '../../../simplePatch'
 import {ModalType} from '../../ArrayInput/typedefs'
-import {Marker, Presence} from '../../../typedefs'
+import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {Patch} from '../../../typedefs/patch'
 import {PatchEvent} from '../../../PatchEvent'
@@ -30,7 +31,7 @@ interface Props {
   onChange: (patchEvent: PatchEvent, editPath: Path) => void
   onClose: () => void
   onFocus: (arg0: Path) => void
-  presence: Presence[]
+  presence: FormFieldPresence[]
   readOnly: boolean
   value: PortableTextBlock[] | undefined
 }

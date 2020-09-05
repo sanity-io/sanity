@@ -1,1 +1,1 @@
-module.exports = require('./lib/components-public-api')
+module.exports = require('./lib/components')
