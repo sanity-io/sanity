@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom'
+
 import {usePortal} from './hooks'
 
 interface PortalProps {

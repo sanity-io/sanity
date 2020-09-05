@@ -4,4 +4,4 @@ export interface PortalContextInterface {
   element: HTMLElement
 }
 
-export const PortalContext = createContext(null)
+export const PortalContext = createContext<PortalContextInterface | null>(null)
