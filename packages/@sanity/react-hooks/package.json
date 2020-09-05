@@ -13,7 +13,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "posttest": "tsc --noEmit",
-    "clean": "rimraf lib coverage"
+    "clean": "rimraf lib coverage",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

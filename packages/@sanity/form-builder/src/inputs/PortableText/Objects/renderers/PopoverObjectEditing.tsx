@@ -6,9 +6,9 @@ import Stacked from 'part:@sanity/components/utilities/stacked'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {PresenceOverlay} from '@sanity/base/presence'
+import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker, Presence, Type as FormBuilderType} from '../../../../typedefs'
+import {Marker, Type as FormBuilderType} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -21,7 +21,7 @@ interface Props {
   onClose: (event: React.SyntheticEvent) => void
   onFocus: (arg0: Path) => void
   path: Path
-  presence: Presence[]
+  presence: FormFieldPresence[]
   readOnly: boolean
   referenceElement: HTMLElement
   type: Type

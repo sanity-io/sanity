@@ -1,6 +1,7 @@
 import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
   ErrorChange,
@@ -15,7 +16,7 @@ import {
 import {Subject} from 'rxjs'
 import {Patch} from '../../typedefs/patch'
 import PatchEvent from '../../PatchEvent'
-import {Presence, Marker} from '../../typedefs'
+import {Marker} from '../../typedefs'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Path} from '../../typedefs/path'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
@@ -41,7 +42,7 @@ type Props = {
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  presence: Presence[]
+  presence: FormFieldPresence[]
   subscribe: (arg0: ({patches: PatchEvent}) => void) => void
   type: Type
   value: PortableTextBlock[] | undefined

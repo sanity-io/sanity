@@ -15,9 +15,10 @@ declare module 'part:@sanity/base/router' {
     className?: string
     intent: string
     onClick: (event: React.MouseEvent<HTMLElement>) => void
-    onMouseDown: (event: React.MouseEvent<HTMLElement>) => void
+    onMouseDown?: (event: React.MouseEvent<HTMLElement>) => void
     params: {}
-    tabIndex: number
+    tabIndex?: number
+    title?: string
   }>
   export const RouterProvider: React.ComponentType<{
     router: any
@@ -106,12 +107,41 @@ declare module 'part:@sanity/base/settings' {
 }
 
 declare module 'part:@sanity/base/location' {
-  const x: {actions: {navigate: (newUrl: string, options: {}) => void}; state: Observable<any>}
-  export default x
+  const locationStore: {
+    actions: {navigate: (newUrl: string, options: {}) => void}
+    state: Observable<any>
+  }
+
+  export default locationStore
+}
+
+declare module 'part:@sanity/components/avatar' {
+  export * from '@sanity/components/src/avatar'
+}
+
+declare module 'part:@sanity/components/click-outside' {
+  export * from '@sanity/components/src/clickOutside'
 }
 
 declare module 'part:@sanity/components/buttons/default' {
-  const DefaultButton: React.ComponentType<{disabled?: boolean; onClick?: () => void}>
+  const DefaultButton: React.ComponentClass<{
+    kind?: 'simple' | 'secondary'
+    color?: 'primary' | 'success' | 'danger' | 'white' | 'warning'
+    onBlur?: () => void
+    onClick?: () => void
+    children?: React.ReactNode
+    inverted?: boolean
+    icon?: React.ComponentType<{}>
+    loading?: boolean
+    className?: string
+    disabled?: boolean
+    tabIndex?: number
+    padding?: 'large' | 'default' | 'small' | 'none'
+    bleed?: boolean
+    selected?: boolean
+    size?: 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
+  }>
+
   export default DefaultButton
 }
 
@@ -133,9 +163,28 @@ declare module 'part:@sanity/components/lists/create-document' {
   export default CreateDocumentList
 }
 
+declare module 'part:@sanity/components/tooltip' {
+  export * from '@sanity/components/src/tooltip'
+}
+
 declare module 'part:@sanity/base/file-icon' {
   const DocumentIcon: React.ComponentType<{}>
   export default DocumentIcon
+}
+
+declare module 'part:@sanity/base/cog-icon' {
+  const CogIcon: React.ComponentType<{}>
+  export default CogIcon
+}
+
+declare module 'part:@sanity/base/link-icon' {
+  const LinkIcon: React.ComponentType<{}>
+  export default LinkIcon
+}
+
+declare module 'part:@sanity/base/users-icon' {
+  const UserIcon: React.ComponentType<{}>
+  export default UserIcon
 }
 
 declare module 'part:@sanity/components/buttons/fab' {
@@ -214,7 +263,9 @@ declare module 'part:@sanity/base/chevron-down-icon' {
 }
 
 declare module 'part:@sanity/components/avatar' {
+  export type AvatarSize = any
   export const Avatar: any
+  export const AvatarStack: any
 }
 
 declare module 'part:@sanity/components/menus/default' {
