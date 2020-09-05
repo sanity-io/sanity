@@ -18,8 +18,8 @@ interface LinkProps {
 export default class Link extends React.PureComponent<
   LinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
 > {
-  context: RouterProviderContext
-  _element: HTMLAnchorElement
+  context: RouterProviderContext | null = null
+  _element: HTMLAnchorElement | null = null
 
   static defaultProps = {
     replace: false
@@ -30,6 +30,8 @@ export default class Link extends React.PureComponent<
   }
 
   private handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
+    if (!this.context) throw new Error('Link: missing context value')
+
     if (!this.context.__internalRouter) {
       return
     }
@@ -39,6 +41,8 @@ export default class Link extends React.PureComponent<
     }
 
     const {onClick, href, target, replace} = this.props
+
+    if (!href) return
 
     if (onClick) {
       onClick(event)

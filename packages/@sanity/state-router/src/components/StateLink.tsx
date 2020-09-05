@@ -11,8 +11,8 @@ type Props = {
 }
 
 export default class StateLink extends React.PureComponent<Props> {
-  context: RouterProviderContext
-  _element: Link
+  context: RouterProviderContext | null = null
+  _element: Link | null = null
 
   static defaultProps = {
     replace: false,
@@ -44,10 +44,13 @@ export default class StateLink extends React.PureComponent<Props> {
     return this.resolvePathFromState(nextState)
   }
 
-  resolvePathFromState(state: Object) {
+  resolvePathFromState(state: Record<string, any>) {
+    if (!this.context) throw new Error('StateLink: missing context value')
+
     if (!this.context.__internalRouter) {
       return `javascript://state@${JSON.stringify(state)}`
     }
+
     return this.context.__internalRouter.resolvePathFromState(state)
   }
 

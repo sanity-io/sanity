@@ -11,13 +11,13 @@ interface IntentLinkProps {
 export default class IntentLink extends React.PureComponent<
   IntentLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
 > {
-  context: RouterProviderContext
+  context: RouterProviderContext | null = null
 
   static contextTypes = {
     __internalRouter: internalRouterContextTypeCheck
   }
 
-  _element: Link
+  _element: Link | null = null
 
   focus() {
     if (this._element) {
@@ -32,9 +32,12 @@ export default class IntentLink extends React.PureComponent<
   }
 
   resolveIntentLink(intent: string, params?: IntentParameters) {
+    if (!this.context) throw new Error('IntentLink: missing context value')
+
     if (!this.context.__internalRouter) {
       return `javascript://intent@${JSON.stringify({intent, params})}`
     }
+
     return this.context.__internalRouter.resolveIntentLink(intent, params)
   }
 

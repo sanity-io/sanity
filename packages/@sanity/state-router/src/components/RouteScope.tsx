@@ -2,10 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import isEmpty from '../utils/isEmpty'
 
-import {InternalRouter, NavigateOptions, RouterProviderContext} from './types'
 import {RouterContext} from '../RouterContext'
+import {InternalRouter, NavigateOptions, RouterProviderContext} from './types'
 
-function addScope(routerState: Object, scope: string, scopedState: Object) {
+function addScope(
+  routerState: Record<string, any>,
+  scope: string,
+  scopedState: Record<string, any>
+) {
   return (
     scopedState && {
       ...routerState,
@@ -20,7 +24,7 @@ type Props = {
 }
 
 export default class RouteScope extends React.Component<Props> {
-  context: RouterProviderContext
+  context: RouterProviderContext | null = null
   __internalRouter: InternalRouter
 
   static childContextTypes = {
@@ -51,22 +55,26 @@ export default class RouteScope extends React.Component<Props> {
 
   getScopedState = () => {
     const {scope} = this.props
+    if (!this.context) throw new Error('RouteScope: missing context value')
     const parentInternalRouter = this.context.__internalRouter
     return parentInternalRouter.getState()[scope]
   }
 
-  resolvePathFromState = (nextState: Object): string => {
+  resolvePathFromState = (nextState: Record<string, any>): string => {
+    if (!this.context) throw new Error('RouteScope: missing context value')
+
     const parentInternalRouter = this.context.__internalRouter
     const scope = this.props.scope
 
-    const nextStateScoped: Object = isEmpty(nextState)
+    const nextStateScoped: Record<string, any> = isEmpty(nextState)
       ? {}
       : addScope(parentInternalRouter.getState(), scope, nextState)
 
     return parentInternalRouter.resolvePathFromState(nextStateScoped)
   }
 
-  navigate = (nextState: Object, options?: NavigateOptions): void => {
+  navigate = (nextState: Record<string, any>, options?: NavigateOptions): void => {
+    if (!this.context) throw new Error('RouteScope: missing context value')
     const parentInternalRouter = this.context.__internalRouter
     const nextScopedState = addScope(parentInternalRouter.getState(), this.props.scope, nextState)
     parentInternalRouter.navigate(nextScopedState, options)

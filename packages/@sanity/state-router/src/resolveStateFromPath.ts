@@ -29,7 +29,9 @@ function matchPath(
   }
 
   const rest = parts.slice(segmentsLength)
-  let childState = null
+  let childState: {
+    [key: string]: string
+  } | null = null
   const children =
     typeof node.children === 'function' ? arrayify(node.children(state)) : node.children
   children.some(childNode => {
@@ -44,11 +46,11 @@ function matchPath(
     return null
   }
 
-  const mergedState = {...state, ...childState}
+  const mergedState = {...state, ...(childState || {})}
   return node.scope ? {[node.scope]: mergedState} : mergedState
 }
 
-export default function resolveStateFromPath(node: Node, path: string): Object | null {
+export default function resolveStateFromPath(node: Node, path: string): Record<string, any> | null {
   debug('resolving state from path %s', path)
 
   const pathMatch = matchPath(node, path.split('?')[0])
