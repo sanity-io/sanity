@@ -1,19 +1,37 @@
 import React from 'react'
-import {useUser} from '@sanity/base/hooks'
+import {useUser, useTimeAgo} from '@sanity/base/hooks'
 import {UserAvatar} from '@sanity/base/components'
 import {AnnotationDetails} from '../../types'
+import {useAnnotationColor} from './hooks'
 import styles from './DiffAnnotationTooltipContent.css'
 
-export function DiffAnnotationTooltipContent(props: {annotation: AnnotationDetails}) {
+export function DiffAnnotationTooltipContent({
+  annotations,
+  description = 'Changed by'
+}: {
+  annotations: AnnotationDetails[]
+  description?: React.ReactNode | string
+}) {
   return (
     <div className={styles.root}>
-      <UserItem userId={props.annotation.author} />
+      {typeof description === 'string' ? (
+        <span className={styles.description}>{description}</span>
+      ) : (
+        description
+      )}
+
+      {annotations.map(annotation => (
+        <AnnotationItem key={annotation.author} annotation={annotation} />
+      ))}
     </div>
   )
 }
 
-function UserItem(props: {userId: string}) {
-  const {isLoading, error, value: user} = useUser(props.userId)
+function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
+  const {author, timestamp} = annotation
+  const color = useAnnotationColor(annotation)
+  const {error, value: user} = useUser(author)
+  const timeAgo = useTimeAgo(timestamp)
 
   // @todo handle?
   if (error) {
@@ -21,16 +39,16 @@ function UserItem(props: {userId: string}) {
   }
 
   return (
-    <div className={styles.userItem}>
-      {isLoading && <span className={styles.loadingText}>Loading…</span>}
-      {user && (
-        <>
-          <span className={styles.avatarContainer}>
-            <UserAvatar user={user} />
-          </span>
-          <span className={styles.displayName}>{user.displayName}</span>
-        </>
-      )}
+    <div className={styles.annotation}>
+      <div className={styles.user} style={{backgroundColor: color.background, color: color.text}}>
+        <span className={styles.avatarContainer}>
+          <UserAvatar userId={author} />
+        </span>
+        <span className={styles.displayName}>{user ? user.displayName : 'Loading…'}</span>
+      </div>
+      <time className={styles.timeAgo} dateTime={timestamp.toISOString()}>
+        {timeAgo}
+      </time>
     </div>
   )
 }
