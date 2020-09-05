@@ -10,10 +10,10 @@ import {AvatarPosition, AvatarStatus, AvatarSize} from './types'
 export interface AvatarProps {
   color: string
   src?: string
-  title: string
+  title?: string
   initials?: string
   onImageLoadError?: (event: Error) => void
-  arrowPosition?: AvatarPosition | null
+  arrowPosition?: AvatarPosition
   animateArrowFrom?: AvatarPosition
   status?: AvatarStatus
   size?: AvatarSize
@@ -38,7 +38,7 @@ export function Avatar(props: AvatarProps) {
   } = props
 
   const elementId = useId()
-  const [arrowPosition, setArrowPosition] = useState(
+  const [arrowPosition, setArrowPosition] = useState<AvatarPosition | undefined>(
     animateArrowFrom || arrowPositionProp || 'inside'
   )
   const [imageFailed, setImageFailed] = useState<boolean>(false)
