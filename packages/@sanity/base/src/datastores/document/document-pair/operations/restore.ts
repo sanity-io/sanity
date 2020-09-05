@@ -1,5 +1,5 @@
-import {OperationArgs} from '../../types'
 import historyStore from 'part:@sanity/base/datastore/history'
+import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const restore = {
