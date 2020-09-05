@@ -46,12 +46,12 @@ export default class ValidationList extends React.PureComponent<Props> {
         clearTimeout(this.scrollTimeout)
       }
       this.scrollTimeout = setTimeout(() => {
-        onFocus(path)
-        onClose()
+        if (onFocus) onFocus(path)
+        if (onClose) onClose()
       }, 300)
     } else {
-      onFocus(path)
-      onClose()
+      if (onFocus) onFocus(path)
+      if (onClose) onClose()
     }
   }
 

@@ -7,8 +7,8 @@ import {Avatar} from './Avatar'
 import {AvatarPosition, AvatarSize, AvatarStatus} from './types'
 
 interface BaseProps {
-  position?: AvatarPosition | null
-  animateArrowFrom?: AvatarPosition | null
+  position?: AvatarPosition
+  animateArrowFrom?: AvatarPosition
   size?: AvatarSize
   status?: AvatarStatus
   tone?: 'navbar'
@@ -46,8 +46,8 @@ export function UserAvatar(props: Props) {
 
 function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}: LoadedUserProps) {
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
-  const userColor = useUserColor(user.id)
-  const imageUrl = imageLoadError ? null : user?.imageUrl
+  const userColor = useUserColor(user.id) || {border: ''}
+  const imageUrl = imageLoadError ? undefined : user?.imageUrl
 
   return (
     <Avatar
@@ -66,14 +66,14 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
 }
 
 function UserAvatarLoader({userId, ...loadedProps}: UnloadedUserProps) {
-  const {isLoading, error, value: user} = useUser(userId)
+  const {isLoading, error, value} = useUser(userId)
 
-  if (isLoading || error) {
+  if (isLoading || error || !value) {
     // @todo How do we handle this?
     return null
   }
 
-  return <UserAvatar {...loadedProps} user={user} />
+  return <UserAvatar {...loadedProps} user={value} />
 }
 
 function isLoaded(props: Props): props is LoadedUserProps {

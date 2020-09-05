@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp,@typescript-eslint/no-use-before-define */
 import * as React from 'react'
 import {CSSProperties} from 'react'
-import {RegionsWithIntersections} from './RegionsWithIntersections'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
   AVATAR_ARROW_HEIGHT,
@@ -15,6 +14,8 @@ import {
 import {RegionWithIntersectionDetails} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
 import {OverlayItem} from '../overlay-reporter'
+import {TrackerComponentProps} from '../overlay-reporter/Tracker'
+import {RegionsWithIntersections} from './RegionsWithIntersections'
 
 const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',
@@ -70,22 +71,22 @@ function group(
 
   return {
     top: orderByTop(grouped.top).map(
-      (withIntersection: RegionWithSpacerHeight, i, grp): RegionWithSpacerHeightAndIndent => ({
-        ...withIntersection,
+      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
+        ...(withIntersection as RegionWithSpacerHeight),
         indent: grp
           .slice(i + 1)
           .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
       })
     ),
     inside: orderByTop(grouped.inside).map(
-      (withIntersection: RegionWithSpacerHeight): RegionWithSpacerHeightAndIndent => ({
-        ...withIntersection,
+      (withIntersection): RegionWithSpacerHeightAndIndent => ({
+        ...(withIntersection as RegionWithSpacerHeight),
         indent: 0
       })
     ),
     bottom: orderByTop(grouped.bottom).map(
-      (withIntersection: RegionWithSpacerHeight, i, grp): RegionWithSpacerHeightAndIndent => ({
-        ...withIntersection,
+      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
+        ...(withIntersection as RegionWithSpacerHeight),
         indent: grp
           .slice(0, i)
           .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
@@ -98,12 +99,8 @@ const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
   <div style={{height: Math.max(0, height), ...rest?.style}} />
 )
 
-type Props = {
-  regions: OverlayItem[]
-  children: React.ReactElement
-  trackerRef: React.RefObject<any>
-  margins: Margins
-}
+type Props = TrackerComponentProps<{margins: Margins}>
+
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
 export function StickyOverlay(props: Props) {

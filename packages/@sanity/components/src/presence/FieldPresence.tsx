@@ -55,8 +55,8 @@ interface InnerProps {
   maxAvatars: number
   presence: FormFieldPresence[]
   stack?: boolean
-  position?: AvatarPosition | null
-  animateArrowFrom?: AvatarPosition | null
+  position?: AvatarPosition
+  animateArrowFrom?: AvatarPosition
 }
 
 export function FieldPresenceInner({
@@ -94,21 +94,24 @@ export function FieldPresenceInner({
         renderItem={item => <PresenceListItem status="online" user={item.user} />}
       >
         <div className={styles.inner} style={{minWidth}}>
-          {avatars.map((av, i) => (
-            <div
-              key={av.key}
-              style={{
-                position: 'absolute',
-                transform: `translate3d(${-i * (AVATAR_SIZE + AVATAR_DISTANCE)}px, 0px, 0px)`,
-                transitionProperty: 'transform',
-                transitionDuration: '200ms',
-                transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
-                zIndex: 100 - i
-              }}
-            >
-              {av.element}
-            </div>
-          ))}
+          {avatars.map(
+            (av, i) =>
+              av && (
+                <div
+                  key={av.key}
+                  style={{
+                    position: 'absolute',
+                    transform: `translate3d(${-i * (AVATAR_SIZE + AVATAR_DISTANCE)}px, 0px, 0px)`,
+                    transitionProperty: 'transform',
+                    transitionDuration: '200ms',
+                    transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
+                    zIndex: 100 - i
+                  }}
+                >
+                  {av.element}
+                </div>
+              )
+          )}
         </div>
       </PopoverList>
     </div>
