@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react'
+import {useId} from '@reach/auto-id'
+import {Marker} from '../types'
 import styles from './Checkbox.css'
 import sharedStyles from './shared.css'
-import {Marker} from '../typedefs'
-import {useId} from '@reach/auto-id'
 
 type Props = {
   label: any

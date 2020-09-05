@@ -5,7 +5,7 @@ import React from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import {Marker} from '../typedefs'
+import {Marker} from '../types'
 import ValidationList from './ValidationList'
 
 import styles from './ValidationStatus.css'
@@ -59,14 +59,14 @@ export default class ValidationStatus extends React.PureComponent<Props> {
       </div>
     )
 
+    const content = showSummary ? (
+      <TooltipText />
+    ) : (
+      <ValidationList markers={validation} kind="simple" />
+    )
+
     return (
-      <Tooltip
-        className={styles.root}
-        disabled={hideTooltip}
-        content={
-          showSummary ? <TooltipText /> : <ValidationList markers={validation} kind="simple" />
-        }
-      >
+      <Tooltip className={styles.root} disabled={hideTooltip} content={content as any}>
         <div className={styles.inner}>
           {validation && validation.length > 0 && (
             <div className={iconClassName}>
