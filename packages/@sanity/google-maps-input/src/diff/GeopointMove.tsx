@@ -68,7 +68,7 @@ export function GeopointMove({diff, api, map, label}: Props) {
       )}
       {annotation &&
         ReactDOM.createPortal(
-          <DiffAnnotationTooltipContent annotation={annotation} />,
+          <DiffAnnotationTooltipContent annotations={[annotation]} />,
           infoEl.current
         )}
     </>

@@ -1,15 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--extra-small-padding) 0;
+  padding: var(--extra-small-padding);
   font-size: var(--font-size-base);
   font-weight: normal;
   font-style: normal;
   color: var(--text-color);
 }
 
-.userItem {
-  padding: var(--extra-small-padding) var(--small-padding);
+.annotation {
+  padding: var(--extra-small-padding) 0;
+  display: flex;
+  align-items: center;
+}
+
+.user {
+  /* @todo replace me with variable I guess? */
+  border-radius: 5px;
   display: flex;
   align-items: center;
 }
@@ -27,5 +34,14 @@
 }
 
 .loadingText {
+  color: var(--text-muted);
+}
+
+.timeAgo {
+  margin: 0 var(--small-padding);
+  font-size: var(--font-size-small);
+}
+
+.description {
   color: var(--text-muted);
 }
