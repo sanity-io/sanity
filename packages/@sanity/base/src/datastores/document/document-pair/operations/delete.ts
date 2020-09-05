@@ -1,6 +1,6 @@
+import client from 'part:@sanity/base/client'
 import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import client from 'part:@sanity/base/client'
 
 export const del = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
