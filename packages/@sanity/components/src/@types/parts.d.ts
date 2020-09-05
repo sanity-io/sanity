@@ -8,24 +8,12 @@ declare module 'part:@sanity/base/check-icon' {
   export {default} from '@sanity/base/src/components/icons/Check'
 }
 
-declare module 'part:@sanity/base/cog-icon' {
-  export {default} from '@sanity/base/src/components/icons/Cog'
-}
-
-declare module 'part:@sanity/base/error-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/ErrorOutline'
-}
-
-declare module 'part:@sanity/base/link-icon' {
-  export {default} from '@sanity/base/src/components/icons/Link'
-}
-
 declare module 'part:@sanity/base/close-icon' {
   export {default} from '@sanity/base/src/components/icons/CloseIcon'
 }
 
-declare module 'part:@sanity/base/users-icon' {
-  export {default} from '@sanity/base/src/components/icons/UsersIcon'
+declare module 'part:@sanity/base/error-outline-icon' {
+  export {default} from '@sanity/base/src/components/icons/ErrorOutline'
 }
 
 declare module 'part:@sanity/components/buttons/default' {

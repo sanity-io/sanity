@@ -15,3 +15,11 @@ declare module 'config:@sanity/google-maps-input' {
   const config: Config
   export default config
 }
+
+declare module 'part:@sanity/components/avatar' {
+  export * from '@sanity/components/src/avatar'
+}
+
+declare module 'part:@sanity/components/tooltip' {
+  export * from '@sanity/components/src/tooltip'
+}

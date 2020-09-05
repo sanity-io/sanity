@@ -12,7 +12,7 @@ import {Router, Tool} from '../types'
 import Branding from './branding/Branding'
 import LoginStatus from './loginStatus/LoginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
-import {GlobalPresenceStatus} from './studioStatus/GlobalPresenceStatus'
+import {PresenceMenu} from './presenceMenu'
 import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
 
@@ -128,7 +128,7 @@ function Navbar(props: Props) {
         <SanityStatusContainer />
       </div>
       <div className={styles.presenceStatus}>
-        <GlobalPresenceStatus />
+        <PresenceMenu />
       </div>
       {isSidecarEnabled && isSidecarEnabled() && (
         <div className={styles.sidecarStatus}>

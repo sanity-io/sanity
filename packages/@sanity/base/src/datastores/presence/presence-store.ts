@@ -30,19 +30,20 @@ import {
   withLatestFrom
 } from 'rxjs/operators'
 import {flatten, groupBy, omit, uniq} from 'lodash'
-import {createBifurTransport} from './message-transports/bifurTransport'
 import {nanoid} from 'nanoid'
 
-import userStore from '../user'
+import userStore, {User} from '../user'
 import {
   PresenceLocation,
   Session,
-  User,
+  // User,
   UserSessionPair,
   DocumentPresence,
   GlobalPresence
-} from './types'
+} from '../../presence'
+
 import {bifur} from '../../client/bifur'
+import {connectionStatus$} from '../../connection-status/connection-status-store'
 import {
   DisconnectEvent,
   RollCallEvent,
@@ -50,7 +51,7 @@ import {
   TransportEvent
 } from './message-transports/transport'
 import {mock$} from './mock-events'
-import {connectionStatus$} from '../../connection-status/connection-status-store'
+import {createBifurTransport} from './message-transports/bifurTransport'
 
 const KEY = 'presence_session_id'
 const generate = () => nanoid(16)

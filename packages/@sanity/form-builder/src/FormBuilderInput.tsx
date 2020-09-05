@@ -1,17 +1,17 @@
 /* eslint-disable complexity */
 import React from 'react'
 import shallowEquals from 'shallow-equals'
-import {Path, PathSegment} from './typedefs/path'
-import PatchEvent from './PatchEvent'
+import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths'
-import {Type, Marker, Presence} from './typedefs'
-import {Context as PresenceContext} from '@sanity/components/lib/presence'
+import {Path, PathSegment} from './typedefs/path'
+import PatchEvent from './PatchEvent'
+import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
-const EMPTY_PRESENCE: Presence[] = emptyArray()
+const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 
 interface Props {
   value: any
@@ -20,7 +20,7 @@ interface Props {
   onFocus: (arg0: Path) => void
   onBlur: () => void
   readOnly: boolean
-  presence?: Presence[]
+  presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
   level: number
@@ -234,7 +234,7 @@ export class FormBuilderInput extends React.Component<Props> {
 
     return (
       <div data-focus-path={PathUtils.toString(path)}>
-        <PresenceContext.Provider value={childPresenceInfo}>
+        <FormFieldPresenceContext.Provider value={childPresenceInfo}>
           <InputComponent
             {...rest}
             {...leafProps}
@@ -250,7 +250,7 @@ export class FormBuilderInput extends React.Component<Props> {
             level={level}
             ref={this.setInput}
           />
-        </PresenceContext.Provider>
+        </FormFieldPresenceContext.Provider>
       </div>
     )
   }

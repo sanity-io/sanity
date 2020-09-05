@@ -20,3 +20,13 @@ declare module 'part:@sanity/base/schema' {
 
   export default schema
 }
+
+declare module 'part:@sanity/components/avatar' {
+  export * from '@sanity/components/src/avatar'
+}
+
+declare module 'part:@sanity/components/tooltip' {
+  export * from '@sanity/components/src/tooltip'
+}
+
+declare module 'all:part:*'

@@ -4,7 +4,6 @@
   "exclude": ["test/**/*.ts"],
   "compilerOptions": {
     "rootDir": "src",
-    "strict": true,
     "jsx": "react",
     "outDir": "./lib",
     "plugins": [

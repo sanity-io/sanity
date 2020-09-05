@@ -33,29 +33,31 @@ export default function InsertMenu(props: Props) {
         placement="bottom"
         open={open}
         content={
-          <div className={styles.menu}>
-            {items.map(item => {
-              const itemIsDisabled = item.disabled
-              const title = item.type.title || item.type.type.name
-              return (
-                <button
-                  aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
-                  disabled={itemIsDisabled}
-                  className={styles.menuItem}
-                  key={item.key}
-                  onClick={() => {
-                    item.handle()
-                    handleClose()
-                  }}
-                  title={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
-                  type="button"
-                >
-                  <span className={styles.iconContainer}>{React.createElement(item.icon)}</span>
-                  <span className={styles.title}>{title}</span>
-                </button>
-              )
-            })}
-          </div>
+          (
+            <div className={styles.menu}>
+              {items.map(item => {
+                const itemIsDisabled = item.disabled
+                const title = item.type.title || item.type.type.name
+                return (
+                  <button
+                    aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
+                    disabled={itemIsDisabled}
+                    className={styles.menuItem}
+                    key={item.key}
+                    onClick={() => {
+                      item.handle()
+                      handleClose()
+                    }}
+                    title={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
+                    type="button"
+                  >
+                    <span className={styles.iconContainer}>{React.createElement(item.icon)}</span>
+                    <span className={styles.title}>{title}</span>
+                  </button>
+                )
+              })}
+            </div>
+          ) as any
         }
       >
         <div>

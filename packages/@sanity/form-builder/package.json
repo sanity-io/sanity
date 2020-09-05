@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rimraf lib",
     "test": "NODE_ENV=test jest",
-    "build": "tsc"
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

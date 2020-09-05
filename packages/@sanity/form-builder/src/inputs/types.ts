@@ -1,4 +1,5 @@
-import {Type, Marker, Presence} from '../typedefs'
+import {FormFieldPresence} from '@sanity/base/presence'
+import {Type, Marker} from '../typedefs'
 import PatchEvent from '../PatchEvent'
 
 export type Props = {
@@ -10,5 +11,5 @@ export type Props = {
   onFocus: () => void
   onBlur?: () => void
   markers: Array<Marker>
-  presence: Presence
+  presence: FormFieldPresence[]
 }

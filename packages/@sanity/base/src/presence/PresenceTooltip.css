@@ -1,0 +1,23 @@
+.root {
+  padding: 0.25em 0;
+}
+
+.item {
+  padding: 0.25em 0.5em;
+  display: flex;
+  align-items: center;
+}
+
+.avatarContainer {
+  /*  */
+}
+
+.textContainer {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  margin-top: -1px;
+  margin-left: 0.5em;
+  font-size: 13px;
+  line-height: 16px;
+}

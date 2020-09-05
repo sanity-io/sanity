@@ -29,7 +29,7 @@ export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps) {
   )
 
   return (
-    <Tooltip content={content} position="top">
+    <Tooltip content={content as any} placement="top">
       {createElement(as, {className, style}, children)}
     </Tooltip>
   )

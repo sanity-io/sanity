@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, {useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Placement} from '../types'
+import {TooltipPlacement} from './types'
 import {TooltipArrow} from './tooltipArrow'
 
 import styles from './tooltip.css'
@@ -10,8 +10,8 @@ export interface TooltipProps {
   children: React.ReactElement
   className?: string
   content: React.ReactNode | JSX.Element
-  disabled: boolean
-  placement?: Placement
+  disabled?: boolean
+  placement?: TooltipPlacement
   tone?: 'navbar'
 }
 

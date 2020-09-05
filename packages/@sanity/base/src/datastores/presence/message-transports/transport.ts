@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import {PresenceLocation} from '../types'
+import {PresenceLocation} from '../../../presence/types'
 
 // Not sure if this is the best choice of words, but:
 // Message: something you send

@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
+import {GlobalPresence} from '../../presence/types'
 import {globalPresence$} from './presence-store'
-import {GlobalPresence} from './types'
 
 export function useGlobalPresence(): GlobalPresence[] {
   const [presence, setPresence] = useState<GlobalPresence[]>([])

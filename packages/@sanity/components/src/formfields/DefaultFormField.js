@@ -1,3 +1,4 @@
+import {FieldPresence} from '@sanity/base/presence'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -6,7 +7,6 @@ import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import FieldStatus from '../fieldsets/FieldStatus'
-import {FieldPresence} from '../presence'
 
 export default class DefaultFormField extends React.PureComponent {
   static propTypes = {

@@ -1,6 +1,7 @@
 /* eslint-disable react/require-default-props */
 import classNames from 'classnames'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -19,7 +20,7 @@ import {Portal} from 'part:@sanity/components/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
-import {Presence, Marker} from '../../typedefs'
+import {Marker} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
@@ -45,7 +46,7 @@ type Props = {
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patche$: Subject<EditorPatch>
-  presence: Presence[]
+  presence: FormFieldPresence[]
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers

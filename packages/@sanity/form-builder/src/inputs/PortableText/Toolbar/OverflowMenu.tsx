@@ -117,23 +117,25 @@ export function OverflowMenu(props: Props) {
           placement="bottom"
           open={open}
           content={
-            <div className={styles.overflowMenu}>
-              {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
-                const action = actions[hiddenAction.index]
-                return (
-                  <div
-                    className={classNames(
-                      styles.menuItem,
-                      action.firstInGroup && styles.firstInGroup
-                    )}
-                    key={String(hiddenActionIndex)}
-                    onMouseDown={preventDefault} // Needed so the editor doesn't reset selection
-                  >
-                    <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
-                  </div>
-                )
-              })}
-            </div>
+            (
+              <div className={styles.overflowMenu}>
+                {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
+                  const action = actions[hiddenAction.index]
+                  return (
+                    <div
+                      className={classNames(
+                        styles.menuItem,
+                        action.firstInGroup && styles.firstInGroup
+                      )}
+                      key={String(hiddenActionIndex)}
+                      onMouseDown={preventDefault} // Needed so the editor doesn't reset selection
+                    >
+                      <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
+                    </div>
+                  )
+                })}
+              </div>
+            ) as any
           }
         >
           <div>

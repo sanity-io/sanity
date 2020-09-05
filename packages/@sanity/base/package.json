@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rimraf lib",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

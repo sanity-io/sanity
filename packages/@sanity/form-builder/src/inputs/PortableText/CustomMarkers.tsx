@@ -27,7 +27,7 @@ export default class Markers extends React.Component<Props, {}> {
     }, click to log to console.`
 
     return (
-      <Tooltip content={<>{text}</>}>
+      <Tooltip content={(<>{text}</>) as any}>
         <CommentIcon onClick={this.handleCustomMarkerClick} />
       </Tooltip>
     )

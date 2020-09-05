@@ -2,10 +2,10 @@ import React, {useRef} from 'react'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import PatchEvent, {set} from '../PatchEvent'
-import styles from './BooleanInput.css'
 import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/base/presence'
+import PatchEvent, {set} from '../PatchEvent'
+import styles from './BooleanInput.css'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(
@@ -44,7 +44,7 @@ const BooleanInput = React.forwardRef(
           </Switch>
         )}
         <FieldStatus position="top">
-          <FieldPresence presence={presence} />
+          <FieldPresence maxAvatars={1} presence={presence} />
         </FieldStatus>
       </div>
     )

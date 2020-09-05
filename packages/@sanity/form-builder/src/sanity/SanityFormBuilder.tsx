@@ -1,8 +1,9 @@
 import React from 'react'
-import SanityFormBuilderContext from './SanityFormBuilderContext'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
-import {Presence, Marker, Type} from '../typedefs'
+import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
+import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 type PatchChannel = {
@@ -22,7 +23,7 @@ type Props = {
   onBlur: () => void
   autoFocus: boolean
   focusPath: Path
-  presence: Presence[]
+  presence: FormFieldPresence[]
 }
 
 const EMPTY = []

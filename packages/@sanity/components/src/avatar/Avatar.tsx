@@ -1,7 +1,6 @@
 /* eslint-disable id-length */
 /* eslint-disable react/require-default-props */
 
-// import classNames from 'classnames'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './Avatar.css'
@@ -44,6 +43,7 @@ export function Avatar(props: AvatarProps) {
   const [imageFailed, setImageFailed] = useState<boolean>(false)
 
   useEffect(() => {
+    // @todo: replace with RAF?
     const arrowTimeoutId = setTimeout(() => {
       setArrowPosition(arrowPositionProp)
     }, 50)
@@ -72,7 +72,7 @@ export function Avatar(props: AvatarProps) {
 
   return (
     <div
-      aria-title={title}
+      aria-label={title}
       className={styles.root}
       data-bg={color}
       data-arrow-position={arrowPosition}
