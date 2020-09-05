@@ -1,5 +1,5 @@
-import {OperationArgs} from '../../types'
 import client from 'part:@sanity/base/client'
+import {OperationArgs} from '../../types'
 
 export const discardChanges = {
   disabled: ({snapshots}: OperationArgs) => {

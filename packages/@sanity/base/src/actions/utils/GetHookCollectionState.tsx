@@ -1,6 +1,6 @@
+import {throttle} from 'lodash'
 import React from 'react'
 import {HookStateContainer} from './HookStateContainer'
-import {throttle} from 'lodash'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 
 const actionIds = new WeakMap()

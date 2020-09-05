@@ -5,6 +5,13 @@
   "compilerOptions": {
     "outDir": "./lib",
     "strictNullChecks": false,
-    "jsx": "react"
+    "jsx": "react",
+
+    // Paths
+    "baseUrl": "./src",
+    "paths": {
+      "part:@sanity/base/datastore/history": ["./datastores/history"],
+      "part:@sanity/base/user": ["./datastores/user"]
+    }
   }
 }
