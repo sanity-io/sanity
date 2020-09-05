@@ -9,7 +9,8 @@
     "compile": "tsc",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "sanity",
