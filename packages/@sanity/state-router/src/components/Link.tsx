@@ -11,15 +11,13 @@ function isModifiedEvent(event: MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 }
 
-type Props = {
+interface LinkProps {
   replace?: boolean
-  onClick?: (event: MouseEvent) => void
-  href: string
-  target?: string
-  children?: React.ReactNode
 }
 
-export default class Link extends React.PureComponent<Props> {
+export default class Link extends React.PureComponent<
+  LinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
+> {
   context: RouterProviderContext
   _element: HTMLAnchorElement
 
@@ -31,7 +29,7 @@ export default class Link extends React.PureComponent<Props> {
     __internalRouter: internalRouterContextTypeCheck
   }
 
-  private handleClick = (event: MouseEvent): void => {
+  private handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
     if (!this.context.__internalRouter) {
       return
     }
