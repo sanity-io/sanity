@@ -4,12 +4,29 @@ import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback} from 'react'
+import {Placement} from '../types'
 
 interface MenuButtonProps {
   boundaryElement?: HTMLElement | null
-  buttonProps?: any // @todo: button typings
+  buttonProps?: {
+    kind?: 'simple' | 'secondary'
+    color?: 'primary' | 'success' | 'danger' | 'white' | 'warning'
+    onBlur?: () => void
+    onClick?: () => void
+    children?: React.ReactNode
+    inverted?: boolean
+    icon?: React.ComponentType<{}>
+    loading?: boolean
+    className?: string
+    disabled?: boolean
+    tabIndex?: number
+    padding?: 'large' | 'default' | 'small' | 'none'
+    bleed?: boolean
+    selected?: boolean
+    size?: 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
+  }
   menu?: React.ReactNode
-  placement?: string
+  placement?: Placement
   open?: boolean
   setOpen: (val: boolean) => void
 }
@@ -31,11 +48,11 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
 
   return (
     <ClickOutside onClickOutside={handleClickOutside}>
-      {ref => (
+      {(ref: React.MutableRefObject<HTMLDivElement>) => (
         <div {...restProps} ref={ref}>
           <Popover
             boundaryElement={boundaryElement}
-            content={menu}
+            content={menu as any}
             open={open}
             placement={placement}
           >

@@ -1,16 +1,18 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/require-default-props */
+
 import React, {useState} from 'react'
 import {Popover} from 'part:@sanity/components/popover'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import {useId} from '@reach/auto-id'
+import {Placement} from '../types'
 import styles from './PopoverList.css'
 import {User} from './types'
 
 type Props<Item> = {
   items: Item[]
   renderItem: (item: Item, onClose?: (event: any) => void) => React.ReactNode
-  placement?: string
+  placement?: Placement
   children?: React.ReactNode
   disabled?: boolean
   isGlobal?: boolean
@@ -105,7 +107,7 @@ export default function PopoverList<Item extends {user: User}>({
   if (mode === 'tooltip') {
     return (
       <div className={styles.root}>
-        <Tooltip content={html} disabled={disabled} placement={placement}>
+        <Tooltip content={html as any} disabled={disabled} placement={placement}>
           {popoverChildren}
         </Tooltip>
       </div>
@@ -114,7 +116,7 @@ export default function PopoverList<Item extends {user: User}>({
 
   return (
     <div className={styles.root}>
-      <Popover content={html} disabled={disabled} placement={placement} open={isOpen}>
+      <Popover content={html as any} disabled={disabled} placement={placement} open={isOpen}>
         {popoverChildren}
       </Popover>
     </div>

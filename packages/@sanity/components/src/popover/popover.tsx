@@ -5,6 +5,7 @@ import React, {cloneElement, useState, useEffect} from 'react'
 import {usePopper} from 'react-popper'
 import {Modifier} from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
+import {Placement} from '../types'
 import {PopoverArrow} from './arrow'
 
 import styles from './popover.css'
@@ -22,24 +23,12 @@ const applyModifer: Modifier<'applyMaxSize', {}> = {
 
 interface PopoverProps {
   boundaryElement?: HTMLElement | null
-  children: JSX.Element
+  children: React.ReactElement
   className?: string
-  content: React.ReactNode
-  disabled: boolean
+  content?: React.ReactNode
+  disabled?: boolean
   open?: boolean
-  placement?:
-    | 'top'
-    | 'top-start'
-    | 'top-end'
-    | 'right'
-    | 'right-start'
-    | 'right-end'
-    | 'left'
-    | 'left-start'
-    | 'left-end'
-    | 'bottom'
-    | 'bottom-start'
-    | 'bottom-end'
+  placement?: Placement
   targetElement?: HTMLElement | null
   tone?: 'navbar'
 }
