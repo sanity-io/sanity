@@ -1,6 +1,5 @@
 /* eslint-disable react/no-multi-comp */
 import * as React from 'react'
-import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
 import {
   SNAP_TO_DOCK_DISTANCE_BOTTOM,
@@ -10,6 +9,7 @@ import {
   INTERSECTION_THRESHOLDS
 } from '../constants'
 import {RegionWithIntersectionDetails} from '../types'
+import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
 import styles from './RegionsWithIntersections.css'
 
 const OVERLAY_STYLE: React.CSSProperties = {
@@ -38,10 +38,12 @@ interface WithIntersectionProps extends React.ComponentProps<'div'> {
 }
 const WithIntersection = (props: WithIntersectionProps) => {
   const {onIntersection, io, id, ...rest} = props
-  const element = React.useRef()
+  const element = React.useRef<HTMLDivElement | null>(null)
   React.useEffect(() => {
+    const el = element.current
+    if (!el) return
     const subscription = io
-      .observe(element.current)
+      .observe(el)
       .pipe(tap(entry => onIntersection(id, entry)))
       .subscribe()
     return () => subscription.unsubscribe()
@@ -67,7 +69,7 @@ const invert = (num: number) => -num
 export function RegionsWithIntersections(props: Props) {
   const {regions, render, children, trackerRef, margins} = props
 
-  const overlayRef = React.useRef<HTMLDivElement>()
+  const overlayRef = React.useRef<HTMLDivElement | null>(null)
 
   const io = React.useMemo(
     () =>
@@ -89,53 +91,49 @@ export function RegionsWithIntersections(props: Props) {
 
   const top = intersections['::top']
   const bottom = intersections['::bottom']
-  const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] =
-    top && bottom
-      ? regions
-          .filter(region => region.data?.presence?.length > 0)
-          .map(
-            (region): RegionWithIntersectionDetails => {
-              const intersection = intersections[region.id]
-              if (!intersection) {
-                return null
-              }
+  const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] = (top && bottom
+    ? regions
+        .filter(region => region.data?.presence?.length > 0)
+        .map((region): RegionWithIntersectionDetails | null => {
+          const intersection = intersections[region.id]
+          if (!intersection) {
+            return null
+          }
 
-              const {bottom: boundsBottom, top: boundsTop} = intersection.boundingClientRect
+          const {bottom: boundsBottom, top: boundsTop} = intersection.boundingClientRect
 
-              const aboveTop = intersection.boundingClientRect.top < top.boundingClientRect.bottom
-              const belowBottom =
-                intersection.boundingClientRect.top < bottom.boundingClientRect.top
-              const distanceTop = intersection.isIntersecting
-                ? boundsTop - (intersection.intersectionRect.top - INTERSECTION_ELEMENT_PADDING)
-                : aboveTop
-                ? -top.boundingClientRect.bottom
-                : bottom.boundingClientRect.top
+          const aboveTop = intersection.boundingClientRect.top < top.boundingClientRect.bottom
+          const belowBottom = intersection.boundingClientRect.top < bottom.boundingClientRect.top
+          const distanceTop = intersection.isIntersecting
+            ? boundsTop - (intersection.intersectionRect.top - INTERSECTION_ELEMENT_PADDING)
+            : aboveTop
+            ? -top.boundingClientRect.bottom
+            : bottom.boundingClientRect.top
 
-              const distanceBottom = intersection.isIntersecting
-                ? -(
-                    boundsBottom -
-                    (intersection.intersectionRect.bottom + INTERSECTION_ELEMENT_PADDING)
-                  )
-                : belowBottom
-                ? bottom.boundingClientRect.top
-                : -top.boundingClientRect.bottom
+          const distanceBottom = intersection.isIntersecting
+            ? -(
+                boundsBottom -
+                (intersection.intersectionRect.bottom + INTERSECTION_ELEMENT_PADDING)
+              )
+            : belowBottom
+            ? bottom.boundingClientRect.top
+            : -top.boundingClientRect.bottom
 
-              const position =
-                distanceTop <= SNAP_TO_DOCK_DISTANCE_TOP
-                  ? 'top'
-                  : distanceBottom <= SNAP_TO_DOCK_DISTANCE_BOTTOM
-                  ? 'bottom'
-                  : 'inside'
-              return {
-                distanceTop,
-                distanceBottom,
-                region,
-                position
-              }
-            }
-          )
-          .filter(Boolean)
-      : []
+          const position =
+            distanceTop <= SNAP_TO_DOCK_DISTANCE_TOP
+              ? 'top'
+              : distanceBottom <= SNAP_TO_DOCK_DISTANCE_BOTTOM
+              ? 'bottom'
+              : 'inside'
+          return {
+            distanceTop,
+            distanceBottom,
+            region,
+            position
+          }
+        })
+        .filter(Boolean)
+    : []) as RegionWithIntersectionDetails[]
 
   return (
     <div ref={trackerRef} style={{position: 'relative'}}>
@@ -153,8 +151,7 @@ export function RegionsWithIntersections(props: Props) {
       />
       <div>{children}</div>
       <div ref={overlayRef} className={styles.overlay} style={OVERLAY_STYLE}>
-        {regionsWithIntersectionDetails &&
-          overlayRef.current &&
+        {overlayRef.current &&
           render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
       </div>
       {regions.map(region => {

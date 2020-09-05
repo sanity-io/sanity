@@ -2,6 +2,7 @@ import {Observable, Subject} from 'rxjs'
 import {filter} from 'rxjs/operators'
 
 import {ResizeObserver as Polyfill, ResizeObserverEntry} from '@juggle/resize-observer'
+
 const ResizeObserver = (window as any).ResizeObserver || Polyfill
 
 export interface ObservableResizeObserver {

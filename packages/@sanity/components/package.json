@@ -6,7 +6,8 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

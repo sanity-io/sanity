@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, {useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Placement} from '../types'
-import {Arrow} from './arrow'
+import {TooltipArrow} from './tooltipArrow'
 
 import styles from './tooltip.css'
 
@@ -17,9 +17,9 @@ export interface TooltipProps {
 
 export function Tooltip(props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
   const {children, className, content, disabled, placement = 'bottom', tone, ...restProps} = props
-  const [referenceElement, setReferenceElement] = useState(null)
-  const [popperElement, setPopperElement] = useState(null)
-  const [arrowElement, setArrowElement] = useState(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
   const popper = usePopper(referenceElement, popperElement, {
     placement,
     modifiers: [
@@ -70,7 +70,7 @@ export function Tooltip(props: TooltipProps & Omit<React.HTMLProps<HTMLDivElemen
           {...popper.attributes.popper}
         >
           <div className={styles.card}>{content}</div>
-          <Arrow ref={setArrowElement} style={popper.styles.arrow} tone={tone} />
+          <TooltipArrow ref={setArrowElement} style={popper.styles.arrow} tone={tone} />
         </div>
       )}
     </>

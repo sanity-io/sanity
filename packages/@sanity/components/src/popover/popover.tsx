@@ -6,7 +6,7 @@ import {usePopper} from 'react-popper'
 import {Modifier} from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
 import {Placement} from '../types'
-import {PopoverArrow} from './arrow'
+import {PopoverArrow} from './popoverArrow'
 
 import styles from './popover.css'
 
@@ -44,9 +44,9 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
     targetElement,
     ...restProps
   } = props
-  const [referenceElement, setReferenceElement] = useState(null)
-  const [popperElement, setPopperElement] = useState(null)
-  const [arrowElement, setArrowElement] = useState(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+  const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
   const popper = usePopper(referenceElement, popperElement, {
     placement,
     modifiers: [

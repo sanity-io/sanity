@@ -9,14 +9,14 @@ export const RegionReporter = React.memo(function RegionReporter<Data>(props: {
   style?: React.CSSProperties
 }) {
   const {id, component, data} = props
-  const ref = React.useRef<HTMLDivElement>()
+  const ref = React.useRef<HTMLDivElement | null>(null)
   const context = React.useContext(Context)
 
   React.useEffect(() => {
     context.dispatch({
       type: 'mount',
       id,
-      element: ref.current,
+      element: ref.current || undefined,
       data,
       component
     })

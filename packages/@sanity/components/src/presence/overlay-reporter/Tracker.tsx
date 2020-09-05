@@ -46,24 +46,22 @@ function getRelativeRect(element, parent): Rect {
   }
 }
 
-type TrackerProps<ComponentProps> = {
-  component: React.ComponentType<
-    ComponentProps & {
-      regions: OverlayItem[]
-      children: React.ReactNode
-      trackerRef: React.RefObject<HTMLElement>
-    }
-  >
+export type TrackerComponentProps<ComponentProps> = ComponentProps & {
+  regions: OverlayItem[]
+  children: React.ReactNode
+  trackerRef: React.RefObject<HTMLElement | null>
+}
+
+export type TrackerProps<ComponentProps> = {
+  component: React.ComponentType<TrackerComponentProps<ComponentProps>>
   children: React.ReactNode
   style?: React.CSSProperties
   componentProps: ComponentProps
 }
 
-export const Tracker = React.memo(function Tracker<ComponentProps extends {}>(
-  props: TrackerProps<ComponentProps>
-) {
-  const trackerRef = React.useRef<HTMLElement>()
-  const [items, setItems] = React.useState([])
+export const Tracker = React.memo(function Tracker(props: TrackerProps<Record<string, any>>) {
+  const trackerRef = React.useRef<HTMLElement | null>(null)
+  const [items, setItems] = React.useState<OverlayItem[]>([])
 
   const regionReporterElementEvents$: Subject<RegionReporterEvent> = React.useMemo(
     () => new ReplaySubject<RegionReporterEvent>(),
@@ -71,6 +69,8 @@ export const Tracker = React.memo(function Tracker<ComponentProps extends {}>(
   )
 
   React.useEffect(() => {
+    if (!trackerRef.current) return
+
     const resizeObserver: ObservableResizeObserver = createResizeObserver()
 
     const trackerBounds$ = resizeObserver
@@ -113,7 +113,7 @@ export const Tracker = React.memo(function Tracker<ComponentProps extends {}>(
           unmounted$.pipe(map(() => ({type: 'remove', id: elementId, children: null, rect: null})))
         )
       }),
-      scan((items, event: any) => {
+      scan((items: any[], event: any) => {
         if (event.type === 'update') {
           const exists = items.some(item => item.id === event.id)
           if (exists) {

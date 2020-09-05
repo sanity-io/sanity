@@ -7,7 +7,7 @@ import styles from './ValidationListItem.css'
 
 type Props = {
   kind: string
-  onClick: (event: any, path: any) => void
+  onClick?: (event: any, path: any) => void
   showLink?: boolean
   path: string
   hasFocus?: boolean
