@@ -3,7 +3,7 @@ import withRouterHOC from './withRouterHOC'
 import {Router} from './types'
 
 type Props = {
-  router?: Router
+  router: Router
   children: (router: Router) => React.ReactElement
 }
 
