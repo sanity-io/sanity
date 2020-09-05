@@ -3,14 +3,14 @@ import Link from './Link'
 import {RouterProviderContext, IntentParameters} from './types'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 
-type Props = {
+interface IntentLinkProps {
   intent: string
   params?: IntentParameters
-  children: React.ReactNode
-  className?: string
 }
 
-export default class IntentLink extends React.PureComponent<Props> {
+export default class IntentLink extends React.PureComponent<
+  IntentLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
+> {
   context: RouterProviderContext
 
   static contextTypes = {
@@ -39,8 +39,10 @@ export default class IntentLink extends React.PureComponent<Props> {
   }
 
   render() {
-    const {intent, params, ...rest} = this.props
+    const {intent, params, ...restProps} = this.props
 
-    return <Link href={this.resolveIntentLink(intent, params)} {...rest} ref={this.setElement} />
+    return (
+      <Link {...restProps} href={this.resolveIntentLink(intent, params)} ref={this.setElement} />
+    )
   }
 }
