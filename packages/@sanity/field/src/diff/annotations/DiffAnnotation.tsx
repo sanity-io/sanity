@@ -16,6 +16,7 @@ export interface AnnotatedDiffProps {
 interface BaseAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   className?: string
+  description?: React.ReactNode | string
   children: React.ReactNode
 }
 
@@ -23,7 +24,7 @@ export type DiffAnnotationProps = (AnnotationProps | AnnotatedDiffProps) & BaseA
 
 export function DiffAnnotation(props: DiffAnnotationProps) {
   const colorManager = useUserColorManager()
-  const {as = 'span', children, className} = props
+  const {as = 'span', children, className, description} = props
   const annotation =
     'diff' in props ? getAnnotationAtPath(props.diff, props.path || []) : props.annotation
 
@@ -34,7 +35,13 @@ export function DiffAnnotation(props: DiffAnnotationProps) {
   const color = getAnnotationColor(colorManager, annotation)
   const style = {background: color.background, color: color.text}
   return (
-    <DiffAnnotationTooltip as={as} className={className} annotation={annotation} style={style}>
+    <DiffAnnotationTooltip
+      as={as}
+      className={className}
+      annotation={annotation}
+      style={style}
+      description={description}
+    >
       {children}
     </DiffAnnotationTooltip>
   )
