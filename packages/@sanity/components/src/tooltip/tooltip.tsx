@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, {useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
+import {Placement} from '../types'
 import {Arrow} from './arrow'
 
 import styles from './tooltip.css'
@@ -8,21 +9,9 @@ import styles from './tooltip.css'
 export interface TooltipProps {
   children: React.ReactElement
   className?: string
-  content: React.ReactNode
+  content: React.ReactNode | JSX.Element
   disabled: boolean
-  placement?:
-    | 'top'
-    | 'top-start'
-    | 'top-end'
-    | 'right'
-    | 'right-start'
-    | 'right-end'
-    | 'left'
-    | 'left-start'
-    | 'left-end'
-    | 'bottom'
-    | 'bottom-start'
-    | 'bottom-end'
+  placement?: Placement
   tone?: 'navbar'
 }
 

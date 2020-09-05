@@ -1,6 +1,6 @@
 import React from 'react'
+import {Marker} from '../types'
 import ValidationListItem from './ValidationListItem'
-import {Marker} from '../typedefs'
 
 import styles from './ValidationList.css'
 
