@@ -1,14 +1,14 @@
 /* eslint-disable react/no-multi-comp, complexity, react/jsx-filename-extension */
 
+import {FieldPresence} from '@sanity/base/presence'
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import FieldStatus from './FieldStatus'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {FieldPresence} from '../presence'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import FieldStatus from './FieldStatus'
 
 export default class Fieldset extends React.PureComponent {
   static propTypes = {

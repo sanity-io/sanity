@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "prepublishOnly": "sanity-check"
+    "prepublishOnly": "sanity-check",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

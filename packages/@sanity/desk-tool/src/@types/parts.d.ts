@@ -1,6 +1,10 @@
 declare module 'part:*'
 declare module 'all:part:*'
 
+declare module 'part:@sanity/components/avatar' {
+  export * from '@sanity/components/src/avatar'
+}
+
 declare module 'part:@sanity/components/menu-button' {
   export const MenuButton: ComponentType<{
     // @todo: typings
@@ -10,6 +14,10 @@ declare module 'part:@sanity/components/menu-button' {
     open?: boolean
     setOpen?: (val: boolean) => void
   }>
+}
+
+declare module 'part:@sanity/components/tooltip' {
+  export * from '@sanity/components/src/tooltip'
 }
 
 declare module 'all:part:@sanity/base/diff-resolver' {

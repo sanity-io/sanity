@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DialogContent from 'part:@sanity/components/dialogs/content'
@@ -12,13 +13,13 @@ import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import * as PathUtils from '@sanity/util/paths'
-import {FieldPresence, PresenceOverlay} from '@sanity/base/presence'
+
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {Path} from '../../typedefs/path'
-import {Presence, Marker, Type} from '../../typedefs'
+import {Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
@@ -58,7 +59,7 @@ type Props = {
   filterField: Function
   readOnly: boolean | null
   focusPath: Path
-  presence: Presence[]
+  presence: FormFieldPresence[]
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}
@@ -120,7 +121,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
   getMemberType(): Type | null {
     const {value, type} = this.props
     const itemTypeName = resolveTypeName(value)
-    const memberType = type.of.find(memberType => memberType.name === itemTypeName)
+    const memberType = type.of.find(_memberType => _memberType.name === itemTypeName)
     return memberType
   }
   getTitle(): string {
@@ -160,7 +161,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
-    const childPresence = presence.filter(presence => presence.path.length > 1)
+    const childPresence = presence.filter(_presence => _presence.path.length > 1)
     const content = (
       <FormBuilderInput
         type={memberType}

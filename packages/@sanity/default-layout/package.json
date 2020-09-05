@@ -32,6 +32,7 @@
     "@sanity/base": "1.150.7",
     "@sanity/components": "1.150.7",
     "@sanity/generate-help-url": "1.150.1",
+    "@sanity/util": "1.150.1",
     "classnames": "^2.2.5",
     "is-hotkey": "^0.1.4",
     "lodash": "^4.17.15",
