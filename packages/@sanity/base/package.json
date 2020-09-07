@@ -64,7 +64,7 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-dom": "^16.9.0",
