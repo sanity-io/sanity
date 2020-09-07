@@ -67,6 +67,17 @@
   display: none;
 }
 
+.mainArea {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+
+  @nest .root.isOverlayVisible & {
+    overflow: hidden;
+    height: 100%;
+  }
+}
+
 .toolContainer {
   position: relative;
   height: 100%;
@@ -76,19 +87,27 @@
 
   @media (--screen-medium) {
     overflow: auto;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.sidecarContainer {
+  position: relative;
+
+  @media (--max-screen-medium) {
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    width: 420px;
+
+    @nest &:empty {
+      display: none;
+    }
   }
 }
 
 .sideMenuContainer {
   /* semantic class name */
-}
-
-.mainArea {
-  flex: 1;
-  min-height: 0;
-
-  @nest .root.isOverlayVisible & {
-    overflow: hidden;
-    height: 100%;
-  }
 }

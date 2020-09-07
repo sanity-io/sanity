@@ -63,7 +63,7 @@ class Sidecar extends React.PureComponent<{}, State> {
   render() {
     const {isOpen, isVisible} = this.state
 
-    if (!(isSidecarEnabled && isSidecarEnabled())) {
+    if (!isVisible || !(isSidecarEnabled && isSidecarEnabled())) {
       return null
     }
 

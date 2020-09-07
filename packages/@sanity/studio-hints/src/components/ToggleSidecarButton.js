@@ -5,9 +5,8 @@ import {
   isSidecarOpenSetting,
   toggleSidecarOpenState
 } from 'part:@sanity/default-layout/sidecar-datastore'
-import styles from './ToggleSidecarButton.css'
-import CloseCircleIcon from './icons/CloseCircle'
-import HelpCircleIcon from './icons/HelpCircle'
+import Button from 'part:@sanity/components/buttons/default'
+import HelpCircleIcon from 'part:@sanity/base/help-circle-icon'
 
 export default class ToggleSidecarButton extends React.PureComponent {
   state = {
@@ -28,18 +27,17 @@ export default class ToggleSidecarButton extends React.PureComponent {
 
   render() {
     const {isOpen} = this.state
+
     return (
-      <button
-        className={styles.toggleButton}
-        onClick={toggleSidecarOpenState}
-        type="button"
+      <Button
         aria-label="Toggle sidecar"
         aria-pressed={isOpen}
-      >
-        <div className={styles.inner} tabIndex={-1}>
-          {isOpen ? <CloseCircleIcon /> : <HelpCircleIcon />}
-        </div>
-      </button>
+        icon={HelpCircleIcon}
+        kind="simple"
+        onClick={toggleSidecarOpenState}
+        selected={isOpen}
+        tone="navbar"
+      />
     )
   }
 }
