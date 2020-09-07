@@ -57,6 +57,7 @@ import mux from './mux'
 import review from './review'
 import gallery from './gallery'
 import presence, {objectWithNestedArray} from './presence'
+import {customBlock, hoistedPt, hoistedPtDocument} from './hoistedPt'
 
 export default createSchema({
   name: 'test-examples',
@@ -122,6 +123,9 @@ export default createSchema({
     simpleBlock,
     simpleBlockNote,
     simpleBlockNoteBody,
-    simpleBlockNoteUrl
+    simpleBlockNoteUrl,
+    hoistedPtDocument,
+    hoistedPt,
+    customBlock
   ])
 })
