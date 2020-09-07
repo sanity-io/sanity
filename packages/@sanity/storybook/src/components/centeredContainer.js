@@ -4,7 +4,13 @@ import React from 'react'
 
 import styles from './centeredContainer.css'
 
-export function CenteredContainer({children, className: classNameProp, style, ...restProps}) {
+export function CenteredContainer({
+  children,
+  className: classNameProp,
+  defaultTone,
+  style,
+  ...restProps
+}) {
   const fontSize = number(
     'Font size (rem)',
     1,
@@ -16,7 +22,7 @@ export function CenteredContainer({children, className: classNameProp, style, ..
     select(
       'Background tone',
       {'': '(none)', component: 'Component', navbar: 'Navbar'},
-      'component',
+      defaultTone || 'component',
       'Container'
     ) || undefined
 
