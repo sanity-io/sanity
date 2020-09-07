@@ -9,10 +9,8 @@
 }
 
 .crumb > * {
-  overflow: hidden;
   display: inline-block;
   white-space: nowrap;
-  padding: 0.2em 0;
 }
 
 .change__breadcrumb__separator {
