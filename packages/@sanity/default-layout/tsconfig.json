@@ -12,6 +12,11 @@
           "customMatcher": "\\.css$"
         }
       }
-    ]
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "part:@sanity/default-layout/tool-switcher": ["./navbar/toolMenu/ToolMenu"],
+      "part:@sanity/default-layout/sidecar-datastore": ["./datastores/sidecar"]
+    }
   }
 }
