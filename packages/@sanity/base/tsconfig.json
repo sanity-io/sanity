@@ -8,7 +8,6 @@
     "strictNullChecks": false,
     "jsx": "react",
 
-    // Paths
     "baseUrl": "./src",
     "paths": {
       "part:@sanity/base/datastore/history": ["./datastores/history"],

@@ -19,7 +19,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@juggle/resize-observer": "3.1.3",
+    "@juggle/resize-observer": "^3.2.0",
+    "@popperjs/core": "^2.4.4",
     "@reach/auto-id": "^0.10.5",
     "@sanity/base": "1.150.8",
     "@sanity/util": "1.150.1",
