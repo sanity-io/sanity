@@ -32,6 +32,7 @@ function HintCard(props) {
           <span className={styles.cardTitle}>{card.titleOverride || card.hint.title}</span>
           <p className={styles.cardSummary}>{card.hint.description}</p>
         </div>
+
         <span className={styles.externalIcon}>
           <LaunchIcon />
         </span>

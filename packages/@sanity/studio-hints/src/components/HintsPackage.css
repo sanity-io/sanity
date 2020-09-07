@@ -1,12 +1,29 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--medium-padding);
   position: relative;
   display: flex;
   flex-direction: column;
+  background: var(--main-navigation-color);
+  color: var(--main-navigation-color--inverted);
+}
+
+.header {
+  background: var(--main-navigation-color);
+  padding: var(--medium-padding);
+  border-bottom: 1px solid var(--hairline-color);
+}
+
+.content {
+  padding: var(--medium-padding);
   flex: 1;
-  color: color(var(--main-navigation-color--inverted) a(70%));
+  min-height: 0;
+  overflow: auto;
+  padding: var(--large-padding) var(--medium-padding);
+
+  @nest & > div + div {
+    margin-top: var(--extra-large-padding);
+  }
 }
 
 .withError {
@@ -43,23 +60,11 @@
 }
 
 .footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  max-width: 100%;
-  padding: 0 var(--medium-padding);
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
   background: var(--main-navigation-color);
-}
+  border-top: 1px solid var(--hairline-color);
 
-.removeHintsLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--brand-primary);
-  color: var(--brand-primary--inverted);
-  border-radius: var(--border-radius-medium);
-  text-decoration: none;
-  min-height: calc(var(--font-size-large) * 2.2);
-  margin: var(--small-padding) 0;
+  @nest & > a {
+    width: 100%;
+  }
 }
