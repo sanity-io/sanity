@@ -1,9 +1,35 @@
 // declare module 'part:*'
-
 declare module 'part:@sanity/base/authentication-fetcher'
 declare module 'part:@sanity/base/client'
-declare module 'part:@sanity/base/preview'
 declare module 'part:@sanity/base/user'
+
+declare module 'part:@sanity/base/preview' {
+  import {Observable} from 'rxjs'
+
+  const PreviewBase: React.ComponentType<{
+    type?: object // Schema type
+    fields?: string[]
+    value: any
+    children?: (props: any) => React.ComponentType
+    layout: 'inline' | 'block' | 'default' | 'card' | 'media'
+  }>
+
+  type previewObserver = (
+    value: Reference | string,
+    schemaType: object
+  ) => Observable<{snapshot: {title: string}}>
+
+  export const observeForPreview: previewObserver
+  export default PreviewBase
+}
+
+declare module 'part:@sanity/base/schema' {
+  interface Schema {
+    get(typeName: string): unknown
+  }
+  const schema: Schema
+  export default schema
+}
 
 declare module 'all:part:@sanity/base/diff-resolver' {
   import {ComponentType} from 'react'
