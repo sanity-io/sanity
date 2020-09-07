@@ -13,17 +13,6 @@ import {arrayMove} from 'react-sortable-hoc'
 
 const chance = new Chance()
 
-const containerStyle: React.CSSProperties = {
-  width: '90%',
-  height: '90%',
-  boxShadow: '0 0 10px #999',
-  overflow: 'auto',
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translateX(-50%) translateY(-50%)'
-}
-
 interface SortableGridTesterProps {
   items: {key: string}[]
   onSort?: () => void
@@ -61,7 +50,7 @@ class SortableGridTester extends React.PureComponent<
     const {renderWith: Preview} = this.props
 
     return (
-      <SortableGridList onSort={this.handleOnSort}>
+      <SortableGridList onSortEnd={this.handleOnSort}>
         {items.map((item, index) => (
           <SortableGridItem key={item.key} index={index}>
             <DragHandle />
@@ -88,9 +77,7 @@ export function MediaPreviewSortableStory() {
 
   return (
     <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
-      <div style={containerStyle}>
-        <SortableGridTester items={items} renderWith={MediaPreview} />
-      </div>
+      <SortableGridTester items={items} renderWith={MediaPreview} />
     </Sanity>
   )
 }

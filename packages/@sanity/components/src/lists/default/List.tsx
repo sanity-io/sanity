@@ -1,14 +1,16 @@
+/* eslint-disable react/prop-types */
+
 import classNames from 'classnames'
 import React from 'react'
 
-import styles from '../styles/DefaultList.css'
+import styles from './List.css'
 
-const DefaultList = React.forwardRef(
+const List = React.forwardRef(
   (props: React.HTMLProps<HTMLUListElement>, ref: React.Ref<HTMLUListElement>) => {
     return <ul {...props} className={classNames(styles.root, props.className)} ref={ref} />
   }
 )
 
-DefaultList.displayName = 'DefaultList'
+List.displayName = 'List'
 
-export default DefaultList
+export default List

@@ -1,4 +1,6 @@
 import ListItem from '../default/ListItem'
-import {createSortableItem} from '../sortable-factories'
+import {createSortableItem} from './sortable-factories'
 
-export default createSortableItem(ListItem)
+const SortableListItem = createSortableItem(ListItem as any)
+
+export default SortableListItem

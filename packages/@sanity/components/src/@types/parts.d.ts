@@ -44,6 +44,10 @@ declare module 'part:@sanity/base/compose-icon' {
   export {default} from '@sanity/base/src/components/icons/Compose'
 }
 
+declare module 'part:@sanity/base/drag-handle-icon' {
+  export {default} from '@sanity/base/src/components/icons/DragHandle'
+}
+
 declare module 'part:@sanity/base/error-outline-icon' {
   export {default} from '@sanity/base/src/components/icons/ErrorOutline'
 }

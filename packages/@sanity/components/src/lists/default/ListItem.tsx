@@ -1,22 +1,20 @@
 import classNames from 'classnames'
-import React from 'react'
+import React, {forwardRef} from 'react'
 
-import styles from '../styles/DefaultListItem.css'
+import styles from './ListItem.css'
 
-export default class CoreListItem extends React.Component<React.HTMLProps<HTMLLIElement>> {
-  ref = React.createRef<HTMLLIElement>()
+const ListItem = forwardRef(
+  (props: React.HTMLProps<HTMLLIElement>, ref: React.Ref<HTMLLIElement>) => {
+    const {children, className, ...restProps} = props
 
-  focus() {
-    if (this.ref.current) this.ref.current.focus()
-  }
-
-  render() {
     return (
-      <li
-        {...this.props}
-        ref={this.ref}
-        className={classNames(styles.root, this.props.className)}
-      />
+      <li {...restProps} className={classNames(styles.root, className)} ref={ref}>
+        {children}
+      </li>
     )
   }
-}
+)
+
+ListItem.displayName = 'ListItem'
+
+export default ListItem
