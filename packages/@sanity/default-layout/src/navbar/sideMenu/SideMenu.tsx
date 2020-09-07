@@ -1,6 +1,8 @@
+import {UserAvatar} from '@sanity/base/components'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
+import Button from 'part:@sanity/components/buttons/default'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import DatasetSelect from '../datasetSelect/DatasetSelect'
 import {HAS_SPACES} from '../../util/spaces'
@@ -28,31 +30,24 @@ function SideMenu(props: Props) {
   return (
     <div className={className}>
       <div>
-        <button
-          className={styles.closeButton}
-          type="button"
-          onClick={onClose}
-          title="Close menu"
-          tabIndex={tabIndex}
-        >
-          <CloseIcon />
-        </button>
-
         <div className={styles.header}>
-          <div className={styles.userProfile}>
-            {user.profileImage ? (
-              <img
-                className={styles.userProfileImage}
-                src={user.profileImage}
-                alt={`${user.name}'s profile image`}
-                data-initials={user.name ? user.name.charAt(0) : user.email.charAt(0)}
-              />
-            ) : (
-              <div className={styles.userProfileImageMissing}>
-                {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+          <div className={styles.headerMain}>
+            <div className={styles.userProfile}>
+              <div className={styles.userAvatarContainer}>
+                <UserAvatar size="medium" userId="me" />
               </div>
-            )}
-            <div className={styles.userProfileText}>{user.name || user.email}</div>
+              <div className={styles.userProfileText}>{user.name || user.email}</div>
+            </div>
+
+            <div className={styles.closeButtonContainer}>
+              <Button
+                icon={CloseIcon}
+                kind="simple"
+                onClick={onClose}
+                tabIndex={tabIndex}
+                title="Close menu"
+              />
+            </div>
           </div>
 
           {HAS_SPACES && (
@@ -75,21 +70,14 @@ function SideMenu(props: Props) {
 
         <div className={styles.menuBottom}>
           <div className={styles.signOutButton}>
-            <a onClick={onSignOut} tabIndex={tabIndex}>
-              <span className={styles.signOutButtonIconContainer}>
-                <SignOutIcon />
-              </span>
-              <span className={styles.signOutButtonText}>Sign out</span>
-            </a>
+            <Button icon={SignOutIcon} kind="simple" onClick={onSignOut} tabIndex={tabIndex}>
+              Sign out
+            </Button>
           </div>
         </div>
       </div>
     </div>
   )
-}
-
-SideMenu.defaultProps = {
-  activeToolName: null
 }
 
 export default SideMenu

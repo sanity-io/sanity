@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
 import {UserAvatar} from '@sanity/base/components'
@@ -43,36 +44,39 @@ class LoginStatus extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const popoverContent = (
+      <div className={styles.menuWrapper}>
+        <Menu
+          onAction={this.handleUserMenuItemClick}
+          items={[
+            {
+              title: `Sign out`,
+              icon: IconSignOut,
+              action: 'signOut'
+            }
+          ]}
+          origin="top-right"
+          onClickOutside={this.handleUserMenuClickOutside}
+        />
+      </div>
+    )
+
     return (
       <div className={classNames(styles.root, this.props.className)}>
-        <Popover
-          content={
-            <div className={styles.menuWrapper}>
-              <Menu
-                onAction={this.handleUserMenuItemClick}
-                items={[
-                  {
-                    title: `Sign out`,
-                    icon: IconSignOut,
-                    action: 'signOut'
-                  }
-                ]}
-                origin="top-right"
-                onClickOutside={this.handleUserMenuClickOutside}
-              />
-            </div>
-          }
-          open={this.state.isOpen}
-          placement="bottom-end"
-        >
+        <Popover content={popoverContent as any} open={this.state.isOpen} placement="bottom-end">
           <button
             className={styles.button}
             onClick={this.handleAvatarClick}
-            title="Show user menu"
+            title="Toggle user menu"
             type="button"
           >
             <div className={styles.inner} tabIndex={-1}>
-              <UserAvatar size="medium" tone="navbar" userId="me" />
+              <div className={styles.avatarContainer}>
+                <UserAvatar size="medium" tone="navbar" userId="me" />
+              </div>
+              <div className={styles.iconContainer}>
+                <ChevronDownIcon />
+              </div>
             </div>
           </button>
         </Popover>

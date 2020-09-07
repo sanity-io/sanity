@@ -10,7 +10,7 @@ import {Package, Severity} from './types'
 
 interface Props {
   showStatus: boolean
-  versionReply: {outdated: Package[]; isSupported: boolean; isUpToDate: boolean}
+  versionReply: {outdated?: Package[]; isSupported: boolean; isUpToDate: boolean}
 }
 
 const levels: Array<Severity> = ['low', 'medium', 'high']

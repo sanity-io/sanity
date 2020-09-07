@@ -28,18 +28,6 @@
   color: var(--text-muted);
 }
 
-.button {
-  appearance: none;
-  font: inherit;
-  -webkit-font-smoothing: inherit;
-  background: none;
-  color: inherit;
-  border: 0;
-  border-radius: 4px;
-  padding: var(--small-padding);
-  margin: 0;
-}
-
 .avatarList {
   max-height: calc(100vh - 130px);
   overflow: auto;
@@ -48,61 +36,6 @@
 
 .inner {
   outline: none;
-}
-
-.mobileContent {
-  display: flex;
-  text-decoration: none;
-  padding: 0.75em;
-  white-space: nowrap;
-  flex-direction: row;
-  align-items: center;
-  -webkit-font-smoothing: inherit;
-  line-height: calc(25 / 16);
-  margin: 0;
-  height: 100%;
-
-  @media (--screen-medium) {
-    display: none;
-    padding: 0.75em;
-  }
-
-  @media (hover: hover) {
-    color: var(--main-navigation-color--inverted-muted);
-
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    background-color: color(var(--focus-color) a(20%));
-  }
-
-  @nest & .icon {
-    @nest & > svg {
-      display: block;
-      font-size: calc(17 / 16 * 1em);
-      margin: calc(4 / 17 * 1em);
-
-      @nest &[data-sanity-icon='true'] {
-        font-size: calc(25 / 16 * 1em);
-        margin: 0;
-      }
-    }
-  }
-
-  @nest & .statusIndicator {
-    position: absolute;
-    top: calc(1em - 1px);
-    right: calc(1em - 1px);
-    height: 0.5em;
-    width: 0.5em;
-    border-radius: 50%;
-    border: 1px solid var(--main-navigation-color);
-    background: var(--state-success-color);
-    box-sizing: border-box;
-  }
 }
 
 .avatars {
@@ -119,7 +52,6 @@
   padding: var(--extra-small-padding) 0;
   position: sticky;
   bottom: 0;
-  min-width: 180px;
 }
 
 .manageLink {
@@ -144,4 +76,23 @@
       margin: calc(4 / 25 * -1em); /* -4px */
     }
   }
+}
+
+.narrowButton {
+  @media (--screen-medium) {
+    display: none;
+  }
+}
+
+.wideButton {
+  display: none;
+
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.avatarStack {
+  margin: -1px -3px -2px;
+  height: 23px;
 }

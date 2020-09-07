@@ -4,6 +4,7 @@ import {useGlobalPresence} from '@sanity/base/hooks'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import {AvatarStack} from 'part:@sanity/components/avatar'
+import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState} from 'react'
@@ -21,7 +22,7 @@ export function PresenceMenu() {
   const handleToggle = useCallback(() => setOpen(!open), [open])
   const handleClose = useCallback(() => setOpen(false), [])
 
-  const content = (
+  const popoverContent = (
     <div className={styles.popoverContent}>
       {presence.length === 0 && (
         <div className={styles.header}>
@@ -59,26 +60,38 @@ export function PresenceMenu() {
     <ClickOutside onClickOutside={handleClose}>
       {ref => (
         <div className={styles.root} ref={ref as React.Ref<HTMLDivElement>}>
-          <Popover content={content} open={open}>
-            <button className={styles.button} onClick={handleToggle} type="button">
-              <div className={styles.inner} tabIndex={-1}>
-                <div className={styles.mobileContent}>
-                  {/* Only show this on mobile */}
-                  <div className={styles.icon}>
-                    {presence.length > 0 && <div className={styles.statusIndicator} />}
-                    <UsersIcon />
-                  </div>
-                </div>
+          <Popover content={popoverContent as any} open={open}>
+            <div>
+              <Button
+                className={styles.narrowButton}
+                icon={UsersIcon}
+                iconStatus="success"
+                kind="simple"
+                onClick={handleToggle}
+                selected={open}
+                tone="navbar"
+              >
+                {/* {presence.length > 0 && <div className={styles.statusIndicator} />} */}
+              </Button>
 
-                <div className={styles.avatars}>
-                  <AvatarStack maxLength={MAX_AVATARS_GLOBAL} tone="navbar">
-                    {presence.map(item => (
-                      <UserAvatar key={item.user.id} user={item.user} />
-                    ))}
-                  </AvatarStack>
-                </div>
-              </div>
-            </button>
+              <Button
+                className={styles.wideButton}
+                kind="simple"
+                onClick={handleToggle}
+                selected={open}
+                tone="navbar"
+              >
+                <AvatarStack
+                  className={styles.avatarStack}
+                  maxLength={MAX_AVATARS_GLOBAL}
+                  tone="navbar"
+                >
+                  {presence.map(item => (
+                    <UserAvatar key={item.user.id} user={item.user} />
+                  ))}
+                </AvatarStack>
+              </Button>
+            </div>
           </Popover>
         </div>
       )}

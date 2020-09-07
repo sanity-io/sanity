@@ -1,3 +1,5 @@
+/* eslint-disable import/export */
+
 // import {Observable} from 'rxjs'
 type Observable<T> = any
 
@@ -123,26 +125,12 @@ declare module 'part:@sanity/components/click-outside' {
   export * from '@sanity/components/src/clickOutside'
 }
 
+declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
-  const DefaultButton: React.ComponentClass<{
-    kind?: 'simple' | 'secondary'
-    color?: 'primary' | 'success' | 'danger' | 'white' | 'warning'
-    onBlur?: () => void
-    onClick?: () => void
-    children?: React.ReactNode
-    inverted?: boolean
-    icon?: React.ComponentType<{}>
-    loading?: boolean
-    className?: string
-    disabled?: boolean
-    tabIndex?: number
-    padding?: 'large' | 'default' | 'small' | 'none'
-    bleed?: boolean
-    selected?: boolean
-    size?: 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
-  }>
-
-  export default DefaultButton
+  export {default} from '@sanity/components/src/buttons/DefaultButton'
+}
+declare module 'part:@sanity/components/buttons/state' {
+  export {default} from '@sanity/components/src/buttons/StateButton'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen' {
@@ -185,14 +173,6 @@ declare module 'part:@sanity/base/link-icon' {
 declare module 'part:@sanity/base/users-icon' {
   const UserIcon: React.ComponentType<{}>
   export default UserIcon
-}
-
-declare module 'part:@sanity/components/buttons/fab' {
-  const Fab: React.ComponentType<{
-    colored: boolean
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
-  }>
-  export default Fab
 }
 
 declare module 'part:@sanity/default-layout/branding-style' {
@@ -310,9 +290,9 @@ declare module 'part:@sanity/base/util/draft-utils' {
   export const getPublishedId: (str: string) => string
 }
 
+declare module 'part:@sanity/components/loading/spinner-style'
 declare module 'part:@sanity/components/loading/spinner' {
-  const Spinner: React.ComponentType<{center: boolean; message: string}>
-  export default Spinner
+  export {default} from '@sanity/components/src/loading/Spinner'
 }
 
 declare module 'part:@sanity/base/search' {
@@ -392,13 +372,11 @@ declare module 'part:@sanity/components/dialogs/fullscreen-message' {
 }
 
 declare module 'part:@sanity/components/popover' {
-  // export const Portal: ComponentType<{}>
-  export const Popover: any
+  export * from '@sanity/components/src/popover'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  // export const Portal: ComponentType<{}>
-  export const Tooltip: any
+  export * from '@sanity/components/src/tooltip'
 }
 
 declare module 'part:@sanity/base/util/document-action-utils' {
@@ -418,6 +396,11 @@ declare module 'part:@sanity/base/client' {
 declare module 'part:@sanity/base/error-icon' {
   const ErrorIcon: React.ComponentType<{}>
   export default ErrorIcon
+}
+
+declare module 'part:@sanity/base/spinner-icon' {
+  const SpinnerIcon: React.ComponentType<{}>
+  export default SpinnerIcon
 }
 
 declare module 'part:@sanity/base/warning-icon' {

@@ -1,17 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --nav-bar-box: 3.0625em; /* 49px */
-}
-
 .root {
   display: grid;
-  /* prettier-ignore */
-  grid-template-areas:  'hamburger   createButton branding     sidecarStatus presence    searchButton';
-  /* prettier-ignore */
-  grid-template-columns: min-content min-content  auto         min-content   min-content min-content;
   box-sizing: border-box;
-  align-items: stretch;
+  /* prettier-ignore */
+  grid-template-areas:  'hamburger   createButton branding       sidecarStatus presence    searchButton';
+  /* prettier-ignore */
+  grid-template-columns: min-content min-content  minmax(0, 1fr) min-content   min-content min-content;
 
   @media (--screen-medium) {
     /* prettier-ignore */
@@ -21,33 +16,23 @@
 
     @nest &.withToolSwitcher {
       /* prettier-ignore */
-      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus presence   sidecarStatus loginStatus';
+      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus presence    sidecarStatus loginStatus';
       /* prettier-ignore */
       grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  max-content min-content   min-content;
     }
-  }
-
-  @nest & > a {
-    text-decoration: none;
-    color: inherit;
   }
 }
 
 .branding {
   grid-area: branding;
-  position: relative;
-  box-sizing: border-box;
-  overflow: hidden;
-
-  @media (--screen-medium) {
-    display: flex;
-    align-items: stretch;
-    overflow: visible;
-  }
+  padding: 4px;
 }
 
-a.branding {
+.brandingLink {
+  text-decoration: none;
+  color: inherit;
   outline: none;
+  border-radius: 4px;
 
   @nest &:focus {
     background-color: color(var(--focus-color) a(20%));
@@ -56,51 +41,12 @@ a.branding {
 
 .hamburger {
   grid-area: hamburger;
-  display: flex;
-  align-items: stretch;
+  padding: 4px;
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
       display: none;
     }
-  }
-}
-
-.hamburgerButton {
-  -webkit-font-smoothing: inherit;
-  appearance: none;
-  display: flex;
-  align-items: center;
-  outline: none;
-  border: 0;
-  border-radius: 0;
-  margin: 0;
-  padding: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-
-  @media (hover: hover) {
-    color: var(--main-navigation-color--inverted-muted);
-
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    background-color: color(var(--focus-color) a(20%));
-  }
-}
-
-.hamburgerButtonInner {
-  outline: none;
-  display: flex;
-  align-items: center;
-  padding: calc(var(--medium-padding) - var(--extra-small-padding));
-
-  @nest & > svg {
-    font-size: calc(25 / 16 * 1em);
   }
 }
 
@@ -121,6 +67,7 @@ a.branding {
 .toolSwitcher {
   display: none;
   grid-area: toolSwitcher;
+  padding: 4px;
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -132,29 +79,28 @@ a.branding {
 .sanityStatus {
   grid-area: sanityStatus;
   display: none;
-  align-items: stretch;
+  padding: 4px;
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
-      display: flex;
+      display: block;
     }
   }
 }
 
 .presenceStatus {
   grid-area: presence;
-  display: flex;
-  align-items: stretch;
+  padding: 4px;
 }
 
 .loginStatus {
   grid-area: loginStatus;
   display: none;
-  align-items: stretch;
+  padding: 4px;
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
-      display: flex;
+      display: block;
     }
   }
 }
@@ -193,7 +139,6 @@ a.branding {
 
   @media (--screen-medium) {
     position: relative;
-    justify-self: stretch;
     padding: var(--small-padding);
 
     @nest &.searchIsOpen {
@@ -204,41 +149,10 @@ a.branding {
 
 .createButton {
   grid-area: createButton;
-  -webkit-font-smoothing: inherit;
-  appearance: none;
-  outline: none;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  display: flex;
-  user-select: none;
-  cursor: default;
-  position: relative;
-  margin: 0;
-  padding: 0;
-
-  @media (hover: hover) {
-    color: var(--main-navigation-color--inverted-muted);
-
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    color: inherit;
-    background-color: color(var(--focus-color) a(20%));
-  }
-
-  @nest > [data-tooltipped] {
-    display: flex !important;
-  }
+  padding: 4px;
 }
 
 .createButtonInner {
-  outline: none;
   display: flex;
   align-items: center;
   text-align: center;
@@ -273,70 +187,10 @@ a.branding {
 }
 
 .searchButton {
-  -webkit-font-smoothing: inherit;
-  appearance: none;
-  outline: none;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  display: flex;
   grid-area: searchButton;
-  text-align: center;
-  user-select: none;
-  cursor: default;
-  position: relative;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-
-  @media (hover: hover) {
-    color: var(--main-navigation-color--inverted-muted);
-
-    @nest &:hover {
-      color: inherit;
-    }
-  }
-
-  @nest &:focus {
-    background-color: color(var(--focus-color) a(20%));
-  }
+  padding: 4px;
 
   @media (--screen-medium) {
     display: none;
   }
-
-  @nest .root[data-search-open='true'] & {
-    display: none;
-  }
-}
-
-.searchButtonInner {
-  outline: none;
-  display: flex;
-  align-items: center;
-  padding: calc(var(--medium-padding) - var(--extra-small-padding));
-
-  @nest & > svg {
-    font-size: calc(25 / 16 * 1em);
-  }
-}
-
-.searchButtonIcon {
-  display: inline-block;
-  font-size: calc(25 / 16 * 1em);
-  line-height: 1;
-
-  @nest & > svg {
-    display: block;
-  }
-
-  @media (--screen-medium) {
-    display: block;
-  }
-}
-
-.searchButtonText {
-  display: none;
 }

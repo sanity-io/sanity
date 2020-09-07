@@ -16,7 +16,7 @@
     {
       "implements": "part:@sanity/default-layout/tool-switcher",
       "name": "part:@sanity/default-layout/default-tool-switcher",
-      "path": "navbar/toolMenu/ToolSwitcher"
+      "path": "navbar/toolMenu/ToolMenu"
     },
     {
       "name": "part:@sanity/default-layout/sidecar",
