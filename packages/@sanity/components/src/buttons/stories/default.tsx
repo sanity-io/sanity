@@ -49,7 +49,8 @@ export function DefaultStory() {
     selected: boolean('Selected', false, 'props'),
     size:
       select('Size', ['', 'extra-small', 'small', 'medium', 'large', 'extra-large'], '', 'props') ||
-      undefined
+      undefined,
+    tone: select('Tone', {'': '(none)', navbar: 'Navbar'}, '', 'Props') || undefined
   }
 
   const children = text('Text', 'Touch Me!', 'props')
