@@ -1,7 +1,10 @@
+import icon from 'part:@sanity/base/user-icon'
+
 export default {
   type: 'document',
   name: 'author',
   title: 'Author',
+  icon,
   fields: [
     {
       type: 'string',
