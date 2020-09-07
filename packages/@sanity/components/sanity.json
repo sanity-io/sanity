@@ -357,7 +357,7 @@
     },
     {
       "implements": "part:@sanity/components/lists/default-style",
-      "path": "lists/styles/DefaultList.css"
+      "path": "lists/default/List.css"
     },
     {
       "name": "part:@sanity/components/lists/default-item-style",
@@ -365,7 +365,7 @@
     },
     {
       "implements": "part:@sanity/components/lists/default-item-style",
-      "path": "lists/styles/DefaultListItem.css"
+      "path": "lists/default/ListItem.css"
     },
     {
       "name": "part:@sanity/components/drag-handle-style",
@@ -373,7 +373,7 @@
     },
     {
       "implements": "part:@sanity/components/drag-handle-style",
-      "path": "lists/styles/DragHandle.css"
+      "path": "lists/sortable/DragHandle.css"
     },
     {
       "name": "part:@sanity/components/edititem/fold",
