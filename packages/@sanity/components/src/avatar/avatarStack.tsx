@@ -1,7 +1,6 @@
-/* eslint-disable react/require-default-props */
-
+import classNames from 'classnames'
 import React, {cloneElement} from 'react'
-import {isElement} from 'react-is'
+import {childrenToElementArray} from '../helpers'
 import {AvatarCounter} from './avatarCounter'
 import {AvatarSize} from './types'
 
@@ -14,8 +13,15 @@ interface AvatarStackProps {
   tone?: 'navbar'
 }
 
-export function AvatarStack(props: AvatarStackProps) {
-  const {children: childrenProp, maxLength: maxLengthProp = 4, size = 'small', tone} = props
+export function AvatarStack(props: AvatarStackProps & React.HTMLProps<HTMLDivElement>) {
+  const {
+    children: childrenProp,
+    className,
+    maxLength: maxLengthProp = 4,
+    size = 'small',
+    tone,
+    ...restProps
+  } = props
   const maxLength = Math.max(maxLengthProp, 0)
   const children = childrenToElementArray(childrenProp)
   const len = children.length
@@ -25,7 +31,7 @@ export function AvatarStack(props: AvatarStackProps) {
 
   return (
     <>
-      <div className={styles.root} data-size={size}>
+      <div {...restProps} className={classNames(styles.root, className)} data-size={size}>
         {len === 0 && (
           <div>
             <AvatarCounter count={len} />
@@ -44,10 +50,4 @@ export function AvatarStack(props: AvatarStackProps) {
       </div>
     </>
   )
-}
-
-function childrenToElementArray(children: React.ReactNode): React.ReactElement[] {
-  const childrenArray = Array.isArray(children) ? children : [children]
-
-  return childrenArray.filter(isElement)
 }
