@@ -1,6 +1,3 @@
-/* eslint-disable id-length */
-/* eslint-disable react/require-default-props */
-
 import React, {useCallback, useEffect, useState} from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './Avatar.css'

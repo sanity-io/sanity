@@ -1,30 +1,13 @@
-/* eslint-disable react/require-default-props */
-
 import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback} from 'react'
+import {ButtonProps} from '../buttons'
 import {Placement} from '../types'
 
 interface MenuButtonProps {
   boundaryElement?: HTMLElement | null
-  buttonProps?: {
-    kind?: 'simple' | 'secondary'
-    color?: 'primary' | 'success' | 'danger' | 'white' | 'warning'
-    onBlur?: () => void
-    onClick?: () => void
-    children?: React.ReactNode
-    inverted?: boolean
-    icon?: React.ComponentType<{}>
-    loading?: boolean
-    className?: string
-    disabled?: boolean
-    tabIndex?: number
-    padding?: 'large' | 'default' | 'small' | 'none'
-    bleed?: boolean
-    selected?: boolean
-    size?: 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
-  }
+  buttonProps?: ButtonProps
   menu?: React.ReactNode
   placement?: Placement
   open?: boolean

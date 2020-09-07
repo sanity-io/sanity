@@ -1,3 +1,7 @@
 {
-  "extends": ["../../../.eslintrc.js"]
+  "extends": ["../../../.eslintrc.js"],
+  "rules": {
+    "id-length": "off",
+    "react/require-default-props": "off"
+  }
 }

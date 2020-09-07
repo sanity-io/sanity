@@ -433,7 +433,7 @@
     },
     {
       "implements": "part:@sanity/components/validation/status",
-      "path": "validation/ValidationStatus.js"
+      "path": "validation/ValidationStatus"
     },
     {
       "name": "part:@sanity/components/validation/list",
@@ -441,7 +441,7 @@
     },
     {
       "implements": "part:@sanity/components/validation/list",
-      "path": "validation/ValidationList.js"
+      "path": "validation/ValidationList"
     },
     {
       "name": "part:@sanity/components/previews/block-image-style",
@@ -457,103 +457,103 @@
     },
     {
       "implements": "part:@sanity/components/utilities/arrow-key-navigation",
-      "path": "utilities/ArrowKeyNavigation.js"
+      "path": "utilities/ArrowKeyNavigation"
     },
     {
       "implements": "part:@sanity/components/autocomplete/default",
-      "path": "autocomplete/DefaultAutocomplete.js"
+      "path": "autocomplete/DefaultAutocomplete"
     },
     {
       "implements": "part:@sanity/components/buttons/default",
-      "path": "buttons/DefaultButton.js"
+      "path": "buttons/DefaultButton"
     },
     {
       "implements": "part:@sanity/components/buttons/button-grid",
-      "path": "buttons/ButtonGrid.js"
+      "path": "buttons/ButtonGrid"
     },
     {
       "implements": "part:@sanity/components/buttons/button-collection",
-      "path": "buttons/ButtonCollection.js"
+      "path": "buttons/ButtonCollection"
     },
     {
       "implements": "part:@sanity/components/buttons/button-group",
-      "path": "buttons/ButtonGroup.js"
+      "path": "buttons/ButtonGroup"
     },
     {
       "implements": "part:@sanity/components/buttons/anchor",
-      "path": "buttons/AnchorButton.js"
+      "path": "buttons/AnchorButton"
     },
     {
       "implements": "part:@sanity/components/buttons/intent",
-      "path": "buttons/IntentButton.js"
+      "path": "buttons/IntentButton"
     },
     {
       "implements": "part:@sanity/components/loading/spinner",
-      "path": "loading/Spinner.js"
+      "path": "loading/Spinner"
     },
     {
       "implements": "part:@sanity/components/progress/bar",
-      "path": "progress/ProgressBar.js"
+      "path": "progress/ProgressBar"
     },
     {
       "implements": "part:@sanity/components/progress/circle",
-      "path": "progress/ProgressCircle.js"
+      "path": "progress/ProgressCircle"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown",
-      "path": "buttons/DropDownButton.js"
+      "path": "buttons/DropDownButton"
     },
     {
       "implements": "part:@sanity/components/toggles/switch",
-      "path": "toggles/Switch.js"
+      "path": "toggles/Switch"
     },
     {
       "implements": "part:@sanity/components/toggles/checkbox",
-      "path": "toggles/Checkbox.js"
+      "path": "toggles/Checkbox"
     },
     {
       "implements": "part:@sanity/components/toggles/buttons",
-      "path": "toggles/Buttons.js"
+      "path": "toggles/Buttons"
     },
     {
       "implements": "part:@sanity/components/radiobutton/default",
-      "path": "radiobutton/RadioButtonDefault.js"
+      "path": "radiobutton/RadioButtonDefault"
     },
     {
       "implements": "part:@sanity/components/toggles/button",
-      "path": "toggles/ToggleButton.js"
+      "path": "toggles/ToggleButton"
     },
     {
       "implements": "part:@sanity/components/formfields/default",
-      "path": "formfields/DefaultFormField.js"
+      "path": "formfields/DefaultFormField"
     },
     {
       "implements": "part:@sanity/components/labels/default",
-      "path": "labels/DefaultLabel.js"
+      "path": "labels/DefaultLabel"
     },
     {
       "implements": "part:@sanity/components/textareas/default",
-      "path": "textareas/DefaultTextArea.js"
+      "path": "textareas/DefaultTextArea"
     },
     {
       "implements": "part:@sanity/components/textinputs/default",
-      "path": "textinputs/DefaultTextInput.js"
+      "path": "textinputs/DefaultTextInput"
     },
     {
       "implements": "part:@sanity/components/textfields/default",
-      "path": "textfields/DefaultTextField.js"
+      "path": "textfields/DefaultTextField"
     },
     {
       "implements": "part:@sanity/components/textfields/search",
-      "path": "textfields/SearchField.js"
+      "path": "textfields/SearchField"
     },
     {
       "implements": "part:@sanity/components/tags/textfield",
-      "path": "tags/TextField.js"
+      "path": "tags/TextField"
     },
     {
       "implements": "part:@sanity/components/selects/default",
-      "path": "selects/DefaultSelect.js"
+      "path": "selects/DefaultSelect"
     },
     {
       "implements": "part:@sanity/components/selects/default-style",
@@ -561,11 +561,11 @@
     },
     {
       "implements": "part:@sanity/components/selects/radio",
-      "path": "selects/RadioSelect.js"
+      "path": "selects/RadioSelect"
     },
     {
       "implements": "part:@sanity/components/selects/searchable",
-      "path": "selects/SearchableSelect.js"
+      "path": "selects/SearchableSelect"
     },
     {
       "implements": "part:@sanity/components/selects/searchable-style",
@@ -573,7 +573,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/custom",
-      "path": "selects/CustomSelect.js"
+      "path": "selects/CustomSelect"
     },
     {
       "implements": "part:@sanity/components/selects/custom-style",
@@ -581,7 +581,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/menu",
-      "path": "selects/SelectMenu.js"
+      "path": "selects/SelectMenu"
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
@@ -589,7 +589,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/style",
-      "path": "selects/StyleSelect.js"
+      "path": "selects/StyleSelect"
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
@@ -597,31 +597,31 @@
     },
     {
       "implements": "part:@sanity/components/dialogs/default",
-      "path": "dialogs/DefaultDialog.js"
+      "path": "dialogs/DefaultDialog"
     },
     {
       "implements": "part:@sanity/components/dialogs/content",
-      "path": "dialogs/DialogContent.js"
+      "path": "dialogs/DialogContent"
     },
     {
       "implements": "part:@sanity/components/dialogs/confirm",
-      "path": "dialogs/ConfirmDialog.js"
+      "path": "dialogs/ConfirmDialog"
     },
     {
       "implements": "part:@sanity/components/dialogs/fullscreen",
-      "path": "dialogs/FullscreenDialog.js"
+      "path": "dialogs/FullscreenDialog"
     },
     {
       "implements": "part:@sanity/components/dialogs/fullscreen-message",
-      "path": "dialogs/FullscreenMessageDialog.js"
+      "path": "dialogs/FullscreenMessageDialog"
     },
     {
       "implements": "part:@sanity/components/dialogs/popover",
-      "path": "dialogs/PopOver.js"
+      "path": "dialogs/PopOver"
     },
     {
       "implements": "part:@sanity/components/dialogs/pane-popover",
-      "path": "dialogs/PanePopover.js"
+      "path": "dialogs/PanePopover"
     },
     {
       "implements": "part:@sanity/components/dialogs/popover-style",
@@ -630,55 +630,55 @@
 
     {
       "implements": "part:@sanity/components/fieldsets/default",
-      "path": "fieldsets/DefaultFieldset.js"
+      "path": "fieldsets/DefaultFieldset"
     },
     {
       "implements": "part:@sanity/components/snackbar/default",
-      "path": "snackbar/DefaultSnackbar.js"
+      "path": "snackbar/DefaultSnackbar"
     },
     {
       "implements": "part:@sanity/components/snackbar/item",
-      "path": "snackbar/SnackbarItem.js"
+      "path": "snackbar/SnackbarItem"
     },
     {
       "implements": "part:@sanity/components/snackbar/provider",
-      "path": "snackbar/SnackbarProvider.js"
+      "path": "snackbar/SnackbarProvider"
     },
     {
       "implements": "part:@sanity/components/edititem/fold",
-      "path": "edititem/EditItemFoldOut.js"
+      "path": "edititem/EditItemFoldOut"
     },
     {
       "implements": "part:@sanity/components/previews/create-document",
-      "path": "previews/CreateDocumentPreview.js"
+      "path": "previews/CreateDocumentPreview"
     },
     {
       "implements": "part:@sanity/components/previews/default",
-      "path": "previews/DefaultPreview.js"
+      "path": "previews/DefaultPreview"
     },
     {
       "implements": "part:@sanity/components/previews/detail",
-      "path": "previews/DetailPreview.js"
+      "path": "previews/DetailPreview"
     },
     {
       "implements": "part:@sanity/components/previews/card",
-      "path": "previews/CardPreview.js"
+      "path": "previews/CardPreview"
     },
     {
       "implements": "part:@sanity/components/previews/media",
-      "path": "previews/MediaPreview.js"
+      "path": "previews/MediaPreview"
     },
     {
       "implements": "part:@sanity/components/previews/inline",
-      "path": "previews/InlinePreview.js"
+      "path": "previews/InlinePreview"
     },
     {
       "implements": "part:@sanity/components/previews/block",
-      "path": "previews/BlockPreview.js"
+      "path": "previews/BlockPreview"
     },
     {
       "implements": "part:@sanity/components/previews/block-image",
-      "path": "previews/BlockImagePreview.js"
+      "path": "previews/BlockImagePreview"
     },
     {
       "implements": "part:@sanity/components/autocomplete/default-style",
@@ -698,7 +698,7 @@
     },
     {
       "implements": "part:@sanity/components/buttons/in-input",
-      "path": "buttons/InInput.js"
+      "path": "buttons/InInput"
     },
     {
       "implements": "part:@sanity/components/buttons/in-input-style",
@@ -706,31 +706,31 @@
     },
     {
       "implements": "part:@sanity/components/fileinput/default",
-      "path": "fileinput/DefaultFileInput.js"
+      "path": "fileinput/DefaultFileInput"
     },
     {
       "implements": "part:@sanity/components/fileinput/button",
-      "path": "fileinput/FileInputButton.js"
+      "path": "fileinput/FileInputButton"
     },
     {
       "implements": "part:@sanity/components/utilities/image-loader",
-      "path": "utilities/ImageLoader.js"
+      "path": "utilities/ImageLoader"
     },
     {
       "implements": "part:@sanity/components/utilities/stacked-escapable",
-      "path": "utilities/StackedEscapable.js"
+      "path": "utilities/StackedEscapable"
     },
     {
       "implements": "part:@sanity/components/utilities/poppable",
-      "path": "utilities/Poppable.js"
+      "path": "utilities/Poppable"
     },
     {
       "implements": "part:@sanity/components/utilities/escapable",
-      "path": "utilities/Escapable.js"
+      "path": "utilities/Escapable"
     },
     {
       "implements": "part:@sanity/components/utilities/stacked",
-      "path": "utilities/Stacked.js"
+      "path": "utilities/Stacked"
     },
     {
       "implements": "part:@sanity/components/loading/spinner-style",
@@ -818,7 +818,7 @@
     },
     {
       "implements": "part:@sanity/components/menus/default",
-      "path": "menus/DefaultMenu.js"
+      "path": "menus/DefaultMenu"
     },
     {
       "implements": "part:@sanity/components/menus/default-style",
@@ -827,7 +827,7 @@
     {
       "name": "part:@sanity/components/menus/divider",
       "description": "Menu item divider symbol",
-      "path": "menus/divider.js"
+      "path": "menus/divider"
     },
     {
       "implements": "part:@sanity/components/lists/default",
@@ -847,7 +847,7 @@
     },
     {
       "implements": "part:@sanity/components/lists/create-document",
-      "path": "lists/CreateDocument.js"
+      "path": "lists/CreateDocument"
     },
     {
       "implements": "part:@sanity/components/edititem/fold-style",
@@ -895,7 +895,7 @@
     },
     {
       "implements": "part:@sanity/components/utilities/activate-on-focus",
-      "path": "utilities/ActivateOnFocus.js"
+      "path": "utilities/ActivateOnFocus"
     },
     {
       "name": "part:@sanity/components/utilities/portal",
@@ -903,7 +903,7 @@
     },
     {
       "implements": "part:@sanity/components/utilities/portal",
-      "path": "utilities/Portal/index.js"
+      "path": "utilities/Portal/index"
     },
     {
       "name": "part:@sanity/components/panes/default",
@@ -911,11 +911,11 @@
     },
     {
       "implements": "part:@sanity/components/panes/default",
-      "path": "panes/DefaultPane.js"
+      "path": "panes/DefaultPane"
     },
     {
       "implements": "part:@sanity/components/panes/tabbed",
-      "path": "panes/TabbedPane.js"
+      "path": "panes/TabbedPane"
     },
     {
       "name": "part:@sanity/components/panes/split-controller",
@@ -923,7 +923,7 @@
     },
     {
       "implements": "part:@sanity/components/panes/split-controller",
-      "path": "panes/SplitController.js"
+      "path": "panes/SplitController"
     },
     {
       "name": "part:@sanity/components/panes/split-pane-wrapper",
@@ -931,15 +931,15 @@
     },
     {
       "implements": "part:@sanity/components/panes/split-pane-wrapper",
-      "path": "panes/SplitPaneWrapper.js"
+      "path": "panes/SplitPaneWrapper"
     },
     {
       "implements": "part:@sanity/components/utilities/scroll-container",
-      "path": "utilities/ScrollContainer.js"
+      "path": "utilities/ScrollContainer"
     },
     {
       "implements": "part:@sanity/components/typography/hotkeys",
-      "path": "typography/Hotkeys.js"
+      "path": "typography/Hotkeys"
     },
     {
       "name": "part:@sanity/components/history/list-item",
@@ -947,123 +947,123 @@
     },
     {
       "implements": "part:@sanity/components/history/list-item",
-      "path": "history/ListItem.js"
+      "path": "history/ListItem"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "autocomplete/story.js"
+      "path": "autocomplete/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "buttons/story.js"
+      "path": "buttons/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "dialogs/story.js"
+      "path": "dialogs/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "toggles/story.js"
+      "path": "toggles/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "fieldsets/story.js"
+      "path": "fieldsets/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "lists/story.js"
+      "path": "lists/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "lists/story_grid.js"
+      "path": "lists/story_grid"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "snackbar/story.js"
+      "path": "snackbar/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "menus/story.js"
+      "path": "menus/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "icons/story.js"
+      "path": "icons/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "textfields/story.js"
+      "path": "textfields/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "typography/story.js"
+      "path": "typography/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "loading/story.js"
+      "path": "loading/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "tags/story.js"
+      "path": "tags/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "progress/story.js"
+      "path": "progress/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "selects/story.js"
+      "path": "selects/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "textinputs/story.js"
+      "path": "textinputs/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "labels/story.js"
+      "path": "labels/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "formfields/story.js"
+      "path": "formfields/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "textareas/story.js"
+      "path": "textareas/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "edititem/story.js"
+      "path": "edititem/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "previews/story.js"
+      "path": "previews/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "radiobutton/story.js"
+      "path": "radiobutton/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "fileinput/story.js"
+      "path": "fileinput/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "utilities/story.js"
+      "path": "utilities/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "panes/story.js"
+      "path": "panes/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "validation/story.js"
+      "path": "validation/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "history/story.js"
+      "path": "history/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "badges/story.js"
+      "path": "badges/story"
     },
     {
       "name": "part:@sanity/components/badges/default",
@@ -1071,11 +1071,11 @@
     },
     {
       "implements": "part:@sanity/components/badges/default",
-      "path": "badges/DefaultBadge.js"
+      "path": "badges/DefaultBadge"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "tabs/story.js"
+      "path": "tabs/story"
     },
     {
       "name": "part:@sanity/components/tabs/tab",
@@ -1083,7 +1083,7 @@
     },
     {
       "implements": "part:@sanity/components/tabs/tab",
-      "path": "tabs/Tab.js"
+      "path": "tabs/Tab"
     },
     {
       "name": "part:@sanity/components/tabs/tab-list",
@@ -1091,7 +1091,7 @@
     },
     {
       "implements": "part:@sanity/components/tabs/tab-list",
-      "path": "tabs/TabList.js"
+      "path": "tabs/TabList"
     },
     {
       "name": "part:@sanity/components/tabs/tab-panel",
@@ -1099,7 +1099,7 @@
     },
     {
       "implements": "part:@sanity/components/tabs/tab-panel",
-      "path": "tabs/TabPanel.js"
+      "path": "tabs/TabPanel"
     },
     {
       "implements": "part:@sanity/components/portal",

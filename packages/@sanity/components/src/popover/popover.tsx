@@ -1,5 +1,3 @@
-/* eslint-disable react/require-default-props */
-
 import classNames from 'classnames'
 import React, {cloneElement, useState, useEffect} from 'react'
 import {usePopper} from 'react-popper'
