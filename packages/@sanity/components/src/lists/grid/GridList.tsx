@@ -1,18 +1,16 @@
-import cx from 'classnames'
+import classNames from 'classnames'
 import React from 'react'
 
-import styles from './styles/GridList.css'
+import styles from './GridList.css'
 
-interface GridListProps {
-  onSortEnd?: () => void
-  onSortStart?: () => void
-  lockToContainerEdges?: boolean
-  useDragHandle?: boolean
+function GridList(props: React.HTMLProps<HTMLUListElement>) {
+  const {children, className, ...restProps} = props
+
+  return (
+    <ul {...restProps} className={classNames(styles.root, className)}>
+      {children}
+    </ul>
+  )
 }
 
-export default function GridList(props: GridListProps & React.HTMLProps<HTMLUListElement>) {
-  // @todo: why are these unused props here?
-  const {className, onSortEnd, onSortStart, lockToContainerEdges, useDragHandle, ...rest} = props
-
-  return <ul {...rest} className={cx(styles.root, className)} />
-}
+export default GridList

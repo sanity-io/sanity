@@ -1,7 +1,7 @@
 import CreateDocumentPreview from 'part:@sanity/components/previews/create-document'
 import React from 'react'
 
-import styles from './styles/CreateDocument.css'
+import styles from './CreateDocument.css'
 
 interface CreateDocumentPreviewItem {
   key: string
