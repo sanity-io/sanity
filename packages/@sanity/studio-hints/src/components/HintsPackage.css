@@ -1,9 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --nav-bar-box: 3.0625em; /* 49px */
-}
-
 .root {
   padding: var(--medium-padding);
   position: relative;
