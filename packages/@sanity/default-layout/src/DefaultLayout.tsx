@@ -6,7 +6,7 @@ import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
 import Sidecar from './addons/Sidecar'
 import RenderTool from './main/RenderTool'
-import ActionModal from './navbar/actionButton/ActionModal'
+import ActionModal from './actionModal/ActionModal'
 import SideMenu from './navbar/sideMenu/SideMenu'
 import NavbarContainer from './navbar/NavbarContainer'
 import {SchemaErrorReporter} from './schemaErrors/SchemaErrorReporter'
@@ -157,6 +157,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
         <div className={styles.navBar}>
           <NavbarContainer
             tools={tools}
+            createMenuIsOpen={createMenuIsOpen}
             onCreateButtonClick={this.handleCreateButtonClick}
             onToggleMenu={this.handleToggleMenu}
             onSwitchTool={this.handleSwitchTool}
@@ -214,4 +215,4 @@ class DefaultLayout extends React.PureComponent<Props, State> {
   }
 }
 
-export default withRouterHOC(DefaultLayout) as React.ComponentType<OuterProps>
+export default (withRouterHOC(DefaultLayout as any) as any) as React.ComponentType<OuterProps>

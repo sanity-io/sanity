@@ -25,7 +25,7 @@
 
 .branding {
   grid-area: branding;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 }
 
 .brandingLink {
@@ -41,7 +41,7 @@
 
 .hamburger {
   grid-area: hamburger;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -68,7 +68,7 @@
 .toolSwitcher {
   display: none;
   grid-area: toolSwitcher;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -80,7 +80,7 @@
 .sanityStatus {
   grid-area: sanityStatus;
   display: none;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -91,13 +91,13 @@
 
 .presenceStatus {
   grid-area: presence;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 }
 
 .loginStatus {
   grid-area: loginStatus;
   display: none;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -108,7 +108,7 @@
 
 .helpButton {
   grid-area: helpButton;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 }
 
 .extras {
@@ -151,7 +151,7 @@
 
 .createButton {
   grid-area: createButton;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 }
 
 .createButtonInner {
@@ -190,7 +190,7 @@
 
 .searchButton {
   grid-area: searchButton;
-  padding: var(--extra-small-padding);
+  padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
     display: none;
