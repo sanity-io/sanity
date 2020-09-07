@@ -28,7 +28,7 @@
     "react-dom": "^16.9.0"
   },
   "devDependencies": {
-    "typescript": "^3.7.3",
-    "typescript-plugin-css-modules": "^1.2.1"
+    "typescript": "^4.0.2",
+    "typescript-plugin-css-modules": "^2.4.0"
   }
 }
