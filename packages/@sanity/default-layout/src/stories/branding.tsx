@@ -8,7 +8,7 @@ export function BrandingStory() {
     <div className={DefaultLayoutStyles.navBar}>
       <div className={NavbarStyles.root}>
         <div className={NavbarStyles.branding}>
-          <Branding />
+          <Branding projectName="Storybook" />
         </div>
       </div>
     </div>
