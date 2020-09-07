@@ -6,7 +6,15 @@ import SearchResults from '../navbar/search/SearchResults'
 
 export function SearchFieldMobileStory() {
   const hasResults = boolean('hasResults', false, 'props')
-  const items = hasResults ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] : []
+  const items: any[] = hasResults
+    ? [
+        {
+          hit: {_id: 'foo', _type: 'foo'},
+          score: 12,
+          stories: {path: 'foo', score: 1, why: 'test'}
+        }
+      ]
+    : []
   const query = text('query', '', 'props')
 
   return (
@@ -19,11 +27,12 @@ export function SearchFieldMobileStory() {
           results={
             <SearchResults
               activeIndex={number('activeIndex', -1, 'props')}
+              isBleeding
               isLoading={boolean('isLoading', false, 'props')}
               items={items}
               query={query}
               renderItem={key => (
-                <div key={key} style={{padding: '0.75em 1em'}}>
+                <div key={key.hit._id} style={{padding: '0.75em 1em'}}>
                   {key}
                 </div>
               )}
