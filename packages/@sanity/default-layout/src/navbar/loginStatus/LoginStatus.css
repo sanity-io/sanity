@@ -12,13 +12,13 @@
   appearance: none;
   outline: none;
   border: 0;
-  border-radius: 0;
   background: none;
   color: inherit;
   font: inherit;
   padding: 0;
   margin: 0 auto;
   display: block;
+  border-radius: 4px;
 
   @nest &:focus {
     background-color: color(var(--brand-primary) a(20%));
@@ -26,51 +26,19 @@
 }
 
 .inner {
-  padding: var(--small-padding) var(--medium-padding) var(--small-padding) var(--small-padding);
+  padding: 3px;
   position: relative;
   outline: none;
-}
-
-.userImage {
-  display: block;
-  height: 2.0625em;
-  width: 2.0625em;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: var(--preview-placeholder-color);
-
-  @nest &:before {
-    content: attr(data-initials);
-    text-align: center;
-    display: block;
-    line-height: 2em;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    background-color: var(--preview-placeholder-color);
-  }
-}
-
-.userImageMissing {
-  composes: userImage;
   display: flex;
-  background-color: var(--brand-primary);
-  color: var(--brand-primary--inverted);
   align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
-  border: none;
 }
 
-.userName {
-  display: none;
+.avatarContainer {
 }
 
-.userMenu {
-  position: absolute;
-  top: 2rem;
-  right: 1rem;
-  z-index: var(--zindex-portal);
-}
-
-.menuWrapper {
+.iconContainer {
+  @nest & > svg {
+    display: block;
+    font-size: 17px;
+  }
 }

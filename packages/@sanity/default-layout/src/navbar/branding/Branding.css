@@ -3,13 +3,9 @@
 .root {
   text-decoration: none;
   color: inherit;
-  font-weight: 400;
-  width: 100%;
-  outline: none;
-  padding: 1em;
+  padding: 0.75em;
   box-sizing: border-box;
   position: relative;
-  text-align: center;
 
   @media (--screen-medium) {
     display: flex;
@@ -21,15 +17,15 @@
 .projectName {
   display: block;
   color: inherit;
-  font-size: inherit;
   margin: 0;
   padding: 0;
+  font-size: inherit;
   line-height: calc(17 / 16);
   font-weight: 600;
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 100%;
-  overflow: hidden;
+  text-align: center;
 
   @media (--screen-medium) {
     width: unset;
