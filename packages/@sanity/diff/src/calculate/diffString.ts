@@ -103,10 +103,11 @@ export function removedString<A>(
     annotation: input.annotation,
 
     get segments(): StringDiffSegment<A>[] {
-      this.segments = input
+      const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
         .map(segment => ({type: 'removed', ...segment}))
-      return this.segments
+
+      return replaceProperty(this, 'segments', segments)
     }
   }
 }
