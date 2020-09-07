@@ -42,6 +42,10 @@
       "description": "Same as default button, but takes an intent and generates an anchor"
     },
     {
+      "name": "part:@sanity/components/buttons/state",
+      "description": "Same as default button, but takes an state and generates an anchor"
+    },
+    {
       "name": "part:@sanity/components/buttons/default-style",
       "description": "Default button styling"
     },
@@ -486,6 +490,10 @@
     {
       "implements": "part:@sanity/components/buttons/intent",
       "path": "buttons/IntentButton"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/state",
+      "path": "buttons/StateButton"
     },
     {
       "implements": "part:@sanity/components/loading/spinner",
