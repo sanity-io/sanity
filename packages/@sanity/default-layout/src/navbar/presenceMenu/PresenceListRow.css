@@ -28,7 +28,8 @@
 }
 
 .inner {
-  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
 }
@@ -37,16 +38,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 15ch;
+  margin-top: -1px;
 }
 
 .linkIcon {
   display: flex;
   align-items: center;
-  padding-left: var(--medium-padding);
+  margin-left: calc(var(--medium-padding) - var(--extra-small-padding));
   transition: transform 0.1s linear, opacity 0.1s linear;
   align-self: center;
-  margin-left: auto;
   color: var(--gray);
 
   @nest & > svg {
