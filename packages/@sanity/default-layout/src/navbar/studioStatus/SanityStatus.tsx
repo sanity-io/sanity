@@ -1,11 +1,10 @@
 import React from 'react'
+import Button from 'part:@sanity/components/buttons/default'
 import PackageIcon from 'part:@sanity/base/package-icon'
 import {useId} from '@reach/auto-id'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
 import {Package, Severity} from './types'
-
-import styles from './SanityStatus.css'
 
 interface Props {
   isSupported: boolean
@@ -13,7 +12,7 @@ interface Props {
   level: Severity
   onHideDialog: () => void
   onShowDialog: () => void
-  outdated: Package[]
+  outdated?: Package[]
   showDialog: boolean
   versions: {[key: string]: string}
 }
@@ -30,7 +29,7 @@ export default function SanityStatus(props: Props) {
     level,
     onHideDialog,
     onShowDialog,
-    outdated,
+    outdated = [],
     showDialog,
     versions
   } = props
@@ -39,7 +38,7 @@ export default function SanityStatus(props: Props) {
   const severity: Severity = isSupported ? currentLevel : 'high'
 
   return (
-    <div className={styles.root}>
+    <>
       {showDialog && (
         <div role="dialog" aria-modal="true" aria-labelledby={elementId}>
           {isUpToDate ? (
@@ -50,31 +49,17 @@ export default function SanityStatus(props: Props) {
         </div>
       )}
       {!isUpToDate && (
-        <button
-          className={styles.button}
-          onClick={onShowDialog}
-          type="button"
+        <Button
           aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+          icon={PackageIcon}
+          iconStatus="primary"
           id={elementId}
-        >
-          <div className={styles.buttonInner} tabIndex={-1}>
-            <div className={styles.hasUpdates}>
-              <span className={styles.updateIcon} role="image">
-                <div
-                  className={styles.updateIndicator}
-                  data-severity={severity}
-                  aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
-                />
-                <PackageIcon />
-              </span>
-            </div>
-          </div>
-        </button>
+          kind="simple"
+          onClick={onShowDialog}
+          selected={showDialog}
+          tone="navbar"
+        />
       )}
-    </div>
+    </>
   )
-}
-
-SanityStatus.defaultProps = {
-  outdated: []
 }
