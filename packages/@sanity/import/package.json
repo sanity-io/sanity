@@ -34,10 +34,10 @@
     "gunzip-maybe": "^1.4.1",
     "is-tar": "^1.0.0",
     "lodash": "^4.17.15",
-    "mississippi": "^2.0.0",
+    "mississippi": "^4.0.0",
     "p-map": "^1.2.0",
     "peek-stream": "^1.1.2",
-    "split2": "^2.1.1",
+    "split2": "^3.2.2",
     "tar-fs": "^1.16.0",
     "tempy": "^0.3.0",
     "whatwg-url": "^7.0.0"
