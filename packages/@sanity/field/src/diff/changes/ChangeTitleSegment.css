@@ -6,6 +6,12 @@
 
 .indexGroup {
   padding: 0;
+  font-weight: 600;
+  @nest ins& {
+    text-decoration: none;
+  }
+  border-radius: 3px;
+  padding: 1px 4px;
 }
 
 .indexGroup:not(:first-child) {
