@@ -40,6 +40,13 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
   const [, setTick] = React.useState(0)
 
   const [keys, setKeys] = React.useState({})
+  const mountedRef = React.useRef(true)
+
+  React.useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const ricHandle = React.useRef(null)
   const onRequestUpdate = useThrottled(
@@ -47,9 +54,12 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
       if (ricHandle.current) {
         cancelIdleCallback(ricHandle.current)
       }
-      requestIdleCallback(() => {
+      ricHandle.current = requestIdleCallback(() => {
         ricHandle.current = null
-        setTick(t => t + 1)
+
+        if (mountedRef.current) {
+          setTick(tick => tick + 1)
+        }
       })
     },
     60,
