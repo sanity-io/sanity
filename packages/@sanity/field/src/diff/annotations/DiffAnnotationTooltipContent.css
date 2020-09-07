@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--extra-small-padding);
+  padding: var(--extra-small-padding) var(--extra-small-padding) var(--small-padding) var(--small-padding);
   font-size: var(--font-size-base);
   font-weight: normal;
   font-style: normal;
@@ -15,15 +15,15 @@
 }
 
 .user {
-  /* @todo replace me with variable I guess? */
-  border-radius: 5px;
+  border-radius: 1em;
   display: flex;
   align-items: center;
+  padding-right: var(--small-padding);
 }
 
 .avatarContainer {
   display: block;
-  margin-right: var(--small-padding);
+  margin-right: var(--extra-small-padding);
 }
 
 .displayName {
@@ -40,8 +40,12 @@
 .timeAgo {
   margin: 0 var(--small-padding);
   font-size: var(--font-size-small);
+  color: var(--text-muted);
 }
 
 .description {
   color: var(--text-muted);
+  font-size: var(--font-size-xsmall--uppercase);
+  text-transform: uppercase;
+  font-weight: 600;
 }
