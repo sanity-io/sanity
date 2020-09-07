@@ -33,10 +33,10 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^8.0.0",
     "empty": "^0.10.1",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.7.1",
-    "ts-jest": "^24.2.0"
+    "ts-jest": "^26.3.0"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

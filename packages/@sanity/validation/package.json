@@ -30,7 +30,7 @@
     "url": "git+https://github.com/sanity-io/sanity.git"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^26.4.2"
   },
   "dependencies": {
     "clone-deep": "^2.0.1",
