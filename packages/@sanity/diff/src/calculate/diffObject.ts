@@ -1,5 +1,6 @@
 import {ObjectDiff, ObjectInput, DiffOptions} from '../types'
 import {diffInput, removedInput, addedInput} from './diffInput'
+import {replaceProperty} from '../helpers'
 
 const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev'])
 
@@ -77,13 +78,12 @@ export function removedObject<A>(
     annotation: input.annotation,
 
     get fields(): ObjectDiff<A>['fields'] {
-      delete this.fields
-      this.fields = {}
+      const fields: ObjectDiff<A>['fields'] = {}
       for (let key of input.keys) {
         let value = input.get(key)!
-        this.fields[key] = removedInput(value, undefined, options)
+        fields[key] = removedInput(value, undefined, options)
       }
-      return this.fields
+      return replaceProperty<typeof fields>(this, 'fields', fields)
     }
   }
 }
@@ -102,13 +102,12 @@ export function addedObject<A>(
     annotation: input.annotation,
 
     get fields(): ObjectDiff<A>['fields'] {
-      delete this.fields
-      this.fields = {}
+      const fields: ObjectDiff<A>['fields'] = {}
       for (let key of input.keys) {
         let value = input.get(key)!
-        this.fields[key] = addedInput(value, undefined, options)
+        fields[key] = addedInput(value, undefined, options)
       }
-      return this.fields
+      return replaceProperty<typeof fields>(this, 'fields', fields)
     }
   }
 }

@@ -5,6 +5,7 @@ import {
   DIFF_INSERT
 } from 'diff-match-patch'
 import {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
+import {replaceProperty} from '../helpers'
 
 const dmp = new DiffMatchPatch()
 
@@ -37,9 +38,8 @@ export function diffString<A>(
 
     // Compute and memoize string segments only when accessed
     get segments(): StringDiffSegment<A>[] {
-      delete this.segments
-      this.segments = buildSegments(fromInput, toInput)
-      return this.segments
+      const segments = buildSegments(fromInput, toInput)
+      return replaceProperty(this, 'segments', segments)
     }
   }
 }
@@ -103,7 +103,6 @@ export function removedString<A>(
     annotation: input.annotation,
 
     get segments(): StringDiffSegment<A>[] {
-      delete this.segments
       this.segments = input
         .sliceAnnotation(0, input.value.length)
         .map(segment => ({type: 'removed', ...segment}))
@@ -126,11 +125,11 @@ export function addedString<A>(
     annotation: input.annotation,
 
     get segments(): StringDiffSegment<A>[] {
-      delete this.segments
-      this.segments = input
+      const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
         .map(segment => ({type: 'added', ...segment}))
-      return this.segments
+
+      return replaceProperty(this, 'segments', segments)
     }
   }
 }
