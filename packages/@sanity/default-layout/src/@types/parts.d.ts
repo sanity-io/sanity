@@ -215,6 +215,11 @@ declare module 'part:@sanity/base/sign-out-icon' {
   export default LeaveIcon
 }
 
+declare module 'part:@sanity/base/view-column-icon' {
+  const ViewColumnIcon: React.ComponentType<{}>
+  export default ViewColumnIcon
+}
+
 declare module 'part:@sanity/default-layout/tool-switcher' {
   const ToolSwitcher: React.ComponentType<{
     activeToolName: string

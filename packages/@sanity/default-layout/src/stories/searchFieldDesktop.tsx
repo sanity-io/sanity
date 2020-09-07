@@ -8,7 +8,15 @@ import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function SearchFieldDesktopStory() {
   const hasResults = boolean('hasResults', false, 'props')
-  const items = hasResults ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] : []
+  const items: any[] = hasResults
+    ? [
+        {
+          hit: {_id: 'foo', _type: 'foo'},
+          score: 12,
+          stories: {path: 'foo', score: 1, why: 'test'}
+        }
+      ]
+    : []
   const query = text('query', '', 'props')
 
   return (
@@ -23,11 +31,12 @@ export function SearchFieldDesktopStory() {
               results={
                 <SearchResults
                   activeIndex={number('activeIndex', -1, 'props')}
+                  isBleeding={false}
                   isLoading={boolean('isLoading', false, 'props')}
                   items={items}
                   query={query}
                   renderItem={key => (
-                    <div key={key} style={{padding: '0.5em 0.75em'}}>
+                    <div key={key.hit._id} style={{padding: '0.5em 0.75em'}}>
                       {key}
                     </div>
                   )}

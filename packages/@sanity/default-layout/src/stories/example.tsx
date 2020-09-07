@@ -7,12 +7,12 @@ import ComposeIcon from 'part:@sanity/base/compose-icon'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
 import Branding from '../navbar/branding/Branding'
-import ToolSwitcherWidget from '../navbar/toolMenu/ToolSwitcherWidget'
+import ToolMenu from '../navbar/toolMenu/ToolMenu'
 import LoginStatus from '../navbar/loginStatus/LoginStatus'
 import SanityStatus from '../navbar/studioStatus/SanityStatus'
 import SearchField from '../navbar/search/SearchField'
 import SearchResults from '../navbar/search/SearchResults'
-import ToolSwitcherItem from '../navbar/toolMenu/ToolSwitcherItem'
+// import ToolMenuItem from '../navbar/toolMenu/ToolMenuItem'
 
 import NavbarStyles from '../navbar/Navbar.css'
 import DefaultLayoutStyles from '../DefaultLayout.css'
@@ -27,9 +27,9 @@ function SearchResultItem(key) {
   )
 }
 
-function CustomToolSwitcherItem(tool) {
-  return <ToolSwitcherItem title={tool.name} icon={tool.icon} />
-}
+// function CustomToolMenuItem(tool) {
+//   return <ToolMenuItem title={tool.name} icon={tool.icon} />
+// }
 
 export function ExampleStory() {
   const menuIsOpen = boolean('menuIsOpen', false, 'props')
@@ -51,7 +51,7 @@ export function ExampleStory() {
   return (
     <div className={className}>
       <div className={DefaultLayoutStyles.navBar}>
-        <div className={`${NavbarStyles.root} ${NavbarStyles.withToolSwitcher}`}>
+        <div className={`${NavbarStyles.root} ${NavbarStyles.withToolMenu}`}>
           <div className={NavbarStyles.hamburger}>
             <button
               className={NavbarStyles.hamburgerButton}
@@ -63,11 +63,11 @@ export function ExampleStory() {
             </button>
           </div>
           <a className={NavbarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
-            <Branding />
+            <Branding projectName="Storybook" />
           </a>
           <button className={NavbarStyles.createButton} onClick={noop} type="button">
             <Tooltip
-              content={<>Create new document</>}
+              content={(<>Create new document</>) as any}
               disabled={'ontouchstart' in document.documentElement}
             >
               <div className={NavbarStyles.createButtonInner} tabIndex={-1}>
@@ -86,6 +86,7 @@ export function ExampleStory() {
               results={
                 <SearchResults
                   activeIndex={number('searchActiveIndex', -1, 'props')}
+                  isBleeding={false}
                   isLoading={boolean('searchIsLoading', false, 'props')}
                   items={[]}
                   query={''}
@@ -98,23 +99,29 @@ export function ExampleStory() {
           </div>
           {/* spaceSwitcher */}
           <div className={NavbarStyles.toolSwitcher}>
-            <ToolSwitcherWidget
+            <ToolMenu
+              activeToolName="desk"
+              direction="horizontal"
+              isVisible
               onSwitchTool={action('onSwitchTool')}
+              router={{} as any}
               tools={[
                 {
-                  name: 'Desk tool',
+                  name: 'desk',
+                  title: 'Desk',
                   icon: ViewColumnIcon
                 },
                 {
-                  name: 'Plugin 1',
+                  name: 'plugin1',
+                  title: 'Plugin 1',
                   icon: PluginIcon
                 },
                 {
-                  name: 'Plugin 2',
+                  name: 'plugin2',
+                  title: 'Plugin 2',
                   icon: PluginIcon
                 }
               ]}
-              renderItem={CustomToolSwitcherItem}
             />
           </div>
           <div className={NavbarStyles.sanityStatus}>
@@ -124,7 +131,8 @@ export function ExampleStory() {
               level={sanityStatusLevel}
               onHideDialog={noop}
               onShowDialog={noop}
-              outdated={sanityStatusOutdated}
+              showDialog={false}
+              outdated={sanityStatusOutdated as any}
               versions={sanityStatusVersions}
             />
           </div>
