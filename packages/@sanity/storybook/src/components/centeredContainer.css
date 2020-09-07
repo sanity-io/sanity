@@ -8,7 +8,17 @@
   align-items: center;
   justify-content: center;
 
-  & > * {
+  @nest & > * {
     min-width: 0;
+  }
+
+  @nest &[data-tone='component'] {
+    background-color: var(--component-bg);
+    color: var(--component-text-color);
+  }
+
+  @nest &[data-tone='navbar'] {
+    background-color: var(--main-navigation-color);
+    color: var(--main-navigation-color--inverted);
   }
 }
