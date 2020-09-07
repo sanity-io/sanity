@@ -8,10 +8,23 @@
 }
 
 .headerContainer {
+  position: relative;
   background: var(--component-bg);
 
-  @nest .root:not(.isCollapsed) & {
+  @nest .root:not(.isCollapsed) &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
     border-bottom: 1px solid var(--hairline-color);
+  }
+
+  @media (--max-screen-medium) {
+    position: sticky;
+    top: 0;
+    z-index: var(--zindex-pane);
   }
 }
 
@@ -26,6 +39,8 @@
 }
 
 .documentScroller {
-  height: 100%;
-  overflow: auto;
+  @media (--screen-medium) {
+    height: 100%;
+    overflow: auto;
+  }
 }
