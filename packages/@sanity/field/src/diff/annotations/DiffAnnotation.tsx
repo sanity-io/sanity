@@ -5,7 +5,7 @@ import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
 import {getAnnotationAtPath, getAnnotationColor} from './helpers'
 
 export interface AnnotationProps {
-  annotation: Annotation
+  annotation: Annotation | undefined | null
 }
 
 export interface AnnotatedDiffProps {
