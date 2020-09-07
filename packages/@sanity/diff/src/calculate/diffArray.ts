@@ -1,6 +1,7 @@
 import {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
 import {diffInput, removedInput, addedInput} from './diffInput'
 import {getLongestCommonSubsequence} from './lcs'
+import {replaceProperty} from '../helpers'
 
 export function diffArray<A>(
   fromInput: ArrayInput<A>,
@@ -18,10 +19,9 @@ export function diffArray<A>(
       fromValue,
       toValue,
       get items(): ItemDiff<A>[] {
-        delete this.items
         const items = diffExactByPosition(fromInput, toInput, options)
         if (!items) throw new Error('invariant broken: equivalent input, but diff detected')
-        return (this.items = items)
+        return replaceProperty<typeof items>(this, 'items', items)
       }
     }
   }
@@ -328,8 +328,7 @@ export function removedArray<A>(
     annotation: input.annotation,
 
     get items(): ArrayDiff<A>['items'] {
-      delete this.items
-      this.items = []
+      const items = []
       for (let i = 0; i < input.length; i++) {
         let item = input.at(i)
         this.items.push({
@@ -339,7 +338,8 @@ export function removedArray<A>(
           diff: removedInput(item, undefined, options)
         })
       }
-      return this.items
+
+      return replaceProperty<typeof items>(this, 'items', items)
     }
   }
 }
@@ -358,8 +358,7 @@ export function addedArray<A>(
     annotation: input.annotation,
 
     get items(): ArrayDiff<A>['items'] {
-      delete this.items
-      this.items = []
+      const items = []
       for (let i = 0; i < input.length; i++) {
         let item = input.at(i)
         this.items.push({
@@ -369,7 +368,8 @@ export function addedArray<A>(
           diff: addedInput(item, undefined, options)
         })
       }
-      return this.items
+
+      return replaceProperty<typeof items>(this, 'items', items)
     }
   }
 }
