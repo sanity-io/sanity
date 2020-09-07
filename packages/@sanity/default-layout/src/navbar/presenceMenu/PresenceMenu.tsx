@@ -65,19 +65,19 @@ export function PresenceMenu() {
               <Button
                 className={styles.narrowButton}
                 icon={UsersIcon}
-                iconStatus="success"
+                iconStatus={presence.length > 0 ? 'success' : undefined}
                 kind="simple"
                 onClick={handleToggle}
+                padding="small"
                 selected={open}
                 tone="navbar"
-              >
-                {/* {presence.length > 0 && <div className={styles.statusIndicator} />} */}
-              </Button>
+              />
 
               <Button
                 className={styles.wideButton}
                 kind="simple"
                 onClick={handleToggle}
+                padding="small"
                 selected={open}
                 tone="navbar"
               >

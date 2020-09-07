@@ -21,7 +21,7 @@ import DatasetSelect from './datasetSelect/DatasetSelect'
 import styles from './Navbar.css'
 
 interface Props {
-  searchIsOpen: boolean
+  createMenuIsOpen: boolean
   onCreateButtonClick: () => void
   onSearchClose: () => void
   onSearchOpen: () => void
@@ -31,6 +31,7 @@ interface Props {
   onToggleMenu: () => void
   onUserLogout: () => void
   router: Router
+  searchIsOpen: boolean
   showLabel: boolean
   showToolSwitcher: boolean
   tools: Tool[]
@@ -39,9 +40,9 @@ interface Props {
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 // eslint-disable-next-line complexity
-function Navbar(props: Props) {
+export default function Navbar(props: Props) {
   const {
-    searchIsOpen,
+    createMenuIsOpen,
     onCreateButtonClick,
     onToggleMenu,
     onSwitchTool,
@@ -52,6 +53,7 @@ function Navbar(props: Props) {
     onSetSearchElement,
     router,
     tools,
+    searchIsOpen,
     showLabel,
     showToolSwitcher
   } = props
@@ -68,6 +70,7 @@ function Navbar(props: Props) {
           icon={HamburgerIcon}
           kind="simple"
           onClick={onToggleMenu}
+          padding="small"
           title="Open menu"
           tone="navbar"
         />
@@ -96,6 +99,8 @@ function Navbar(props: Props) {
               icon={ComposeIcon}
               kind="simple"
               onClick={onCreateButtonClick}
+              padding="small"
+              selected={createMenuIsOpen}
               tone="navbar"
             />
           </div>
@@ -138,10 +143,14 @@ function Navbar(props: Props) {
         <LoginStatus onLogout={onUserLogout} />
       </div>
       <div className={styles.searchButton}>
-        <Button icon={SearchIcon} kind="simple" onClick={onSearchOpen} tone="navbar" />
+        <Button
+          icon={SearchIcon}
+          kind="simple"
+          onClick={onSearchOpen}
+          padding="small"
+          tone="navbar"
+        />
       </div>
     </div>
   )
 }
-
-export default Navbar

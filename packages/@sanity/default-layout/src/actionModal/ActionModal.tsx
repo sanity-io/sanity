@@ -6,15 +6,19 @@ import styles from './ActionModal.css'
 
 interface Props {
   actions: {icon?: React.ComponentType<{}>}[]
-  onClose?: () => void
-  title?: string
+  onClose: () => void
 }
 
 function ActionModal(props: Props) {
-  const {title, actions, onClose} = props
+  const {actions, onClose} = props
 
   return (
-    <FullscreenDialog cardClassName={styles.card} onClose={onClose} title={title} isOpen>
+    <FullscreenDialog
+      cardClassName={styles.card}
+      onClose={onClose}
+      title="Create new document"
+      isOpen
+    >
       {actions.length > 0 ? (
         <CreateDocumentList
           items={actions.map(action => ({
@@ -28,11 +32,6 @@ function ActionModal(props: Props) {
       )}
     </FullscreenDialog>
   )
-}
-
-ActionModal.defaultProps = {
-  title: 'New document',
-  actions: []
 }
 
 export default ActionModal

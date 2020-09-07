@@ -56,6 +56,7 @@ export default function SanityStatus(props: Props) {
           id={elementId}
           kind="simple"
           onClick={onShowDialog}
+          padding="small"
           selected={showDialog}
           tone="navbar"
         />

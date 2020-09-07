@@ -18,7 +18,7 @@ interface Props {
 
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
-function ToolSwitcher(props: Props) {
+function ToolMenu(props: Props) {
   const {
     activeToolName,
     direction,
@@ -53,6 +53,7 @@ function ToolSwitcher(props: Props) {
                   key={tool.name}
                   kind="simple"
                   onClick={onSwitchTool}
+                  padding="small"
                   selected={activeToolName === tool.name}
                   state={{...router.state, tool: tool.name, [tool.name]: undefined}}
                   title={title}
@@ -70,4 +71,4 @@ function ToolSwitcher(props: Props) {
   )
 }
 
-export default ToolSwitcher
+export default ToolMenu

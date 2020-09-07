@@ -3,7 +3,7 @@ import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
+import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import DatasetSelect from '../datasetSelect/DatasetSelect'
 import {HAS_SPACES} from '../../util/spaces'
 import {Router, Tool, User} from '../../types'
@@ -58,7 +58,7 @@ function SideMenu(props: Props) {
         </div>
 
         <div className={styles.toolSwitcher}>
-          <ToolSwitcher
+          <ToolMenu
             activeToolName={activeToolName}
             direction="vertical"
             isVisible={isOpen}
