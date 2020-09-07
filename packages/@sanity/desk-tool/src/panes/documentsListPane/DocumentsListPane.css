@@ -3,24 +3,18 @@
 :root {
   --default-item-selected-color: var(--brand-primary);
   --default-item-active-color: var(--brand-primary);
-  --nav-bar-box: 3.0625em; /* 49px */
 }
 
 .root {
-  display: block;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  bottom: 0;
-  right: 0;
-  box-sizing: border-box;
-  position: relative;
-
-  @media (--max-screen-medium) {
-    /* hack to make the spinner place at center */
-    min-height: calc(100vh - var(--nav-bar-box));
-  }
+  /* display: block; */
+  /* top: 0; */
+  /* left: 0; */
+  /* height: 100%; */
+  /* width: 100%; */
+  /* bottom: 0; */
+  /* right: 0; */
+  /* box-sizing: border-box; */
+  /* position: relative; */
 }
 
 .layout__default {
