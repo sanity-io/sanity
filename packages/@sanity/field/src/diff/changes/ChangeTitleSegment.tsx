@@ -17,7 +17,8 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {
   const deleted = typeof toIndex === 'undefined'
   if (created) {
     // Item was created
-    const description = `Added in position ${(toIndex || 0) + 1} by`
+    const readableIndex = (toIndex || 0) + 1
+    const description = `Added in position ${readableIndex} by`
     return (
       <DiffAnnotation
         annotation={annotation || null}
@@ -25,13 +26,15 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {
         as="ins"
         description={description}
       >
-        #{toIndex}
+        #{readableIndex}
       </DiffAnnotation>
     )
   }
 
   if (deleted) {
-    const description = `Removed from position ${(fromIndex || 0) + 1} by`
+    // Item was deleted
+    const readableIndex = (fromIndex || 0) + 1
+    const description = `Removed from position ${readableIndex} by`
     return (
       <DiffAnnotation
         annotation={annotation || null}
@@ -39,12 +42,13 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {
         as="del"
         description={description}
       >
-        #{fromIndex}
+        #{readableIndex}
       </DiffAnnotation>
     )
   }
 
   if (hasMoved && typeof toIndex !== 'undefined' && typeof fromIndex !== 'undefined') {
+    // Item was moved
     const indexDiff = toIndex - fromIndex
     const indexSymbol = indexDiff < 0 ? '↑' : '↓'
     const description = `Moved ${Math.abs(indexDiff)} position ${indexDiff < 0 ? 'up' : 'down'} by`
@@ -64,5 +68,7 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {
     )
   }
 
-  return <span className={styles.indexGroup}>#{toIndex}</span>
+  // Changed/unchanged
+  const readableIndex = (toIndex || 0) + 1
+  return <span className={styles.indexGroup}>#{readableIndex}</span>
 }
