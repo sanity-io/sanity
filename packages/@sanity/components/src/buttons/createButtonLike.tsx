@@ -14,9 +14,11 @@ export interface ButtonState {
 }
 
 export default function createButtonLike(
-  Component: ButtonComponent,
+  as: ButtonComponent | 'button' | 'a',
   {displayName, defaultProps = {}}: ButtonComponentOpts
 ) {
+  const Component = as as ButtonComponent
+
   return class ButtonLike extends React.Component<ButtonProps, ButtonState> {
     static displayName =
       displayName ||
@@ -26,7 +28,7 @@ export default function createButtonLike(
 
     static defaultProps = defaultProps
 
-    _element: HTMLAnchorElement | HTMLButtonElement | null = null
+    _element: HTMLButtonElement | null = null
 
     state = {
       focusSetFromOutside: false
@@ -39,11 +41,11 @@ export default function createButtonLike(
       }
     }
 
-    setRootElement = (el: HTMLAnchorElement | HTMLButtonElement | null) => {
+    setRootElement = (el: HTMLButtonElement | null) => {
       this._element = el
     }
 
-    handleBlur = (event: React.FocusEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    handleBlur = (event: React.FocusEvent<HTMLButtonElement>) => {
       if (this.props.onBlur) {
         this.props.onBlur(event)
       }
@@ -69,6 +71,7 @@ export default function createButtonLike(
         bleed,
         selected,
         size,
+        tone,
         ...restProps
       } = this.props
 
@@ -91,6 +94,7 @@ export default function createButtonLike(
           {...restProps}
           className={className}
           data-icon-status={iconStatus}
+          data-tone={tone}
           disabled={disabled || loading}
           ref={this.setRootElement}
           tabIndex={0}
