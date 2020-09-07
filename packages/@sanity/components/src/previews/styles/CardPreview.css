@@ -32,19 +32,17 @@
   composes: ellipsis;
   text-transform: none;
   color: inherit;
-  margin: 0;
-  padding: 0 !important;
+  margin: 0 !important;
   min-width: 0;
-  line-height: 1.3em;
 }
 
 .subtitle {
-  font-size: 0.75em;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   text-transform: none;
-  font-weight: 300;
-  margin: 0;
+  font-weight: 400;
+  margin: var(--extra-small-padding) 0 0;
   padding: 0;
-  margin-bottom: 0.5em;
   color: inherit;
 }
 
@@ -97,6 +95,13 @@
     height: 4em;
     opacity: 0.5;
   }
+
+  @nest & > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .mediaContentRelative {
@@ -105,10 +110,11 @@
 
 .description {
   font-size: var(--font-size-xsmall);
+  line-height: var(--line-height-xsmall);
   color: inherit;
   font-weight: 400;
   padding: 0;
-  margin: 0;
+  margin: var(--extra-small-padding) 0 0;
 }
 
 .meta {
@@ -116,19 +122,13 @@
   background-color: inherit;
 }
 
-.img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.imgLandscape {
+/* .imgLandscape {
   composes: img;
 }
 
 .imgPortrait {
   composes: img;
-}
+} */
 
 .placeholder {
   composes: root;
