@@ -13,6 +13,8 @@
   /* :focus */
   --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
   --color-button-focus-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--brand-primary);
+  --color-button-navbar-focus-shadow: 0 0 0 1px var(--main-navigation-color),
+    0 0 0 3px var(--brand-primary);
   /* :hover */
   --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
   /* :active */
@@ -36,6 +38,19 @@
   /* :selected */
   --color-button-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
   --color-button-simple-selected-text: var(--selected-item-color);
+  /* simple={true} tone="navbar" */
+  --color-button-navbar-simple-color: var(--color-button-bg);
+  /* :focus */
+  --color-button-navbar-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-navbar-simple-focus-text: color(var(--color-button-bg) lightness(+ 20%));
+  /* :hover */
+  --color-button-navbar-simple-hover-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-navbar-simple-hover-text: color(var(--color-button-bg) lightness(+ 20%));
+  /* :active */
+  --color-button-navbar-simple-active-bg: color(var(--color-button-bg) alpha(20%));
+  /* :selected */
+  --color-button-navbar-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
+  --color-button-navbar-simple-selected-text: var(--selected-item-color);
 
   /**
    * color="primary"
@@ -248,6 +263,10 @@
       box-shadow: var(--color-button-focus-shadow);
     }
 
+    @nest &:focus[data-tone='navbar'] > .inner {
+      box-shadow: var(--color-button-navbar-focus-shadow);
+    }
+
     @media (hover: hover) {
       @nest &:hover > .inner {
         background-color: var(--color-button-hover-bg);
@@ -258,7 +277,7 @@
       background-color: var(--color-button-active-bg);
     }
 
-    @nest &.simple {
+    @nest &.simple:not([data-tone='navbar']) {
       @nest & > .inner {
         background-color: var(--color-button-simple-enabled-bg);
         color: var(--color-button-simple-enabled-text);
@@ -282,6 +301,33 @@
       @nest &.selected > .inner {
         background-color: var(--color-button-simple-selected-bg);
         color: var(--color-button-simple-selected-text);
+      }
+    }
+
+    @nest &.simple[data-tone='navbar'] {
+      @nest & > .inner {
+        background-color: transparent;
+        color: var(--color-button-navbar-simple-color);
+      }
+
+      @nest & .spinner {
+        background-color: color(var(--white) alpha(80%));
+      }
+
+      @media (hover: hover) {
+        @nest &:hover > .inner {
+          background-color: var(--color-button-navbar-simple-hover-bg);
+          color: var(--color-button-navbar-simple-hover-text);
+        }
+      }
+
+      @nest &:active > .inner {
+        background-color: var(--color-button-navbar-simple-active-bg);
+      }
+
+      @nest &.selected > .inner {
+        background-color: var(--color-button-navbar-simple-selected-bg);
+        color: var(--color-button-navbar-simple-selected-text);
       }
     }
   }
@@ -414,32 +460,32 @@
   border-radius: 3px;
   box-shadow: 0 0 0 1px var(--color-button-bg);
 
-  @nest .root[data-icon-status='primary'] & {
+  @nest .root:not(.disabled)[data-icon-status='primary'] & {
     background: var(--brand-primary);
   }
 
-  @nest .root[data-icon-status='success'] & {
+  @nest .root:not(.disabled)[data-icon-status='success'] & {
     background: var(--state-success-color);
   }
 
-  @nest .root[data-icon-status='warning'] & {
+  @nest .root:not(.disabled)[data-icon-status='warning'] & {
     background: var(--state-success-color);
   }
 
-  @nest .root[data-icon-status='danger']:not(.disabled) & {
+  @nest .root:not(.disabled)[data-icon-status='danger'] & {
     background: var(--state-success-color);
   }
 
-  @nest .root.simple & {
+  @nest .root:not(.disabled).simple & {
     box-shadow: 0 0 0 1px var(--component-bg);
+  }
+
+  @nest .root:not(.disabled).simple[data-tone='navbar'] & {
+    box-shadow: 0 0 0 1px var(--main-navigation-color);
   }
 
   @nest .root:not(.disabled):hover & {
     box-shadow: 0 0 0 1px var(--color-button-hover-bg);
-  }
-
-  @nest .root.simple:not(.disabled):hover & {
-    box-shadow: 0 0 0 1px var(--color-button-simple-hover-bg);
   }
 }
 
