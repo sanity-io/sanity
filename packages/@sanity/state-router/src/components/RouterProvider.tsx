@@ -77,7 +77,7 @@ export default class RouterProvider extends React.Component<Props> {
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (this.props.state !== nextProps.state) {
       this._state = nextProps.state
-      this.__internalRouter.channel.publish(nextProps.state)
+      setTimeout(this.__internalRouter.channel.publish, 0, nextProps.state)
     }
   }
 
