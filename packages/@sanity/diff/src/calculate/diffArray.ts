@@ -328,10 +328,10 @@ export function removedArray<A>(
     annotation: input.annotation,
 
     get items(): ArrayDiff<A>['items'] {
-      const items = []
+      const items: ArrayDiff<A>['items'] = []
       for (let i = 0; i < input.length; i++) {
         let item = input.at(i)
-        this.items.push({
+        items.push({
           fromIndex: i,
           toIndex: undefined,
           hasMoved: false,
@@ -358,10 +358,10 @@ export function addedArray<A>(
     annotation: input.annotation,
 
     get items(): ArrayDiff<A>['items'] {
-      const items = []
+      const items: ArrayDiff<A>['items'] = []
       for (let i = 0; i < input.length; i++) {
         let item = input.at(i)
-        this.items.push({
+        items.push({
           fromIndex: undefined,
           toIndex: i,
           hasMoved: false,
