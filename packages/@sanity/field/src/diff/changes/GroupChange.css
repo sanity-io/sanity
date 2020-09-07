@@ -9,8 +9,3 @@
   margin: 0 0 0.5em;
   display: flex;
 }
-
-.groupChange > .changeList {
-  border-left: 1px solid var(--hairline-color);
-  padding-left: 0.75em;
-}
