@@ -189,7 +189,10 @@ class DefaultLayout extends React.PureComponent<Props, State> {
               <RenderTool tool={router.state.tool} />
             </RouteScope>
           </div>
-          <Sidecar />
+
+          <div className={styles.sidecarContainer}>
+            <Sidecar />
+          </div>
         </div>
 
         {createMenuIsOpen && (

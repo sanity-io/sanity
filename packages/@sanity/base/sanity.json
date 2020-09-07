@@ -524,6 +524,14 @@
       "path": "components/icons/AngleUpIcon.js"
     },
     {
+      "name": "part:@sanity/base/help-circle-icon",
+      "description": "Used in help buttons"
+    },
+    {
+      "implements": "part:@sanity/base/help-circle-icon",
+      "path": "components/icons/HelpCircle"
+    },
+    {
       "name": "part:@sanity/base/spinner-icon",
       "description": "Used selects and dropdowns"
     },

@@ -165,6 +165,11 @@ declare module 'part:@sanity/base/cog-icon' {
   export default CogIcon
 }
 
+declare module 'part:@sanity/base/help-circle-icon' {
+  const HelpIcon: React.ComponentType<{}>
+  export default HelpIcon
+}
+
 declare module 'part:@sanity/base/link-icon' {
   const LinkIcon: React.ComponentType<{}>
   export default LinkIcon
