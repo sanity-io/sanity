@@ -4,11 +4,10 @@
   padding: var(--medium-padding);
   border-radius: var(--border-radius-medium);
   border: 1px solid var(--hairline-color);
-  margin: var(--small-padding) 0;
   cursor: pointer;
   display: flex;
   text-decoration: none;
-  color: inherit;
+  color: var(--main-navigation-color--inverted-muted);
 
   @nest &:hover {
     color: var(--main-navigation-color--inverted);
@@ -22,7 +21,7 @@
   font-weight: var(--headings-font-weight);
   align-items: center;
   justify-content: space-between;
-  margin: 0;
+  margin: -2px 0 1px;
 }
 
 .externalIcon {
@@ -32,5 +31,7 @@
 }
 
 .cardSummary {
-  margin: 0;
+  margin: calc(var(--small-padding) - 3px) 0 -2px;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
 }

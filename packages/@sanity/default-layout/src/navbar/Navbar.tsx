@@ -126,14 +126,14 @@ function Navbar(props: Props) {
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />
       </div>
+      {sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled() && (
+        <div className={styles.helpButton}>
+          {sidecar && createElement(sidecar.SidecarToggleButton)}
+        </div>
+      )}
       <div className={styles.presenceStatus}>
         <PresenceMenu />
       </div>
-      {sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled() && (
-        <div className={styles.sidecarStatus}>
-          {sidecar && sidecar.SidecarLayout && createElement(sidecar.SidecarLayout)}
-        </div>
-      )}
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} />
       </div>

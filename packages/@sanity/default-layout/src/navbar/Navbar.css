@@ -4,35 +4,35 @@
   display: grid;
   box-sizing: border-box;
   /* prettier-ignore */
-  grid-template-areas:  'hamburger   createButton branding       sidecarStatus presence    searchButton';
+  grid-template-areas:  'hamburger   createButton branding       helpButton  presence    searchButton';
   /* prettier-ignore */
-  grid-template-columns: min-content min-content  minmax(0, 1fr) min-content   min-content min-content;
+  grid-template-columns: min-content min-content  minmax(0, 1fr) min-content min-content min-content;
 
   @media (--screen-medium) {
     /* prettier-ignore */
-    grid-template-areas:  'hamburger   branding    createButton search              presence    sidecarStatus extras';
+    grid-template-areas:  'hamburger   branding    createButton search              helpButton  presence    extras';
     /* prettier-ignore */
-    grid-template-columns: max-content max-content min-content  minmax(240px, 100%) max-content min-content   max-content;
+    grid-template-columns: max-content max-content min-content  minmax(240px, 100%) min-content max-content max-content;
 
     @nest &.withToolSwitcher {
       /* prettier-ignore */
-      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus presence    sidecarStatus loginStatus';
+      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus helpButton  presence    loginStatus';
       /* prettier-ignore */
-      grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  max-content min-content   min-content;
+      grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  min-content max-content min-content;
     }
   }
 }
 
 .branding {
   grid-area: branding;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 }
 
 .brandingLink {
   text-decoration: none;
   color: inherit;
   outline: none;
-  border-radius: 4px;
+  border-radius: var(--extra-small-padding);
 
   @nest &:focus {
     background-color: color(var(--focus-color) a(20%));
@@ -41,7 +41,7 @@
 
 .hamburger {
   grid-area: hamburger;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -53,7 +53,8 @@
 .datasetSelect {
   display: none;
   grid-area: datasetSelect;
-  font-size: calc(13 / 16 * 1em);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   padding: var(--small-padding);
   box-sizing: border-box;
 
@@ -67,7 +68,7 @@
 .toolSwitcher {
   display: none;
   grid-area: toolSwitcher;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -79,7 +80,7 @@
 .sanityStatus {
   grid-area: sanityStatus;
   display: none;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -90,13 +91,13 @@
 
 .presenceStatus {
   grid-area: presence;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 }
 
 .loginStatus {
   grid-area: loginStatus;
   display: none;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 
   @media (--screen-medium) {
     @nest .withToolSwitcher & {
@@ -105,8 +106,9 @@
   }
 }
 
-.sidecarStatus {
-  grid-area: sidecarStatus;
+.helpButton {
+  grid-area: helpButton;
+  padding: var(--extra-small-padding);
 }
 
 .extras {
@@ -149,7 +151,7 @@
 
 .createButton {
   grid-area: createButton;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 }
 
 .createButtonInner {
@@ -188,7 +190,7 @@
 
 .searchButton {
   grid-area: searchButton;
-  padding: 4px;
+  padding: var(--extra-small-padding);
 
   @media (--screen-medium) {
     display: none;

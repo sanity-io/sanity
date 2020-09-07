@@ -28,7 +28,7 @@ function CardLinks(props) {
                 rel="noopener noreferrer"
               >
                 {/* TODO: handle inserting icon */}
-                {link.title}
+                <span className={styles.linkTitleText}>{link.title}</span>
                 <span className={styles.externalIcon}>
                   <LaunchIcon />
                 </span>

@@ -1,5 +1,6 @@
 /* eslint-disable no-console, class-methods-use-this */
 import React from 'react'
+import LinkButton from 'part:@sanity/components/buttons/anchor'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import WarningIcon from 'part:@sanity/base/warning-icon'
@@ -126,19 +127,30 @@ export default class HintsPackage extends React.PureComponent {
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
       <div className={styles.root}>
-        <h2 className={styles.trayTitle}>{title}</h2>
-        <LinksList title={linksTitle} links={links} repoId={repoId} />
-        <LinksList type="card" title={hintsTitle} links={hints} repoId={repoId} />
+        <div className={styles.header}>
+          <h2 className={styles.trayTitle}>{title}</h2>
+        </div>
+
+        <div className={styles.content}>
+          <div>
+            <LinksList title={linksTitle} links={links} repoId={repoId} />
+          </div>
+          <div>
+            <LinksList type="card" title={hintsTitle} links={hints} repoId={repoId} />
+          </div>
+        </div>
+
         <div className={styles.footer}>
           {sidebarRemovalInstructions && (
-            <a
+            <LinkButton
+              color="primary"
               href={resolveUrl(sidebarRemovalInstructions)}
-              className={styles.removeHintsLink}
-              target="_blank"
               rel="noopener noreferrer"
+              tone="navbar"
+              target="_blank"
             >
               How to remove this?
-            </a>
+            </LinkButton>
           )}
         </div>
       </div>

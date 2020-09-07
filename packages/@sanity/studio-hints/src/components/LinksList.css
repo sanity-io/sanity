@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-bottom: var(--small-padding);
 }
 
 .linksList {
@@ -15,12 +14,16 @@
   letter-spacing: 1px;
   font-family: var(--font-family-monospace);
   font-size: var(--font-size-small);
-  font-weight: 500;
-  margin: var(--medium-padding) 0;
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  margin: -2px 0 calc(var(--medium-padding) - 1px);
+  color: var(--main-navigation-color--inverted-muted);
 }
 
-.cardList:last-child {
-  margin-bottom: calc(var(--font-size-large) * 3);
+.cardList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: var(--small-padding);
 }
 
 .simpleList {
@@ -29,23 +32,29 @@
   margin: 0;
   padding: var(--small-padding) 0;
   list-style: none;
+}
 
-  @nest & .link {
-    display: flex;
-    justify-content: space-between;
-    text-decoration: none;
-    font-size: calc(var(--font-size-large) - 2px);
-    font-weight: normal;
-    margin: 0;
-    color: inherit;
-    padding: calc(var(--small-padding) + 0.25rem) var(--medium-padding);
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  font-size: calc(var(--font-size-large) - 2px);
+  font-weight: normal;
+  margin: 0;
+  color: inherit;
+  padding: calc(var(--small-padding) + 0.25rem) var(--medium-padding);
+  color: var(--main-navigation-color--inverted-muted);
 
-    @nest &:hover {
-      color: var(--main-navigation-color--inverted);
-      background: color(var(--main-navigation-color) l(+4%));
-      cursor: pointer;
-    }
+  @nest &:hover {
+    color: var(--main-navigation-color--inverted);
+    background: color(var(--main-navigation-color) l(+4%));
+    cursor: pointer;
   }
+}
+
+.linkTitleText {
+  margin: -2px 0 -1px;
 }
 
 .externalIcon {
