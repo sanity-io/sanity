@@ -66,7 +66,7 @@
     "semver": "^6.1.2",
     "simple-get": "^4.0.0",
     "tar-fs": "^1.16.0",
-    "terser": "4.6.7"
+    "terser": "^4.6.7"
   },
   "repository": {
     "type": "git",

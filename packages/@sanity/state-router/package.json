@@ -33,7 +33,7 @@
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
     "history": "^4.6.3",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",
     "quickreload": "^2.1.2",
@@ -43,7 +43,7 @@
     "remon": "^1.0.2",
     "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^26.3.0",
     "ts-node": "^8.6.2",
     "tsify": "^4.0.1"
   },
