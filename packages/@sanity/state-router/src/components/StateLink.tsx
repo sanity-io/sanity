@@ -10,7 +10,9 @@ type Props = {
   toIndex?: boolean
 }
 
-export default class StateLink extends React.PureComponent<Props> {
+export default class StateLink extends React.PureComponent<
+  Props & React.HTMLProps<HTMLAnchorElement>
+> {
   context: RouterProviderContext | null = null
   _element: Link | null = null
 
