@@ -24,7 +24,12 @@ export function Change({
   previewComponent: PreviewComponent
 }: ChangeProps) {
   const containerClassName = className ? `${styles.root} ${className}` : styles.root
-  const {fromValue, toValue} = diff
+  const {fromValue, toValue, action} = diff
+
+  if (action === 'unchanged') {
+    return <PreviewComponent value={toValue} schemaType={schemaType} />
+  }
+
   const from = hasValue(fromValue) ? (
     <DiffAnnotationCard as="del" className={styles.remove} diff={diff}>
       <PreviewComponent value={fromValue} schemaType={schemaType} />
