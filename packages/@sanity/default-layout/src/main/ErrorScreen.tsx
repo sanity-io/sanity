@@ -87,9 +87,4 @@ function ErrorScreen(props: Props) {
   )
 }
 
-ErrorScreen.defaultProps = {
-  error: null,
-  info: null
-}
-
 export default ErrorScreen

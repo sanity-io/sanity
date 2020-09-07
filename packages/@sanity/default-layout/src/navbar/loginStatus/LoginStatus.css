@@ -1,13 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  text-align: center;
-  align-items: center;
-  position: relative;
-}
-
-.button {
   -webkit-font-smoothing: antialiased;
   appearance: none;
   outline: none;
@@ -26,7 +19,7 @@
 }
 
 .inner {
-  padding: 3px;
+  /* padding: 3px; */
   position: relative;
   outline: none;
   display: flex;
@@ -34,6 +27,7 @@
 }
 
 .avatarContainer {
+  margin: -1px;
 }
 
 .iconContainer {

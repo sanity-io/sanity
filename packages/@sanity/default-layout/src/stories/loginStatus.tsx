@@ -9,13 +9,7 @@ export function LoginStatusStory() {
     <div className={DefaultLayoutStyles.navBar}>
       <div className={NavbarStyles.root}>
         <div className={NavbarStyles.loginStatus}>
-          <LoginStatus
-            user={{
-              name: 'John Doe',
-              profileImage: 'https://randomuser.me/api/portraits/men/12.jpg'
-            }}
-            onLogout={() => action('onLogout')}
-          />
+          <LoginStatus onLogout={() => action('onLogout')} />
         </div>
       </div>
     </div>

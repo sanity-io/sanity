@@ -3,6 +3,7 @@ import {Router, Tool} from '../types'
 import Navbar from './Navbar'
 
 interface Props {
+  createMenuIsOpen: boolean
   onCreateButtonClick: () => void
   onSearchClose: () => void
   onSearchOpen: () => void
@@ -162,6 +163,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
 
   render() {
     const {
+      createMenuIsOpen,
       onCreateButtonClick,
       onSearchClose,
       onSearchOpen,
@@ -176,6 +178,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
 
     return (
       <Navbar
+        createMenuIsOpen={createMenuIsOpen}
         onCreateButtonClick={onCreateButtonClick}
         onSearchClose={onSearchClose}
         onSearchOpen={onSearchOpen}

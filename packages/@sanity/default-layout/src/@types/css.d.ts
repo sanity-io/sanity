@@ -1,4 +1,4 @@
 declare module '*.css' {
-  const styles: {[key: string]: string}
+  const styles: Record<string, string>
   export default styles
 }

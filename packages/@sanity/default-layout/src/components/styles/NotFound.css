@@ -1,5 +1,0 @@
-@import "part:@sanity/base/theme/variables-style";
-
-.root {
-  padding: var(--medium-padding);
-}

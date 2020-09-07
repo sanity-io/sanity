@@ -12,7 +12,6 @@ import LoginStatus from '../navbar/loginStatus/LoginStatus'
 import SanityStatus from '../navbar/studioStatus/SanityStatus'
 import SearchField from '../navbar/search/SearchField'
 import SearchResults from '../navbar/search/SearchResults'
-// import ToolMenuItem from '../navbar/toolMenu/ToolMenuItem'
 
 import NavbarStyles from '../navbar/Navbar.css'
 import DefaultLayoutStyles from '../DefaultLayout.css'
@@ -26,10 +25,6 @@ function SearchResultItem(key) {
     </div>
   )
 }
-
-// function CustomToolMenuItem(tool) {
-//   return <ToolMenuItem title={tool.name} icon={tool.icon} />
-// }
 
 export function ExampleStory() {
   const menuIsOpen = boolean('menuIsOpen', false, 'props')
@@ -97,7 +92,6 @@ export function ExampleStory() {
               onChange={action('onChange')}
             />
           </div>
-          {/* spaceSwitcher */}
           <div className={NavbarStyles.toolSwitcher}>
             <ToolMenu
               activeToolName="desk"
@@ -137,15 +131,8 @@ export function ExampleStory() {
             />
           </div>
           <div className={NavbarStyles.loginStatus}>
-            <LoginStatus
-              user={{
-                name: 'John Doe',
-                profileImage: 'https://randomuser.me/api/portraits/men/12.jpg'
-              }}
-              onLogout={action('onLogout')}
-            />
+            <LoginStatus onLogout={action('onLogout')} />
           </div>
-          {/* searchButton */}
         </div>
       </div>
     </div>

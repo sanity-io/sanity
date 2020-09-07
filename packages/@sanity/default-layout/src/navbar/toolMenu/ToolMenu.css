@@ -14,7 +14,7 @@
     }
 
     @nest & > li + li {
-      margin-left: 0.25em;
+      margin-left: 0.75em;
     }
   }
 

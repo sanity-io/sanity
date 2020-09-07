@@ -5,12 +5,16 @@ import {Router} from '../types'
 
 import styles from './NotFound.css'
 
-interface Props {
+interface OuterProps {
+  children: React.ReactNode
+}
+
+interface NotFoundProps {
   children: React.ReactNode
   router: Router
 }
 
-function NotFound(props: Props) {
+function NotFound(props: NotFoundProps) {
   const router = props.router
   const rootState =
     HAS_SPACES && router.state && router.state.space ? {space: router.state.space} : {}
@@ -30,4 +34,4 @@ function NotFound(props: Props) {
   )
 }
 
-export default withRouterHOC(NotFound)
+export default (withRouterHOC(NotFound) as any) as React.ComponentType<OuterProps>

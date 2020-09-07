@@ -3,9 +3,10 @@
 .root {
   text-decoration: none;
   color: inherit;
-  padding: 0.75em;
+  padding: 0.5em;
   box-sizing: border-box;
   position: relative;
+  border-radius: var(--border-radius-medium);
 
   @media (--screen-medium) {
     display: flex;
