@@ -42,7 +42,7 @@
     "react-click-outside": "^3.0.0",
     "react-motion": "^0.5.2",
     "react-popper": "^2.2.3",
-    "react-sortable-hoc": "^0.6.3",
+    "react-sortable-hoc": "^1.11.0",
     "react-split-pane": "^0.1.84",
     "rxjs": "^6.5.3",
     "string-hash": "^1.1.3"
