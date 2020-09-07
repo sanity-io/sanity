@@ -3,6 +3,11 @@
   --size: 1.8rem;
 }
 
+.root {
+  display: flex;
+  align-items: center;
+}
+
 .statusBadges {
   position: relative;
   display: flex;
@@ -65,4 +70,13 @@
     background-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);
   }
+}
+
+.statusDetails {
+  white-space: nowrap;
+  margin: -2px 0 -1px;
+}
+
+.label {
+  font-weight: 500;
 }

@@ -27,11 +27,6 @@
   /*  */
 }
 
-.statusDetails {
-  white-space: nowrap;
-  margin: -2px 0 -1px;
-}
-
 .lastUpdatedButton {
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
