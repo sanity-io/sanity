@@ -1,9 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --nav-bar-box: 3.0625em; /* 49px */
-}
-
 .root {
   position: relative;
   color: var(--main-navigation-color--inverted-muted);
@@ -144,10 +140,6 @@
   @nest .root:not(.isBleeding) & > svg {
     font-size: 20px;
   }
-
-  @nest .isBleeding & {
-    min-width: var(--nav-bar-box);
-  }
 }
 
 .clearButtonWithValue {
@@ -189,7 +181,7 @@
   z-index: 150;
 
   @nest .root.isBleeding & {
-    top: var(--nav-bar-box);
+    top: 0;
     box-shadow: none;
   }
 

@@ -1,12 +1,14 @@
-import React from 'react'
+import classNames from 'classnames'
+import React, {createElement} from 'react'
 import config from 'config:sanity'
 import ComposeIcon from 'part:@sanity/base/compose-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
-import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
+import SearchIcon from 'part:@sanity/base/search-icon'
+import Button from 'part:@sanity/components/buttons/default'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
+import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
 import Branding from './branding/Branding'
@@ -36,13 +38,7 @@ interface Props {
 
 const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
-let isSidecarEnabled: () => boolean
-let SidecarToggleButton: React.ComponentType<{}>
-if (sidecar) {
-  isSidecarEnabled = sidecar.isSidecarEnabled
-  SidecarToggleButton = sidecar.SidecarToggleButton
-}
-
+// eslint-disable-next-line complexity
 function Navbar(props: Props) {
   const {
     searchIsOpen,
@@ -59,49 +55,52 @@ function Navbar(props: Props) {
     showLabel,
     showToolSwitcher
   } = props
-  let searchClassName = styles.search
-  if (searchIsOpen) searchClassName += ` ${styles.searchIsOpen}`
-  let className = styles.root
-  if (showToolSwitcher) className += ` ${styles.withToolSwitcher}`
 
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
+  const className = classNames(styles.root, showToolSwitcher && styles.withToolSwitcher)
+  const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
 
   return (
     <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
-        <button
-          className={styles.hamburgerButton}
-          type="button"
-          title="Open menu"
+        <Button
+          aria-label="Open menu"
+          icon={HamburgerIcon}
+          kind="simple"
           onClick={onToggleMenu}
-        >
-          <div className={styles.hamburgerButtonInner} tabIndex={-1}>
-            <HamburgerIcon />
-          </div>
-        </button>
+          title="Open menu"
+          tone="navbar"
+        />
       </div>
-      <StateLink state={rootState} className={styles.branding}>
-        <Branding projectName={config && config.project.name} />
-      </StateLink>
+      <div className={styles.branding}>
+        <StateLink state={rootState} className={styles.brandingLink}>
+          <Branding projectName={config && config.project.name} />
+        </StateLink>
+      </div>
       {HAS_SPACES && (
         <div className={styles.datasetSelect}>
           <DatasetSelect isVisible={showToolSwitcher} tone="navbar" />
         </div>
       )}
-      <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
+      <div className={styles.createButton}>
         <Tooltip
           disabled={TOUCH_DEVICE}
-          content={<span className={styles.createButtonTooltipContent}>Create new document</span>}
+          content={
+            (<span className={styles.createButtonTooltipContent}>Create new document</span>) as any
+          }
           tone="navbar"
         >
-          <div className={styles.createButtonInner} tabIndex={-1}>
-            <div className={styles.createButtonIcon}>
-              <ComposeIcon />
-            </div>
-            <span className={styles.createButtonText}>New</span>
+          <div>
+            <Button
+              aria-label="Create"
+              icon={ComposeIcon}
+              kind="simple"
+              onClick={onCreateButtonClick}
+              tone="navbar"
+            />
           </div>
         </Tooltip>
-      </button>
+      </div>
       <div className={searchClassName} ref={onSetSearchElement}>
         <div>
           <SearchContainer
@@ -130,22 +129,17 @@ function Navbar(props: Props) {
       <div className={styles.presenceStatus}>
         <PresenceMenu />
       </div>
-      {isSidecarEnabled && isSidecarEnabled() && (
+      {sidecar && sidecar.isSidecarEnabled && sidecar.isSidecarEnabled() && (
         <div className={styles.sidecarStatus}>
-          <SidecarToggleButton />
+          {sidecar && sidecar.SidecarLayout && createElement(sidecar.SidecarLayout)}
         </div>
       )}
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} />
       </div>
-      <button className={styles.searchButton} onClick={onSearchOpen} type="button">
-        <div className={styles.searchButtonInner} tabIndex={-1}>
-          <span className={styles.searchButtonIcon}>
-            <SearchIcon />
-          </span>
-          <span className={styles.searchButtonText}>Search</span>
-        </div>
-      </button>
+      <div className={styles.searchButton}>
+        <Button icon={SearchIcon} kind="simple" onClick={onSearchOpen} tone="navbar" />
+      </div>
     </div>
   )
 }
