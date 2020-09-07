@@ -54,7 +54,7 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}) {
     const description = `Moved ${Math.abs(indexDiff)} position ${indexDiff < 0 ? 'up' : 'down'} by`
     return (
       <>
-        <span className={styles.indexGroup}>#{toIndex}</span>
+        <span className={styles.indexGroup}>#{toIndex + 1}</span>
         <DiffAnnotation
           annotation={annotation || null}
           className={styles.indexGroup}
