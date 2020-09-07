@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client",
-  "version": "1.150.1",
+  "version": "1.150.7",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/sanityClient.js",
   "umd": "umd/sanityClient.min.js",
