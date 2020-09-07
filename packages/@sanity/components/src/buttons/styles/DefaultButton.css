@@ -12,8 +12,7 @@
   --color-button-spinner-bg: color(var(--color-button-bg) alpha(80%));
   /* :focus */
   --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
-  --color-button-focus-shadow: 0 0 0 1px var(--component-bg),
-    0 0 0 3px var(--brand-primary);
+  --color-button-focus-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--brand-primary);
   /* :hover */
   --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
   /* :active */
@@ -392,7 +391,7 @@
 }
 
 .icon {
-  display: flex;
+  position: relative;
 
   @nest & > svg {
     font-size: calc(17 / 16 * 1em); /* 17px */
@@ -403,6 +402,44 @@
       font-size: calc(25 / 16 * 1em); /* 25px */
       margin: calc(4 / 25 * -1em); /* -4px */
     }
+  }
+}
+
+.iconStatus {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--color-button-bg);
+
+  @nest .root[data-icon-status='primary'] & {
+    background: var(--brand-primary);
+  }
+
+  @nest .root[data-icon-status='success'] & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root[data-icon-status='warning'] & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root[data-icon-status='danger']:not(.disabled) & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root.simple & {
+    box-shadow: 0 0 0 1px var(--component-bg);
+  }
+
+  @nest .root:not(.disabled):hover & {
+    box-shadow: 0 0 0 1px var(--color-button-hover-bg);
+  }
+
+  @nest .root.simple:not(.disabled):hover & {
+    box-shadow: 0 0 0 1px var(--color-button-simple-hover-bg);
   }
 }
 
@@ -421,16 +458,16 @@
   justify-content: center;
   width: stretch;
 
-  @nest .padding_large & {
-    padding: calc(var(--medium-padding--em) - 1px);
+  @nest .padding_small & {
+    padding: calc(var(--small-padding--em) - 1px);
   }
 
-  @nest .padding_default & {
+  @nest .padding_medium & {
     padding: calc(var(--medium-padding--em) - var(--extra-small-padding--em) - 1px);
   }
 
-  @nest .padding_small & {
-    padding: calc(var(--small-padding--em) - 1px);
+  @nest .padding_large & {
+    padding: calc(var(--medium-padding--em) - 1px);
   }
 }
 
