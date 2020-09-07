@@ -1,4 +1,20 @@
-import {ArraySchemaType, Diff, KeyedObject, SchemaType, TypedObject} from '../diff'
+import schema from 'part:@sanity/base/schema'
+import {ArraySchemaType, Diff, SchemaType, TypedObject, ReferenceSchemaType} from '../diff'
+
+export function getReferencedType(referenceType: ReferenceSchemaType): SchemaType | undefined {
+  if (!referenceType.to) {
+    return referenceType.type
+      ? getReferencedType(referenceType.type as ReferenceSchemaType)
+      : undefined
+  }
+
+  if (Array.isArray(referenceType.to) && referenceType.to.length !== 1) {
+    return undefined
+  }
+
+  const targetType = schema.get(referenceType.to[0].name) as SchemaType
+  return targetType
+}
 
 export function resolveTypeName(value: unknown) {
   return isTypedObject(value) ? value._type : resolveJSType(value)
@@ -45,10 +61,6 @@ function resolveArrayMemberType(
 
 function isTypedObject(val: unknown): val is TypedObject {
   return typeof val === 'object' && val !== null && typeof (val as TypedObject)._type === 'string'
-}
-
-function isKeyedObject(val: unknown): val is KeyedObject {
-  return typeof val === 'object' && val !== null && typeof (val as KeyedObject)._key === 'string'
 }
 
 function resolveJSType(val: unknown) {

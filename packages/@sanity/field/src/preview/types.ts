@@ -5,7 +5,9 @@ import {
   BooleanSchemaType,
   StringSchemaType,
   NumberSchemaType,
-  ObjectSchemaType
+  ObjectSchemaType,
+  Reference,
+  ReferenceSchemaType
 } from '../diff'
 
 export type PreviewComponent<T> = ComponentType<{
@@ -18,6 +20,8 @@ export type PreviewComponent<T> = ComponentType<{
     ? StringSchemaType
     : T extends number
     ? NumberSchemaType
+    : T extends Reference
+    ? ReferenceSchemaType
     : T extends object
     ? ObjectSchemaType
     : any

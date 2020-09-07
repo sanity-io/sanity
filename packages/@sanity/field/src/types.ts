@@ -179,7 +179,9 @@ export interface Reference {
   _weak?: boolean
 }
 
-export type ReferenceSchemaType = ObjectSchemaType<Reference>
+export type ReferenceSchemaType = ObjectSchemaType<Reference> & {
+  to: SchemaType[]
+}
 
 export type SchemaType<A = unknown, O extends object = Record<string, any>> =
   | ArraySchemaType<A>
