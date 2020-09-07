@@ -50,7 +50,7 @@ function normalizeArgs(
 
 export default function route(
   routeOrOpts: string | NodeOptions,
-  childrenOrOpts?: NodeOptions | RouteChildren,
+  childrenOrOpts?: NodeOptions | RouteChildren | null,
   children?: Router | RouteChildren
 ): Router {
   return createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children))
