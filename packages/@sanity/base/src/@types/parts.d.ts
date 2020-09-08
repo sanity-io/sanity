@@ -1,5 +1,27 @@
+/* eslint-disable import/no-duplicates */
 // @todo: define interface
 declare module 'part:@sanity/base/authentication-fetcher'
+
+declare module 'config:sanity' {
+  interface SanityConfig {
+    api: {
+      projectId: string
+      dataset: string
+    }
+  }
+
+  const config: SanityConfig
+  export default config
+}
+
+declare module 'part:@sanity/base/configure-client?' {
+  import {SanityClient} from '@sanity/client'
+
+  type Configurer = (client: SanityClient) => SanityClient
+  const configure: Configurer | undefined
+
+  export default configure
+}
 
 declare module 'part:@sanity/base/client' {
   import {SanityClient} from '@sanity/client'
