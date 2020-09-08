@@ -13,9 +13,8 @@ import {
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
-import {RegionWithIntersectionDetails} from '../types'
+import {FormFieldPresence, RegionWithIntersectionDetails} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
-import {OverlayItem} from '../overlay-reporter'
 import {TrackerComponentProps} from '../overlay-reporter/Tracker'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 

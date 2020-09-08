@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {GlobalPresence} from '../../presence/types'
+import {GlobalPresence} from './types'
 import {globalPresence$} from './presence-store'
 
 export function useGlobalPresence(): GlobalPresence[] {

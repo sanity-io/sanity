@@ -14,7 +14,7 @@ type PresenceRegionProps = {
 }
 
 function RegionWithOverlay({component, ...rest}: PresenceRegionProps) {
-  return <RegionReporter id={useId() || ''} data={rest} component={component as any} />
+  return <RegionReporter id={useId() || ''} data={rest} component={component} />
 }
 
 function RegionWithoutOverlay({component: Component, ...rest}: PresenceRegionProps) {
