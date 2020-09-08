@@ -1,8 +1,12 @@
-export * from './types'
+import {FormFieldPresenceContext} from './context'
 
-// @todo: move these to `@sanity/form-builder` or `@sanity/field`
-export * from './overlay/PresenceOverlay'
-export * from './FieldPresence'
-export * from './overlay/PresenceOverlayRegion'
-export * from './context'
-export * from './PresenceScope'
+// Note: This is the public API of `@sanity/base/presence`
+// Any changes here will affect the public API
+import {FormFieldPresence} from './types'
+
+export {GlobalPresence} from '../datastores/presence/types'
+export {FormFieldPresence}
+
+export {FormFieldPresenceContext}
+export {PresenceOverlay} from './overlay/PresenceOverlay'
+export {FieldPresence} from './FieldPresence'

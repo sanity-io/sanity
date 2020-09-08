@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {map, mergeMapTo, share, switchMapTo, tap, switchMap} from 'rxjs/operators'
 import {EMPTY, fromEvent, merge, Observable, defer} from 'rxjs'
-import {PresenceLocation} from '../../../presence/types'
+import {PresenceLocation} from '../types'
 import {Transport, TransportEvent, TransportMessage} from './transport'
 
 type BifurStateMessage = {
