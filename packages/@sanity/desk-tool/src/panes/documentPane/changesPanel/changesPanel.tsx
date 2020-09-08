@@ -97,7 +97,14 @@ export function ChangesPanel({
 
         {changeAnnotations.length > 0 && (
           <Tooltip
-            content={(<DiffAnnotationTooltipContent annotations={changeAnnotations} />) as any}
+            content={
+              (
+                <DiffAnnotationTooltipContent
+                  description="Changes by"
+                  annotations={changeAnnotations}
+                />
+              ) as any
+            }
             placement="top"
           >
             <div className={styles.changeAuthorsContainer}>
