@@ -42,7 +42,7 @@ export function buildChangeList(
 
   if (schemaType.jsonType === 'array' && diff.type === 'array') {
     childChanges = buildArrayChangeList(schemaType, diff, path, titlePath)
-    if (!diffComponent) {
+    if (!diffComponent || childChanges.length === 0) {
       return childChanges
     }
   }
