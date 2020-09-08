@@ -17,7 +17,7 @@ export function TimelineItem(props: {
   title: string
   onSelect: (chunk: Chunk) => void
   chunk: Chunk
-  timestamp: Date
+  timestamp: string
   type: ChunkType
 }) {
   const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, title, type} = props

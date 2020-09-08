@@ -27,7 +27,7 @@ const ICON_COMPONENTS: {[key: string]: React.ComponentType<{}>} = {
   unpublish: UnpublishIcon
 }
 
-export function formatHoursAgo(date: Date) {
+export function formatHoursAgo(date: Date | string) {
   const now = Date.now()
   const h = differenceInHours(now, date)
 
@@ -44,7 +44,7 @@ export function formatHoursAgo(date: Date) {
   return 'Just now'
 }
 
-export function formatTimelineEventDate(date: Date) {
+export function formatTimelineEventDate(date: Date | string) {
   if (isToday(date)) {
     return formatHoursAgo(date)
   }

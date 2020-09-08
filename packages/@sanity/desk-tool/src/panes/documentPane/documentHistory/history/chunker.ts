@@ -11,8 +11,8 @@ function canMergeEdit(type: ChunkType) {
 
 const CHUNK_WINDOW = 5 * 60 * 1000 // 5 minutes
 
-function isWithinMergeWindow(a: Date, b: Date) {
-  return b.valueOf() - a.valueOf() < CHUNK_WINDOW
+function isWithinMergeWindow(a: string, b: string) {
+  return Date.parse(b) - Date.parse(a) < CHUNK_WINDOW
 }
 
 export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
