@@ -1,1 +1,1 @@
-export * from './src/presence'
+export * from './lib/presence'

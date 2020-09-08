@@ -1,51 +1,7 @@
-import React from 'react'
+import {PathElement, Session, Status, User} from '../datastores/presence/types'
 
-import {User} from '../datastores/user'
-
-export type Status = 'online' | 'editing' | 'inactive'
-
-export type PathElement = string | number | {_key: string}
-
-type LastActiveAt = string // iso date
-
-// Low level data/transport format
-export interface Session {
-  id?: string
-  sessionId: string
-  userId: string
-  lastActiveAt: LastActiveAt
-  locations: PresenceLocation[]
-}
-
-// (this is what each client typically exchanges over bifur)
-export interface PresenceLocation {
-  type: 'document'
-  documentId: string
-  path: PathElement[]
-  data?: Record<string, any>
-  lastActiveAt: LastActiveAt
-}
-
-// These are the data prepared and made ready for different types of UI components to use
-// Presence data prepared for a single document
-export interface DocumentPresence {
-  user: User
-  path: PathElement[]
-  lastActiveAt: LastActiveAt
-}
-
-export interface UserSessionPair {
-  user: User
-  session: Session
-}
-
-export interface GlobalPresence {
-  user: User
-  lastActiveAt: LastActiveAt
-  locations: PresenceLocation[]
-}
-
-//////////////////////////////
+export type Position = 'top' | 'bottom' | 'inside' | null
+export type Size = 'xsmall' | 'small' | 'medium'
 
 export type RegionWithIntersectionDetails = {
   distanceTop: number
@@ -56,18 +12,18 @@ export type RegionWithIntersectionDetails = {
 
 export type Region = {
   id: string
-  data: Data
+  data: FieldPresenceData
   rect: {
     top: number
     left: number
     height: number
     width: number
   }
-  component: React.ComponentType<Data>
+  component: React.ComponentType<FieldPresenceData>
   spacerHeight?: number
 }
 
-type Data = {
+export type FieldPresenceData = {
   presence: FormFieldPresence[]
   maxAvatars: number
   avatarComponent: React.ComponentType
@@ -89,11 +45,4 @@ export interface FormFieldPresence {
   path: PathElement[]
   sessionId: string
   lastActiveAt: string
-}
-
-export type GlobalPresenceItem = {
-  user: User
-  status: Status
-  lastActiveAt: string
-  locations: PresenceLocation[]
 }

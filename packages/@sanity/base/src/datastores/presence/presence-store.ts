@@ -33,14 +33,6 @@ import {flatten, groupBy, omit, uniq} from 'lodash'
 import {nanoid} from 'nanoid'
 
 import userStore, {User} from '../user'
-import {
-  PresenceLocation,
-  Session,
-  // User,
-  UserSessionPair,
-  DocumentPresence,
-  GlobalPresence
-} from '../../presence'
 
 import {bifur} from '../../client/bifur'
 import {connectionStatus$} from '../../connection-status/connection-status-store'
@@ -52,6 +44,7 @@ import {
 } from './message-transports/transport'
 import {mock$} from './mock-events'
 import {createBifurTransport} from './message-transports/bifurTransport'
+import {DocumentPresence, GlobalPresence, PresenceLocation, Session, UserSessionPair} from './types'
 
 const KEY = 'presence_session_id'
 const generate = () => nanoid(16)
@@ -217,6 +210,7 @@ export const globalPresence$: Observable<GlobalPresence[]> = allSessions$.pipe(
   map(userAndSessions =>
     userAndSessions.map(userAndSession => ({
       user: userAndSession.user,
+      status: 'online',
       lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
       locations: flatten((userAndSession.sessions || []).map(session => session.locations || []))
         .map(location => ({
