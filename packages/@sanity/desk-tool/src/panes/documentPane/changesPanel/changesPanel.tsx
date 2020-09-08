@@ -4,16 +4,20 @@ import {
   ObjectDiff,
   ObjectSchemaType,
   DocumentChangeContext,
+  DiffAnnotationTooltipContent,
   ChangeList,
   Chunk
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import {UserAvatar} from '@sanity/base/components'
+import {Tooltip} from 'part:@sanity/components/tooltip'
 import Button from 'part:@sanity/components/buttons/default'
+import {AvatarStack} from 'part:@sanity/components/avatar'
+import {formatTimelineEventDate, formatTimelineEventLabel} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
 
 import styles from './changesPanel.css'
-import {format} from 'date-fns'
-import {formatTimelineEventDate, formatTimelineEventLabel} from '../timeline'
+import {collectLatestAuthorAnnotations} from './helpers'
 
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -44,6 +48,10 @@ export function ChangesPanel({
   }
 
   const documentContext = React.useMemo(() => ({documentId, schemaType}), [documentId, schemaType])
+  const changeAnnotations = React.useMemo(
+    () => (diff ? collectLatestAuthorAnnotations(diff) : []),
+    [diff]
+  )
 
   // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
   // as an outside-click.
@@ -86,6 +94,21 @@ export function ChangesPanel({
             </Button>
           </div>
         </div>
+
+        {changeAnnotations.length > 0 && (
+          <Tooltip
+            content={(<DiffAnnotationTooltipContent annotations={changeAnnotations} />) as any}
+            placement="top"
+          >
+            <div className={styles.changeAuthorsContainer}>
+              <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
+                {changeAnnotations.map(({author}) => (
+                  <UserAvatar key={author} userId={author} />
+                ))}
+              </AvatarStack>
+            </div>
+          </Tooltip>
+        )}
       </header>
 
       <div className={styles.body}>
