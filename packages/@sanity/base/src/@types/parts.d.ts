@@ -15,9 +15,9 @@ declare module 'config:sanity' {
 }
 
 declare module 'part:@sanity/base/configure-client?' {
-  import {SanityClient} from '@sanity/client'
+  import {SanityClient as OriginalSanityClient} from '@sanity/client'
 
-  type Configurer = (client: SanityClient) => SanityClient
+  type Configurer = (client: OriginalSanityClient) => OriginalSanityClient
   const configure: Configurer | undefined
 
   export default configure
