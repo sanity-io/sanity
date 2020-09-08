@@ -15,12 +15,17 @@ type BlockPreviewStatusComponent = React.FunctionComponent<{
   layout: 'default'
 }>
 
+type MediaCallable = (options: {
+  dimensions: PreviewMediaDimensions
+  layout: 'default'
+}) => React.ReactNode | null | undefined
+
 interface BlockPreviewProps {
   title?: BlockPreviewFieldProp
   subtitle?: BlockPreviewFieldProp
   description?: BlockPreviewFieldProp
   mediaDimensions?: PreviewMediaDimensions
-  media?: React.ReactNode | BlockPreviewMediaComponent
+  media?: React.ReactNode | MediaCallable
   status?: React.ReactNode | BlockPreviewStatusComponent
   children?: React.ReactNode
   extendedPreview?: BlockPreviewFieldProp
@@ -57,7 +62,7 @@ export default class BlockPreview extends React.PureComponent<BlockPreviewProps>
           {media && (
             <div className={`${styles.media}`}>
               {typeof media === 'function' &&
-                createElement(media as BlockPreviewMediaComponent, {
+                media({
                   dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,
                   layout: 'default'
                 })}
