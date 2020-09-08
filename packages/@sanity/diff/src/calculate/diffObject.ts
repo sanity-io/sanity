@@ -2,7 +2,7 @@ import {ObjectDiff, ObjectInput, DiffOptions} from '../types'
 import {diffInput, removedInput, addedInput} from './diffInput'
 import {replaceProperty} from '../helpers'
 
-const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev'])
+const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev', '_weak'])
 
 export function diffObject<A>(
   fromInput: ObjectInput<A>,
