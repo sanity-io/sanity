@@ -8,7 +8,7 @@ export function AnnotatedStringDiffSegment({
 }: {
   segment: StringDiffSegment
 }): React.ReactElement {
-  if (segment.type === 'added') {
+  if (segment.action === 'added') {
     return (
       <DiffAnnotation annotation={segment.annotation} as="ins" className={styles.add}>
         {segment.text}
@@ -16,7 +16,7 @@ export function AnnotatedStringDiffSegment({
     )
   }
 
-  if (segment.type === 'removed') {
+  if (segment.action === 'removed') {
     return (
       <DiffAnnotation annotation={segment.annotation} as="del" className={styles.remove}>
         {segment.text}

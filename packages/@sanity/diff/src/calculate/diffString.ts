@@ -24,7 +24,7 @@ export function diffString<A>(
       isChanged: false,
       fromValue,
       toValue,
-      segments: [{type: 'unchanged', text: fromValue}]
+      segments: [{type: 'stringSegment', action: 'unchanged', text: fromValue}]
     }
   }
 
@@ -59,14 +59,15 @@ function buildSegments<A>(
   for (let [op, text] of dmpDiffs) {
     switch (op) {
       case DIFF_EQUAL:
-        segments.push({type: 'unchanged', text})
+        segments.push({type: 'stringSegment', action: 'unchanged', text})
         fromIdx += text.length
         toIdx += text.length
         break
       case DIFF_DELETE:
         for (let segment of fromInput.sliceAnnotation(fromIdx, fromIdx + text.length)) {
           segments.push({
-            type: 'removed',
+            type: 'stringSegment',
+            action: 'removed',
             text: segment.text,
             annotation: segment.annotation
           })
@@ -76,7 +77,8 @@ function buildSegments<A>(
       case DIFF_INSERT:
         for (let segment of toInput.sliceAnnotation(toIdx, toIdx + text.length)) {
           segments.push({
-            type: 'added',
+            type: 'stringSegment',
+            action: 'added',
             text: segment.text,
             annotation: segment.annotation
           })
@@ -105,7 +107,7 @@ export function removedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map(segment => ({type: 'removed', ...segment}))
+        .map(segment => ({type: 'stringSegment', action: 'removed', ...segment}))
 
       return replaceProperty(this, 'segments', segments)
     }
@@ -128,7 +130,7 @@ export function addedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map(segment => ({type: 'added', ...segment}))
+        .map(segment => ({type: 'stringSegment', action: 'added', ...segment}))
 
       return replaceProperty(this, 'segments', segments)
     }
