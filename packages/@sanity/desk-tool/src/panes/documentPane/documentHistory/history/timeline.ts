@@ -130,7 +130,7 @@ export class Timeline {
       : {
           index: 0,
           id: entry.transactionId,
-          timestamp: entry.timestamp,
+          timestamp: entry.timestamp.toISOString(),
           author: entry.author
         }
 
@@ -169,7 +169,7 @@ export class Timeline {
       index: 0,
       id: event.id,
       author: event.author,
-      timestamp: new Date(event.timestamp),
+      timestamp: event.timestamp,
       draftEffect: event.effects[this.draftId],
       publishedEffect: event.effects[this.publishedId]
     })
@@ -262,7 +262,7 @@ export class Timeline {
     }
 
     const [timestampStr, chunkId] = id.split('/', 3)
-    const timestamp = new Date(Number(timestampStr))
+    const timestamp = Number(timestampStr)
 
     for (let idx = this._chunks.lastIdx; idx >= this._chunks.firstIdx; idx--) {
       const chunk = this._chunks.get(idx)
@@ -270,7 +270,7 @@ export class Timeline {
         return chunk
       }
 
-      if (chunk.endTimestamp.valueOf() + 60 * 60 * 1000 < timestamp.valueOf()) {
+      if (Date.parse(chunk.endTimestamp) + 60 * 60 * 1000 < timestamp) {
         // The chunk ended _before_ the timestamp we're asking for. This means that there
         // is no point in looking further and the chunk is invalid.
 

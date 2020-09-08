@@ -46,7 +46,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
         </span>
         <span className={styles.displayName}>{user ? user.displayName : 'Loading…'}</span>
       </div>
-      <time className={styles.timeAgo} dateTime={timestamp.toISOString()}>
+      <time className={styles.timeAgo} dateTime={timestamp}>
         {timeAgo}
       </time>
     </div>
