@@ -35,8 +35,8 @@ export type Chunk = {
   type: ChunkType
   start: number
   end: number
-  startTimestamp: Date
-  endTimestamp: Date
+  startTimestamp: string
+  endTimestamp: string
   authors: Set<string>
 }
 
@@ -45,7 +45,7 @@ export type Chunk = {
  */
 export type AnnotationDetails = {
   chunk: Chunk
-  timestamp: Date
+  timestamp: string
   author: string
 }
 

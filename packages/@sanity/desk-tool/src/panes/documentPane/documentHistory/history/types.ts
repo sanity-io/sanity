@@ -20,7 +20,7 @@ export type Transaction = {
   index: number
   id: string
   author: string
-  timestamp: Date
+  timestamp: string
   draftEffect?: MendozaEffectPair
   publishedEffect?: MendozaEffectPair
 }
