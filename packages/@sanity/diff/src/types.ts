@@ -133,13 +133,15 @@ export type Diff<A> =
 export type StringDiffSegment<A> = StringSegmentChanged<A> | StringSegmentUnchanged
 
 export type StringSegmentChanged<A> = {
-  type: 'added' | 'removed'
+  type: 'stringSegment'
+  action: 'added' | 'removed'
   text: string
   annotation: A
 }
 
 export type StringSegmentUnchanged = {
-  type: 'unchanged'
+  type: 'stringSegment'
+  action: 'unchanged'
   text: string
 }
 
