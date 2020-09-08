@@ -35,7 +35,7 @@
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin: 0;
+  margin: var(--extra-small-padding) 0 0;
   padding: 0;
   display: block;
 }

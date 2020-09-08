@@ -45,6 +45,7 @@
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-top: var(--extra-small-padding);  
 
   /* @nest .inline & {
     font-size: var(--font-size-tiny);
