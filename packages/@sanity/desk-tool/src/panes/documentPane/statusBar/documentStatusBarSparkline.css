@@ -1,4 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
+
+@keyframes DocumentStatusBar__spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 :root {
   --size: 1.8rem;
 }
@@ -69,6 +80,21 @@
     font-size: var(--font-size-tiny);
     background-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.isSyncing {
+  @nest & svg {
+    animation-name: DocumentStatusBar__spin;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
 }
 
