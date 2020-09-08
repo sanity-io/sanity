@@ -1,3 +1,4 @@
+import {ReportedRegion} from '../components/react-track-elements'
 import {PathElement, Session, Status, User} from '../datastores/presence/types'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
@@ -7,21 +8,10 @@ export type RegionWithIntersectionDetails = {
   distanceTop: number
   distanceBottom: number
   position: 'top' | 'bottom' | 'inside'
-  region: Region
+  region: ReportedRegion<FieldPresenceData>
 }
 
-export type Region = {
-  id: string
-  data: FieldPresenceData
-  rect: {
-    top: number
-    left: number
-    height: number
-    width: number
-  }
-  component: React.ComponentType<FieldPresenceData>
-  spacerHeight?: number
-}
+export {ReportedRegion}
 
 export type FieldPresenceData = {
   presence: FormFieldPresence[]
