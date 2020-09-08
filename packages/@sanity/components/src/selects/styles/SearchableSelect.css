@@ -49,6 +49,8 @@
 
 .functions {
   composes: functions from 'part:@sanity/components/selects/default-style';
+  border: 1px solid transparent;
+  box-sizing: border-box;
 }
 
 .popper {
