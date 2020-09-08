@@ -30,10 +30,9 @@
 
 .tag {
   display: inline-block;
-  background-color: var(--gray-lightest);
+  background-color: color(var(--gray) alpha(10%));
   border-radius: var(--border-radius-small);
-  color: var(--gray-dark);
-  border: 1px solid var(--gray-light);
+  color: var(--gray-darker);
   box-sizing: border-box;
   padding: 0 0.5em;
   font-size: 1em;
@@ -49,11 +48,13 @@
 
 .clearTag {
   right: 0;
-  top: 0;
+  top: -0.05em;
+  position: relative;
   cursor: pointer;
   height: 100%;
   font-size: 1em;
   padding-left: 0.5em;
+  color: var(--gray-dark);
 
   @nest &:hover {
     color: var(--state-danger-color);
