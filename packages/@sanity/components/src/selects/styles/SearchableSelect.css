@@ -112,8 +112,7 @@
 .openItem {
   display: flex;
   align-items: center;
-  transition: transform 0.1s linear, opacity 0.1s linear;
-  opacity: 0.6;
+  transition: transform 0.1s;
   cursor: pointer;
   outline: none;
 
