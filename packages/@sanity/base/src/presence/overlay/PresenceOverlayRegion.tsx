@@ -3,7 +3,7 @@ import {useId} from '@reach/auto-id'
 import React from 'react'
 
 import {FormFieldPresence} from '../types'
-import {RegionReporter} from '../overlay-reporter'
+import {Reporter} from './tracker'
 import {DISABLE_OVERLAY} from '../constants'
 import {FieldPresenceProps} from '../FieldPresence'
 
@@ -14,7 +14,7 @@ type PresenceRegionProps = {
 }
 
 function RegionWithOverlay({component, ...rest}: PresenceRegionProps) {
-  return <RegionReporter id={useId() || ''} data={rest} component={component} />
+  return <Reporter id={useId() || ''} data={rest} component={component} />
 }
 
 function RegionWithoutOverlay({component: Component, ...rest}: PresenceRegionProps) {

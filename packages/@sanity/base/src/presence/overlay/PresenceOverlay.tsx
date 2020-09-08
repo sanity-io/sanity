@@ -1,6 +1,6 @@
 import React from 'react'
 import {DISABLE_OVERLAY} from '../constants'
-import {Tracker} from '../overlay-reporter'
+import {Tracker} from './tracker'
 import {StickyOverlay} from './StickyOverlay'
 
 interface Props {

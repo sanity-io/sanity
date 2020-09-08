@@ -15,7 +15,7 @@ import {
 } from '../constants'
 import {FormFieldPresence, RegionWithIntersectionDetails} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
-import {TrackerComponentProps} from '../overlay-reporter/Tracker'
+import {TrackerComponentProps} from '../../components/react-track-elements'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 
 const ITEM_TRANSITION: CSSProperties = {
@@ -100,7 +100,7 @@ const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
   <div style={{height: Math.max(0, height), ...rest?.style}} />
 )
 
-type Props = TrackerComponentProps<{margins: Margins}>
+type Props = TrackerComponentProps<{margins: Margins}, {presence: FormFieldPresence[]}>
 
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
