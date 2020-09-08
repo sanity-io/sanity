@@ -5,10 +5,11 @@
 import React from 'react'
 import Badge from 'part:@sanity/components/badges/default'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
-// import {SyncState} from './syncState' // TODO
 import styles from './documentStatusBarSparkline.css'
 import {useDocumentHistory} from '../documentHistory'
 import {useTimeAgo} from '@sanity/base/hooks'
+import SyncIcon from 'part:@sanity/base/sync-icon'
+import {useSyncState} from '@sanity/react-hooks'
 
 export interface Badge {
   label: string
@@ -26,14 +27,16 @@ function DocumentStatusBarSparklineInner({states, disabled}: Props) {
   if (states.length === 0) {
     return null
   }
-  const {displayed} = useDocumentHistory()
+  const {displayed, timeline} = useDocumentHistory()
   const timeAgo = displayed?._updatedAt && useTimeAgo(displayed._updatedAt)
   const lastState = states[states.length - 1]
+  const syncState = timeline && useSyncState(timeline.publishedId)
   return (
     <div className={styles.root}>
       <div className={styles.statusBadges} data-disabled={disabled}>
-        {states.map((badge, badgeIndex) => {
-          const Icon = badge.icon
+        {states.map((badge, badgeIndex, arr) => {
+          const showSyncIndicator = badgeIndex === arr.length - 1 && syncState.isSyncing
+          const Icon = showSyncIndicator ? SyncIcon : badge.icon
           return (
             <div
               key={String(badgeIndex)}
@@ -41,7 +44,13 @@ function DocumentStatusBarSparklineInner({states, disabled}: Props) {
               data-color={badge.color}
               title={badge.title}
             >
-              {Icon ? <Icon /> : badge.label}
+              {Icon ? (
+                <span className={`${styles.icon} ${showSyncIndicator ? styles.isSyncing : ''}`}>
+                  <Icon />
+                </span>
+              ) : (
+                badge.label
+              )}
             </div>
           )
         })}
