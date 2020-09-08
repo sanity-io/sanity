@@ -7,9 +7,9 @@ import Badge from 'part:@sanity/components/badges/default'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 import styles from './documentStatusBarSparkline.css'
 import {useDocumentHistory} from '../documentHistory'
-import {useTimeAgo} from '@sanity/base/hooks'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
+import TimeAgo from '../../../components/TimeAgo'
 
 export interface Badge {
   label: string
@@ -21,14 +21,14 @@ export interface Badge {
 interface Props {
   states: Badge[]
   disabled: boolean
+  lastUpdated: string | undefined | null
 }
 
-function DocumentStatusBarSparklineInner({states, disabled}: Props) {
+function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props) {
   if (states.length === 0) {
     return null
   }
-  const {displayed, timeline} = useDocumentHistory()
-  const timeAgo = displayed?._updatedAt && useTimeAgo(displayed._updatedAt)
+  const {timeline} = useDocumentHistory()
   const lastState = states[states.length - 1]
   const syncState = timeline && useSyncState(timeline.publishedId)
   return (
@@ -58,7 +58,7 @@ function DocumentStatusBarSparklineInner({states, disabled}: Props) {
       </div>
       <div className={styles.statusDetails}>
         <div className={styles.label}>{lastState.label}</div>
-        <div>{timeAgo ? timeAgo : 'Empty'}</div>
+        {lastUpdated && <TimeAgo time={lastUpdated} />}
       </div>
     </div>
   )
@@ -68,6 +68,7 @@ export function DocumentStatusBarSparkline(props: {
   badges: Badge[]
   editState: any
   disabled: boolean
+  lastUpdated: string | undefined | null
 }) {
   return props.badges ? (
     <RenderBadgeCollectionState
@@ -75,6 +76,7 @@ export function DocumentStatusBarSparkline(props: {
       badges={props.badges}
       badgeProps={props.editState}
       disabled={props.disabled}
+      lastUpdated={props.lastUpdated}
     />
   ) : null
 }

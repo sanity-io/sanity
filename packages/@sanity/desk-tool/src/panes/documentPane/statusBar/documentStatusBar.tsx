@@ -31,6 +31,7 @@ export function DocumentStatusBar(props: Props) {
             editState={editState}
             badges={badges}
             disabled={historyController.onOlderRevision()}
+            lastUpdated={props.lastUpdated}
           />
         </button>
       </div>
