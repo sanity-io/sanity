@@ -20,14 +20,14 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/react-hooks": "1.150.4",
+    "@sanity/react-hooks": "1.150.7",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "1.150.3",
+    "@sanity/base": "1.150.7",
     "@sanity/check": "1.150.1",
-    "@sanity/components": "1.150.3",
-    "@sanity/field": "1.150.1",
+    "@sanity/components": "1.150.7",
+    "@sanity/field": "1.150.7",
     "@types/googlemaps": "^3.39.11",
     "lodash": "^4.17.15",
     "rimraf": "^2.7.1"

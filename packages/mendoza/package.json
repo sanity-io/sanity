@@ -1,12 +1,30 @@
 {
   "name": "mendoza",
   "version": "0.1.0",
-  "private": true,
-  "main": "./lib",
+  "description": "",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "engines": {
+    "node": ">=8"
+  },
   "devDependencies": {
     "ts-node": "^8.6.2",
     "typescript": "^4.0.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "keywords": [
+    "mendoza",
+    "diff"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
   "prettier": {
     "semi": false,
     "printWidth": 100,
