@@ -4,7 +4,7 @@
   display: flex;
   border: var(--input-border-size) solid var(--input-border-color);
   border-radius: var(--input-border-radius);
-  padding: var(--medium-padding);
+  padding: var(--medium-padding) var(--medium-padding) 0;
 }
 
 .vertical {
@@ -21,5 +21,6 @@
 }
 
 .item {
-  margin-right: 1rem;
+  margin-right: var(--medium-padding);
+  margin-bottom: var(--medium-padding);
 }
