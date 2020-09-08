@@ -1,5 +1,15 @@
 import {UserColorManager, UserColor} from '@sanity/base/user-color'
-import {Annotation, Diff, Path, KeyedSegment, ItemDiff} from '../../types'
+import {
+  Annotation,
+  Diff,
+  Path,
+  KeyedSegment,
+  ItemDiff,
+  ArrayDiff,
+  ObjectDiff,
+  StringDiff,
+  StringDiffSegment
+} from '../../types'
 import {stringToPath, pathToString, isIndexSegment, isKeySegment} from '../../paths/helpers'
 import {FALLBACK_DIFF_COLOR} from './contants'
 
@@ -84,4 +94,70 @@ function warn(msg: string) {
 function itemMatchesKey(item: ItemDiff, key: KeyedSegment) {
   const itemDiff = item.diff
   return itemDiff.type !== 'object' || !itemDiff.toValue ? false : itemDiff.toValue._key === key
+}
+
+export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolean
+
+/**
+ * Visit all diffs in tree, until visitor returns false
+ *
+ * @param diff Diff to visit
+ * @param visitor Visitor function, return false to stop from going deeper
+ */
+export function visitDiff(diff: Diff | StringDiffSegment, visitor: DiffVisitor, path: Path = []) {
+  if (!visitor(diff, path)) {
+    return
+  }
+
+  if (diff.type === 'array') {
+    visitArrayDiff(diff, visitor, path)
+    return
+  }
+
+  if (diff.type === 'object') {
+    visitObjectDiff(diff, visitor, path)
+    return
+  }
+
+  if (diff.type === 'string') {
+    visitStringDiff(diff, visitor, path)
+    return
+  }
+}
+
+function visitArrayDiff(diff: ArrayDiff, visitor: DiffVisitor, path: Path) {
+  if (diff.action === 'unchanged') {
+    return
+  }
+
+  diff.items.forEach(itemDiff => {
+    const _key = itemDiff.diff.type === 'object' && (itemDiff.diff.toValue?._key as string)
+    const segment = _key ? {_key} : getItemDiffIndex(itemDiff)
+    visitDiff(itemDiff.diff, visitor, path.concat(segment))
+  })
+}
+
+function visitObjectDiff(diff: ObjectDiff, visitor: DiffVisitor, path: Path) {
+  if (diff.action === 'unchanged') {
+    return
+  }
+
+  Object.keys(diff.fields).forEach(fieldName => {
+    const fieldDiff = diff.fields[fieldName]
+    visitDiff(fieldDiff, visitor, path.concat(fieldName))
+  })
+}
+
+function visitStringDiff(diff: StringDiff, visitor: DiffVisitor, path: Path) {
+  if (diff.action === 'unchanged') {
+    return
+  }
+
+  diff.segments.forEach(segment => {
+    visitDiff(segment, visitor, path)
+  })
+}
+
+function getItemDiffIndex(itemDiff: ItemDiff): number {
+  return typeof itemDiff.toIndex === 'undefined' ? itemDiff.fromIndex || 0 : itemDiff.toIndex
 }
