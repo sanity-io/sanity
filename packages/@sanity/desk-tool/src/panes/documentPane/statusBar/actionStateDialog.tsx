@@ -3,6 +3,7 @@
 /* eslint-disable react/jsx-handler-names */
 
 import * as React from 'react'
+import {ButtonColor} from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import Button from 'part:@sanity/components/buttons/default'
@@ -15,7 +16,7 @@ import styles from './documentStatusBar.css'
 // Todo: move these to action spec/core types
 interface ConfirmDialogProps {
   type: 'confirm'
-  color: string
+  color: ButtonColor
   message: React.ReactNode
   onConfirm: () => void
   onCancel: () => void

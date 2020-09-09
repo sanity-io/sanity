@@ -1,7 +1,7 @@
 import createButtonLike from './createButtonLike'
-import {ButtonProps} from './types'
+import {ButtonColor, ButtonProps} from './types'
 
-export {ButtonProps}
+export {ButtonColor, ButtonProps}
 
 export default createButtonLike('button', {
   displayName: 'DefaultButton',

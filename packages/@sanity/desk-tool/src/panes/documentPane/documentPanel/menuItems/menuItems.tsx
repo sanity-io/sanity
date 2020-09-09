@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/jsx-filename-extension */
-
 import React from 'react'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
+import {MenuItemType} from 'part:@sanity/components/menus/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import {DeskToolFeatures} from '../../../../features'
-import {Doc, MenuAction} from '../../types'
+import {Doc} from '../../types'
 
 import styles from './menuItems.css'
 
@@ -23,7 +20,7 @@ interface Params {
   value: Doc | null
 }
 
-const getHistoryMenuItem = (params: Params): MenuAction | null => {
+const getHistoryMenuItem = (params: Params): MenuItemType | null => {
   const {
     features,
     value,
@@ -49,7 +46,7 @@ const getHistoryMenuItem = (params: Params): MenuAction | null => {
   return null
 }
 
-const getInspectItem = ({value}: Params): MenuAction => ({
+const getInspectItem = ({value}: Params): MenuItemType => ({
   action: 'inspect',
   title: (
     <span className={styles.menuItem}>
@@ -63,12 +60,12 @@ const getInspectItem = ({value}: Params): MenuAction => ({
   isDisabled: !value
 })
 
-export const getProductionPreviewItem = ({value, rev}: Params): MenuAction | null => {
+export const getProductionPreviewItem = ({value, rev}: Params): MenuItemType | null => {
   if (!value || !resolveProductionPreviewUrl) {
     return null
   }
 
-  let previewUrl
+  let previewUrl: string
 
   try {
     previewUrl = resolveProductionPreviewUrl(value, rev)
@@ -98,10 +95,10 @@ export const getProductionPreviewItem = ({value, rev}: Params): MenuAction | nul
   }
 }
 
-export const getMenuItems = (params: Params): MenuAction[] => {
+export const getMenuItems = (params: Params): MenuItemType[] => {
   const items = [getProductionPreviewItem, getHistoryMenuItem, getInspectItem]
     .filter(Boolean)
     .map(fn => fn(params))
 
-  return items.filter(i => i !== null) as MenuAction[]
+  return items.filter(i => i !== null) as MenuItemType[]
 }

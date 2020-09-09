@@ -44,7 +44,9 @@ interface State {
 }
 
 function getActionKey(action: MenuItemType, index: number) {
-  return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
+  const title = String(action.title)
+
+  return (typeof action.action === 'string' ? action.action + title : title) || index
 }
 
 function noActionFn() {
@@ -173,7 +175,7 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
         kind="simple"
         padding="small"
         params={action.intent && action.intent.params}
-        title={action.title}
+        title={typeof action.title === 'string' ? action.title : undefined}
       />
     )
   }
@@ -230,7 +232,7 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
             icon={Icon}
             kind="simple"
             padding="small"
-            title={action.title}
+            title={typeof action.title === 'string' ? action.title : undefined}
             onClick={this.handleMenuAction.bind(this, action)}
           />
         )}

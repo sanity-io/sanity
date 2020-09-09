@@ -23,21 +23,18 @@ export function ValidationMenu(props: ValidationMenuProps) {
     return null
   }
 
+  const popoverContent = (
+    <ValidationList
+      documentType={schemaType}
+      markers={validationMarkers}
+      onClose={onClose}
+      onFocus={setFocusPath}
+      showLink
+    />
+  )
+
   return (
-    <Popover
-      content={
-        <ValidationList
-          documentType={schemaType}
-          markers={validationMarkers}
-          isOpen={isOpen}
-          onClose={onClose}
-          onFocus={setFocusPath}
-          showLink
-        />
-      }
-      open={isOpen}
-      placement="bottom-end"
-    >
+    <Popover content={popoverContent as any} open={isOpen} placement="bottom-end">
       <div>
         <Button
           color={validationErrorMarkers.length > 0 ? 'danger' : 'warning'}
