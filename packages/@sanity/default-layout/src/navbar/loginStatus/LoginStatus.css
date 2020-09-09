@@ -14,7 +14,7 @@
   border-radius: 4px;
 
   @nest &:focus {
-    background-color: color(var(--brand-primary) a(20%));
+    box-shadow: var(--input-box-shadow--focus);
   }
 }
 
