@@ -15,7 +15,7 @@ export function DefaultStory() {
   const items: MenuItemType[] = range(number('#items', 30)).map((item, i) => {
     return {
       title: chance.name(),
-      icon: icon,
+      icon: icon || undefined,
       key: String(i)
     }
   })
