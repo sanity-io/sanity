@@ -49,8 +49,8 @@
   /* :active */
   --color-button-navbar-simple-active-bg: color(var(--color-button-bg) alpha(20%));
   /* :selected */
-  --color-button-navbar-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
-  --color-button-navbar-simple-selected-text: var(--selected-item-color);
+  --color-button-navbar-simple-selected-bg: color(var(--selected-item-color) alpha(20%));
+  --color-button-navbar-simple-selected-text: color(var(--selected-item-color) lightness(+ 15%));;
 
   /**
    * color="primary"
