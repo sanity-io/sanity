@@ -53,14 +53,6 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
   const {rev} = props
 
-  const handleCloseValidationResults = useCallback(() => {
-    setValidationOpen(false)
-  }, [])
-
-  const handleToggleValidationResults = useCallback(() => {
-    setValidationOpen(!isValidationOpen)
-  }, [isValidationOpen])
-
   const handleTitleClick = useCallback(() => {
     if (props.isCollapsed && props.onExpand) props.onExpand()
     if (!props.isCollapsed && props.onCollapse) props.onCollapse()
@@ -93,10 +85,9 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             <ValidationMenu
               isOpen={isValidationOpen}
               markers={props.markers}
-              onClose={handleCloseValidationResults}
-              onToggle={handleToggleValidationResults}
               schemaType={props.schemaType}
               setFocusPath={props.setFocusPath}
+              setOpen={setValidationOpen}
             />
           </div>
 
