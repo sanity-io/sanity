@@ -37,6 +37,7 @@ export default class ToggleSidecarButton extends React.PureComponent {
         onClick={toggleSidecarOpenState}
         selected={isOpen}
         tone="navbar"
+        padding="small"
       />
     )
   }
