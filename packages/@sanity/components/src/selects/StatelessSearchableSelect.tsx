@@ -176,7 +176,7 @@ export default class StatelessSearchableSelect extends React.PureComponent<
                 )}
                 {!readOnly && onClear && value && (
                   <button type="button" className={styles.clearButton} onClick={onClear}>
-                    <CloseIcon color="inherit" />
+                    <CloseIcon />
                   </button>
                 )}
                 {!readOnly && (
@@ -188,7 +188,7 @@ export default class StatelessSearchableSelect extends React.PureComponent<
                         tabIndex={0}
                         onKeyPress={disabled ? undefined : this.handleArrowKeyPress}
                       >
-                        <FaAngleDown color="inherit" />
+                        <FaAngleDown />
                       </div>
                     )}
                     {isLoading && (

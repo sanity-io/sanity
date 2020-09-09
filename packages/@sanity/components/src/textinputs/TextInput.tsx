@@ -74,7 +74,7 @@ export default class DefaultTextInput extends React.PureComponent<DefaultTextInp
 
         {isClearable && (
           <button className={styles.clearButton} onClick={onClear} type="button">
-            <CloseIcon color="inherit" />
+            <CloseIcon />
           </button>
         )}
       </div>
