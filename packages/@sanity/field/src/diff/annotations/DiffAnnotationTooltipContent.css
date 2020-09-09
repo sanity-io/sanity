@@ -38,7 +38,8 @@
 }
 
 .timeAgo {
-  margin: 0 var(--small-padding);
+  margin: 0 var(--small-padding) 0 auto;
+  padding-left: var(--small-padding);
   font-size: var(--font-size-small);
   color: var(--text-muted);
 }
