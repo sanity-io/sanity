@@ -25,23 +25,15 @@
   }
 }
 
-.paneFunctions {
-  padding: 8px;
-
-  @nest .isCollapsed & {
-    display: none;
-  }
-
-  @nest &:empty {
-    display: none;
-  }
-}
-
 .paneActions {
   padding: 8px;
   display: flex;
 
-  @nest & > div + div {
+  @nest & > div:empty {
+    display: none;
+  }
+
+  @nest & > div:not(:empty) + div {
     margin-left: 4px;
   }
 

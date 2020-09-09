@@ -82,19 +82,24 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           <strong>{props.title}</strong>
         </div>
 
-        <div className={styles.paneFunctions}>
-          {LanguageFilter && <LanguageFilter />}
-          <ValidationMenu
-            isOpen={isValidationOpen}
-            markers={props.markers}
-            onClose={handleCloseValidationResults}
-            onToggle={handleToggleValidationResults}
-            schemaType={props.schemaType}
-            setFocusPath={props.setFocusPath}
-          />
-        </div>
-
         <div className={styles.paneActions}>
+          {LanguageFilter && (
+            <div>
+              <LanguageFilter />
+            </div>
+          )}
+
+          <div>
+            <ValidationMenu
+              isOpen={isValidationOpen}
+              markers={props.markers}
+              onClose={handleCloseValidationResults}
+              onToggle={handleToggleValidationResults}
+              schemaType={props.schemaType}
+              setFocusPath={props.setFocusPath}
+            />
+          </div>
+
           <div>
             <DocumentPanelContextMenu
               isCollapsed={props.isCollapsed}
