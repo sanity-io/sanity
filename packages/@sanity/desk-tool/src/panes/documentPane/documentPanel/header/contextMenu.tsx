@@ -1,16 +1,15 @@
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
-import Menu from 'part:@sanity/components/menus/default'
+import Menu, {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import React, {useCallback, useMemo} from 'react'
-import {MenuAction, MenuItemGroup} from '../../types'
 
 import styles from './contextMenu.css'
 
 interface DocumentPanelContextMenuProps {
   isCollapsed: boolean
-  items: MenuAction[]
-  itemGroups: MenuItemGroup[]
-  onAction: (action: MenuAction) => void
+  items: MenuItemType[]
+  itemGroups: MenuItemGroupType[]
+  onAction: (action: MenuItemType) => void
   open: boolean
   setOpen: (val: boolean) => void
 }
@@ -27,7 +26,7 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
   )
 
   const handleAction = useCallback(
-    (action: MenuAction) => {
+    (action: MenuItemType) => {
       onAction(action)
       setOpen(false)
     },
@@ -57,7 +56,6 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
           id={id}
           items={items}
           groups={itemGroups}
-          origin={isCollapsed ? 'top-left' : 'top-right'}
           onAction={handleAction}
           onClose={handleCloseMenu}
         />

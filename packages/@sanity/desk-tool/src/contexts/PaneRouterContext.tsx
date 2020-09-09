@@ -156,7 +156,7 @@ type PaneRouterContextFactory = (options: {
 }) => PaneRouterContextShape
 
 interface DeskToolPanesProps {
-  router: Router<{panes: RouterPanesState; payload: unknown; params: Record<string, any>}>
+  router: Router // <{panes: RouterPanesState; payload: unknown; params: Record<string, any>}>
 }
 
 export function getPaneRouterContextFactory(
