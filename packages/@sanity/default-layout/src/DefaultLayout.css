@@ -79,6 +79,8 @@
 }
 
 .toolContainer {
+  flex: 1;
+  min-width: 0;
   position: relative;
   height: 100%;
   margin-top: 0;
@@ -87,8 +89,6 @@
 
   @media (--screen-medium) {
     overflow: auto;
-    flex: 1;
-    min-width: 0;
   }
 }
 
