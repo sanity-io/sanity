@@ -172,7 +172,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const {List, Item} = resolveListComponents(isSortable, isGrid)
     const listProps = isSortable
       ? {
-          movingItemClass: styles.movingItem,
+          helperClass: styles.movingItem,
           onSortEnd: this.handleSortEnd,
           onSortStart: this.handleSortStart,
           lockToContainerEdges: true,
