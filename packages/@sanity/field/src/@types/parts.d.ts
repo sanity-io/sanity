@@ -70,6 +70,11 @@ declare module 'part:@sanity/base/undo-icon' {
   export default UndoIcon
 }
 
+declare module 'part:@sanity/base/error-outline-icon' {
+  const ErrorOutlineIcon: React.ComponentType<{}>
+  export default ErrorOutlineIcon
+}
+
 declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }

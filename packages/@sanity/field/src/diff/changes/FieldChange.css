@@ -6,6 +6,11 @@
   margin-bottom: 1em;
 }
 
+.error {
+  composes: root;
+  border-left-color: var(--state-danger-color);
+}
+
 .diffComponent {
 }
 

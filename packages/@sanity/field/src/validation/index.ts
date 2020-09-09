@@ -1,6 +1,11 @@
 import {SchemaType, ObjectSchemaType} from '../diff'
 
-export function getValueError(value: unknown, schemaType: SchemaType) {
+export interface FieldValueError {
+  message: string
+  value: unknown
+}
+
+export function getValueError(value: unknown, schemaType: SchemaType): FieldValueError | undefined {
   const {jsonType} = schemaType
   const valueType = Array.isArray(value) ? 'array' : typeof value
 
@@ -9,11 +14,16 @@ export function getValueError(value: unknown, schemaType: SchemaType) {
   }
 
   if (valueType !== jsonType) {
-    return {error: `Value is ${valueType}, expected ${jsonType}`, value}
+    return {message: `Value is ${valueType}, expected ${jsonType}`, value}
   }
 
   if (isObjectType(schemaType) && isObjectValue(value)) {
-    return schemaType.fields.find(field => getValueError(value[field.name], field.type))
+    for (const field of schemaType.fields) {
+      const fieldError = getValueError(value[field.name], field.type)
+      if (fieldError) {
+        return fieldError
+      }
+    }
   }
 
   return undefined

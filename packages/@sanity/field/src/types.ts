@@ -15,6 +15,7 @@ import {
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged
 } from '@sanity/diff'
 import {Path} from './paths'
+import {FieldValueError} from './validation'
 
 /**
  * History timeline / chunking
@@ -212,6 +213,7 @@ export interface FieldChangeNode {
   diff: Diff
   key: string
   path: Path
+  error?: FieldValueError
   titlePath: ChangeTitlePath
   schemaType: SchemaType
   renderHeader: boolean

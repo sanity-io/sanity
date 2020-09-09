@@ -14,7 +14,6 @@ import {
   ArrayDiff,
   DiffComponent
 } from '../../types'
-import {ValueError} from './ValueError'
 
 export function buildDocumentChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff) {
   const changes = buildChangeList(schemaType, diff)
@@ -68,11 +67,12 @@ export function buildChangeList(
       type: 'field',
       diff,
       path,
+      error,
       titlePath,
       schemaType,
       renderHeader,
       key: pathToString(path),
-      diffComponent: error ? ValueError : component,
+      diffComponent: error ? undefined : component,
       childChanges:
         childChanges.length === 1 && childChanges[0].type === 'group'
           ? childChanges[0].changes
