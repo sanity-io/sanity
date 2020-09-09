@@ -241,6 +241,7 @@ export class Timeline {
       const initialChunk = chunkFromTransaction(firstTx)
       initialChunk.type = 'initial'
       initialChunk.id = '@initial'
+      initialChunk.end = initialChunk.start
       this._chunks.addToBeginning(initialChunk)
     }
   }
