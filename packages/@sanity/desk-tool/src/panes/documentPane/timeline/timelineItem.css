@@ -149,13 +149,13 @@
   width: 33px;
   height: 33px;
   border-radius: calc(33px / 2);
-  padding: var(--extra-small-padding);
-  box-sizing: border-box;
   box-shadow: 0 0 0 2px var(--timeline-event-enabled-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @nest & > svg {
     display: block;
-    font-size: calc(25 / 16 * 1em);
   }
 
   @nest .root[data-type='create'] & {
