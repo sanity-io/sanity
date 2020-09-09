@@ -56,6 +56,7 @@
     "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.10",
     "jest": "^26.4.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
