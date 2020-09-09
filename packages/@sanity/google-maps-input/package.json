@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "prepublishOnly": "sanity-check",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
@@ -25,7 +24,6 @@
   },
   "devDependencies": {
     "@sanity/base": "1.150.7",
-    "@sanity/check": "1.150.1",
     "@sanity/components": "1.150.7",
     "@sanity/field": "1.150.7",
     "@types/googlemaps": "^3.39.11",
