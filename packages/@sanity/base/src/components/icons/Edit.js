@@ -4,22 +4,14 @@ import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2
+  strokeWidth: 1
 }
 
 export default function EditIcon() {
   return (
-    <svg
-      data-sanity-icon
-      viewBox="0 0 25 25"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid"
-      width="1em"
-      height="1em"
-    >
-      <path d="M7 15L6 19L10 18L20 8L17 5L7 15Z" style={strokeStyle} />
-      <path d="M15 7L18 10" style={strokeStyle} />
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4.71429 10.1429L4 13L6.85714 12.2857L14 5.14286L11.8571 3L4.71429 10.1429Z" style={strokeStyle}/>
+      <path d="M10 5L12 7" style={strokeStyle}/>
     </svg>
   )
 }
