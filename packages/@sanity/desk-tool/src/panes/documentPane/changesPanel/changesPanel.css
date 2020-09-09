@@ -32,13 +32,15 @@
 .versionSelectContainer {
   padding: 0.25em 0.5em;
   margin-top: calc(0 - var(--small-padding));
+  display: flex;
+  align-items: end;
 }
 
 .changeAuthorsContainer {
-  display: inline-block;
 }
 
 .changeAuthorsAvatarStack {
+  margin-left: auto;
 }
 
 .body {
