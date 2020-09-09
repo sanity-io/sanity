@@ -113,7 +113,11 @@ export class Timeline {
   }
 
   reset() {
-    // TODO: Clear timeline
+    this._transactions = new TwoEndedArray()
+    this._chunks = new TwoEndedArray()
+    this._possiblePendingTransactions = new Map()
+    this._recreateTransactionsFrom = undefined
+    this.reachedEarliestEntry = false
   }
 
   /**
