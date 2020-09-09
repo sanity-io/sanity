@@ -19,6 +19,7 @@
     right: 0;
     bottom: -1px;
     border-bottom: 1px solid var(--hairline-color);
+    z-index: 1;
   }
 
   @media (--max-screen-medium) {
