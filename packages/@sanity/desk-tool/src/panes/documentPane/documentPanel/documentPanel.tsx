@@ -178,7 +178,3 @@ export function DocumentPanel(props: DocumentPanelProps) {
     </div>
   )
 }
-
-DocumentPanel.defaultProps = {
-  paneTitle: undefined
-}
