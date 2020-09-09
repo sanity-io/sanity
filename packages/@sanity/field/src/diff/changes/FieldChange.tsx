@@ -8,6 +8,7 @@ import {RevertChangesButton} from './RevertChangesButton'
 import {undoChange} from './undoChange'
 
 import styles from './FieldChange.css'
+import {ValueError} from './ValueError'
 
 const FallbackDiff = () => <div>Missing diff</div>
 
@@ -21,14 +22,20 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
     [documentId, change.key, change.diff]
   )
 
+  const rootClass = change.error ? styles.error : styles.root
+
   return (
-    <div className={styles.root}>
+    <div className={rootClass}>
       {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
 
       <div className={styles.diffComponent}>
-        <DiffErrorBoundary>
-          <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-        </DiffErrorBoundary>
+        {change.error ? (
+          <ValueError error={change.error} />
+        ) : (
+          <DiffErrorBoundary>
+            <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+          </DiffErrorBoundary>
+        )}
       </div>
 
       <div className={styles.revertChangesButtonContainer}>
