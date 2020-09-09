@@ -1,17 +1,18 @@
+import {Chunk} from '@sanity/field/diff'
 import classNames from 'classnames'
 import {negate} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
-import {DocumentView, MenuAction, MenuItemGroup} from '../../types'
+import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
+import {DocumentView} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
 import {ValidationMenu} from './validationMenu'
-import {Chunk} from '@sanity/field/diff'
-import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
 
 import styles from './header.css'
 
@@ -22,10 +23,10 @@ export interface DocumentPanelHeaderProps {
   isCollapsed: boolean
   isTimelineOpen: boolean
   markers: any
-  menuItems: MenuAction[]
-  menuItemGroups: MenuItemGroup[]
+  menuItems: MenuItemType[]
+  menuItemGroups: MenuItemGroupType[]
   onCloseView: () => void
-  onContextMenuAction: (action: MenuAction) => void
+  onContextMenuAction: (action: MenuItemType) => void
   onCollapse?: () => void
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
@@ -41,7 +42,7 @@ export interface DocumentPanelHeaderProps {
   isHistoryOpen: boolean
 }
 
-const isActionButton = (item: MenuAction) => (item as any).showAsAction
+const isActionButton = (item: MenuItemType) => (item as any).showAsAction
 const isMenuButton = negate(isActionButton)
 
 // eslint-disable-next-line complexity
@@ -67,7 +68,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
   // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
   // as an outside-click.
-  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLDivElement>) => {
+  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation()
   }, [])
 

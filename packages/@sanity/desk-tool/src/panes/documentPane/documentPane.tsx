@@ -1,10 +1,11 @@
-import {ClickOutside} from 'part:@sanity/components/click-outside'
-import {Popover} from 'part:@sanity/components/popover'
-import Snackbar from 'part:@sanity/components/snackbar/default'
+import {Chunk} from '@sanity/field/diff'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
+import {ClickOutside} from 'part:@sanity/components/click-outside'
+import {MenuItemGroupType} from 'part:@sanity/components/menus/default'
+import {Popover} from 'part:@sanity/components/popover'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useCallback, useRef, useState} from 'react'
-import {Chunk} from '@sanity/field/diff'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
@@ -15,7 +16,7 @@ import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {Timeline, sinceTimelineProps, revTimelineProps} from './timeline'
-import {Doc, DocumentViewType, MenuItemGroup} from './types'
+import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
@@ -29,7 +30,7 @@ interface DocumentPaneProps {
   isCollapsed: boolean
   isSelected: boolean
   markers: any[]
-  menuItemGroups: MenuItemGroup[]
+  menuItemGroups: MenuItemGroupType[]
   onChange: (patches: any[]) => void
   onExpand?: () => void
   onCollapse?: () => void
@@ -168,34 +169,33 @@ export function DocumentPane(props: DocumentPaneProps) {
   const isChangesOpen = historyController.changesPanelActive()
   const isTimelineOpen = timelineMode !== 'closed'
 
+  const popoverContent = (
+    <ClickOutside onClickOutside={handleTimelineClose}>
+      {ref =>
+        timelineMode === 'rev' ? (
+          <Timeline
+            ref={ref as any}
+            timeline={timeline}
+            onSelect={selectRev}
+            onLoadMore={loadMoreHistory}
+            {...revTimelineProps(historyController.realRevChunk)}
+          />
+        ) : (
+          <Timeline
+            ref={ref as any}
+            timeline={timeline}
+            onSelect={selectSince}
+            onLoadMore={loadMoreHistory}
+            {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
+          />
+        )
+      }
+    </ClickOutside>
+  )
+
   return (
     <Popover
-      content={
-        <ClickOutside onClickOutside={handleTimelineClose}>
-          {ref =>
-            timelineMode === 'rev' ? (
-              <Timeline
-                ref={ref}
-                timeline={timeline}
-                onSelect={selectRev}
-                onLoadMore={loadMoreHistory}
-                {...revTimelineProps(historyController.realRevChunk)}
-              />
-            ) : (
-              <Timeline
-                ref={ref}
-                timeline={timeline}
-                onSelect={selectSince}
-                onLoadMore={loadMoreHistory}
-                {...sinceTimelineProps(
-                  historyController.sinceTime!,
-                  historyController.realRevChunk
-                )}
-              />
-            )
-          }
-        </ClickOutside>
-      }
+      content={popoverContent as any}
       open={isTimelineOpen}
       placement="bottom"
       targetElement={

@@ -25,9 +25,10 @@ export interface MenuItem {
   intent?: Intent
   isDisabled?: boolean
   key?: string
-  title: string
+  title: React.ReactNode
   params?: Record<string, string>
   showAsAction?: boolean | ShowAsAction
+  url?: string
 }
 
 export interface MenuItemGroup {

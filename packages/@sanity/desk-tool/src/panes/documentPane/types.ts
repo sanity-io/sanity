@@ -24,17 +24,17 @@ export interface Doc {
   [key: string]: any
 }
 
-export interface MenuAction {
-  action: string
-  icon?: React.FunctionComponent | React.Component
-  isDisabled?: boolean
-  title: React.ReactNode
-  url?: string
-}
+// export interface MenuAction {
+//   action: string
+//   icon?: React.FunctionComponent | React.Component
+//   isDisabled?: boolean
+//   title: React.ReactNode
+//   url?: string
+// }
 
-export interface MenuItemGroup {
-  id: string
-}
+// export interface MenuItemGroup {
+//   id: string
+// }
 
 export interface DocumentViewType {
   type: string

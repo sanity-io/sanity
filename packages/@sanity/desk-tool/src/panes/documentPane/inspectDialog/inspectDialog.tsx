@@ -90,7 +90,6 @@ function InspectDialogComponent(props) {
 
   return (
     <FullScreenDialog
-      showHeader
       title={
         <span>
           Inspecting{' '}
@@ -127,7 +126,6 @@ function InspectDialogComponent(props) {
           aria-labelledby={`${tabIdPrefix}tab-${viewMode.id}`}
           className={styles.content}
           id={`${tabIdPrefix}tabpanel`}
-          role="tabpanel"
         >
           {viewMode === VIEW_MODE_PARSED && (
             <div className={styles.jsonInspectorContainer}>

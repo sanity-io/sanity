@@ -6,13 +6,14 @@ import {
   useValidationStatus
 } from '@sanity/react-hooks'
 import schema from 'part:@sanity/base/schema'
+import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import withInitialValue from '../../utils/withInitialValue'
 import ErrorPane from '../errorPane/ErrorPane'
 import {LoadingPane} from '../loadingPane'
 import {DocumentHistoryProvider} from './documentHistory'
 import {DocumentPane} from './documentPane'
-import {Doc, DocumentPaneOptions, MenuAction} from './types'
+import {Doc, DocumentPaneOptions} from './types'
 import {getInitialValue} from './utils/value'
 
 declare const __DEV__: boolean
@@ -28,8 +29,8 @@ interface Props {
   isClosable: boolean
   onExpand?: () => void
   onCollapse?: () => void
-  menuItems: MenuAction[]
-  menuItemGroups: {id: string}[]
+  menuItems: MenuItemType[]
+  menuItemGroups: MenuItemGroupType[]
   views: {
     type: string
     id: string

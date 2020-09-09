@@ -55,7 +55,7 @@ export function ChangesPanel({
 
   // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
   // as an outside-click.
-  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLDivElement>) => {
+  const ignoreClickOutside = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation()
   }, [])
 
@@ -115,7 +115,6 @@ export function ChangesPanel({
             </Tooltip>
           )}
         </div>
-
       </header>
 
       <div className={styles.body}>
