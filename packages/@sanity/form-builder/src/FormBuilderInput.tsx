@@ -9,6 +9,7 @@ import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
 
+const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
@@ -29,6 +30,12 @@ interface Props {
   filterField?: Function
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
+}
+
+interface Context {
+  presence?: FormFieldPresence[]
+  formBuilder: any
+  getValuePath: any
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -191,11 +198,13 @@ export class FormBuilderInput extends React.Component<Props> {
       markers,
       type,
       level,
-      presence = this.context.presence,
       focusPath,
       isRoot,
+      presence: explicitPresence,
       ...rest
     } = this.props
+
+    const presence = explicitPresence || (this.context as Context).presence
     const InputComponent = this.resolveInputComponent(type)
     if (!InputComponent) {
       return (
@@ -216,21 +225,17 @@ export class FormBuilderInput extends React.Component<Props> {
     }
     const childFocusPath = this.getChildFocusPath()
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
+    const leafProps = isLeaf ? EMPTY_PROPS : {focusPath: childFocusPath}
 
     const childPresenceInfo =
-      readOnly || presence.length === 0
+      readOnly || !presence || presence.length === 0
         ? EMPTY_PRESENCE
         : presence
-        ? presence
-            .filter(presence => {
-              return PathUtils.startsWith(path, presence.path)
-            })
+            .filter(presence => PathUtils.startsWith(path, presence.path))
             .map(presence => ({
               ...presence,
               path: trimChildPath(path, presence.path)
             }))
-        : EMPTY_PRESENCE
-    const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
     return (
       <div data-focus-path={PathUtils.toString(path)}>
