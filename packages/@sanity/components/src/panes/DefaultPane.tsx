@@ -61,7 +61,7 @@ const noop = () => {
 const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
-class Pane extends React.PureComponent<DefaultPaneProps, State> {
+class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
   static defaultProps = {
     index: 0,
     footer: undefined,
@@ -180,7 +180,7 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
     )
   }
 
-  renderActionMenuItem = (item: MenuItemType) => {
+  renderActionMenuItem = (item: MenuItemType, index: number) => {
     if (!item) return null
 
     const {styles = {}} = this.props
@@ -191,6 +191,7 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
       <IntentLink
         className={styles.initialValueTemplateMenuItem}
         intent="create"
+        key={item.key || index}
         onClick={this.handleCloseTemplateMenu}
         params={params}
       >
@@ -253,7 +254,7 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
             }}
             menu={
               <div className={styles.initialValueTemplateMenu}>
-                {items.map(item => this.renderActionMenuItem(item))}
+                {items.map((item, index) => this.renderActionMenuItem(item, index))}
               </div>
             }
             open={this.state.isInitialValueMenuOpen}
@@ -416,4 +417,4 @@ class Pane extends React.PureComponent<DefaultPaneProps, State> {
   }
 }
 
-export default Styleable(Pane as any, defaultStyles) as React.ComponentType<DefaultPaneProps>
+export default Styleable(DefaultPane as any, defaultStyles) as React.ComponentType<DefaultPaneProps>
