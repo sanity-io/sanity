@@ -16,7 +16,5 @@ export function collectLatestAuthorAnnotations(diff: Diff): AnnotationDetails[] 
     return true
   })
 
-  return Array.from(authorMap.values()).sort(
-    (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
-  )
+  return Array.from(authorMap.values()).sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1))
 }
