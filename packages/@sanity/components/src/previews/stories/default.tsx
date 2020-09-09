@@ -7,11 +7,11 @@ import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 import {PreviewCard, Stack} from './components'
 
-const renderMedia = dimensions => {
+const renderMedia = () => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
 }
 
-const renderStatus = options => {
+const renderStatus = () => {
   return (
     <span>
       Status <LinkIcon /> <WarningIcon />
@@ -19,7 +19,7 @@ const renderStatus = options => {
   )
 }
 
-const renderTitle = options => {
+const renderTitle = (options: {layout: string}) => {
   return (
     <span>
       This <span style={{color: 'green'}}>is</span> a <strong>title</strong>
@@ -28,25 +28,13 @@ const renderTitle = options => {
   )
 }
 
-const renderSubtitle = options => {
+const renderSubtitle = () => {
   return (
     <span>
       This is a{' '}
       <strong style={{color: 'red'}}>
         <WarningIcon />
         subtitle
-      </strong>
-    </span>
-  )
-}
-
-const renderDescription = options => {
-  return (
-    <span>
-      This is the{' '}
-      <strong style={{color: 'red'}}>
-        <WarningIcon />
-        description
       </strong>
     </span>
   )
@@ -112,11 +100,9 @@ export function DefaultStory() {
                 <DefaultPreview
                   title={renderTitle}
                   subtitle={renderSubtitle}
-                  description={renderDescription}
                   status={renderStatus}
                   media={renderMedia}
                   isPlaceholder={boolean('placeholder', false, 'props')}
-                  date={new Date()}
                   progress={number(
                     'progress',
                     undefined,
@@ -152,12 +138,6 @@ export function DefaultStory() {
                       This is a <strong style={{color: 'red'}}>subtitle</strong>
                     </span>
                   }
-                  description={
-                    <span>
-                      This is the long the descriptions that should no be to long, beacuse we will
-                      cap it
-                    </span>
-                  }
                   isPlaceholder={boolean('placeholder', false, 'props')}
                   media={boolean('Show image', true, 'test') ? renderMedia : undefined}
                   status={
@@ -166,7 +146,6 @@ export function DefaultStory() {
                       <WarningIcon />
                     </div>
                   }
-                  date={new Date()}
                   progress={number(
                     'progress',
                     undefined,
@@ -202,15 +181,9 @@ export function DefaultStory() {
              This is the title an it is very long, so long that it should be ellipsed`,
                   'props'
                 )}
-                description={text(
-                  'description',
-                  'This is the long the descriptions that should no be to long, beacuse we will cap it',
-                  'props'
-                )}
                 status={text('status', '🔔 🐣 👻', 'props')}
                 media={boolean('Show image', true, 'props') ? renderMedia : undefined}
                 isPlaceholder={boolean('placeholder', false, 'props')}
-                date={new Date()}
                 progress={number(
                   'progress',
                   undefined,

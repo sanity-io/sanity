@@ -1,7 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react'
 import {useId} from '@reach/auto-id'
-import styles from './Avatar.css'
+import React, {useCallback, useEffect, useState} from 'react'
 import {AvatarPosition, AvatarStatus, AvatarSize} from './types'
+
+import styles from './Avatar.css'
 
 export interface AvatarProps {
   color: string

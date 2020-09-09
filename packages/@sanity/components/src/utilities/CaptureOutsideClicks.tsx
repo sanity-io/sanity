@@ -1,16 +1,14 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-export default class CaptureOutsideClicks extends React.Component {
-  static propTypes = {
-    onClickOutside: PropTypes.func,
-    wrapperElement: PropTypes.string
-  }
-  static defaultProps = {
-    wrapperElement: 'div'
-  }
+interface CaptureOutsideClicksProps extends React.HTMLProps<HTMLDivElement> {
+  onClickOutside?: (event: MouseEvent) => void
+  wrapperElement?: string
+}
 
+export default class CaptureOutsideClicks extends React.Component<CaptureOutsideClicksProps> {
   hadMouseDown = false
+
+  _wrapperElement: HTMLDivElement | null = null
 
   UNSAFE_componentWillMount() {
     document.addEventListener('mouseup', this.handleDocumentClick)
@@ -22,16 +20,17 @@ export default class CaptureOutsideClicks extends React.Component {
     document.removeEventListener('mousedown', this.handleMouseDown)
   }
 
-  handleMouseDown = event => {
-    if (this._wrapperElement.contains(event.target)) {
+  handleMouseDown = (event: MouseEvent) => {
+    if (this._wrapperElement && this._wrapperElement.contains(event.target as Node)) {
       this.hadMouseDown = true
     }
   }
 
-  handleDocumentClick = event => {
+  handleDocumentClick = (event: MouseEvent) => {
     if (
       this.props.onClickOutside &&
       this._wrapperElement &&
+      event.target instanceof Node &&
       !this._wrapperElement.contains(event.target) &&
       !this.hadMouseDown
     ) {
@@ -40,14 +39,15 @@ export default class CaptureOutsideClicks extends React.Component {
     this.hadMouseDown = false
   }
 
-  setWrapperElement = element => {
+  setWrapperElement = (element: HTMLDivElement | null) => {
     this._wrapperElement = element
   }
 
   render() {
-    const {wrapperElement, onClickOutside, ...rest} = this.props
+    const {wrapperElement = 'div', onClickOutside: _, ...restProps} = this.props
+
     return React.createElement(wrapperElement, {
-      ...rest,
+      ...restProps,
       ref: this.setWrapperElement
     })
   }

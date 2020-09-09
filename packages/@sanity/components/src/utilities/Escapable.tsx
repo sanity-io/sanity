@@ -1,52 +1,53 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-function createListener(eventName) {
-  let listeners = []
+interface EscapableProps {
+  onEscape?: (event: KeyboardEvent) => void
+  children?: React.ReactNode
+}
+
+type Listener<E = Event> = (event: E) => void
+
+function createListener<E extends Event>(eventName: 'keydown') {
+  let listeners: Listener<E>[] = []
   return listen
 
-  function notify(event) {
+  function notify(event: E) {
     listeners.forEach(l => l(event))
   }
 
-  function unlisten(listener) {
+  function unlisten(listener: Listener<E>) {
     listeners = listeners.filter(l => l !== listener)
+
     if (listeners.length === 0) {
-      document.removeEventListener(eventName, notify)
+      document.removeEventListener(eventName, notify as Listener)
     }
   }
 
-  function listen(listener) {
+  function listen(listener: Listener<E>) {
     if (listeners.length === 0) {
-      document.addEventListener(eventName, notify)
+      document.addEventListener(eventName, notify as Listener)
     }
+
     listeners.push(listener)
+
     return () => unlisten(listener)
   }
 }
 
-const onKeypress = createListener('keydown')
+const onKeypress = createListener<KeyboardEvent>('keydown')
 
-export default class Escapable extends React.Component {
-  static propTypes = {
-    onEscape: PropTypes.func,
-    children: PropTypes.node
-  }
-
-  static defaultProps = {
-    onEscape: () => {},
-    children: undefined
-  }
+export default class Escapable extends React.Component<EscapableProps> {
+  removeListener?: () => void
 
   UNSAFE_componentWillMount() {
     this.removeListener = onKeypress(this.handleKeyPress)
   }
 
   componentWillUnmount() {
-    this.removeListener()
+    if (this.removeListener) this.removeListener()
   }
 
-  handleKeyPress = event => {
+  handleKeyPress = (event: KeyboardEvent) => {
     if (this.props.onEscape && event.key === 'Escape') {
       this.props.onEscape(event)
     }

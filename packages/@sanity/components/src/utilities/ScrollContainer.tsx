@@ -1,21 +1,14 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './styles/ScrollContainer.css'
+import React from 'react'
 
-export default class ScrollContainer extends React.PureComponent {
-  static propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node,
-    onScroll: PropTypes.func,
-    tabIndex: PropTypes.number
-  }
+import styles from './ScrollContainer.css'
 
-  static defaultProps = {
-    children: undefined,
-    className: '',
-    onScroll: () => null,
-    tabIndex: undefined
-  }
+interface ScrollContainerProps extends Omit<React.HTMLProps<HTMLDivElement>, 'onScroll'> {
+  onScroll?: (event: Event) => void
+}
+
+export default class ScrollContainer extends React.PureComponent<ScrollContainerProps> {
+  _scrollContainerElement: HTMLDivElement | null = null
 
   getChildContext() {
     return {
@@ -23,42 +16,46 @@ export default class ScrollContainer extends React.PureComponent {
     }
   }
 
-  static defaultProps = {
-    className: ''
-  }
-
   static childContextTypes = {
     getScrollContainer: PropTypes.func
   }
 
   componentDidMount() {
-    if (this.props.onScroll) {
+    const {onScroll} = this.props
+
+    if (onScroll && this._scrollContainerElement) {
       this._scrollContainerElement.addEventListener('scroll', this.handleScroll, {passive: true})
     }
   }
 
   componentWillUnmount() {
-    if (this.props.onScroll) {
-      this._scrollContainerElement.removeEventListener('scroll', this.handleScroll, {passive: true})
+    const {onScroll} = this.props
+
+    if (onScroll && this._scrollContainerElement) {
+      this._scrollContainerElement.removeEventListener('scroll', this.handleScroll)
     }
   }
 
-  handleScroll = event => {
-    this.props.onScroll(event)
+  handleScroll = (event: Event) => {
+    const {onScroll} = this.props
+
+    if (onScroll) onScroll(event)
   }
 
-  setScrollContainerElement = element => {
+  setScrollContainerElement = (element: HTMLDivElement | null) => {
     this._scrollContainerElement = element
   }
 
   render() {
+    const {children, className, onScroll: _, ...restProps} = this.props
+
     return (
       <div
+        {...restProps}
+        className={`${styles.scrollContainer} ${className}`}
         ref={this.setScrollContainerElement}
-        className={`${styles.scrollContainer} ${this.props.className}`}
-        tabIndex={this.props.tabIndex}
       >
-        {this.props.children}
+        {children}
       </div>
     )
   }

@@ -35,12 +35,10 @@ export function DefaultStory() {
     'Props'
   )
 
-  console.log(tone)
-
   return (
     <CenteredContainer>
       <Sanity part="part:@sanity/components/dialogs/default" propTables={[Tooltip]}>
-        <Tooltip content={<>{children}</>} placement={placement} tone={tone || undefined}>
+        <Tooltip content={(<>{children}</>) as any} placement={placement} tone={tone || undefined}>
           <span style={{display: 'inline-block'}}>Hover me</span>
         </Tooltip>
       </Sanity>

@@ -27,14 +27,12 @@ export function DefaultStory() {
     'Props'
   )
 
+  const popoverContent = children ? <div style={{padding: '1em'}}>{children}</div> : null
+
   return (
     <CenteredContainer>
       <Sanity part="part:@sanity/components/dialogs/default" propTables={[Popover]}>
-        <Popover
-          content={children ? <div style={{padding: '1em'}}>{children}</div> : null}
-          open={open}
-          placement={placement}
-        >
+        <Popover content={popoverContent as any} open={open} placement={placement}>
           <span
             style={{
               display: 'inline-block',

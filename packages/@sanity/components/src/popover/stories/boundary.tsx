@@ -42,14 +42,16 @@ export function BoundaryStory() {
   )
 }
 
-function PopoverExample({boundary, content, open, placement}) {
+function PopoverExample({boundary, content, open, placement}: any) {
   const boundaryRef = useRef(null)
+
+  const popoverContent = content ? <div style={{padding: '1em'}}>{content}</div> : null
 
   return (
     <div ref={boundaryRef} style={{minWidth: 200, minHeight: 200, outline: '1px solid red'}}>
       <Popover
         boundaryElement={boundary === 'wrapper' ? boundaryRef.current : null}
-        content={content ? <div style={{padding: '1em'}}>{content}</div> : null}
+        content={popoverContent as any}
         open={open}
         placement={placement}
       >

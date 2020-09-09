@@ -1,57 +1,34 @@
 import {uniqueId} from 'lodash'
-import PropTypes from 'prop-types'
-import React from 'react'
-import FormField from 'part:@sanity/components/formfields/default'
-import TextInput from 'part:@sanity/components/textinputs/default'
 import styles from 'part:@sanity/components/autocomplete/default-style'
+import FormField from 'part:@sanity/components/formfields/default'
 import {List} from 'part:@sanity/components/lists/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import React from 'react'
+import {AutocompleteSuggestionItem} from './types'
 
-const noop = () => undefined
+interface DefaultAutocompleteProps {
+  id?: string
+  label: string
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSelect?: (item: AutocompleteSuggestionItem) => void
+  placeholder?: string
+  suggestions?: AutocompleteSuggestionItem[]
+  value?: string
+}
 
-export default class DefaultAutocomplete extends React.PureComponent {
-  static propTypes = {
-    id: PropTypes.string,
-    label: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
-    onSelect: PropTypes.func,
-    suggestions: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string
-      })
-    ),
-    value: PropTypes.string
+export default class DefaultAutocomplete extends React.PureComponent<DefaultAutocompleteProps> {
+  _inputId?: string = undefined
+
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (this.props.onChange) this.props.onChange(event)
   }
 
-  static defaultProps = {
-    id: undefined,
-    onChange: noop,
-    onSelect: noop,
-    suggestions: [],
-    value: ''
-  }
-
-  constructor(props, context) {
-    super(props, context)
-
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleSelect(item) {
-    this.props.onSelect(item)
-  }
-
-  handleChange(event) {
-    this.props.onChange(event)
-  }
-
-  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('Autocomplete')
   }
 
   render() {
-    const {suggestions, label, value} = this.props
+    const {suggestions = [], label, placeholder, value = ''} = this.props
     const isOpen = suggestions.length > 1
 
     return (
@@ -61,14 +38,15 @@ export default class DefaultAutocomplete extends React.PureComponent {
         labelFor={this._inputId}
       >
         <TextInput
-          id={this._inputId}
+          inputId={this._inputId}
           value={value}
           className={styles.textField}
+          placeholder={placeholder}
           onChange={this.handleChange}
         />
         <div className={styles.input} />
         <div className={styles.suggestionsContainer}>
-          <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />
+          <List className={styles.suggestions} />
         </div>
       </FormField>
     )

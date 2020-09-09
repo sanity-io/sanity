@@ -17,7 +17,6 @@ export function CreateDocumentStory() {
           <Stack>
             <PreviewCard>
               <CreateDocumentPreview
-                // eslint-disable-next-line no-script-url
                 params={{intent: 'create', template: 'test'}}
                 title={text('title', 'Movie', 'props')}
                 subtitle={text('subtitle', 'Sci-fi', 'props')}

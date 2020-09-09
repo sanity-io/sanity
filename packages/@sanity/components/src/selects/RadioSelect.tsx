@@ -1,17 +1,17 @@
 import classNames from 'classnames'
 import React from 'react'
 import RadioButton from '../radiobutton/RadioButtonDefault'
-import styles from './styles/RadioSelect.css'
+import styles from './RadioSelect.css'
 
 interface RadioSelectProps {
-  name: string
+  name?: string
   direction: 'horizontal' | 'vertical'
   onFocus?: (evt: React.FocusEvent<HTMLInputElement>) => void
   onChange?: (val: any) => void
   value: any
-  readOnly: boolean
+  readOnly?: boolean
   items: {title: string}[]
-  inputId: string
+  inputId?: string
 }
 
 const RadioSelect = React.forwardRef((props: RadioSelectProps, ref: React.Ref<HTMLDivElement>) => {

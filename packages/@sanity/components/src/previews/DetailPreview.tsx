@@ -1,21 +1,21 @@
 import styles from 'part:@sanity/components/previews/detail-style'
 import React from 'react'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 interface DetailPreviewProps {
   title?: React.ReactNode | React.FC<{layout: 'detail'}>
   subtitle?: React.ReactNode | React.FC<{layout: 'detail'}>
   description?: React.ReactNode | React.FC<{layout: 'detail'}>
   status?: React.ReactNode | React.FC<{layout: 'detail'}>
-  media?: React.ReactNode | React.FC<{dimensions: PreviewMediaDimensions; layout: 'default'}>
-  mediaDimensions?: PreviewMediaDimensions
+  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'default'}>
+  mediaDimensions?: MediaDimensions
   children?: React.ReactNode
   isPlaceholder?: boolean
 }
 
 let index = 0
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 120,
   height: 120,
   fit: 'crop',

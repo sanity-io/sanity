@@ -1,8 +1,15 @@
-export type Marker = {
-  path: any[]
+// @todo: import these from `@sanity/field`?
+export type KeyedSegment = {
+  _key: string
+}
+export type PathSegment = string | number | KeyedSegment
+export type Path = PathSegment[]
+
+export interface Marker {
+  path: Path
   type: string
-  level: string
-  item: any
+  level?: string
+  item: {message: string}
 }
 
 export type Placement =
@@ -18,3 +25,10 @@ export type Placement =
   | 'bottom'
   | 'bottom-start'
   | 'bottom-end'
+
+export interface MediaDimensions {
+  width?: number
+  height?: number
+  fit?: 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'scale' | 'min'
+  aspect?: number
+}

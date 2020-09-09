@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -8,38 +7,21 @@ import DefaultPane from './DefaultPane'
 
 import styles from './TabbedPane.css'
 
-const noop = () => {
-  /* intentional noop */
+interface TabbedPaneProps {
+  idPrefix: string
+  views?: {
+    icon?: React.ComponentType<{}>
+    id: string
+    title: string
+  }[]
+  activeView?: string
+  isClosable?: boolean
+  onSetActiveView: (viewId: string | null) => void
+  onSplitPane?: () => void
+  onCloseView?: () => void
 }
 
-// eslint-disable-next-line
-class TabbedPane extends React.Component {
-  static propTypes = {
-    idPrefix: PropTypes.string.isRequired,
-    views: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired
-      })
-    ),
-    activeView: PropTypes.string,
-    isClosable: PropTypes.bool,
-    onSetActiveView: PropTypes.func,
-    onSplitPane: PropTypes.func,
-    onCloseView: PropTypes.func
-  }
-
-  static defaultProps = {
-    views: [],
-    activeView: undefined,
-    isClosable: false,
-    onSetActiveView: noop,
-    onSplitPane: undefined,
-    onCloseView: noop
-  }
-
-  state = {}
-
+class TabbedPane extends React.Component<TabbedPaneProps> {
   renderHeaderViewMenu = () => {
     const {views = [], onSplitPane, onCloseView, isClosable} = this.props
     const isSplittable = Boolean(onSplitPane)
@@ -89,7 +71,6 @@ class TabbedPane extends React.Component {
               key={view.id}
               label={<>{view.title}</>}
               icon={view.icon}
-              // eslint-disable-next-line react/jsx-no-bind
               onClick={() => onSetActiveView(index === 0 ? null : view.id)}
               aria-controls={tabPanelId}
             />
@@ -114,6 +95,7 @@ class TabbedPane extends React.Component {
     return (
       <DefaultPane
         hasTabs={hasTabs}
+        index={0}
         renderHeaderViewMenu={this.renderHeaderViewMenu}
         tabIdPrefix={idPrefix}
         viewId={activeView}

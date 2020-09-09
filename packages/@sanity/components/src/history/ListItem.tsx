@@ -1,43 +1,34 @@
-/* eslint-disable react/jsx-filename-extension */
-import PropTypes from 'prop-types'
 import React from 'react'
-// import UserAvatar from '../presence/UserAvatar'
-// import PopoverList from '../presence/PopoverList'
-// import {PresenceListItem} from '../presence/PresenceListItem'
 import EventIcon from './EventIcon'
 
-import styles from './styles/ListItem.modules.css'
+import styles from './ListItem.modules.css'
 
-const noop = () => {} // eslint-disable-line no-empty-function
-const MAX_USERS = 3
+interface HistoryListItemProps {
+  status?: string
+  title?: string
+  children?: React.ReactNode
+  isCurrentVersion?: boolean
+  isSelected?: boolean
+  onSelect: (evt: React.MouseEvent<HTMLDivElement>) => void
+  onEnterKey: () => void
+  onArrowUpKey: () => void
+  onArrowDownKey: () => void
+  rev?: string
+  tooltip?: string
+  type?: string
+  users?: {
+    name?: string
+    email?: string
+    imageUrl?: string
+    id?: string
+  }[]
+  linkParams?: Record<string, unknown>
+  linkComponent?: React.ComponentType<{params: Record<string, unknown>}>
+}
 
-export default class HistoryListItem extends React.PureComponent {
-  static propTypes = {
-    status: PropTypes.string,
-    title: PropTypes.string,
-    children: PropTypes.node,
-    isCurrentVersion: PropTypes.bool,
-    isSelected: PropTypes.bool,
-    onSelect: PropTypes.func,
-    onEnterKey: PropTypes.func,
-    onArrowUpKey: PropTypes.func,
-    onArrowDownKey: PropTypes.func,
-    rev: PropTypes.string,
-    tooltip: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    users: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string,
-        email: PropTypes.string,
-        imageUrl: PropTypes.string,
-        id: PropTypes.string
-      })
-    ),
-    // eslint-disable-next-line react/forbid-prop-types
-    linkParams: PropTypes.object,
-    linkComponent: PropTypes.elementType
-  }
+const noop = () => undefined
 
+export default class HistoryListItem extends React.PureComponent<HistoryListItemProps> {
   static defaultProps = {
     status: 'Edited',
     title: undefined,
@@ -54,7 +45,7 @@ export default class HistoryListItem extends React.PureComponent {
     linkComponent: undefined
   }
 
-  _rootElement = React.createRef()
+  _rootElement: React.RefObject<HTMLDivElement> = React.createRef()
 
   componentDidUpdate(prevProps) {
     const {isSelected} = this.props
@@ -71,14 +62,14 @@ export default class HistoryListItem extends React.PureComponent {
     }
   }
 
-  handleKeyUp = event => {
+  handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const {onEnterKey} = this.props
     if (event.key === 'Enter') {
       onEnterKey()
     }
   }
 
-  handleKeyDown = event => {
+  handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     // Prevent arrow keypress scrolling
     const {onArrowUpKey, onArrowDownKey} = this.props
     if (event.key === 'ArrowDown') {
@@ -90,7 +81,7 @@ export default class HistoryListItem extends React.PureComponent {
     }
   }
 
-  handleSelect = evt => {
+  handleSelect = (evt: React.MouseEvent<HTMLDivElement>) => {
     this.props.onSelect(evt)
   }
 
@@ -102,14 +93,12 @@ export default class HistoryListItem extends React.PureComponent {
       status,
       isSelected,
       title,
-      // users,
       children,
       isCurrentVersion,
       rev,
       tooltip,
       type
     } = this.props
-    // const availableUsers = users.filter(Boolean)
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
 
     const content = (
@@ -132,32 +121,7 @@ export default class HistoryListItem extends React.PureComponent {
             </p>
           </div>
         )}
-        {/* {availableUsers && availableUsers.length > 0 && (
-          <PopoverList
-            items={availableUsers.map(user => ({locations: [], user}))}
-            disabled={availableUsers.length < 2}
-            avatarSize="small"
-            renderItem={item => <PresenceListItem status="online" user={item.user} />}
-          >
-            <div className={styles.users}>
-              <div className={styles.userIcons}>
-                {availableUsers.slice(0, MAX_USERS).map((user, i) => (
-                  <div key={user.id} className={styles.userAvatar}>
-                    <UserAvatar user={user} />
-                  </div>
-                ))}
-              </div>
-              {availableUsers.length === 1 && (
-                <div className={styles.userName}>{availableUsers[0].displayName}</div>
-              )}
-              {availableUsers.length > 1 && (
-                <div className={styles.extraItems}>
-                  <div className={styles.userName}>{availableUsers.length} people</div>
-                </div>
-              )}
-            </div>
-          </PopoverList>
-        )} */}
+
         {children && <div className={styles.children}>{children}</div>}
       </>
     )
@@ -168,7 +132,7 @@ export default class HistoryListItem extends React.PureComponent {
       'data-is-current-version': isCurrentVersion,
       'data-is-selected': isSelected,
       'data-rev': rev,
-      tabIndex: type === 'truncated' ? null : '0',
+      tabIndex: type === 'truncated' ? undefined : 0,
       onKeyUp: this.handleKeyUp,
       onKeyDown: this.handleKeyDown,
       title: tooltip,

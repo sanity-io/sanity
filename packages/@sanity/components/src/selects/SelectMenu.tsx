@@ -1,26 +1,31 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import cx from 'classnames'
 import {List, Item} from 'part:@sanity/components/lists/default'
-import styles from './styles/SelectMenu.css'
 import scrollIntoView from 'dom-scroll-into-view'
+import styles from './SelectMenu.css'
 
-export default class SelectMenu extends React.Component {
-  static propTypes = {
-    items: PropTypes.array,
-    renderItem: PropTypes.func, // (item: T) => Element,
-    value: PropTypes.any,
-    highlightIndex: PropTypes.number,
-    onSelect: PropTypes.func // (item: T) => void
-  }
+type Item = unknown
+
+interface SelectMenuProps {
+  items?: Item[]
+  renderItem?: (item: Item, index: number) => React.ReactNode
+  value?: Item
+  highlightIndex?: number
+  onSelect?: (item: Item) => void
+}
+
+export default class SelectMenu extends React.Component<SelectMenuProps> {
+  scrollContainer: HTMLDivElement | null = null
 
   handleItemClick = event => {
     const index = Number(event.currentTarget.getAttribute('data-item-index'))
     const {onSelect, items} = this.props
-    onSelect(items[index])
+    if (onSelect && items) onSelect(items[index])
   }
 
   componentDidUpdate(prevProps) {
+    if (!this.scrollContainer) return
+
     if (prevProps.highlightIndex !== this.props.highlightIndex) {
       const itemElement = this.scrollContainer.querySelector(
         `[data-item-index="${this.props.highlightIndex}"]`
@@ -29,7 +34,7 @@ export default class SelectMenu extends React.Component {
     }
   }
 
-  setScrollContainer = domNode => {
+  setScrollContainer = (domNode: HTMLDivElement | null) => {
     this.scrollContainer = domNode
   }
 
@@ -38,23 +43,25 @@ export default class SelectMenu extends React.Component {
     return (
       <div className={styles.scrollContainer} ref={this.setScrollContainer}>
         <List className={styles.list}>
-          {items.map((item, index) => {
-            const classes = cx(styles.item, {
-              [styles.highlighted]: index === highlightIndex,
-              [styles.selected]: item === value
-            })
-            return (
-              <Item
-                key={index}
-                data-item-index={index}
-                onClick={this.handleItemClick}
-                className={classes}
-                tabIndex={0}
-              >
-                {renderItem(item, index)}
-              </Item>
-            )
-          })}
+          {items &&
+            items.map((item, index) => {
+              const classes = cx(
+                styles.item,
+                index === highlightIndex && styles.highlighted,
+                item === value && styles.selected
+              )
+              return (
+                <Item
+                  key={index}
+                  data-item-index={index}
+                  onClick={this.handleItemClick}
+                  className={classes}
+                  tabIndex={0}
+                >
+                  {renderItem && renderItem(item, index)}
+                </Item>
+              )
+            })}
         </List>
       </div>
     )

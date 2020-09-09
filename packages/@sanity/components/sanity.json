@@ -565,7 +565,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/default-style",
-      "path": "selects/styles/DefaultSelect.css"
+      "path": "selects/DefaultSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/radio",
@@ -577,7 +577,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/searchable-style",
-      "path": "selects/styles/SearchableSelect.css"
+      "path": "selects/SearchableSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/custom",
@@ -585,7 +585,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/custom-style",
-      "path": "selects/styles/CustomSelect.css"
+      "path": "selects/CustomSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/menu",
@@ -593,7 +593,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
-      "path": "selects/styles/StyleSelect.css"
+      "path": "selects/StyleSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/style",
@@ -601,7 +601,7 @@
     },
     {
       "implements": "part:@sanity/components/selects/style-style",
-      "path": "selects/styles/StyleSelect.css"
+      "path": "selects/StyleSelect.css"
     },
     {
       "implements": "part:@sanity/components/dialogs/default",
@@ -633,7 +633,7 @@
     },
     {
       "implements": "part:@sanity/components/dialogs/popover-style",
-      "path": "dialogs/styles/PopOver.css"
+      "path": "dialogs/PopOver.css"
     },
 
     {
@@ -690,19 +690,19 @@
     },
     {
       "implements": "part:@sanity/components/autocomplete/default-style",
-      "path": "autocomplete/styles/DefaultAutocomplete.css"
+      "path": "autocomplete/DefaultAutocomplete.css"
     },
     {
       "implements": "part:@sanity/components/buttons/default-style",
-      "path": "buttons/styles/DefaultButton.css"
+      "path": "buttons/DefaultButton.css"
     },
     {
       "implements": "part:@sanity/components/buttons/button-grid-style",
-      "path": "buttons/styles/ButtonGrid.css"
+      "path": "buttons/ButtonGrid.css"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",
-      "path": "buttons/styles/DropDownButton.css"
+      "path": "buttons/DropDownButton.css"
     },
     {
       "implements": "part:@sanity/components/buttons/in-input",
@@ -710,7 +710,7 @@
     },
     {
       "implements": "part:@sanity/components/buttons/in-input-style",
-      "path": "buttons/styles/InInput.css"
+      "path": "buttons/InInput.css"
     },
     {
       "implements": "part:@sanity/components/fileinput/default",
@@ -742,15 +742,15 @@
     },
     {
       "implements": "part:@sanity/components/loading/spinner-style",
-      "path": "loading/styles/Spinner.css"
+      "path": "loading/Spinner.css"
     },
     {
       "implements": "part:@sanity/components/progress/bar-style",
-      "path": "progress/styles/ProgressBar.css"
+      "path": "progress/ProgressBar.css"
     },
     {
       "implements": "part:@sanity/components/progress/circle-style",
-      "path": "progress/styles/ProgressCircle.css"
+      "path": "progress/ProgressCircle.css"
     },
     {
       "implements": "part:@sanity/components/toggles/switch-style",
@@ -766,63 +766,63 @@
     },
     {
       "implements": "part:@sanity/components/toggles/buttons-style",
-      "path": "toggles/styles/Buttons.css"
+      "path": "toggles/Buttons.css"
     },
     {
       "implements": "part:@sanity/components/toggles/button-style",
-      "path": "toggles/styles/ToggleButton.css"
+      "path": "toggles/ToggleButton.css"
     },
     {
       "implements": "part:@sanity/components/formfields/default-style",
-      "path": "formfields/styles/DefaultFormField.css"
+      "path": "formfields/DefaultFormField.css"
     },
     {
       "implements": "part:@sanity/components/labels/default-style",
-      "path": "labels/styles/DefaultLabel.css"
+      "path": "labels/DefaultLabel.css"
     },
     {
       "implements": "part:@sanity/components/textareas/default-style",
-      "path": "textareas/styles/DefaultTextArea.css"
+      "path": "textareas/DefaultTextArea.css"
     },
     {
       "implements": "part:@sanity/components/textinputs/default-style",
-      "path": "textinputs/styles/DefaultTextInput.css"
+      "path": "textinputs/DefaultTextInput.css"
     },
     {
       "implements": "part:@sanity/components/textfields/default-style",
-      "path": "textfields/styles/DefaultTextField.css"
+      "path": "textfields/DefaultTextField.css"
     },
     {
       "implements": "part:@sanity/components/textfields/search-style",
-      "path": "textfields/styles/SearchField.css"
+      "path": "textfields/SearchField.css"
     },
     {
       "implements": "part:@sanity/components/tags/textfield-style",
-      "path": "tags/styles/TextField.css"
+      "path": "tags/TextField.css"
     },
     {
       "implements": "part:@sanity/components/dialogs/fullscreen-style",
-      "path": "dialogs/styles/FullscreenDialog.css"
+      "path": "dialogs/FullscreenDialog.css"
     },
     {
       "implements": "part:@sanity/components/dialogs/default-style",
-      "path": "dialogs/styles/DefaultDialog.css"
+      "path": "dialogs/DefaultDialog.css"
     },
     {
       "implements": "part:@sanity/components/dialogs/content-style",
-      "path": "dialogs/styles/DialogContent.css"
+      "path": "dialogs/DialogContent.css"
     },
     {
       "implements": "part:@sanity/components/fieldsets/default-style",
-      "path": "fieldsets/styles/DefaultFieldset.css"
+      "path": "fieldsets/DefaultFieldset.css"
     },
     {
       "implements": "part:@sanity/components/snackbar/default-style",
-      "path": "snackbar/styles/DefaultSnackbar.css"
+      "path": "snackbar/DefaultSnackbar.css"
     },
     {
       "implements": "part:@sanity/components/snackbar/snackbar-style",
-      "path": "snackbar/styles/SnackbarItem.css"
+      "path": "snackbar/SnackbarItem.css"
     },
     {
       "implements": "part:@sanity/components/menus/default",
@@ -830,7 +830,7 @@
     },
     {
       "implements": "part:@sanity/components/menus/default-style",
-      "path": "menus/styles/DefaultMenu.css"
+      "path": "menus/DefaultMenu.css"
     },
     {
       "name": "part:@sanity/components/menus/divider",
@@ -859,35 +859,35 @@
     },
     {
       "implements": "part:@sanity/components/edititem/fold-style",
-      "path": "edititem/styles/EditItemFoldOut.css"
+      "path": "edititem/EditItemFoldOut.css"
     },
     {
       "implements": "part:@sanity/components/previews/default-style",
-      "path": "previews/styles/DefaultPreview.css"
+      "path": "previews/DefaultPreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/card-style",
-      "path": "previews/styles/CardPreview.css"
+      "path": "previews/CardPreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/detail-style",
-      "path": "previews/styles/DetailPreview.css"
+      "path": "previews/DetailPreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/inline-style",
-      "path": "previews/styles/InlinePreview.css"
+      "path": "previews/InlinePreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/block-style",
-      "path": "previews/styles/BlockPreview.css"
+      "path": "previews/BlockPreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/block-image-style",
-      "path": "previews/styles/BlockImagePreview.css"
+      "path": "previews/BlockImagePreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/media-style",
-      "path": "previews/styles/MediaPreview.css"
+      "path": "previews/MediaPreview.css"
     },
     {
       "name": "part:@sanity/components/panes/default-pane-style",
@@ -895,7 +895,7 @@
     },
     {
       "implements": "part:@sanity/components/panes/default-pane-style",
-      "path": "panes/styles/DefaultPane.css"
+      "path": "panes/DefaultPane.css"
     },
     {
       "name": "part:@sanity/components/utilities/activate-on-focus",

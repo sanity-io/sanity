@@ -1,5 +1,4 @@
 import {Avatar} from 'part:@sanity/components/avatar'
-// import {action} from 'part:@sanity/storybook/addons/actions'
 import {color, select, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
@@ -33,8 +32,6 @@ export function DefaultStory() {
       ) || undefined,
     color: color('Color', '#0c0', 'Props'),
     initials: text('Intitials', 'si', 'Props'),
-    // isAnimating: boolean('Animate', false, 'Props'),
-    // position: 'top',
     size: select(
       'Size',
       {
@@ -70,18 +67,6 @@ export function DefaultStory() {
         'Props'
       ) || undefined
   }
-
-  // color: string
-  // src?: string
-  // label: string
-  // isAnimating?: boolean
-  // children?: React.ReactNode
-  // onImageLoadError?: (event: Error) => void
-  // position?: Position
-  // animateArrowFrom?: Position
-  // status?: Status
-  // size?: Size
-  // tone?: 'navbar'
 
   return (
     <CenteredContainer>

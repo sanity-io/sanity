@@ -12,11 +12,13 @@ export function DefaultStory() {
     'tab-edit',
     'props'
   )
+
   const tabs = [
     {id: 'tab-edit', label: 'Edit'},
     {id: 'tab-seo', label: 'SEO'},
     {id: 'tab-preview', label: 'Preview'}
   ]
+
   return (
     <div style={{background: 'white'}}>
       <TabList>

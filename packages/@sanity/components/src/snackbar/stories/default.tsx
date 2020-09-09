@@ -22,6 +22,7 @@ export function DefaultStory() {
       icon={boolean('With icons', false)}
       isCloseable={boolean('isCloseable', false, 'props')}
       action={{title: text('Action title', 'Action'), callback: action('callback()')}}
+      onSetHeight={action('onSetheight')}
     >
       {text('children', '', 'props')}
     </Snackbar>

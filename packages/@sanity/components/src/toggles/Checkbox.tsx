@@ -1,20 +1,15 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {Marker} from '../types'
 import styles from './Checkbox.css'
 import sharedStyles from './shared.css'
 
-type Props = {
-  label: any
-  description: string
-  markers: Marker[]
-  checked: boolean
-  inputRef: React.RefObject<HTMLInputElement>
-  disabled: boolean
-  readOnly: boolean
-  children: any
-  onFocus: () => void
-  onBlur?: () => void
+interface CheckboxProps {
+  children?: React.ReactNode
+  description?: React.ReactNode
+  label?: React.ReactNode
+  markers?: Marker[]
+  readOnly?: boolean
 }
 
 export default React.forwardRef(function Checkbox(
@@ -26,31 +21,36 @@ export default React.forwardRef(function Checkbox(
     disabled,
     readOnly,
     children,
-    onFocus,
-    onBlur,
     ...rest
-  }: Props,
+  }: CheckboxProps & Omit<React.HTMLProps<HTMLInputElement>, 'aria-described-by' | 'id' | 'type'>,
   ref: any
 ) {
   const elementId = useId()
+  const innerRef = useRef<HTMLInputElement | null>(null)
+
   useEffect(() => {
-    if (typeof checked === 'undefined' && ref?.current) {
-      ref.current.indeterminate = true
+    if (innerRef?.current) {
+      innerRef.current.indeterminate = checked === undefined
     }
+  }, [checked])
+
+  const setRef = useCallback((el: HTMLInputElement | null) => {
+    innerRef.current = el
+    if (typeof ref === 'function') ref(el)
+    else if (typeof ref === 'object') ref.current = el
   }, [])
 
   return (
     <div className={styles.root}>
       <input
+        {...rest}
         id={`checkbox-${elementId}-input`}
         aria-describedby={`checkbox-${elementId}-description`}
         className={styles.input}
-        {...rest}
+        checked={checked || false}
         type="checkbox"
         disabled={disabled || readOnly}
-        checked={checked}
-        ref={ref}
-        onFocus={onFocus}
+        ref={setRef}
       />
       <div className={styles.checkbox}>
         <svg

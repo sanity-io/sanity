@@ -22,6 +22,7 @@ export function CustomIconStory() {
       icon={text('Icon', '🐈', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
       action={{title: text('Action title', 'Action'), callback: action('callback()')}}
+      onSetHeight={action('onSetheight')}
     />
   )
 }

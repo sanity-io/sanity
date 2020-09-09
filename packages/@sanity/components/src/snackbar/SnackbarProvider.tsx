@@ -2,31 +2,35 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Portal} from '../utilities/Portal'
 import SnackbarItem from './SnackbarItem'
+import {SnackbarItemType} from './types'
+
+interface SnackbarProviderProps {
+  children: React.ReactNode
+}
+
+interface State {
+  activeSnacks: SnackbarItemType[]
+}
 
 // This determines (in pixels) how far from the bottom of the screen
 // the lowest of the snackbars will be placed:
 const SNACKBAR_MARGIN_BOTTOM = 76
 
-export default class SnackbarProvider extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired
-  }
-
+export default class SnackbarProvider extends React.Component<SnackbarProviderProps, State> {
   static childContextTypes = {
     addToSnackQueue: PropTypes.func,
     handleDismissSnack: PropTypes.func,
     updateSnack: PropTypes.func
   }
 
-  constructor(props, context) {
-    super(props, context)
-    this.state = {
-      activeSnacks: []
-    }
+  state: State = {
+    activeSnacks: []
   }
 
   maxStack = 3
-  snackQueue = []
+  snackQueue: SnackbarItemType[] = []
+
+  _removeTimer?: NodeJS.Timer
 
   get offsets() {
     const {activeSnacks} = this.state
@@ -36,10 +40,11 @@ export default class SnackbarProvider extends React.Component {
         snackbar: 12
       }
       let offset = viewOffset
-      while (activeSnacks[index - 1]) {
-        const snackHeight = activeSnacks[index - 1].height || 60
+      let i = index
+      while (activeSnacks[i - 1]) {
+        const snackHeight = activeSnacks[i - 1].height || 60
         offset += snackHeight + snackbarOffset
-        index -= 1
+        i -= 1
       }
       return offset
     })
@@ -48,19 +53,19 @@ export default class SnackbarProvider extends React.Component {
   /*
    Set a height for the snackbar to stack them correctly
   */
-  handleSetHeight = (id, height) => {
+  handleSetHeight = (id: number, height: number) => {
     this.setState(({activeSnacks}) => ({
       activeSnacks: activeSnacks.map(snack => (snack.id === id ? {...snack, height} : {...snack}))
     }))
   }
 
-  addToSnackQueue = contextSnack => {
+  addToSnackQueue = (contextSnack: SnackbarItemType) => {
     const {activeSnacks} = this.state
 
-    const newSnack = {
+    const newSnack: SnackbarItemType = {
+      ...contextSnack,
       id: new Date().getTime() + Math.floor(Math.random() * 10000),
-      isOpen: true,
-      ...contextSnack
+      isOpen: true
     }
 
     if (!newSnack.allowDuplicateSnackbarType) {
@@ -108,9 +113,12 @@ export default class SnackbarProvider extends React.Component {
   processSnackQueue = () => {
     if (this.snackQueue.length > 0) {
       const newSnack = this.snackQueue.shift()
-      this.setState(({activeSnacks}) => ({
-        activeSnacks: [...activeSnacks, newSnack]
-      }))
+
+      if (newSnack) {
+        this.setState(({activeSnacks}) => ({
+          activeSnacks: [...activeSnacks, newSnack]
+        }))
+      }
     }
   }
 
@@ -149,7 +157,7 @@ export default class SnackbarProvider extends React.Component {
     then call to remove it from activeSnacks in order to
     transition it out
   */
-  handleDismissSnack = id => {
+  handleDismissSnack = (id: number | string) => {
     this.setState(
       ({activeSnacks}) => ({
         activeSnacks: activeSnacks.map(snack => {
@@ -165,7 +173,7 @@ export default class SnackbarProvider extends React.Component {
     Remove the snack from the state
     The removal is delayed in order to transition the snack out first
   */
-  handleRemoveSnack = id => {
+  handleRemoveSnack = (id: number | string) => {
     this._removeTimer = setTimeout(() => {
       this.setState(({activeSnacks}) => ({
         activeSnacks: activeSnacks.filter(snack => snack.id !== id)
@@ -174,7 +182,10 @@ export default class SnackbarProvider extends React.Component {
   }
 
   componentWillUnmount() {
-    clearTimeout(this._removeTimer)
+    if (this._removeTimer) {
+      clearTimeout(this._removeTimer)
+      this._removeTimer = undefined
+    }
   }
 
   getChildContext = () => ({
@@ -190,7 +201,7 @@ export default class SnackbarProvider extends React.Component {
       <>
         {children}
         <Portal>
-          <div role="region" aria-label="notifications" tabIndex="-1">
+          <div role="region" aria-label="notifications" tabIndex={-1}>
             {activeSnacks.map((snack, index) => (
               <SnackbarItem
                 key={snack.id}

@@ -1,40 +1,26 @@
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
+import {MenuItem as MenuItemType} from './types'
 
-class DefaultMenuItem extends React.Component {
-  static propTypes = {
-    isFocused: PropTypes.bool,
-    onFocus: PropTypes.func.isRequired,
-    onAction: PropTypes.func.isRequired,
-    className: PropTypes.string,
-    danger: PropTypes.bool,
-    isDisabled: PropTypes.bool,
-    item: PropTypes.shape({
-      title: PropTypes.node.isRequired,
-      icon: PropTypes.func,
-      intent: PropTypes.shape({
-        type: PropTypes.string.isRequired,
-        params: PropTypes.object
-      })
-    }).isRequired
-  }
+interface DefaultMenuItemProps {
+  isFocused?: boolean
+  onFocus: (event: React.FocusEvent<HTMLAnchorElement>, item: MenuItemType) => void
+  onAction: (event: React.MouseEvent<HTMLAnchorElement>, item: MenuItemType) => void
+  className?: string
+  danger?: boolean
+  isDisabled?: boolean
+  item: MenuItemType
+}
 
-  static defaultProps = {
-    className: '',
-    isFocused: false,
-    isDisabled: false,
-    danger: false
-  }
-
-  handleClick = event => {
+class DefaultMenuItem extends React.Component<DefaultMenuItemProps> {
+  handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.stopPropagation()
     this.props.onAction(event, this.props.item)
   }
 
-  handleFocus = event => {
+  handleFocus = (event: React.FocusEvent<HTMLAnchorElement>) => {
     this.props.onFocus(event, this.props.item)
   }
 
@@ -56,12 +42,16 @@ class DefaultMenuItem extends React.Component {
   renderIntentLink = () => {
     const {danger, item} = this.props
     const {intent} = item
+
+    // @todo: is this what we want?
+    if (!intent) return null
+
     return (
       <IntentLink
         onClick={this.handleClick}
         className={danger ? styles.dangerLink : styles.link}
         onFocus={this.handleFocus}
-        tabIndex="0"
+        tabIndex={0}
         intent={intent.type}
         params={intent.params}
       >
@@ -74,10 +64,10 @@ class DefaultMenuItem extends React.Component {
     const {isDisabled, danger} = this.props
     return (
       <a
-        onClick={isDisabled ? null : this.handleClick}
+        onClick={isDisabled ? undefined : this.handleClick}
         className={danger ? styles.dangerLink : styles.link}
         onFocus={this.handleFocus}
-        tabIndex="0"
+        tabIndex={0}
       >
         {this.renderLinkChildren()}
       </a>
@@ -85,18 +75,16 @@ class DefaultMenuItem extends React.Component {
   }
 
   render() {
-    const {className, isDisabled, isFocused, item} = this.props
+    const {className: classNameProp, isDisabled, isFocused, item} = this.props
     const {intent} = item
+    const className = classNames(
+      classNameProp,
+      isFocused ? styles.focusedItem : styles.item,
+      isDisabled && styles.isDisabled
+    )
+
     return (
-      <li
-        className={classNames([
-          isFocused ? styles.focusedItem : styles.item,
-          isDisabled && styles.isDisabled,
-          className
-        ])}
-      >
-        {intent ? this.renderIntentLink() : this.renderFunctionLink()}
-      </li>
+      <li className={className}>{intent ? this.renderIntentLink() : this.renderFunctionLink()}</li>
     )
   }
 }

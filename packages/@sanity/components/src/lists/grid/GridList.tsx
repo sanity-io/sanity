@@ -1,16 +1,14 @@
 import classNames from 'classnames'
-import React from 'react'
+import React, {forwardRef} from 'react'
 
 import styles from './GridList.css'
 
-function GridList(props: React.HTMLProps<HTMLUListElement>) {
-  const {children, className, ...restProps} = props
-
-  return (
-    <ul {...restProps} className={classNames(styles.root, className)}>
-      {children}
-    </ul>
+const GridList = forwardRef(
+  (props: React.HTMLProps<HTMLUListElement>, ref: React.Ref<HTMLUListElement>) => (
+    <ul {...props} className={classNames(styles.root, props.className)} ref={ref} />
   )
-}
+)
+
+GridList.displayName = 'GridList'
 
 export default GridList

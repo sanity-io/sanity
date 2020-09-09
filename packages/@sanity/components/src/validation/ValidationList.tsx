@@ -1,12 +1,12 @@
 import React from 'react'
-import {Marker} from '../types'
+import {Marker, Path} from '../types'
 import ValidationListItem from './ValidationListItem'
 
 import styles from './ValidationList.css'
 
 type Props = {
   kind?: string
-  onFocus?: (path: any) => void
+  onFocus?: (path: Path) => void
   onClose?: () => void
   showLink?: boolean
   truncate?: boolean
@@ -35,7 +35,7 @@ export default class ValidationList extends React.PureComponent<Props> {
     }
   }
 
-  handleClick = (event, path) => {
+  handleClick = (_: React.MouseEvent<HTMLAnchorElement>, path: Path = []) => {
     const {onFocus, onClose} = this.props
     const pathString = path[0]
     const element = document.querySelector(`[data-focus-path="${pathString}"]`)
@@ -55,10 +55,11 @@ export default class ValidationList extends React.PureComponent<Props> {
     }
   }
 
-  resolvePathTitle(path) {
+  resolvePathTitle(path: Path) {
     const type = this.props.documentType
     const fields = type && type.fields
     const field = fields && fields.find(curr => curr.name === path[0])
+
     return field ? field.type.title : ''
   }
 

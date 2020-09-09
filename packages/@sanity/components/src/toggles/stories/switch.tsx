@@ -4,7 +4,7 @@ import Switch from 'part:@sanity/components/toggles/switch'
 import {boolean, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'block',
   position: 'absolute',
   padding: '2rem',

@@ -1,47 +1,46 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import styles from './Tab.css'
 
-export default class Tab extends React.PureComponent {
-  static propTypes = {
-    'aria-controls': PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    icon: PropTypes.func,
-    isActive: PropTypes.bool,
-    isFocused: PropTypes.bool,
-    label: PropTypes.node.isRequired,
-    onClick: PropTypes.func.isRequired,
-    onFocus: PropTypes.func
-  }
+interface TabProps {
+  'aria-controls': string
+  id: string
+  icon?: React.ComponentType<{}>
+  isActive?: boolean
+  isFocused?: boolean
+  label: React.ReactNode
+  onClick: () => void
+  onFocus?: () => void
+}
 
-  static defaultProps = {
-    icon: undefined,
-    isActive: false,
-    isFocused: false,
-    onFocus: undefined
-  }
+interface State {
+  isDOMFocused: boolean
+}
 
-  // reference to root element
-  element = null
+export default class Tab extends React.PureComponent<TabProps, State> {
+  element: HTMLButtonElement | null = null
+  focusTimeout?: NodeJS.Timer
 
-  constructor(props) {
+  constructor(props: TabProps) {
     super(props)
     this.state = {isDOMFocused: false}
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: TabProps) {
     if (!prevProps.isFocused && this.props.isFocused) {
       if (!this.state.isDOMFocused) {
         this.focusTimeout = setTimeout(() => {
-          this.element.focus()
+          if (this.element) this.element.focus()
         }, 0)
       }
     }
   }
 
   componentWillUnmount() {
-    clearTimeout(this.focusTimeout)
+    if (this.focusTimeout) {
+      clearTimeout(this.focusTimeout)
+      this.focusTimeout = undefined
+    }
   }
 
   handleBlur = () => {
@@ -50,17 +49,18 @@ export default class Tab extends React.PureComponent {
 
   handleFocus = () => {
     this.setState({isDOMFocused: true})
+
     if (this.props.onFocus) {
       this.props.onFocus()
     }
   }
 
-  setElement = element => {
+  setElement = (element: HTMLButtonElement | null) => {
     this.element = element
   }
 
   render() {
-    const {id, isActive, label, onClick, icon} = this.props
+    const {icon, id, isActive, label, onClick} = this.props
 
     return (
       <button

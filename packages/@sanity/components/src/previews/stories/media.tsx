@@ -5,7 +5,7 @@ import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 import {PreviewCard, Stack} from './components'
 
-const renderMedia = dimensions => {
+const renderMedia = () => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
 }
 
@@ -65,7 +65,6 @@ export function MediaStory() {
                   'This is the long the descriptions that should no be to long, beacuse we will cap it',
                   'props'
                 )}
-                // date={boolean('date', true, 'test') ? new Date() : false}
                 media={renderMedia}
                 isPlaceholder={boolean('isplaceholder', false, 'props')}
               >

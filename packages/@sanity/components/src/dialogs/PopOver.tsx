@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
+
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
@@ -11,35 +12,30 @@ import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
+import {DialogAction} from './types'
+
+interface PopOverProps {
+  title?: string
+  children: React.ReactNode
+  onClose?: () => void
+  onClickOutside?: () => void
+  onEscape?: (event: KeyboardEvent) => void
+  onAction?: (action: DialogAction) => void
+  modifiers?: object
+  placement?: string
+  useOverlay?: boolean
+  hasAnimation?: boolean
+  color?: 'default' | 'danger'
+  padding?: 'none' | 'small' | 'medium' | 'large'
+  referenceElement?: Element
+  actions?: DialogAction[]
+}
 
 // @todo: Rename to `Popover`
-export default class PopOver extends React.PureComponent {
-  static propTypes = {
-    title: PropTypes.string,
-    children: PropTypes.node.isRequired,
-    onClose: PropTypes.func,
-    onClickOutside: PropTypes.func,
-    onEscape: PropTypes.func,
-    onAction: PropTypes.func,
-    modifiers: PropTypes.object,
-    placement: PropTypes.string,
-    useOverlay: PropTypes.bool,
-    hasAnimation: PropTypes.bool,
-    color: PropTypes.oneOf(['default', 'danger']),
-    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
-    referenceElement: PropTypes.instanceOf(Element),
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        kind: PropTypes.string,
-        title: PropTypes.string,
-        key: PropTypes.string
-      })
-    )
-  }
-
+export default class PopOver extends React.PureComponent<PopOverProps> {
   static defaultProps = {
     title: undefined,
-    onAction() {},
+    onAction: () => undefined,
     actions: [],
     color: 'default',
     padding: 'medium',
@@ -54,11 +50,13 @@ export default class PopOver extends React.PureComponent {
     }
   }
 
-  createActionButton = (action, i) => {
+  createActionButton = (action: DialogAction, i: number) => {
+    const {onAction} = this.props
+
     return (
       <Button
         key={i}
-        onClick={() => this.props.onAction(action)}
+        onClick={() => onAction && onAction(action)}
         data-action-index={i}
         color={action.color}
         disabled={action.disabled}
@@ -88,7 +86,7 @@ export default class PopOver extends React.PureComponent {
     const [primary, secondary] = partition(actions, action => action.primary)
 
     // Undefined referenceElement causes Popper to think it is defined
-    const popperPropHack = {}
+    const popperPropHack: {referenceElement?: any} = {}
     if (referenceElement) {
       popperPropHack.referenceElement = referenceElement
     }
@@ -103,7 +101,11 @@ export default class PopOver extends React.PureComponent {
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                <Popper placement={this.props.placement} modifiers={modifiers} {...popperPropHack}>
+                <Popper
+                  placement={this.props.placement as any}
+                  modifiers={modifiers as any}
+                  {...popperPropHack}
+                >
                   {({ref, style, placement, arrowProps}) => (
                     <div
                       ref={ref}
@@ -127,7 +129,7 @@ export default class PopOver extends React.PureComponent {
                           style={arrowProps.style}
                         />
                         <Escapable
-                          onEscape={event =>
+                          onEscape={(event: KeyboardEvent) =>
                             (isActive || event.shiftKey) && onEscape && onEscape(event)
                           }
                         />
@@ -166,7 +168,7 @@ export default class PopOver extends React.PureComponent {
                             </div>
                           )}
                           <div className={styles.content}>{children}</div>
-                          {actions.length > 0 && (
+                          {actions && actions.length > 0 && (
                             <div className={styles.footer}>
                               <ButtonGrid
                                 align="end"

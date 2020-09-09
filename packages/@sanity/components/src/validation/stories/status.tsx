@@ -7,7 +7,7 @@ import React from 'react'
 
 const chance = new Chance()
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -21,8 +21,8 @@ const centerStyle = {
   paddingBottom: '10em'
 }
 
-const mockMarkers = length => {
-  return range(length || 5).map((marker, i) => {
+const mockMarkers = (length = 5) => {
+  return range(length).map((marker, i) => {
     return {
       type: 'validation',
       level: 'error',
@@ -41,7 +41,7 @@ export function StatusStory() {
   return (
     <div style={centerStyle}>
       <Sanity part="part:@sanity/components/validation/status" propTables={[ValidationStatus]}>
-        <ValidationStatus markers={mockMarkers()} onClick={action('onClick')} />
+        <ValidationStatus markers={mockMarkers()} />
       </Sanity>
     </div>
   )

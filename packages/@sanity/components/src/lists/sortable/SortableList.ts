@@ -8,4 +8,6 @@ const SortableList = createSortableList(List as any, {
   useDragHandle: true
 })
 
+SortableList.displayName = 'SortableList'
+
 export default SortableList

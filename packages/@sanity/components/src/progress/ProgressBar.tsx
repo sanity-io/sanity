@@ -11,7 +11,6 @@ interface ProgressBarProps {
   showPercent?: boolean
 }
 
-// eslint-disable-next-line react/prefer-stateless-function
 export default class ProgressBar extends React.Component<ProgressBarProps> {
   render() {
     const {percent = 0, isComplete, text, showPercent, isInProgress} = this.props
