@@ -16,7 +16,14 @@
 }
 
 .isDisabled {
-  display: none; /* hide on mobile */
+  @media (--max-screen-medium) {
+    /* hide on mobile */
+    display: none;
+
+    @nest &:last-child {
+      display: block;
+    }
+  }
 
   @media (--screen-medium) {
     display: flex;
