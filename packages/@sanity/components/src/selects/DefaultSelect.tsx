@@ -78,7 +78,7 @@ export default class DefaultSelect extends React.Component<
         </select>
         <div className={styles.functions}>
           <span className={styles.arrow}>
-            <FaAngleDown color="inherit" />
+            <FaAngleDown />
           </span>
         </div>
       </div>

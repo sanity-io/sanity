@@ -26,7 +26,7 @@ export function ToggleButtonStory() {
           selected={boolean('selected', false, 'props')}
           disabled={boolean('disabled', false, 'props')}
           onClick={action('onClick')}
-          icon={icon}
+          icon={icon || undefined}
         >
           {text('children', 'this is the content', 'props')}
         </ToggleButton>

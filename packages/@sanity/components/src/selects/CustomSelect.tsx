@@ -83,7 +83,7 @@ export default class CustomSelect extends React.Component<CustomSelectProps> {
           <div className={styles.selectContainer}>
             <span className={styles.text}>{renderItem(value)}</span>
             <div className={styles.arrow}>
-              <FaAngleDown color="inherit" />
+              <FaAngleDown />
             </div>
           </div>
         </div>

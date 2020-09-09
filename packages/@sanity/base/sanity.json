@@ -505,7 +505,7 @@
     },
     {
       "implements": "part:@sanity/base/close-icon",
-      "path": "components/icons/CloseIcon.js"
+      "path": "components/icons/CloseIcon"
     },
     {
       "name": "part:@sanity/base/angle-down-icon",
@@ -513,7 +513,7 @@
     },
     {
       "implements": "part:@sanity/base/angle-down-icon",
-      "path": "components/icons/AngleDownIcon.js"
+      "path": "components/icons/AngleDownIcon"
     },
     {
       "name": "part:@sanity/base/angle-up-icon",
@@ -521,7 +521,7 @@
     },
     {
       "implements": "part:@sanity/base/angle-up-icon",
-      "path": "components/icons/AngleUpIcon.js"
+      "path": "components/icons/AngleUpIcon"
     },
     {
       "name": "part:@sanity/base/help-circle-icon",
@@ -537,7 +537,7 @@
     },
     {
       "implements": "part:@sanity/base/spinner-icon",
-      "path": "components/icons/SpinnerIcon.js"
+      "path": "components/icons/SpinnerIcon"
     },
     {
       "name": "part:@sanity/base/sanity-logo-icon",
@@ -585,7 +585,7 @@
     },
     {
       "implements": "part:@sanity/base/visibility-off-icon",
-      "path": "components/icons/VisibilityOff.js"
+      "path": "components/icons/VisibilityOff"
     },
     {
       "name": "part:@sanity/base/visibility-icon",
@@ -593,7 +593,7 @@
     },
     {
       "implements": "part:@sanity/base/visibility-icon",
-      "path": "components/icons/Visibility.js"
+      "path": "components/icons/Visibility"
     },
     {
       "name": "part:@sanity/base/format-bold-icon",
@@ -705,7 +705,7 @@
     },
     {
       "implements": "part:@sanity/base/trash-icon",
-      "path": "components/icons/Trash.js"
+      "path": "components/icons/Trash"
     },
     {
       "name": "part:@sanity/base/trash-outline-icon",
@@ -713,31 +713,31 @@
     },
     {
       "implements": "part:@sanity/base/trash-outline-icon",
-      "path": "components/icons/TrashOutline.js"
+      "path": "components/icons/TrashOutline"
     },
     {
       "implements": "part:@sanity/base/sanity-logo-icon",
-      "path": "components/icons/SanityLogo.js"
+      "path": "components/icons/SanityLogo"
     },
     {
       "implements": "part:@sanity/base/hamburger-icon",
-      "path": "components/icons/Hamburger.js"
+      "path": "components/icons/Hamburger"
     },
     {
       "implements": "part:@sanity/base/undo-icon",
-      "path": "components/icons/Undo.js"
+      "path": "components/icons/Undo"
     },
     {
       "implements": "part:@sanity/base/sort-alpha-desc-icon",
-      "path": "components/icons/SortAlphaDesc.js"
+      "path": "components/icons/SortAlphaDesc"
     },
     {
       "implements": "part:@sanity/base/sort-icon",
-      "path": "components/icons/Sort.js"
+      "path": "components/icons/Sort"
     },
     {
       "implements": "part:@sanity/base/bars-icon",
-      "path": "components/icons/Bars.js"
+      "path": "components/icons/Bars"
     },
     {
       "implements": "part:@sanity/base/preview",
@@ -745,299 +745,299 @@
     },
     {
       "implements": "part:@sanity/base/th-list-icon",
-      "path": "components/icons/ThList.js"
+      "path": "components/icons/ThList"
     },
     {
       "implements": "part:@sanity/base/th-large-icon",
-      "path": "components/icons/ThLarge.js"
+      "path": "components/icons/ThLarge"
     },
     {
       "implements": "part:@sanity/base/cog-icon",
-      "path": "components/icons/Cog.js"
+      "path": "components/icons/Cog"
     },
     {
       "implements": "part:@sanity/base/sign-out-icon",
-      "path": "components/icons/SignOut.js"
+      "path": "components/icons/SignOut"
     },
     {
       "implements": "part:@sanity/base/lightbulb-icon",
-      "path": "components/icons/Lightbulb.js"
+      "path": "components/icons/Lightbulb"
     },
     {
       "implements": "part:@sanity/base/link-icon",
-      "path": "components/icons/Link.js"
+      "path": "components/icons/Link"
     },
     {
       "implements": "part:@sanity/base/binary-icon",
-      "path": "components/icons/Binary.js"
+      "path": "components/icons/Binary"
     },
     {
       "implements": "part:@sanity/base/upload-icon",
-      "path": "components/icons/Upload.js"
+      "path": "components/icons/Upload"
     },
     {
       "implements": "part:@sanity/base/format-bold-icon",
-      "path": "components/icons/FormatBold.js"
+      "path": "components/icons/FormatBold"
     },
     {
       "implements": "part:@sanity/base/format-italic-icon",
-      "path": "components/icons/FormatItalic.js"
+      "path": "components/icons/FormatItalic"
     },
     {
       "implements": "part:@sanity/base/format-list-bulleted-icon",
-      "path": "components/icons/FormatListBulleted.js"
+      "path": "components/icons/FormatListBulleted"
     },
     {
       "implements": "part:@sanity/base/format-list-numbered-icon",
-      "path": "components/icons/FormatListNumbered.js"
+      "path": "components/icons/FormatListNumbered"
     },
     {
       "implements": "part:@sanity/base/format-quote-icon",
-      "path": "components/icons/FormatQuote.js"
+      "path": "components/icons/FormatQuote"
     },
     {
       "implements": "part:@sanity/base/format-strikethrough-icon",
-      "path": "components/icons/FormatStrikethrough.js"
+      "path": "components/icons/FormatStrikethrough"
     },
     {
       "implements": "part:@sanity/base/format-underlined-icon",
-      "path": "components/icons/FormatUnderlined.js"
+      "path": "components/icons/FormatUnderlined"
     },
     {
       "implements": "part:@sanity/base/format-code-icon",
-      "path": "components/icons/FormatCode.js"
+      "path": "components/icons/FormatCode"
     },
     {
       "implements": "part:@sanity/base/fullscreen-icon",
-      "path": "components/icons/Fullscreen.js"
+      "path": "components/icons/Fullscreen"
     },
     {
       "implements": "part:@sanity/base/fullscreen-exit-icon",
-      "path": "components/icons/FullscreenExit.js"
+      "path": "components/icons/FullscreenExit"
     },
     {
       "implements": "part:@sanity/base/package-icon",
-      "path": "components/icons/Package.js"
+      "path": "components/icons/Package"
     },
     {
       "implements": "part:@sanity/base/plus-icon",
-      "path": "components/icons/Plus.js"
+      "path": "components/icons/Plus"
     },
     {
       "implements": "part:@sanity/base/split-horizontal-icon",
-      "path": "components/icons/SplitHorizontal.js"
+      "path": "components/icons/SplitHorizontal"
     },
     {
       "implements": "part:@sanity/base/plus-circle-icon",
-      "path": "components/icons/PlusCircle.js"
+      "path": "components/icons/PlusCircle"
     },
     {
       "implements": "part:@sanity/base/plus-circle-outline-icon",
-      "path": "components/icons/PlusCircleOutline.js"
+      "path": "components/icons/PlusCircleOutline"
     },
     {
       "implements": "part:@sanity/base/public-icon",
-      "path": "components/icons/Public.js"
+      "path": "components/icons/Public"
     },
     {
       "implements": "part:@sanity/base/publish-icon",
-      "path": "components/icons/Publish.js"
+      "path": "components/icons/Publish"
     },
     {
       "implements": "part:@sanity/base/truncate-icon",
-      "path": "components/icons/Truncate.js"
+      "path": "components/icons/Truncate"
     },
     {
       "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish.js"
+      "path": "components/icons/Unpublish"
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",
-      "path": "components/icons/CheckCircle.js"
+      "path": "components/icons/CheckCircle"
     },
     {
       "implements": "part:@sanity/base/check-icon",
-      "path": "components/icons/Check.js"
+      "path": "components/icons/Check"
     },
     {
       "implements": "part:@sanity/base/circle-thin-icon",
-      "path": "components/icons/CircleThin.js"
+      "path": "components/icons/CircleThin"
     },
     {
       "implements": "part:@sanity/base/arrow-drop-down",
-      "path": "components/icons/ArrowDropDown.js"
+      "path": "components/icons/ArrowDropDown"
     },
     {
       "implements": "part:@sanity/base/arrow-right",
-      "path": "components/icons/ArrowRight.js"
+      "path": "components/icons/ArrowRight"
     },
     {
       "implements": "part:@sanity/base/search-icon",
-      "path": "components/icons/Search.js"
+      "path": "components/icons/Search"
     },
     {
       "implements": "part:@sanity/base/edit-icon",
-      "path": "components/icons/Edit.js"
+      "path": "components/icons/Edit"
     },
     {
       "implements": "part:@sanity/base/more-vert-icon",
-      "path": "components/icons/MoreVert.js"
+      "path": "components/icons/MoreVert"
     },
     {
       "implements": "part:@sanity/base/ellipsis-icon",
-      "path": "components/icons/Ellipsis.js"
+      "path": "components/icons/Ellipsis"
     },
     {
       "implements": "part:@sanity/base/view-column-icon",
-      "path": "components/icons/ViewColumn.js"
+      "path": "components/icons/ViewColumn"
     },
     {
       "implements": "part:@sanity/base/content-copy-icon",
-      "path": "components/icons/ContentCopy.js"
+      "path": "components/icons/ContentCopy"
     },
     {
       "implements": "part:@sanity/base/question-icon",
-      "path": "components/icons/Question.js"
+      "path": "components/icons/Question"
     },
     {
       "implements": "part:@sanity/base/plugin-icon",
-      "path": "components/icons/Plug.js"
+      "path": "components/icons/Plug"
     },
     {
       "implements": "part:@sanity/base/image-icon",
-      "path": "components/icons/Image.js"
+      "path": "components/icons/Image"
     },
     {
       "implements": "part:@sanity/base/image-area-icon",
-      "path": "components/icons/ImageArea.js"
+      "path": "components/icons/ImageArea"
     },
     {
       "implements": "part:@sanity/base/images-icon",
-      "path": "components/icons/Images.js"
+      "path": "components/icons/Images"
     },
     {
       "implements": "part:@sanity/base/sync-icon",
-      "path": "components/icons/Sync.js"
+      "path": "components/icons/Sync"
     },
     {
       "implements": "part:@sanity/base/time-icon",
-      "path": "components/icons/Time.js"
+      "path": "components/icons/Time"
     },
     {
       "implements": "part:@sanity/base/info-icon",
-      "path": "components/icons/Info.js"
+      "path": "components/icons/Info"
     },
     {
       "implements": "part:@sanity/base/error-icon",
-      "path": "components/icons/Error.js"
+      "path": "components/icons/Error"
     },
     {
       "implements": "part:@sanity/base/error-outline-icon",
-      "path": "components/icons/ErrorOutline.js"
+      "path": "components/icons/ErrorOutline"
     },
     {
       "implements": "part:@sanity/base/warning-icon",
-      "path": "components/icons/Warning.js"
+      "path": "components/icons/Warning"
     },
     {
       "implements": "part:@sanity/base/danger-icon",
-      "path": "components/icons/Danger.js"
+      "path": "components/icons/Danger"
     },
     {
       "implements": "part:@sanity/base/file-icon",
-      "path": "components/icons/File.js"
+      "path": "components/icons/File"
     },
     {
       "implements": "part:@sanity/base/paste-icon",
-      "path": "components/icons/Paste.js"
+      "path": "components/icons/Paste"
     },
     {
       "implements": "part:@sanity/base/calendar-icon",
-      "path": "components/icons/Calendar.js"
+      "path": "components/icons/Calendar"
     },
     {
       "implements": "part:@sanity/base/chevron-down-icon",
-      "path": "components/icons/ChevronDown.js"
+      "path": "components/icons/ChevronDown"
     },
     {
       "implements": "part:@sanity/base/folder-icon",
-      "path": "components/icons/Folder.js"
+      "path": "components/icons/Folder"
     },
     {
       "implements": "part:@sanity/base/block-object-icon",
-      "path": "components/icons/BlockObject.js"
+      "path": "components/icons/BlockObject"
     },
     {
       "implements": "part:@sanity/base/inline-object-icon",
-      "path": "components/icons/InlineObject.js"
+      "path": "components/icons/InlineObject"
     },
     {
       "implements": "part:@sanity/base/comment-icon",
-      "path": "components/icons/Comment.js"
+      "path": "components/icons/Comment"
     },
     {
       "implements": "part:@sanity/base/history-icon",
-      "path": "components/icons/History.js"
+      "path": "components/icons/History"
     },
     {
       "implements": "part:@sanity/base/eye-icon",
-      "path": "components/icons/Eye.js"
+      "path": "components/icons/Eye"
     },
     {
       "implements": "part:@sanity/base/launch-icon",
-      "path": "components/icons/Launch.js"
+      "path": "components/icons/Launch"
     },
     {
       "implements": "part:@sanity/base/users-icon",
-      "path": "components/icons/UsersIcon.js"
+      "path": "components/icons/UsersIcon"
     },
     {
       "implements": "part:@sanity/base/user-icon",
-      "path": "components/icons/User.js"
+      "path": "components/icons/User"
     },
     {
       "implements": "part:@sanity/base/clipboard-icon",
-      "path": "components/icons/Clipboard.js"
+      "path": "components/icons/Clipboard"
     },
     {
       "implements": "part:@sanity/base/clipboard-image-icon",
-      "path": "components/icons/ClipboardImage.js"
+      "path": "components/icons/ClipboardImage"
     },
     {
       "implements": "part:@sanity/base/drag-handle-icon",
-      "path": "components/icons/DragHandle.js"
+      "path": "components/icons/DragHandle"
     },
     {
       "implements": "part:@sanity/base/stack-icon",
-      "path": "components/icons/Stack.js"
+      "path": "components/icons/Stack"
     },
     {
       "implements": "part:@sanity/base/stack-compact-icon",
-      "path": "components/icons/StackCompact.js"
+      "path": "components/icons/StackCompact"
     },
     {
       "implements": "part:@sanity/base/compose-icon",
-      "path": "components/icons/Compose.js"
+      "path": "components/icons/Compose"
     },
     {
       "implements": "part:@sanity/base/publish-icon",
-      "path": "components/icons/Publish.js"
+      "path": "components/icons/Publish"
     },
     {
       "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish.js"
+      "path": "components/icons/Unpublish"
     },
     {
       "implements": "part:@sanity/base/truncate-icon",
-      "path": "components/icons/Truncate.js"
+      "path": "components/icons/Truncate"
     },
     {
       "implements": "part:@sanity/base/reset-icon",
-      "path": "components/icons/Reset.js"
+      "path": "components/icons/Reset"
     },
     {
       "implements": "part:@sanity/base/code-block-icon",
-      "path": "components/icons/CodeBlock.js"
+      "path": "components/icons/CodeBlock"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",

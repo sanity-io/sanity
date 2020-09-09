@@ -205,7 +205,7 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
               {!value && placeholder}
             </span>
             <span className={styles.arrow}>
-              <ArrowIcon color="inherit" />
+              <ArrowIcon />
             </span>
           </div>
         </button>
@@ -239,8 +239,7 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
                       >
                         <div className={styles.itemContent}>{renderItem(item)}</div>
                         <div className={styles.itemIcon}>
-                          {isSelected && <CheckmarkIcon />}
-                          {isSemiSelected && <CheckmarkIcon style={{opacity: 0.5}} />}
+                          {(isSelected || isSemiSelected) && <CheckmarkIcon />}
                         </div>
                       </div>
                     </li>
