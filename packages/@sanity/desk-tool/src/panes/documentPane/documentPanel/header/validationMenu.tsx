@@ -1,20 +1,18 @@
-import Button from 'part:@sanity/components/buttons/default'
+import {MenuButton} from 'part:@sanity/components/menu-button'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import React from 'react'
-import {Popover} from 'part:@sanity/components/popover'
+import React, {useCallback} from 'react'
 
 interface ValidationMenuProps {
   isOpen: boolean
   markers: any[]
-  onClose: () => void
-  onToggle: () => void
   schemaType: any
   setFocusPath: (path: any) => void
+  setOpen: (val: boolean) => void
 }
 
 export function ValidationMenu(props: ValidationMenuProps) {
-  const {isOpen, markers, onClose, onToggle, schemaType, setFocusPath} = props
+  const {isOpen, markers, schemaType, setFocusPath, setOpen} = props
   const validationMarkers = markers.filter(marker => marker.type === 'validation')
   const validationErrorMarkers = validationMarkers.filter(marker => marker.level === 'error')
   const validationWarningwarnings = validationMarkers.filter(marker => marker.level === 'warning')
@@ -23,29 +21,32 @@ export function ValidationMenu(props: ValidationMenuProps) {
     return null
   }
 
+  const handleClose = useCallback(() => setOpen(false), [])
+
   const popoverContent = (
     <ValidationList
       documentType={schemaType}
       markers={validationMarkers}
-      onClose={onClose}
+      onClose={handleClose}
       onFocus={setFocusPath}
       showLink
     />
   )
 
   return (
-    <Popover content={popoverContent as any} open={isOpen} placement="bottom-end">
-      <div>
-        <Button
-          color={validationErrorMarkers.length > 0 ? 'danger' : 'warning'}
-          kind="simple"
-          icon={ErrorOutlineIcon}
-          onClick={onToggle}
-          padding="small"
-          selected={isOpen}
-          title="Show validation issues"
-        />
-      </div>
-    </Popover>
+    <MenuButton
+      buttonProps={{
+        color: validationErrorMarkers.length > 0 ? 'danger' : 'warning',
+        kind: 'simple',
+        icon: ErrorOutlineIcon,
+        padding: 'small',
+        selected: isOpen,
+        title: 'Show validation issues'
+      }}
+      menu={popoverContent}
+      open={isOpen}
+      placement="bottom-end"
+      setOpen={setOpen}
+    />
   )
 }
