@@ -50,7 +50,7 @@
   --color-button-navbar-simple-active-bg: color(var(--color-button-bg) alpha(20%));
   /* :selected */
   --color-button-navbar-simple-selected-bg: color(var(--selected-item-color) alpha(20%));
-  --color-button-navbar-simple-selected-text: color(var(--selected-item-color) lightness(+ 15%));;
+  --color-button-navbar-simple-selected-text: color(var(--selected-item-color) lightness(+ 15%));
 
   /**
    * color="primary"
@@ -554,7 +554,7 @@
     }
   }
 
-  @nest &.simple {
+  @nest &.simple:not([data-tone='navbar']) {
     @nest & > .inner {
       background-color: var(--color-button-primary-simple-enabled-bg);
       color: var(--color-button-primary-simple-enabled-text);
@@ -611,7 +611,7 @@
     }
   }
 
-  @nest &.simple {
+  @nest &.simple:not([data-tone='navbar']) {
     @nest & > .inner {
       background-color: var(--color-button-success-simple-enabled-bg);
       color: var(--color-button-success-simple-enabled-text);
@@ -668,7 +668,7 @@
     }
   }
 
-  @nest &.simple {
+  @nest &.simple:not([data-tone='navbar']) {
     @nest & > .inner {
       background-color: var(--color-button-warning-simple-enabled-bg);
       color: var(--color-button-warning-simple-enabled-text);
@@ -725,7 +725,7 @@
     }
   }
 
-  @nest &.simple {
+  @nest &.simple:not([data-tone='navbar']) {
     @nest & > .inner {
       background-color: var(--color-button-danger-simple-enabled-bg);
       color: var(--color-button-danger-simple-enabled-text);
