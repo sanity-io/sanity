@@ -49,6 +49,8 @@
 
 .functions {
   composes: functions from 'part:@sanity/components/selects/default-style';
+  border: 1px solid transparent;
+  box-sizing: border-box;
 }
 
 .popper {
@@ -110,8 +112,7 @@
 .openItem {
   display: flex;
   align-items: center;
-  transition: transform 0.1s linear, opacity 0.1s linear;
-  opacity: 0.6;
+  transition: transform 0.1s;
   cursor: pointer;
   outline: none;
 

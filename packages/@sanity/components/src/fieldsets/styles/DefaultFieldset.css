@@ -9,10 +9,6 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-gap: var(--large-padding) var(--medium-padding);
-
-  @media (--screen-medium) {
-    grid-gap: var(--extra-large-padding) var(--medium-padding);
-  }
 }
 
 .fieldset {
@@ -27,7 +23,6 @@
   display: flex;
   align-items: center;
   margin-bottom: var(--small-padding);
-  padding: var(--extra-small-padding) 0;
 }
 
 .headerMain {
@@ -40,7 +35,7 @@
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin: 0;
+  margin: var(--extra-small-padding) 0 0;
   padding: 0;
   display: block;
 }
@@ -129,7 +124,7 @@
   vertical-align: middle;
   transition: transform 0.1s linear;
   transform: rotate(-90deg);
-  margin-top: -0.1em;
+  margin-top: 1px;
 
   @nest &.isOpen {
     transform: rotate(0);

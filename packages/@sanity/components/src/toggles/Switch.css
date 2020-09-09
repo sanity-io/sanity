@@ -6,15 +6,15 @@
   --focus-color: var(--brand-primary);
 
   /* Thumb */
-  --thumb-size: calc(var(--track-height) * 0.7);
+  --thumb-size: 1rem;
   --thumb-color: var(--switch-color);
   --thumb-off-color: var(--white);
   --thumb-on-color: var(--white);
   --thumb-disabled-color: var(--input-color-disabled);
   --thumb-offset: 4px;
   /* Track */
-  --track-height: 1.4em;
-  --track-width: 2.5em;
+  --track-height: 1.5rem;
+  --track-width: 2.5rem;
   --track-disabled-color: var(--input-bg-disabled);
   --track-color: var(--gray-light);
   --track-off-color: var(--gray);
@@ -25,6 +25,7 @@
 .root {
   position: relative;
   display: flex;
+  align-items: center;
 }
 
 .input {
@@ -44,7 +45,6 @@
 .switchWrapper {
   flex-shrink: 0;
   position: relative;
-  margin-right: var(--small-padding);
   height: var(--track-height);
   width: var(--track-width);
   border-radius: var(--track-height);
@@ -58,7 +58,7 @@
   top: calc((100% - var(--thumb-size)) / 2);
   height: var(--thumb-size);
   width: var(--thumb-size);
-  border-radius: var(--thumb-size);
+  border-radius: 50%;
   cursor: default;
   composes: animation-default from 'part:@sanity/base/theme/animation-style';
   transform-origin: left;

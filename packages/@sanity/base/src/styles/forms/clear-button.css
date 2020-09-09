@@ -12,15 +12,16 @@
   margin: 0;
   display: inline-flex;
   align-items: center;
+  transition: transform 0.1s;
 
   &:hover,
   &:focus {
     color: var(--clear-cross-color-hover);
-    transform: scale(1.5);
+    transform: scale(1.3);
   }
 
   &:active {
-    transform: scale(2);
+    transform: scale(1.6);
   }
 
   @nest & svg {

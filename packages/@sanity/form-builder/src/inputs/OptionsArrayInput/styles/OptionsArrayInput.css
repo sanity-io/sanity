@@ -2,6 +2,14 @@
 
 .itemWrapperVertical {
   display: block;
+
+  @nest & .item {
+    margin-bottom: var(--small-padding);
+  }
+}
+
+.itemVertical {
+  margin-bottom: var(--small-padding);
 }
 
 .itemWrapperHorizontal {

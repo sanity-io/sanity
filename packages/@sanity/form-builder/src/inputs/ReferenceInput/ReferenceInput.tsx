@@ -227,6 +227,7 @@ export default withValuePath(
             title={previewSnapshot && `Open ${previewSnapshot.title}`}
             intent="edit"
             params={{id: value._ref}}
+            className={styles.referenceLink}
           >
             <LinkIcon />
           </IntentLink>

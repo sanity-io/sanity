@@ -55,22 +55,23 @@ export default React.forwardRef(function Checkbox(
       <div className={styles.checkbox}>
         <svg
           className={`${styles.mark} ${styles.checkmark}`}
-          viewBox="0 0 12 10"
+          viewBox="0 0 16 16"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M0.73999 4.5L4.13999 7.9L10.6 1.44" stroke="currentColor" strokeWidth="2" />
+          <path d="M3 7.5L6.5 11L13 4.5" stroke="currentColor" strokeWidth="2" />
         </svg>
         <svg
           className={`${styles.mark} ${styles.indeterminate}`}
-          viewBox="0 0 9 3"
+          viewBox="0 0 16 16"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M0.0799561 1.5H8.91996" stroke="currentColor" strokeWidth="2" />
+          <path d="M12 8H4" stroke="currentColor" strokeWidth="2" />
         </svg>
       </div>
-      <div>
+      {label && (
+      <div className={sharedStyles.label}>
         <div className={sharedStyles.titleWrapper}>
           <label className={sharedStyles.title} htmlFor={`checkbox-${elementId}-input`}>
             {label}
@@ -83,6 +84,7 @@ export default React.forwardRef(function Checkbox(
           </div>
         )}
       </div>
+      )}
     </div>
   )
 })

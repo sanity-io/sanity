@@ -11,3 +11,7 @@
 .hasWarnings input {
   color: var(--legend-color);
 }
+
+.referenceLink {
+  color: var(--gray-darker);
+}

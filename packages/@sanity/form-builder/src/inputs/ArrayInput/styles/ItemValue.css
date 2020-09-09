@@ -98,7 +98,7 @@
 .functionsInGrid {
   composes: functions;
   position: absolute;
-  top: var(--extra-small-padding);
+  top: var(--small-padding);
   right: var(--extra-small-padding);
   z-index: 1;
   color: var(--text-color);

@@ -13,7 +13,6 @@
 .root {
   position: relative;
   display: flex;
-  margin-bottom: var(--small-padding);
 }
 
 .input {
@@ -40,14 +39,12 @@
   border: 1px solid var(--checkbox-off-color);
   border-radius: 3px;
   margin-top: 1px;
-  margin-right: var(--small-padding);
   line-height: 1;
 
   @nest & .mark {
     position: absolute;
     top: calc((100% - var(--checkbox-button-size)) / 2);
     left: calc((100% - var(--checkbox-button-size)) / 2);
-    transform: scale(0.5);
     opacity: 0;
     flex: 1;
     height: var(--checkbox-button-size);
@@ -83,7 +80,6 @@
 .input:checked + .checkbox {
   @nest & .checkmark {
     opacity: 1;
-    transform: scale(0.8);
   }
 }
 
