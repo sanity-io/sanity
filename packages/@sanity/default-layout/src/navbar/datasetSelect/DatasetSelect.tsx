@@ -93,6 +93,6 @@ class DatasetSelect extends React.PureComponent<Props, State> {
   }
 }
 
-export default (withRouterHOC(enhanceClickOutside(DatasetSelect)) as any) as React.ComponentType<
+export default (withRouterHOC(enhanceClickOutside(DatasetSelect as any)) as any) as React.ComponentType<
   OuterProps
 >
