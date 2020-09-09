@@ -35,7 +35,7 @@ export default function createButtonLike(
     }
 
     focus() {
-      if (this._element && this._element.focus) {
+      if (this._element) {
         this.setState({focusSetFromOutside: true})
         this._element.focus()
       }

@@ -1,8 +1,13 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/EventIcon.module.css'
 
-function EventIcon({className, type}) {
+import styles from './EventIcon.module.css'
+
+interface EventIconProps {
+  className: string
+  type?: string
+}
+
+function EventIcon({className, type}: EventIconProps) {
   switch (type) {
     case 'created':
       return <div className={`${className} ${styles.created}`} aria-hidden="true" />
@@ -30,11 +35,6 @@ function EventIcon({className, type}) {
     default:
       return <div className={`${className} ${styles.edited}`} aria-hidden="true" />
   }
-}
-
-EventIcon.propTypes = {
-  className: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired
 }
 
 export default EventIcon

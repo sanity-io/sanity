@@ -10,13 +10,13 @@ import ValidationList from './ValidationList'
 
 import styles from './ValidationStatus.css'
 
-type Props = {
+interface ValidationStatusProps {
   hideTooltip?: boolean
   showSummary?: boolean
   markers: Marker[]
 }
 
-export default class ValidationStatus extends React.PureComponent<Props> {
+export default class ValidationStatus extends React.PureComponent<ValidationStatusProps> {
   static defaultProps = {
     markers: []
   }
@@ -42,7 +42,7 @@ export default class ValidationStatus extends React.PureComponent<Props> {
     const hasBoth = errors.length > 0 && warnings.length > 0
 
     const tooltipText = `Found ${errorText} ${
-      warningText !== '' ? `${hasBoth ? 'and ' : ''}${warningText}` : ''
+      warningText === '' ? '' : `${hasBoth ? 'and ' : ''}${warningText}`
     }`
 
     const iconClassName = classNames(

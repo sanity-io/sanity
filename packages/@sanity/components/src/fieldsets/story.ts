@@ -1,6 +1,5 @@
 import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs} from 'part:@sanity/storybook/addons/knobs'
-
 import {CollapsibleStory} from './stories/collapsible'
 import {ColumnsStory} from './stories/columns'
 import {DefaultStory} from './stories/default'

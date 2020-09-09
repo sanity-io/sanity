@@ -1,30 +1,25 @@
-/* eslint-disable react/jsx-no-bind */
-
-import PropTypes from 'prop-types'
 import React from 'react'
+
 import styles from './TabList.css'
 
-export default class TabList extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      focusedTabIdx: -1
-    }
+interface TabListProps {
+  children: React.ReactElement[]
+}
+
+interface State {
+  focusedTabIdx: number
+}
+
+export default class TabList extends React.PureComponent<TabListProps, State> {
+  state: State = {
+    focusedTabIdx: -1
   }
 
-  static defaultProps = {
-    children: null
-  }
-
-  static propTypes = {
-    children: PropTypes.node
-  }
-
-  handleTabFocus = tabIdx => {
+  handleTabFocus = (tabIdx: number) => {
     this.setState({focusedTabIdx: tabIdx})
   }
 
-  handleKeyDown = evt => {
+  handleKeyDown = (evt: React.KeyboardEvent<HTMLDivElement>) => {
     const numTabs = this.props.children.length
 
     if (evt.key === 'ArrowLeft') {

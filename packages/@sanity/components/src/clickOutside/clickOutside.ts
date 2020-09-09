@@ -5,8 +5,6 @@ export interface ClickOutsideProps {
   onClickOutside: () => void
 }
 
-const noop = () => undefined
-
 export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
   const ref = useRef<HTMLElement | null>(null)
   const hadMouseDownRef = useRef(false)
@@ -14,7 +12,7 @@ export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
   useEffect(() => {
     const el = ref.current
 
-    if (!el) return noop
+    if (!el) return undefined
 
     const handleWindowMouseUp = (evt: MouseEvent) => {
       const target = evt.target
@@ -33,7 +31,6 @@ export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
     window.addEventListener('mouseup', handleWindowMouseUp)
     el.addEventListener('mousedown', handleRefMouseDown)
 
-    // eslint-disable-next-line consistent-return
     return () => {
       window.removeEventListener('mouseup', handleWindowMouseUp)
       el.removeEventListener('mousedown', handleRefMouseDown)

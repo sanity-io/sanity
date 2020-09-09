@@ -5,7 +5,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import {debounce, truncate} from 'lodash'
 import styles from 'part:@sanity/components/previews/card-style'
 import React from 'react'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 interface CardPreviewProps {
   title?: React.ReactNode | React.FC<unknown>
@@ -13,13 +13,13 @@ interface CardPreviewProps {
   description?: React.ReactNode | React.FC<{layout: 'card'}>
   date?: Date
   status?: React.ReactNode | React.FC<{layout: 'default'}>
-  media?: React.ReactNode | React.FC<{dimensions: PreviewMediaDimensions; layout: 'default'}>
-  mediaDimensions?: PreviewMediaDimensions
+  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'default'}>
+  mediaDimensions?: MediaDimensions
   children?: React.ReactNode
   isPlaceholder?: boolean
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 300,
   height: 225,
   aspect: 4 / 3,
@@ -44,7 +44,6 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
     media: undefined,
     isPlaceholder: false,
     children: undefined
-    // mediaDimensions:
   }
 
   index = index++

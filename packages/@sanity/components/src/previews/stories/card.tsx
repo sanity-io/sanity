@@ -6,11 +6,11 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 
-const renderMedia = dimensions => {
+const renderMedia = () => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
 }
 
-const renderStatus = options => {
+const renderStatus = () => {
   return (
     <span>
       Status <LinkIcon /> <WarningIcon />
@@ -18,7 +18,7 @@ const renderStatus = options => {
   )
 }
 
-const renderTitle = options => {
+const renderTitle = (options: {layout: string}) => {
   return (
     <span>
       This <span style={{color: 'green'}}>is</span> a <strong>title</strong>
@@ -27,7 +27,7 @@ const renderTitle = options => {
   )
 }
 
-const renderSubtitle = options => {
+const renderSubtitle = () => {
   return (
     <span>
       This is a{' '}
@@ -39,7 +39,7 @@ const renderSubtitle = options => {
   )
 }
 
-const renderDescription = options => {
+const renderDescription = () => {
   return (
     <span>
       This is the{' '}
@@ -110,7 +110,6 @@ export function CardStory() {
               title={renderTitle}
               subtitle={renderSubtitle}
               description={renderDescription}
-              // date={boolean('date', true, 'test') ? new Date() : false}
               status={renderStatus}
               media={renderMedia}
               isPlaceholder={boolean('placeholder', true, 'props')}
@@ -159,7 +158,6 @@ export function CardStory() {
                   <WarningIcon />
                 </div>
               }
-              // date={boolean('date', true) ? new Date() : false}
               mediaDimensions={{
                 width: 300,
                 height: 225,
@@ -187,7 +185,6 @@ export function CardStory() {
               'William James Murray is an American actor, comedian, and writer. He first gained exposure on Saturday Night Live, a series of performances that earned him his first Emmy Award, and later starred in.',
               'props'
             )}
-            // date={boolean('date', true, 'test') ? new Date() : false}
             status={text('status', '🔔 🐣 👻', 'props')}
             media={boolean('Show image', true, 'test') ? renderMedia : undefined}
             isPlaceholder={boolean('isPlaceholder', false, 'props')}

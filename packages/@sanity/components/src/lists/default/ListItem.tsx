@@ -4,15 +4,9 @@ import React, {forwardRef} from 'react'
 import styles from './ListItem.css'
 
 const ListItem = forwardRef(
-  (props: React.HTMLProps<HTMLLIElement>, ref: React.Ref<HTMLLIElement>) => {
-    const {children, className, ...restProps} = props
-
-    return (
-      <li {...restProps} className={classNames(styles.root, className)} ref={ref}>
-        {children}
-      </li>
-    )
-  }
+  (props: React.HTMLProps<HTMLLIElement>, ref: React.Ref<HTMLLIElement>) => (
+    <li {...props} className={classNames(styles.root, props.className)} ref={ref} />
+  )
 )
 
 ListItem.displayName = 'ListItem'

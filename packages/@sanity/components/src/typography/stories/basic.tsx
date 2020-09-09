@@ -2,7 +2,7 @@ import React from 'react'
 import headings from 'part:@sanity/base/theme/typography/headings-style'
 import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
 import Chance from 'chance'
-import styles from '../styles/story.css'
+import styles from './story.css'
 
 const chance = new Chance()
 

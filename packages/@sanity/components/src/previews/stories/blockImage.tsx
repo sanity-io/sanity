@@ -8,11 +8,11 @@ import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 import {PreviewCard, Stack} from './components'
 
-const renderMedia = dimensions => {
+const renderMedia = () => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
 }
 
-const renderStatus = options => {
+const renderStatus = () => {
   return (
     <span>
       Status <LinkIcon /> <WarningIcon />
@@ -20,7 +20,7 @@ const renderStatus = options => {
   )
 }
 
-const renderTitle = options => {
+const renderTitle = (options: {layout: string}) => {
   return (
     <span>
       This <span style={{color: 'green'}}>is</span> a <strong>title</strong>
@@ -29,7 +29,7 @@ const renderTitle = options => {
   )
 }
 
-const renderSubtitle = options => {
+const renderSubtitle = () => {
   return (
     <span>
       This is a{' '}
@@ -41,7 +41,7 @@ const renderSubtitle = options => {
   )
 }
 
-const renderDescription = options => {
+const renderDescription = () => {
   return (
     <span>
       This is the{' '}
@@ -114,9 +114,7 @@ export function BlockImageStory() {
                 subtitle={renderSubtitle}
                 description={boolean('description', false, 'props') ? renderDescription : ''}
                 status={renderStatus}
-                // date={new Date()}
                 media={renderMedia}
-                // isPlaceholder={boolean('isplaceholder', false, 'props')}
               >
                 {boolean('Custom children', false) && renderCustomChildren()}
               </BlockImagePreview>
@@ -161,9 +159,7 @@ export function BlockImageStory() {
                       <WarningIcon />
                     </div>
                   }
-                  // isPlaceholder={boolean('placeholder', false, 'props')}
                   media={boolean('Show image', false, 'test') ? renderMedia : undefined}
-                  // date={boolean('date', true, 'test') ? new Date() : false}
                 >
                   {boolean('Custom children', false, 'props') && renderCustomChildren()}
                 </BlockImagePreview>
@@ -186,9 +182,7 @@ export function BlockImageStory() {
                 subtitle={text('subtitle', 'This is the subtitle', 'props')}
                 description={text('description', 'This is the description', 'props')}
                 status={text('status', '🔔 🐣 👻', 'props')}
-                // date={boolean('date', true) ? new Date() : false}
                 media={renderMedia}
-                // isPlaceholder={boolean('isplaceholder', false, 'props')}
               >
                 {boolean('Custom children', false) && renderCustomChildren()}
               </BlockImagePreview>

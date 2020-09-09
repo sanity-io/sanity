@@ -6,13 +6,13 @@ import Escapable from './Escapable'
 import {Portal} from './Portal'
 import Stacked from './Stacked'
 
-import styles from './styles/Poppable.css'
+import styles from './Poppable.css'
 
-type PopperModifiers = ReadonlyArray<Partial<Modifier<string, any>>>
+type PopperModifiers = ReadonlyArray<Partial<Modifier<string, unknown>>>
 
 interface PoppableProps {
   onEscape?: () => void
-  onClickOutside?: (ev: React.MouseEvent<HTMLElement>) => void
+  onClickOutside?: (ev: MouseEvent) => void
   target?: React.ReactNode
   children?: React.ReactNode
   referenceClassName?: string
@@ -33,18 +33,18 @@ const DEFAULT_MODIFIERS: PopperModifiers = [
 ]
 
 export default class Poppable extends React.Component<PoppableProps> {
-  popperNode: any = null
+  popperNode: HTMLElement | null = null
 
-  setPopperNode = (node: any) => {
+  setPopperNode = (node: HTMLElement | null) => {
     this.popperNode = node
   }
 
-  handleClickOutside = (ev: React.MouseEvent<HTMLElement>) => {
+  handleClickOutside = (ev: MouseEvent) => {
     if (!this.popperNode || !ev.target) {
       return
     }
 
-    if (!this.popperNode.contains(ev.target)) {
+    if (!this.popperNode.contains(ev.target as Node)) {
       const {onClickOutside} = this.props
 
       if (onClickOutside) onClickOutside(ev)
@@ -65,7 +65,7 @@ export default class Poppable extends React.Component<PoppableProps> {
     } = this.props
 
     // Undefined referenceElement causes Popper to think it is defined
-    const popperPropHack: {referenceElement?: any} = {}
+    const popperPropHack: {referenceElement?: HTMLElement} = {}
     if (referenceElement) {
       popperPropHack.referenceElement = referenceElement
     }
@@ -84,7 +84,6 @@ export default class Poppable extends React.Component<PoppableProps> {
                     innerRef={this.setPopperNode}
                     modifiers={modifiers}
                     placement={placement}
-                    // positionFixed
                     {...popperPropHack}
                   >
                     {({ref, placement: placementState, style}) => (

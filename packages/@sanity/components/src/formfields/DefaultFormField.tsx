@@ -1,46 +1,29 @@
-import {FieldPresence} from '@sanity/base/presence'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
-import React from 'react'
-
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import React from 'react'
 import FieldStatus from '../fieldsets/FieldStatus'
+import {Marker} from '../types'
 
-export default class DefaultFormField extends React.PureComponent {
-  static propTypes = {
-    label: PropTypes.string,
-    className: PropTypes.string,
-    inline: PropTypes.bool,
-    description: PropTypes.string,
-    level: PropTypes.number,
-    children: PropTypes.node,
-    wrapped: PropTypes.bool,
-    labelFor: PropTypes.string,
-    markers: PropTypes.arrayOf(
-      PropTypes.shape({
-        type: PropTypes.string
-      })
-    ),
-    presence: PropTypes.any
-  }
+interface DefaultFormFieldProps {
+  label?: string
+  className?: string
+  inline?: boolean
+  description?: string
+  level?: number
+  children?: React.ReactNode
+  wrapped?: boolean
+  labelFor?: string
+  markers?: Marker[]
+  presence?: FormFieldPresence[]
+}
 
-  static defaultProps = {
-    children: undefined,
-    className: undefined,
-    description: undefined,
-    label: undefined,
-    labelFor: undefined,
-    level: 1,
-    inline: false,
-    markers: [],
-    wrapped: false
-  }
-
+export default class DefaultFormField extends React.PureComponent<DefaultFormFieldProps> {
   render() {
     const {
-      level,
+      level = 1,
       label,
       labelFor,
       description,
@@ -48,7 +31,7 @@ export default class DefaultFormField extends React.PureComponent {
       inline,
       wrapped,
       className: classNameProp,
-      markers,
+      markers = [],
       presence
     } = this.props
 
@@ -77,9 +60,11 @@ export default class DefaultFormField extends React.PureComponent {
                 </div>
                 {description && <div className={styles.description}>{description}</div>}
               </div>
-              <FieldStatus>
-                <FieldPresence presence={presence} />
-              </FieldStatus>
+              {presence && (
+                <FieldStatus>
+                  <FieldPresence maxAvatars={4} presence={presence} />
+                </FieldStatus>
+              )}
             </div>
           )}
         </label>

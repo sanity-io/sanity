@@ -1,41 +1,28 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/textfields/search-style'
 import {uniqueId} from 'lodash'
 
-export default class SearchFieldField extends React.Component {
-  static propTypes = {
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string,
+interface SearchFieldFieldProps {
+  label: string
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+  onFocus?: () => void
+  onBlur?: () => void
+  placeholder?: string
+  value?: string
+}
 
-    onChange: PropTypes.func,
-    onKeyPress: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    placeholder: PropTypes.string
-  }
-
-  static defaultProps = {
-    value: '',
-    onKeyPress() {},
-    onChange() {},
-    onFocus() {},
-    onBlur() {}
-  }
-
+export default class SearchFieldField extends React.Component<SearchFieldFieldProps> {
   _inputId = uniqueId('searchfield')
 
-  handleChange = event => {
-    const value = event.target.value
-    this.props.onChange(value)
-  }
-
-  handleKeyPress = event => {
-    this.props.onKeyPress(event)
+  handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (this.props.onKeyPress) {
+      this.props.onKeyPress(event)
+    }
   }
 
   render() {
-    const {label, placeholder, value, onChange, onFocus, onBlur, onKeyPress} = this.props
+    const {label, placeholder, value = '', onChange, onFocus, onBlur, onKeyPress} = this.props
 
     return (
       <div className={styles.root}>

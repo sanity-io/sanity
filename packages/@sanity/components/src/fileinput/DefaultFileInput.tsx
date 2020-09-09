@@ -1,17 +1,17 @@
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import {uniqueId} from 'lodash'
 
 import styles from './DefaultFileInput.css'
 
-export default class DefaultFileInput extends React.PureComponent {
-  static propTypes = {
-    onSelect: PropTypes.func.isRequired,
-    children: PropTypes.node,
-    className: PropTypes.string,
-    style: PropTypes.object
-  }
+interface DefaultFileInputProps {
+  onSelect?: (files: FileList | null) => void
+  children?: React.ReactNode
+  className?: string
+  style?: object
+}
+
+export default class DefaultFileInput extends React.PureComponent<DefaultFileInputProps> {
   _inputId = uniqueId('FileSelect')
   componentDidMount() {
     if ('value' in this.props) {
@@ -25,8 +25,10 @@ export default class DefaultFileInput extends React.PureComponent {
     }
   }
 
-  handleSelect = event => {
-    this.props.onSelect(event.target.files)
+  handleSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (this.props.onSelect) {
+      this.props.onSelect(event.target.files)
+    }
   }
 
   render() {

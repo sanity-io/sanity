@@ -4,7 +4,7 @@ import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import {boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'block',
   position: 'absolute',
   padding: '2rem',
@@ -31,6 +31,7 @@ export function CheckboxStory() {
             onChange={action('onChange')}
             onBlur={action('onBlur')}
             onFocus={action('onFocus')}
+            ref={{current: true} as any}
           >
             {boolean('Children', false, 'test') ? <h1 style={{color: 'red'}}>Test</h1> : false}
           </Checkbox>

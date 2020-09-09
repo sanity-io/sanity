@@ -1,20 +1,16 @@
-/* eslint-disable complexity */
-
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import SplitPane from 'react-split-pane'
-import styles from './styles/SplitController.css'
+import {childrenToElementArray} from '../helpers'
+import styles from './SplitController.css'
 
-export default class PanesSplitController extends React.PureComponent {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    onCheckCollapse: PropTypes.func,
-    autoCollapse: PropTypes.bool,
-    collapsedWidth: PropTypes.number,
-    isMobile: PropTypes.bool
-  }
+interface SplitControllerProps {
+  children: React.ReactNode
+  collapsedWidth?: number
+  isMobile?: boolean
+}
 
+export default class PanesSplitController extends React.PureComponent<SplitControllerProps> {
   state = {
     isResizing: false
   }
@@ -31,7 +27,7 @@ export default class PanesSplitController extends React.PureComponent {
     })
   }
 
-  renderSplitPane = (pane1, pane2) => {
+  renderSplitPane = (pane1: React.ReactElement, pane2?: React.ReactElement) => {
     const isCollapsed = pane1.props.isCollapsed
     const {collapsedWidth} = this.props
     const {isResizing} = this.state
@@ -63,7 +59,7 @@ export default class PanesSplitController extends React.PureComponent {
     )
   }
 
-  renderRecursivePanes = panes => {
+  renderRecursivePanes = (panes: React.ReactElement[]) => {
     // only 1 pane left
     if (panes.length === 1) {
       return panes[0]
@@ -81,7 +77,7 @@ export default class PanesSplitController extends React.PureComponent {
 
   render() {
     const {children, isMobile} = this.props
-    const panes = React.Children.toArray(children)
+    const panes = childrenToElementArray(children)
 
     if (panes.length === 0) {
       return <div>No panes</div>

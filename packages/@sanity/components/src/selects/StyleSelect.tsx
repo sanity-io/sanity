@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import styles from 'part:@sanity/components/selects/style-style'
@@ -9,6 +8,26 @@ import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import {List} from 'part:@sanity/components/lists/default'
 import Poppable from 'part:@sanity/components/utilities/poppable'
+
+export interface StyleSelectItem {
+  key?: string
+  title?: string
+  active?: boolean
+}
+
+interface StyleSelectProps {
+  placeholder?: string
+  disabled?: boolean
+  onChange: (item: StyleSelectItem) => void
+  onOpen: () => void
+  onClose: () => void
+  value?: StyleSelectItem[]
+  renderItem: (item: StyleSelectItem) => React.ReactNode
+  className?: string
+  items: StyleSelectItem[]
+  padding?: 'large' | 'default' | 'small' | 'none'
+  transparent?: boolean
+}
 
 const modifiers = {
   preventOverflow: {
@@ -33,38 +52,17 @@ const modifiers = {
   }
 }
 
-const StyleSelectList = React.forwardRef((props, ref) => (
-  <List className={styles.list} ref={ref}>
-    {props.children}
-  </List>
-))
+const StyleSelectList = React.forwardRef(
+  (props: {children: React.ReactNode}, ref: React.Ref<HTMLUListElement>) => (
+    <List className={styles.list} ref={ref}>
+      {props.children}
+    </List>
+  )
+)
+
 StyleSelectList.displayName = 'StyleSelectList'
 
-class StyleSelect extends React.PureComponent {
-  static propTypes = {
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func,
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-    value: PropTypes.arrayOf(
-      PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired
-      })
-    ),
-    renderItem: PropTypes.func.isRequired,
-    className: PropTypes.string,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string,
-        active: PropTypes.bool
-      })
-    ),
-    padding: PropTypes.oneOf(['large', 'default', 'small', 'none']),
-    transparent: PropTypes.bool
-  }
-
+class StyleSelect extends React.PureComponent<StyleSelectProps> {
   static defaultProps = {
     className: '',
     onChange: () => undefined,
@@ -81,22 +79,22 @@ class StyleSelect extends React.PureComponent {
     showList: false
   }
 
-  buttonElement = React.createRef()
-  firstItemElement = React.createRef()
+  buttonElement = React.createRef<HTMLButtonElement>()
+  firstItemElement = React.createRef<HTMLDivElement>()
   keyboardNavigation = false
   menuHasKeyboardFocus = false
 
-  handleSelect = event => {
+  handleItemClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    const index = event.currentTarget.dataset.index
-    if (!index) {
-      return
-    }
+    this.handleSelect(Number(event.currentTarget.dataset.index))
+  }
+
+  handleSelect = (index: number) => {
     const item = this.props.items[index]
-    if (!item) {
-      return
-    }
+
+    if (!item) return
+
     this.props.onChange(item)
     this.handleCloseList()
     this.keyboardNavigation = false
@@ -106,29 +104,27 @@ class StyleSelect extends React.PureComponent {
     if (this.props.disabled) {
       return
     }
-    this.setState(
-      {
-        showList: true
-      },
-      () => {
-        this.menuHasKeyboardFocus = true
-        this.keyboardNavigation = true
+
+    this.setState({showList: true}, () => {
+      this.menuHasKeyboardFocus = true
+      this.keyboardNavigation = true
+
+      if (this.firstItemElement.current) {
         this.firstItemElement.current.focus()
-        this.props.onOpen()
       }
-    )
+
+      this.props.onOpen()
+    })
   }
 
   handleCloseList = () => {
-    this.buttonElement.current.focus()
-    this.setState(
-      {
-        showList: false
-      },
-      () => {
-        this.props.onClose()
-      }
-    )
+    if (this.buttonElement.current) {
+      this.buttonElement.current.focus()
+    }
+
+    this.setState({showList: false}, () => {
+      this.props.onClose()
+    })
   }
 
   handleButtonClick = event => {
@@ -137,30 +133,34 @@ class StyleSelect extends React.PureComponent {
     } else {
       this.handleOpenList()
     }
+
     this.keyboardNavigation = event.detail == 0
   }
 
-  handleButtonKeyDown = event => {
+  handleButtonKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key == 'Enter') {
       this.handleOpenList()
     }
   }
 
-  handleButtonBlur = event => {
+  handleButtonBlur = () => {
     if (this.state.showList && !this.menuHasKeyboardFocus && this.keyboardNavigation) {
       this.handleCloseList()
     }
   }
 
-  handleMenuBlur = event => {
+  handleMenuBlur = () => {
     this.menuHasKeyboardFocus = false
-    this.buttonElement.current.focus()
+    if (this.buttonElement.current) {
+      this.buttonElement.current.focus()
+    }
     this.handleCloseList()
   }
 
-  handleItemKeyPress = event => {
+  handleItemKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
-      this.handleSelect(event)
+      event.stopPropagation()
+      this.handleSelect(Number(event.currentTarget.dataset.index))
     }
   }
 
@@ -175,6 +175,7 @@ class StyleSelect extends React.PureComponent {
       renderItem,
       transparent
     } = this.props
+
     const {showList} = this.state
     const className = classNames(
       classNameProp,
@@ -191,7 +192,12 @@ class StyleSelect extends React.PureComponent {
         onKeyPress={this.handleButtonKeyDown}
         tabIndex={0}
       >
-        <button className={styles.button} disabled={disabled} ref={this.buttonElement}>
+        <button
+          className={styles.button}
+          disabled={disabled}
+          ref={this.buttonElement}
+          type="button"
+        >
           <div className={styles.buttonInner}>
             <span className={styles.title}>
               {value && value.length > 1 && 'Multiple'}
@@ -206,7 +212,7 @@ class StyleSelect extends React.PureComponent {
 
         <Poppable
           onEscape={this.handleCloseList}
-          modifiers={modifiers}
+          modifiers={modifiers as any}
           onClickOutside={this.handleCloseList}
           popperClassName={styles.popper}
         >
@@ -216,19 +222,20 @@ class StyleSelect extends React.PureComponent {
                 {items.map((item, index) => {
                   const isSemiSelected = value && value.length > 1 && value.includes(item)
                   const isSelected = value && value.length === 1 && value[0].key == item.key
-                  const classNames = `
-                        ${isSelected ? styles.itemSelected : styles.item}
-                        ${isSemiSelected ? styles.itemSemiSelected : ''}
-                      `
+                  const _classNames = `
+                    ${isSelected ? styles.itemSelected : styles.item}
+                    ${isSemiSelected ? styles.itemSemiSelected : ''}
+                  `
+
                   return (
-                    <li key={`${item.key}${index}`}>
+                    <li key={`${item.key}_${String(index)}`}>
                       <div
-                        title={item.title}
+                        className={_classNames}
                         data-index={index}
-                        onClick={this.handleSelect}
-                        className={classNames}
-                        onKeyPress={this.handleItemKeyPress} //eslint-disable-line react/jsx-no-bind
-                        ref={index === 0 && this.firstItemElement}
+                        onClick={this.handleItemClick}
+                        onKeyPress={this.handleItemKeyPress}
+                        ref={index === 0 ? this.firstItemElement : undefined}
+                        title={item.title}
                       >
                         <div className={styles.itemContent}>{renderItem(item)}</div>
                         <div className={styles.itemIcon}>
@@ -240,7 +247,6 @@ class StyleSelect extends React.PureComponent {
                   )
                 })}
               </ArrowKeyNavigation>
-
               <div tabIndex={0} onFocus={this.handleMenuBlur} />
             </>
           )}

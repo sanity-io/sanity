@@ -1,27 +1,21 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {forwardRef} from 'react'
 
 import styles from './DefaultBadge.css'
 
-export default class DefaultBadge extends React.PureComponent {
-  static propTypes = {
-    color: PropTypes.oneOf([undefined, 'success', 'warning', 'danger', 'info']),
-    children: PropTypes.node.isRequired,
-    title: PropTypes.string
-  }
-
-  static defaultProps = {
-    color: undefined,
-    title: undefined
-  }
-
-  render() {
-    const {color, children, title} = this.props
-
-    return (
-      <span className={styles.root} data-color={color} title={title}>
-        {children}
-      </span>
-    )
-  }
+interface DefaultBadgeProps extends React.HTMLProps<HTMLSpanElement> {
+  color?: 'success' | 'warning' | 'danger' | 'info'
 }
+
+const DefaultBadge = forwardRef((props: DefaultBadgeProps, ref: React.Ref<HTMLSpanElement>) => {
+  const {color, children, ...restProps} = props
+
+  return (
+    <span {...restProps} className={styles.root} data-color={color} ref={ref}>
+      {children}
+    </span>
+  )
+})
+
+DefaultBadge.displayName = 'DefaultBadge'
+
+export default DefaultBadge

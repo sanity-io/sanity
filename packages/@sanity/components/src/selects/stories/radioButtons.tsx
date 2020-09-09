@@ -2,7 +2,7 @@ import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook'
 import RadioSelect from 'part:@sanity/components/selects/radio'
-import {text, number, select} from 'part:@sanity/storybook/addons/knobs'
+import {number, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React from 'react'
 
@@ -15,7 +15,7 @@ const radioItems = range(10).map((item, i) => {
   }
 })
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -39,7 +39,6 @@ export function RadioButtonsStory() {
           items={radioItems}
           value={value}
           onChange={action('onChange')}
-          legend={text('legend', 'Radio button select', 'props')}
           direction={select('direction', [false, 'vertical', 'vertical'], undefined, 'props')}
         />
       </Sanity>

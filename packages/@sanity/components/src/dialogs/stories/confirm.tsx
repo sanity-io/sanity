@@ -70,7 +70,9 @@ function DialogExample(props) {
   useEffect(() => {
     portalRef.current.setAttribute('data-portal', '')
     document.body.appendChild(portalRef.current)
-    return () => document.body.removeChild(portalRef.current)
+    return () => {
+      document.body.removeChild(portalRef.current)
+    }
   }, [])
 
   return (

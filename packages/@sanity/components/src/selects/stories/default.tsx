@@ -9,14 +9,14 @@ import Chance from 'chance'
 
 const chance = new Chance()
 
-const items = range(20).map((item, i) => {
+const items = range(20).map((_, i) => {
   return {
     title: chance.name(),
     key: `${i}`
   }
 })
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

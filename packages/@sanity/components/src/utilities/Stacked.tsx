@@ -1,12 +1,21 @@
-import React from 'react'
-import PropTypes from 'prop-types'
 import pubsub from 'nano-pubsub'
+import React from 'react'
 
-export function createStack() {
-  let stack = []
+interface StackedProps {
+  children: (top: boolean) => React.ReactNode
+  stack?: {
+    remove?: (val: unknown) => void
+    peek?: () => void
+    push?: (val: unknown) => void
+    subscribe?: (val: unknown) => void
+  }
+}
+
+export function createStack<T = unknown>() {
+  let stack: T[] = []
   const changes = pubsub()
 
-  function remove(instance) {
+  function remove(instance: T) {
     stack = stack.filter(entry => entry !== instance)
     onChange()
   }
@@ -14,7 +23,8 @@ export function createStack() {
   function peek() {
     return stack[stack.length - 1]
   }
-  function push(entry) {
+
+  function push(entry: T) {
     stack.push(entry)
     onChange()
   }
@@ -33,17 +43,7 @@ export function createStack() {
 
 const DEFAULT_STACK = createStack()
 
-export default class Stacked extends React.Component {
-  static propTypes = {
-    children: PropTypes.func.isRequired,
-    stack: PropTypes.shape({
-      remove: PropTypes.func,
-      peek: PropTypes.func,
-      push: PropTypes.func,
-      subscribe: PropTypes.func
-    })
-  }
-
+export default class Stacked extends React.Component<StackedProps> {
   static defaultProps = {
     stack: DEFAULT_STACK
   }
@@ -52,21 +52,33 @@ export default class Stacked extends React.Component {
     top: null
   }
 
-  constructor(props) {
-    super()
-    this._unsubscribe = props.stack.subscribe(top => {
-      this.setState(() => ({top}))
-    })
+  _unsubscribe: any
+
+  constructor(props: StackedProps) {
+    super(props)
+
+    const {stack} = props
+
+    if (stack && stack.subscribe) {
+      this._unsubscribe = stack.subscribe((top: unknown) => {
+        this.setState(_ => ({top}))
+      })
+    }
   }
+
   UNSAFE_componentWillMount() {
     const {stack} = this.props
-    stack.push(this)
+    if (stack && stack.push) stack.push(this)
   }
 
   componentWillUnmount() {
     const {stack} = this.props
+
     this._unsubscribe()
-    stack.remove(this)
+
+    if (stack && stack.remove) {
+      stack.remove(this)
+    }
   }
 
   render() {

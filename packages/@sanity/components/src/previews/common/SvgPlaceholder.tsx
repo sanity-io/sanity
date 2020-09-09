@@ -1,5 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+
+interface SvgPlaceHolderProps {
+  styles: Record<string, string>
+}
 
 const svgStyles: React.CSSProperties = {
   position: 'relative',
@@ -7,7 +10,7 @@ const svgStyles: React.CSSProperties = {
   height: '100%'
 }
 
-const SvgPlaceholder = ({styles}) => {
+const SvgPlaceholder = ({styles}: SvgPlaceHolderProps) => {
   return (
     <div className={styles.placeholder}>
       <svg x="0" y="0" className={styles.svg} style={svgStyles}>
@@ -42,14 +45,6 @@ const SvgPlaceholder = ({styles}) => {
       </svg>
     </div>
   )
-}
-
-SvgPlaceholder.propTypes = {
-  styles: PropTypes.object
-}
-
-SvgPlaceholder.defaultProps = {
-  styles: {}
 }
 
 export default SvgPlaceholder

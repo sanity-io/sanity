@@ -9,8 +9,8 @@ type Props = {
   onChange?: (item: object) => void
   onFocus?: (evt: React.FocusEvent<HTMLInputElement>) => void
   checked: boolean
-  disabled: boolean
-  name: string
+  disabled?: boolean
+  name?: string
 }
 
 export default function RadioButton({
@@ -34,6 +34,7 @@ export default function RadioButton({
         id={`radio-${elementId}-input`}
         aria-describedby={`radio-${elementId}-description`}
         className={styles.input}
+        name={name}
         type="checkbox"
         disabled={disabled}
         checked={checked}

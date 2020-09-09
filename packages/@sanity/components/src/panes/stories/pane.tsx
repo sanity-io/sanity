@@ -1,16 +1,17 @@
 import ComposeIcon from 'part:@sanity/base/compose-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {MenuItemType} from 'part:@sanity/components/menus/default'
 import Pane from 'part:@sanity/components/panes/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
-import {boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
+import {boolean, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import React from 'react'
 
 import styles from './pane.css'
 
-const menuItems = [
+const menuItems: MenuItemType[] = [
   {
     action: 'first',
     title: 'First item',
@@ -69,11 +70,11 @@ export function PaneStory() {
     <Sanity part="part:@sanity/components/panes/default" propTables={[Pane]}>
       <DebugRouterProvider>
         <Pane
+          index={0}
           title={text('title', 'This is the default pane title', 'props')}
           isCollapsed={boolean('isCollapsed', false, 'props')}
           onExpand={action('onExpand')}
           onCollapse={action('onCollapse')}
-          minSize={number('minWidth', 300, 'props')}
           onAction={action('onAction')}
           menuItems={menuItems}
           renderActions={renderActions}

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 /**
@@ -7,17 +6,15 @@ import React from 'react'
  * @todo See if this can be done in a more intuitive way without this extra layer
  */
 
-export default class SplitPaneWrapper extends React.Component {
-  /* eslint-disable react/no-unused-prop-types */
-  static propTypes = {
-    minSize: PropTypes.number,
-    maxSize: PropTypes.number,
-    defaultSize: PropTypes.number,
-    children: PropTypes.node,
-    index: PropTypes.number
-  }
-  /* eslint-enable react/no-unused-prop-types */
+interface SplitPaneWrapperProps {
+  minSize?: number
+  maxSize?: number
+  defaultSize?: number
+  children?: React.ReactNode
+  index?: number
+}
 
+export default class SplitPaneWrapper extends React.Component<SplitPaneWrapperProps> {
   static defaultProps = {
     minSize: 100,
     maxSize: 500,

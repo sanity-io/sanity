@@ -1,8 +1,8 @@
 import {IntentLink} from 'part:@sanity/base/router'
 import React from 'react'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
-import styles from './styles/CreateDocumentPreview.css'
+import styles from './CreateDocumentPreview.css'
 
 interface CreateDocumentPreviewProps {
   title?: React.ReactNode | React.FunctionComponent<unknown>
@@ -17,10 +17,10 @@ interface CreateDocumentPreviewProps {
   }
   templateParams?: Record<string, unknown>
   onClick?: () => void
-  mediaDimensions?: PreviewMediaDimensions
+  mediaDimensions?: MediaDimensions
 }
 
-const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSION: MediaDimensions = {
   width: 80,
   height: 80,
   aspect: 1,

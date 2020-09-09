@@ -1,6 +1,6 @@
 export type ButtonColor = 'primary' | 'success' | 'danger' | 'white' | 'warning'
 export type ButtonKind = 'simple' | 'secondary'
-export type ButtonPadding = 'small' | 'medium' | 'large'
+export type ButtonPadding = 'small' | 'medium' | 'large' | 'none'
 export type ButtonSize = 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
 
 export interface ButtonProps extends Omit<React.HTMLProps<HTMLButtonElement>, 'size' | 'ref'> {
