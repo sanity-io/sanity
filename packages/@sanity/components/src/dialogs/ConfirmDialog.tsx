@@ -1,21 +1,21 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import styles from './styles/ConfirmDialog.css'
+import styles from './ConfirmDialog.css'
+import {DialogAction} from './types'
 
-export default class ConfirmDialog extends React.PureComponent {
-  static propTypes = {
-    title: PropTypes.string,
-    color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
-    cancelColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
-    confirmColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
-    children: PropTypes.node,
-    onConfirm: PropTypes.func.isRequired,
-    onCancel: PropTypes.func,
-    confirmButtonText: PropTypes.string,
-    cancelButtonText: PropTypes.string
-  }
+interface ConfirmDialogProps {
+  title?: string
+  color?: 'default' | 'warning' | 'success' | 'danger' | 'info'
+  cancelColor?: 'primary' | 'success' | 'danger' | 'white'
+  confirmColor?: 'primary' | 'success' | 'danger' | 'white'
+  children?: React.ReactNode
+  onConfirm: () => void
+  onCancel?: () => void
+  confirmButtonText?: string
+  cancelButtonText?: string
+}
 
+export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProps> {
   static defaultProps = {
     confirmColor: 'danger',
     cancelColor: undefined,
@@ -23,19 +23,11 @@ export default class ConfirmDialog extends React.PureComponent {
     cancelButtonText: 'Cancel'
   }
 
-  handleDialogClick = event => {
-    event.stopPropagation()
-  }
-
-  setDialogElement = element => {
-    this.dialog = element
-  }
-
-  handleAction = (action, event) => {
+  handleAction = (action: DialogAction) => {
     if (action.key === 'confirm') {
-      this.props.onConfirm(event)
-    } else {
-      this.props.onCancel(event)
+      this.props.onConfirm()
+    } else if (this.props.onCancel) {
+      this.props.onCancel()
     }
   }
 
@@ -51,24 +43,29 @@ export default class ConfirmDialog extends React.PureComponent {
       title
     } = this.props
 
-    const actions = [
-      confirmButtonText && {
-        key: 'confirm',
-        index: 1,
-        title: confirmButtonText,
-        color: confirmColor,
-        action: onConfirm
-      },
-      cancelButtonText && {
-        key: 'cancel',
-        index: 2,
-        title: cancelButtonText,
-        color: cancelColor,
-        action: onCancel,
-        kind: 'simple',
-        secondary: true
-      }
-    ].filter(Boolean)
+    const cancelAction: DialogAction | null = cancelButtonText
+      ? {
+          key: 'cancel',
+          index: 2,
+          title: cancelButtonText,
+          color: cancelColor,
+          action: onCancel,
+          kind: 'simple',
+          secondary: true
+        }
+      : null
+
+    const confirmAction: DialogAction | null = confirmButtonText
+      ? {
+          key: 'confirm',
+          index: 1,
+          title: confirmButtonText,
+          color: confirmColor,
+          action: onConfirm
+        }
+      : null
+
+    const actions = [confirmAction, cancelAction].filter(Boolean) as DialogAction[]
 
     return (
       <DefaultDialog

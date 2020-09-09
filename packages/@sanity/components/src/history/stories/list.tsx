@@ -38,7 +38,7 @@ export function ListStory() {
       <ListItem status="unpublished" title="22 may 2018" users={[mockUser()]} />
       {range(number('items', 10, 'test')).map(() => {
         const item = mockHistoryItem()
-        return <ListItem key={item.key} {...item} />
+        return <ListItem {...item} key={item.key} />
       })}
       <ListItem status="created" title="test" users={[mockUser()]} />
     </div>

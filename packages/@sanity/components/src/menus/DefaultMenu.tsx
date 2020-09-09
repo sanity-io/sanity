@@ -1,63 +1,43 @@
-import PropTypes from 'prop-types'
+/* eslint-disable max-depth */
+
 import React from 'react'
 import {groupBy, flatten} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
-import MenuItem from './DefaultMenuItem'
+import DefaultMenuItem from './DefaultMenuItem'
+import {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
+
+// export typings
+export {MenuItemGroupType, MenuItemType}
+
+interface DefaultMenuProps {
+  id?: string
+  onAction: (item: MenuItemType) => void
+  className?: string
+  // onClickOutside?: (event: any) => void
+  onClose?: (event?: KeyboardEvent) => void
+  items: MenuItemType[]
+  groups?: MenuItemGroupType[]
+  router?: {
+    navigateIntent: (intentName: string, params?: Record<string, string>) => void
+  }
+}
+
+interface State {
+  focusedItem?: MenuItemType
+  items: MenuItemType[]
+}
 
 const ungrouped = Symbol('__ungrouped__')
 
-function parentButtonIsMenuButton(node, id) {
-  let el = node
-  do {
-    if (el.tagName === 'BUTTON' && el.dataset.menuButtonId === id) {
-      return true
-    }
-  } while ((el = el.parentNode))
-
-  return false
-}
-
-class DefaultMenu extends React.Component {
-  static propTypes = {
-    id: PropTypes.string,
-    onAction: PropTypes.func.isRequired,
-    className: PropTypes.string,
-    onClickOutside: PropTypes.func,
-    onClose: PropTypes.func,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.node.isRequired,
-        icon: PropTypes.func,
-        intent: PropTypes.shape({
-          type: PropTypes.string.isRequired,
-          params: PropTypes.object
-        })
-      })
-    ),
-    groups: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string
-      })
-    ),
-    router: PropTypes.shape({
-      navigateIntent: PropTypes.func.isRequired
-    }).isRequired
+class DefaultMenu extends React.Component<DefaultMenuProps, State> {
+  state: State = {
+    items: []
   }
 
-  static defaultProps = {
-    id: undefined,
-    className: '',
-    items: [],
-    groups: [],
-    onClickOutside() {},
-    onClose() {}
-  }
-
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(props: DefaultMenuProps) {
     const groups = props.items.reduce(
       (acc, item) => {
         if (!item.group) {
@@ -70,52 +50,37 @@ class DefaultMenu extends React.Component {
     )
 
     const byGroup = groupBy(props.items, item => item.group || ungrouped)
-    const hasUngrouped = typeof byGroup[ungrouped] !== 'undefined'
-    const targets = hasUngrouped ? [ungrouped].concat(groups) : groups
-    const items = flatten(targets.map(group => byGroup[group] || []))
+    // @todo: symbol cannot be used as index type
+    const hasUngrouped = typeof byGroup[ungrouped as any] !== 'undefined'
+    let targets: Array<string | symbol> = []
+    if (hasUngrouped) {
+      targets.push(ungrouped, ...groups)
+    } else {
+      targets = groups
+    }
+    // @todo: symbol cannot be used as index type
+    const items = flatten(targets.map(group => byGroup[group as any] || []))
     return {items}
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      focusedItem: null
-    }
-  }
-
-  handleClickOutside = event => {
-    const {id, onClickOutside} = this.props
-    if (id && parentButtonIsMenuButton(event.target, id)) {
-      // Don't treat clicks on the open menu button as "outside" clicks -
-      // prevents us from double-toggling a menu as open/closed
-      return
-    }
-
-    this.setState({focusedItem: null})
-    onClickOutside(event)
   }
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false)
-    window.addEventListener('resize', this.handleResize, false)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize, false)
     window.removeEventListener('keydown', this.handleKeyDown, false)
   }
 
   // eslint-disable-next-line complexity
-  handleKeyDown = event => {
+  handleKeyDown = (event: KeyboardEvent) => {
     const {router} = this.props
     const {focusedItem} = this.state
-    const items = this.state.items.filter(item => !item.isDisabled)
-    const currentIndex = items.indexOf(focusedItem) || 0
+    const items = this.state.items ? this.state.items.filter(item => !item.isDisabled) : []
+    const currentIndex = focusedItem ? items.indexOf(focusedItem) || 0 : 0
 
     if (event.key === 'Escape') {
-      this.setState({focusedItem: null})
-      this.props.onClose(event)
+      this.setState({focusedItem: undefined})
+      if (this.props.onClose) this.props.onClose(event)
     }
 
     if (event.key === 'ArrowDown') {
@@ -132,31 +97,28 @@ class DefaultMenu extends React.Component {
 
     if (event.key === 'Enter' && focusedItem) {
       if (focusedItem.intent) {
-        router.navigateIntent(focusedItem.intent.type, focusedItem.intent.params)
+        if (router) {
+          // @todo: typings
+          router.navigateIntent(focusedItem.intent.type, focusedItem.intent.params as any)
+        }
       } else {
-        this.handleAction(event, focusedItem)
+        this.props.onAction(focusedItem)
       }
     }
   }
 
-  handleAction = (event, item) => {
+  handleAction = (event: React.MouseEvent<HTMLAnchorElement>, item: MenuItemType) => {
     event.stopPropagation()
+
     if (item.intent) {
-      this.props.onClose()
+      if (this.props.onClose) this.props.onClose()
     } else {
       this.props.onAction(item)
     }
   }
 
-  handleFocus = (event, focusedItem) => {
-    this.setState({focusedItem})
-  }
-
-  handleKeyPress = event => {
-    const index = event.target.getAttribute('data-action-id')
-    if (event.key === 'Enter') {
-      this.props.onAction(this.props.items[index])
-    }
+  handleFocus = (_: React.FocusEvent<HTMLAnchorElement>, item: MenuItemType) => {
+    this.setState({focusedItem: item})
   }
 
   renderGroupedItems() {
@@ -164,9 +126,10 @@ class DefaultMenu extends React.Component {
 
     return items.map((item, index) => {
       const prev = items[index - 1]
+
       return (
-        <MenuItem
-          key={index}
+        <DefaultMenuItem
+          key={String(index)}
           item={item}
           danger={item.danger}
           isDisabled={item.isDisabled}
@@ -181,12 +144,15 @@ class DefaultMenu extends React.Component {
 
   render() {
     const {className} = this.props
+
     return (
-      <div className={classNames([styles.root, className])}>
+      <div className={classNames(styles.root, className)}>
         <ul className={styles.list}>{this.renderGroupedItems()}</ul>
       </div>
     )
   }
 }
 
-export default withRouterHOC(enhanceWithClickOutside(DefaultMenu))
+export default (withRouterHOC(
+  enhanceWithClickOutside(DefaultMenu as any)
+) as any) as React.ComponentClass<DefaultMenuProps>

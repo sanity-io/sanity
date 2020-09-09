@@ -5,7 +5,7 @@ import styles from './avatarCounter.css'
 
 interface AvatarCounterProps {
   count: number
-  isGlobal?: boolean
+  // isGlobal?: boolean
   size?: AvatarSize
   tone?: 'navbar'
 }

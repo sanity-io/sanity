@@ -1,20 +1,21 @@
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/ActivateOnFocus.css'
 import enhanceWithClickOutside from 'react-click-outside'
 
-class ActivateOnFocus extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    className: PropTypes.string,
-    message: PropTypes.string,
-    html: PropTypes.node,
-    isActive: PropTypes.bool,
-    onActivate: PropTypes.func,
-    inputId: PropTypes.string
-  }
+import styles from './ActivateOnFocus.css'
 
+interface ActivateOnFocusProps {
+  children: React.ReactNode
+  className?: string
+  message?: string
+  html?: React.ReactNode
+  isActive?: boolean
+  onActivate?: () => void
+  overlayClassName?: string
+  inputId?: string
+}
+
+class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
   static defaultProps = {
     className: undefined,
     message: 'Click to activate…',
@@ -25,7 +26,7 @@ class ActivateOnFocus extends React.Component {
     hasFocus: false
   }
 
-  handleClick = event => {
+  handleClick = (_: React.MouseEvent<HTMLDivElement>) => {
     if (!this.state.hasFocus) {
       this.setState({
         hasFocus: true

@@ -1,8 +1,8 @@
 import React from 'react'
-import Menu from 'part:@sanity/components/menus/default'
+import DefaultMenu, {MenuItemType} from 'part:@sanity/components/menus/default'
 import {action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
-import {number, boolean, select} from 'part:@sanity/storybook/addons/knobs'
+import {number, boolean} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import {range} from 'lodash'
@@ -12,22 +12,15 @@ const chance = new Chance()
 
 export function DefaultStory() {
   const icon = boolean('icons', false) ? SanityIcon : false
-  const items = range(number('#items', 30)).map((item, i) => {
+  const items: MenuItemType[] = range(number('#items', 30)).map((item, i) => {
     return {
       title: chance.name(),
       icon: icon,
-      key: i
+      key: String(i)
     }
   })
 
-  const origins = {
-    'top-left': 'Top Left',
-    'top-right': 'Top Right',
-    'bottom-right': 'Bottom Right',
-    'bottom-left': 'Bottom left'
-  }
-
-  const scrollStyle = {
+  const scrollStyle: React.CSSProperties = {
     width: '70vw',
     height: '70vh',
     border: '1px dotted #ccc',
@@ -37,15 +30,14 @@ export function DefaultStory() {
 
   return (
     <DebugRouterProvider>
-      <Sanity part="part:@sanity/components/menus/default" propTables={[Menu]}>
+      <Sanity part="part:@sanity/components/menus/default" propTables={[DefaultMenu]}>
         <div style={boolean('is inside scroll', false) ? scrollStyle : {}}>
           <div>
-            <Menu
+            <DefaultMenu
               onAction={action('onAction')}
               onClose={action('onClose')}
-              onClickOutside={action('prop:onClickOutside')}
+              // onClickOutside={action('prop:onClickOutside')}
               items={items}
-              origin={select('origin (prop)', origins)}
             />
           </div>
         </div>

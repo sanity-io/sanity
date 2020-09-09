@@ -66,19 +66,18 @@ export default class DropDownButton extends React.PureComponent<
   DropdownButtonProps & React.HTMLProps<HTMLButtonElement>,
   DropdownButtonState
 > {
-  firstItemElement = React.createRef<HTMLElement>()
-  buttonElement = React.createRef<any>()
+  // @todo: how to refer to `ButtonLike`?
+  _buttonElement = React.createRef<any>()
+  _firstItemElement = React.createRef<HTMLLIElement>()
+  _menuElement: HTMLElement | null = null
+
+  menuHasKeyboardFocus = false
+  keyboardNavigation = false
+  menuId: string | null = null
 
   state = {
     menuOpened: false
   }
-
-  menuHasKeyboardFocus = false
-  keyboardNavigation = false
-
-  menuId: string | null = null
-
-  _menuElement: HTMLElement | null = null
 
   constructor(props) {
     super(props)
@@ -88,7 +87,7 @@ export default class DropDownButton extends React.PureComponent<
       .substr(2, 6)
   }
 
-  handleClose = (event?: React.FocusEvent<HTMLElement>) => {
+  handleClose = (event?: React.MouseEvent<HTMLElement>) => {
     if (event && parentButtonIsMenuButton(event.target, this.menuId)) {
       // Don't treat clicks on the open menu button as "outside" clicks -
       // prevents us from double-toggling a menu as open/closed
@@ -96,6 +95,10 @@ export default class DropDownButton extends React.PureComponent<
     }
 
     this.setState({menuOpened: false})
+  }
+
+  handleClickOutside = () => {
+    this.handleClose()
   }
 
   setMenuElement = (element: HTMLElement | null) => {
@@ -115,7 +118,7 @@ export default class DropDownButton extends React.PureComponent<
     }
   }
 
-  handleItemClick = (event: React.KeyboardEvent<HTMLElement>, item: DropdownItem) => {
+  handleItemClick = (event: React.MouseEvent<HTMLElement>, item: DropdownItem) => {
     event.stopPropagation()
     this.handleAction(item)
   }
@@ -134,7 +137,7 @@ export default class DropDownButton extends React.PureComponent<
 
   handleMenuBlur = () => {
     this.menuHasKeyboardFocus = false
-    if (this.buttonElement.current) this.buttonElement.current.focus()
+    if (this._buttonElement.current) this._buttonElement.current.focus()
     this.handleClose()
   }
 
@@ -142,7 +145,7 @@ export default class DropDownButton extends React.PureComponent<
     if (event.key == 'ArrowDown' && this.state.menuOpened) {
       this.menuHasKeyboardFocus = true
       this.keyboardNavigation = true
-      if (this.firstItemElement.current) this.firstItemElement.current.focus()
+      if (this._firstItemElement.current) this._firstItemElement.current.focus()
     }
   }
 
@@ -158,8 +161,8 @@ export default class DropDownButton extends React.PureComponent<
       ...rest
     } = omit(this.props, 'onAction')
     const {menuOpened} = this.state
-    const buttonElement =
-      this.buttonElement && this.buttonElement.current && this.buttonElement.current._element
+    const _buttonElement =
+      this._buttonElement && this._buttonElement.current && this._buttonElement.current._element
 
     return (
       <>
@@ -171,7 +174,7 @@ export default class DropDownButton extends React.PureComponent<
           kind={kind}
           onKeyDown={this.handleButtonKeyDown}
           onBlur={this.handleButtonBlur}
-          ref={this.buttonElement as any}
+          ref={this._buttonElement as any}
         >
           {(showArrow || children) && (
             <div className={styles.inner}>
@@ -191,11 +194,11 @@ export default class DropDownButton extends React.PureComponent<
 
         {/* Dropdown menu */}
         <Poppable
-          modifiers={modifiers}
+          modifiers={modifiers as any}
           placement={placement}
-          referenceElement={buttonElement}
+          referenceElement={_buttonElement}
           onEscape={this.handleClose}
-          onClickOutside={this.handleClose}
+          onClickOutside={this.handleClickOutside}
           referenceClassName={styles.outer}
           popperClassName={styles.popper}
           positionFixed
@@ -208,11 +211,10 @@ export default class DropDownButton extends React.PureComponent<
                     <Item
                       key={String(i)}
                       className={styles.listItem}
-                      onClick={event => this.handleItemClick(event, item)} //eslint-disable-line react/jsx-no-bind
-                      onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
-                      item={item}
+                      onClick={event => this.handleItemClick(event, item)}
+                      onKeyPress={event => this.handleItemKeyPress(event, item)}
                       tabIndex={0}
-                      ref={i === 0 && this.firstItemElement}
+                      ref={i === 0 ? this._firstItemElement : undefined}
                     >
                       {renderItem ? renderItem(item) : <div>{item.title}</div>}
                     </Item>

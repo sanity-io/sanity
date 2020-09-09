@@ -9,7 +9,7 @@ import React from 'react'
 const chance = new Chance()
 
 export function CreateDocumentStory() {
-  const templateChoices = range(number('# Choices', 5, 'test')).map((choice, i) => {
+  const templateChoices = range(number('# Choices', 5, 'test')).map((_, i) => {
     return {
       id: `${i}`,
       key: `${i}`,

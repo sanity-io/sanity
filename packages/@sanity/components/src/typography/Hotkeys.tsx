@@ -1,13 +1,12 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/Hotkeys.css'
+import styles from './Hotkeys.css'
 
-export default class Hotkeys extends React.PureComponent {
-  static propTypes = {
-    size: PropTypes.oneOf(['small', 'medium', 'large']),
-    keys: PropTypes.arrayOf(PropTypes.string)
-  }
+interface HotkeysProps {
+  size?: 'small' | 'medium' | 'large'
+  keys?: string[]
+}
 
+export default class Hotkeys extends React.PureComponent<HotkeysProps> {
   static defaultProps = {
     size: undefined
   }

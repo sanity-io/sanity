@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from 'part:@sanity/components/previews/block-image-style'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 type BlockImagePreviewStatusComponent = React.FunctionComponent<{
   layout: 'default'
@@ -10,28 +10,17 @@ interface BlockImagePreviewProps {
   title?: React.ReactNode | React.FC<{}>
   subtitle?: React.ReactNode | React.FC<{}>
   description?: React.ReactNode | React.FC<{}>
-  mediaDimensions?: PreviewMediaDimensions
+  mediaDimensions?: MediaDimensions
   media?:
     | React.ReactNode
-    | React.FunctionComponent<{dimensions: PreviewMediaDimensions; layout: 'blockImage'}>
+    | React.FunctionComponent<{dimensions: MediaDimensions; layout: 'blockImage'}>
   children?: React.ReactNode
   status?: React.ReactNode | BlockImagePreviewStatusComponent
-  // type?: {
-  //   title: string
-  //   name: string
-  // }
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {width: 600, height: 600, fit: 'fillmax'}
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {width: 600, height: 600, fit: 'fillmax'}
 
 export default class BlockImagePreview extends React.PureComponent<BlockImagePreviewProps> {
-  // static defaultProps = {
-  //   type: {
-  //     title: undefined,
-  //     name: undefined
-  //   }
-  // }
-
   // eslint-disable-next-line complexity
   render() {
     const {title, subtitle, description, mediaDimensions, media, children, status} = this.props

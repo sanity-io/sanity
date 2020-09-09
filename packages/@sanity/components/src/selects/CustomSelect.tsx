@@ -1,19 +1,21 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/custom-style'
 import cx from 'classnames'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 
-export default class CustomSelect extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.object,
-    renderItem: PropTypes.func,
-    items: PropTypes.array
-  }
+interface CustomSelectProps {
+  onChange: (item: any) => void
+  value: Record<any, any>
+  renderItem: (
+    item: any,
+    params?: {index: number; isActive: boolean; isSelected: boolean}
+  ) => React.ReactNode
+  items: any[]
+}
 
+export default class CustomSelect extends React.Component<CustomSelectProps> {
   static defaultProps = {
-    onChange() {}
+    onChange: () => undefined
   }
 
   state = {
@@ -87,14 +89,15 @@ export default class CustomSelect extends React.Component {
         </div>
         {isOpen && (
           <div className={styles.listContainer}>
-            <ul className={styles.items} onKeyDown={this.handleKeyDown} ref={this.setListContainer}>
+            <ul className={styles.items} onKeyDown={this.handleKeyDown}>
               {items.map((item, index) => {
                 const isActive = index === activeIndex
                 const isSelected = item === value
-                const className = cx(styles.item, {
-                  [styles.selectedItem]: isSelected,
-                  [styles.activeItem]: isActive
-                })
+                const className = cx(
+                  styles.item,
+                  isSelected && styles.selectedItem,
+                  isActive && styles.activeItem
+                )
                 return (
                   <li
                     key={index}

@@ -3,6 +3,7 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
+import {DefaultTextInputProps} from '../types'
 
 const VALID_TYPES = [
   'color',
@@ -18,20 +19,18 @@ const VALID_TYPES = [
   'week'
 ]
 
-class DefaultTextInputTest extends React.PureComponent {
-  constructor(...args) {
-    super(...args)
-    this.handleChange = this.handleChange.bind(this)
-    this.state = {
-      value: ''
-    }
+interface State {
+  value: string
+}
+
+class DefaultTextInputTest extends React.PureComponent<DefaultTextInputProps, State> {
+  constructor(props: DefaultTextInputProps) {
+    super(props)
+    this.state = {value: ''}
   }
 
-  handleChange(event) {
-    const value = event.currentTarget.value
-    this.setState({
-      value: value
-    })
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({value: event.currentTarget.value})
   }
 
   render() {

@@ -2,17 +2,16 @@ import classNames from 'classnames'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
 import React from 'react'
 import Styleable from '../utilities/Styleable'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 interface DefaultPreviewProps {
   title?: React.ReactNode | React.FC<{layout: 'default'}>
   subtitle?: React.ReactNode | React.FC<{layout: 'default'}>
-  mediaDimensions?: PreviewMediaDimensions
+  mediaDimensions?: MediaDimensions
   status?: React.ReactNode | React.FC<{layout: 'default'}>
-  media?: React.ReactNode | React.FC<{dimensions: PreviewMediaDimensions; layout: 'default'}>
+  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'default'}>
   isPlaceholder?: boolean
   children?: React.ReactNode
-  // eslint-disable-next-line react/forbid-prop-types
   styles?: {
     root?: string
     placeholder?: string
@@ -31,7 +30,7 @@ interface DefaultPreviewProps {
   progress?: number
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 80,
   height: 80,
   aspect: 1,
@@ -115,4 +114,6 @@ class DefaultPreview extends React.PureComponent<DefaultPreviewProps> {
   }
 }
 
-export default Styleable(DefaultPreview, defaultStyles)
+export default Styleable(DefaultPreview as any, defaultStyles) as React.ComponentType<
+  DefaultPreviewProps
+>

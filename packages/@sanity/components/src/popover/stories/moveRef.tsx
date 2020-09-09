@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import {Popover} from 'part:@sanity/components/popover'
 import {select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -18,16 +16,18 @@ export function MoveRefStory() {
   )
 }
 
-function PopoverExample({refIndex}) {
+function PopoverExample({refIndex}: {refIndex: number}) {
   const ref1 = useRef(null)
   const ref2 = useRef(null)
   const open = true
   const placement = 'bottom'
   const ref = refIndex === 0 ? ref1 : ref2
 
+  const popoverContent = <div style={{padding: '1em'}}>popover content</div>
+
   return (
     <Popover
-      content={<div style={{padding: '1em'}}>popover content</div>}
+      content={popoverContent as any}
       open={open}
       placement={placement}
       style={{transition: 'transform 200ms'}}

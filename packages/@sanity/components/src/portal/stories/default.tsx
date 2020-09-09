@@ -11,13 +11,18 @@ export function DefaultStory() {
 }
 
 function PortalExample() {
-  const rootRef = useRef(null)
-  const portalRef = useRef(document.createElement('div'))
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const portalRef = useRef<HTMLDivElement>(document.createElement('div'))
 
   useEffect(() => {
-    rootRef.current.appendChild(portalRef.current)
+    if (rootRef.current) {
+      rootRef.current.appendChild(portalRef.current)
+    }
+
     return () => {
-      rootRef.current.removeChild(portalRef.current)
+      if (rootRef.current) {
+        rootRef.current.removeChild(portalRef.current)
+      }
     }
   }, [])
 

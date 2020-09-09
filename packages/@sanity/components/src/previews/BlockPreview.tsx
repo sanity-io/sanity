@@ -2,12 +2,12 @@
 
 import React, {createElement} from 'react'
 import styles from 'part:@sanity/components/previews/block-style'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 type BlockPreviewFieldProp = React.ReactNode | (() => void)
 
 type BlockPreviewMediaComponent = React.FunctionComponent<{
-  dimensions: PreviewMediaDimensions
+  dimensions: MediaDimensions
   layout: 'default'
 }>
 
@@ -15,27 +15,18 @@ type BlockPreviewStatusComponent = React.FunctionComponent<{
   layout: 'default'
 }>
 
-type MediaCallable = (options: {
-  dimensions: PreviewMediaDimensions
-  layout: 'default'
-}) => React.ReactNode | null | undefined
-
 interface BlockPreviewProps {
   title?: BlockPreviewFieldProp
   subtitle?: BlockPreviewFieldProp
   description?: BlockPreviewFieldProp
-  mediaDimensions?: PreviewMediaDimensions
-  media?: React.ReactNode | MediaCallable
+  mediaDimensions?: MediaDimensions
+  media?: React.ReactNode | BlockPreviewMediaComponent
   status?: React.ReactNode | BlockPreviewStatusComponent
   children?: React.ReactNode
   extendedPreview?: BlockPreviewFieldProp
-  // type?: {
-  //   title?: string
-  //   name?: string
-  // }
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 160,
   height: 160,
   aspect: 1,
@@ -53,7 +44,6 @@ export default class BlockPreview extends React.PureComponent<BlockPreviewProps>
       status,
       children,
       extendedPreview
-      // type = {}
     } = this.props
 
     return (

@@ -1,22 +1,16 @@
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
-import React from 'react'
 import styles from 'part:@sanity/components/dialogs/content-style'
+import React from 'react'
 
-export default class DialogContent extends React.PureComponent {
-  static propTypes = {
-    size: PropTypes.oneOf(['small', 'medium', 'large', 'auto']),
-    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
-    children: PropTypes.node.isRequired
-  }
+interface DialogContentProps {
+  size?: 'small' | 'medium' | 'large' | 'auto'
+  padding?: 'none' | 'small' | 'medium' | 'large'
+  children?: React.ReactNode
+}
 
-  static defaultProps = {
-    size: 'auto',
-    padding: 'medium'
-  }
-
+export default class DialogContent extends React.PureComponent<DialogContentProps> {
   render() {
-    const {size, children, padding} = this.props
+    const {size = 'auto', children, padding = 'medium'} = this.props
 
     return <div className={classNames(styles[size], styles[`padding_${padding}`])}>{children}</div>
   }

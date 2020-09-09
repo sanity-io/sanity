@@ -8,18 +8,18 @@ import {Container} from 'part:@sanity/storybook/components'
 
 const chance = new Chance()
 
-export function FoldStory() {
-  const wrapperStyles = {
-    width: '50%',
-    margin: '0 auto',
-    backgroundColor: '#ccc',
-    minHeight: '50vh',
-    maxHeight: '70vh',
-    paddingTop: '5rem',
-    position: 'relative',
-    overflow: 'scroll'
-  }
+const wrapperStyles: React.CSSProperties = {
+  width: '50%',
+  margin: '0 auto',
+  backgroundColor: '#ccc',
+  minHeight: '50vh',
+  maxHeight: '70vh',
+  paddingTop: '5rem',
+  position: 'relative',
+  overflow: 'scroll'
+}
 
+export function FoldStory() {
   return (
     <Container>
       <div style={wrapperStyles}>

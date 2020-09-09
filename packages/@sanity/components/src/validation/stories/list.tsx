@@ -6,13 +6,14 @@ import {boolean} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
+import {Marker} from '../../types'
 
 import styles from './list.css'
 
 const chance = new Chance()
 
-const mockMarkers = length => {
-  return range(length || 5).map((marker, i) => {
+const mockMarkers = (length = 5): Marker[] => {
+  return range(length).map((marker, i) => {
     return {
       type: 'validation',
       level: 'error',

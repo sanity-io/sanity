@@ -1,62 +1,23 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import CloseIcon from 'part:@sanity/base/close-icon'
 import classNames from 'classnames'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import defaultStyles from 'part:@sanity/components/textinputs/default-style'
+import React from 'react'
+import {DefaultTextInputProps} from './types'
 
-const NOOP = () => {}
-
-export default class DefaultTextInput extends React.PureComponent {
-  static propTypes = {
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    markers: PropTypes.array,
-    focusPath: PropTypes.array,
-    type: PropTypes.string,
-    onClear: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    isClearable: PropTypes.bool,
-    isSelected: PropTypes.bool,
-    disabled: PropTypes.bool,
-    autoComplete: PropTypes.string,
-    hasError: PropTypes.bool,
-    customValidity: PropTypes.string,
-    styles: PropTypes.shape({
-      container: PropTypes.string,
-      input: PropTypes.string,
-      isClearable: PropTypes.string,
-      isDisabled: PropTypes.string,
-      clearButton: PropTypes.string,
-      inputOnDisabled: PropTypes.string,
-      inputOnError: PropTypes.string,
-      containerOnError: PropTypes.string
-    }),
-    inputId: PropTypes.string
-  }
-
-  static defaultProps = {
-    value: '',
-    type: 'text',
-    hasError: false,
-    isSelected: false,
-    isClearable: false,
-    disabled: false,
-    autoComplete: 'off',
-    onClear: NOOP,
-    onFocus: NOOP,
-    onBlur: NOOP,
-    styles: {},
-    customValidity: '',
-    inputId: ''
-  }
+export default class DefaultTextInput extends React.PureComponent<DefaultTextInputProps> {
+  _input: HTMLInputElement | null = null
 
   componentDidMount() {
-    this._input.setCustomValidity(this.props.customValidity)
+    if (this._input && typeof this.props.customValidity === 'string') {
+      this._input.setCustomValidity(this.props.customValidity)
+    }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: DefaultTextInputProps) {
     if (nextProps.customValidity !== this.props.customValidity) {
-      this._input.setCustomValidity(nextProps.customValidity)
+      if (this._input && typeof nextProps.customValidity === 'string') {
+        this._input.setCustomValidity(nextProps.customValidity)
+      }
     }
   }
 
@@ -72,44 +33,45 @@ export default class DefaultTextInput extends React.PureComponent {
     }
   }
 
-  setInput = element => {
+  setInput = (element: HTMLInputElement | null) => {
     this._input = element
   }
 
   render() {
     const {
+      className: classNameProp,
       onClear,
-      hasError,
-      isClearable,
-      isSelected,
-      disabled,
+      hasError = false,
+      isClearable = false,
+      isSelected = false,
+      disabled = false,
       markers,
-      styles: passedStyles,
+      styles: stylesProp,
       customValidity,
       focusPath,
-      inputId,
-      ...rest
+      inputId = '',
+      ...restProps
     } = this.props
 
-    const styles = {
-      ...defaultStyles,
-      ...passedStyles
-    }
+    const styles = {...defaultStyles, ...stylesProp}
 
     return (
       <div
-        className={classNames(styles.container, [
+        className={classNames(
+          styles.container,
           isClearable && styles.isClearable,
-          disabled && styles.isDisabled
-        ])}
+          disabled && styles.isDisabled,
+          classNameProp
+        )}
       >
         <input
+          {...restProps}
           id={inputId}
           ref={this.setInput}
-          {...rest}
           className={classNames(styles.input)}
           disabled={disabled}
         />
+
         {isClearable && (
           <button className={styles.clearButton} onClick={onClear} type="button">
             <CloseIcon color="inherit" />

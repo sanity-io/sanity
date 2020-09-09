@@ -1,29 +1,30 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/default-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 
-export default class DefaultSelect extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.object,
-    hasError: PropTypes.bool,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    hasFocus: PropTypes.bool,
-    disabled: PropTypes.bool,
-    readOnly: PropTypes.bool,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string
-      })
-    )
-  }
+interface Item {
+  title: string
+}
 
+interface DefaultSelectProps {
+  onChange: (item: Item) => void
+  value: Item
+  hasError: boolean
+  onFocus: () => void
+  onBlur: () => void
+  hasFocus: boolean
+  disabled: boolean
+  readOnly: boolean
+  items: Item[]
+}
+
+export default class DefaultSelect extends React.Component<
+  DefaultSelectProps & Omit<React.HTMLProps<HTMLSelectElement>, 'value'>
+> {
   static defaultProps = {
-    onChange() {},
-    onBlur() {},
-    onFocus() {},
+    onChange: () => undefined,
+    onBlur: () => undefined,
+    onFocus: () => undefined,
     readOnly: false,
     hasError: false,
     hasFocus: false,
@@ -31,7 +32,9 @@ export default class DefaultSelect extends React.Component {
     items: []
   }
 
-  handleChange = event => {
+  _input: any
+
+  handleChange = (event: any) => {
     this.props.onChange(this.props.items[event.target.value])
   }
 

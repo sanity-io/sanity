@@ -12,6 +12,7 @@ export function ManyStory() {
     'tab-edit',
     'props'
   )
+
   const tabs = [
     {id: 'tab-0', label: 'Foo'},
     {id: 'tab-1', label: 'Foo'},
@@ -35,6 +36,7 @@ export function ManyStory() {
     {id: 'tab-19', label: 'Foo'},
     {id: 'tab-20', label: 'Foo'}
   ]
+
   return (
     <div style={{background: 'white'}}>
       <TabList>

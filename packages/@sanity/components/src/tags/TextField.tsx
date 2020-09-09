@@ -1,58 +1,57 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import styles from 'part:@sanity/components/tags/textfield-style'
 
-function removeAt(array, index) {
+interface TagsTextFieldProps {
+  onChange: (value: string[]) => void
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  readOnly?: boolean
+  markers?: unknown[]
+  value?: string[]
+  inputId?: string
+}
+
+interface State {
+  inputValue: string
+}
+
+function removeAt(array: string[], index: number) {
   const copy = array ? array.slice() : []
   copy.splice(index, 1)
   return copy
 }
 
-export default class TagsTextField extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func.isRequired,
-    onBlur: PropTypes.func,
-    readOnly: PropTypes.bool,
-    markers: PropTypes.array,
-    value: PropTypes.arrayOf(PropTypes.string),
-    inputId: PropTypes.string
-  }
+export default class TagsTextField extends React.Component<
+  TagsTextFieldProps & Omit<React.HTMLProps<HTMLInputElement>, 'onBlur' | 'onChange' | 'value'>,
+  State
+> {
+  _input: HTMLInputElement | null = null
 
-  static defaultProps = {
-    value: [],
-    readOnly: false,
-    onBlur: () => {}
-  }
-
-  state = {
+  state: State = {
     inputValue: ''
   }
 
-  addTag(tagValue) {
-    const {value, onChange} = this.props
-    onChange((value || []).concat(tagValue))
+  addTag(tagValue: string) {
+    const {value = [], onChange} = this.props
+    onChange(value.concat(tagValue))
   }
 
-  removeTag(index) {
-    const {value, onChange} = this.props
+  removeTag(index: number) {
+    const {value = [], onChange} = this.props
     onChange(removeAt(value, index))
   }
 
-  addAndClearInput(tagValue) {
+  addAndClearInput(tagValue: string) {
     this.addTag(tagValue)
-    // clear input value
-    this.setState({
-      inputValue: ''
-    })
+    this.setState({inputValue: ''})
   }
 
-  handleRemoveTagClick = event => {
+  handleRemoveTagClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     this.removeTag(Number(event.currentTarget.getAttribute('data-index')))
   }
 
-  handleKeyDown = event => {
-    const {value} = this.props
+  handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const {value = []} = this.props
     const {inputValue} = this.state
 
     if (event.key === 'Backspace' && inputValue === '') {
@@ -60,7 +59,7 @@ export default class TagsTextField extends React.Component {
     }
   }
 
-  handleKeyPress = event => {
+  handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const {inputValue} = this.state
 
     if (inputValue && event.key === 'Enter') {
@@ -68,15 +67,18 @@ export default class TagsTextField extends React.Component {
     }
   }
 
-  handleBlur = event => {
+  handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const {inputValue} = this.state
     if (inputValue) {
       this.addAndClearInput(inputValue)
     }
-    this.props.onBlur(event)
+
+    if (this.props.onBlur) {
+      this.props.onBlur(event)
+    }
   }
 
-  handleInputChange = event => {
+  handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({inputValue: event.currentTarget.value})
   }
 
@@ -86,13 +88,13 @@ export default class TagsTextField extends React.Component {
     }
   }
 
-  setInput = el => {
+  setInput = (el: HTMLInputElement | null) => {
     this._input = el
   }
 
   render() {
     const {inputValue} = this.state
-    const {onChange, value, readOnly, markers, inputId, ...rest} = this.props
+    const {onChange, value = [], readOnly, markers, inputId, ...rest} = this.props
 
     return (
       <div className={readOnly ? styles.rootReadOnly : styles.root}>

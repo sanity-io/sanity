@@ -1,13 +1,13 @@
 import classNames from 'classnames'
 import React from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import {Marker} from '../types'
+import {Marker, Path} from '../types'
 
 import styles from './ValidationListItem.css'
 
-type Props = {
+interface ValidationListItemProps {
   kind: string
-  onClick?: (event: any, path: any) => void
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>, path?: Path) => void
   showLink?: boolean
   path: string
   hasFocus?: boolean
@@ -15,7 +15,7 @@ type Props = {
   marker: Marker
 }
 
-export default class ValidationListItem extends React.PureComponent<Props> {
+export default class ValidationListItem extends React.PureComponent<ValidationListItemProps> {
   static defaultProps = {
     kind: '',
     path: '',
@@ -23,7 +23,8 @@ export default class ValidationListItem extends React.PureComponent<Props> {
     showLink: false,
     truncate: false
   }
-  _element: any
+
+  _element: HTMLAnchorElement | null = null
 
   componentDidMount() {
     if (this.props.hasFocus) {
@@ -31,32 +32,32 @@ export default class ValidationListItem extends React.PureComponent<Props> {
     }
   }
 
-  handleKeyPress = event => {
+  handleKeyPress = (event: React.KeyboardEvent<HTMLAnchorElement>) => {
     if (event.key === 'Enter') {
-      this.handleClick(event)
+      this.handleClick(event as any)
     }
   }
 
   focus() {
     setTimeout(() => {
-      this._element.focus()
+      if (this._element) this._element.focus()
     }, 200)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: ValidationListItemProps) {
     if (nextProps.hasFocus) {
       this.focus()
     }
   }
 
-  handleClick = event => {
+  handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     const {marker, onClick} = this.props
     if (onClick) {
       onClick(event, marker.path)
     }
   }
 
-  setElement = element => {
+  setElement = (element: HTMLAnchorElement | null) => {
     this._element = element
   }
 
@@ -72,7 +73,7 @@ export default class ValidationListItem extends React.PureComponent<Props> {
         onKeyPress={this.handleKeyPress}
         className={classNames(
           onClick ? styles.interactiveItem : styles.item,
-          styles[marker.level],
+          marker.level && styles[marker.level],
           truncate && styles.truncate
         )}
       >

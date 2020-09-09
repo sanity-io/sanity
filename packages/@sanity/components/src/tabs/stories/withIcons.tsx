@@ -17,11 +17,13 @@ export function WithIconsStory() {
     'tab-edit',
     'props'
   )
+
   const tabs = [
     {icon: EditIcon, id: 'tab-edit', label: 'Content'},
     {icon: CalendarIcon, id: 'tab-seo', label: 'SEO'},
     {icon: EyeIcon, id: 'tab-preview', label: 'Preview'}
   ]
+
   return (
     <div style={{background: 'white'}}>
       <TabList>

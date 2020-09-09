@@ -28,7 +28,7 @@ function renderFullscreenContent(type) {
       return <div>{paragraphs}</div>
     case 'example':
       return (
-        <DialogContent size="medium" padding={false}>
+        <DialogContent size="medium">
           <h1>With dialog content</h1>
           <p>{paragraph}</p>
         </DialogContent>
@@ -82,7 +82,9 @@ function DialogExample(props) {
   useEffect(() => {
     portalRef.current.setAttribute('data-portal', '')
     document.body.appendChild(portalRef.current)
-    return () => document.body.removeChild(portalRef.current)
+    return () => {
+      document.body.removeChild(portalRef.current)
+    }
   }, [])
 
   return (

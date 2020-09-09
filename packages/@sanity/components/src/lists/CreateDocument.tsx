@@ -3,7 +3,7 @@ import React from 'react'
 
 import styles from './CreateDocument.css'
 
-interface CreateDocumentPreviewItem {
+export interface CreateDocumentPreviewItem {
   key: string
   title?: string
   subtitle?: string

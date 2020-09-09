@@ -1,20 +1,20 @@
 import styles from 'part:@sanity/components/previews/media-style'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import React from 'react'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 interface MediaPreviewProps {
   title?: string
   subtitle?: React.ReactNode | React.FC<{}>
   description?: React.ReactNode | React.FC<{}>
-  media?: React.ReactNode | React.FC<{dimensions: PreviewMediaDimensions; layout: 'media'}>
+  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'media'}>
   progress?: number
-  mediaDimensions?: PreviewMediaDimensions
+  mediaDimensions?: MediaDimensions
   children?: React.ReactNode
   isPlaceholder?: boolean
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 160,
   height: 160,
   aspect: 1,

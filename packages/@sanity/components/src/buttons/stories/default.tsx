@@ -12,18 +12,17 @@ const actionsProps = {
   onFocus: action('onFocus')
 }
 
+let buttonElement: any = null
+
+function testFocus() {
+  if (buttonElement) buttonElement.focus()
+}
+
+function setButtonElement(element: any) {
+  buttonElement = element
+}
+
 export function DefaultStory() {
-  let buttonElement: any = null
-
-  function testFocus() {
-    console.log('test focus')
-    if (buttonElement) buttonElement.focus()
-  }
-
-  function setButtonElement(element: any) {
-    buttonElement = element
-  }
-
   button('Test focus', testFocus, 'test')
 
   const buttonProps = {
@@ -53,12 +52,12 @@ export function DefaultStory() {
     tone: select('Tone', {'': '(none)', navbar: 'Navbar'}, '', 'Props') || undefined
   }
 
-  const children = text('Text', 'Touch Me!', 'props')
+  const children = text('Text', 'Label', 'props')
 
   return (
     <CenteredContainer>
       <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
-        <div>
+        <div style={{width: '100%', maxWidth: 300}}>
           <div>
             <h2>kind="default"</h2>
             <Button {...buttonProps} ref={setButtonElement}>

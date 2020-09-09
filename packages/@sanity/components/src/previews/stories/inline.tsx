@@ -4,11 +4,11 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
 import React from 'react'
 
-const renderMedia = dimensions => {
+const renderMedia = () => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
 }
 
-const renderTitle = options => {
+const renderTitle = (options: {layout: string}) => {
   return (
     <span>
       This <span style={{color: 'green'}}>is</span> a <strong>title</strong>
@@ -32,11 +32,7 @@ export function InlineStory() {
         <Sanity part="part:@sanity/components/previews/inline" propTables={[InlinePreview]}>
           <p>
             This is a text, and suddenly a inline preview appearst before
-            <InlinePreview
-              title={renderTitle}
-              media={renderMedia}
-              // isPlaceholder={boolean('isPlaceholder', false, 'props')}
-            >
+            <InlinePreview title={renderTitle} media={renderMedia}>
               {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
             </InlinePreview>
             this word.
@@ -52,11 +48,7 @@ export function InlineStory() {
         <Sanity part="part:@sanity/components/previews/inline" propTables={[InlinePreview]}>
           <p>
             This is a text, and suddenly a inline preview appearst before
-            <InlinePreview
-              title={<span>title</span>}
-              media={renderMedia}
-              // isPlaceholder={boolean('isPlaceholder', false, 'props')}
-            >
+            <InlinePreview title={<span>title</span>} media={renderMedia}>
               {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
             </InlinePreview>
             this word.
@@ -71,12 +63,7 @@ export function InlineStory() {
       <Sanity part="part:@sanity/components/previews/inline" propTables={[InlinePreview]}>
         <p>
           This is a text, and suddenly an inline preview appears before{' '}
-          <InlinePreview
-            title={text('title', 'This is the title', 'props')}
-            media={renderMedia}
-            // date={boolean('date', true, 'test') ? new Date() : false}
-            // isPlaceholder={boolean('isPlaceholder', false, 'props')}
-          >
+          <InlinePreview title={text('title', 'This is the title', 'props')} media={renderMedia}>
             {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
           </InlinePreview>{' '}
           this word.

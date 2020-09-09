@@ -3,7 +3,7 @@ import FileInput from 'part:@sanity/components/fileinput/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

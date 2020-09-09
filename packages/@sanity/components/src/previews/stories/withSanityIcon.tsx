@@ -12,12 +12,7 @@ export function WithSanityIconStory() {
         <Sanity part="part:@sanity/components/previews/default" propTables={[DefaultPreview]}>
           <Stack>
             <PreviewCard>
-              <DefaultPreview
-                title="Title"
-                subtitle="Subtitle"
-                description="Description"
-                media={<WarningIcon />}
-              />
+              <DefaultPreview title="Title" subtitle="Subtitle" media={<WarningIcon />} />
             </PreviewCard>
           </Stack>
         </Sanity>

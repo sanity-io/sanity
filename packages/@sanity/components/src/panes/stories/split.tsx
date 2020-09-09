@@ -9,75 +9,22 @@ import React from 'react'
 
 import styles from './split.css'
 
-class AutoCollapseTest extends React.PureComponent {
-  state = {
-    collapsed: []
-  }
+interface PaneType {
+  collapsed: boolean
+  defaultSize: number
+  index: number
+  isCollapsed: boolean
+  key: string
+  minSize: number
+  title: string
+}
 
-  handleCollapse = collapsedPanes => {
-    this.setState({collapsed: collapsedPanes})
-  }
+interface Props {
+  panes: PaneType[]
+}
 
-  handleExpand = collapsedPanes => {
-    this.setState({collapsed: collapsedPanes})
-  }
-
-  handlePaneCollapse = index => {
-    this.setState(prevState => {
-      const collapsed = prevState.collapsed.slice()
-      collapsed[index] = true
-      return {collapsed}
-    })
-  }
-
-  handlePaneExpand = index => {
-    this.setState(prevState => {
-      const collapsed = prevState.collapsed.slice()
-      collapsed[index] = false
-      return {collapsed}
-    })
-  }
-
-  render() {
-    const {panes} = this.props
-    const {collapsed} = this.state
-
-    return (
-      <SplitController
-        onShouldCollapse={this.handleCollapse}
-        onShouldExpand={this.handleExpand}
-        collapsed={collapsed} // trigger
-      >
-        {panes.map((pane, i) => {
-          return (
-            <SplitPaneWrapper
-              minSize={pane.minSize}
-              defaultSize={pane.defaultSize}
-              key={pane.key}
-              isCollapsed={pane.isCollapsed}
-            >
-              <Pane
-                index={i}
-                title={pane.title}
-                minSize={pane.minSize}
-                defaultSize={pane.defaultSize}
-                onExpand={this.handlePaneExpand}
-                onCollapse={this.handlePaneCollapse}
-                onMenuToggle={action}
-                isCollapsed={pane.isCollapsed}
-              >
-                <div className={styles.root}>
-                  <pre>collapsed={pane.isCollapsed ? 'true' : 'false'}</pre>
-                  <pre>defaultSize={pane.defaultSize}</pre>
-                  <pre>minSize={pane.minSize}</pre>
-                </div>
-              </Pane>
-            </SplitPaneWrapper>
-          )
-        })}
-      </SplitController>
-    )
-  }
+interface State {
+  collapsed: PaneType[]
 }
 
 export function SplitStory() {
@@ -97,4 +44,55 @@ export function SplitStory() {
       <AutoCollapseTest panes={object('Panes', panes, 'props')} />
     </DebugRouterProvider>
   )
+}
+
+class AutoCollapseTest extends React.PureComponent<Props, State> {
+  state: State = {
+    collapsed: []
+  }
+
+  handlePaneCollapse = (index: number) => {
+    this.setState(prevState => {
+      const collapsed = prevState.collapsed.slice()
+      collapsed[index].collapsed = true
+      return {collapsed}
+    })
+  }
+
+  handlePaneExpand = (index: number) => {
+    this.setState(prevState => {
+      const collapsed = prevState.collapsed.slice()
+      collapsed[index].collapsed = false
+      return {collapsed}
+    })
+  }
+
+  render() {
+    const {panes} = this.props
+
+    return (
+      <SplitController>
+        {panes.map((pane, i) => {
+          return (
+            <SplitPaneWrapper minSize={pane.minSize} defaultSize={pane.defaultSize} key={pane.key}>
+              <Pane
+                index={i}
+                title={pane.title}
+                onExpand={this.handlePaneExpand}
+                onCollapse={this.handlePaneCollapse}
+                onAction={action('action')}
+                isCollapsed={pane.isCollapsed}
+              >
+                <div className={styles.root}>
+                  <pre>collapsed={pane.isCollapsed ? 'true' : 'false'}</pre>
+                  <pre>defaultSize={pane.defaultSize}</pre>
+                  <pre>minSize={pane.minSize}</pre>
+                </div>
+              </Pane>
+            </SplitPaneWrapper>
+          )
+        })}
+      </SplitController>
+    )
+  }
 }

@@ -4,7 +4,7 @@ import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 import {number} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'block',
   position: 'absolute',
   padding: '2rem',

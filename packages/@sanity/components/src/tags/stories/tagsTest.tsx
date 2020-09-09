@@ -3,7 +3,7 @@ import {array} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React from 'react'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -12,32 +12,6 @@ const centerStyle = {
   position: 'absolute',
   top: 0,
   left: 0
-}
-
-class DefaultTextFieldTagsImplementation extends React.PureComponent {
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      tags: this.props.tags || []
-    }
-  }
-
-  handleChange = tags => {
-    this.setState({
-      tags: tags
-    })
-  }
-
-  render() {
-    return (
-      <TagsTextField
-        label="Tags"
-        placeholder="This is the placeholder"
-        value={this.state.tags}
-        onChange={this.handleChange}
-      />
-    )
-  }
 }
 
 export function TagsTestStory() {
@@ -63,4 +37,44 @@ export function TagsTestStory() {
       </Sanity>
     </div>
   )
+}
+
+interface DefaultTextFieldTagsImplementationProps {
+  tags: string[]
+}
+
+interface State {
+  tags: string[]
+}
+
+class DefaultTextFieldTagsImplementation extends React.PureComponent<
+  DefaultTextFieldTagsImplementationProps,
+  State
+> {
+  state: State = {tags: []}
+
+  constructor(props: DefaultTextFieldTagsImplementationProps) {
+    super(props)
+
+    this.state = {
+      tags: props.tags || []
+    }
+  }
+
+  handleChange = (tags: string[]) => {
+    this.setState({
+      tags: tags
+    })
+  }
+
+  render() {
+    return (
+      <TagsTextField
+        label="Tags"
+        placeholder="This is the placeholder"
+        value={this.state.tags}
+        onChange={this.handleChange}
+      />
+    )
+  }
 }

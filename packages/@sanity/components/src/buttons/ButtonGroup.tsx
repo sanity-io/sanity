@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
-import styles from './styles/ButtonGroup.css'
+
+import styles from './ButtonGroup.css'
 
 export default class ButtonGroup extends React.PureComponent<React.HTMLProps<HTMLDivElement>> {
   render() {

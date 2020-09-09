@@ -1,5 +1,5 @@
-/* eslint-disable complexity */
-import PropTypes from 'prop-types'
+/* eslint-disable complexity, max-depth */
+
 import React from 'react'
 import styles from 'part:@sanity/components/selects/searchable-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
@@ -7,80 +7,74 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {Manager, Reference, Popper} from 'react-popper'
+import {get} from 'lodash'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
-import {get} from 'lodash'
 import SelectMenu from './SelectMenu'
 
-const noop = () => {}
+// interface Item {}
 
-export default class StatelessSearchableSelect extends React.PureComponent {
-  static propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.any,
-    inputValue: PropTypes.string,
-    onInputChange: PropTypes.func,
-    onClear: PropTypes.func,
-    renderItem: PropTypes.func,
-    placeholder: PropTypes.string,
-    isLoading: PropTypes.bool,
-    isOpen: PropTypes.bool,
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-    openItemElement: PropTypes.func,
-    items: PropTypes.array,
-    highlightIndex: PropTypes.number,
-    onHighlightIndexChange: PropTypes.func,
-    isInputSelected: PropTypes.bool,
-    disabled: PropTypes.bool,
-    dropdownPosition: PropTypes.string,
-    readOnly: PropTypes.bool,
-    inputId: PropTypes.string
+type Item = unknown
+
+// @todo
+type Value = any
+
+interface StatelessSearchableSelectProps {
+  onChange?: (item: Item) => void
+  value?: Value
+  inputValue?: string
+  onInputChange?: (val: string) => void
+  onClear?: () => void
+  renderItem: (item: Item) => React.ReactNode
+  placeholder?: string
+  isLoading?: boolean
+  isOpen?: boolean
+  onOpen?: () => void
+  onClose?: (event?: MouseEvent) => void
+  openItemElement?: (value: Value) => React.ReactNode
+  items?: Item[]
+  highlightIndex?: number
+  onHighlightIndexChange?: (index: number) => void
+  isInputSelected?: boolean
+  disabled?: boolean
+  dropdownPosition?: string
+  readOnly?: boolean
+  inputId?: string
+}
+
+export default class StatelessSearchableSelect extends React.PureComponent<
+  StatelessSearchableSelectProps & React.HTMLProps<HTMLInputElement>
+> {
+  _input: DefaultTextInput | null = null
+
+  handleSelect = (item: Item) => {
+    if (this.props.onChange) this.props.onChange(item)
   }
 
-  static defaultProps = {
-    onChange: noop,
-    onOpen: noop,
-    onClose: noop,
-    onInputChange: noop,
-    isLoading: false,
-    readOnly: false,
-    renderItem: item => item,
-    items: [],
-    dropdownPosition: 'bottom',
-    inputId: ''
-  }
-
-  handleSelect = item => {
-    this.props.onChange(item)
-  }
-
-  handleArrowClick = () => {
+  handleArrowClick = (event?: React.MouseEvent<HTMLDivElement>) => {
     const {isOpen, onOpen} = this.props
     if (isOpen) {
       this.handleClose()
-    } else {
-      onOpen()
-    }
+    } else if (onOpen) onOpen()
   }
 
-  handleArrowKeyPress = event => {
+  handleArrowKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
       this.handleArrowClick()
     }
   }
 
-  handleInputChange = event => {
-    this.props.onInputChange(event.target.value)
+  handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (this.props.onInputChange) this.props.onInputChange(event.target.value)
   }
 
-  handleKeyDown = event => {
-    const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen} = this.props
+  handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const {items, highlightIndex = -1, onHighlightIndexChange, isOpen, onOpen} = this.props
 
     if (event.key === 'ArrowDown' && !isOpen) {
-      onOpen()
+      if (onOpen) onOpen()
     }
 
     if (!items || items.length === 0) {
@@ -91,38 +85,42 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     if (event.key === 'ArrowUp') {
       event.preventDefault()
       const nextIndex = highlightIndex - 1
-      onHighlightIndexChange(nextIndex < 0 ? lastIndex : nextIndex)
+      if (onHighlightIndexChange) {
+        onHighlightIndexChange(nextIndex < 0 ? lastIndex : nextIndex)
+      }
     }
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (!isOpen) {
-        onOpen()
+        if (onOpen) onOpen()
       }
       const nextIndex = highlightIndex + 1
-      onHighlightIndexChange(nextIndex > lastIndex ? 0 : nextIndex)
+      if (onHighlightIndexChange) {
+        onHighlightIndexChange(nextIndex > lastIndex ? 0 : nextIndex)
+      }
     }
   }
 
-  handleKeyUp = event => {
-    const {items, onChange, highlightIndex} = this.props
+  handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const {items = [], onChange, highlightIndex = -1} = this.props
     if (event.key === 'Enter' && highlightIndex > -1 && items[highlightIndex]) {
-      onChange(items[highlightIndex])
+      if (onChange) onChange(items[highlightIndex])
     }
   }
 
-  handleClose = event => {
-    this.props.onClose()
+  handleClose = (event?: MouseEvent) => {
+    if (this.props.onClose) this.props.onClose(event)
   }
 
-  setInput = input => {
-    this._input = input
+  setInput = (ref: DefaultTextInput | null) => {
+    this._input = ref
   }
 
   focus() {
-    this._input.focus()
+    if (this._input) this._input.focus()
   }
 
-  renderItem = item => {
+  renderItem = (item: Item) => {
     return <div className={styles.item}>{this.props.renderItem(item)}</div>
   }
 
@@ -132,7 +130,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       placeholder,
       isLoading,
       value,
-      items,
+      items = [],
       renderItem,
       isOpen,
       highlightIndex,
@@ -142,7 +140,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       onInputChange,
       onOpen,
       onClose,
-      dropdownPosition,
+      dropdownPosition = 'bottom',
       disabled,
       onHighlightIndexChange,
       openItemElement,
@@ -168,7 +166,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 value={inputValue || ''}
                 selected={isInputSelected}
                 disabled={disabled}
-                ref={this.setInput}
+                ref={this.setInput as any}
                 spellCheck="false"
                 readOnly={readOnly}
               />
@@ -186,9 +184,9 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                     {!isLoading && (
                       <div
                         className={styles.arrow}
-                        onClick={disabled ? null : this.handleArrowClick}
+                        onClick={disabled ? undefined : this.handleArrowClick}
                         tabIndex={0}
-                        onKeyPress={disabled ? null : this.handleArrowKeyPress}
+                        onKeyPress={disabled ? undefined : this.handleArrowKeyPress}
                       >
                         <FaAngleDown color="inherit" />
                       </div>
@@ -210,22 +208,24 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               <Portal>
                 <Popper
                   placement="bottom"
-                  modifiers={{
-                    preventOverflow: {
-                      boundariesElement: 'viewport'
-                    },
-                    customStyle: {
-                      enabled: true,
-                      fn: data => {
-                        const width = get(data, 'instance.reference.clientWidth') || 500
-                        data.styles = {
-                          ...data.styles,
-                          width: width
+                  modifiers={
+                    {
+                      preventOverflow: {
+                        boundariesElement: 'viewport'
+                      },
+                      customStyle: {
+                        enabled: true,
+                        fn: data => {
+                          const width = get(data, 'instance.reference.clientWidth') || 500
+                          data.styles = {
+                            ...data.styles,
+                            width: width
+                          }
+                          return data
                         }
-                        return data
                       }
-                    }
-                  }}
+                    } as any
+                  }
                 >
                   {({ref, style, placement, arrowProps}) => (
                     <div

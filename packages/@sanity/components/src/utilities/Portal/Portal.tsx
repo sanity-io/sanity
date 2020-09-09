@@ -1,7 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {createPortal} from 'react-dom'
 import styles from './Portal.css'
+
+interface PortalProps {
+  children?: React.ReactNode
+}
 
 const canUseDOM = !!(
   typeof window !== 'undefined' &&
@@ -9,26 +12,27 @@ const canUseDOM = !!(
   window.document.createElement
 )
 
-export class Portal extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired
-  }
+export class Portal extends React.Component<PortalProps> {
+  node?: HTMLDivElement
 
   componentWillUnmount() {
     if (this.node) {
       document.body.removeChild(this.node)
     }
-    this.node = null
+
+    this.node = undefined
   }
 
   render() {
     if (!canUseDOM) {
       return null
     }
+
     if (!this.node) {
       this.node = document.createElement('div')
       document.body.appendChild(this.node)
     }
+
     return createPortal(
       <React.Fragment>
         {this.props.children}

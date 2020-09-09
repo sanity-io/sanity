@@ -1,39 +1,24 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import styles from 'part:@sanity/components/textareas/default-style'
 import IoAndroidClose from 'part:@sanity/base/close-icon'
+import styles from 'part:@sanity/components/textareas/default-style'
 
-const NOOP = () => {}
-export default class DefaultTextArea extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    onKeyPress: PropTypes.func,
-    onBlur: PropTypes.func,
-    onClear: PropTypes.func,
-    value: PropTypes.string,
-    customValidity: PropTypes.string,
-    isClearable: PropTypes.bool,
-    rows: PropTypes.number,
-    hasFocus: PropTypes.bool,
-    disabled: PropTypes.bool,
-    inputId: PropTypes.string
-  }
+interface DefaultTextAreaProps {
+  onClear?: (event?: unknown) => void
+  customValidity?: string
+  isClearable?: boolean
+  hasFocus?: boolean
+  inputId?: string
+}
 
-  static defaultProps = {
-    value: '',
-    customValidity: '',
-    rows: 10,
-    isClearable: false,
-    onKeyPress: NOOP,
-    onChange: NOOP,
-    onFocus: NOOP,
-    onClear: NOOP,
-    onBlur: NOOP
-  }
+export default class DefaultTextArea extends React.Component<
+  DefaultTextAreaProps & Omit<React.HTMLProps<HTMLTextAreaElement>, 'id'>
+> {
+  _input: HTMLTextAreaElement | null = null
 
-  handleClear = event => {
-    this.props.onClear(event)
+  handleClear = (event: unknown) => {
+    if (this.props.onClear) {
+      this.props.onClear(event)
+    }
   }
 
   select() {
@@ -48,32 +33,32 @@ export default class DefaultTextArea extends React.Component {
     }
   }
 
-  setInput = element => {
+  setInput = (element: HTMLTextAreaElement | null) => {
     this._input = element
   }
 
   componentDidMount() {
-    this._input.setCustomValidity(this.props.customValidity)
+    if (this._input) {
+      this._input.setCustomValidity(this.props.customValidity || '')
+    }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.customValidity !== this.props.customValidity) {
-      this._input.setCustomValidity(nextProps.customValidity)
+  UNSAFE_componentWillReceiveProps(nextProps: DefaultTextAreaProps) {
+    if (this._input) {
+      if (nextProps.customValidity !== this.props.customValidity) {
+        this._input.setCustomValidity(nextProps.customValidity || '')
+      }
     }
   }
 
   render() {
     const {
-      value,
       isClearable,
-      rows,
-      onKeyPress,
-      onChange,
-      onFocus,
-      onBlur,
       onClear,
-      customValidity,
+      customValidity = '',
       inputId,
+      hasFocus,
+      rows = 10,
       ...rest
     } = this.props
 
@@ -82,16 +67,12 @@ export default class DefaultTextArea extends React.Component {
         <textarea
           id={inputId}
           className={styles.textarea}
-          rows={rows}
-          value={value}
-          onChange={onChange}
-          onKeyPress={onKeyPress}
-          onFocus={onFocus}
-          onBlur={onBlur}
           autoComplete="off"
           ref={this.setInput}
+          rows={rows}
           {...rest}
         />
+
         {isClearable && !this.props.disabled && (
           <button type="button" className={styles.clearButton} onClick={onClear}>
             <IoAndroidClose color="inherit" />

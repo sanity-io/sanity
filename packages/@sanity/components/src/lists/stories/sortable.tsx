@@ -7,7 +7,7 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const chance = new Chance()
 
-const defaultItems = range(100).map((item, i) => {
+const defaultItems = range(100).map((_, i) => {
   return {
     key: `${i}`,
     title: chance.name()

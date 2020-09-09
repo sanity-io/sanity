@@ -1,15 +1,15 @@
 import styles from 'part:@sanity/components/previews/inline-style'
 import React from 'react'
-import {PreviewMediaDimensions} from './types'
+import {MediaDimensions} from '../types'
 
 interface InlinePreviewProps {
   title?: React.ReactNode | React.FC<{layout: 'inline'}>
-  media?: React.ReactNode | React.FC<{dimensions: PreviewMediaDimensions; layout: 'default'}>
+  media?: React.ReactNode | React.FC<{dimensions: MediaDimensions; layout: 'default'}>
   children?: React.ReactNode
-  mediaDimensions?: PreviewMediaDimensions
+  mediaDimensions?: MediaDimensions
 }
 
-const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
+const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
   height: 32,
   fit: 'crop',

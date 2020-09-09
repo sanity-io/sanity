@@ -1,36 +1,43 @@
-/* eslint-disable react/no-multi-comp, complexity, react/jsx-filename-extension */
+/* eslint-disable complexity */
 
-import {FieldPresence} from '@sanity/base/presence'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
-import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import {Marker, Path} from '../types'
 import FieldStatus from './FieldStatus'
 
-export default class Fieldset extends React.PureComponent {
-  static propTypes = {
-    description: PropTypes.string,
-    legend: PropTypes.string.isRequired,
-    columns: PropTypes.number,
-    isCollapsible: PropTypes.bool,
-    onFocus: PropTypes.func,
-    isCollapsed: PropTypes.bool,
-    fieldset: PropTypes.shape({
-      description: PropTypes.string,
-      legend: PropTypes.string
-    }),
-    children: PropTypes.node,
-    level: PropTypes.number,
-    className: PropTypes.string,
-    tabIndex: PropTypes.number,
-    transparent: PropTypes.bool,
-    styles: PropTypes.object,
-    markers: PropTypes.array,
-    presence: PropTypes.array
+interface FieldsetProps {
+  description?: string
+  legend: string
+  columns?: number
+  isCollapsible?: boolean
+  onFocus?: (path: Path) => void
+  isCollapsed?: boolean
+  fieldset: {
+    description?: string
+    legend?: string
   }
+  children?: React.ReactNode
+  level?: number
+  className?: string
+  tabIndex?: number
+  transparent?: boolean
+  styles?: object
+  markers?: Marker[]
+  presence: FormFieldPresence[]
+}
+
+interface State {
+  isCollapsed: boolean
+  hasBeenToggled: boolean
+}
+
+export default class Fieldset extends React.PureComponent<FieldsetProps, State> {
+  _focusElement: HTMLDivElement | null = null
 
   static defaultProps = {
     children: undefined,
@@ -49,10 +56,11 @@ export default class Fieldset extends React.PureComponent {
     presence: []
   }
 
-  constructor(props) {
-    super()
+  constructor(props: FieldsetProps) {
+    super(props)
+
     this.state = {
-      isCollapsed: props.isCollapsed,
+      isCollapsed: props.isCollapsed || false,
       hasBeenToggled: false
     }
   }
@@ -70,18 +78,19 @@ export default class Fieldset extends React.PureComponent {
     }
   }
 
-  handleFocus = event => {
+  handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
+    // Make sure we don't trigger onFocus for child elements
     if (event.target === this._focusElement) {
-      // Make sure we don't trigger onFocus for child elements
-      this.props.onFocus(event)
+      // @todo: don't call with `event` here?
+      if (this.props.onFocus) this.props.onFocus(event as any)
     }
   }
 
   focus() {
-    this._focusElement.focus()
+    if (this._focusElement) this._focusElement.focus()
   }
 
-  setFocusElement = el => {
+  setFocusElement = (el: HTMLDivElement | null) => {
     this._focusElement = el
   }
 
@@ -91,14 +100,14 @@ export default class Fieldset extends React.PureComponent {
       legend,
       description,
       columns,
-      level,
+      level = 1,
       className,
       isCollapsible,
       isCollapsed: _ignore,
       children,
       tabIndex,
       transparent,
-      markers,
+      markers = [],
       presence,
       ...rest
     } = this.props
@@ -144,7 +153,6 @@ export default class Fieldset extends React.PureComponent {
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
                   // Uses the tabIndex 0 and -1 here to avoid focus state on click
                   tabIndex={isCollapsible ? 0 : undefined}
-                  // eslint-disable-next-line react/jsx-no-bind
                   onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
                 >
                   <div
@@ -157,7 +165,7 @@ export default class Fieldset extends React.PureComponent {
                         <ArrowDropDown />
                       </div>
                     )}
-                    <DefaultLabel className={styles.label}>
+                    <DefaultLabel className={styles.label} level={1}>
                       {legend || fieldset.legend}
                     </DefaultLabel>
                   </div>
@@ -179,16 +187,12 @@ export default class Fieldset extends React.PureComponent {
                 )}
               </div>
               <FieldStatus>
-                <FieldPresence presence={presence} />
+                <FieldPresence maxAvatars={4} presence={presence} />
               </FieldStatus>
             </div>
 
             {isCollapsible && !isCollapsed && (
-              <div
-                duration={250}
-                height={isCollapsed && children ? 0 : 'auto'}
-                className={styles.content}
-              >
+              <div className={styles.content}>
                 <div className={styles.fieldWrapper}>
                   {(hasBeenToggled || !isCollapsed) && children}
                 </div>

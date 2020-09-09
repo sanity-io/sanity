@@ -1,21 +1,49 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import {negate} from 'lodash'
+import S, {InitialValueTemplateItem} from '@sanity/base/structure-builder'
 import classNames from 'classnames'
+import {negate} from 'lodash'
 import {MenuButton} from 'part:@sanity/components/menu-button'
-import Menu from 'part:@sanity/components/menus/default'
+import Menu, {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
-import S from '@sanity/base/structure-builder'
+import React from 'react'
+import {childrenToElementArray} from '../helpers'
 import Styleable from '../utilities/Styleable'
 
-import defaultStyles from './styles/DefaultPane.css'
+import defaultStyles from './DefaultPane.css'
 
-function getActionKey(action, index) {
+interface DefaultPaneProps {
+  hasTabs?: boolean
+  tabIdPrefix?: string
+  viewId?: string
+  title?: React.ReactNode
+  isCollapsed?: boolean
+  onExpand?: (index: number) => void
+  onCollapse?: (index: number) => void
+  children?: React.ReactNode
+  isSelected?: boolean
+  isScrollable?: boolean
+  hasSiblings?: boolean
+  onAction?: (item: MenuItemType) => boolean
+  renderActions?: (actions: MenuItemType[]) => React.ReactNode
+  menuItems?: MenuItemType[]
+  menuItemGroups?: MenuItemGroupType[]
+  initialValueTemplates?: InitialValueTemplateItem[]
+  index: number
+  footer?: React.ReactNode
+  renderHeaderViewMenu?: () => React.ReactNode
+  styles?: Record<string, string>
+}
+
+interface State {
+  isInitialValueMenuOpen: boolean
+  isMenuOpen: boolean
+}
+
+function getActionKey(action: MenuItemType, index: number) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
 }
 
@@ -28,56 +56,10 @@ const noop = () => {
   /* intentional noop */
 }
 
-const isActionButton = item => item.showAsAction
+const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
-function toChildNodeArray(nodes) {
-  const arr = Array.isArray(nodes) ? nodes : [nodes]
-
-  return arr.filter(x => x !== undefined && x !== null && x !== false)
-}
-
-class Pane extends React.PureComponent {
-  static propTypes = {
-    hasTabs: PropTypes.bool,
-    tabIdPrefix: PropTypes.string,
-    viewId: PropTypes.string,
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-    isCollapsed: PropTypes.bool,
-    onExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
-    children: PropTypes.node,
-    isSelected: PropTypes.bool,
-    isScrollable: PropTypes.bool,
-    hasSiblings: PropTypes.bool,
-    onAction: PropTypes.func,
-    renderActions: PropTypes.func,
-    menuItems: PropTypes.arrayOf(
-      PropTypes.shape({
-        showAsAction: PropTypes.oneOfType([
-          PropTypes.bool,
-          PropTypes.shape({whenCollapsed: PropTypes.bool})
-        ])
-      })
-    ),
-    menuItemGroups: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string
-      })
-    ),
-    initialValueTemplates: PropTypes.arrayOf(
-      PropTypes.shape({
-        templateId: PropTypes.string,
-        parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
-      })
-    ),
-    index: PropTypes.number,
-    footer: PropTypes.node,
-    renderHeaderViewMenu: PropTypes.func,
-    styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
-  }
-
+class Pane extends React.PureComponent<DefaultPaneProps, State> {
   static defaultProps = {
     index: 0,
     footer: undefined,
@@ -101,11 +83,12 @@ class Pane extends React.PureComponent {
 
   actionHandlers = {}
 
-  rootElement = null
+  rootElement: HTMLDivElement | null = null
 
-  scrollFrameId = null
+  templateMenuId: string
+  paneMenuId: string
 
-  constructor(props) {
+  constructor(props: DefaultPaneProps) {
     super(props)
 
     this.state = {
@@ -129,11 +112,11 @@ class Pane extends React.PureComponent {
     this.setState({isMenuOpen: false})
   }
 
-  setContextMenuOpen = val => {
+  setContextMenuOpen = (val: boolean) => {
     this.setState({isMenuOpen: val})
   }
 
-  setInitialValueMenuOpen = val => {
+  setInitialValueMenuOpen = (val: boolean) => {
     this.setState({isInitialValueMenuOpen: val})
   }
 
@@ -141,60 +124,67 @@ class Pane extends React.PureComponent {
     this.setState({isInitialValueMenuOpen: false})
   }
 
-  handleRootClick = event => {
+  handleRootClick = () => {
     const {onExpand, isCollapsed, index} = this.props
+
     if (isCollapsed && onExpand) {
       onExpand(index)
     }
   }
 
-  handleTitleClick = event => {
+  handleTitleClick = () => {
     const {onCollapse, isCollapsed, index} = this.props
     if (!isCollapsed && onCollapse) {
       onCollapse(index)
     }
   }
 
-  handleMenuAction = item => {
+  handleMenuAction = (item: MenuItemType) => {
     this.setContextMenuOpen(false)
 
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
     }
-    const actionHandled = this.props.onAction(item)
+
+    const {onAction} = this.props
+
+    const actionHandled = onAction && onAction(item)
+
     if (actionHandled) {
       return
     }
 
-    const handler = this.actionHandlers[item.action] || noActionFn
+    const handler =
+      (typeof item.action === 'string' && this.actionHandlers[item.action]) || noActionFn
+
     handler(item.params, this)
   }
 
-  renderIntentAction = (action, i) => {
-    const {styles} = this.props
+  renderIntentAction = (action: MenuItemType, i: number): React.ReactElement => {
+    const {styles = {}} = this.props
 
     return (
       <IntentButton
         className={styles.actionButton}
         icon={action.icon}
-        intent={action.intent.type}
+        intent={action.intent && action.intent.type}
         key={getActionKey(action, i)}
         kind="simple"
         padding="small"
-        params={action.intent.params}
+        params={action.intent && action.intent.params}
         title={action.title}
       />
     )
   }
 
-  renderActionMenuItem = item => {
-    const {styles} = this.props
-    if (!item) {
-      return null
-    }
-    const params = item.intent.params
+  renderActionMenuItem = (item: MenuItemType) => {
+    if (!item) return null
+
+    const {styles = {}} = this.props
+    const params = item.intent && item.intent.params
     const Icon = item.icon
+
     return (
       <IntentLink
         className={styles.initialValueTemplateMenuItem}
@@ -204,23 +194,34 @@ class Pane extends React.PureComponent {
       >
         <div>
           <div>{item.title}</div>
-          <div className={styles.initialValueTemplateSubtitle}>{params.type}</div>
+          {typeof params === 'object' && (
+            // @todo: typings
+            <div className={styles.initialValueTemplateSubtitle}>{(params as any).type}</div>
+          )}
         </div>
-        <div className={styles.initialValueTemplateMenuItemIcon}>
-          <Icon />
-        </div>
+        {Icon && (
+          <div className={styles.initialValueTemplateMenuItemIcon}>
+            <Icon />
+          </div>
+        )}
       </IntentLink>
     )
   }
 
-  renderAction = (action, i) => {
+  renderAction = (action: MenuItemType, i: number): React.ReactNode => {
     if (action.intent) {
       return this.renderIntentAction(action, i)
     }
 
-    const {styles, initialValueTemplates} = this.props
-    const items = S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)
+    const styles = this.props.styles || {}
+
+    // @todo: typings
+    const items: MenuItemType[] = this.props.initialValueTemplates
+      ? (S.menuItemsFromInitialValueTemplateItems(this.props.initialValueTemplates) as any)
+      : []
+
     const Icon = action.icon
+
     return (
       <div className={styles.menuWrapper} key={getActionKey(action, i)}>
         {action.action !== 'toggleTemplateSelectionMenu' && (
@@ -230,7 +231,6 @@ class Pane extends React.PureComponent {
             kind="simple"
             padding="small"
             title={action.title}
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={this.handleMenuAction.bind(this, action)}
           />
         )}
@@ -264,10 +264,13 @@ class Pane extends React.PureComponent {
   }
 
   renderActionNodes() {
-    const {isCollapsed, menuItems, renderActions} = this.props
+    const {isCollapsed, menuItems = [], renderActions} = this.props
 
     const actions = menuItems.filter(
-      action => action.showAsAction && (!isCollapsed || action.showAsAction.whenCollapsed)
+      action =>
+        action.showAsAction &&
+        (!isCollapsed ||
+          (typeof action.showAsAction === 'object' && action.showAsAction.whenCollapsed))
     )
 
     if (renderActions) {
@@ -278,9 +281,10 @@ class Pane extends React.PureComponent {
   }
 
   renderHeaderToolsOverflowMenu() {
-    const {styles, menuItems, menuItemGroups, isCollapsed} = this.props
+    const {styles = {}, menuItems = [], menuItemGroups} = this.props
     const items = menuItems.filter(isMenuButton)
     const {isMenuOpen} = this.state
+
     if (items.length === 0) {
       return null
     }
@@ -306,7 +310,6 @@ class Pane extends React.PureComponent {
               id={this.paneMenuId}
               items={items}
               groups={menuItemGroups}
-              origin={isCollapsed ? 'top-left' : 'top-right'}
               onAction={this.handleMenuAction}
               onClose={this.handleCloseContextMenu}
             />
@@ -320,13 +323,12 @@ class Pane extends React.PureComponent {
   }
 
   renderHeaderTools() {
-    const {styles} = this.props
-    const headerActionNodes = toChildNodeArray(this.renderActionNodes())
+    const {styles = {}} = this.props
+    const headerActionNodes = childrenToElementArray(this.renderActionNodes())
 
     return (
       <>
         {headerActionNodes.map((actionNode, actionNodeIndex) => (
-          // eslint-disable-next-line react/no-array-index-key
           <div key={actionNodeIndex} className={styles.headerToolContainer}>
             {actionNode}
           </div>
@@ -336,7 +338,7 @@ class Pane extends React.PureComponent {
     )
   }
 
-  setRootElement = el => {
+  setRootElement = (el: HTMLDivElement | null) => {
     this.rootElement = el
   }
 
@@ -350,7 +352,7 @@ class Pane extends React.PureComponent {
       isCollapsed,
       isScrollable,
       hasSiblings,
-      styles,
+      styles = {},
       footer,
       tabIdPrefix,
       viewId
@@ -364,15 +366,15 @@ class Pane extends React.PureComponent {
       <div className={styles.notScrollable}>{children}</div>
     )
 
-    const headerViewMenuNode = this.props.renderHeaderViewMenu()
+    const headerViewMenuNode = this.props.renderHeaderViewMenu && this.props.renderHeaderViewMenu()
 
     return (
       <div
-        className={classNames([
+        className={classNames(
           styles.root,
           isCollapsed && styles.isCollapsed,
           isSelected ? styles.isActive : styles.isDisabled
-        ])}
+        )}
         onClick={this.handleRootClick}
         ref={this.setRootElement}
       >
@@ -395,7 +397,6 @@ class Pane extends React.PureComponent {
             aria-labelledby={`${tabIdPrefix}tab-${viewId}`}
             className={styles.main}
             id={`${tabIdPrefix}tabpanel`}
-            role="tabpanel"
           >
             {mainChildren}
           </TabPanel>
@@ -413,4 +414,4 @@ class Pane extends React.PureComponent {
   }
 }
 
-export default Styleable(Pane, defaultStyles)
+export default Styleable(Pane as any, defaultStyles) as React.ComponentType<DefaultPaneProps>

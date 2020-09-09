@@ -15,31 +15,31 @@ export function DeeplyNestedStory() {
             legend="Dude, I heard you like fieldsets…"
             description={chance.paragraph()}
             level={1}
-            tabIndex="0"
+            tabIndex={0}
           >
             <Fieldset
               legend="So I put a fieldset in a fieldset…"
               description={chance.paragraph()}
               level={2}
-              tabIndex="0"
+              tabIndex={0}
             >
               <Fieldset
                 legend="In a fieldset…"
                 description={chance.paragraph()}
                 level={3}
-                tabIndex="0"
+                tabIndex={0}
               >
                 <Fieldset
                   legend="In a fieldset!"
                   description={chance.paragraph()}
                   level={4}
-                  tabIndex="0"
+                  tabIndex={0}
                 >
                   <Fieldset
                     legend="In a fieldset!"
                     description={chance.paragraph()}
                     level={5}
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     Content
                   </Fieldset>

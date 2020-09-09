@@ -15,7 +15,7 @@ export function DefaultStory() {
             description={text('description', 'This is the description', 'props')}
             level={number('level', 1, 'props')}
             transparent={boolean('transparent', false, 'props')}
-            tabIndex={boolean('tabIndex', false, 'test') ? 0 : false}
+            tabIndex={boolean('tabIndex', false, 'test') ? 0 : -1}
             markers={boolean('show markers', false, 'test') ? [] : undefined}
           >
             <DefaultPreview

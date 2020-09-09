@@ -1,60 +1,40 @@
 import classNames from 'classnames'
 import {partition} from 'lodash'
-import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import {Portal} from 'part:@sanity/components/portal'
-import PropTypes from 'prop-types'
 import React from 'react'
 import StackedEscapable from '../utilities/StackedEscapable'
+import {DialogAction} from './types'
 
-const noop = () => {}
+interface FullScreenDialogProps {
+  cardClassName?: string
+  className?: string
+  title?: React.ReactNode
+  children?: React.ReactNode
+  onClose?: () => void
+  onEscape?: () => void
+  isOpen?: boolean
+  onAction?: (action: DialogAction) => void
+  actions?: DialogAction[]
 
-export default class FullScreenDialog extends React.PureComponent {
-  static propTypes = {
-    cardClassName: PropTypes.string,
-    className: PropTypes.string,
-    title: PropTypes.node,
-    children: PropTypes.node,
-    onClose: PropTypes.func,
-    onEscape: PropTypes.func,
-    isOpen: PropTypes.bool,
-    onAction: PropTypes.func,
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        tooltip: PropTypes.string,
-        kind: PropTypes.string,
-        autoFocus: PropTypes.bool,
-        disabled: PropTypes.bool,
-        inverted: PropTypes.bool
-      })
-    ),
+  // deprecated
+  color?: 'default' | 'warning' | 'info' | 'success' | 'danger'
+  padding?: 'none' | 'small' | 'medium' | 'large'
+}
 
-    // deprecated
-    /* eslint-disable react/no-unused-prop-types */
-    color: PropTypes.oneOf(['default', 'warning', 'info', 'success', 'danger']),
-    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large'])
-    /* eslint-enable react/no-unused-prop-types */
-  }
+const noop = () => undefined
 
-  static defaultProps = {
-    cardClassName: undefined,
-    isOpen: true,
-    onAction() {},
-    actions: [],
+export default class FullScreenDialog extends React.PureComponent<FullScreenDialogProps> {
+  createButtonFromAction = (action: DialogAction, i: number) => {
+    const {onAction} = this.props
 
-    // deprecated
-    color: 'default',
-    padding: 'medium'
-  }
-
-  createButtonFromAction = (action, i) => {
     return (
       <Button
         key={i}
-        onClick={() => this.props.onAction(action)}
+        onClick={() => onAction && onAction(action)}
         data-action-index={i}
         color={action.color}
         disabled={action.disabled}
@@ -68,7 +48,7 @@ export default class FullScreenDialog extends React.PureComponent {
     )
   }
 
-  renderActions = actions => {
+  renderActions = (actions: DialogAction[]) => {
     if (!actions || actions.length === 0) {
       return null
     }
@@ -84,7 +64,7 @@ export default class FullScreenDialog extends React.PureComponent {
 
   // eslint-disable-next-line complexity
   render() {
-    const {title, cardClassName, className, onClose, onEscape, isOpen, actions} = this.props
+    const {title, cardClassName, className, onClose, onEscape, isOpen = true, actions} = this.props
 
     return (
       <StackedEscapable onEscape={onEscape || onClose || noop}>

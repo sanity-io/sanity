@@ -1,7 +1,7 @@
 import React from 'react'
 import {action} from 'part:@sanity/storybook'
 import Switch from 'part:@sanity/components/toggles/switch'
-import {boolean, text} from 'part:@sanity/storybook/addons/knobs'
+import {text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 
@@ -18,12 +18,12 @@ export function ActivateOnFocusStory() {
         }}
       >
         <ActivateOnFocus
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
+          onActivate={action('onActivate')}
+          // onBlur={action('onBlur')}
           message={text('message', '', 'props')}
-          enableBlur={boolean('enableBlur', false, 'props')}
+          // enableBlur={boolean('enableBlur', false, 'props')}
         >
-          <textarea rows="30">This should not be selected on first click</textarea>
+          <textarea rows={30}>This should not be selected on first click</textarea>
         </ActivateOnFocus>
       </div>
     </Sanity>

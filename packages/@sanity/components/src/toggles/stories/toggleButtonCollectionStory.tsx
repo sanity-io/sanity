@@ -3,7 +3,7 @@ import {action} from 'part:@sanity/storybook'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'block',
   position: 'absolute',
   padding: '2rem',

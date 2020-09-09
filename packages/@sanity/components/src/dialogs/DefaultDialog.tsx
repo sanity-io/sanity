@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
+
 import classNames from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
@@ -10,64 +11,46 @@ import {partition} from 'lodash'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
+import {DialogAction} from './types'
 
-const noop = () => {}
+interface DefaultDialogProps {
+  color?: 'default' | 'warning' | 'success' | 'danger' | 'info'
+  className?: string
+  title?: string
+  children?: React.ReactNode
+  onOpen?: () => void
+  onClose?: () => void
+  onEscape?: (event: KeyboardEvent) => void
+  onClickOutside?: () => void
+  onAction?: (action: DialogAction) => void
+  showCloseButton?: boolean
+  actionsAlign?: 'start' | 'end'
+  actions?: DialogAction[]
+}
 
-export default class DefaultDialog extends React.PureComponent {
-  static propTypes = {
-    color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
-    className: PropTypes.string,
-    title: PropTypes.string,
-    children: PropTypes.node,
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-    onEscape: PropTypes.func,
-    onClickOutside: PropTypes.func,
-    onAction: PropTypes.func,
-    showCloseButton: PropTypes.bool,
-    actionsAlign: PropTypes.oneOf(['start', 'end']),
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        icon: PropTypes.func,
-        tooltip: PropTypes.string,
-        kind: PropTypes.string,
-        autoFocus: PropTypes.bool
-      })
-    )
-  }
+const noop = () => undefined
 
-  static defaultProps = {
-    showCloseButton: true,
-    actionsAlign: 'end',
-    onAction() {},
-    onOpen() {},
-    onClose() {},
-    actions: [],
-    color: 'default'
-  }
+export default class DefaultDialog extends React.PureComponent<DefaultDialogProps> {
+  contentElement: unknown
+  dialog: unknown
 
   openDialogElement() {
-    this.props.onOpen()
+    if (this.props.onOpen) this.props.onOpen()
   }
 
-  handleDialogClick = event => {
-    event.stopPropagation()
-  }
-
-  setDialogElement = element => {
+  setDialogElement = (element: unknown) => {
     this.dialog = element
   }
 
-  setContentElement = element => {
+  setContentElement = (element: unknown) => {
     this.contentElement = element
   }
 
-  createButtonFromAction = (action, i) => {
+  createButtonFromAction = (action: DialogAction, i: number) => {
     return (
       <Button
         key={i}
-        onClick={() => this.props.onAction(action)}
+        onClick={() => this.props.onAction && this.props.onAction(action)}
         data-action-index={i}
         color={action.color}
         disabled={action.disabled}
@@ -82,18 +65,16 @@ export default class DefaultDialog extends React.PureComponent {
     )
   }
 
-  renderActions = actions => {
+  renderActions = (actions: DialogAction[]) => {
     if (!actions || actions.length === 0) {
       return null
     }
 
     const [secondary, primary] = partition(actions, action => action.secondary)
+    const {actionsAlign = 'end'} = this.props
 
     return (
-      <ButtonGrid
-        align={this.props.actionsAlign}
-        secondary={secondary.map(this.createButtonFromAction)}
-      >
+      <ButtonGrid align={actionsAlign} secondary={secondary.map(this.createButtonFromAction)}>
         {primary.map(this.createButtonFromAction)}
       </ButtonGrid>
     )
@@ -103,12 +84,12 @@ export default class DefaultDialog extends React.PureComponent {
     const {
       title,
       actions,
-      color,
+      color = 'default',
       onClose,
       onClickOutside,
       onEscape,
       className: classNameProp,
-      showCloseButton
+      showCloseButton = true
     } = this.props
 
     const className = classNames(
@@ -123,13 +104,12 @@ export default class DefaultDialog extends React.PureComponent {
     return (
       <Portal>
         <Stacked>
-          {/* eslint-disable-next-line complexity */}
           {isActive => (
             <div className={className}>
               <div className={styles.overlay} />
               <div className={styles.dialog}>
                 <Escapable
-                  onEscape={event => (isActive || event.shiftKey) && handleEscape(event)}
+                  onEscape={event => (isActive || event.shiftKey) && handleEscape(event as any)}
                 />
                 <CaptureOutsideClicks
                   onClickOutside={isActive ? onClickOutside : undefined}

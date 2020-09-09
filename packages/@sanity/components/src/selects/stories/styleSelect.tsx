@@ -1,10 +1,10 @@
 import React from 'react'
 import {action} from 'part:@sanity/storybook'
-import StyleSelect from 'part:@sanity/components/selects/style'
+import StyleSelect, {StyleSelectItem} from 'part:@sanity/components/selects/style'
 import {boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
-const styleItems = [
+const styleItems: StyleSelectItem[] = [
   {
     title: 'Paragraph',
     key: 'style-paragraph'
@@ -31,7 +31,7 @@ const styleItems = [
   }
 ]
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -62,11 +62,9 @@ export function StyleSelectStory() {
     <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
       <div style={centerStyle}>
         <StyleSelect
-          label={text('label', 'This is the label', 'props')}
           placeholder={text('placeholder', 'This is the placeholder', 'props')}
           transparent={boolean('transparent', false, 'props')}
           onChange={action('onChange')}
-          onFocus={action('onFocus')}
           onOpen={action('onOpen')}
           padding={select('Padding', ['large', 'default', 'small', 'none'], 'default', 'props')}
           renderItem={renderStyleItem}

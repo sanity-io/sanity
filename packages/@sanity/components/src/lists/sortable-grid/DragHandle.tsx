@@ -6,8 +6,8 @@ import {createDragHandle} from '../sortable/sortable-factories'
 import styles from './DragHandle.css'
 
 const DragHandle = forwardRef(
-  ({className, ...restProps}: React.HTMLProps<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => (
-    <div {...restProps} className={classNames(styles.root, className)} ref={ref}>
+  (props: React.HTMLProps<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => (
+    <div {...props} className={classNames(styles.root, props.className)} ref={ref}>
       <DragHandleIcon />
     </div>
   )

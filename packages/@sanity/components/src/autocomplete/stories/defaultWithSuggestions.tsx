@@ -21,7 +21,7 @@ export function DefaultWithSuggestionsStory() {
         <Autocomplete
           value="One"
           suggestions={suggestions}
-          isOpen
+          // isOpen
           label="Autocomplete component"
           onChange={action('onChange')}
         />

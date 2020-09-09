@@ -1,17 +1,24 @@
-import PropTypes from 'prop-types'
 import React from 'react'
+import {Subscription} from 'rxjs'
 import {loadImage} from './loadImage'
 
-export default class ImageLoader extends React.PureComponent {
-  static propTypes = {
-    src: PropTypes.string.isRequired,
-    children: PropTypes.func
-  }
+interface ImageLoaderProps {
+  src: string
+  children: (props: {image: HTMLImageElement | null; error: Error | null}) => React.ReactNode
+}
 
+interface State {
+  loadedImage: HTMLImageElement | null
+  error: Error | null
+}
+
+export default class ImageLoader extends React.PureComponent<ImageLoaderProps, State> {
   state = {
     loadedImage: null,
     error: null
   }
+
+  subscription?: Subscription
 
   UNSAFE_componentWillMount() {
     this.loadImage(this.props.src)
@@ -27,15 +34,15 @@ export default class ImageLoader extends React.PureComponent {
     }
   }
 
-  loadImage(src) {
+  loadImage(src: string) {
     this.unsubscribe()
     this.subscription = loadImage(src).subscribe({
       next: url => this.setState({loadedImage: url, error: null}),
-      error: error => this.setState({loadImage: null, error: error})
+      error: error => this.setState({loadedImage: null, error: error})
     })
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: ImageLoaderProps) {
     if (nextProps.src !== this.props.src) {
       this.loadImage(nextProps.src)
     }
@@ -44,6 +51,7 @@ export default class ImageLoader extends React.PureComponent {
   render() {
     const {children} = this.props
     const {error, loadedImage} = this.state
+
     return error || loadedImage ? children({image: loadedImage, error}) : null
   }
 }

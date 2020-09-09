@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {action} from 'part:@sanity/storybook'
 import DefaultSelect from 'part:@sanity/components/selects/default'
@@ -17,7 +16,7 @@ const items = range(20).map((item, i) => {
   }
 })
 
-const centerStyle = {
+const centerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

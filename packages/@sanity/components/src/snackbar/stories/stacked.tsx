@@ -21,6 +21,7 @@ export function StackedStory() {
         title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('isCloseable', true, 'props')}
         icon
+        onSetHeight={action('onSetheight')}
       />
       <Snackbar
         {...globalDefaults}
@@ -29,6 +30,7 @@ export function StackedStory() {
         title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('isCloseable', true, 'props')}
         icon
+        onSetHeight={action('onSetheight')}
       />
       <Snackbar
         {...globalDefaults}
@@ -36,6 +38,7 @@ export function StackedStory() {
         kind="success"
         title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('onClose', true, 'props')}
+        onSetHeight={action('onSetheight')}
       />
     </>
   )

@@ -4,7 +4,7 @@ import React from 'react'
 
 import styles from './allVersions.css'
 
-const colors = [undefined, 'success', 'danger', 'warning', 'info']
+const colors: any[] = [undefined, 'success', 'danger', 'warning', 'info']
 
 export function AllVersionsStory() {
   return (

@@ -7,6 +7,7 @@ import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import React from 'react'
+import {DialogAction} from '../types'
 
 const chance = new Chance()
 
@@ -39,9 +40,9 @@ function renderContent(type) {
 }
 
 export function PopoverStory() {
-  const actions = [
+  const actions: DialogAction[] = [
     {
-      index: '1',
+      index: 1,
       color: 'success',
       title: 'Please click me',
       autoFocus: true
@@ -89,7 +90,7 @@ export function PopoverStory() {
     'props'
   )
 
-  const refStyles = {
+  const refStyles: React.CSSProperties = {
     position: 'absolute',
     top: `${top}%`,
     left: `${left}%`,

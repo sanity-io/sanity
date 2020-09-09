@@ -1,27 +1,31 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {useId} from '@reach/auto-id'
 import {Marker} from '../types'
 import styles from './Switch.css'
 import sharedStyles from './shared.css'
 
-type Props = {
-  label: string
-  description: string
-  markers: Marker[]
-  checked: boolean
-  disabled: boolean
-  inputRef: React.RefObject<HTMLInputElement>
-  readOnly: boolean
-  children: any
-  onFocus: () => void
-  onBlur?: () => void
+interface SwitchProps {
+  label?: string
+  description?: string
+  markers?: Marker[]
+  readOnly?: boolean
 }
 
 export default React.forwardRef(function Switch(
-  {disabled, markers, checked, label, description, readOnly, children, onFocus, ...rest}: Props,
+  {
+    disabled,
+    markers,
+    checked,
+    label,
+    description,
+    readOnly,
+    children,
+    ...rest
+  }: SwitchProps & Omit<React.HTMLProps<HTMLInputElement>, 'aria-described-by' | 'id' | 'type'>,
   ref: any
 ) {
   const elementId = useId()
+
   useEffect(() => {
     if (typeof checked === 'undefined' && ref?.current) {
       ref.current.indeterminate = true
@@ -39,7 +43,6 @@ export default React.forwardRef(function Switch(
         disabled={disabled || readOnly}
         checked={checked}
         ref={ref}
-        onFocus={onFocus}
       />
       <div className={styles.switchWrapper}>
         <div className={styles.track} />

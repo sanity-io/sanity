@@ -8,7 +8,7 @@ import React from 'react'
 const chance = new Chance()
 
 export function CardsStory() {
-  const items = range(50).map((item, i) => {
+  const items = range(50).map((_, i) => {
     const width = 300
     const height = 120
     const randomImage = `http://placekitten.com/${width}/${height}`

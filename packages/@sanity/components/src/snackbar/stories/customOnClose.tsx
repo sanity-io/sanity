@@ -23,6 +23,7 @@ export function CustomOnCloseStory() {
       isCloseable={boolean('isCloseable', true, 'props')}
       action={{title: text('Action title', 'Action'), callback: action('callback()')}}
       onClose={action(text('onClose', 'Custom onClose', 'props'))}
+      onSetHeight={action('onSetheight')}
     />
   )
 }

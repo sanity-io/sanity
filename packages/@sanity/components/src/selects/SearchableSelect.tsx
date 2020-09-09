@@ -1,60 +1,79 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
 
-export default class SearchableSelect extends React.PureComponent {
-  static propTypes = {
-    label: PropTypes.string,
-    description: PropTypes.string,
-    className: PropTypes.string,
-    onChange: PropTypes.func,
-    onSearch: PropTypes.func,
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-    onFocus: PropTypes.func,
-    onClear: PropTypes.func,
-    value: PropTypes.object,
-    inputValue: PropTypes.string,
-    error: PropTypes.bool,
-    placeholder: PropTypes.string,
-    isLoading: PropTypes.bool,
-    renderItem: PropTypes.func.isRequired,
-    items: PropTypes.array,
-    dropdownPosition: PropTypes.string,
-    readOnly: PropTypes.bool
-  }
+type Item = unknown
 
+interface SearchableSelectProps {
+  label?: string
+  description?: string
+  // className?: string
+  onChange?: (item: Item) => void
+  onSearch?: (inputValue: string) => void
+  onOpen?: () => void
+  onClose?: () => void
+  onFocus?: () => void
+  onClear?: () => void
+  value?: Item
+  inputValue?: string
+  error?: boolean
+  // placeholder?: string
+  isLoading?: boolean
+  renderItem: (item: Item) => React.ReactNode
+  items?: Item[]
+  dropdownPosition?: string
+  readOnly?: boolean
+}
+
+interface State {
+  inputValue: string
+  isOpen: boolean
+  highlightIndex: number
+  isInputSelected: boolean
+  hasFocus: boolean
+  // searchResult: any[]
+}
+
+export default class SearchableSelect extends React.PureComponent<
+  SearchableSelectProps & Omit<React.HTMLProps<HTMLInputElement>, 'onChange' | 'onFocus' | 'value'>,
+  State
+> {
   static defaultProps = {
     placeholder: 'Type to search…',
     isLoading: false,
-    onChange() {},
-    onSearch() {},
-    onOpen() {},
-    onClose() {}
+    onChange: () => undefined,
+    onSearch: () => undefined,
+    onOpen: () => undefined,
+    onClose: () => undefined
   }
 
-  constructor(props) {
-    super()
+  _rootElement: HTMLDivElement | null = null
+  _input: StatelessSearchableSelect | null = null
+
+  constructor(props: SearchableSelectProps) {
+    super(props)
+
     const {inputValue} = props
+
     this.state = {
       inputValue: inputValue || '',
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
       hasFocus: false
+      // searchResult: []
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.items != this.props.items) {
-      this.setState({
-        searchResult: this.props.items
-      })
-    }
+  UNSAFE_componentWillReceiveProps(nextProps: SearchableSelectProps) {
+    // if (nextProps.items != this.props.items) {
+    //   this.setState({
+    //     searchResult: this.props.items || []
+    //   })
+    // }
 
     if (nextProps.inputValue !== this.props.inputValue) {
       this.setState({
-        inputValue: nextProps.inputValue
+        inputValue: nextProps.inputValue || ''
       })
     }
   }
@@ -64,7 +83,7 @@ export default class SearchableSelect extends React.PureComponent {
     this.setState({
       isInputSelected: true
     })
-    onChange(item)
+    if (onChange) onChange(item)
     this.handleClose()
   }
 
@@ -72,14 +91,14 @@ export default class SearchableSelect extends React.PureComponent {
     this.setState({
       isOpen: true
     })
-    this.props.onOpen()
+    if (this.props.onOpen) this.props.onOpen()
   }
 
   handleClose = () => {
     this.setState({
       isOpen: false
     })
-    this.props.onClose()
+    if (this.props.onClose) this.props.onClose()
   }
 
   handleInputChange = inputValue => {
@@ -88,26 +107,26 @@ export default class SearchableSelect extends React.PureComponent {
       isInputSelected: false,
       isOpen: true
     })
-    this.props.onSearch(inputValue)
+    if (this.props.onSearch) this.props.onSearch(inputValue)
   }
 
   handleHighlightIndexChange = nextIndex => {
     this.setState({highlightIndex: nextIndex})
   }
 
-  setRootElement = element => {
+  setRootElement = (element: HTMLDivElement | null) => {
     this._rootElement = element
   }
 
-  setInput = input => {
+  setInput = (input: StatelessSearchableSelect | null) => {
     this._input = input
   }
 
   focus() {
-    this._input.focus()
+    if (this._input) this._input.focus()
   }
 
-  handleFocus = event => {
+  handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     const {onFocus} = this.props
     this.setState({
       hasFocus: true
@@ -117,13 +136,17 @@ export default class SearchableSelect extends React.PureComponent {
     }
   }
 
-  handleBlur = event => {
+  handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     this.setState({
       hasFocus: false,
-      inputValue: this.props.inputValue
+      inputValue: this.props.inputValue || ''
     })
 
-    if (this.state.isOpen && this._rootElement.contains(event.relatedTarget)) {
+    if (
+      this.state.isOpen &&
+      this._rootElement &&
+      this._rootElement.contains(event.relatedTarget as Node | null)
+    ) {
       this.setState({
         isOpen: false
       })
@@ -156,8 +179,8 @@ export default class SearchableSelect extends React.PureComponent {
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
           inputValue={inputValue}
-          isSelected={hasFocus}
-          ref={this.setInput}
+          // isSelected={hasFocus}
+          ref={this.setInput as any}
           readOnly={readOnly}
         />
       </div>
