@@ -31,11 +31,12 @@
 .brandingLink {
   text-decoration: none;
   color: inherit;
-  outline: none;
   border-radius: var(--extra-small-padding);
-
+  display: block;
+  
   @nest &:focus {
-    background-color: color(var(--focus-color) a(20%));
+    outline: 0;
+    box-shadow: var(--input-box-shadow--focus);
   }
 }
 
