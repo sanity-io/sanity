@@ -37,7 +37,7 @@ export default React.forwardRef(function Checkbox(
   const setRef = useCallback((el: HTMLInputElement | null) => {
     innerRef.current = el
     if (typeof ref === 'function') ref(el)
-    else if (typeof ref === 'object') ref.current = el
+    else if (ref && typeof ref === 'object') ref.current = el
   }, [])
 
   return (
