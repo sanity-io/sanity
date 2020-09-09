@@ -156,6 +156,7 @@
 
   @nest & > svg {
     display: block;
+    font-size: calc(25 / 16 * 1em);
   }
 
   @nest .root[data-type='create'] & {
