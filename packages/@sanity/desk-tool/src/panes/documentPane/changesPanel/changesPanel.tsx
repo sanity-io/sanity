@@ -93,29 +93,29 @@ export function ChangesPanel({
               &darr;
             </Button>
           </div>
+          {changeAnnotations.length > 0 && (
+            <Tooltip
+              content={
+                (
+                  <DiffAnnotationTooltipContent
+                    description="Changes by"
+                    annotations={changeAnnotations}
+                  />
+                ) as any
+              }
+              placement="top"
+            >
+              <div className={styles.changeAuthorsContainer}>
+                <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
+                  {changeAnnotations.map(({author}) => (
+                    <UserAvatar key={author} userId={author} />
+                  ))}
+                </AvatarStack>
+              </div>
+            </Tooltip>
+          )}
         </div>
 
-        {changeAnnotations.length > 0 && (
-          <Tooltip
-            content={
-              (
-                <DiffAnnotationTooltipContent
-                  description="Changes by"
-                  annotations={changeAnnotations}
-                />
-              ) as any
-            }
-            placement="top"
-          >
-            <div className={styles.changeAuthorsContainer}>
-              <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
-                {changeAnnotations.map(({author}) => (
-                  <UserAvatar key={author} userId={author} />
-                ))}
-              </AvatarStack>
-            </div>
-          </Tooltip>
-        )}
       </header>
 
       <div className={styles.body}>
