@@ -158,7 +158,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       <SortableList
         className={styles.list}
         onSortEnd={this.handleSortEnd}
-        movingItemClass={styles.movingItem}
+        helperClass={styles.movingItem}
         useDragHandle
       >
         {value.map(this.renderItem)}
