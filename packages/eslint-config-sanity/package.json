@@ -33,9 +33,9 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
-    "eslint": "^6.7.2",
+    "eslint": "^7.8.1",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-react": "^7.20.6",
     "lodash.difference": "^4.5.0"
   }
 }
