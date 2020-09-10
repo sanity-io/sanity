@@ -201,7 +201,7 @@ export * from './paths/types'
  */
 export interface GroupChangeNode {
   type: 'group'
-  groupType: 'array' | 'object'
+  diff: ObjectDiff | ArrayDiff
   changes: ChangeNode[]
   key: string
   path: Path
@@ -218,7 +218,6 @@ export interface FieldChangeNode {
   schemaType: SchemaType
   renderHeader: boolean
   diffComponent?: DiffComponent
-  childChanges?: ChangeNode[]
 }
 
 export type ChangeNode = GroupChangeNode | FieldChangeNode

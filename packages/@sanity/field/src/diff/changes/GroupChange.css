@@ -2,10 +2,22 @@
 
 .groupChange {
 }
+
 .changeList {
+  border-left: 1px solid var(--hairline-color);
+  padding-left: 0.75em;
+}
+
+.changeListOutlined {
+  composes: changeList;
+  border-left-color: var(--state-warning-color);
 }
 
 .changeHeader {
   margin: 0 0 0.5em;
   display: flex;
+}
+
+.revertChangesButtonContainer {
+  display: inline-block;
 }
