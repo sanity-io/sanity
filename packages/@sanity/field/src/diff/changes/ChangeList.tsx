@@ -9,7 +9,7 @@ interface Props {
   fields?: string[]
 }
 
-export function ChangeList({diff, fields, schemaType}: Props) {
+export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }

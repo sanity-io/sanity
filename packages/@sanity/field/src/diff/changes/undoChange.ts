@@ -1,8 +1,12 @@
 import {diffItem} from 'sanity-diff-patch'
-import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI, Diff, Path} from '../../types'
+import {InsertPatch, UnsetPatch, SetPatch, OperationsAPI, Diff, Path, DiffPatch} from '../../types'
 import {pathToString} from '../../paths/helpers'
 
-export function undoChange(diff: Diff, path: Path, documentOperations: OperationsAPI) {
+export function undoChange(diff: Diff, path: Path, documentOperations: OperationsAPI): void {
+  return documentOperations.patch.execute(buildUndoPatches(diff, path))
+}
+
+function buildUndoPatches(diff: Diff, path: Path): DiffPatch[] {
   const patches = diffItem(diff.toValue, diff.fromValue, {diffMatchPatch: {enabled: false}}, path)
 
   const inserts = patches
@@ -22,9 +26,9 @@ export function undoChange(diff: Diff, path: Path, documentOperations: Operation
       return acc
     }, {} as Record<string, unknown>)
 
-  return documentOperations.patch.execute([
+  return [
     ...inserts,
     ...(unsets.length > 0 ? [{unset: unsets}] : []),
     ...(hasSets ? [{set: sets}] : [])
-  ])
+  ]
 }

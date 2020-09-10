@@ -12,7 +12,7 @@ import {ValueError} from './ValueError'
 
 const FallbackDiff = () => <div>Missing diff</div>
 
-export function FieldChange({change}: {change: FieldChangeNode}) {
+export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {documentId, schemaType} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
@@ -28,7 +28,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
     <div className={rootClass}>
       {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
 
-      <div className={styles.diffComponent}>
+      <div className={styles.change}>
         {change.error ? (
           <ValueError error={change.error} />
         ) : (
@@ -36,10 +36,10 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
             <DiffComponent diff={change.diff} schemaType={change.schemaType} />
           </DiffErrorBoundary>
         )}
-      </div>
 
-      <div className={styles.revertChangesButtonContainer}>
-        <RevertChangesButton onClick={handleRevertChanges} />
+        <div className={styles.revertChangesButtonContainer}>
+          <RevertChangesButton onClick={handleRevertChanges} />
+        </div>
       </div>
     </div>
   )

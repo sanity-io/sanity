@@ -1,17 +1,24 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  border-left: 1px solid var(--hairline-color);
-  padding-left: 0.75em;
   margin-bottom: 1em;
 }
 
 .error {
   composes: root;
-  border-left-color: var(--state-danger-color);
 }
 
-.diffComponent {
+.change {
+  border-left: 1px solid var(--hairline-color);
+  padding-left: 0.75em;
+}
+
+.change:hover {
+  border-left-color: var(--state-warning-color);
+}
+
+.error .change {
+  border-left-color: var(--state-danger-color);
 }
 
 .revertChangesButtonContainer {
