@@ -57,40 +57,76 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   const diffYears = differenceInYears(now, date)
 
   if (diffMonths || diffYears) {
+    if (opts.minimal && diffYears === 0) {
+      // same year
+      return {
+        timestamp: format(date, 'MMM D'),
+        refreshInterval: +Infinity
+      }
+    }
+
+    if (opts.minimal) {
+      return {
+        timestamp: format(date, 'MMM D, YYYY'),
+        refreshInterval: +Infinity
+      }
+    }
+
     return {
       timestamp: format(date, 'MMM D, YYYY, hh:mm A'),
       refreshInterval: +Infinity
     }
   }
 
-  const relativeSuffix = opts.minimal ? '' : ' ago'
-
   const diffWeeks = differenceInWeeks(now, date)
   if (diffWeeks) {
-    return {timestamp: `${diffWeeks}w${relativeSuffix}`, refreshInterval: ONE_HOUR}
+    if (opts.minimal) {
+      return {timestamp: `${diffWeeks}w`, refreshInterval: ONE_HOUR}
+    }
+
+    return {timestamp: `${diffWeeks} weeks ago`, refreshInterval: ONE_HOUR}
   }
 
   const diffDays = differenceInDays(now, date)
   if (diffDays) {
+    if (opts.minimal) {
+      return {
+        timestamp: diffDays === 1 ? 'yesterday' : `${diffDays}d`,
+        refreshInterval: ONE_HOUR
+      }
+    }
+
     return {
-      timestamp: diffDays === 1 ? 'yesterday' : `${diffDays}d${relativeSuffix}`,
+      timestamp: diffDays === 1 ? 'yesterday' : `${diffDays} days ago`,
       refreshInterval: ONE_HOUR
     }
   }
 
   const diffHours = differenceInHours(now, date)
   if (diffHours) {
-    return {timestamp: `${diffHours}h${relativeSuffix}`, refreshInterval: ONE_MINUTE}
+    if (opts.minimal) {
+      return {timestamp: `${diffHours}h`, refreshInterval: ONE_MINUTE}
+    }
+
+    return {timestamp: `${diffHours} hours ago`, refreshInterval: ONE_MINUTE}
   }
 
   const diffMins = differenceInMinutes(now, date)
   if (diffMins) {
-    return {timestamp: `${diffMins}m${relativeSuffix}`, refreshInterval: TWENTY_SECONDS}
+    if (opts.minimal) {
+      return {timestamp: `${diffMins}m`, refreshInterval: TWENTY_SECONDS}
+    }
+
+    return {timestamp: `${diffMins} minutes ago`, refreshInterval: TWENTY_SECONDS}
   }
 
   const diffSeconds = differenceInSeconds(now, date)
   if (diffSeconds > 10) {
-    return {timestamp: `${diffSeconds}s${relativeSuffix}`, refreshInterval: FIVE_SECONDS}
+    if (opts.minimal) {
+      return {timestamp: `${diffSeconds}s`, refreshInterval: FIVE_SECONDS}
+    }
+
+    return {timestamp: `${diffSeconds} seconds ago`, refreshInterval: FIVE_SECONDS}
   }
 
   return {timestamp: 'just now', refreshInterval: FIVE_SECONDS}
