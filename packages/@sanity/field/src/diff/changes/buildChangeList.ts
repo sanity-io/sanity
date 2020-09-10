@@ -13,7 +13,8 @@ import {
   ChangeNode,
   ArraySchemaType,
   ArrayDiff,
-  DiffComponent
+  DiffComponent,
+  FieldChangeNode
 } from '../../types'
 
 export function buildChangeList(
@@ -34,6 +35,15 @@ export function buildChangeList(
     }
   }
 
+  return [getFieldChange(schemaType, diff, path, titlePath)]
+}
+
+function getFieldChange(
+  schemaType: SchemaType,
+  diff: Diff,
+  path: Path,
+  titlePath: ChangeTitlePath
+): FieldChangeNode {
   let error
   if (typeof diff.fromValue !== 'undefined') {
     error = getValueError(diff.fromValue, schemaType)
@@ -45,24 +55,23 @@ export function buildChangeList(
 
   let renderHeader = true
   let component: DiffComponent | undefined
+  const diffComponent = resolveDiffComponent(schemaType)
   if (diffComponent) {
     renderHeader = typeof diffComponent === 'function' ? true : diffComponent.renderHeader
     component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
   }
 
-  return [
-    {
-      type: 'field',
-      diff,
-      path,
-      error,
-      titlePath,
-      schemaType,
-      renderHeader,
-      key: pathToString(path) || 'root',
-      diffComponent: error ? undefined : component
-    }
-  ]
+  return {
+    type: 'field',
+    diff,
+    path,
+    error,
+    titlePath,
+    schemaType,
+    renderHeader,
+    key: pathToString(path) || 'root',
+    diffComponent: error ? undefined : component
+  }
 }
 
 export function buildObjectChangeList(
@@ -135,7 +144,14 @@ function buildArrayChangeList(
       annotation: itemDiff.diff.action === 'unchanged' ? undefined : itemDiff.diff.annotation
     })
 
-    acc.push(...buildChangeList(memberType, itemDiff.diff, itemPath, itemTitlePath))
+    const children = buildChangeList(memberType, itemDiff.diff, itemPath, itemTitlePath)
+    if (children.length === 0) {
+      // This can happen when there are no changes to the actual element, it's just been moved
+      acc.push(getFieldChange(memberType, itemDiff.diff, itemPath, itemTitlePath))
+    } else {
+      acc.push(...children)
+    }
+
     return acc
   }, list)
 
