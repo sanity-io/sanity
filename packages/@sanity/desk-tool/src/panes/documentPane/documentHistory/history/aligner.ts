@@ -90,6 +90,7 @@ export class Aligner {
   }
 
   appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent) {
+    console.log({type: 'remote', evt})
     const state = this._states[evt.version]
 
     if (evt.type === 'snapshot') {
@@ -131,25 +132,23 @@ export class Aligner {
         const idx = align(evt, state)
 
         if (idx >= 0) {
-          // These we must only apply locally since they are present in the fetched translog.
-          for (const mutEvt of state.events.slice(0, idx)) {
-            this._apply(state, mutEvt)
-          }
-
-          // ... while these must also be pushed to the timeline:
-          for (const mutEvt of state.events.slice(idx)) {
-            this._apply(state, mutEvt)
-            this.timeline.addRemoteMutation(mutEvt)
-          }
-
-          state.events = []
-          state.aligned = true
+          this._alignAtIndex(state, idx)
         }
       }
     }
 
     this.timeline.addTranslogEntry(evt)
     this.earliestTransactionId = evt.id
+  }
+
+  didReachEarliestEntry() {
+    for (const state of Object.values(this._states)) {
+      if (!state.aligned) {
+        if (state.attrs !== null) throw new Error('unable to find translog entry to align to')
+        this._alignAtIndex(state, 0)
+      }
+    }
+    this.timeline.didReachEarliestEntry()
   }
 
   get isAligned() {
@@ -162,6 +161,22 @@ export class Aligner {
 
   get currentDocument(): CombinedDocument {
     return {draft: this._states.draft.attrs, published: this._states.published.attrs}
+  }
+
+  private _alignAtIndex(state: VersionState, idx: number) {
+    // These we must only apply locally since they are present in the fetched translog.
+    for (const mutEvt of state.events.slice(0, idx)) {
+      this._apply(state, mutEvt)
+    }
+
+    // ... while these must also be pushed to the timeline:
+    for (const mutEvt of state.events.slice(idx)) {
+      this._apply(state, mutEvt)
+      this.timeline.addRemoteMutation(mutEvt)
+    }
+
+    state.events = []
+    state.aligned = true
   }
 
   private get _isComplete() {
