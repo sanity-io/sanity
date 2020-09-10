@@ -1,1 +1,1 @@
-export * from './src/user-color'
+export * from './lib/user-color'
