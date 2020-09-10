@@ -42,11 +42,7 @@ export function ChangesPanel({
   timelineMode
 }: ChangesPanelProps) {
   const {close: closeHistory, historyController} = useDocumentHistory()
-  const diff: ObjectDiff = historyController.currentDiff() as any
-
-  if (!loading && diff?.type !== 'object') {
-    return null
-  }
+  const diff: ObjectDiff | null = historyController.currentObjectDiff() as any
 
   const documentContext = React.useMemo(() => ({documentId, schemaType}), [documentId, schemaType])
   const changeAnnotations = React.useMemo(
@@ -124,7 +120,7 @@ export function ChangesPanel({
       </header>
 
       <div className={styles.body}>
-        {loading ? (
+        {loading || !diff ? (
           <div>Loading…</div>
         ) : (
           <DocumentChangeContext.Provider value={documentContext}>
