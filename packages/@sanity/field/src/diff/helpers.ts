@@ -1,19 +1,19 @@
-import {ObjectDiff, Diff, Path} from '../types'
+import {Diff} from '../types'
 
-export function getDiffAtPath(diff: ObjectDiff, path: Path): Diff | null {
-  let node: Diff = diff
-
-  for (const pathSegment of path) {
-    if (node.type === 'object' && typeof pathSegment === 'string') {
-      node = node.fields[pathSegment]
-      // eslint-disable-next-line max-depth
-      if (!node) return null
-    } else {
-      throw new Error(
-        `Mismatch between path segment (${typeof pathSegment}) and diff type (${diff.type})`
-      )
-    }
+export function getChangeVerb(diff: Diff): 'Added' | 'Removed' | 'Changed' {
+  const hadPrevValue = hasValue(diff.fromValue)
+  const hasNextValue = hasValue(diff.toValue)
+  if (!hadPrevValue && hasNextValue) {
+    return 'Added'
   }
 
-  return node
+  if (!hasNextValue && hadPrevValue) {
+    return 'Removed'
+  }
+
+  return 'Changed'
+}
+
+function hasValue(value: unknown) {
+  return value !== null && typeof value !== 'undefined' && value !== ''
 }
