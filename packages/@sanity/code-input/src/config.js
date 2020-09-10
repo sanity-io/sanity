@@ -1,21 +1,22 @@
 export const SUPPORTED_LANGUAGES = [
-  {title: 'Batch file', value: 'batchfile'},
-  {title: 'CSS', value: 'css'},
-  {title: 'SASS', value: 'sass'},
-  {title: 'SCSS', value: 'scss'},
-  {title: 'HTML', value: 'html'},
-  {title: 'JavaScript', value: 'javascript'},
-  {title: 'JSON', value: 'json'},
-  {title: 'JSX', value: 'jsx'},
-  {title: 'Markdown', value: 'markdown'},
-  {title: 'PHP', value: 'php'},
-  {title: 'Python', value: 'python'},
-  {title: 'sh', value: 'sh'},
-  {title: 'Plain text', value: 'text'},
-  {title: 'GROQ', value: 'groq'}
+  { title: 'Batch file', value: 'batchfile' },
+  { title: 'CSS', value: 'css' },
+  { title: 'SASS', value: 'sass' },
+  { title: 'SCSS', value: 'scss' },
+  { title: 'HTML', value: 'html' },
+  { title: 'JAVA', value: 'java' },
+  { title: 'JavaScript', value: 'javascript' },
+  { title: 'JSON', value: 'json' },
+  { title: 'JSX', value: 'jsx' },
+  { title: 'Markdown', value: 'markdown' },
+  { title: 'PHP', value: 'php' },
+  { title: 'Python', value: 'python' },
+  { title: 'sh', value: 'sh' },
+  { title: 'Plain text', value: 'text' },
+  { title: 'GROQ', value: 'groq' }
 ]
 
-export const LANGUAGE_ALIASES = {js: 'javascript'}
+export const LANGUAGE_ALIASES = { js: 'javascript' }
 
 export const SUPPORTED_THEMES = ['github', 'monokai', 'terminal', 'tomorrow']
 
@@ -26,4 +27,4 @@ export const ACE_SET_OPTIONS = {
   navigateWithinSoftTabs: true /* note only supported by ace v1.2.7 or higher */
 }
 
-export const ACE_EDITOR_PROPS = {$blockScrolling: true}
+export const ACE_EDITOR_PROPS = { $blockScrolling: true }
