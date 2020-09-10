@@ -88,7 +88,7 @@ export function ChangesPanel({
               {menuOpen ? (
                 <>Review changes since</>
               ) : since ? (
-                sinceText(since)
+                <SinceText since={since} />
               ) : (
                 <>Since unknown version</>
               )}{' '}
@@ -134,7 +134,7 @@ export function ChangesPanel({
   )
 }
 
-function sinceText(since: Chunk) {
+function SinceText({since}: {since: Chunk}) {
   const timeAgo = useTimeAgo(since.endTimestamp)
 
   return `Since ${formatTimelineEventLabel(since.type)} ${timeAgo}`
