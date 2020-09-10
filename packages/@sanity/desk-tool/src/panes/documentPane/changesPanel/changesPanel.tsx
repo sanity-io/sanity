@@ -137,5 +137,9 @@ export function ChangesPanel({
 function SinceText({since}: {since: Chunk}) {
   const timeAgo = useTimeAgo(since.endTimestamp)
 
-  return `Since ${formatTimelineEventLabel(since.type)} ${timeAgo}`
+  return (
+    <>
+      Since {formatTimelineEventLabel(since.type)} {timeAgo}
+    </>
+  )
 }
