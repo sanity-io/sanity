@@ -11,7 +11,7 @@ export function DiffAnnotationTooltipContent({
 }: {
   annotations: AnnotationDetails[]
   description?: React.ReactNode | string
-}) {
+}): React.ReactElement {
   return (
     <div className={styles.root}>
       {typeof description === 'string' ? (
