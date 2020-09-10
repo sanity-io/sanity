@@ -291,8 +291,13 @@ export class Controller {
       tid = this._aligner.earliestTransactionId
     }
 
+    // Same consistency checking here:
+    if (this._aligner.earliestTransactionId !== tid || !this._aligner.acceptsHistory) {
+      return
+    }
+
     if (count < limit) {
-      this.timeline.didReachEarliestEntry()
+      this._aligner.didReachEarliestEntry()
     }
 
     this.markChange()
