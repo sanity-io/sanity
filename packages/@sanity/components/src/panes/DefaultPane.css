@@ -1,9 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --pane-success-bg: color(var(--component-bg) blend(var(--state-success-color) 15%));
+  --pane-warning-bg: color(var(--component-bg) blend(var(--state-warning-color) 15%));
+  --pane-danger-bg: color(var(--component-bg) blend(var(--state-danger-color) 15%));
+}
+
 .root {
   display: flex;
   flex-direction: column;
   background-color: var(--component-bg);
+  color: var(--component-text-color);
 
   @media (--max-screen-medium) {
     min-height: 100%;
@@ -13,6 +20,18 @@
     position: relative;
     height: 100%;
   }
+
+  @nest &[data-pane-color='success'] {
+    background-color: var(--pane-success-bg);
+  }
+
+  @nest &[data-pane-color='warning'] {
+    background-color: var(--pane-warning-bg);
+  }
+
+  @nest &[data-pane-color='danger'] {
+    background-color: var(--pane-danger-bg);
+  }
 }
 
 .isDisabled {
@@ -21,7 +40,7 @@
     display: none;
 
     @nest &:last-child {
-      display: block;
+      display: flex;
     }
   }
 
@@ -58,7 +77,7 @@
     top: 0;
   }
 
-  @nest &:after {
+  @nest .root:not([data-pane-loading='true']) &:after {
     content: '';
     display: block;
     position: absolute;
@@ -70,6 +89,18 @@
     @nest .root.isCollapsed & {
       display: none;
     }
+  }
+
+  @nest [data-pane-color='success'] & {
+    background-color: var(--pane-success-bg);
+  }
+
+  @nest [data-pane-color='warning'] & {
+    background-color: var(--pane-warning-bg);
+  }
+
+  @nest [data-pane-color='danger'] & {
+    background-color: var(--pane-danger-bg);
   }
 }
 
@@ -115,6 +146,10 @@
   @nest .isCollapsed & {
     transform: rotate(90deg);
   }
+
+  @nest .root[data-pane-loading='true'] & {
+    font-weight: 400;
+  }
 }
 
 .headerTools {
@@ -149,6 +184,8 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 
   @nest .isCollapsed & {
     display: none;
@@ -156,23 +193,16 @@
 }
 
 .scrollContainer {
-  display: block;
-  box-sizing: border-box;
   outline: none;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 
   @media (--screen-medium) {
     composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-    height: 100%;
-  }
-
-  @media (--max-screen-medium) {
-    transform: initial;
-    position: initial;
-    top: initial;
-    left: initial;
-    height: initial;
-    width: 100%;
-    overflow: initial;
+    overflow: auto;
   }
 
   @nest .isCollapsed & {
@@ -182,7 +212,6 @@
 
 .notScrollable {
   display: block;
-  box-sizing: border-box;
 
   @media (--screen-medium) {
     position: absolute;
@@ -190,16 +219,6 @@
     left: 0;
     right: 0;
     height: 100%;
-  }
-
-  @media (--max-screen-medium) {
-    transform: initial;
-    position: initial;
-    top: initial;
-    left: initial;
-    height: initial;
-    width: 100%;
-    overflow: initial;
   }
 }
 
@@ -279,6 +298,18 @@
 
   @nest .isCollapsed & {
     display: none;
+  }
+
+  @nest [data-pane-color='success'] & {
+    background-color: var(--pane-success-bg);
+  }
+
+  @nest [data-pane-color='warning'] & {
+    background-color: var(--pane-warning-bg);
+  }
+
+  @nest [data-pane-color='danger'] & {
+    background-color: var(--pane-danger-bg);
   }
 }
 

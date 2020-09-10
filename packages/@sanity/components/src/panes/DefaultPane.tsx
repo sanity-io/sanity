@@ -16,6 +16,7 @@ import Styleable from '../utilities/Styleable'
 import defaultStyles from './DefaultPane.css'
 
 interface DefaultPaneProps {
+  color?: 'success' | 'warning' | 'danger'
   hasTabs?: boolean
   tabIdPrefix?: string
   viewId?: string
@@ -24,6 +25,7 @@ interface DefaultPaneProps {
   onExpand?: (index: number) => void
   onCollapse?: (index: number) => void
   children?: React.ReactNode
+  isLoading?: boolean
   isSelected?: boolean
   isScrollable?: boolean
   hasSiblings?: boolean
@@ -348,12 +350,14 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
   // eslint-disable-next-line complexity
   render() {
     const {
+      color,
       title,
       children,
       hasTabs,
-      isSelected,
       isCollapsed,
+      isLoading,
       isScrollable,
+      isSelected,
       hasSiblings,
       styles = {},
       footer,
@@ -378,6 +382,8 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
           isCollapsed && styles.isCollapsed,
           isSelected ? styles.isActive : styles.isDisabled
         )}
+        data-pane-color={color}
+        data-pane-loading={isLoading}
         onClick={this.handleRootClick}
         ref={this.setRootElement}
       >
