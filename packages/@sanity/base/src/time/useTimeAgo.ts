@@ -20,12 +20,21 @@ const TWENTY_SECONDS = 1000 * 20
 const ONE_MINUTE = 1000 * 60
 const ONE_HOUR = ONE_MINUTE * 60
 
-export function useTimeAgo(time: Date | string): string {
-  const [resolved, setResolved] = useReducer(reduceState, null, () => formatRelativeTime(time))
+interface TimeAgoOpts {
+  minimal?: boolean
+}
+
+export function useTimeAgo(time: Date | string, opts: TimeAgoOpts = {}): string {
+  const [resolved, setResolved] = useReducer(reduceState, null, () =>
+    formatRelativeTime(time, opts)
+  )
 
   useEffect(() => {
     const id: number | undefined = Number.isFinite(resolved.refreshInterval)
-      ? window.setInterval(() => setResolved(formatRelativeTime(time)), resolved.refreshInterval)
+      ? window.setInterval(
+          () => setResolved(formatRelativeTime(time, opts)),
+          resolved.refreshInterval
+        )
       : undefined
 
     return () => clearInterval(id)
@@ -40,7 +49,8 @@ function reduceState(prev: TimeSpec, next: TimeSpec) {
     : next
 }
 
-function formatRelativeTime(date: Date | string): TimeSpec {
+// eslint-disable-next-line complexity
+function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
   const now = Date.now()
 
   const diffMonths = differenceInMonths(now, date)
@@ -53,32 +63,34 @@ function formatRelativeTime(date: Date | string): TimeSpec {
     }
   }
 
+  const relativeSuffix = opts.minimal ? '' : ' ago'
+
   const diffWeeks = differenceInWeeks(now, date)
   if (diffWeeks) {
-    return {timestamp: `${diffWeeks}w ago`, refreshInterval: ONE_HOUR}
+    return {timestamp: `${diffWeeks}w${relativeSuffix}`, refreshInterval: ONE_HOUR}
   }
 
   const diffDays = differenceInDays(now, date)
   if (diffDays) {
     return {
-      timestamp: diffDays === 1 ? 'yesterday' : `${diffDays}d ago`,
+      timestamp: diffDays === 1 ? 'yesterday' : `${diffDays}d${relativeSuffix}`,
       refreshInterval: ONE_HOUR
     }
   }
 
   const diffHours = differenceInHours(now, date)
   if (diffHours) {
-    return {timestamp: `${diffHours}h ago`, refreshInterval: ONE_MINUTE}
+    return {timestamp: `${diffHours}h${relativeSuffix}`, refreshInterval: ONE_MINUTE}
   }
 
   const diffMins = differenceInMinutes(now, date)
   if (diffMins) {
-    return {timestamp: `${diffMins}m ago`, refreshInterval: TWENTY_SECONDS}
+    return {timestamp: `${diffMins}m${relativeSuffix}`, refreshInterval: TWENTY_SECONDS}
   }
 
   const diffSeconds = differenceInSeconds(now, date)
   if (diffSeconds > 10) {
-    return {timestamp: `${diffSeconds}s ago`, refreshInterval: FIVE_SECONDS}
+    return {timestamp: `${diffSeconds}s${relativeSuffix}`, refreshInterval: FIVE_SECONDS}
   }
 
   return {timestamp: 'just now', refreshInterval: FIVE_SECONDS}
