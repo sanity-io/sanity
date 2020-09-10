@@ -30,15 +30,14 @@ export function Checkbox({checked, color}: BooleanProps) {
       viewBox="0 0 17 17"
       xmlns="http://www.w3.org/2000/svg"
       fill={color.background}
-      stroke={color.border}
     >
-      <rect x="0.5" y="0.5" width="16" height="16" rx="2.5" />
+      <rect x="0" y="0" width="17" height="17" rx="2.5" />
       {typeof checked === 'undefined' && (
         <path d="M4.07996 8.5H12.92" stroke={color.text} strokeWidth="2" />
       )}
       {checked && (
         <path
-          d="M3.73999 8.49994L7.13999 11.8999L13.6 5.43994"
+          d="M3.5 8L7 11.5L13.5 5"
           stroke={color.text}
           strokeWidth="2"
         />
