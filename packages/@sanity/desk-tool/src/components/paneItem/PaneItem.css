@@ -14,7 +14,6 @@
   display: block;
   text-decoration: inherit;
   outline: none;
-  height: 100%;
   margin: 0;
   padding: var(--small-padding) var(--medium-padding);
 }
