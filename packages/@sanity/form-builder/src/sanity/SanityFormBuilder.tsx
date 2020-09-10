@@ -10,12 +10,14 @@ type PatchChannel = {
   subscribe: () => () => {}
   receivePatches: (patches: Array<any>) => void
 }
+
 type Props = {
   value: any | null
   schema: any
   type: Type
   markers: Array<Marker>
   patchChannel: PatchChannel
+  compareValue: any
   onFocus: (arg0: Path) => void
   readOnly: boolean
   onChange: (patches: any[]) => void
@@ -60,6 +62,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       onBlur,
       focusPath,
       filterField,
+      compareValue,
       presence
     } = this.props
     return (
@@ -70,6 +73,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
           level={0}
           value={value}
           onFocus={onFocus}
+          compareValue={compareValue}
           onBlur={onBlur}
           markers={markers}
           focusPath={focusPath}

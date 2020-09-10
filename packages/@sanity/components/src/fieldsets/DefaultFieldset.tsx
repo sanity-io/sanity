@@ -8,6 +8,7 @@ import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import DefaultLabel from 'part:@sanity/components/labels/default'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {Marker} from '../types'
 import FieldStatus from './FieldStatus'
 
@@ -202,7 +203,9 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
             {!isCollapsible && (
               <div className={styles.content}>
-                <div className={styles.fieldWrapper}>{children}</div>
+                <ChangeIndicator>
+                  <div className={styles.fieldWrapper}>{children}</div>
+                </ChangeIndicator>
               </div>
             )}
           </div>

@@ -1,0 +1,16 @@
+.svg {
+}
+
+.connector {
+  pointer-events: all;
+  stroke: #2276fc;
+  stroke-width: 2;
+}
+
+.connectorLine {
+  composes: connector;
+  @nest &:hover {
+    stroke-width: 4;
+  }
+  transition: stroke-width 200ms;
+}

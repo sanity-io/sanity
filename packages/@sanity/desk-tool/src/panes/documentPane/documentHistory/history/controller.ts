@@ -178,6 +178,10 @@ export class Controller {
     this._since = since
   }
 
+  sinceAttributes() {
+    return this._sinceTime && this._reconstruction ? this._reconstruction.startAttributes() : null
+  }
+
   displayed() {
     return this._revTime && this._reconstruction ? this._reconstruction.endAttributes() : null
   }

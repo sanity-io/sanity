@@ -5,7 +5,7 @@
 import React, {useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from 'part:@sanity/components/avatar'
-import {UserAvatar} from '../components/UserAvatar'
+import {UserAvatar} from '../components'
 import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
@@ -24,10 +24,14 @@ export interface FieldPresenceProps {
   maxAvatars: number
 }
 
-function FieldPresencePlaceholder(props: FieldPresenceProps) {
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
-  return <div className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
-}
+const FieldPresencePlaceholder = React.forwardRef<HTMLDivElement, FieldPresenceProps>(
+  function FieldPresencePlaceholder(props: FieldPresenceProps, ref) {
+    const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+    return (
+      <div ref={ref} className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
+    )
+  }
+)
 
 function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)

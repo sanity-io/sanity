@@ -7,6 +7,8 @@ export interface Rect {
   left: number
 }
 
+export type DelegateComponentType<Data> = React.ComponentType<Data> | keyof React.ReactHTML
+
 export interface ReportedRegion<RegionData> {
   id: string
   children?: React.ReactNode
@@ -19,7 +21,7 @@ export interface RegionReporterMountEvent {
   id: string
   element: HTMLElement
   data: any
-  component: React.ComponentType
+  component: React.ComponentType | keyof React.ReactHTML
 }
 
 export interface RegionReporterUnmountEvent {
@@ -31,7 +33,7 @@ export interface RegionReporterUpdateEvent {
   type: 'update'
   id: string
   data: any
-  component: React.ComponentType
+  component: React.ComponentType | keyof React.ReactHTML
 }
 
 export type RegionReporterEvent =

@@ -18,6 +18,9 @@ import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
+import {Tracker, Reporter} from '@sanity/base/lib/change-indicators'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
+
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
   documentId: string
@@ -39,6 +42,7 @@ interface DocumentPaneProps {
   title?: string
   views: DocumentViewType[]
   value: Doc | null
+  compareValue: Doc | null
 }
 
 // eslint-disable-next-line complexity
@@ -63,6 +67,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     title: paneTitle,
     schemaType,
     value,
+    compareValue,
     views = []
   } = props
   const rootRef = useRef<HTMLDivElement | null>(null)
@@ -158,7 +163,12 @@ export function DocumentPane(props: DocumentPaneProps) {
       ])}
       rootRef={rootRef}
     >
-      <div className={styles.documentAndChangesContainer}>
+      <Tracker
+        component={ConnectorsOverlay}
+        componentProps={{
+          className: styles.documentAndChangesContainer
+        }}
+      >
         <div className={styles.documentContainer}>
           {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
 
@@ -190,13 +200,14 @@ export function DocumentPane(props: DocumentPaneProps) {
             timelineMode={timelineMode}
             toggleInspect={toggleInspect}
             value={value}
+            compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
             versionSelectRef={versionSelectRef}
             views={views}
           />
         </div>
 
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <div className={styles.changesContainer}>
+          <Reporter id="changesPanel" className={styles.changesContainer}>
             <ChangesPanel
               changesSinceSelectRef={changesSinceSelectRef}
               documentId={documentId}
@@ -207,9 +218,9 @@ export function DocumentPane(props: DocumentPaneProps) {
               since={historyController.sinceTime}
               timelineMode={timelineMode}
             />
-          </div>
+          </Reporter>
         )}
-      </div>
+      </Tracker>
 
       <div className={styles.footerContainer}>
         <DocumentStatusBar
