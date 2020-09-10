@@ -36,7 +36,25 @@ const arrayOfObjectsExample = {
     {
       type: 'object',
       title: 'Item',
-      fields: [{type: 'string', name: 'title', title: 'Title'}]
+      fields: [
+        {type: 'string', name: 'title', title: 'Title'},
+        {type: 'string', name: 'field2', title: 'Field 2'},
+        {type: 'string', name: 'field3', title: 'Field 3'},
+        {type: 'string', name: 'field4', title: 'Field 4'},
+        {type: 'string', name: 'field5', title: 'Field 5'},
+        {type: 'string', name: 'field6', title: 'Field 6'},
+        {type: 'string', name: 'field7', title: 'Field 7'},
+        {type: 'string', name: 'field8', title: 'Field 8'},
+        {type: 'string', name: 'field9', title: 'Field 9'},
+        {type: 'string', name: 'field10', title: 'Field 10'},
+        {type: 'string', name: 'field11', title: 'Field 11'},
+        {type: 'string', name: 'field12', title: 'Field 12'},
+        {type: 'string', name: 'field13', title: 'Field 13'},
+        {type: 'string', name: 'field14', title: 'Field 14'},
+        {type: 'string', name: 'field15', title: 'Field 15'},
+        {type: 'string', name: 'field16', title: 'Field 16'},
+        {type: 'string', name: 'field17', title: 'Field 17'}
+      ]
     }
   ],
   options: {
