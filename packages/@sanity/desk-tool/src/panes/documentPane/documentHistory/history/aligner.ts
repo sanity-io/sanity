@@ -1,3 +1,6 @@
+/* eslint-disable max-depth */
+
+import {applyPatch} from 'mendoza'
 import {
   RemoteSnapshotVersionEvent,
   TransactionLogEvent,
@@ -6,7 +9,6 @@ import {
   CombinedDocument
 } from './types'
 import {Timeline} from './timeline'
-import {applyPatch} from 'mendoza'
 
 type VersionState = {
   id: string
@@ -17,7 +19,7 @@ type VersionState = {
   aligned: boolean
 }
 
-function emptyVersionState(id): VersionState {
+function emptyVersionState(id: string): VersionState {
   return {
     id,
     hasAttrs: false,
@@ -26,6 +28,25 @@ function emptyVersionState(id): VersionState {
     events: [],
     aligned: false
   }
+}
+
+function align(history: TransactionLogEvent, state: VersionState): number {
+  const idx = state.events.findIndex(evt => history.id === evt.transactionId)
+  if (idx >= 0) {
+    // Return the next event as we don't want this to be included.
+    return idx + 1
+  }
+
+  if (state.rev) {
+    return state.rev === history.id ? 0 : -1
+  }
+
+  // At this point the document doesn't exist and we were not able to match
+  // it up with a received mutation. This is a bit unfortunate as we don't
+  // have a _reliably_ way of aligning it. For now we just always assume
+  // that it's consistent.
+
+  return 0
 }
 
 /**
@@ -74,7 +95,6 @@ export class Aligner {
     if (evt.type === 'snapshot') {
       this._maybeInvalidateHistory()
 
-      const state = this._states[evt.version]
       state.hasAttrs = true
 
       if (evt.document) {
@@ -100,7 +120,6 @@ export class Aligner {
         if (!state.hasAttrs) throw new Error('received mutation before snapshot')
         state.events.push(evt)
       }
-      return
     }
   }
 
@@ -149,6 +168,7 @@ export class Aligner {
     return Object.values(this._states).every(state => state.hasAttrs)
   }
 
+  // eslint-disable-next-line class-methods-use-this
   private _apply(state: VersionState, evt: DocumentRemoteMutationVersionEvent) {
     state.attrs = applyPatch(state.attrs, evt.effects.apply as any)
   }
@@ -162,23 +182,4 @@ export class Aligner {
       this.timeline.reset()
     }
   }
-}
-
-function align(history: TransactionLogEvent, state: VersionState): number {
-  const idx = state.events.findIndex(evt => history.id === evt.transactionId)
-  if (idx >= 0) {
-    // Return the next event as we don't want this to be included.
-    return idx + 1
-  }
-
-  if (state.rev) {
-    return state.rev === history.id ? 0 : -1
-  }
-
-  // At this point the document doesn't exist and we were not able to match
-  // it up with a received mutation. This is a bit unfortunate as we don't
-  // have a _reliably_ way of aligning it. For now we just always assume
-  // that it's consistent.
-
-  return 0
 }
