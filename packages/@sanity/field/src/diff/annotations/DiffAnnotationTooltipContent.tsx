@@ -31,7 +31,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {author, timestamp} = annotation
   const color = useAnnotationColor(annotation)
   const {error, value: user} = useUser(author)
-  const timeAgo = useTimeAgo(timestamp)
+  const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
   // @todo handle?
   if (error) {
