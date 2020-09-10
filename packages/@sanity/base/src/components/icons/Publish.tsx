@@ -4,14 +4,22 @@ import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1
+  strokeWidth: 1.2
 }
 
 const PublishIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 3.5H14" style={strokeStyle}/>
-    <path d="M8.5 6V14" style={strokeStyle}/>
-    <path d="M5 9.5L8.5 6L12 9.5" style={strokeStyle}/>
+  <svg
+    data-sanity-icon
+    viewBox="0 0 25 25"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid"
+    width="1em"
+    height="1em"
+  >
+    <path d="M4.99997 5.50005H20" style={strokeStyle} />
+    <path d="M12.5 9.00003V20" style={strokeStyle} />
+    <path d="M7.5 14L12.5 9.00003L17.5 14" style={strokeStyle} />
   </svg>
 )
 

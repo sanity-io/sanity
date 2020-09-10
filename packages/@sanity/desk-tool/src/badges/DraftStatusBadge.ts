@@ -1,4 +1,4 @@
-import EditIcon from 'part:@sanity/base/edit-icon'
+import EditIcon from './icons/edit'
 
 export function DraftStatusBadge(props) {
   return props.draft
