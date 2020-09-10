@@ -200,7 +200,10 @@ export class Controller {
 
   currentObjectDiff(): ObjectDiff<any> | null {
     const diff = this.currentDiff()
-    if (diff && diff.type !== 'object') throw new Error(`ObjectDiff expected, got ${diff.type}`)
+    if (diff) {
+      if (diff.type === 'null') return null
+      if (diff.type !== 'object') throw new Error(`ObjectDiff expected, got ${diff.type}`)
+    }
     return diff
   }
 
