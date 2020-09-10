@@ -40,7 +40,7 @@ export function ChangesPanel({
   since,
   schemaType,
   timelineMode
-}: ChangesPanelProps) {
+}: ChangesPanelProps): React.ReactElement | null {
   const {close: closeHistory, historyController} = useDocumentHistory()
   const diff: ObjectDiff | null = historyController.currentObjectDiff() as any
 
@@ -134,7 +134,7 @@ export function ChangesPanel({
   )
 }
 
-function SinceText({since}: {since: Chunk}) {
+function SinceText({since}: {since: Chunk}): React.ReactElement {
   const timeAgo = useTimeAgo(since.endTimestamp)
 
   return (
