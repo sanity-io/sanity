@@ -1,6 +1,7 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext} from 'react'
 import {FieldChangeNode, OperationsAPI} from '../../types'
+import {FallbackDiff} from '../fallback/FallbackDiff'
 import {ChangeHeader} from './ChangeHeader'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DocumentChangeContext} from './DocumentChangeContext'
@@ -9,8 +10,6 @@ import {undoChange} from './undoChange'
 
 import styles from './FieldChange.css'
 import {ValueError} from './ValueError'
-
-const FallbackDiff = () => <div>Missing diff</div>
 
 export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
