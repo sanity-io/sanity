@@ -1,6 +1,7 @@
+import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk} from '@sanity/field/diff'
 import classNames from 'classnames'
-import {negate} from 'lodash'
+import {negate, upperFirst} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -8,7 +9,7 @@ import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/def
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
-import {formatTimelineEventDate, formatTimelineEventLabel} from '../../timeline'
+import {formatTimelineEventLabel} from '../../timeline'
 import {DocumentView} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
@@ -66,6 +67,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
   const showTabs = features.splitViews && props.views.length > 1
   const showVersionMenu = true // props.isHistoryOpen
+  const menuOpen = props.isTimelineOpen && props.timelineMode === 'rev'
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
@@ -157,10 +159,13 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                 selected={props.isTimelineOpen && props.timelineMode === 'rev'}
                 size="small"
               >
-                {props.isTimelineOpen && props.timelineMode === 'rev' ? (
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {menuOpen ? (
                   <>Select version</>
-                ) : (
+                ) : rev ? (
                   <TimelineButtonLabel rev={rev} />
+                ) : (
+                  <>Current version</>
                 )}{' '}
                 &darr;
               </Button>
@@ -172,12 +177,12 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   )
 }
 
-function TimelineButtonLabel({rev}: {rev: Chunk | null}) {
-  if (!rev) return <>Current version</>
+function TimelineButtonLabel({rev}: {rev: Chunk}) {
+  const timeAgo = useTimeAgo(rev.endTimestamp)
 
   return (
     <>
-      {formatTimelineEventLabel(rev.type)} {formatTimelineEventDate(rev.endTimestamp)}
+      {upperFirst(formatTimelineEventLabel(rev.type))} {timeAgo}
     </>
   )
 }

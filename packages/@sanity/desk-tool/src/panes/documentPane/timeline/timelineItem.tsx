@@ -1,7 +1,8 @@
 import React, {useCallback, createElement} from 'react'
+import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk, ChunkType} from '@sanity/field/diff'
 import {
-  formatTimelineEventDate,
+  // formatTimelineEventDate,
   formatTimelineEventLabel,
   getTimelineEventIconComponent
 } from './helpers'
@@ -23,6 +24,7 @@ export function TimelineItem(props: {
   const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, title, type} = props
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
+  const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
   const handleClick = useCallback(
     (evt: React.MouseEvent<HTMLButtonElement>) => {
@@ -51,7 +53,7 @@ export function TimelineItem(props: {
           <div className={styles.typeName}>
             {formatTimelineEventLabel(type) || <code>{type}</code>}
           </div>
-          <div className={styles.timestamp}>{formatTimelineEventDate(timestamp)}</div>
+          <div className={styles.timestamp}>{timeAgo}</div>
         </div>
         <div className={styles.avatarStackContainer}>
           <UserAvatarStack maxLength={3} userIds={authorUserIds} />

@@ -13,7 +13,8 @@ import {UserAvatar} from '@sanity/base/components'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import Button from 'part:@sanity/components/buttons/default'
 import {AvatarStack} from 'part:@sanity/components/avatar'
-import {formatTimelineEventDate, formatTimelineEventLabel} from '../timeline'
+import {useTimeAgo} from '@sanity/base/hooks'
+import {formatTimelineEventLabel} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
 
 import styles from './changesPanel.css'
@@ -59,6 +60,8 @@ export function ChangesPanel({
     evt.stopPropagation()
   }, [])
 
+  const menuOpen = isTimelineOpen && timelineMode === 'since'
+
   return (
     <div className={styles.root}>
       <header className={styles.header}>
@@ -85,10 +88,13 @@ export function ChangesPanel({
               selected={isTimelineOpen && timelineMode === 'since'}
               size="small"
             >
-              {isTimelineOpen && timelineMode === 'since' ? (
+              {/* eslint-disable-next-line no-nested-ternary */}
+              {menuOpen ? (
                 <>Review changes since</>
-              ) : (
+              ) : since ? (
                 sinceText(since)
+              ) : (
+                <>Since unknown version</>
               )}{' '}
               &darr;
             </Button>
@@ -132,10 +138,8 @@ export function ChangesPanel({
   )
 }
 
-function sinceText(since: Chunk | null) {
-  if (!since) return `Since unknown version`
+function sinceText(since: Chunk) {
+  const timeAgo = useTimeAgo(since.endTimestamp)
 
-  return `Since ${formatTimelineEventLabel(since.type)} ${formatTimelineEventDate(
-    since.endTimestamp
-  )}`
+  return `Since ${formatTimelineEventLabel(since.type)} ${timeAgo}`
 }
