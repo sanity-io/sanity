@@ -1,19 +1,19 @@
 import React from 'react'
 import {Path} from '../../paths'
-import {PreviewComponent} from '../../preview/types'
+import {PreviewComponent as IPreviewComponent} from '../../preview/types'
 import {DiffAnnotationTooltip, getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {Diff as DiffType, SchemaType} from '../../types'
+import {Diff, SchemaType} from '../../types'
+import {getChangeVerb} from '../helpers'
 import {ChangeLayout} from './ChangeLayout'
 import styles from './Change.css'
 
 interface ChangeProps {
-  previewComponent: PreviewComponent<any>
-  diff: DiffType
+  previewComponent: IPreviewComponent<any>
+  diff: Diff
   schemaType: SchemaType
   path?: Path | string
   layout?: 'grid' | 'inline'
   className?: string
-  children?: React.ReactNode
 }
 
 export function Change({
@@ -23,12 +23,13 @@ export function Change({
   className,
   schemaType,
   previewComponent: PreviewComponent
-}: ChangeProps) {
+}: ChangeProps): React.ReactElement {
   const containerClassName = className ? `${styles.root} ${className}` : styles.root
   const {fromValue, toValue, action} = diff
   const annotation = getAnnotationAtPath(diff, path || [])
   const color = useAnnotationColor(annotation)
   const colorStyle = color ? {background: color.background, color: color.text} : {}
+  const description = `${getChangeVerb(diff)} by`
 
   if (action === 'unchanged') {
     return <PreviewComponent value={toValue} schemaType={schemaType} />
@@ -40,6 +41,7 @@ export function Change({
       className={styles.remove}
       annotation={annotation}
       style={colorStyle}
+      description={description}
     >
       <PreviewComponent value={fromValue} schemaType={schemaType} />
     </DiffAnnotationTooltip>
@@ -53,6 +55,7 @@ export function Change({
       className={styles.add}
       annotation={annotation}
       style={colorStyle}
+      description={description}
     >
       <PreviewComponent value={toValue} schemaType={schemaType} />
     </DiffAnnotationTooltip>
