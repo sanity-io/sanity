@@ -17,7 +17,7 @@ export default class LoadingPane extends React.PureComponent {
   }
 
   static defaultProps = {
-    message: 'Loading…',
+    // message: 'Loading…',
     path: [],
     title: '\u00a0',
     index: undefined,
@@ -30,7 +30,7 @@ export default class LoadingPane extends React.PureComponent {
 
     const isGetter = typeof props.message === 'function'
     const currentMessage = isGetter ? props.message(props.path) : props.message
-    const isObservable = typeof currentMessage.subscribe === 'function'
+    const isObservable = currentMessage && typeof currentMessage.subscribe === 'function'
     const state = {currentMessage: isObservable ? LoadingPane.defaultProps.message : currentMessage}
 
     if (isObservable) {
@@ -61,6 +61,7 @@ export default class LoadingPane extends React.PureComponent {
     return (
       <DefaultPane
         title={title}
+        isLoading
         isScrollable={false}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
