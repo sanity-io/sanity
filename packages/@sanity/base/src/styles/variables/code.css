@@ -2,7 +2,7 @@
 
 :root {
   /* Code */
-  --code-bg: var(--gray-lightest);
+  --code-bg: color(var(--gray) alpha(10%));
   --code-color: var(--gray-darker);
 
   /* KBD */
