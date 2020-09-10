@@ -1,3 +1,16 @@
 .root {
   height: 300px;
 }
+
+.root:empty {
+  background: #eee;
+  display: table;
+  width: 100%;
+}
+
+.root:empty:after {
+  content: 'Missing/invalid data';
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}

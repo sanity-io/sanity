@@ -22,8 +22,8 @@ export const GeopointArrayDiff: React.ComponentType<DiffProps> = ({diff, schemaT
 }
 
 function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps}) {
-  const fromValue = diff.fromValue || []
-  const toValue = diff.toValue || []
+  const fromValue = (diff.fromValue || []).filter(hasCoordinates)
+  const toValue = (diff.toValue || []).filter(hasCoordinates)
   if (fromValue.length === 0 && toValue.length === 0) {
     return null
   }
@@ -62,6 +62,10 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
 
 function isChangeDiff(diff: Diff): diff is ObjectDiff<Geopoint> {
   return diff.action !== 'unchanged' && diff.type === 'object'
+}
+
+function hasCoordinates(point: Partial<Geopoint>): point is Geopoint {
+  return typeof point.lat === 'number' && typeof point.lng === 'number'
 }
 
 function getBounds(
