@@ -1,0 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  font-family: var(--font-family-monospace);
+  background: var(--code-bg);
+  color: var(--code-color);
+  padding: var(--medium-padding);
+  overflow: auto;
+  border-radius: var(--border-radius-medium);
+
+  @nest & code {
+    font-family: inherit;
+  }
+}

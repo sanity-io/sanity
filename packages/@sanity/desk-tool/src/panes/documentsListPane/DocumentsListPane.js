@@ -11,10 +11,10 @@ import {of, combineLatest} from 'rxjs'
 import {map, tap, filter as filterEvents} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import settings from '../../settings'
-import styles from './DocumentsListPane.css'
 import listViewStyles from '../../components/listView/ListView.css'
-import {InfiniteList} from './infiniteList'
 import {PaneItem} from '../../components/paneItem'
+import styles from './DocumentsListPane.css'
+import {InfiniteList} from './infiniteList'
 
 const PARTIAL_PAGE_LIMIT = 100
 const FULL_LIST_LIMIT = 2000
@@ -399,7 +399,6 @@ export default class DocumentsListPane extends React.PureComponent {
         onCollapse={onCollapse}
         onAction={this.handleAction}
         onExpand={onExpand}
-        isScrollable={false}
       >
         {this.renderContent()}
       </DefaultPane>

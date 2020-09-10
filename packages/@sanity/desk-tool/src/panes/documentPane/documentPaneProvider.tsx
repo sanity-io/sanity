@@ -8,6 +8,7 @@ import {
 import schema from 'part:@sanity/base/schema'
 import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {CodeBlock} from '../../components/CodeBlock'
 import withInitialValue from '../../utils/withInitialValue'
 import ErrorPane from '../errorPane/ErrorPane'
 import {LoadingPane} from '../loadingPane'
@@ -85,9 +86,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         {__DEV__ && value && (
           <div>
             <h4>Here is the JSON representation of the document:</h4>
-            <pre>
-              <code>{JSON.stringify(value, null, 2)}</code>
-            </pre>
+            <CodeBlock>{JSON.stringify(value, null, 2)}</CodeBlock>
           </div>
         )}
       </ErrorPane>
@@ -95,7 +94,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
   }
 
   if (connectionState === 'connecting' || !editState) {
-    return <LoadingPane {...props} delay={600} message={`Loading ${schemaType.title}…`} />
+    return <LoadingPane {...props} delay={600} title={`Loading ${schemaType.title}…`} />
   }
 
   const initialValue = getInitialValue({initialValue: props.initialValue, options: props.options})
