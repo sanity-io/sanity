@@ -1,4 +1,4 @@
-import PublishIcon from 'part:@sanity/base/publish-icon'
+import PublishIcon from './icons/publish'
 
 export function PublishedStatusBadge(props) {
   return props.published
