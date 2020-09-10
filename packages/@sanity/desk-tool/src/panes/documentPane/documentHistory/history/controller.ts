@@ -2,6 +2,7 @@
 import {SanityClient} from '@sanity/client'
 import {Observable} from 'rxjs'
 import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'
+import {ObjectDiff} from '@sanity/diff'
 import {Timeline, ParsedTimeRef} from './timeline'
 import {getJsonStream} from './ndjsonStreamer'
 import {RemoteSnapshotVersionEvent, Chunk} from './types'
@@ -195,6 +196,12 @@ export class Controller {
 
   currentDiff() {
     return this._reconstruction ? this._reconstruction.diff() : null
+  }
+
+  currentObjectDiff(): ObjectDiff<any> | null {
+    const diff = this.currentDiff()
+    if (diff && diff.type !== 'object') throw new Error(`ObjectDiff expected, got ${diff.type}`)
+    return diff
   }
 
   handleRemoteMutation(ev: RemoteSnapshotVersionEvent) {
