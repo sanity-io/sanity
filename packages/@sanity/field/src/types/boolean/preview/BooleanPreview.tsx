@@ -46,16 +46,16 @@ export function Checkbox({checked, color}: BooleanProps) {
   )
 }
 
-export function Switch({checked}: BooleanProps) {
+export function Switch({checked, color}: BooleanProps) {
   return (
-    <svg width="33" height="17" viewBox="0 0 33 17" xmlns="http://www.w3.org/2000/svg">
-      <rect width="33" height="17" rx="8.5" fill={checked ? '#3AB667' : '#7B8CA8'} />
+    <svg width="38" height="22" viewBox="0 0 38 22" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="22" rx="11" fill={checked ? color.border : color.background} />
       {typeof checked === 'undefined' && (
-        <rect x="12" y="4" width="9" height="9" rx="4.5" fill="white" />
+        <rect x="11" y="3" width="16" height="16" rx="8" fill="white" />
       )}
-      {checked && <rect x="20" y="4" width="9" height="9" rx="4.5" fill="white" />}
+      {checked && <rect x="18" y="3" width="16" height="16" rx="8" fill="white" />}
       {typeof checked === 'boolean' && !checked && (
-        <rect x="4" y="4" width="9" height="9" rx="4.5" fill="white" />
+        <rect x="4" y="3" width="16" height="16" rx="8" fill="white" />
       )}
     </svg>
   )
