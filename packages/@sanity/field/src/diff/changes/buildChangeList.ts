@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {pathToString} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
@@ -15,13 +16,6 @@ import {
   DiffComponent
 } from '../../types'
 
-export function buildDocumentChangeList(schemaType: ObjectSchemaType, diff: ObjectDiff) {
-  const changes = buildChangeList(schemaType, diff)
-  return changes.length === 1 && changes[0].type === 'group' && changes[0].path.length === 0
-    ? changes[0].changes
-    : changes
-}
-
 export function buildChangeList(
   schemaType: SchemaType,
   diff: Diff,
@@ -30,19 +24,13 @@ export function buildChangeList(
 ): ChangeNode[] {
   const diffComponent = resolveDiffComponent(schemaType)
 
-  let childChanges: ChangeNode[] = []
-
-  if (schemaType.jsonType === 'object' && diff.type === 'object') {
-    childChanges = buildObjectChangeList(schemaType, diff, path, titlePath)
-    if (!diffComponent) {
-      return childChanges
+  if (!diffComponent) {
+    if (schemaType.jsonType === 'object' && diff.type === 'object') {
+      return buildObjectChangeList(schemaType, diff, path, titlePath)
     }
-  }
 
-  if (schemaType.jsonType === 'array' && diff.type === 'array') {
-    childChanges = buildArrayChangeList(schemaType, diff, path, titlePath)
-    if (!diffComponent || childChanges.length === 0) {
-      return childChanges
+    if (schemaType.jsonType === 'array' && diff.type === 'array') {
+      return buildArrayChangeList(schemaType, diff, path, titlePath)
     }
   }
 
@@ -56,7 +44,7 @@ export function buildChangeList(
   }
 
   let renderHeader = true
-  let component: DiffComponent | undefined = undefined
+  let component: DiffComponent | undefined
   if (diffComponent) {
     renderHeader = typeof diffComponent === 'function' ? true : diffComponent.renderHeader
     component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
@@ -71,12 +59,8 @@ export function buildChangeList(
       titlePath,
       schemaType,
       renderHeader,
-      key: pathToString(path),
-      diffComponent: error ? undefined : component,
-      childChanges:
-        childChanges.length === 1 && childChanges[0].type === 'group'
-          ? childChanges[0].changes
-          : childChanges
+      key: pathToString(path) || 'root',
+      diffComponent: error ? undefined : component
     }
   ]
 }
@@ -106,8 +90,8 @@ export function buildObjectChangeList(
     return [
       {
         type: 'group',
-        groupType: 'object',
-        key: pathToString(path),
+        diff,
+        key: pathToString(path) || 'root',
         path,
         titlePath,
         changes: reduceTitlePaths(changes, titlePath.length)
@@ -120,11 +104,11 @@ export function buildObjectChangeList(
 
 function buildArrayChangeList(
   schemaType: ArraySchemaType,
-  arrayDiff: ArrayDiff,
+  diff: ArrayDiff,
   path: Path = [],
   titlePath: ChangeTitlePath = []
 ): ChangeNode[] {
-  const changedOrMoved = arrayDiff.items.filter(
+  const changedOrMoved = diff.items.filter(
     item => item.hasMoved || item.diff.action !== 'unchanged'
   )
 
@@ -142,7 +126,7 @@ function buildArrayChangeList(
       return acc
     }
 
-    const index = arrayDiff.items.indexOf(itemDiff)
+    const index = diff.items.indexOf(itemDiff)
     const itemPath = path.concat(index)
     const itemTitlePath = titlePath.concat({
       hasMoved: itemDiff.hasMoved,
@@ -159,8 +143,8 @@ function buildArrayChangeList(
     return [
       {
         type: 'group',
-        groupType: 'array',
-        key: pathToString(path),
+        diff,
+        key: pathToString(path) || 'root',
         path,
         titlePath,
         changes: reduceTitlePaths(changes, titlePath.length)
