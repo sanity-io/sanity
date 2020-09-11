@@ -58,14 +58,16 @@ function SideMenu(props: Props) {
         </div>
 
         <div className={styles.toolSwitcher}>
-          <ToolMenu
-            activeToolName={activeToolName}
-            direction="vertical"
-            isVisible={isOpen}
-            onSwitchTool={onSwitchTool}
-            router={router}
-            tools={tools}
-          />
+          {tools.length > 1 && (
+            <ToolMenu
+              activeToolName={activeToolName}
+              direction="vertical"
+              isVisible={isOpen}
+              onSwitchTool={onSwitchTool}
+              router={router}
+              tools={tools}
+            />
+          )}
         </div>
 
         <div className={styles.menuBottom}>

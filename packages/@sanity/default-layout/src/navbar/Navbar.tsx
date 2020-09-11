@@ -116,16 +116,18 @@ export default function Navbar(props: Props) {
         </div>
       </div>
       <div className={styles.toolSwitcher}>
-        <ToolMenu
-          direction="horizontal"
-          isVisible={showToolMenu}
-          tools={tools}
-          activeToolName={router.state.tool}
-          onSwitchTool={onSwitchTool}
-          router={router}
-          showLabel={showLabel}
-          tone="navbar"
-        />
+        {tools.length > 1 && (
+          <ToolMenu
+            direction="horizontal"
+            isVisible={showToolMenu}
+            tools={tools}
+            activeToolName={router.state.tool}
+            onSwitchTool={onSwitchTool}
+            router={router}
+            showLabel={showLabel}
+            tone="navbar"
+          />
+        )}
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.sanityStatus}>
