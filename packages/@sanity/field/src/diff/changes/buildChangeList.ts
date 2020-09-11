@@ -4,20 +4,20 @@ import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 import {
-  ObjectSchemaType,
-  ObjectDiff,
-  SchemaType,
-  Diff,
-  Path,
-  ChangeTitlePath,
-  ChangeNode,
-  ArraySchemaType,
   ArrayDiff,
+  ArraySchemaType,
+  ChangeNode,
+  ChangeTitlePath,
+  Diff,
   DiffComponent,
   FieldChangeNode,
   ItemDiff,
   MultiFieldSet,
-  Fieldset
+  ObjectDiff,
+  ObjectField,
+  ObjectSchemaType,
+  Path,
+  SchemaType
 } from '../../types'
 
 interface DiffContext {
@@ -40,7 +40,7 @@ export function buildChangeList(
     }
 
     if (schemaType.jsonType === 'array' && diff.type === 'array') {
-      return buildArrayChangeList(schemaType, diff, path, titlePath, context)
+      return buildArrayChangeList(schemaType, diff, path, titlePath)
     }
   }
 
@@ -54,47 +54,93 @@ export function buildObjectChangeList(
   titlePath: ChangeTitlePath = [],
   diffContext: DiffContext & {fieldFilter?: string[]} = {}
 ): ChangeNode[] {
-  const {fieldFilter, ...context} = diffContext
   const changes: ChangeNode[] = []
 
-  for (const field of schemaType.fields) {
+  for (const fieldSet of schemaType.fieldsets) {
+    if (fieldSet.single) {
+      changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, diffContext))
+    } else {
+      changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, diffContext))
+    }
+  }
+
+  if (changes.length < 2) {
+    return changes
+  }
+
+  return [
+    {
+      type: 'group',
+      key: pathToString(path) || 'root',
+      path,
+      titlePath,
+      changes: reduceTitlePaths(changes, titlePath.length)
+    }
+  ]
+}
+
+export function buildFieldChange(
+  field: ObjectField,
+  diff: ObjectDiff,
+  path: Path,
+  titlePath: ChangeTitlePath,
+  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+): ChangeNode[] {
+  const {fieldFilter, ...context} = diffContext
+  const fieldDiff = diff.fields[field.name]
+  if (!fieldDiff || !fieldDiff.isChanged || (fieldFilter && !fieldFilter.includes(field.name))) {
+    return []
+  }
+
+  const fieldPath = path.concat([field.name])
+  const fieldTitlePath = titlePath.concat([field.type.title || field.name])
+  return buildChangeList(field.type, fieldDiff, fieldPath, fieldTitlePath, context)
+}
+
+export function buildFieldsetChangeList(
+  fieldSet: MultiFieldSet,
+  diff: ObjectDiff,
+  path: Path,
+  titlePath: ChangeTitlePath,
+  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+): ChangeNode[] {
+  const {fields, name, title} = fieldSet
+  const {fieldFilter, ...context} = diffContext
+
+  const fieldSetTitlePath = titlePath.concat([title || name])
+  const changes: ChangeNode[] = []
+
+  for (const field of fields) {
     const fieldDiff = diff.fields[field.name]
     if (!fieldDiff || !fieldDiff.isChanged || (fieldFilter && !fieldFilter.includes(field.name))) {
       continue
     }
 
     const fieldPath = path.concat([field.name])
-    const fieldSet = field.fieldset ? findFieldset(field.fieldset, schemaType) : undefined
-    const fieldTitlePath = titlePath.concat([
-      ...(fieldSet ? [fieldSet.title || fieldSet.name] : []),
-      ...[field.type.title || field.name]
-    ])
-
+    const fieldTitlePath = fieldSetTitlePath.concat([field.type.title || field.name])
     changes.push(...buildChangeList(field.type, fieldDiff, fieldPath, fieldTitlePath, context))
   }
 
-  if (changes.length > 1) {
-    return [
-      {
-        type: 'group',
-        diff,
-        key: pathToString(path) || 'root',
-        path,
-        titlePath,
-        changes: reduceTitlePaths(changes, titlePath.length)
-      }
-    ]
+  if (changes.length < 2) {
+    return changes
   }
 
-  return changes
+  return [
+    {
+      type: 'group',
+      key: pathToString(path) || 'root',
+      path,
+      titlePath: fieldSetTitlePath,
+      changes: reduceTitlePaths(changes, fieldSetTitlePath.length)
+    }
+  ]
 }
 
 export function buildArrayChangeList(
   schemaType: ArraySchemaType,
   diff: ArrayDiff,
   path: Path = [],
-  titlePath: ChangeTitlePath = [],
-  context: DiffContext = {}
+  titlePath: ChangeTitlePath = []
 ): ChangeNode[] {
   const changedOrMoved = diff.items.filter(
     item => item.hasMoved || item.diff.action !== 'unchanged'
@@ -158,7 +204,6 @@ export function buildArrayChangeList(
     return [
       {
         type: 'group',
-        diff,
         key: pathToString(path) || 'root',
         path,
         titlePath,
@@ -214,13 +259,4 @@ function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
     change.titlePath = change.titlePath.slice(byLength)
     return change
   })
-}
-
-function findFieldset(name: string, schemaType: ObjectSchemaType): MultiFieldSet | undefined {
-  const fieldSet = schemaType.fieldsets.find(set => isMultiFieldset(set) && set.name === name)
-  return fieldSet && isMultiFieldset(fieldSet) ? fieldSet : undefined
-}
-
-function isMultiFieldset(set: Fieldset): set is MultiFieldSet {
-  return 'fields' in set
 }
