@@ -3,11 +3,44 @@ import {StringDiffSegment, StringDiff} from '../../types'
 import {DiffAnnotation} from '../annotations'
 import styles from './AnnotatedStringDiff.css'
 
+function FormattedPreviewText({
+  isFirstSegment,
+  isLastSegment,
+  text
+}: {
+  isFirstSegment: boolean
+  isLastSegment: boolean
+  text: string
+}) {
+  const startsWithWhitespace = text.startsWith(' ')
+  const endsWithWhitespace = text.endsWith(' ')
+
+  return (
+    <>
+      {isFirstSegment && startsWithWhitespace && <>&nbsp;</>}
+      {text}
+      {isLastSegment && endsWithWhitespace && <>&nbsp;</>}
+    </>
+  )
+}
+
 export function AnnotatedStringDiffSegment({
+  isFirstSegment,
+  isLastSegment,
   segment
 }: {
+  isFirstSegment: boolean
+  isLastSegment: boolean
   segment: StringDiffSegment
 }): React.ReactElement {
+  const text = (
+    <FormattedPreviewText
+      isFirstSegment={isFirstSegment}
+      isLastSegment={isLastSegment}
+      text={segment.text}
+    />
+  )
+
   if (segment.action === 'added') {
     return (
       <DiffAnnotation
@@ -16,7 +49,7 @@ export function AnnotatedStringDiffSegment({
         className={styles.add}
         description="Added by"
       >
-        {segment.text}
+        {text}
       </DiffAnnotation>
     )
   }
@@ -29,19 +62,27 @@ export function AnnotatedStringDiffSegment({
         className={styles.remove}
         description="Removed by"
       >
-        {segment.text}
+        {text}
       </DiffAnnotation>
     )
   }
 
-  return <>{segment.text}</>
+  return text
 }
 
 export function AnnotatedStringDiff({diff}: {diff: StringDiff}) {
+  const len = diff.segments.length
+
   return (
     <>
-      {(diff.segments || []).map((segment, idx) => (
-        <AnnotatedStringDiffSegment key={String(idx)} segment={segment} />
+      {(diff.segments || []).map((segment, segmentIndex) => (
+        <AnnotatedStringDiffSegment
+          isFirstSegment={segmentIndex === 0}
+          isLastSegment={segmentIndex === len - 1}
+          // eslint-disable-next-line react/no-array-index-key
+          key={segmentIndex}
+          segment={segment}
+        />
       ))}
     </>
   )
