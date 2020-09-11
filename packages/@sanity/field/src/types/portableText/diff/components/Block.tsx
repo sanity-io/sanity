@@ -1,7 +1,14 @@
 import React, {SyntheticEvent} from 'react'
-import {PortableTextBlock, PortableTextChild, ChildMap} from '../types'
-import {isDecorator, isHeader, childIsSpan, diffDidRemove, UNKNOWN_TYPE_NAME} from '../helpers'
+import {PortableTextBlock, PortableTextChild, ChildMap, PortableTextDiff} from '../types'
+import {isDecorator, isHeader, childIsSpan, UNKNOWN_TYPE_NAME} from '../helpers'
 
+import {
+  ObjectDiff,
+  DiffAnnotation,
+  DiffAnnotationTooltip,
+  useDiffAnnotationColor
+} from '../../../../diff'
+import {ObjectSchemaType} from '../../../../types'
 import Annotation from './Annotation'
 import Decorator from './Decorator'
 import InlineObject from './InlineObject'
@@ -10,11 +17,10 @@ import Header from './Header'
 import Paragraph from './Paragraph'
 import Span from './Span'
 
-import {ObjectDiff} from '../../../../diff'
-import {ObjectSchemaType} from '../../../../types'
+import styles from './Block.css'
 
 type Props = {
-  diff: ObjectDiff
+  diff: PortableTextDiff
   childMap: ChildMap
 }
 
@@ -23,9 +29,11 @@ export default function Block(props: Props): JSX.Element {
 
   const handleObjectFocus = (event: SyntheticEvent<HTMLSpanElement>) => {
     // TODO: implement this later on when we can do focus in the editor pane
+    // eslint-disable-next-line no-alert
     alert('Focus object here!')
   }
 
+  // eslint-disable-next-line complexity
   const renderBlock = ({
     block,
     children
@@ -33,7 +41,29 @@ export default function Block(props: Props): JSX.Element {
     block: PortableTextBlock
     children: React.ReactNode
   }): JSX.Element => {
+    const classNames = [styles.root, diff.action, `style_${diff.displayValue.style || 'undefined'}`]
     let returned: React.ReactNode = children
+    let fromStyle
+
+    // If style was changed, indicate that
+    if (diff.action === 'changed' && diff.fields.style && diff.fields.style.action === 'changed') {
+      fromStyle = diff.fromValue.style
+      classNames.push(`changed_from_style_${fromStyle || 'undefined'}`)
+      const color = useDiffAnnotationColor(diff, [])
+      const style = color ? {background: color.background, color: color.text} : {}
+
+      returned = (
+        <div className={styles.styleIsChanged}>
+          <div className={styles.changedBlockStyleNotice}>
+            <DiffAnnotationTooltip diff={diff.fields.style} as={'div'}>
+              Changed block style from '{fromStyle}'
+            </DiffAnnotationTooltip>
+          </div>
+          <div style={style}>{returned}</div>
+        </div>
+      )
+    }
+
     if (block.style === 'blockquote') {
       returned = <Blockquote block={block}>{returned}</Blockquote>
     } else if (block.style && isHeader(block)) {
@@ -45,25 +75,49 @@ export default function Block(props: Props): JSX.Element {
     } else {
       returned = <Paragraph block={block}>{returned}</Paragraph>
     }
-    return <>{returned}</>
+    return <div className={classNames.join(' ')}>{returned}</div>
   }
 
+  // eslint-disable-next-line complexity
   const renderChild = (child: PortableTextChild) => {
+    let cDiff
     const fromMap = childMap[child._key]
-    const diff = fromMap.diff as ObjectDiff
+    if (fromMap) {
+      cDiff = fromMap.diff as ObjectDiff
+    }
     const isSpan = childIsSpan(child)
     // Render span or inline object?
     const renderInlineObject = renderObjectTypes[child._type]
-    const renderSpanOrInline = renderInlineObject
-      ? props => renderInlineObject({...props, child, diff})
-      : props => renderSpan({...props, child, diff})
+    const renderSpanOrInline =
+      !isSpan && renderInlineObject
+        ? cProps => renderInlineObject({...cProps, child, diff: cDiff, blockDiff: diff})
+        : cProps => renderSpan({...cProps, child, diff: cDiff, blockDiff: diff})
     let returned = renderSpanOrInline({child})
     // Render decorators
+    // eslint-disable-next-line no-unused-expressions
     isSpan &&
       child.marks &&
       (
         child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
-      ).map(mark => {
+      ).forEach(mark => {
+        const hasMarksDiff =
+          cDiff &&
+          (cDiff.fromValue === child || cDiff.toValue === child) &&
+          cDiff.isChanged &&
+          cDiff.fields.marks &&
+          cDiff.fields.marks.type === 'array'
+        if (hasMarksDiff) {
+          const didRemove = cDiff.fields.marks.action === 'removed'
+          returned = (
+            <DiffAnnotation
+              annotation={cDiff.annotation}
+              as={didRemove ? 'del' : 'ins'}
+              description={`${didRemove ? 'Removed' : 'Added'} formatting`}
+            >
+              {returned}
+            </DiffAnnotation>
+          )
+        }
         returned = (
           <Decorator key={`decorator-${child._key}-${mark}`} block={block} mark={mark} span={child}>
             {returned}
@@ -71,11 +125,12 @@ export default function Block(props: Props): JSX.Element {
         )
       })
     // Render annotations
+    // eslint-disable-next-line no-unused-expressions
     isSpan &&
       child.marks &&
       (
         child.marks.filter(mark => !isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
-      ).map(markDefKey => {
+      ).forEach(markDefKey => {
         returned = (
           <Annotation
             block={block}
@@ -91,23 +146,33 @@ export default function Block(props: Props): JSX.Element {
     return returned
   }
 
-  const renderSpan = (props: {child: PortableTextChild; diff: ObjectDiff}): React.ReactNode => {
-    const {child, diff} = props
-    return <Span key={`span-${child._key}`} block={block} diff={diff} span={child} />
+  const renderSpan = (sProps: {
+    child: PortableTextChild
+    diff?: ObjectDiff
+    blockDiff?: ObjectDiff
+  }): React.ReactNode => {
+    return (
+      <Span
+        key={`span-${sProps.child._key}`}
+        block={block}
+        blockDiff={sProps.blockDiff}
+        diff={sProps.diff}
+        span={sProps.child}
+      />
+    )
   }
 
   // Set up renderers for inline object types
   // TODO: previews from schema
-  const renderInlineObject = (props: {
+  const renderInlineObject = (cProps: {
     child: PortableTextChild
     diff: ObjectDiff
   }): React.ReactNode => {
-    const {child, diff} = props
     return (
       <InlineObject
-        key={`inline-object-${child._key}`}
-        object={child}
-        diff={diff}
+        key={`inline-object-${cProps.child._key}`}
+        object={cProps.child}
+        diff={cProps.diff}
         onClick={handleObjectFocus}
       />
     )
@@ -127,17 +192,9 @@ export default function Block(props: Props): JSX.Element {
         renderObjectTypes[UNKNOWN_TYPE_NAME] = renderInvalidInlineObjectType
       }
     })
-
-  let block = diff.toValue as PortableTextBlock
-
-  // If something is removed, we should show the beforeValue?
-  // TODO: check up on this!
-  if (diffDidRemove(diff)) {
-    block = diff.fromValue as PortableTextBlock
-  }
-
+  const block = diff.displayValue
   return renderBlock({
     block,
-    children: (block.children || []).map(child => renderChild(child))
+    children: (diff.displayValue.children || []).map(child => renderChild(child))
   })
 }
