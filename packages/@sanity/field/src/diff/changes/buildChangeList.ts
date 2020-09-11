@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import {pathToString} from '../../paths'
+import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
@@ -135,8 +135,12 @@ function buildArrayChangeList(
       return acc
     }
 
-    const index = diff.items.indexOf(itemDiff)
-    const itemPath = path.concat(index)
+    const segment =
+      getItemKeySegment(itemDiff.diff.fromValue) ||
+      getItemKeySegment(itemDiff.diff.toValue) ||
+      diff.items.indexOf(itemDiff)
+
+    const itemPath = path.concat(segment)
     const itemTitlePath = titlePath.concat({
       hasMoved: itemDiff.hasMoved,
       toIndex: itemDiff.toIndex,

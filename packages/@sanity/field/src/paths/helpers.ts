@@ -1,6 +1,4 @@
-import {Path} from './types'
-import {PathSegment} from './types'
-import {KeyedSegment} from './types'
+import {Path, PathSegment, KeyedSegment} from './types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
@@ -72,5 +70,35 @@ export function isKeySegment(segment: any): segment is KeyedSegment {
     return reKeySegment.test(segment.trim())
   }
 
-  return segment && segment._key
+  return Boolean(segment && segment._key)
+}
+
+export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
+  if (pathA.length !== pathB.length) {
+    return false
+  }
+
+  return pathA.every((segmentA, index) => {
+    const segmentB = pathB[index]
+    if (isKeySegment(segmentA) && isKeySegment(segmentB)) {
+      return segmentA._key === segmentB._key
+    }
+
+    if (isIndexSegment(segmentA)) {
+      return Number(segmentA) === Number(segmentB)
+    }
+
+    return segmentA === segmentB
+  })
+}
+
+export function getItemKey(arrayItem: unknown): string | undefined {
+  return typeof arrayItem === 'object' && arrayItem !== null
+    ? (arrayItem as KeyedSegment)._key
+    : undefined
+}
+
+export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined {
+  const key = getItemKey(arrayItem)
+  return key ? {_key: key} : undefined
 }
