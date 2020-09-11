@@ -1,10 +1,10 @@
 import React from 'react'
+import {uniqueId, capitalize} from 'lodash'
+import FormField from 'part:@sanity/components/formfields/default'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
-import PatchEvent, {set} from '../PatchEvent'
-import FormField from 'part:@sanity/components/formfields/default'
+import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
-import {uniqueId, capitalize} from 'lodash'
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
@@ -21,11 +21,10 @@ export default class SelectInput extends React.Component<Props> {
   static defaultProps = {
     value: ''
   }
-  handleChange = (item: Record<string, any>) => {
+  handleChange = (item: string | number | {title?: string; value: string | number}) => {
     const {onChange} = this.props
-    onChange(
-      PatchEvent.from(set(typeof item === 'string' || typeof item === 'number' ? item : item.value))
-    )
+    const newValue = typeof item === 'string' || typeof item === 'number' ? item : item.value
+    onChange(PatchEvent.from(typeof newValue === 'undefined' ? unset() : set(newValue)))
   }
   focus() {
     if (this._input) {
