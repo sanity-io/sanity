@@ -5,12 +5,18 @@
   pointer-events: all;
   stroke: #2276fc;
   stroke-width: 2;
+  @nest &:hover .connectorPath {
+    opacity: 1;
+  }
 }
 
-.connectorLine {
-  composes: connector;
-  @nest &:hover {
-    stroke-width: 4;
+.connectorPath {
+  transition: opacity 200ms;
+  opacity: 0;
+  @nest &.hasFocus {
+    opacity: 1;
   }
-  transition: stroke-width 200ms;
+}
+.hasFocus {
+  opacity: 1;
 }

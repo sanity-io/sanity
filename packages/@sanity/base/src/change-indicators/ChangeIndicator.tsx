@@ -3,6 +3,7 @@ import {FieldContext} from './FieldContext'
 import {Reporter} from './elementTracker'
 import isEqual from 'react-fast-compare'
 import scrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
+import * as PathUtils from '@sanity/util/paths'
 
 const isPrimitive = value =>
   typeof value === 'string' ||
@@ -17,23 +18,10 @@ const ChangeBar = React.forwardRef(
     <div
       ref={ref}
       style={{
-        paddingRight: 8,
-        position: 'relative'
+        paddingRight: 8
       }}
     >
       {props.children}
-      {props.isChanged && (
-        <div
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 2,
-            backgroundColor: '#2276FC'
-          }}
-        />
-      )}
     </div>
   )
 )
@@ -60,20 +48,20 @@ export function ChangeIndicator(props: Props) {
   const isChanged =
     (isPrimitive(value) && isPrimitive(compareValue) && value !== compareValue) ||
     (props.compareDeep && !isEqual(value, compareValue))
-  // todo: need to know whether to show in overlay or not
-  // return <ChangeBar>{props.children}</ChangeBar>
 
-  return (
-    <ChangeBar isChanged={isChanged} ref={ref}>
-      {isChanged && context.hasFocus ? (
-        <Reporter
-          id={`changed-field`}
-          component="div"
-          data={{path: context.path, children: props.children, scrollTo}}
-        />
-      ) : (
-        props.children || null
-      )}
-    </ChangeBar>
+  return isChanged ? (
+    <Reporter
+      id={`field-${PathUtils.toString(context.path)}`}
+      component={ChangeBar}
+      data={{
+        path: context.path,
+        isChanged,
+        children: props.children,
+        scrollTo,
+        hasFocus: context.hasFocus
+      }}
+    />
+  ) : (
+    props.children || null
   )
 }

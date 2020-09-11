@@ -1,8 +1,9 @@
 import React from 'react'
 import styles from './ConnectorsOverlay.css'
-import {connectorLinePath} from '../../components/changeConnector/svgHelpers'
+import {connectorLinePath, linePathFromPoints} from '../../components/changeConnector/svgHelpers'
 import {Arrows} from '../../components/changeConnector/Arrows'
 import * as PathUtils from '@sanity/util/paths'
+import {groupBy} from 'lodash'
 
 interface Props {
   children?: React.ReactNode
@@ -24,32 +25,32 @@ export function ConnectorsOverlay(props: Props) {
     ...rest
   } = props
 
-  const changesPanel = regions.find(region => region.id == 'changesPanel')
-  const changedField = regions.find(
-    region => region !== changesPanel && region.id.startsWith('changed-field')
-  )
+  const grouped = groupBy(regions, region => {
+    if (region.id === 'changesPanel') {
+      return 'changesPanel'
+    }
+    return region.id.startsWith('field-') ? 'fieldRegions' : 'changeRegions'
+  })
 
-  const changedRegion =
-    changedField &&
-    regions.find(
-      region =>
-        region !== changesPanel &&
-        region.id === `change-${PathUtils.toString(changedField.data.path)}`
-    )
-
+  const changesPanel = grouped.changesPanel && grouped.changesPanel[0]
   // note: this assumes the changes panel header and the document panel always have the same height
   const topEdge = changesPanel?.rect?.top
-  const changeMarkerLeft = changedRegion?.rect?.left - 10
 
+  const {fieldRegions = [], changeRegions = []} = grouped
   return (
     <div ref={trackerRef} {...rest}>
       {children}
       {changesPanel &&
-        changedField &&
-        changedRegion &&
-        (() => {
+        fieldRegions.map(changedField => {
+          const changedRegion = changeRegions.find(r =>
+            PathUtils.isEqual(r.data.path, changedField.data.path)
+          )
+          if (!changedRegion) {
+            return null
+          }
+          const changeMarkerLeft = changedRegion?.rect?.left - 10
           const connectorFrom = {
-            left: changedField.rect.left + changedField.rect.width + 8,
+            left: changedField.rect.left + changedField.rect.width,
             top: changedField.rect.top - documentPanelScrollTop - topEdge + 8
           }
           const connectorTo = {
@@ -64,8 +65,23 @@ export function ConnectorsOverlay(props: Props) {
             left: changeMarkerLeft,
             top: Math.max(changedRegion.rect.top - changePanelScrollTop) - topEdge
           }
+          const leftBarFrom = {
+            left: changedField.rect.left + changedField.rect.width,
+            top: Math.max(changedField.rect.top - documentPanelScrollTop) - topEdge
+          }
+          const leftBarTo = {
+            left: changedField.rect.left + changedField.rect.width,
+            top: changedField.rect.top + changedField.rect.height - documentPanelScrollTop - topEdge
+          }
+          const connectorPath = connectorLinePath(
+            connectorFrom,
+            connectorTo,
+            10,
+            changesPanel.rect.left + 10
+          )
           return (
             <svg
+              key={changedField.id}
               onClick={() => {
                 if (changedField?.data) changedField?.data.scrollTo()
                 if (changedRegion?.data) changedRegion?.data.scrollTo()
@@ -85,44 +101,46 @@ export function ConnectorsOverlay(props: Props) {
             >
               <React.Fragment key={`field-${changedField.id}`}>
                 {changedRegion && (
-                  <g className={styles.connectorLine}>
-                    <path
-                      d={connectorLinePath(
-                        connectorFrom,
-                        connectorTo,
-                        10,
-                        changesPanel.rect.left + 10
-                      )}
-                      fill="none"
-                    />
-                    <rect
-                      x={connectorFrom.left}
-                      y={Math.min(connectorTo.top, connectorFrom.top)}
-                      width={connectorTo.left - connectorFrom.left}
-                      height={Math.abs(connectorTo.top - connectorFrom.top)}
-                      fill="none"
-                      stroke="none"
-                    />
-                  </g>
-                )}
-                {changedRegion && (
                   <g className={styles.connector}>
-                    <path d={linePathFromPoints(rightBarFrom, rightBarTo)} />
-                    <Arrows
-                      from={connectorFrom}
-                      to={connectorTo}
-                      left={changesPanel.rect.left + 10}
-                      bounds={{
-                        width: 0,
-                        height: changesPanel.rect.height
-                      }}
+                    <path d={linePathFromPoints(leftBarFrom, leftBarTo)} />
+                    <path
+                      d={linePathFromPoints(leftBarFrom, leftBarTo)}
+                      strokeWidth={15}
+                      stroke="none"
+                      fill="none"
                     />
+
+                    <g
+                      className={`${styles.connectorPath}${
+                        changedField.data.hasFocus ? styles.hasFocus : ''
+                      }`}
+                    >
+                      <path d={connectorPath} fill="none" />
+                      {/* to make the active area wider */}
+                      <path d={connectorPath} strokeWidth={15} stroke="none" fill="none" />
+                      <path d={linePathFromPoints(rightBarFrom, rightBarTo)} />
+                      <path
+                        d={linePathFromPoints(rightBarFrom, rightBarTo)}
+                        strokeWidth={15}
+                        stroke="none"
+                        fill="none"
+                      />{' '}
+                      <Arrows
+                        from={connectorFrom}
+                        to={connectorTo}
+                        left={changesPanel.rect.left + 10}
+                        bounds={{
+                          width: 0,
+                          height: changesPanel.rect.height
+                        }}
+                      />
+                    </g>
                   </g>
                 )}
               </React.Fragment>
             </svg>
           )
-        })()}
+        })}
     </div>
   )
 }
