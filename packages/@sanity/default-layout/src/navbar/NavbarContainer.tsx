@@ -19,15 +19,15 @@ interface NextState {
   winWidth: number
   showLabel?: boolean
   showLabelMinWidth?: number
-  showToolSwitcher?: boolean
-  showToolSwitcherMinWidth?: number
+  showToolMenu?: boolean
+  showToolMenuMinWidth?: number
 }
 
 interface State {
   showLabel: boolean
   showLabelMinWidth: number
-  showToolSwitcher: boolean
-  showToolSwitcherMinWidth: number
+  showToolMenu: boolean
+  showToolMenuMinWidth: number
 }
 
 /* eslint-disable complexity */
@@ -37,13 +37,13 @@ function getNextState(
   state: {
     showLabel: boolean
     showLabelMinWidth: number
-    showToolSwitcher: boolean
-    showToolSwitcherMinWidth: number
+    showToolMenu: boolean
+    showToolMenuMinWidth: number
   },
   mostRight: {},
   winWidth: number
 ) {
-  const {showLabel, showLabelMinWidth, showToolSwitcher, showToolSwitcherMinWidth} = state
+  const {showLabel, showLabelMinWidth, showToolMenu, showToolMenuMinWidth} = state
   const mostRightIsVisible = mostRight && mostRight <= winWidth
   const nextState: NextState = {winWidth}
 
@@ -57,19 +57,19 @@ function getNextState(
       nextState.showLabel = true
     }
 
-    if (showToolSwitcher) {
-      if (showToolSwitcherMinWidth === -1 || winWidth < showToolSwitcherMinWidth) {
-        nextState.showToolSwitcherMinWidth = winWidth
+    if (showToolMenu) {
+      if (showToolMenuMinWidth === -1 || winWidth < showToolMenuMinWidth) {
+        nextState.showToolMenuMinWidth = winWidth
       }
-    } else if (showToolSwitcherMinWidth < winWidth) {
-      nextState.showToolSwitcher = true
+    } else if (showToolMenuMinWidth < winWidth) {
+      nextState.showToolMenu = true
     }
   } else {
     // most-right element is NOT within viewport
     if (showLabel) {
       nextState.showLabel = false
-    } else if (showToolSwitcher) {
-      nextState.showToolSwitcher = false
+    } else if (showToolMenu) {
+      nextState.showToolMenu = false
     }
   }
 
@@ -83,8 +83,8 @@ class NavbarContainer extends React.PureComponent<Props, State> {
   state = {
     showLabel: false,
     showLabelMinWidth: -1,
-    showToolSwitcher: false,
-    showToolSwitcherMinWidth: -1,
+    showToolMenu: false,
+    showToolMenuMinWidth: -1,
     winWidth: -1
   }
 
@@ -102,13 +102,12 @@ class NavbarContainer extends React.PureComponent<Props, State> {
 
   /* eslint-disable complexity */
   componentDidUpdate(prevProps: Props, prevState: State) {
-    const {showLabel, showLabelMinWidth, showToolSwitcher, showToolSwitcherMinWidth} = this.state
+    const {showLabel, showLabelMinWidth, showToolMenu, showToolMenuMinWidth} = this.state
     const didShowLabel = showLabelMinWidth === -1 && !prevState.showLabel && showLabel
-    const didShowToolSwitcher =
-      showToolSwitcherMinWidth === -1 && !prevState.showToolSwitcher && showToolSwitcher
-    const didHideLabel = showToolSwitcherMinWidth === -1 && prevState.showLabel && !showLabel
+    const didShowToolMenu = showToolMenuMinWidth === -1 && !prevState.showToolMenu && showToolMenu
+    const didHideLabel = showToolMenuMinWidth === -1 && prevState.showLabel && !showLabel
 
-    if (didShowLabel || didShowToolSwitcher || didHideLabel) {
+    if (didShowLabel || didShowToolMenu || didHideLabel) {
       this.handleCustomResize(window.innerWidth)
     }
   }
@@ -140,14 +139,12 @@ class NavbarContainer extends React.PureComponent<Props, State> {
 
   handleCustomResize(winWidth: number) {
     if (this.loginStatusElement) {
-      const {showToolSwitcher} = this.state
-      // console.log(this.searchElement)
-      const mostRightRect = showToolSwitcher
+      const {showToolMenu} = this.state
+      const mostRightRect = showToolMenu
         ? this.loginStatusElement.getBoundingClientRect()
         : this.searchElement.getBoundingClientRect()
       this.setState(state => {
         const nextState = getNextState(state, mostRightRect.left + mostRightRect.width, winWidth)
-        // console.log(nextState)
         return nextState as State
       })
     }
@@ -174,7 +171,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       searchIsOpen,
       tools
     } = this.props
-    const {showLabel, showToolSwitcher} = this.state
+    const {showLabel, showToolMenu} = this.state
 
     return (
       <Navbar
@@ -190,7 +187,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
         router={router}
         searchIsOpen={searchIsOpen}
         showLabel={showLabel}
-        showToolSwitcher={showToolSwitcher}
+        showToolMenu={showToolMenu}
         tools={tools}
       />
     )
