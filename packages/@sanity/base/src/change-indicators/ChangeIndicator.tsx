@@ -17,7 +17,7 @@ const ChangeBar = React.forwardRef(
     <div
       ref={ref}
       style={{
-        paddingRight: 4,
+        paddingRight: 8,
         position: 'relative'
       }}
     >

@@ -49,7 +49,7 @@ export function ConnectorsOverlay(props: Props) {
         changedRegion &&
         (() => {
           const connectorFrom = {
-            left: changedField.rect.left + changedField.rect.width + 4,
+            left: changedField.rect.left + changedField.rect.width + 8,
             top: changedField.rect.top - documentPanelScrollTop - topEdge + 8
           }
           const connectorTo = {
