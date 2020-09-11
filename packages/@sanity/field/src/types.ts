@@ -184,6 +184,7 @@ export interface MultiFieldSet {
   name: string
   title?: string
   description?: string
+  single?: false
   options?: {
     collapsible?: boolean
     collapsed?: boolean
@@ -221,7 +222,6 @@ export * from './paths/types'
  */
 export interface GroupChangeNode {
   type: 'group'
-  diff: ObjectDiff | ArrayDiff
   changes: ChangeNode[]
   key: string
   path: Path

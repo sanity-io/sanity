@@ -17,8 +17,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
 
   const handleRevertChanges = React.useCallback(() => undoChange(group, docOperations), [
     documentId,
-    group.key,
-    group.diff
+    group
   ])
 
   return (

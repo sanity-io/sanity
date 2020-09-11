@@ -1,23 +1,27 @@
 import {diffItem} from 'sanity-diff-patch'
 import {pathToString, getItemKeySegment} from '../../paths/helpers'
 import {
-  OperationsAPI,
-  Diff,
-  Path,
-  DiffPatch,
+  ArrayDiff,
   ChangeNode,
-  ItemDiff,
-  PatchOperations,
+  Diff,
+  DiffPatch,
   InsertDiffPatch,
-  UnsetDiffPatch,
+  ItemDiff,
+  OperationsAPI,
+  PatchOperations,
+  Path,
   SetDiffPatch,
-  ArrayDiff
+  UnsetDiffPatch
 } from '../../types'
 
 const diffOptions = {diffMatchPatch: {enabled: false}}
 
 export function undoChange(change: ChangeNode, documentOperations: OperationsAPI): void {
   const patches: PatchOperations[] = []
+
+  if (change.type === 'group') {
+    return change.changes.forEach(child => undoChange(child, documentOperations))
+  }
 
   if (change.type === 'field' && change.diff.action === 'added') {
     // The reverse of an add operation is an unset -
