@@ -15,7 +15,9 @@ import {
   ArrayDiff,
   DiffComponent,
   FieldChangeNode,
-  ItemDiff
+  ItemDiff,
+  MultiFieldSet,
+  Fieldset
 } from '../../types'
 
 interface DiffContext {
@@ -62,7 +64,11 @@ export function buildObjectChangeList(
     }
 
     const fieldPath = path.concat([field.name])
-    const fieldTitlePath = titlePath.concat([field.type.title || field.name])
+    const fieldSet = field.fieldset ? findFieldset(field.fieldset, schemaType) : undefined
+    const fieldTitlePath = titlePath.concat([
+      ...(fieldSet ? [fieldSet.title || fieldSet.name] : []),
+      ...[field.type.title || field.name]
+    ])
 
     changes.push(...buildChangeList(field.type, fieldDiff, fieldPath, fieldTitlePath, context))
   }
@@ -208,4 +214,13 @@ function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
     change.titlePath = change.titlePath.slice(byLength)
     return change
   })
+}
+
+function findFieldset(name: string, schemaType: ObjectSchemaType): MultiFieldSet | undefined {
+  const fieldSet = schemaType.fieldsets.find(set => isMultiFieldset(set) && set.name === name)
+  return fieldSet && isMultiFieldset(fieldSet) ? fieldSet : undefined
+}
+
+function isMultiFieldset(set: Fieldset): set is MultiFieldSet {
+  return 'fields' in set
 }
