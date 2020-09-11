@@ -1,11 +1,11 @@
 import React from 'react'
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
-import {uniqueId} from 'lodash'
 
-export default class TextInput extends React.Component<Props> {
+export default class TextInput extends React.Component<Props<string>> {
   _input: TextArea | null
   _inputId = uniqueId('TextInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
