@@ -8,7 +8,7 @@ import SearchIcon from 'part:@sanity/base/search-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
-import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
+import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
 import Branding from './branding/Branding'
@@ -33,7 +33,7 @@ interface Props {
   router: Router
   searchIsOpen: boolean
   showLabel: boolean
-  showToolSwitcher: boolean
+  showToolMenu: boolean
   tools: Tool[]
 }
 
@@ -55,11 +55,11 @@ export default function Navbar(props: Props) {
     tools,
     searchIsOpen,
     showLabel,
-    showToolSwitcher
+    showToolMenu
   } = props
 
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
-  const className = classNames(styles.root, showToolSwitcher && styles.withToolSwitcher)
+  const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
   const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
 
   return (
@@ -82,7 +82,7 @@ export default function Navbar(props: Props) {
       </div>
       {HAS_SPACES && (
         <div className={styles.datasetSelect}>
-          <DatasetSelect isVisible={showToolSwitcher} tone="navbar" />
+          <DatasetSelect isVisible={showToolMenu} tone="navbar" />
         </div>
       )}
       <div className={styles.createButton}>
@@ -116,9 +116,9 @@ export default function Navbar(props: Props) {
         </div>
       </div>
       <div className={styles.toolSwitcher}>
-        <ToolSwitcher
+        <ToolMenu
           direction="horizontal"
-          isVisible={showToolSwitcher}
+          isVisible={showToolMenu}
           tools={tools}
           activeToolName={router.state.tool}
           onSwitchTool={onSwitchTool}
