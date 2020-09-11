@@ -1,10 +1,11 @@
 import React from 'react'
+import {uniqueId} from 'lodash'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
-import {uniqueId} from 'lodash'
-export default class TelephoneInput extends React.Component<Props> {
+
+export default class TelephoneInput extends React.Component<Props<string>> {
   _input: TextInput | null
   _inputId = uniqueId('TelephoneInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {

@@ -1,11 +1,12 @@
 import React from 'react'
+import {uniqueId} from 'lodash'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
-import {uniqueId} from 'lodash'
-export default class NumberInput extends React.Component<Props, {}> {
+
+export default class NumberInput extends React.Component<Props<number>> {
   _input: TextInput | null
   _inputId = uniqueId('NumberInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {

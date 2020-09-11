@@ -9,7 +9,7 @@ import styles from './BooleanInput.css'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(
-  (props: Props, ref: React.MutableRefObject<HTMLDivElement>) => {
+  (props: Props<boolean>, ref: React.MutableRefObject<HTMLDivElement>) => {
     const inputRef = useRef<any>(null)
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
       props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
