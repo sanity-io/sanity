@@ -1,3 +1,4 @@
+import {KeyedObject} from '../diff'
 import {Path, PathSegment, KeyedSegment} from './types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
@@ -93,12 +94,14 @@ export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
 }
 
 export function getItemKey(arrayItem: unknown): string | undefined {
-  return typeof arrayItem === 'object' && arrayItem !== null
-    ? (arrayItem as KeyedSegment)._key
-    : undefined
+  return isKeyedObject(arrayItem) ? arrayItem._key : undefined
 }
 
 export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined {
   const key = getItemKey(arrayItem)
   return key ? {_key: key} : undefined
+}
+
+export function isKeyedObject(item: unknown): item is KeyedObject {
+  return typeof item === 'object' && item !== null && typeof (item as KeyedObject)._key === 'string'
 }

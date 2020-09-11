@@ -211,6 +211,8 @@ export interface GroupChangeNode {
 export interface FieldChangeNode {
   type: 'field'
   diff: Diff
+  itemDiff?: ItemDiff
+  parentDiff?: ObjectDiff | ArrayDiff
   key: string
   path: Path
   error?: FieldValueError
@@ -245,27 +247,47 @@ export type ChangeTitlePath = (string | FromToIndex)[]
  * Document operations API + patches
  * @todo remove - should be imported from somewhere else
  */
+export type InsertPatch =
+  | {before: string; items: unknown[]}
+  | {after: string; items: unknown[]}
+  | {replace: string; items: unknown[]}
+
+export interface PatchOperations {
+  set?: {[key: string]: unknown}
+  setIfMissing?: {[key: string]: unknown}
+  merge?: {[key: string]: unknown}
+  diffMatchPatch?: {[key: string]: unknown}
+  unset?: string[]
+  inc?: {[key: string]: number}
+  dec?: {[key: string]: number}
+  insert?: InsertPatch
+  ifRevisionID?: string
+}
+
 export interface OperationsAPI {
   patch: {
-    execute: (patches: any[]) => void
+    execute: (patches: PatchOperations[]) => void
   }
 }
 
-export interface SetPatch {
+/**
+ * From sanity-diff-patch
+ */
+export interface SetDiffPatch {
   op: 'set'
   path: Path
   value: unknown
 }
 
-export interface UnsetPatch {
+export interface UnsetDiffPatch {
   op: 'unset'
   path: Path
 }
 
-export interface InsertPatch {
+export interface InsertDiffPatch {
   op: 'insert'
   after: Path
-  items: any[]
+  items: unknown[]
 }
 
-export type DiffPatch = SetPatch | UnsetPatch | InsertPatch
+export type DiffPatch = SetDiffPatch | UnsetDiffPatch | InsertDiffPatch
