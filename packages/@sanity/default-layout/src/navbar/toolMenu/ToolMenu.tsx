@@ -53,7 +53,7 @@ function ToolMenu(props: Props) {
                   key={tool.name}
                   kind="simple"
                   onClick={onSwitchTool}
-                  padding="small"
+                  padding={direction === 'horizontal' ? 'small' : 'medium'}
                   selected={activeToolName === tool.name}
                   state={{...router.state, tool: tool.name, [tool.name]: undefined}}
                   title={title}
