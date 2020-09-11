@@ -171,8 +171,28 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 export interface ObjectSchemaType<T extends object = Record<string, any>> extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
+  fieldsets: Fieldset[]
   diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
 }
+
+export interface SingleFieldSet {
+  single: true
+  field: ObjectField
+}
+
+export interface MultiFieldSet {
+  name: string
+  title?: string
+  description?: string
+  options?: {
+    collapsible?: boolean
+    collapsed?: boolean
+    columns?: number
+  }
+  fields: ObjectField[]
+}
+
+export type Fieldset = SingleFieldSet | MultiFieldSet
 
 export interface Reference {
   _ref: string
