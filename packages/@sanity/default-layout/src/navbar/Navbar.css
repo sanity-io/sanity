@@ -14,7 +14,7 @@
     /* prettier-ignore */
     grid-template-columns: max-content max-content min-content  minmax(240px, 100%) min-content max-content max-content;
 
-    @nest &.withToolSwitcher {
+    @nest &.withToolMenu {
       /* prettier-ignore */
       grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus helpButton  presence    loginStatus';
       /* prettier-ignore */
@@ -33,7 +33,7 @@
   color: inherit;
   border-radius: var(--extra-small-padding);
   display: block;
-  
+
   @nest &:focus {
     outline: 0;
     box-shadow: var(--input-box-shadow--focus);
@@ -45,7 +45,7 @@
   padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
-    @nest .withToolSwitcher & {
+    @nest .withToolMenu & {
       display: none;
     }
   }
@@ -60,7 +60,7 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    @nest .withToolSwitcher & {
+    @nest .withToolMenu & {
       display: flex;
     }
   }
@@ -72,7 +72,7 @@
   padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
-    @nest .withToolSwitcher & {
+    @nest .withToolMenu & {
       display: flex;
     }
   }
@@ -84,7 +84,7 @@
   padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
-    @nest .withToolSwitcher & {
+    @nest .withToolMenu & {
       display: block;
     }
   }
@@ -101,7 +101,7 @@
   padding: var(--small-padding) var(--extra-small-padding);
 
   @media (--screen-medium) {
-    @nest .withToolSwitcher & {
+    @nest .withToolMenu & {
       display: block;
     }
   }
