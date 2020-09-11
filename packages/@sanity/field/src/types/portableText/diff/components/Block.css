@@ -1,0 +1,25 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  /* border: 1px solid #ccc;
+  @nest .added & {
+    border-color: green;
+  }
+  @nest .changed & {
+   border-color: blue;
+  }
+  @nest .removed & {
+    border-color: red;
+  } */
+}
+
+.styleIsChanged {
+  border: 1px dotted #ccc;
+  padding: var(--small-padding);
+}
+
+.changedBlockStyleNotice {
+  font-size: var(--font-size-xsmall);
+  font-weight: initial;
+  margin-bottom: var(--small-padding);
+}
