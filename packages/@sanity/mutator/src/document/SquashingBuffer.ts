@@ -132,11 +132,16 @@ export default class SquashingBuffer {
     } else if (typeof match.value === 'string' && typeof nextValue === 'string') {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
-      const patch = this.dmp
-        .patch_make(match.value, nextValue)
-        .map(patch => patch.toString())
-        .join('')
-      op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
+      try {
+        const patch = this.dmp
+          .patch_make(match.value, nextValue)
+          .map(patch => patch.toString())
+          .join('')
+        op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
+      } catch {
+        // patch_make failed due to unicode issue https://github.com/google/diff-match-patch/issues/59
+        return false
+      }
     } else {
       // console.log("Not able to rewrite to dmp, making normal set")
       // We are changing the type of the value, so must make a normal set-operation
