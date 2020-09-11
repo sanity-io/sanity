@@ -1,11 +1,5 @@
-@import 'part:@sanity/base/theme/variables-style';
-
 .root {
-}
-
-.block {
-  /* border: 1px solid #ccc;
-  @nest .added & {
+  /* @nest .added & {
     border-color: green;
   }
   @nest .changed & {
@@ -14,10 +8,4 @@
   @nest .removed & {
     border-color: red;
   } */
-}
-
-.summary {
-  display: none;
-  font-size: var(--font-size-xsmall);
-  color: var(--text-muted);
 }

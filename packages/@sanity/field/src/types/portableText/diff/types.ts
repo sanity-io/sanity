@@ -27,3 +27,4 @@ export type ChildMap = Record<
     schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
   }
 >
+export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock}
