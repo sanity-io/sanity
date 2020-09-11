@@ -15,10 +15,11 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const [hoverRef, isHoveringRevert] = useHover<HTMLDivElement>()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
-  const handleRevertChanges = React.useCallback(
-    () => undoChange(group.diff, group.path, docOperations),
-    [documentId, group.key, group.diff]
-  )
+  const handleRevertChanges = React.useCallback(() => undoChange(group, docOperations), [
+    documentId,
+    group.key,
+    group.diff
+  ])
 
   return (
     <div className={styles.groupChange}>
