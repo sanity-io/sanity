@@ -23,8 +23,7 @@ module.exports = {
   ],
   rules: {
     'import/no-extraneous-dependencies': 'off', // because of parts
-    'import/no-unresolved': ['error', {ignore: ['.*:.*']}],
-
+    'import/no-unresolved': ['error', {ignore: ['.*:.*']}], // because of parts
     'prettier/prettier': 'error',
     'sort-imports': 'off' // prefer import/order
   },
