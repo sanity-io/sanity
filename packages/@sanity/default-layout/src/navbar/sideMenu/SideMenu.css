@@ -3,6 +3,7 @@
 :root {
   --side-menu-color: var(--component-bg);
   --side-menu-color-inverted: var(--component-text-color);
+  --side-menu-margin-right: 49px;
 }
 
 .root {
@@ -28,6 +29,7 @@
   transform: translate(-100%);
   pointer-events: all;
   padding-left: env(safe-area-inset-left);
+  margin-right: var(--side-menu-margin-right);
 }
 
 .root.isOpen {
@@ -45,7 +47,7 @@
 }
 
 .closeButtonContainer {
-  padding: 4px;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
 .userProfile {
@@ -53,7 +55,9 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  padding: 0.5em;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) 0
+    calc(var(--medium-padding) - var(--extra-small-padding))
+    calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
 .userAvatarContainer {

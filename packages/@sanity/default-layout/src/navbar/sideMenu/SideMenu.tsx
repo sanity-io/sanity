@@ -44,6 +44,7 @@ function SideMenu(props: Props) {
                 icon={CloseIcon}
                 kind="simple"
                 onClick={onClose}
+                padding="small"
                 tabIndex={tabIndex}
                 title="Close menu"
               />
