@@ -14,11 +14,12 @@ function FormattedPreviewText({
 }) {
   const startsWithWhitespace = text.startsWith(' ')
   const endsWithWhitespace = text.endsWith(' ')
+  const isWhitespace = text.trim().length === 0 ? styles.empty : false
 
   return (
     <>
       {isFirstSegment && startsWithWhitespace && <>&nbsp;</>}
-      {text}
+      {isWhitespace ? <span className={styles.empty}>{text}</span> : text}
       {isLastSegment && endsWithWhitespace && <>&nbsp;</>}
     </>
   )
