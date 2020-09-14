@@ -1,6 +1,7 @@
 import {ObjectModel} from './object-model'
 import {RawPatch} from './patch'
 import {Patcher} from './internal-patcher'
+import {utf8charSize, utf8stringSize} from './utf8'
 
 // The incremental patcher allows you to apply multiple patches and tracks the history of every element.
 // It also allows you to extract a simple diff between the documents.
@@ -37,29 +38,6 @@ export type StringPart<T> = {
   uses: StringContent<T>[]
   startMeta: T
   endMeta: T
-}
-
-function utf8charSize(code: number): 1 | 2 | 3 | 4 {
-  if (code >> 16) {
-    return 4
-  } else if (code >> 11) {
-    return 3
-  } else if (code >> 7) {
-    return 2
-  } else {
-    return 1
-  }
-}
-
-function utf8stringSize(str: string): number {
-  let b = 0
-  for (let i = 0; i < str.length; i++) {
-    let code = str.codePointAt(i)!
-    let size = utf8charSize(code)
-    if (size == 4) i++
-    b += size
-  }
-  return b
 }
 
 class Model<T>
