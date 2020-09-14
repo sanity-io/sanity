@@ -143,7 +143,7 @@ export function buildArrayChangeList(
   titlePath: ChangeTitlePath = []
 ): ChangeNode[] {
   const changedOrMoved = diff.items.filter(
-    item => item.hasMoved || item.diff.action !== 'unchanged'
+    item => (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged'
   )
 
   if (changedOrMoved.length === 0) {
