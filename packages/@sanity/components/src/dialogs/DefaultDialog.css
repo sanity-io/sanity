@@ -21,11 +21,7 @@
 }
 
 :root {
-  --dialog-padding: var(--medium-padding);
-  --dialog-border-radius: var(--border-radius-large);
-  --dialog-header-height: 3.375em;
-  --dialog-functions-height: calc(2em + (var(--medium-padding) * 2));
-  --dialog-max-height: calc(100vh - 200px);
+  --dialog-border-radius: var(--border-radius-medium);
 }
 
 .root {
@@ -35,7 +31,6 @@
   top: 0;
   left: 0;
   bottom: 0;
-  color: var(--text-color);
 }
 
 .overlay {
@@ -72,25 +67,52 @@
   composes: root;
 }
 
-.dialog {
-  display: flex;
+.card {
   position: relative;
   composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
-  border: 0;
   border-radius: var(--dialog-border-radius);
-  padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
   transform-origin: center;
   box-sizing: border-box;
+  width: 100%;
   max-width: calc(100% - 2rem);
-  max-height: calc(100% - 8rem);
+  min-height: 0;
+  max-height: calc(100% - 2rem);
 
-  @media (--screen-medium) {
-    width: auto;
-    height: auto;
+  @nest .root:not([data-dialog-size]) {
+    width: initial;
+    height: initial;
+  }
+
+  @nest .root[data-dialog-size='small'][data-container-min~='medium'] & {
+    max-width: 20rem;
+  }
+
+  @nest .root[data-dialog-size='medium'][data-container-min~='medium'] & {
+    width: 27rem;
+  }
+
+  @nest .root[data-dialog-size='medium'][data-container-min~='default'] & {
+    width: 33rem;
+  }
+
+  @nest .root[data-dialog-size='medium'][data-container-min~='large'] & {
+    width: 35rem;
+  }
+
+  @nest .root[data-dialog-size='large'][data-container-min~='medium'] & {
+    width: 28rem;
+  }
+
+  @nest .root[data-dialog-size='large'][data-container-min~='default'] & {
+    width: 40rem;
+  }
+
+  @nest .root[data-dialog-size='large'][data-container-min~='large'] & {
+    width: 50rem;
   }
 }
 
@@ -160,13 +182,18 @@
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   box-sizing: border-box;
   background-color: var(--component-bg);
+  color: var(--component-text-color);
 
-  @nest & > :first-child {
-    margin-top: 2px;
+  @nest .root[data-dialog-padding='small'] & {
+    padding: var(--small-padding);
   }
 
-  @nest & > :last-child {
-    margin-bottom: 0;
+  @nest .root[data-dialog-padding='medium'] & {
+    padding: var(--medium-padding);
+  }
+
+  @nest .root[data-dialog-padding='large'] & {
+    padding: var(--large-padding);
   }
 }
 
@@ -212,7 +239,8 @@
   top: 0;
   right: 0;
   z-index: 1;
-  background: var(--component-bg);
+  background-color: var(--component-bg);
+  color: var(--component-text-color);
   transform: translate(50%, -50%);
   border-radius: 50%;
 
@@ -221,77 +249,11 @@
   }
 }
 
-/* .closeButton {
-  appearance: none;
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  justify-content: center;
-  outline: none;
-  background-color: transparent;
-  color: inherit;
-  border: none;
-  position: relative;
-  width: var(--dialog-header-height);
-  min-width: var(--dialog-header-height);
-  margin: 0;
-  padding: 0;
-
-  @nest & .closeButtonIcon {
-    transition: transform 0.1s linear;
-    display: flex;
-    align-items: center;
-    align-self: stretch;
-    justify-content: center;
-  }
-
-  @nest & .closeButtonIcon > svg {
-    font-size: 1.5625em;
-    position: absolute;
-  }
-
-  @media (hover: hover) {
-    opacity: 0.7;
-
-    @nest &:hover {
-      opacity: 1;
-    }
-  }
-} */
-
-/* .closeButtonOutside {
-  position: absolute;
-  outline: none;
-  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  color: var(--black);
-  border: none;
-  border-radius: 50%;
-  background-color: var(--component-bg);
-  font-size: 1rem;
-  top: -1rem;
-  right: -1rem;
-  z-index: 1;
-  height: 2rem;
-  width: 2rem;
-  transition: transform 0.1s linear;
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  justify-content: center;
-
-  @nest &:hover .closeButtonIcon {
-    transform: scale(1.2);
-  }
-
-  @nest &:active .closeButtonIcon {
-    transform: scale(0.8);
-  }
-} */
-
 .footer {
   box-sizing: border-box;
   padding: var(--medium-padding);
   background-color: var(--component-bg);
+  color: var(--component-text-color);
   border-radius: 0 0 var(--dialog-border-radius) var(--dialog-border-radius);
   position: relative;
   z-index: 10;

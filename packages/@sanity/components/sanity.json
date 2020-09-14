@@ -1156,6 +1156,14 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "avatar/story"
+    },
+    {
+      "implements": "part:@sanity/components/container-query",
+      "path": "containerQuery"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "containerQuery/story"
     }
   ]
 }

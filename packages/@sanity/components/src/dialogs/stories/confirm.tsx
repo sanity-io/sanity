@@ -2,7 +2,6 @@ import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select} from 'part:@sanity/storybook/addons/knobs'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -28,10 +27,10 @@ function renderContent(type) {
       return <div>{paragraphs}</div>
     case 'example':
       return (
-        <DialogContent size="medium" padding="medium">
+        <>
           <h1>With dialog content</h1>
           <p>{paragraph}</p>
-        </DialogContent>
+        </>
       )
     default:
       return 'Minimal'
@@ -39,7 +38,8 @@ function renderContent(type) {
 }
 
 export function ConfirmStory() {
-  const contentTest = select('content', dialogTestContent, 'minimal')
+  const contentTest = select('Content', dialogTestContent, 'minimal')
+
   return (
     <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
       <DialogExample
@@ -56,6 +56,8 @@ export function ConfirmStory() {
         confirmButtonText={text('confirmButtonText', 'Yes, delete', 'props')}
         cancelButtonText={text('cancelButtonText', undefined, 'props')}
         title={text('title', 'Confirm', 'props')}
+        size="medium"
+        padding="medium"
       >
         {contentTest && renderContent(contentTest)}
       </DialogExample>
@@ -69,7 +71,9 @@ function DialogExample(props) {
 
   useEffect(() => {
     portalRef.current.setAttribute('data-portal', '')
+
     document.body.appendChild(portalRef.current)
+
     return () => {
       document.body.removeChild(portalRef.current)
     }

@@ -1,7 +1,9 @@
+export type DialogColor = 'warning' | 'success' | 'danger' | 'primary' | 'white'
+
 export interface DialogAction {
   key?: string
   index?: number
-  color?: 'warning' | 'success' | 'danger' | 'primary' | 'white'
+  color?: DialogColor
   title: string
   icon?: React.ComponentType<{}>
   tooltip?: string

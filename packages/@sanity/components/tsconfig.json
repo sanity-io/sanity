@@ -28,6 +28,7 @@
       "part:@sanity/components/buttons/in-input": ["./buttons/InInput"],
       "part:@sanity/components/buttons/intent": ["./buttons/IntentButton"],
       "part:@sanity/components/click-outside": ["./clickOutside"],
+      "part:@sanity/components/container-query": ["./containerQuery"],
       "part:@sanity/components/dialogs/confirm": ["./dialogs/ConfirmDialog"],
       "part:@sanity/components/dialogs/content": ["./dialogs/DialogContent"],
       "part:@sanity/components/dialogs/default": ["./dialogs/DefaultDialog"],
