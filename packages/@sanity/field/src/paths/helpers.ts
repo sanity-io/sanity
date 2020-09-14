@@ -1,4 +1,4 @@
-import {KeyedObject} from '../diff'
+import {KeyedObject, TypedObject} from '../diff'
 import {Path, PathSegment, KeyedSegment, IndexTuple} from './types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
@@ -32,6 +32,45 @@ export function pathToString(path: Path): string {
 
     throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
   }, '')
+}
+
+// eslint-disable-next-line complexity
+export function getValueAtPath(rootValue: unknown, path: Path): unknown {
+  const segment = path[0]
+  if (!segment) {
+    return rootValue
+  }
+
+  const tail = path.slice(1)
+  if (isIndexSegment(segment)) {
+    return getValueAtPath(Array.isArray(rootValue) ? rootValue[segment] : undefined, tail)
+  }
+
+  if (isKeySegment(segment)) {
+    return getValueAtPath(
+      Array.isArray(rootValue) ? rootValue.find(item => item._key === segment._key) : undefined,
+      tail
+    )
+  }
+
+  if (typeof segment === 'string') {
+    return getValueAtPath(
+      typeof rootValue === 'object' && rootValue !== null ? rootValue[segment] : undefined,
+      tail
+    )
+  }
+
+  throw new Error(`Unknown segment type ${JSON.stringify(segment)}`)
+}
+
+export function findIndex(array: unknown[], segment: PathSegment): number {
+  if (typeof segment !== 'number' && !isKeySegment(segment)) {
+    return -1
+  }
+
+  return typeof segment === 'number'
+    ? segment
+    : array.findIndex(item => isKeyedObject(item) && item._key === segment._key)
 }
 
 export function stringToPath(path: string): Path {
@@ -136,4 +175,10 @@ export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined 
 
 export function isKeyedObject(item: unknown): item is KeyedObject {
   return typeof item === 'object' && item !== null && typeof (item as KeyedObject)._key === 'string'
+}
+
+export function isTypedObject(item: unknown): item is TypedObject {
+  return (
+    typeof item === 'object' && item !== null && typeof (item as TypedObject)._type === 'string'
+  )
 }
