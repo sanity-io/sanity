@@ -1,4 +1,5 @@
-import {DiffComponent, DiffComponentOptions} from '../../types'
+/* eslint-disable no-bitwise */
+import {DiffComponent, DiffComponentOptions, ShowDiffHeader} from '../../types'
 import {NumberFieldDiff} from '../../types/number/diff'
 import {StringFieldDiff} from '../../types/string/diff'
 import {ReferenceFieldDiff} from '../../types/reference/diff'
@@ -8,11 +9,11 @@ import {BooleanFieldDiff} from '../../types/boolean/diff'
 import {PTDiff} from '../../types/portableText/diff'
 
 export const defaultComponents: {[key: string]: DiffComponent<any> | DiffComponentOptions<any>} = {
-  block: PTDiff,
   string: StringFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
   image: ImageFieldDiff,
   file: FileFieldDiff,
-  boolean: {component: BooleanFieldDiff, renderHeader: false}
+  boolean: {component: BooleanFieldDiff, showHeader: ShowDiffHeader.WhenMoved},
+  block: {component: PTDiff, showHeader: ShowDiffHeader.WhenMoved | ShowDiffHeader.WhenNotGrouped}
 }

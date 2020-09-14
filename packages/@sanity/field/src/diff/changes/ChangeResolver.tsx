@@ -3,9 +3,9 @@ import {ChangeNode} from '../../types'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 
-export function ChangeResolver({change}: {change: ChangeNode}) {
+export function ChangeResolver({change, isGrouped}: {change: ChangeNode; isGrouped?: boolean}) {
   if (change.type === 'field') {
-    return <FieldChange change={change} />
+    return <FieldChange change={change} isGrouped={isGrouped} />
   }
 
   if (change.type === 'group') {

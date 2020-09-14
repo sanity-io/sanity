@@ -10,6 +10,7 @@ import {
   ChangeTitlePath,
   Diff,
   DiffComponent,
+  DiffComponentOptions,
   FieldChangeNode,
   ItemDiff,
   MultiFieldSet,
@@ -17,7 +18,8 @@ import {
   ObjectField,
   ObjectSchemaType,
   Path,
-  SchemaType
+  SchemaType,
+  ShowDiffHeader
 } from '../../types'
 
 interface DiffContext {
@@ -232,11 +234,12 @@ function getFieldChange(
     error = getValueError(diff.toValue, schemaType)
   }
 
-  let renderHeader = true
+  let showHeader: DiffComponentOptions['showHeader'] = ShowDiffHeader.Always
   let component: DiffComponent | undefined
   const diffComponent = resolveDiffComponent(schemaType)
   if (diffComponent) {
-    renderHeader = typeof diffComponent === 'function' ? true : diffComponent.renderHeader
+    showHeader =
+      typeof diffComponent === 'function' ? ShowDiffHeader.Always : diffComponent.showHeader
     component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
   }
 
@@ -249,7 +252,7 @@ function getFieldChange(
     parentDiff,
     titlePath,
     schemaType,
-    renderHeader,
+    showHeader,
     key: pathToString(path) || 'root',
     diffComponent: error ? undefined : component
   }

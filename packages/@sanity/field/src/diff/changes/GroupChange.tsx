@@ -28,7 +28,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
 
       <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
         {changes.map(change => (
-          <ChangeResolver key={change.key} change={change} />
+          <ChangeResolver key={change.key} change={change} isGrouped />
         ))}
 
         <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
