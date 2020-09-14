@@ -190,8 +190,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const isChildPresence = pItem =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = isGrid ? [] : presence.filter(isChildPresence)
-          const childCompareValue =
-            compareValue && compareValue.find(compareItem => item?._key == compareItem?._key)
+
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -203,7 +202,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 type={type}
                 value={item}
                 level={level}
-                compareValue={childCompareValue}
+                compareValue={compareValue}
                 markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
