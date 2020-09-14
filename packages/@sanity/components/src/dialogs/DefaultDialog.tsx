@@ -3,6 +3,7 @@
 import classNames from 'classnames'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import {ContainerQuery} from 'part:@sanity/components/container-query'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
@@ -11,21 +12,23 @@ import {partition} from 'lodash'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
-import {DialogAction} from './types'
+import {DialogAction, DialogColor} from './types'
 
 interface DefaultDialogProps {
-  color?: 'default' | 'warning' | 'success' | 'danger' | 'info'
-  className?: string
-  title?: string
+  actions?: DialogAction[]
+  actionsAlign?: 'start' | 'end'
   children?: React.ReactNode
+  color?: DialogColor
+  className?: string
   onOpen?: () => void
   onClose?: () => void
   onEscape?: (event: KeyboardEvent) => void
   onClickOutside?: () => void
   onAction?: (action: DialogAction) => void
+  padding?: 'none' | 'small' | 'medium' | 'large'
   showCloseButton?: boolean
-  actionsAlign?: 'start' | 'end'
-  actions?: DialogAction[]
+  size?: 'small' | 'medium' | 'large' | 'auto'
+  title?: string
 }
 
 const noop = () => undefined
@@ -82,14 +85,16 @@ export default class DefaultDialog extends React.PureComponent<DefaultDialogProp
 
   render() {
     const {
-      title,
       actions,
+      className: classNameProp,
       color = 'default',
       onClose,
       onClickOutside,
       onEscape,
-      className: classNameProp,
-      showCloseButton = true
+      padding = 'medium',
+      showCloseButton = true,
+      size = 'medium',
+      title
     } = this.props
 
     const className = classNames(
@@ -105,9 +110,13 @@ export default class DefaultDialog extends React.PureComponent<DefaultDialogProp
       <Portal>
         <Stacked>
           {isActive => (
-            <div className={className}>
+            <ContainerQuery
+              className={className}
+              data-dialog-padding={padding}
+              data-dialog-size={size}
+            >
               <div className={styles.overlay} />
-              <div className={styles.dialog}>
+              <div className={styles.card}>
                 <Escapable
                   onEscape={event => (isActive || event.shiftKey) && handleEscape(event as any)}
                 />
@@ -161,7 +170,7 @@ export default class DefaultDialog extends React.PureComponent<DefaultDialogProp
                   )}
                 </CaptureOutsideClicks>
               </div>
-            </div>
+            </ContainerQuery>
           )}
         </Stacked>
       </Portal>

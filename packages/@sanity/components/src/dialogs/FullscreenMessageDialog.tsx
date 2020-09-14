@@ -5,7 +5,7 @@ import React from 'react'
 import styles from './FullscreenMessageDialog.css'
 
 interface Props {
-  buttons: React.ReactNode
+  buttons?: React.ReactNode
   children: React.ReactNode
   color?: 'info' | 'success' | 'warning' | 'danger'
   onClose?: () => void

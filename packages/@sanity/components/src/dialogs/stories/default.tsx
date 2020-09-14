@@ -10,13 +10,6 @@ import React, {useRef, useEffect} from 'react'
 
 const chance = new Chance()
 
-const dialogTestContent = {
-  minimal: 'minimal',
-  paragraph: 'paragraph',
-  longtext: 'longtext',
-  example: 'example with dialogcontent'
-}
-
 const paragraph = chance.paragraph()
 const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
 
@@ -39,45 +32,87 @@ function renderContent(type) {
 }
 
 export function DefaultStory() {
-  const actions = [
+  const actions = boolean('Actions', false, 'test')
+    ? [
+        {
+          index: '1',
+          title: 'Finish',
+          color: 'primary',
+          autoFocus: true
+        },
+        {
+          index: '2',
+          title: 'Cancel'
+        },
+        {
+          index: '3',
+          title: 'Secondary',
+          color: 'danger',
+          secondary: true
+        }
+      ]
+    : []
+  const color = select(
+    'Color',
+    ['default', 'danger', 'success', 'info', 'warning'],
+    undefined,
+    'Props'
+  )
+  const content = select(
+    'Content',
     {
-      index: '1',
-      title: 'Finish',
-      color: 'primary',
-      autoFocus: true
+      minimal: 'minimal',
+      paragraph: 'paragraph',
+      longtext: 'longtext',
+      example: 'example with dialogcontent'
     },
-    {
-      index: '2',
-      title: 'Cancel'
-    },
-    {
-      index: '3',
-      title: 'Secondary',
-      color: 'danger',
-      secondary: true
-    }
-  ]
-
-  const dialogActions = boolean('Show actions', false, 'test') ? actions : []
-  const contentTest = select('content', dialogTestContent, 'minimal')
+    'minimal'
+  )
+  // 'none' | 'small' | 'medium' | 'large'
+  const padding =
+    select(
+      'Padding',
+      {
+        '': '(undefined)',
+        none: 'None',
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large'
+      },
+      '',
+      'Props'
+    ) || undefined
+  const showCloseButton = boolean('Show close button', false, 'Props')
+  // 'small' | 'medium' | 'large' | 'auto'
+  const size =
+    select(
+      'Size',
+      {
+        '': '(undefined)',
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large',
+        auto: 'Auto'
+      },
+      '',
+      'Props'
+    ) || undefined
+  const title = text('Title', undefined, 'Props')
 
   return (
     <Sanity part="part:@sanity/components/dialogs/default" propTables={[DefaultDialog]}>
       <DialogExample
-        title={text('title', undefined, 'props')}
-        color={select(
-          'color',
-          ['default', 'danger', 'success', 'info', 'warning'],
-          undefined,
-          'props'
-        )}
-        showCloseButton={boolean('showCloseButton', false, 'props')}
+        actions={actions}
+        color={color}
         onEscape={action('onEscape')}
         onClose={action('onClose')}
         onAction={action('onAction')}
-        actions={dialogActions}
+        padding={padding}
+        showCloseButton={showCloseButton}
+        size={size}
+        title={title}
       >
-        {contentTest && renderContent(contentTest)}
+        {content && renderContent(content)}
       </DialogExample>
     </Sanity>
   )
