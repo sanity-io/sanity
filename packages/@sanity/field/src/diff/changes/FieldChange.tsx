@@ -1,6 +1,6 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext} from 'react'
-import {FieldChangeNode, OperationsAPI} from '../../types'
+import {FieldChangeNode, OperationsAPI, ShowDiffHeader} from '../../types'
 import {FallbackDiff} from '../fallback/FallbackDiff'
 import {ValueError} from './ValueError'
 import {ChangeHeader} from './ChangeHeader'
@@ -11,11 +11,20 @@ import {undoChange} from './undoChange'
 
 import styles from './FieldChange.css'
 
-export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
+function hasFlag(value: ShowDiffHeader, flag: number) {
+  // eslint-disable-next-line no-bitwise
+  return (value & flag) === flag
+}
+
+export function FieldChange({
+  change,
+  isGrouped
+}: {
+  change: FieldChangeNode
+  isGrouped?: boolean
+}): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {documentId, schemaType, rootDiff} = useContext(
-    DocumentChangeContext
-  )
+  const {documentId, schemaType, rootDiff} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
   const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
@@ -25,10 +34,14 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
   ])
 
   const rootClass = change.error ? styles.error : styles.root
+  const showHeader =
+    hasFlag(change.showHeader, ShowDiffHeader.Always) ||
+    (hasFlag(change.showHeader, ShowDiffHeader.WhenMoved) && change.itemDiff?.hasMoved) ||
+    (hasFlag(change.showHeader, ShowDiffHeader.WhenNotGrouped) && !isGrouped)
 
   return (
     <div className={rootClass}>
-      {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
+      {showHeader && <ChangeHeader titlePath={change.titlePath} />}
 
       <div className={styles.change}>
         {change.error ? (
