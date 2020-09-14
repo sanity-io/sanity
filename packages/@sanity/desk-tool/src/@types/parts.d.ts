@@ -1,3 +1,5 @@
+/* eslint-disable import/export */
+
 // declare module 'part:*'
 // declare module 'all:part:*'
 
@@ -353,6 +355,10 @@ declare module 'part:@sanity/components/buttons/intent' {
 
 declare module 'part:@sanity/components/click-outside' {
   export * from '@sanity/components/src/clickOutside'
+}
+
+declare module 'part:@sanity/components/container-query' {
+  export * from '@sanity/components/src/containerQuery'
 }
 
 declare module 'part:@sanity/components/dialogs/content-style'
