@@ -48,7 +48,7 @@ export function ConnectorsOverlay(props: Props) {
           if (!changedRegion) {
             return null
           }
-          const changeMarkerLeft = changedRegion?.rect?.left - 10
+          const changeMarkerLeft = changedRegion?.rect?.left
           const connectorFrom = {
             left: changedField.rect.left + changedField.rect.width,
             top: changedField.rect.top - documentPanelScrollTop - topEdge + 8
@@ -57,22 +57,7 @@ export function ConnectorsOverlay(props: Props) {
             left: changeMarkerLeft,
             top: changedRegion.rect.top - changePanelScrollTop - topEdge + 8
           }
-          const rightBarTo = {
-            left: changeMarkerLeft,
-            top: changedRegion.rect.top + changedRegion.rect.height - changePanelScrollTop - topEdge
-          }
-          const rightBarFrom = {
-            left: changeMarkerLeft,
-            top: Math.max(changedRegion.rect.top - changePanelScrollTop) - topEdge
-          }
-          const leftBarFrom = {
-            left: changedField.rect.left + changedField.rect.width,
-            top: Math.max(changedField.rect.top - documentPanelScrollTop) - topEdge
-          }
-          const leftBarTo = {
-            left: changedField.rect.left + changedField.rect.width,
-            top: changedField.rect.top + changedField.rect.height - documentPanelScrollTop - topEdge
-          }
+
           const connectorPath = connectorLinePath(
             connectorFrom,
             connectorTo,
@@ -102,14 +87,6 @@ export function ConnectorsOverlay(props: Props) {
               <React.Fragment key={`field-${changedField.id}`}>
                 {changedRegion && (
                   <g className={styles.connector}>
-                    <path d={linePathFromPoints(leftBarFrom, leftBarTo)} />
-                    <path
-                      d={linePathFromPoints(leftBarFrom, leftBarTo)}
-                      strokeWidth={15}
-                      stroke="none"
-                      fill="none"
-                    />
-
                     <g
                       className={`${styles.connectorPath}${
                         changedField.data.hasFocus ? styles.hasFocus : ''
@@ -118,13 +95,6 @@ export function ConnectorsOverlay(props: Props) {
                       <path d={connectorPath} fill="none" />
                       {/* to make the active area wider */}
                       <path d={connectorPath} strokeWidth={15} stroke="none" fill="none" />
-                      <path d={linePathFromPoints(rightBarFrom, rightBarTo)} />
-                      <path
-                        d={linePathFromPoints(rightBarFrom, rightBarTo)}
-                        strokeWidth={15}
-                        stroke="none"
-                        fill="none"
-                      />{' '}
                       <Arrows
                         from={connectorFrom}
                         to={connectorTo}

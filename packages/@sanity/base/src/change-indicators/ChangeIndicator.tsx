@@ -18,7 +18,8 @@ const ChangeBar = React.forwardRef(
     <div
       ref={ref}
       style={{
-        paddingRight: 8
+        paddingRight: 8,
+        borderRight: '2px solid #2276fc'
       }}
     >
       {props.children}

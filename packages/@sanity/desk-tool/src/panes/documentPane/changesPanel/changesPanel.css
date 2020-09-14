@@ -11,6 +11,11 @@
   border-bottom: 1px solid var(--hairline-color);
 }
 
+.changeWrapper {
+  border-left: 2px solid #2276fc;
+  padding-left: 0.75em;
+}
+
 .mainNav {
   display: flex;
 }
