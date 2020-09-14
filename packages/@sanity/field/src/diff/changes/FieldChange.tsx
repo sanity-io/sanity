@@ -13,10 +13,12 @@ import styles from './FieldChange.css'
 
 export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {documentId, schemaType} = useContext(DocumentChangeContext)
+  const {documentId, schemaType, rootDiff} = useContext(
+    DocumentChangeContext
+  )
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
-  const handleRevertChanges = useCallback(() => undoChange(change, docOperations), [
+  const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
     documentId,
     change.key,
     change.diff

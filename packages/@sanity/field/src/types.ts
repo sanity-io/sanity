@@ -244,16 +244,6 @@ export interface FieldChangeNode {
 
 export type ChangeNode = GroupChangeNode | FieldChangeNode
 
-export interface TypedObject {
-  [key: string]: unknown
-  _type: string
-}
-
-export interface KeyedObject {
-  [key: string]: unknown
-  _key: string
-}
-
 export interface FromToIndex {
   hasMoved: boolean
   fromIndex?: number
@@ -311,3 +301,25 @@ export interface InsertDiffPatch {
 }
 
 export type DiffPatch = SetDiffPatch | UnsetDiffPatch | InsertDiffPatch
+
+/**
+ * Document/object value types
+ */
+export interface SanityDocument {
+  [key: string]: unknown
+  _id: string
+  _type: string
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+}
+
+export interface TypedObject {
+  [key: string]: unknown
+  _type: string
+}
+
+export interface KeyedObject {
+  [key: string]: unknown
+  _key: string
+}

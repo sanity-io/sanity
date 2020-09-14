@@ -6,7 +6,8 @@ import {
   DocumentChangeContext,
   DiffAnnotationTooltipContent,
   ChangeList,
-  Chunk
+  Chunk,
+  DocumentChangeContextProps
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar} from '@sanity/base/components'
@@ -44,7 +45,15 @@ export function ChangesPanel({
   const {close: closeHistory, historyController} = useDocumentHistory()
   const diff: ObjectDiff | null = historyController.currentObjectDiff() as any
 
-  const documentContext = React.useMemo(() => ({documentId, schemaType}), [documentId, schemaType])
+  const documentContext: DocumentChangeContextProps = React.useMemo(
+    () => ({
+      documentId,
+      schemaType,
+      rootDiff: diff
+    }),
+    [documentId, schemaType, diff]
+  )
+
   const changeAnnotations = React.useMemo(
     () => (diff ? collectLatestAuthorAnnotations(diff) : []),
     [diff]

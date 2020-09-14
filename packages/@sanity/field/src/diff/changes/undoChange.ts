@@ -1,5 +1,15 @@
+/* eslint-disable complexity */
 import {diffItem} from 'sanity-diff-patch'
-import {pathToString, getItemKeySegment} from '../../paths/helpers'
+import {
+  pathToString,
+  getItemKeySegment,
+  isKeyedObject,
+  isTypedObject,
+  getValueAtPath,
+  isKeySegment,
+  isIndexSegment,
+  findIndex
+} from '../../paths/helpers'
 import {
   ArrayDiff,
   ChangeNode,
@@ -7,6 +17,7 @@ import {
   DiffPatch,
   InsertDiffPatch,
   ItemDiff,
+  ObjectDiff,
   OperationsAPI,
   PatchOperations,
   Path,
@@ -16,11 +27,23 @@ import {
 
 const diffOptions = {diffMatchPatch: {enabled: false}}
 
-export function undoChange(change: ChangeNode, documentOperations: OperationsAPI): void {
+export function undoChange(
+  change: ChangeNode,
+  rootDiff: ObjectDiff | null,
+  documentOperations: OperationsAPI
+): void {
+  if (!rootDiff) {
+    return
+  }
+
   const patches: PatchOperations[] = []
 
+  // @todo Figure out if reverting the entire `objectDiff`/`arrayDiff` for a group
+  // would end up with the same result - in which case reverting the whole thing as
+  // a single diff is much faster
   if (change.type === 'group') {
-    return change.changes.forEach(child => undoChange(child, documentOperations))
+    change.changes.forEach(child => undoChange(child, rootDiff, documentOperations))
+    return
   }
 
   if (change.type === 'field' && change.diff.action === 'added') {
@@ -39,10 +62,10 @@ export function undoChange(change: ChangeNode, documentOperations: OperationsAPI
     patches.push(...buildMovePatches(change.itemDiff, change.parentDiff, change.path))
   } else {
     // For all other operations, try to find the most optimal case
-    patches.push(...buildUndoPatches(change.diff, change.path))
+    patches.push(...buildUndoPatches(change.diff, rootDiff, change.path))
   }
 
-  return documentOperations.patch.execute(patches)
+  documentOperations.patch.execute(patches)
 }
 
 function buildUnsetPatches(diff: Diff, path: Path): PatchOperations[] {
@@ -72,7 +95,7 @@ function buildMovePatches(
   return [{unset: [pathToString(path)]}, {insert: {...insertLocation, items: [fromValue]}}]
 }
 
-function buildUndoPatches(diff: Diff, path: Path): PatchOperations[] {
+function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
   const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path) as DiffPatch[]
 
   const inserts = patches
@@ -83,20 +106,91 @@ function buildUndoPatches(diff: Diff, path: Path): PatchOperations[] {
     .filter((patch): patch is UnsetDiffPatch => patch.op === 'unset')
     .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
 
+  const stubbedPaths = new Set<string>()
+  const stubs: PatchOperations[] = []
+
   let hasSets = false
   const sets = patches
     .filter((patch): patch is SetDiffPatch => patch.op === 'set')
     .reduce((acc, patch) => {
       hasSets = true
+      stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
       acc[pathToString(patch.path)] = patch.value
       return acc
     }, {} as Record<string, unknown>)
 
   return [
+    ...stubs,
     ...inserts,
     ...(unsets.length > 0 ? [{unset: unsets}] : []),
     ...(hasSets ? [{set: sets}] : [])
   ]
+}
+
+function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
+  const value = rootDiff.fromValue as Record<string, unknown>
+  const nextValue = rootDiff.toValue as Record<string, unknown>
+  const stubs: PatchOperations[] = []
+
+  for (let i = 1; i <= path.length; i++) {
+    const subPath = path.slice(0, i)
+    const pathStr = pathToString(subPath)
+    if (stubbed.has(pathStr)) {
+      continue
+    }
+
+    const nextSegment = path[i]
+    const nextIsArrayElement = isKeySegment(nextSegment) || isIndexSegment(nextSegment)
+    const itemValue = getValueAtPath(value, subPath)
+    const stub = getStubValue(itemValue)
+
+    // If the next array element does not exist, we need to inject an insert stub here
+    if (
+      nextIsArrayElement &&
+      Array.isArray(itemValue) &&
+      !getValueAtPath(nextValue, path.slice(0, i + 1))
+    ) {
+      const indexAtPrev = findIndex(itemValue, nextSegment)
+      const prevItem = itemValue[indexAtPrev - 1]
+      const nextItem = getValueAtPath(value, subPath.concat(nextSegment))
+      const prevSeg = isKeyedObject(prevItem) ? {_key: prevItem._key} : indexAtPrev - 1
+      const after = pathToString(subPath.concat(indexAtPrev < 1 ? 0 : prevSeg))
+      stubs.push({insert: {after, items: [getStubValue(nextItem)]}})
+
+      i++
+      continue
+    }
+
+    if (typeof stub === 'undefined') {
+      continue
+    }
+
+    stubbed.add(pathStr)
+    stubs.push({setIfMissing: {[pathStr]: stub as Record<string, unknown>}})
+  }
+  return stubs
+}
+
+function getStubValue(item: unknown): unknown {
+  if (Array.isArray(item)) {
+    return []
+  }
+
+  if (typeof item !== 'object' || item === null) {
+    return undefined
+  }
+
+  const props: Record<string, unknown> = {}
+
+  if (isKeyedObject(item)) {
+    props._key = item._key
+  }
+
+  if (isTypedObject(item)) {
+    props._type = item._type
+  }
+
+  return props
 }
 
 function getFromItem(parentDiff: ArrayDiff, itemDiff: ItemDiff) {
