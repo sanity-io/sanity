@@ -92,27 +92,24 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
 
     return (
       <Dialog
-        isOpen
         onClose={onClose}
         onClickOutside={onClose}
         title={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
       >
-        <div className={styles.content}>
-          {__DEV__ && (
-            <>
-              <div className={styles.textContent}>
-                <p>
-                  This Studio is no longer up to date{' '}
-                  {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
-                </p>
-              </div>
+        {__DEV__ && (
+          <>
+            <div className={styles.textContent}>
+              <p>
+                This Studio is no longer up to date{' '}
+                {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
+              </p>
+            </div>
 
-              {this.renderTable()}
-            </>
-          )}
+            {this.renderTable()}
+          </>
+        )}
 
-          {!__DEV__ && this.renderContactDeveloper()}
-        </div>
+        {!__DEV__ && this.renderContactDeveloper()}
       </Dialog>
     )
   }

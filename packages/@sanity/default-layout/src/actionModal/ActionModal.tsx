@@ -1,8 +1,7 @@
 import React from 'react'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import FileIcon from 'part:@sanity/base/file-icon'
-import styles from './ActionModal.css'
 
 interface Props {
   actions: {icon?: React.ComponentType<{}>}[]
@@ -13,11 +12,11 @@ function ActionModal(props: Props) {
   const {actions, onClose} = props
 
   return (
-    <FullscreenDialog
-      cardClassName={styles.card}
+    <DefaultDialog
+      onClickOutside={onClose}
       onClose={onClose}
+      size="large"
       title="Create new document"
-      isOpen
     >
       {actions.length > 0 ? (
         <CreateDocumentList
@@ -30,7 +29,7 @@ function ActionModal(props: Props) {
       ) : (
         <h3>No initial value templates are configured.</h3>
       )}
-    </FullscreenDialog>
+    </DefaultDialog>
   )
 }
 

@@ -295,21 +295,11 @@ declare module 'part:@sanity/components/buttons/state' {
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen' {
-  const FullscreenDialog: React.ComponentType<{
-    cardClassName?: string
-    className?: string
-    isOpen?: boolean
-    onClose?: () => void
-    title?: React.ReactNode
-  }>
-  export default FullscreenDialog
+  export {default} from '@sanity/components/src/dialogs/FullscreenDialog'
 }
 
 declare module 'part:@sanity/components/lists/create-document' {
-  const CreateDocumentList: React.ComponentType<{
-    items: {}[]
-  }>
-  export default CreateDocumentList
+  export {default} from '@sanity/components/src/lists/CreateDocument'
 }
 
 declare module 'part:@sanity/components/tooltip' {
@@ -321,13 +311,7 @@ declare module 'part:@sanity/components/avatar' {
 }
 
 declare module 'part:@sanity/components/menus/default' {
-  const DefaultMenu: React.ComponentType<{
-    items: {action: string; icon: React.ComponentType<{}>; title: string}[]
-    onAction: (item: {}) => void
-    onClickOutside: () => void
-    origin: string
-  }>
-  export default DefaultMenu
+  export {default} from '@sanity/components/src/menus/DefaultMenu'
 }
 
 declare module 'part:@sanity/components/loading/spinner-style'
@@ -336,31 +320,19 @@ declare module 'part:@sanity/components/loading/spinner' {
 }
 
 declare module 'part:@sanity/components/typography/hotkeys' {
-  const Hotkeys: React.ComponentType<{keys: string[]}>
-  export default Hotkeys
+  export {default} from '@sanity/components/src/typography/Hotkeys'
 }
 
 declare module 'part:@sanity/components/dialogs/default' {
-  const DefaultDialog: React.ComponentType<{
-    isOpen: boolean
-    onClickOutside: () => void
-    onClose: () => void
-    title?: React.ReactNode
-  }>
-  export default DefaultDialog
+  export {default} from '@sanity/components/src/dialogs/DefaultDialog'
 }
 
 declare module 'part:@sanity/components/dialogs/content' {
-  const DialogContent: React.ComponentType<{size: 'medium'; padding: 'large'}>
-  export default DialogContent
+  export {default} from '@sanity/components/src/dialogs/DialogContent'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen-message' {
-  const FullscreenMessageDialog: React.ComponentType<{
-    color?: 'danger'
-    title: React.ReactNode
-  }>
-  export default FullscreenMessageDialog
+  export {default} from '@sanity/components/src/dialogs/FullscreenMessageDialog'
 }
 
 declare module 'part:@sanity/components/popover' {

@@ -52,12 +52,7 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
 
     const popoverContent = (
       <div className={styles.menuWrapper}>
-        <Menu
-          onAction={this.handleUserMenuItemClick}
-          items={menuItems}
-          origin="top-right"
-          onClickOutside={this.handleClickOutside}
-        />
+        <Menu onAction={this.handleUserMenuItemClick} items={menuItems} />
       </div>
     )
 
