@@ -1,4 +1,5 @@
 .svg {
+  z-index: 2000;
 }
 
 .connector {
