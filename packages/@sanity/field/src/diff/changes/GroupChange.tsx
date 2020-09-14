@@ -11,11 +11,11 @@ import styles from './GroupChange.css'
 
 export function GroupChange({change: group}: {change: GroupChangeNode}): React.ReactElement {
   const {titlePath, changes} = group
-  const {documentId, schemaType} = React.useContext(DocumentChangeContext)
+  const {documentId, schemaType, rootDiff} = React.useContext(DocumentChangeContext)
   const [hoverRef, isHoveringRevert] = useHover<HTMLDivElement>()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
-  const handleRevertChanges = React.useCallback(() => undoChange(group, docOperations), [
+  const handleRevertChanges = React.useCallback(() => undoChange(group, rootDiff, docOperations), [
     documentId,
     group
   ])
