@@ -9,6 +9,10 @@ interface DialogContentProps {
 }
 
 export default class DialogContent extends React.PureComponent<DialogContentProps> {
+  componentDidMount() {
+    console.warn('DialogContent is deprecated. Use `<DefaultDialog padding size />` instead.')
+  }
+
   render() {
     const {size = 'auto', children, padding = 'medium'} = this.props
 

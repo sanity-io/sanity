@@ -1,28 +1,21 @@
 import React from 'react'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import styles from './ConfirmDialog.css'
-import {DialogAction} from './types'
+import {DialogAction, DialogColor} from './types'
 
 interface ConfirmDialogProps {
-  title?: string
-  color?: 'default' | 'warning' | 'success' | 'danger' | 'info'
-  cancelColor?: 'primary' | 'success' | 'danger' | 'white'
-  confirmColor?: 'primary' | 'success' | 'danger' | 'white'
-  children?: React.ReactNode
-  onConfirm: () => void
-  onCancel?: () => void
-  confirmButtonText?: string
   cancelButtonText?: string
+  cancelColor?: 'primary' | 'success' | 'danger' | 'white'
+  children?: React.ReactNode
+  color?: DialogColor
+  confirmButtonText?: string
+  confirmColor?: 'primary' | 'success' | 'danger' | 'white'
+  onCancel?: () => void
+  onConfirm: () => void
+  title?: string
 }
 
 export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProps> {
-  static defaultProps = {
-    confirmColor: 'danger',
-    cancelColor: undefined,
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel'
-  }
-
   handleAction = (action: DialogAction) => {
     if (action.key === 'confirm') {
       this.props.onConfirm()
@@ -33,14 +26,13 @@ export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProp
 
   render() {
     const {
-      color,
-      confirmColor,
+      cancelButtonText = 'Cancel',
       cancelColor,
-      confirmButtonText,
-      cancelButtonText,
-      onConfirm,
+      confirmColor,
+      confirmButtonText = 'OK',
       onCancel,
-      title
+      onConfirm,
+      ...restProps
     } = this.props
 
     const cancelAction: DialogAction | null = cancelButtonText
@@ -69,9 +61,8 @@ export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProp
 
     return (
       <DefaultDialog
-        color={color}
+        {...restProps}
         actions={actions}
-        title={title}
         showCloseButton={false}
         onEscape={this.props.onCancel}
         onAction={this.handleAction}
