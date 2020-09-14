@@ -1,10 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.content {
-  max-width: 640px;
-  padding-bottom: var(--medium-padding);
-}
-
 .versionsTable {
   -webkit-overflow-scrolling: touch;
   overflow-x: auto;
