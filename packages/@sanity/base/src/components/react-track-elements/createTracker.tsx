@@ -30,10 +30,10 @@ function isId<T extends {id: string}>(id: string) {
 
 const getOffsetsTo = (source, target) => {
   let el = source
-  let top = 0
+  let top = -el.scrollTop
   let left = 0
   while (el && el !== target) {
-    top += el.offsetTop
+    top += el.offsetTop - el.scrollTop
     left += el.offsetLeft
     el = el.offsetParent
   }
