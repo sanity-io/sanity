@@ -286,6 +286,14 @@ declare module 'part:@sanity/components/click-outside' {
   export * from '@sanity/components/src/clickOutside'
 }
 
+declare module 'part:@sanity/components/container-query' {
+  export * from '@sanity/components/src/containerQuery'
+}
+
+declare module 'part:@sanity/components/buttons/button-grid-style'
+declare module 'part:@sanity/components/buttons/button-grid' {
+  export {default} from '@sanity/components/src/buttons/ButtonGrid'
+}
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
   export {default} from '@sanity/components/src/buttons/DefaultButton'
@@ -294,6 +302,7 @@ declare module 'part:@sanity/components/buttons/state' {
   export {default} from '@sanity/components/src/buttons/StateButton'
 }
 
+declare module 'part:@sanity/components/dialogs/fullscreen-style'
 declare module 'part:@sanity/components/dialogs/fullscreen' {
   export {default} from '@sanity/components/src/dialogs/FullscreenDialog'
 }
@@ -310,6 +319,7 @@ declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
 
+declare module 'part:@sanity/components/menus/default-style'
 declare module 'part:@sanity/components/menus/default' {
   export {default} from '@sanity/components/src/menus/DefaultMenu'
 }
@@ -323,10 +333,12 @@ declare module 'part:@sanity/components/typography/hotkeys' {
   export {default} from '@sanity/components/src/typography/Hotkeys'
 }
 
+declare module 'part:@sanity/components/dialogs/default-style'
 declare module 'part:@sanity/components/dialogs/default' {
   export {default} from '@sanity/components/src/dialogs/DefaultDialog'
 }
 
+declare module 'part:@sanity/components/dialogs/content-style'
 declare module 'part:@sanity/components/dialogs/content' {
   export {default} from '@sanity/components/src/dialogs/DialogContent'
 }
@@ -337,6 +349,14 @@ declare module 'part:@sanity/components/dialogs/fullscreen-message' {
 
 declare module 'part:@sanity/components/popover' {
   export * from '@sanity/components/src/popover'
+}
+
+declare module 'part:@sanity/components/portal' {
+  export * from '@sanity/components/src/portal'
+}
+
+declare module 'part:@sanity/components/previews/create-document' {
+  export {default} from '@sanity/components/src/previews/CreateDocumentPreview'
 }
 
 declare module 'part:@sanity/components/tooltip' {

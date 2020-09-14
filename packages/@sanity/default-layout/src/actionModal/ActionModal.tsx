@@ -4,7 +4,7 @@ import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import FileIcon from 'part:@sanity/base/file-icon'
 
 interface Props {
-  actions: {icon?: React.ComponentType<{}>}[]
+  actions: {icon?: React.ComponentType<{}>; key: string}[]
   onClose: () => void
 }
 
