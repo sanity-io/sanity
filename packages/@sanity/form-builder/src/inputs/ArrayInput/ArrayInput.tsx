@@ -5,7 +5,6 @@ import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import DefaultButton from 'part:@sanity/components/buttons/default'
-import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
 import {Marker, Type} from '../../typedefs'
@@ -51,7 +50,7 @@ export type Props = {
   onBlur: () => void
   focusPath: Path
   readOnly: boolean
-  filterField: (field: any) => boolean
+  filterField: () => any
   resolveUploader?: (type: Type, file: File) => Uploader
   presence: any
 }
@@ -327,7 +326,9 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             Some items in this list are not objects. We need to remove them before the list can be
             edited.
             <div className={styles.removeNonObjectsButtonWrapper}>
-              <Button onClick={this.handleRemoveNonObjectValues}>Remove non-object values</Button>
+              <DefaultButton onClick={this.handleRemoveNonObjectValues}>
+                Remove non-object values
+              </DefaultButton>
             </div>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through an API client from outside the
@@ -354,7 +355,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             Some items in this list are missing their keys. We need to fix this before the list can
             be edited.
             <div className={styles.fixMissingKeysButtonWrapper}>
-              <Button onClick={this.handleFixMissingKeys}>Fix missing keys</Button>
+              <DefaultButton onClick={this.handleFixMissingKeys}>Fix missing keys</DefaultButton>
             </div>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through the API client from outside the

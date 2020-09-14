@@ -4,7 +4,6 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Popover from 'part:@sanity/components/dialogs/popover'
@@ -56,7 +55,7 @@ type Props = {
   onChange: (arg0: PatchEvent, arg1: ItemValue) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
-  filterField: Function
+  filterField: () => any
   readOnly: boolean | null
   focusPath: Path
   presence: FormFieldPresence[]
@@ -216,9 +215,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onAction={this.handleDialogAction}
             placement="auto"
           >
-            <PresenceOverlay>
-              <DialogContent size="small">{content}</DialogContent>
-            </PresenceOverlay>
+            <PresenceOverlay>{content}</PresenceOverlay>
           </Popover>
         </div>
       )
@@ -232,9 +229,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         actions={actions}
         onAction={this.handleDialogAction}
       >
-        <PresenceOverlay>
-          <DialogContent size="medium">{content}</DialogContent>
-        </PresenceOverlay>
+        <PresenceOverlay>{content}</PresenceOverlay>
       </DefaultDialog>
     )
   }

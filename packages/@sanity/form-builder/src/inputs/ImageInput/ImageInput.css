@@ -5,6 +5,12 @@
   grid-gap: var(--medium-padding);
 }
 
+.fieldWrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: var(--large-padding) var(--medium-padding);
+}
+
 .field {
   composes: root from '../ObjectInput/styles/Field.css';
 }
@@ -71,14 +77,6 @@
 
   @media (--screen-medium) {
     margin-top: var(--medium-padding);
-  }
-}
-
-.advancedEditFields {
-  margin-bottom: var(--medium-padding);
-
-  @nest & .field {
-    padding-bottom: var(--large-padding);
   }
 }
 
