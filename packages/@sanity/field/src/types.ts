@@ -171,7 +171,7 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
 export interface ObjectSchemaType<T extends object = Record<string, any>> extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
-  fieldsets: Fieldset[]
+  fieldsets?: Fieldset[]
   diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
 }
 

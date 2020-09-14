@@ -56,7 +56,8 @@ export function buildObjectChangeList(
 ): ChangeNode[] {
   const changes: ChangeNode[] = []
 
-  for (const fieldSet of schemaType.fieldsets) {
+  const fieldSets = schemaType.fieldsets || schemaType.fields.map(field => ({single: true, field}))
+  for (const fieldSet of fieldSets) {
     if (fieldSet.single) {
       changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, diffContext))
     } else {
