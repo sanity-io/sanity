@@ -10,7 +10,13 @@ import {
   StringDiff,
   StringDiffSegment
 } from '../../types'
-import {stringToPath, pathToString, isIndexSegment, isKeySegment} from '../../paths/helpers'
+import {
+  stringToPath,
+  pathToString,
+  isIndexSegment,
+  isKeySegment,
+  isIndexTuple
+} from '../../paths/helpers'
 import {FALLBACK_DIFF_COLOR} from './contants'
 
 export function getAnnotationColor(
@@ -43,6 +49,7 @@ function getAnnotationAt(diff: Diff, path: Path): Annotation | undefined {
   return diffAt.annotation || undefined
 }
 
+// eslint-disable-next-line complexity
 function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefined {
   if (path.length === 0) {
     return diff
@@ -50,6 +57,11 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
 
   const segment = path[0]
   const tail = path.slice(1)
+
+  if (isIndexTuple(segment)) {
+    throw new Error('Index tuples are not supported in diff paths')
+  }
+
   if (isIndexSegment(segment) || isKeySegment(segment)) {
     const location = isIndexSegment(segment) ? `at index ${segment}` : `with key ${segment._key}`
     if (diff.type !== 'array') {
@@ -88,6 +100,7 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
 }
 
 function warn(msg: string) {
+  // eslint-disable-next-line no-console
   console.warn(msg)
 }
 
@@ -104,7 +117,11 @@ export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolea
  * @param diff Diff to visit
  * @param visitor Visitor function, return false to stop from going deeper
  */
-export function visitDiff(diff: Diff | StringDiffSegment, visitor: DiffVisitor, path: Path = []) {
+export function visitDiff(
+  diff: Diff | StringDiffSegment,
+  visitor: DiffVisitor,
+  path: Path = []
+): void {
   if (!visitor(diff, path)) {
     return
   }
@@ -121,7 +138,6 @@ export function visitDiff(diff: Diff | StringDiffSegment, visitor: DiffVisitor, 
 
   if (diff.type === 'string') {
     visitStringDiff(diff, visitor, path)
-    return
   }
 }
 
