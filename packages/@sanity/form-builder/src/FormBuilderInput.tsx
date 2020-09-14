@@ -230,7 +230,7 @@ export class FormBuilderInput extends React.Component<Props> {
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? EMPTY_PROPS : {focusPath: childFocusPath}
 
-    const hasFocus = PathUtils.hasFocus(focusPath, path)
+    const hasFocus = PathUtils.startsWith(path, focusPath)
     const childPresenceInfo =
       readOnly || !presence || presence.length === 0
         ? EMPTY_PRESENCE

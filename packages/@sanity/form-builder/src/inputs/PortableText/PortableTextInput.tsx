@@ -189,13 +189,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   const formField = useMemo(
     () => (
-      <FormField
-        description={type.description}
-        label={type.title}
-        level={level}
-        markers={markers}
-        presence={presence}
-      />
+    <FormField
+      description={type.description}
+      label={type.title}
+      level={level}
+      markers={markers}
+      presence={presence}
+    />
     ),
     [markers, presence]
   )
@@ -240,26 +240,28 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
             Jump to editor
           </button>
         )}
-        <Input
-          focusPath={focusPath}
-          hasFocus={hasFocus}
-          hotkeys={hotkeys}
-          isFullscreen={isFullscreen}
-          markers={markers}
-          onBlur={onBlur}
-          onChange={onChange}
-          onCopy={onCopy}
-          onFocus={onFocus}
-          onPaste={onPaste}
-          onToggleFullscreen={handleToggleFullscreen}
-          patche$={patche$}
-          presence={presence}
-          readOnly={readOnly}
-          renderBlockActions={renderBlockActions}
-          renderCustomMarkers={renderCustomMarkers}
-          type={props.type}
-          value={valueTouchedByMarkers}
-        />
+        <ChangeIndicator compareDeep={true}>
+          <Input
+            focusPath={focusPath}
+            hasFocus={hasFocus}
+            hotkeys={hotkeys}
+            isFullscreen={isFullscreen}
+            markers={markers}
+            onBlur={onBlur}
+            onChange={onChange}
+            onCopy={onCopy}
+            onFocus={onFocus}
+            onPaste={onPaste}
+            onToggleFullscreen={handleToggleFullscreen}
+            patche$={patche$}
+            presence={presence}
+            readOnly={readOnly}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
+            type={props.type}
+            value={valueTouchedByMarkers}
+          />
+        </ChangeIndicator>
       </PortableTextEditor>
     ),
     [focusPath, hasFocus, isFullscreen, presence, readOnly, valueTouchedByMarkers]
