@@ -2,7 +2,7 @@ import React from 'react'
 import ImageIcon from 'part:@sanity/base/image-icon'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Asset from './Asset'
 import {AssetFromSource} from './ImageInput'
 
@@ -106,12 +106,7 @@ class DefaultSource extends React.Component<Props, State> {
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <FullscreenDialog
-        cardClassName={styles.card}
-        title="Select image"
-        onClose={this.handleClose}
-        isOpen
-      >
+      <DefaultDialog isOpen onClose={this.handleClose} size="large" title="Select image">
         <div className={styles.imageGrid}>
           {assets.map(asset => (
             <Asset
@@ -136,7 +131,7 @@ class DefaultSource extends React.Component<Props, State> {
             </Button>
           )}
         </div>
-      </FullscreenDialog>
+      </DefaultDialog>
     )
   }
 }

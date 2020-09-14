@@ -13,8 +13,6 @@ import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import {PresenceOverlay} from '@sanity/base/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
@@ -30,17 +28,17 @@ import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 
 // Package files
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {Marker, Reference, Type} from '../../typedefs'
 import {Path} from '../../typedefs/path'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
-import {urlToFile, base64ToFile} from './utils/image'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
+import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
 
@@ -364,33 +362,51 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
+  // handleDialogAction = action => {
+  //   if (action.name === 'done') {
+  //     this.handleStopAdvancedEdit()
+  //   }
+  // }
+
   renderAdvancedEdit(fields: Array<FieldT>) {
     const {value, level, type, onChange, readOnly, materialize} = this.props
     const withImageTool = this.isImageToolEnabled() && value && value.asset
-    const Dialog = withImageTool ? FullscreenDialog : DefaultDialog
+
     return (
-      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
+      <DefaultDialog
+        // actions={[
+        //   {
+        //     name: 'done',
+        //     title: 'Done',
+        //     inverted: true
+        //   }
+        // ]}
+        isOpen
+        title="Edit details"
+        // onAction={this.handleDialogAction}
+        onClose={this.handleStopAdvancedEdit}
+      >
         <PresenceOverlay>
-          <DialogContent size={withImageTool ? 'large' : 'medium'}>
+          <div className={styles.fieldWrapper}>
             {withImageTool && (
-          <WithMaterializedReference materialize={materialize} reference={value.asset}>
-            {imageAsset => (
-              <ImageToolInput
-                type={type}
-                level={level}
-                readOnly={readOnly}
-                imageUrl={this.getConstrainedImageSrc(imageAsset)}
-                value={value}
-                onChange={onChange}
-              />
+              <WithMaterializedReference materialize={materialize} reference={value.asset}>
+                {imageAsset => (
+                  <ImageToolInput
+                    type={type}
+                    level={level}
+                    readOnly={readOnly}
+                    imageUrl={this.getConstrainedImageSrc(imageAsset)}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
+              </WithMaterializedReference>
             )}
-          </WithMaterializedReference>
-        )}
-        <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
-        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
-          </DialogContent>
+
+            {this.renderFields(fields)}
+          </div>
         </PresenceOverlay>
-      </Dialog>
+      </DefaultDialog>
     )
   }
 
