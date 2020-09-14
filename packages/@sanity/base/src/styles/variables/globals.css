@@ -7,7 +7,7 @@
   --preview-placeholder-color: var(--gray-lightest);
 
   /* Backdrop */
-  --backdrop-color: color(var(--brand-darkest) alpha(12%));
+  --backdrop-color: color(var(--gray) alpha(15%));
 
   /* Main navigation */
   --main-navigation-color: var(--gray-darkest);
