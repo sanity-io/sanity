@@ -50,3 +50,8 @@
   text-decoration: line-through;
   mix-blend-mode: multiply;
 }
+
+.empty {
+  white-space: pre-line;
+  white-space: break-spaces;
+}
