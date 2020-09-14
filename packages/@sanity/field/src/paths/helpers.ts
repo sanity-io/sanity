@@ -1,8 +1,9 @@
 import {KeyedObject} from '../diff'
-import {Path, PathSegment, KeyedSegment} from './types'
+import {Path, PathSegment, KeyedSegment, IndexTuple} from './types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
+const reIndexTuple = /^\d*:\d*$/
 
 export function pathToString(path: Path): string {
   if (!Array.isArray(path)) {
@@ -22,6 +23,11 @@ export function pathToString(path: Path): string {
 
     if (isKeySegment(segment) && segment._key) {
       return `${target}[_key=="${segment._key}"]`
+    }
+
+    if (Array.isArray(segment)) {
+      const [from, to] = segment
+      return `${target}[${from}:${to}]`
     }
 
     throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
@@ -46,6 +52,10 @@ export function normalizePathSegment(segment: string): PathSegment {
     return normalizeKeySegment(segment)
   }
 
+  if (isIndexTuple(segment)) {
+    return normalizeIndexTupleSegment(segment)
+  }
+
   return segment
 }
 
@@ -62,16 +72,34 @@ export function normalizeKeySegment(segment: string): KeyedSegment {
   return {_key: segments[1]}
 }
 
-export function isIndexSegment(segment: any): segment is number {
-  return typeof segment === 'number' || /^\[\d+\]$/.test(segment)
+export function normalizeIndexTupleSegment(segment: string): IndexTuple {
+  const [from, to] = segment.split(':').map(seg => (seg === '' ? seg : Number(seg)))
+  return [from, to]
 }
 
-export function isKeySegment(segment: any): segment is KeyedSegment {
+export function isIndexSegment(segment: PathSegment): segment is number {
+  return typeof segment === 'number' || (typeof segment === 'string' && /^\[\d+\]$/.test(segment))
+}
+
+export function isKeySegment(segment: PathSegment): segment is KeyedSegment {
   if (typeof segment === 'string') {
     return reKeySegment.test(segment.trim())
   }
 
-  return Boolean(segment && segment._key)
+  return typeof segment === 'object' && '_key' in segment
+}
+
+export function isIndexTuple(segment: PathSegment): segment is IndexTuple {
+  if (typeof segment === 'string' && reIndexTuple.test(segment)) {
+    return true
+  }
+
+  if (!Array.isArray(segment) || segment.length !== 2) {
+    return false
+  }
+
+  const [from, to] = segment
+  return (typeof from === 'number' || from === '') && (typeof to === 'number' || to === '')
 }
 
 export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
@@ -87,6 +115,10 @@ export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
 
     if (isIndexSegment(segmentA)) {
       return Number(segmentA) === Number(segmentB)
+    }
+
+    if (isIndexTuple(segmentA) && isIndexTuple(segmentB)) {
+      return segmentA[0] === segmentB[0] && segmentA[1] === segmentB[1]
     }
 
     return segmentA === segmentB
