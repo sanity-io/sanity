@@ -5,8 +5,10 @@ import {ReferenceFieldDiff} from '../../types/reference/diff'
 import {ImageFieldDiff} from '../../types/image/diff'
 import {FileFieldDiff} from '../../types/file/diff'
 import {BooleanFieldDiff} from '../../types/boolean/diff'
+import {PTDiff} from '../../types/portableText/diff'
 
 export const defaultComponents: {[key: string]: DiffComponent<any> | DiffComponentOptions<any>} = {
+  block: PTDiff,
   string: StringFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
