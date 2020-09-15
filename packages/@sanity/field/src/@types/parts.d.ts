@@ -101,6 +101,10 @@ declare module 'part:@sanity/components/buttons/default' {
   export default DefaultButton
 }
 
+declare module 'part:@sanity/components/portal' {
+  export * from '@sanity/components/src/portal'
+}
+
 declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
 }

@@ -47,6 +47,10 @@ declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
 
+declare module 'part:@sanity/components/portal' {
+  export * from '@sanity/components/src/portal'
+}
+
 declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
 }
