@@ -240,7 +240,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
             Jump to editor
           </button>
         )}
-        <ChangeIndicator compareDeep={true}>
+        <ChangeIndicator compareDeep={!isFullscreen}>
           <Input
             focusPath={focusPath}
             hasFocus={hasFocus}

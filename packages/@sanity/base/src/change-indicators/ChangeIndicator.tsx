@@ -29,11 +29,6 @@ const ChangeBar = React.forwardRef(
   )
 )
 
-interface Props {
-  compareDeep: boolean
-  children?: React.ReactNode
-}
-
 export function ChangeIndicatorScope(props: {path: Path; children: React.ReactNode}) {
   const context = React.useContext(ChangeIndicatorContext)
 
@@ -41,7 +36,7 @@ export function ChangeIndicatorScope(props: {path: Path; children: React.ReactNo
     <ChangeIndicatorContext.Provider
       value={{
         value: PathUtils.get(context.value, props.path),
-        compareValue: PathUtils.get(context.value, props.path),
+        compareValue: PathUtils.get(context.compareValue, props.path),
         hasFocus: context.hasFocus,
         path: trimChildPath(context.path, props.path)
       }}
@@ -51,7 +46,12 @@ export function ChangeIndicatorScope(props: {path: Path; children: React.ReactNo
   )
 }
 
-export function ChangeIndicator(props: Props) {
+interface Props {
+  compareDeep: boolean
+  children?: React.ReactNode
+}
+
+export const ChangeIndicator = React.memo((props: Props) => {
   const context = React.useContext(ChangeIndicatorContext)
 
   const ref = React.useRef<HTMLDivElement>(null)
@@ -84,4 +84,4 @@ export function ChangeIndicator(props: Props) {
   ) : (
     props.children || null
   )
-}
+})
