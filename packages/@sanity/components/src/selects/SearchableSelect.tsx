@@ -47,7 +47,7 @@ export default class SearchableSelect extends React.PureComponent<
   }
 
   _rootElement: HTMLDivElement | null = null
-  _input: StatelessSearchableSelect | null = null
+  _input: HTMLInputElement | null = null
 
   constructor(props: SearchableSelectProps) {
     super(props)
@@ -119,7 +119,7 @@ export default class SearchableSelect extends React.PureComponent<
     this._rootElement = element
   }
 
-  setInput = (input: StatelessSearchableSelect | null) => {
+  setInput = (input: HTMLInputElement | null) => {
     this._input = input
   }
 
