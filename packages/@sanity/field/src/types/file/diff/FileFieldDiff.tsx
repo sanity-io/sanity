@@ -1,6 +1,6 @@
 import * as React from 'react'
 import FileIcon from 'part:@sanity/base/file-icon'
-import {getRefValue} from '../../../diff/hooks'
+import {useRefValue} from '../../../diff/hooks'
 import {MetaInfo, ChangeArrow} from '../../../diff/components'
 import {
   DiffComponent,
@@ -16,8 +16,8 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
-  const prev = getRefValue<FileAsset>(fromAsset?._ref)
-  const next = getRefValue<FileAsset>(toAsset?._ref)
+  const prev = useRefValue<FileAsset>(fromAsset?._ref)
+  const next = useRefValue<FileAsset>(toAsset?._ref)
 
   const changedFields = Object.keys(fields).filter(
     name => fields[name].isChanged && name !== '_type'

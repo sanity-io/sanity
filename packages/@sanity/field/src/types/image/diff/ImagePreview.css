@@ -2,7 +2,6 @@
 
 .root {
   overflow: hidden;
-  max-height: 190px;
   height: 100%;
   display: grid;
   grid-template-areas: 'image' 'meta';
@@ -10,10 +9,15 @@
 }
 
 .imageWrapper {
+  max-height: 190px;
+  position: relative;
   display: flex;
   flex: 1;
   overflow: hidden;
-  padding: var(--small-padding) var(--small-padding) 0;
+
+  /* "Border as padding" to fix absolutely positioned crop */
+  border: 0px solid transparent;
+  border-width: var(--small-padding) var(--small-padding) 0;
 
   @nest & .image {
     background-color: color(var(--gray-lightest) alpha(50%));
@@ -30,4 +34,19 @@
       opacity: 0.5;
     }
   }
+}
+
+.imageWrapperChanged {
+  composes: imageWrapper;
+  opacity: 0.45;
+}
+
+.crop,
+.hotspot {
+  position: absolute;
+  border: 1px solid transparent;
+}
+
+.strikethrough {
+  text-decoration: line-through;
 }
