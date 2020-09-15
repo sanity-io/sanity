@@ -8,6 +8,7 @@
 }
 
 .headerContainer {
+  z-index: var(--zindex-pane);
   position: relative;
   background: var(--component-bg);
 
@@ -25,7 +26,6 @@
   @media (--max-screen-medium) {
     position: sticky;
     top: 0;
-    z-index: var(--zindex-pane);
   }
 }
 
@@ -43,5 +43,19 @@
   @media (--screen-medium) {
     height: 100%;
     overflow: auto;
+  }
+}
+
+.portal {
+  pointer-events: none;
+  z-index: calc(var(--zindex-pane) - 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  @nest & > * {
+    pointer-events: all;
   }
 }
