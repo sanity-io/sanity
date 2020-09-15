@@ -42,15 +42,13 @@ export function Avatar(props: AvatarProps) {
   const [imageFailed, setImageFailed] = useState<boolean>(false)
 
   useEffect(() => {
-    // @todo: replace with RAF?
-    const arrowTimeoutId = setTimeout(() => {
-      setArrowPosition(arrowPositionProp)
-    }, 50)
+    if (arrowPosition === arrowPositionProp) return undefined
 
-    return () => {
-      clearTimeout(arrowTimeoutId)
-    }
-  }, [arrowPositionProp])
+    // Start animation in the next frame
+    const raf = requestAnimationFrame(() => setArrowPosition(arrowPositionProp))
+
+    return () => cancelAnimationFrame(raf)
+  }, [arrowPosition, arrowPositionProp])
 
   useEffect(() => {
     if (src) setImageFailed(false)
