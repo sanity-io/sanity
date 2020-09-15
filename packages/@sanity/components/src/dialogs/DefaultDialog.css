@@ -31,12 +31,17 @@
   top: 0;
   left: 0;
   bottom: 0;
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    bottom: auto;
+  }
 }
 
 .overlay {
   composes: frosted from 'part:@sanity/base/theme/layout/backgrounds-style';
   animation-name: fadeIn;
-  animation-duration: 0.2s;
+  animation-duration: 200ms;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
   top: 0;
@@ -147,24 +152,19 @@
     pointer-events: none;
   }
 
-  @nest .danger & {
-    background-color: var(--state-danger-color);
-    color: var(--state-danger-color--inverted);
-  }
-
-  @nest .success & {
+  @nest .root[data-dialog-color='success'] & {
     background-color: var(--state-success-color);
     color: var(--state-success-color--inverted);
   }
 
-  @nest .warning & {
+  @nest .root[data-dialog-color='warning'] & {
     background-color: var(--state-warning-color);
     color: var(--state-warning-color--inverted);
   }
 
-  @nest .warning & {
-    background-color: var(--state-warning-color);
-    color: var(--state-warning-color--inverted);
+  @nest .root[data-dialog-color='danger'] & {
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
   }
 }
 

@@ -1,24 +1,22 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 export interface ClickOutsideProps {
-  children: (ref: React.MutableRefObject<HTMLElement | null>) => React.ReactElement
-  onClickOutside: () => void
+  children: (ref: (el: HTMLElement | null) => void) => React.ReactElement
+  onClickOutside?: () => void
 }
 
 export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
-  const ref = useRef<HTMLElement | null>(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const hadMouseDownRef = useRef(false)
 
   useEffect(() => {
-    const el = ref.current
-
-    if (!el) return undefined
+    if (!referenceElement) return undefined
 
     const handleWindowMouseUp = (evt: MouseEvent) => {
       const target = evt.target
 
-      if (!el.contains(target as Node) && !hadMouseDownRef.current) {
-        onClickOutside()
+      if (!referenceElement.contains(target as Node) && !hadMouseDownRef.current) {
+        if (onClickOutside) onClickOutside()
       }
 
       hadMouseDownRef.current = false
@@ -29,13 +27,13 @@ export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
     }
 
     window.addEventListener('mouseup', handleWindowMouseUp)
-    el.addEventListener('mousedown', handleRefMouseDown)
+    referenceElement.addEventListener('mousedown', handleRefMouseDown)
 
     return () => {
       window.removeEventListener('mouseup', handleWindowMouseUp)
-      el.removeEventListener('mousedown', handleRefMouseDown)
+      referenceElement.removeEventListener('mousedown', handleRefMouseDown)
     }
-  }, [onClickOutside])
+  }, [onClickOutside, referenceElement])
 
-  return children(ref)
+  return children(setReferenceElement)
 }
