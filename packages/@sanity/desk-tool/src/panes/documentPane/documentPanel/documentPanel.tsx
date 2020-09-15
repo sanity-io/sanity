@@ -59,16 +59,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const menuItems = useMemo(() => {
     return (
       getMenuItems({
-        canShowHistoryList: true,
         features,
-        isHistoryEnabled: true,
         isHistoryOpen: props.isHistoryOpen,
-        isLiveEditEnabled: props.schemaType.liveEdit === true,
         rev: revTime ? revTime.id : null,
         value: props.value
       }) || []
     )
-  }, [props.isHistoryOpen, props.schemaType, revTime, props.value])
+  }, [features, props.isHistoryOpen, revTime, props.value])
 
   const handleContextMenuAction = useCallback(
     item => {
