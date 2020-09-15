@@ -57,7 +57,6 @@ export function ContainerQuery(props: React.HTMLProps<HTMLDivElement>) {
     <div
       {...restProps}
       data-container-min={min.length ? min.map(bp => bp.name).join(' ') : undefined}
-      data-width={width}
       ref={rootRef}
     >
       {children}
