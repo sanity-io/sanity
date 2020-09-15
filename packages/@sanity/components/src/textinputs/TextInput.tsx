@@ -13,6 +13,7 @@ export default class DefaultTextInput extends React.PureComponent<DefaultTextInp
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: DefaultTextInputProps) {
     if (nextProps.customValidity !== this.props.customValidity) {
       if (this._input && typeof nextProps.customValidity === 'string') {

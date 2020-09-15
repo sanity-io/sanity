@@ -12,7 +12,7 @@ import {ButtonColor, ButtonKind, ButtonPadding, ButtonSize} from './types'
 
 interface DropdownItem {
   title: string
-  icon?: React.ComponentType<{}>
+  icon?: React.ComponentType<Record<string, unknown>>
 }
 
 interface DropdownButtonProps {
@@ -20,7 +20,7 @@ interface DropdownButtonProps {
   items: DropdownItem[]
   onAction: (item: DropdownItem) => void
   inverted?: boolean
-  icon?: React.ComponentType<{}>
+  icon?: React.ComponentType<Record<string, unknown>>
   loading?: boolean
   color?: ButtonColor
   renderItem?: (item: DropdownItem) => React.ReactElement

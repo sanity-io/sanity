@@ -8,7 +8,7 @@ import {PopoverArrow} from './popoverArrow'
 
 import styles from './popover.css'
 
-const applyModifer: Modifier<'applyMaxSize', {}> = {
+const applyModifer: Modifier<'applyMaxSize', Record<string, unknown>> = {
   name: 'applyMaxSize',
   enabled: true,
   phase: 'beforeWrite',
@@ -79,10 +79,6 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
     ]
   })
 
-  if (disabled) {
-    return props.children
-  }
-
   useEffect(() => {
     if (targetElement) {
       setReferenceElement(targetElement)
@@ -91,7 +87,11 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
 
   useEffect(() => {
     if (popper.forceUpdate) popper.forceUpdate()
-  }, [content])
+  }, [popper, content])
+
+  if (disabled) {
+    return props.children
+  }
 
   const children =
     targetElement === undefined

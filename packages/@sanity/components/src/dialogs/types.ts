@@ -5,7 +5,7 @@ export interface DialogAction {
   index?: number
   color?: DialogColor
   title: string
-  icon?: React.ComponentType<{}>
+  icon?: React.ComponentType<Record<string, unknown>>
   tooltip?: string
   kind?: 'simple' | 'secondary'
   autoFocus?: boolean

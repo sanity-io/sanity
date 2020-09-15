@@ -21,7 +21,7 @@ interface PopOverProps {
   onClickOutside?: () => void
   onEscape?: (event: KeyboardEvent) => void
   onAction?: (action: DialogAction) => void
-  modifiers?: object
+  modifiers?: Record<string, any>
   placement?: string
   useOverlay?: boolean
   hasAnimation?: boolean

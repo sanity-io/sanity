@@ -10,6 +10,7 @@ export default class CaptureOutsideClicks extends React.Component<CaptureOutside
 
   _wrapperElement: HTMLDivElement | null = null
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     document.addEventListener('mouseup', this.handleDocumentClick)
     document.addEventListener('mousedown', this.handleMouseDown)

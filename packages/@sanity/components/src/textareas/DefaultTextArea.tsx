@@ -43,6 +43,7 @@ export default class DefaultTextArea extends React.Component<
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: DefaultTextAreaProps) {
     if (this._input) {
       if (nextProps.customValidity !== this.props.customValidity) {

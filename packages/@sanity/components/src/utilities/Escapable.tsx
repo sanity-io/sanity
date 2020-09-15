@@ -39,6 +39,7 @@ const onKeypress = createListener<KeyboardEvent>('keydown')
 export default class Escapable extends React.Component<EscapableProps> {
   removeListener?: () => void
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this.removeListener = onKeypress(this.handleKeyPress)
   }

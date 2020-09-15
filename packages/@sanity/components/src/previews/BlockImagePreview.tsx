@@ -7,9 +7,9 @@ type BlockImagePreviewStatusComponent = React.FunctionComponent<{
 }>
 
 interface BlockImagePreviewProps {
-  title?: React.ReactNode | React.FC<{}>
-  subtitle?: React.ReactNode | React.FC<{}>
-  description?: React.ReactNode | React.FC<{}>
+  title?: React.ReactNode | React.FC<Record<string, unknown>>
+  subtitle?: React.ReactNode | React.FC<Record<string, unknown>>
+  description?: React.ReactNode | React.FC<Record<string, unknown>>
   mediaDimensions?: MediaDimensions
   media?:
     | React.ReactNode

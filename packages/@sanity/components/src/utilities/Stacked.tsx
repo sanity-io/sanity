@@ -66,6 +66,7 @@ export default class Stacked extends React.Component<StackedProps> {
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     const {stack} = this.props
     if (stack && stack.push) stack.push(this)

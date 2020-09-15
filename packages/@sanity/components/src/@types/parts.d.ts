@@ -44,7 +44,7 @@ declare module 'part:@sanity/base/theme/typography/headings-style'
 declare module 'part:@sanity/base/theme/typography/text-blocks-style'
 
 declare module 'part:@sanity/base/brand-logo?' {
-  const BrandLogo: React.ComponentType<{}> | undefined
+  const BrandLogo: React.ComponentType<Record<string, unknown>> | undefined
   export default BrandLogo
 }
 

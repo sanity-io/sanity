@@ -5,7 +5,7 @@ import styles from './Tab.css'
 interface TabProps {
   'aria-controls': string
   id: string
-  icon?: React.ComponentType<{}>
+  icon?: React.ComponentType<Record<string, unknown>>
   isActive?: boolean
   isFocused?: boolean
   label: React.ReactNode

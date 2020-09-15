@@ -5,7 +5,7 @@ export interface SnackbarAction {
 }
 
 export interface SnackbarItemType {
-  action: {}
+  action: Record<string, unknown>
   allowDuplicateSnackbarType: boolean
   autoDismissTimeout: number
   height: number
