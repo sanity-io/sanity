@@ -35,7 +35,7 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
             <DefaultButton color="danger" onClick={this.handleAction}>
               {resolution.action}
             </DefaultButton>
-            <DefaultButton color="secondary" onClick={this.handleIgnore}>
+            <DefaultButton kind="secondary" onClick={this.handleIgnore}>
               Ignore
             </DefaultButton>
           </div>

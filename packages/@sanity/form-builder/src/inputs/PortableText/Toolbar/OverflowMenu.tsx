@@ -1,14 +1,11 @@
-/* eslint-disable react/jsx-no-bind */
-
 import classNames from 'classnames'
-import React, {useEffect, useRef, useState} from 'react'
-import {Popover} from 'part:@sanity/components/popover'
 import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
-import Button from 'part:@sanity/components/buttons/default'
+import {MenuButton} from 'part:@sanity/components/menu-button'
+import React, {useEffect, useRef, useState} from 'react'
 
 import styles from './OverflowMenu.css'
 
-type Action = {
+interface Action {
   firstInGroup?: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
@@ -47,7 +44,6 @@ export function OverflowMenu(props: Props) {
   const lastHidden = hiddenActions.length === 1
   const ioRef = useRef<IntersectionObserver | null>(null)
   const [open, setOpen] = useState(false)
-  const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
   useEffect(() => {
@@ -112,47 +108,41 @@ export function OverflowMenu(props: Props) {
         ))}
       </div>
       <div className={styles.overflowButton} hidden={!showOverflowButton}>
-        <Popover
-          className={styles.initialValueMenuPopover}
-          placement="bottom"
-          open={open}
-          content={
-            (
-              <div className={styles.overflowMenu}>
-                {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
-                  const action = actions[hiddenAction.index]
-                  return (
-                    <div
-                      className={classNames(
-                        styles.menuItem,
-                        action.firstInGroup && styles.firstInGroup
-                      )}
-                      key={String(hiddenActionIndex)}
-                      onMouseDown={preventDefault} // Needed so the editor doesn't reset selection
-                    >
-                      <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
-                    </div>
-                  )
-                })}
-              </div>
-            ) as any
+        <MenuButton
+          buttonProps={{
+            'aria-label': 'Menu',
+            'aria-haspopup': 'menu',
+            'aria-expanded': open,
+            'aria-controls': 'insertmenu',
+            icon: EllipsisIcon,
+            kind: 'simple',
+            padding: 'small',
+            selected: open,
+            title: 'More actions'
+          }}
+          menu={
+            <div className={styles.overflowMenu}>
+              {hiddenActions.map((hiddenAction, hiddenActionIndex) => {
+                const action = actions[hiddenAction.index]
+                return (
+                  <div
+                    className={classNames(
+                      styles.menuItem,
+                      action.firstInGroup && styles.firstInGroup
+                    )}
+                    key={String(hiddenActionIndex)}
+                    onMouseDown={preventDefault} // Needed so the editor doesn't reset selection
+                  >
+                    <ActionMenuItem action={action} disabled={disabled} onClose={handleClose} />
+                  </div>
+                )
+              })}
+            </div>
           }
-        >
-          <div>
-            <Button
-              aria-label="Menu"
-              aria-haspopup="menu"
-              aria-expanded={open}
-              aria-controls={'insertmenu'}
-              icon={EllipsisIcon}
-              kind="simple"
-              onClick={handleOpen}
-              padding="small"
-              selected={open}
-              title="More actions"
-            />
-          </div>
-        </Popover>
+          open={open}
+          placement="bottom"
+          setOpen={setOpen}
+        />
       </div>
     </div>
   )
