@@ -90,7 +90,6 @@ export class Aligner {
   }
 
   appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent) {
-    console.log({type: 'remote', evt})
     const state = this._states[evt.version]
 
     if (evt.type === 'snapshot') {
