@@ -3,7 +3,7 @@ import styles from 'part:@sanity/components/toggles/buttons-style'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 
 interface ToggleButtonItem {
-  icon?: React.ComponentType<{}>
+  icon?: React.ComponentType<Record<string, unknown>>
   title?: string
 }
 

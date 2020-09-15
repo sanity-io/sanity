@@ -49,19 +49,19 @@ export default React.forwardRef(function Switch(
         <div className={styles.thumb} />
       </div>
       {label && (
-      <div className={sharedStyles.label}>
-        <div className={sharedStyles.titleWrapper}>
-          <label className={sharedStyles.title} htmlFor={`switch-${elementId}-input`}>
-            {label}
-          </label>
-          {children}
-        </div>
-        {description && (
-          <div id={`switch-${elementId}-description`} className={sharedStyles.description}>
-            {description}
+        <div className={sharedStyles.label}>
+          <div className={sharedStyles.titleWrapper}>
+            <label className={sharedStyles.title} htmlFor={`switch-${elementId}-input`}>
+              {label}
+            </label>
+            {children}
           </div>
-        )}
-      </div>
+          {description && (
+            <div id={`switch-${elementId}-description`} className={sharedStyles.description}>
+              {description}
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

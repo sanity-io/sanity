@@ -71,19 +71,19 @@ export default React.forwardRef(function Checkbox(
         </svg>
       </div>
       {label && (
-      <div className={sharedStyles.label}>
-        <div className={sharedStyles.titleWrapper}>
-          <label className={sharedStyles.title} htmlFor={`checkbox-${elementId}-input`}>
-            {label}
-          </label>
-          {children}
-        </div>
-        {description && (
-          <div id={`checkbox-${elementId}-description`} className={sharedStyles.description}>
-            {description}
+        <div className={sharedStyles.label}>
+          <div className={sharedStyles.titleWrapper}>
+            <label className={sharedStyles.title} htmlFor={`checkbox-${elementId}-input`}>
+              {label}
+            </label>
+            {children}
           </div>
-        )}
-      </div>
+          {description && (
+            <div id={`checkbox-${elementId}-description`} className={sharedStyles.description}>
+              {description}
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

@@ -20,6 +20,7 @@ export default class ImageLoader extends React.PureComponent<ImageLoaderProps, S
 
   subscription?: Subscription
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this.loadImage(this.props.src)
   }
@@ -42,6 +43,7 @@ export default class ImageLoader extends React.PureComponent<ImageLoaderProps, S
     })
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: ImageLoaderProps) {
     if (nextProps.src !== this.props.src) {
       this.loadImage(nextProps.src)

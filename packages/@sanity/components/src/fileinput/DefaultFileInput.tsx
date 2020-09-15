@@ -8,7 +8,7 @@ interface DefaultFileInputProps {
   onSelect?: (files: FileList | null) => void
   children?: React.ReactNode
   className?: string
-  style?: object
+  style?: React.CSSProperties
 }
 
 export default class DefaultFileInput extends React.PureComponent<DefaultFileInputProps> {

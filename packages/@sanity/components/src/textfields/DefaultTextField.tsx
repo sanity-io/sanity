@@ -32,6 +32,7 @@ export default class DefaultTextField extends React.Component<DefaultTextFieldPr
     if (this.props.onClear) this.props.onClear()
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('DefaultTextField')
   }

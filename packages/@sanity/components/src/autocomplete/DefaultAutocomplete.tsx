@@ -23,6 +23,7 @@ export default class DefaultAutocomplete extends React.PureComponent<DefaultAuto
     if (this.props.onChange) this.props.onChange(event)
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('Autocomplete')
   }

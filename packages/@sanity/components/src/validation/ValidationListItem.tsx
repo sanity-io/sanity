@@ -44,6 +44,7 @@ export default class ValidationListItem extends React.PureComponent<ValidationLi
     }, 200)
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: ValidationListItemProps) {
     if (nextProps.hasFocus) {
       this.focus()
