@@ -11,39 +11,23 @@ import {Doc} from '../../types'
 import styles from './menuItems.css'
 
 interface Params {
-  canShowHistoryList?: boolean
   features: DeskToolFeatures
   isHistoryOpen?: boolean
-  isHistoryEnabled?: boolean
-  isLiveEditEnabled?: boolean
   rev: string | null
   value: Doc | null
 }
 
 const getHistoryMenuItem = (params: Params): MenuItemType | null => {
-  const {
-    features,
-    value,
-    isLiveEditEnabled,
-    isHistoryEnabled,
-    isHistoryOpen,
-    canShowHistoryList
-  } = params
+  const {features, value, isHistoryOpen} = params
 
-  if (isLiveEditEnabled || !canShowHistoryList) {
-    return null
+  if (!features.reviewChanges) return null
+
+  return {
+    action: 'reviewChanges',
+    title: 'Review changes',
+    icon: HistoryIcon,
+    isDisabled: isHistoryOpen || !value
   }
-
-  if (isHistoryEnabled) {
-    return {
-      action: 'reviewChanges',
-      title: 'Review changes',
-      icon: HistoryIcon,
-      isDisabled: !features.reviewChanges || isHistoryOpen || !value
-    }
-  }
-
-  return null
 }
 
 const getInspectItem = ({value}: Params): MenuItemType => ({
