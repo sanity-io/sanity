@@ -42,7 +42,7 @@
     @nest & svg {
       color: inherit;
       opacity: 1;
-      transform: scale(1.1  );
+      transform: scale(1.1);
     }
   }
 }
@@ -55,6 +55,7 @@
 
 .popper {
   z-index: var(--zindex-portal);
+  width: 100%;
 }
 
 .listContainer {
