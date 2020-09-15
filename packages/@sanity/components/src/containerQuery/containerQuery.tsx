@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
+import {ResizeObserver} from '../resizeObserver'
 
 interface ContainerBreakpoint {
   name: string
@@ -6,10 +7,10 @@ interface ContainerBreakpoint {
 }
 
 const CONTAINER_BREAKPOINTS: ContainerBreakpoint[] = [
-  {name: 'medium', minWidth: 512 - 32},
-  {name: 'default', minWidth: 640 - 32},
-  {name: 'large', minWidth: 960 - 32},
-  {name: 'xlarge', minWidth: 1600 - 32}
+  {name: 'medium', minWidth: 512},
+  {name: 'default', minWidth: 640},
+  {name: 'large', minWidth: 960},
+  {name: 'xlarge', minWidth: 1600}
 ]
 
 function findMinBreakpoints(width: number) {
