@@ -32,7 +32,7 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
   return (
     <ClickOutside onClickOutside={handleClickOutside}>
       {ref => (
-        <div {...restProps} ref={ref as React.Ref<HTMLDivElement>}>
+        <div {...restProps} ref={ref}>
           <Popover
             boundaryElement={boundaryElement}
             content={menu as any}
