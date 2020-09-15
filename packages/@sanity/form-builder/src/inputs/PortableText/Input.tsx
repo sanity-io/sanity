@@ -249,7 +249,7 @@ export default function PortableTextInput(props: Props) {
       )
     }
     return (
-      <ChangeIndicatorScope path={[{_key: block._key}, 'children']}>
+      <ChangeIndicatorScope path={[{_key: block._key}]}>
         <ChangeIndicator compareDeep>{returned}</ChangeIndicator>
       </ChangeIndicatorScope>
     )

@@ -69,7 +69,6 @@ interface CoreProps {
   fullPath: Path
   focusPath: Path
   compareDeep: boolean
-  path: Path
   value: any
   compareValue: any
   children?: React.ReactNode
@@ -77,7 +76,6 @@ interface CoreProps {
 
 export const CoreChangeIndicator = ({
   fullPath,
-  path,
   value,
   compareValue,
   focusPath,
@@ -98,7 +96,7 @@ export const CoreChangeIndicator = ({
       id={`field-${PathUtils.toString(fullPath)}`}
       component={ChangeBar}
       data={{
-        path,
+        path: fullPath,
         isChanged,
         hasFocus: PathUtils.startsWith(fullPath, focusPath),
         children,
@@ -122,7 +120,6 @@ export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
       fullPath={fullPath}
       value={value}
       compareValue={compareValue}
-      path={path}
       focusPath={focusPath}
       compareDeep={props.compareDeep}
     >
