@@ -26,7 +26,7 @@ interface FieldsetProps {
   className?: string
   tabIndex?: number
   transparent?: boolean
-  styles?: object
+  styles?: Record<string, string>
   markers?: Marker[]
   presence: FormFieldPresence[]
 }

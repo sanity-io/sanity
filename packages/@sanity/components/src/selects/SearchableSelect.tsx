@@ -64,6 +64,7 @@ export default class SearchableSelect extends React.PureComponent<
     }
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: SearchableSelectProps) {
     // if (nextProps.items != this.props.items) {
     //   this.setState({

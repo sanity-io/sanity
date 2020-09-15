@@ -10,7 +10,7 @@ import styles from './TabbedPane.css'
 interface TabbedPaneProps {
   idPrefix: string
   views?: {
-    icon?: React.ComponentType<{}>
+    icon?: React.ComponentType<Record<string, unknown>>
     id: string
     title: string
   }[]

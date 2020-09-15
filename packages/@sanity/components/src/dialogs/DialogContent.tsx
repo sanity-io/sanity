@@ -10,6 +10,7 @@ interface DialogContentProps {
 
 export default class DialogContent extends React.PureComponent<DialogContentProps> {
   componentDidMount() {
+    // eslint-disable-next-line no-console
     console.warn('DialogContent is deprecated. Use `<DefaultDialog padding size />` instead.')
   }
 

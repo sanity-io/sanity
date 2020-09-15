@@ -5,8 +5,8 @@ import styles from './RadioButtonDefault.css'
 
 type Props = {
   label: string
-  item: object
-  onChange?: (item: object) => void
+  item: Record<string, unknown>
+  onChange?: (item: Record<string, unknown>) => void
   onFocus?: (evt: React.FocusEvent<HTMLInputElement>) => void
   checked: boolean
   disabled?: boolean

@@ -55,6 +55,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
 
   dateElement: HTMLDivElement | null = null
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.isPlaceholder && this.dateElement) {
       this._elementResizeDetector.uninstall(this.dateElement)

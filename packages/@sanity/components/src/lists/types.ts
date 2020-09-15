@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import {SortableContainerProps, SortableElementProps} from 'react-sortable-hoc'
 
 export type ListComponent = React.ForwardRefExoticComponent<React.HTMLProps<HTMLUListElement>>

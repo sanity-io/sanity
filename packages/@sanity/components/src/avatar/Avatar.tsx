@@ -38,6 +38,7 @@ export function Avatar(props: AvatarProps) {
   const [arrowPosition, setArrowPosition] = useState<AvatarPosition | undefined>(
     animateArrowFrom || arrowPositionProp || 'inside'
   )
+
   const [imageFailed, setImageFailed] = useState<boolean>(false)
 
   useEffect(() => {
