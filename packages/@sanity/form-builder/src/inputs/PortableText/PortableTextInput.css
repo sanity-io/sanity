@@ -8,6 +8,10 @@
   left: 0;
   right: 0;
   bottom: 0;
+
+  @media (--max-screen-medium) {
+    position: fixed;
+  }
 }
 
 .root {
@@ -176,9 +180,9 @@
   display: flex;
   flex-direction: column;
 
-  @nest .fullscreenPortal & {
+  /* @nest .fullscreenPortal & {
     margin-bottom: var(--medium-padding);
-  }
+  } */
 
   @nest .readOnly & {
     background-color: var(--input-bg-disabled);
