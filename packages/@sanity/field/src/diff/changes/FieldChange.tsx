@@ -1,6 +1,7 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext} from 'react'
 import {FieldChangeNode, OperationsAPI, ShowDiffHeader} from '../../types'
+import {DiffContext} from '../context/DiffContext'
 import {FallbackDiff} from '../fallback/FallbackDiff'
 import {ValueError} from './ValueError'
 import {ChangeHeader} from './ChangeHeader'
@@ -28,9 +29,9 @@ export function FieldChange({
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
   const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
-    documentId,
-    change.key,
-    change.diff
+    change,
+    rootDiff,
+    docOperations
   ])
 
   const rootClass = change.error ? styles.error : styles.root
@@ -48,7 +49,9 @@ export function FieldChange({
           <ValueError error={change.error} />
         ) : (
           <DiffErrorBoundary>
-            <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+            <DiffContext.Provider value={{path: change.path}}>
+              <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+            </DiffContext.Provider>
           </DiffErrorBoundary>
         )}
 
