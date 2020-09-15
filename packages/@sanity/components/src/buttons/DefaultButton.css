@@ -234,6 +234,7 @@
   color: inherit;
   border: none;
   border-radius: 0;
+  white-space: nowrap;
 
   @nest &[disabled] {
     color: inherit;
