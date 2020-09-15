@@ -55,19 +55,21 @@
 
 .popper {
   z-index: var(--zindex-portal);
-  width: 100%;
+  padding: 0 1px;
+  box-sizing: border-box;
 }
 
 .listContainer {
-  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   display: block;
   min-height: 3.5rem;
   max-height: 20rem;
   overflow: auto;
-  border: 1px solid var(--component-border-color);
   box-sizing: border-box;
   background-color: var(--component-bg);
   transition: max-height 100ms linear;
+  margin: -1px 0;
+  border-radius: 1px;
 }
 
 .listContainerNoResult {
