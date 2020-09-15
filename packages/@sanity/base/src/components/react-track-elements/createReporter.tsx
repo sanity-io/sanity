@@ -16,7 +16,6 @@ export const createReporter = (Context: React.Context<OverlayReporterContext>) =
     const context = React.useContext(Context)
 
     React.useEffect(() => {
-      console.log('dispatch update', id)
       context.dispatch({
         type: 'update',
         id,
@@ -26,7 +25,6 @@ export const createReporter = (Context: React.Context<OverlayReporterContext>) =
     }, [props])
 
     React.useEffect(() => {
-      console.log('dispatch mount', id)
       context.dispatch({
         type: 'mount',
         id,
@@ -35,7 +33,6 @@ export const createReporter = (Context: React.Context<OverlayReporterContext>) =
         component
       })
       return () => {
-        console.log('dispatch unmount', id)
         context.dispatch({type: 'unmount', id})
       }
     }, [])

@@ -1,12 +1,5 @@
 import * as React from 'react'
 
-export interface Rect {
-  height: number
-  width: number
-  top: number
-  left: number
-}
-
 export type DelegateComponentType<Data> = React.ComponentType<Data> | keyof React.ReactHTML
 
 export interface ReportedRegion<RegionData> {
@@ -40,11 +33,6 @@ export type RegionReporterEvent =
   | RegionReporterMountEvent
   | RegionReporterUpdateEvent
   | RegionReporterUnmountEvent
-
-export interface Position {
-  id: string
-  rect: Rect
-}
 
 export interface OverlayReporterContext {
   dispatch: (event: RegionReporterEvent) => void

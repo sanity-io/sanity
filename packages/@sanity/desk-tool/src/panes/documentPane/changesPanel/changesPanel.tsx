@@ -24,6 +24,7 @@ import styles from './changesPanel.css'
 import {Reporter} from '@sanity/base/lib/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/util/lib/typedefs/path'
+import {ScrollContainer} from '@sanity/base/ScrollContainer'
 
 const ChangeFieldWrapper = (props: {path: Path; children: React.ReactNode}) => {
   return (
@@ -140,15 +141,14 @@ export function ChangesPanel({
           )}
         </div>
       </header>
-
-      <Reporter id="changesPanel" component="div" className={styles.body}>
+      <ScrollContainer className={styles.body}>
         <Content
           diff={diff}
           documentContext={documentContext}
           loading={loading}
           schemaType={schemaType}
         />
-      </Reporter>
+      </ScrollContainer>
     </div>
   )
 }
