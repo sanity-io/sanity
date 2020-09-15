@@ -180,7 +180,6 @@ export default class SearchableSelect extends React.PureComponent<
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
           inputValue={inputValue}
-          // isSelected={hasFocus}
           ref={this.setInput as any}
           readOnly={readOnly}
         />
