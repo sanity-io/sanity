@@ -284,7 +284,7 @@ export class Timeline {
 
   findLastPublishedBefore(chunk: Chunk | null): ParsedTimeRef {
     for (
-      let chunkIdx = (chunk ? chunk.index : this._chunks.lastIdx) - 1;
+      let chunkIdx = chunk ? chunk.index - 1 : this._chunks.lastIdx;
       chunkIdx >= this._chunks.firstIdx;
       chunkIdx--
     ) {
