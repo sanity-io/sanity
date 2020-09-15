@@ -1,15 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  z-index: 9999;
+  z-index: var(--zindex-popover);
   display: flex;
 }
 
 .card {
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
+
   background: var(--component-bg);
   color: var(--component-text-color);
   border-radius: var(--border-radius-medium);
-  box-shadow: 0 0 0 1px var(--hairline-color), 0 4px 8px color(var(--gray) alpha(30%));
   flex: 1;
   overflow: hidden;
 
