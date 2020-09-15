@@ -12,6 +12,7 @@ const canUseDOM = !!(
   window.document.createElement
 )
 
+// @todo: refactor to functional component
 export class Portal extends React.Component<PortalProps> {
   node?: HTMLDivElement
 

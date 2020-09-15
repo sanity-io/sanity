@@ -54,18 +54,13 @@ export function Avatar(props: AvatarProps) {
     if (src) setImageFailed(false)
   }, [src])
 
-  const handleImageError = useCallback(
-    evt => {
-      setImageFailed(true)
+  const handleImageError = useCallback(() => {
+    setImageFailed(true)
 
-      if (onImageLoadError) {
-        const err = new Error('Avatar: the image failed to load')
-        ;(err as any).event = evt
-        onImageLoadError(err)
-      }
-    },
-    [onImageLoadError]
-  )
+    if (onImageLoadError) {
+      onImageLoadError(new Error('Avatar: the image failed to load'))
+    }
+  }, [onImageLoadError])
 
   return (
     <div

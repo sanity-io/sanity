@@ -10,6 +10,7 @@ interface State {
   focusedTabIdx: number
 }
 
+// @todo: refactor to functional component
 export default class TabList extends React.PureComponent<TabListProps, State> {
   state: State = {
     focusedTabIdx: -1

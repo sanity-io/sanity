@@ -13,7 +13,6 @@ type PopperModifiers = ReadonlyArray<Partial<Modifier<string, unknown>>>
 interface PoppableProps {
   onEscape?: () => void
   onClickOutside?: (ev: MouseEvent) => void
-  target?: React.ReactNode
   children?: React.ReactNode
   referenceClassName?: string
   referenceElement?: HTMLElement
@@ -32,6 +31,7 @@ const DEFAULT_MODIFIERS: PopperModifiers = [
   }
 ]
 
+// @todo: refactor to functional component
 export default class Poppable extends React.Component<PoppableProps> {
   popperNode: HTMLElement | null = null
 
@@ -55,7 +55,6 @@ export default class Poppable extends React.Component<PoppableProps> {
     const {
       onEscape,
       onClickOutside,
-      target,
       children,
       referenceClassName,
       modifiers = DEFAULT_MODIFIERS,

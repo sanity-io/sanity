@@ -27,6 +27,7 @@ interface FullScreenDialogProps {
 
 const noop = () => undefined
 
+// @todo: refactor to functional component
 export default class FullScreenDialog extends React.PureComponent<FullScreenDialogProps> {
   createButtonFromAction = (action: DialogAction, i: number) => {
     const {onAction} = this.props

@@ -12,6 +12,7 @@ interface InInputButtonProps {
   colored?: boolean
 }
 
+// @todo: refactor to functional component
 export default class InInputButton extends React.Component<
   InInputButtonProps & React.HTMLProps<HTMLButtonElement>
 > {

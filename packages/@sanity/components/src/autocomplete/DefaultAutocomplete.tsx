@@ -16,6 +16,7 @@ interface DefaultAutocompleteProps {
   value?: string
 }
 
+// @todo: refactor to functional component
 export default class DefaultAutocomplete extends React.PureComponent<DefaultAutocompleteProps> {
   _inputId?: string = undefined
 

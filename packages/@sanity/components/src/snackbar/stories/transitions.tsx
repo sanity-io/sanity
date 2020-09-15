@@ -17,6 +17,7 @@ const globalDefaults: Omit<SnackbarItemProps, 'onSetHeight'> = {
   onDismiss: action('onDismiss()')
 }
 
+// @todo: refactor to functional component
 class SnackQueue extends React.PureComponent<SnackQueueProps> {
   static contextTypes = {
     addToSnackQueue: PropTypes.func

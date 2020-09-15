@@ -7,6 +7,7 @@ interface ScrollContainerProps extends Omit<React.HTMLProps<HTMLDivElement>, 'on
   onScroll?: (event: Event) => void
 }
 
+// @todo: refactor to functional component
 export default class ScrollContainer extends React.PureComponent<ScrollContainerProps> {
   _scrollContainerElement: HTMLDivElement | null = null
 
@@ -47,6 +48,7 @@ export default class ScrollContainer extends React.PureComponent<ScrollContainer
   }
 
   render() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {children, className, onScroll: _, ...restProps} = this.props
 
     return (
