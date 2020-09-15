@@ -67,7 +67,8 @@
     height: 7px;
     position: absolute;
     top: -5px;
-    left: calc(50% - 6px);
+    left: calc(50% - 0.5px);
+    transform: translateX(calc(-50% + 0.5px));
   }
 
   @nest .root[data-arrow-position='inside'] & {
