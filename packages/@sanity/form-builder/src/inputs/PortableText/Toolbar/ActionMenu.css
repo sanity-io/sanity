@@ -1,40 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .menuItem {
-  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
-
-  -webkit-font-smoothing: inherit;
   display: block;
-  appearance: none;
-  font: inherit;
-  background: none;
-  color: none;
-  border: 0;
-  border-radius: 0;
-  text-align: left;
   width: 100%;
-  box-sixing: border-box;
-  padding: var(--small-padding) calc(var(--medium-padding) - var(--small-padding));
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
 
-.iconContainer {
-  display: block;
-
-  @nest & svg {
-    display: block;
-    font-size: calc(17 / 16 * 1em);
-
-    @nest &[data-sanity-icon] {
-      font-size: calc(25 / 16 * 1em);
-      margin: calc(4 / 25 * -1em);
-    }
+  @nest & > span > span {
+    justify-content: flex-start;
   }
-}
-
-.title {
-  display: block;
-  margin: -2px 0 -1px var(--small-padding);
 }

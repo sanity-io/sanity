@@ -23,7 +23,7 @@
   display: flex;
   background-color: var(--component-bg);
   border-bottom: 1px solid var(--hairline-color);
-  z-index: 1;
+  z-index: 2;
 
   @nest .fullscreenPortal & {
     box-sizing: border-box;

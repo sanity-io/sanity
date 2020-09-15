@@ -1,19 +1,11 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/no-multi-comp */
-
-import ToggleButton from 'part:@sanity/components/toggles/button'
-import React from 'react'
+import Button from 'part:@sanity/components/buttons/default'
+// import ToggleButton from 'part:@sanity/components/toggles/button'
+import React, {useCallback} from 'react'
+import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {OverflowMenu} from './OverflowMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 import styles from './ActionMenu.css'
-import {
-  PortableTextEditor,
-  usePortableTextEditor,
-  usePortableTextEditorSelection
-} from '@sanity/portable-text-editor'
 
 interface Props {
   disabled: boolean
@@ -25,15 +17,19 @@ function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visib
   const {action, disabled, visible} = props
   const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
 
+  const handleClick = useCallback(() => {
+    action.handle()
+  }, [action])
+
   return (
-    <ToggleButton
+    <Button
       aria-hidden={!visible}
       data-visible={visible}
       disabled={disabled}
       icon={action.icon}
       kind="simple"
       padding="small"
-      onClick={action.handle}
+      onClick={handleClick}
       tabIndex={visible ? 0 : -1}
       selected={action.active}
       title={title}
@@ -45,19 +41,23 @@ function ActionMenuItem(props: {action: PTEToolbarAction; disabled: boolean; onC
   const {action, disabled, onClose} = props
   const title = action.hotkeys ? `${action.title} (${action.hotkeys.join('+')})` : action.title
 
+  const handleClick = useCallback(() => {
+    action.handle()
+    onClose()
+  }, [action])
+
   return (
-    <button
+    <Button
+      bleed
       className={styles.menuItem}
       disabled={disabled}
-      onClick={() => {
-        action.handle()
-        onClose()
-      }}
-      type="button"
+      icon={action.icon}
+      kind="simple"
+      onClick={handleClick}
+      selected={action.active}
     >
-      <span className={styles.iconContainer}>{React.createElement(action.icon)}</span>
-      <span className={styles.title}>{title}</span>
-    </button>
+      {title}
+    </Button>
   )
 }
 

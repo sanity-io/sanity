@@ -11,6 +11,12 @@ declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
 
+declare module 'part:@sanity/components/buttons/default-style'
+declare module 'part:@sanity/components/buttons/default' {
+  export * from '@sanity/components/src/buttons/DefaultButton'
+  export {default} from '@sanity/components/src/buttons/DefaultButton'
+}
+
 declare module 'part:@sanity/components/fieldsets/default' {
   export default class DefaultFieldset extends React.PureComponent<any> {
     focus: () => void
