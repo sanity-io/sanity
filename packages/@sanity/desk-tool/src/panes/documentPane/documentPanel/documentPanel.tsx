@@ -165,7 +165,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
               })}
           </div>
 
-          <div data-portal ref={portalRef} />
+          <div className={styles.portal} ref={portalRef} />
         </div>
       </PortalProvider>
     </div>
