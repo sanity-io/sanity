@@ -10,13 +10,13 @@ export function ClickOutside({children, onClickOutside}: ClickOutsideProps) {
   const hadMouseDownRef = useRef(false)
 
   useEffect(() => {
-    if (!referenceElement) return undefined
+    if (!referenceElement || !onClickOutside) return undefined
 
     const handleWindowMouseUp = (evt: MouseEvent) => {
       const target = evt.target
 
       if (!referenceElement.contains(target as Node) && !hadMouseDownRef.current) {
-        if (onClickOutside) onClickOutside()
+        onClickOutside()
       }
 
       hadMouseDownRef.current = false

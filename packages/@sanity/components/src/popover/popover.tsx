@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, {cloneElement, useState, useEffect} from 'react'
+import React, {cloneElement, useEffect, useRef, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Modifier} from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
@@ -31,7 +31,9 @@ interface PopoverProps {
   tone?: 'navbar'
 }
 
-export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children'>) {
+export function Popover(
+  props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
+) {
   const {
     boundaryElement,
     className,
@@ -42,7 +44,10 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
     targetElement,
     ...restProps
   } = props
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
+    targetElement || null
+  )
+  const targetElementRef = useRef<HTMLElement | null>(targetElement || null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
   const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
   const popper = usePopper(referenceElement, popperElement, {
@@ -79,15 +84,20 @@ export function Popover(props: PopoverProps & Omit<React.HTMLProps<HTMLDivElemen
     ]
   })
 
-  useEffect(() => {
-    if (targetElement) {
-      setReferenceElement(targetElement)
-    }
-  }, [targetElement])
+  const {forceUpdate} = popper
 
   useEffect(() => {
-    if (popper.forceUpdate) popper.forceUpdate()
-  }, [popper, content])
+    if (targetElement && targetElementRef.current !== targetElement) {
+      setReferenceElement(targetElement)
+    }
+
+    targetElementRef.current = targetElement || null
+  }, [targetElement])
+
+  // Force update when `content` or `referenceElement` changes
+  useEffect(() => {
+    if (forceUpdate) forceUpdate()
+  }, [forceUpdate, content, referenceElement])
 
   if (disabled) {
     return props.children
