@@ -112,6 +112,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         documentId={documentId}
         documentIdRaw={documentIdRaw}
         documentType={documentTypeName}
+        draft={editState.draft}
         initialValue={initialValue}
         isClosable={props.isClosable}
         isCollapsed={props.isCollapsed}
@@ -120,6 +121,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         menuItemGroups={props.menuItemGroups}
         onChange={onChange}
         paneKey={props.paneKey}
+        published={editState.published}
         schemaType={schemaType}
         value={value}
         views={props.views}

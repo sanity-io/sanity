@@ -17,6 +17,7 @@ interface DocumentPanelProps {
   connectionState: string
   documentId: string
   documentType: string
+  draft: Doc | null
   idPrefix: string
   initialFocusPath: any[]
   initialValue: Doc
@@ -34,6 +35,7 @@ interface DocumentPanelProps {
   onSplitPane: () => void
   onTimelineOpen: () => void
   paneTitle?: string
+  published: Doc | null
   schemaType: any
   timelineMode: 'rev' | 'since' | 'closed'
   toggleInspect: (val: boolean) => void
@@ -159,6 +161,12 @@ export function DocumentPanel(props: DocumentPanelProps) {
 
             {activeView.type === 'component' &&
               createElement(activeView.component, {
+                document: {
+                  draft: props.draft,
+                  displayed: displayed || props.value || props.initialValue,
+                  historical: displayed,
+                  published: props.published
+                },
                 documentId: props.documentId,
                 options: activeView.options,
                 schemaType: props.schemaType
