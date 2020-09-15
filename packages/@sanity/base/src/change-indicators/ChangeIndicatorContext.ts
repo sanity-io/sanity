@@ -4,10 +4,13 @@ import {Path} from '@sanity/util/lib/typedefs/path'
 interface ChangeIndicatorContext {
   value?: any
   compareValue?: any
-  hasFocus: boolean
+  focusPath: Path
   path: Path
+  fullPath: Path
 }
 
-const initial: ChangeIndicatorContext = {hasFocus: false, path: []}
+const initial: ChangeIndicatorContext = {path: [], fullPath: [], focusPath: null}
 
-export const ChangeIndicatorContext: React.Context<ChangeIndicatorContext> = React.createContext(initial)
+export const ChangeIndicatorContext: React.Context<ChangeIndicatorContext> = React.createContext(
+  initial
+)

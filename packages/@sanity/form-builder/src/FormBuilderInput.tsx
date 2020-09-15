@@ -8,7 +8,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
-import {ChangeIndicatorContext} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {trimChildPath} from '@sanity/util/lib/pathUtils'
 
 const EMPTY_PROPS = emptyObject<{}>()
@@ -227,7 +227,6 @@ export class FormBuilderInput extends React.Component<Props> {
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? EMPTY_PROPS : {focusPath: childFocusPath}
 
-    const hasFocus = PathUtils.startsWith(path, focusPath)
     const childPresenceInfo =
       readOnly || !presence || presence.length === 0
         ? EMPTY_PRESENCE
@@ -243,13 +242,11 @@ export class FormBuilderInput extends React.Component<Props> {
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-          <ChangeIndicatorContext.Provider
-            value={{
-              value,
-              compareValue: childCompareValue,
-              hasFocus,
-              path: this.getValuePath()
-            }}
+          <ChangeIndicatorProvider
+            path={path}
+            focusPath={focusPath}
+            value={value}
+            compareValue={childCompareValue}
           >
             <InputComponent
               {...rest}
@@ -267,7 +264,7 @@ export class FormBuilderInput extends React.Component<Props> {
               level={level}
               ref={this.setInput}
             />
-          </ChangeIndicatorContext.Provider>
+          </ChangeIndicatorProvider>
         </FormFieldPresenceContext.Provider>
       </div>
     )

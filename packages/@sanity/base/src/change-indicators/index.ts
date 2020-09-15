@@ -1,5 +1,10 @@
 export {ChangeIndicatorContext} from './ChangeIndicatorContext'
 
-export {ChangeIndicator, ChangeIndicatorScope} from './ChangeIndicator'
+export {
+  ChangeIndicator,
+  ChangeIndicatorProvider,
+  ChangeIndicatorScope,
+  CoreChangeIndicator
+} from './ChangeIndicator'
 
 export {Tracker, Reporter} from './elementTracker'
