@@ -350,18 +350,23 @@ export function rebaseValue<T>(left: Value<T>, right: Value<T>): Value<T> {
       let leftObj = model.asObject(left)
       let rightObj = model.asObject(right)
 
-      let numRebased = 0
+      // Number of fields which are identical in left and right.
+      let identicalFieldCount = 0
+      let leftFieldCount = Object.keys(leftObj.fields).length
+      let rightFieldCount = Object.keys(rightObj.fields).length
+
       for (let [key, rightVal] of Object.entries(rightObj.fields)) {
         let leftVal = leftObj.fields[key]
         if (leftVal) {
           rightObj.fields[key] = rebaseValue(leftVal, rightVal)
-          if (rightObj.fields[key] !== leftVal) {
-            numRebased++
+          if (rightObj.fields[key] === leftVal) {
+            identicalFieldCount++
           }
         }
       }
 
-      return numRebased === 0 ? left : right
+      let isIdentical = leftFieldCount === rightFieldCount && leftFieldCount === identicalFieldCount
+      return isIdentical ? left : right
     }
     case 'array': {
       let leftArr = model.asArray(left)
