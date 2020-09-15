@@ -17,7 +17,7 @@ function missingContext<T = any>(): T {
   throw new Error('Pane is missing router context')
 }
 
-export const exclusiveParams = ['view']
+export const exclusiveParams = ['view', 'since']
 
 type PaneSegment = {id: string; payload?: unknown; params?: Record<string, any>}
 type RouterPanesState = Array<PaneSegment[]>
@@ -88,8 +88,8 @@ export const PaneRouterContext = React.createContext<PaneRouterContextShape>({
   hasGroupSiblings: false,
   groupLength: 0,
   routerPanesState: [],
-  ChildLink: ({}) => missingContext(),
-  ParameterizedLink: ({}) => missingContext(),
+  ChildLink: () => missingContext(),
+  ParameterizedLink: () => missingContext(),
   replaceCurrent: () => missingContext(),
   closeCurrent: () => missingContext(),
   duplicateCurrent: () => missingContext(),
