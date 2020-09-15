@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension, react/prop-types */
 
 import React from 'react'
-import PropTypes from 'prop-types'
-import {sumBy} from 'lodash'
+import {omit, sumBy} from 'lodash'
 import {merge, of} from 'rxjs'
 import {mapTo, delay, distinctUntilChanged} from 'rxjs/operators'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
-import {ResizeObserver} from './resize-observer'
 import {DeskToolPane, LoadingPane} from '../panes'
 import windowWidth$ from '../utils/windowWidth'
 import isNarrowScreen from '../utils/isNarrowScreen'
 import {LOADING_PANE} from '../constants'
-import {PaneRouterContext, getPaneRouterContextFactory} from '../contexts/PaneRouterContext'
+import {
+  PaneRouterContext,
+  getPaneRouterContextFactory,
+  exclusiveParams
+} from '../contexts/PaneRouterContext'
+import {ResizeObserver} from './resize-observer'
 
 import styles from './DeskToolPanes.css'
 
@@ -52,37 +55,6 @@ function getWaitMessages(path) {
 
 // eslint-disable-next-line react/require-optimization
 export default class DeskToolPanes extends React.Component {
-  static propTypes = {
-    keys: PropTypes.arrayOf(PropTypes.string).isRequired,
-    groupIndexes: PropTypes.arrayOf(PropTypes.number).isRequired,
-    autoCollapse: PropTypes.bool,
-    panes: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          params: PropTypes.object
-        }),
-        PropTypes.symbol
-      ])
-    ).isRequired,
-    router: PropTypes.shape({
-      navigate: PropTypes.func.isRequired,
-      navigateIntent: PropTypes.func.isRequired,
-      state: PropTypes.shape({
-        panes: PropTypes.arrayOf(
-          PropTypes.arrayOf(
-            PropTypes.shape({
-              id: PropTypes.string.isRequired,
-              params: PropTypes.object
-            })
-          )
-        ),
-        payload: PropTypes.object,
-        params: PropTypes.object
-      })
-    }).isRequired
-  }
-
   static defaultProps = {
     autoCollapse: false
   }
@@ -231,7 +203,7 @@ export default class DeskToolPanes extends React.Component {
           const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
           path.push(pane.id || `[${i}]`)
 
-          const {view: rootView, ...rootParams} = groupRoot.params || {}
+          const rootParams = omit(groupRoot.params || {}, exclusiveParams)
           const params = isDuplicate ? {...rootParams, ...sibling.params} : sibling.params
           const payload = isDuplicate ? sibling.payload || groupRoot.payload : sibling.payload
 
