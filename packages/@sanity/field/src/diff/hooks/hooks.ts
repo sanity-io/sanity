@@ -7,7 +7,7 @@ interface PreviewSnapshot {
   title: string
 }
 
-export function getRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
+export function useRefValue<T = unknown>(refId: string | undefined | null): T | undefined {
   const [value, setValue] = useState<T | undefined>(undefined)
   useEffect(() => {
     if (!refId) {

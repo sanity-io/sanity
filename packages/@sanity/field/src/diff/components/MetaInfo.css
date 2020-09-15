@@ -9,32 +9,40 @@
   display: grid;
   grid-template-areas: 'icon meta';
   grid-template-columns: auto 1fr;
+}
 
-  @nest & .info {
-    overflow: hidden;
-    line-height: 1.3;
-    padding-left: var(--small-padding);
-  }
+.info {
+  overflow: hidden;
+  line-height: 1.3;
+  padding-left: var(--small-padding);
+}
 
-  @nest & .title {
-    font-size: inherit;
-    font-weight: 600;
-    margin: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
+.removed {
+  text-decoration: line-through;
+}
 
-  @nest & .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(var(--font-size-large) + 8px);
-  }
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--font-size-large) + 8px);
+}
 
-  @nest &[data-action='removed'] {
-    @nest & .title {
-      text-decoration: line-through;
-    }
-  }
+.iconRemoved {
+  composes: icon;
+  composes: removed;
+}
+
+.title {
+  font-size: inherit;
+  font-weight: 600;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.titleRemoved {
+  composes: title;
+  composes: removed;
 }

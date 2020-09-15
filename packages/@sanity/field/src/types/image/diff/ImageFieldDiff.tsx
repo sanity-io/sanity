@@ -6,15 +6,14 @@ import {
   DiffAnnotationCard,
   ChangeList
 } from '../../../diff'
+import {useRefValue} from '../../../diff/hooks'
+import {ChangeArrow} from '../../../diff/components'
 import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
-import {Image} from './types'
-import {getRefValue} from '../../../diff/hooks'
-import {ChangeArrow} from '../../../diff/components'
+import {Image, SanityImageAsset} from './types'
 
 /* TODO:
-  - Correct annotation for hotspot/crop changes
-  - Visualising hotspot/crop changes
+  - "No change" state
 */
 
 const IMAGE_META_FIELDS = ['crop', 'hotspot']
@@ -22,10 +21,10 @@ const BASE_IMAGE_FIELDS = ['asset', ...IMAGE_META_FIELDS]
 
 export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff
-  const fromAsset = fromValue?.asset
-  const toAsset = toValue?.asset
-  const prev = getRefValue(fromAsset?._ref)
-  const next = getRefValue(toAsset?._ref)
+  const fromRef = fromValue?.asset?._ref
+  const toRef = toValue?.asset?._ref
+  const prev = useRefValue<SanityImageAsset>(fromRef)
+  const next = useRefValue<SanityImageAsset>(toRef)
 
   // Get all the changed fields within this image field
   const changedFields = Object.keys(fields).filter(
@@ -36,55 +35,74 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     .filter(field => !BASE_IMAGE_FIELDS.includes(field.name) && changedFields.includes(field.name))
     .map(field => field.name)
 
+  let assetAction: 'changed' | 'added' | 'removed' = 'changed'
+  if (!fromRef && toRef) {
+    assetAction = 'added'
+  } else if (!toRef && fromRef) {
+    assetAction = 'removed'
+  }
+
   const didAssetChange = changedFields.includes('asset')
   const didCropChange = changedFields.includes('crop')
   const didHotspotChange = changedFields.includes('hotspot')
   const didMetaChange = didCropChange || didHotspotChange
-  const showImageDiff = (didAssetChange || didMetaChange) && toAsset
-
+  const showImageDiff = didAssetChange || didMetaChange
+  const showMetaChange = didMetaChange && !didAssetChange
   const annotationPath = getAnnotationPath({didAssetChange, didCropChange, didHotspotChange})
+
+  // Wrap asset with annotation card only if the asset changed
+  const wrapAsset = content =>
+    didAssetChange ? (
+      <DiffAnnotationCard className={styles.annotation} diff={diff} path={annotationPath}>
+        {content}
+      </DiffAnnotationCard>
+    ) : (
+      content
+    )
+
+  const imageDiff = (
+    <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
+      {prev &&
+        fromValue &&
+        wrapAsset(
+          <ImagePreview
+            is="from"
+            asset={prev}
+            diff={diff}
+            action={assetAction}
+            hotspot={showMetaChange && didHotspotChange ? fromValue.hotspot : undefined}
+            crop={showMetaChange && didCropChange ? fromValue.crop : undefined}
+          />
+        )}
+      {prev && next && <ChangeArrow />}
+      {next &&
+        toValue &&
+        wrapAsset(
+          <ImagePreview
+            is="to"
+            asset={next}
+            diff={diff}
+            hotspot={showMetaChange && didHotspotChange ? toValue.hotspot : undefined}
+            crop={showMetaChange && didCropChange ? toValue.crop : undefined}
+          />
+        )}
+    </div>
+  )
 
   return (
     <div className={styles.root}>
-      {showImageDiff ? (
-        <DiffAnnotationTooltip diff={diff} path={annotationPath}>
-          <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
-            {prev && (
-              <DiffAnnotationCard
-                className={styles.annotation}
-                diff={diff}
-                data-action={didAssetChange ? 'removed' : 'changed'}
-                path={annotationPath}
-              >
-                <ImagePreview
-                  value={prev}
-                  action={didAssetChange ? 'removed' : 'changed'}
-                  hotspot={didMetaChange ? fromValue!.hotspot : undefined}
-                  crop={didMetaChange ? fromValue!.crop : undefined}
-                />
-              </DiffAnnotationCard>
-            )}
-            {prev && next && <ChangeArrow />}
-            {next && (
-              <DiffAnnotationCard
-                className={styles.annotation}
-                diff={diff}
-                data-action={didAssetChange ? 'added' : 'changed'}
-                path={annotationPath}
-              >
-                <ImagePreview
-                  value={next}
-                  action={didAssetChange ? 'added' : 'changed'}
-                  hotspot={didMetaChange ? toValue!.hotspot : undefined}
-                  crop={didMetaChange ? toValue!.crop : undefined}
-                />
-              </DiffAnnotationCard>
-            )}
-          </div>
-        </DiffAnnotationTooltip>
-      ) : (
-        <div>Image not set</div>
-      )}
+      {showImageDiff &&
+        (didAssetChange ? (
+          <DiffAnnotationTooltip
+            diff={diff}
+            path={annotationPath}
+            description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)} by`}
+          >
+            {imageDiff}
+          </DiffAnnotationTooltip>
+        ) : (
+          imageDiff
+        ))}
 
       {nestedFields.length > 0 && (
         <div className={styles.nestedFields}>
