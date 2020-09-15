@@ -164,7 +164,7 @@ const StatelessSearchableSelect = React.forwardRef(
     }
 
     return (
-      <div className={styles.root}>
+      <>
         <div
           ref={setReferenceElement}
           className={disabled ? styles.selectContainerDisabled : styles.selectContainer}
@@ -257,7 +257,7 @@ const StatelessSearchableSelect = React.forwardRef(
             </Stacked>
           </Portal>
         )}
-      </div>
+      </>
     )
   }
 )
