@@ -11,7 +11,13 @@ import {
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
-import {FormFieldPresence, RegionWithIntersectionDetails} from '../types'
+import {
+  FormFieldPresence,
+  Rect,
+  RegionsWithComputedRects,
+  RegionWithIntersectionDetails,
+  ReportedRegion
+} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
 import {TrackerComponentProps} from '../../components/react-track-elements'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
@@ -102,9 +108,36 @@ type Props = TrackerComponentProps<{margins: Margins}, {presence: FormFieldPrese
 
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
-export function StickyOverlay(props: Props) {
-  const {regions, children, trackerRef, margins = DEFAULT_MARGINS} = props
+const getOffsetsTo = (source, target) => {
+  let el = source
+  let top = -el.scrollTop
+  let left = 0
+  while (el && el !== target) {
+    top += el.offsetTop - el.scrollTop
+    left += el.offsetLeft
+    el = el.offsetParent
+  }
+  return {top, left}
+}
 
+function getRelativeRect(element, parent): Rect {
+  return {
+    ...getOffsetsTo(element, parent),
+    width: element.offsetWidth,
+    height: element.offsetHeight
+  }
+}
+
+function regionsWithComputedRects<T>(
+  regions: ReportedRegion<T>[],
+  parent
+): RegionsWithComputedRects<T>[] {
+  return regions.map(region => ({...region, rect: getRelativeRect(region.element, parent)}))
+}
+
+export function StickyOverlay(props: Props) {
+  const {children, trackerRef, margins = DEFAULT_MARGINS} = props
+  const regions = regionsWithComputedRects(props.regions, trackerRef.current)
   const renderCallback = React.useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
       const grouped = group(

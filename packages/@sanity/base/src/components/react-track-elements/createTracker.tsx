@@ -1,8 +1,7 @@
 import * as React from 'react'
-import {merge, ReplaySubject, Subject} from 'rxjs'
+import {concat, merge, of, ReplaySubject, Subject} from 'rxjs'
 import {
   debounceTime,
-  distinctUntilChanged,
   filter,
   map,
   mergeMap,
@@ -10,42 +9,22 @@ import {
   refCount,
   scan,
   share,
+  takeUntil,
   tap
 } from 'rxjs/operators'
 import {createResizeObserver, ObservableResizeObserver} from './resizeObserver'
 import {
-  ReportedRegion,
-  Rect,
   OverlayReporterContext,
   RegionReporterEvent,
-  RegionReporterUpdateEvent,
   RegionReporterMountEvent,
-  RegionReporterUnmountEvent
+  RegionReporterUnmountEvent,
+  RegionReporterUpdateEvent,
+  ReportedRegion
 } from './types'
 import {createReporter} from './createReporter'
 
 function isId<T extends {id: string}>(id: string) {
   return (event: T) => event.id === id
-}
-
-const getOffsetsTo = (source, target) => {
-  let el = source
-  let top = -el.scrollTop
-  let left = 0
-  while (el && el !== target) {
-    top += el.offsetTop - el.scrollTop
-    left += el.offsetLeft
-    el = el.offsetParent
-  }
-  return {top, left}
-}
-
-function getRelativeRect(element, parent): Rect {
-  return {
-    ...getOffsetsTo(element, parent),
-    width: element.offsetWidth,
-    height: element.offsetHeight
-  }
 }
 
 export type TrackerComponentProps<ComponentProps, RegionData> = ComponentProps & {
@@ -60,6 +39,7 @@ export type TrackerProps<ComponentProps, RegionData = {}> = {
   style?: React.CSSProperties
   componentProps: ComponentProps
 }
+
 export function createTracker() {
   const Context: React.Context<OverlayReporterContext> = React.createContext({
     dispatch: (event: RegionReporterEvent): void => {
@@ -73,7 +53,7 @@ export function createTracker() {
     props: TrackerProps<ComponentProps, RegionData>
   ) {
     const trackerRef = React.useRef<HTMLElement>()
-    const [items, setItems] = React.useState([])
+    const [regions, setRegions] = React.useState<ReportedRegion<RegionData>[]>([])
 
     const regionReporterElementEvents$: Subject<RegionReporterEvent> = React.useMemo(
       () => new ReplaySubject<RegionReporterEvent>(),
@@ -97,72 +77,68 @@ export function createTracker() {
         filter((ev): ev is RegionReporterUnmountEvent => ev.type === 'unmount')
       )
 
-      const positions$ = mounts$.pipe(
+      const regions$ = mounts$.pipe(
         mergeMap((mountEvent: RegionReporterMountEvent, i) => {
           const elementId = mountEvent.id
           const unmounted$ = unmounts$.pipe(filter(isId(elementId)), share())
           const elementUpdates$ = updates$.pipe(filter(isId(elementId)), share())
 
-          return merge(
-            trackerBounds$.pipe(
-              map(() => ({
-                type: 'update',
-                id: elementId,
-                rect: getRelativeRect(mountEvent.element, trackerRef.current)
-              }))
-            ),
-            elementUpdates$.pipe(
-              map(update => ({
-                type: 'update',
-                id: elementId,
-                data: update.data,
-                component: update.component,
-                rect: getRelativeRect(mountEvent.element, trackerRef.current)
-              }))
-            ),
-            unmounted$.pipe(
-              map(() => ({type: 'remove', id: elementId, children: null, rect: null}))
-            )
+          return concat(
+            of({
+              type: 'add' as const,
+              id: elementId,
+              element: mountEvent.element,
+              data: mountEvent.data
+            }),
+            merge(
+              trackerBounds$.pipe(
+                map(() => ({
+                  type: 'update' as const,
+                  id: elementId
+                }))
+              ),
+              elementUpdates$.pipe(
+                map(update => ({
+                  type: 'update' as const,
+                  id: elementId,
+                  data: update.data,
+                  component: update.component
+                }))
+              )
+            ).pipe(takeUntil(unmounted$)),
+            of({type: 'remove' as const, id: elementId})
           )
         }),
-        scan((items, event: any) => {
-          if (event.type === 'update') {
-            const exists = items.some(item => item.id === event.id)
-            if (exists) {
-              return items.map(item =>
-                item.id === event.id
-                  ? {
-                      id: event.id,
-                      data: event.data || item.data,
-                      component: event.component || item.component,
-                      rect: event.rect || item.rect
-                    }
-                  : item
-              )
+        scan((items, event) => {
+          if (event.type === 'add') {
+            if (items.has(event.id)) {
+              throw new Error(`Integrity check failed: Region with id "${event.id}" already exists`)
             }
-            return items.concat({
-              id: event.id,
-              rect: event.rect,
-              data: event.data,
-              component: event.component
-            })
+            items.set(event.id, {id: event.id, element: event.element, data: event.data})
           }
-
+          if (event.type === 'update') {
+            const existing = items.get(event.id)
+            if (!existing) {
+              throw new Error(`Integrity check failed: Region with id "${event.id}" is not known`)
+            }
+            items.set(event.id, {...existing, ...event})
+          }
           if (event.type === 'remove') {
-            // todo: it would be better to keep track of elements a little while after their elements actually
-            // unmounts. this will make it possible to support fade out transitions and also animate components
-            // where the react reconciliation decides the most effective thing to do is to unmount and remount the
-            // component
-            // return items
-            return items.filter(item => item.id !== event.id)
+            if (!items.has(event.id)) {
+              throw new Error(`Integrity check failed: Region with id "${event.id}" is not known`)
+            }
+            items.delete(event.id)
           }
           return items
-        }, []),
-        map(items => items.filter(item => item.rect)),
-        distinctUntilChanged(),
+        }, new Map<string, ReportedRegion<RegionData>>()),
         debounceTime(100)
       )
-      const sub = positions$.pipe(tap(setItems)).subscribe()
+      const sub = regions$
+        .pipe(
+          map(items => Array.from(items.values())),
+          tap(setRegions)
+        )
+        .subscribe()
       return () => sub.unsubscribe()
     }, [])
 
@@ -173,7 +149,7 @@ export function createTracker() {
     const {component: Component, componentProps} = props
     return (
       <Context.Provider value={{dispatch}}>
-        <Component {...componentProps} regions={items} trackerRef={trackerRef}>
+        <Component {...componentProps} regions={regions} trackerRef={trackerRef}>
           {props.children}
         </Component>
       </Context.Provider>

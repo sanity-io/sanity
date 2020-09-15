@@ -12,7 +12,7 @@ export type DelegateComponentType<Data> = React.ComponentType<Data> | keyof Reac
 export interface ReportedRegion<RegionData> {
   id: string
   children?: React.ReactNode
-  rect: Rect
+  element: HTMLElement
   data: RegionData
 }
 

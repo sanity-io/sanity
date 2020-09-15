@@ -1,6 +1,5 @@
-import {FieldContext} from './FieldContext'
+export {ChangeIndicatorContext} from './ChangeIndicatorContext'
 
-export {ChangeIndicator} from './ChangeIndicator'
-export {FieldContext as Context}
+export {ChangeIndicator, ChangeIndicatorScope} from './ChangeIndicator'
 
 export {Tracker, Reporter} from './elementTracker'

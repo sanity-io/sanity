@@ -3,17 +3,30 @@ import {DelegateComponentType, OverlayReporterContext} from './types'
 
 export const createReporter = (Context: React.Context<OverlayReporterContext>) =>
   React.memo(function RegionReporter<Data>(props: {
+    // todo: fix wonky typings
     id: string
     data: Data
     children?: React.ReactNode
     component?: DelegateComponentType<Data>
     style?: React.CSSProperties
+    className?: string
   }) {
     const {id, component = 'div', data, ...rest} = props
     const ref = React.useRef()
     const context = React.useContext(Context)
 
     React.useEffect(() => {
+      console.log('dispatch update', id)
+      context.dispatch({
+        type: 'update',
+        id,
+        data,
+        component
+      })
+    }, [props])
+
+    React.useEffect(() => {
+      console.log('dispatch mount', id)
       context.dispatch({
         type: 'mount',
         id,
@@ -22,18 +35,10 @@ export const createReporter = (Context: React.Context<OverlayReporterContext>) =
         component
       })
       return () => {
+        console.log('dispatch unmount', id)
         context.dispatch({type: 'unmount', id})
       }
     }, [])
-
-    React.useEffect(() => {
-      context.dispatch({
-        type: 'update',
-        id,
-        data,
-        component
-      })
-    }, [props])
 
     return React.createElement(component, {
       ref,

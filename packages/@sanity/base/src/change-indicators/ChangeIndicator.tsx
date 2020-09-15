@@ -1,9 +1,11 @@
 import React from 'react'
-import {FieldContext} from './FieldContext'
+import {ChangeIndicatorContext} from './ChangeIndicatorContext'
 import {Reporter} from './elementTracker'
 import isEqual from 'react-fast-compare'
 import scrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
 import * as PathUtils from '@sanity/util/paths'
+import {Path} from '@sanity/util/lib/typedefs/path'
+import {trimChildPath} from '@sanity/util/lib/pathUtils'
 
 const isPrimitive = value =>
   typeof value === 'string' ||
@@ -32,8 +34,25 @@ interface Props {
   children?: React.ReactNode
 }
 
+export function ChangeIndicatorScope(props: {path: Path; children: React.ReactNode}) {
+  const context = React.useContext(ChangeIndicatorContext)
+
+  return (
+    <ChangeIndicatorContext.Provider
+      value={{
+        value: PathUtils.get(context.value, props.path),
+        compareValue: PathUtils.get(context.value, props.path),
+        hasFocus: context.hasFocus,
+        path: trimChildPath(context.path, props.path)
+      }}
+    >
+      {props.children}
+    </ChangeIndicatorContext.Provider>
+  )
+}
+
 export function ChangeIndicator(props: Props) {
-  const context = React.useContext(FieldContext)
+  const context = React.useContext(ChangeIndicatorContext)
 
   const ref = React.useRef<HTMLDivElement>(null)
   const scrollTo = React.useCallback(() => {

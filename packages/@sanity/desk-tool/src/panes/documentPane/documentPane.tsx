@@ -20,7 +20,6 @@ import styles from './documentPane.css'
 
 import {Tracker, Reporter} from '@sanity/base/lib/change-indicators'
 import {ConnectorsOverlay} from './ConnectorsOverlay'
-import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'

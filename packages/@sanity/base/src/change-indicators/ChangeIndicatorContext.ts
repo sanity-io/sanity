@@ -10,4 +10,4 @@ interface ChangeIndicatorContext {
 
 const initial: ChangeIndicatorContext = {hasFocus: false, path: []}
 
-export const FieldContext: React.Context<ChangeIndicatorContext> = React.createContext(initial)
+export const ChangeIndicatorContext: React.Context<ChangeIndicatorContext> = React.createContext(initial)

@@ -8,7 +8,8 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
-import {Context as ChangeConnectorContext} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorContext} from '@sanity/base/lib/change-indicators'
+import {trimChildPath} from '@sanity/util/lib/pathUtils'
 
 const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
@@ -45,10 +46,6 @@ const ENABLE_CONTEXT = () => {}
 
 function getDisplayName(component) {
   return component.displayName || component.name || 'Unknown'
-}
-
-function trimChildPath(path, childPath) {
-  return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : EMPTY_PATH
 }
 
 export class FormBuilderInput extends React.Component<Props> {
@@ -246,7 +243,7 @@ export class FormBuilderInput extends React.Component<Props> {
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-          <ChangeConnectorContext.Provider
+          <ChangeIndicatorContext.Provider
             value={{
               value,
               compareValue: childCompareValue,
@@ -270,7 +267,7 @@ export class FormBuilderInput extends React.Component<Props> {
               level={level}
               ref={this.setInput}
             />
-          </ChangeConnectorContext.Provider>
+          </ChangeIndicatorContext.Provider>
         </FormFieldPresenceContext.Provider>
       </div>
     )
