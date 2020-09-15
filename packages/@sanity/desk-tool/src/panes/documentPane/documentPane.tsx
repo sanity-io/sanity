@@ -25,6 +25,7 @@ interface DocumentPaneProps {
   documentId: string
   documentIdRaw: string
   documentType: string
+  draft: Doc | null
   initialValue: Doc
   isClosable: boolean
   isCollapsed: boolean
@@ -35,6 +36,7 @@ interface DocumentPaneProps {
   onExpand?: () => void
   onCollapse?: () => void
   paneKey: string
+  published: Doc | null
   schemaType: any
   title?: string
   views: DocumentViewType[]
@@ -48,6 +50,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     documentId,
     documentIdRaw,
     documentType,
+    draft,
     initialValue,
     isSelected,
     isCollapsed,
@@ -58,6 +61,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     onCollapse,
     onExpand,
     paneKey,
+    published,
     title: paneTitle,
     schemaType,
     value,
@@ -219,6 +223,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               connectionState={connectionState}
               documentId={documentId}
               documentType={documentType}
+              draft={draft}
               idPrefix={paneKey}
               initialFocusPath={initialFocusPath}
               initialValue={initialValue}
@@ -236,6 +241,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               onSplitPane={handleSplitPane}
               onTimelineOpen={handleTimelineRev}
               paneTitle={paneTitle}
+              published={published}
               schemaType={schemaType}
               timelineMode={timelineMode}
               toggleInspect={toggleInspect}
