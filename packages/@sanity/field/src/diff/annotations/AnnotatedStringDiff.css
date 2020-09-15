@@ -2,17 +2,8 @@
 
 .segment {
   position: relative;
-
-  @nest &::after {
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    content: '';
-    width: 100%;
-    height: 2px;
-    transition: all 0.2s ease-in-out;
-    opacity: 0;
-  }
+  line-height: 1.5; /* To make sure the box shadow doesn't get cut off on multiline strings */
+  box-shadow: 0 2px 0 var(--component-bg);
 
   @nest &:first-child {
     border-top-left-radius: 1px;
@@ -26,16 +17,7 @@
 
   @nest &:hover {
     border-bottom: 1px solid var(--component-bg);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-
-    @nest &::after {
-      border-bottom-left-radius: 1px;
-      border-bottom-right-radius: 1px;
-      background: currentColor;
-      transform: translate3d(0, 1px, 0);
-      opacity: 1;
-    }
+    box-shadow: 0 2px 0 currentColor;
   }
 }
 
