@@ -7,7 +7,7 @@ interface StackedProps {
     remove?: (val: unknown) => void
     peek?: () => void
     push?: (val: unknown) => void
-    subscribe?: (val: unknown) => void
+    subscribe?: (val: unknown) => () => void
   }
 }
 
@@ -43,6 +43,7 @@ export function createStack<T = unknown>() {
 
 const DEFAULT_STACK = createStack()
 
+// @todo: refactor to functional component
 export default class Stacked extends React.Component<StackedProps> {
   static defaultProps = {
     stack: DEFAULT_STACK
@@ -52,7 +53,7 @@ export default class Stacked extends React.Component<StackedProps> {
     top: null
   }
 
-  _unsubscribe: any
+  _unsubscribe?: () => void
 
   constructor(props: StackedProps) {
     super(props)
@@ -61,7 +62,7 @@ export default class Stacked extends React.Component<StackedProps> {
 
     if (stack && stack.subscribe) {
       this._unsubscribe = stack.subscribe((top: unknown) => {
-        this.setState(_ => ({top}))
+        this.setState({top})
       })
     }
   }
@@ -75,7 +76,7 @@ export default class Stacked extends React.Component<StackedProps> {
   componentWillUnmount() {
     const {stack} = this.props
 
-    this._unsubscribe()
+    if (this._unsubscribe) this._unsubscribe()
 
     if (stack && stack.remove) {
       stack.remove(this)

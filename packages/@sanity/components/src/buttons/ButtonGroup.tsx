@@ -3,6 +3,7 @@ import React from 'react'
 
 import styles from './ButtonGroup.css'
 
+// @todo: refactor to functional component
 export default class ButtonGroup extends React.PureComponent<React.HTMLProps<HTMLDivElement>> {
   render() {
     const {children, className, ...restProps} = this.props

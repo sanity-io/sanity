@@ -15,6 +15,7 @@ interface ActivateOnFocusProps {
   inputId?: string
 }
 
+// @todo: refactor to functional component
 class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
   static defaultProps = {
     className: undefined,
@@ -26,7 +27,7 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
     hasFocus: false
   }
 
-  handleClick = (_: React.MouseEvent<HTMLDivElement>) => {
+  handleClick = () => {
     if (!this.state.hasFocus) {
       this.setState({
         hasFocus: true

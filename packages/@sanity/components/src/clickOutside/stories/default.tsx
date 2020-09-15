@@ -12,7 +12,7 @@ export function DefaultStory() {
           {ref => (
             <div
               onClick={action('click inside')}
-              ref={ref as any}
+              ref={ref}
               style={{background: '#fff', border: '1px solid #999', padding: '2em'}}
             >
               click inside/outside

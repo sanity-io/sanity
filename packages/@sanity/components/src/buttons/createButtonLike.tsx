@@ -19,6 +19,7 @@ export default function createButtonLike(
 ) {
   const Component = as as ButtonComponent
 
+  // @todo: refactor to functional component
   return class ButtonLike extends React.Component<ButtonProps, ButtonState> {
     static displayName =
       displayName ||

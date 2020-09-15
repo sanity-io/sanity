@@ -15,6 +15,7 @@ interface ConfirmDialogProps {
   title?: string
 }
 
+// @todo: refactor to functional component
 export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProps> {
   handleAction = (action: DialogAction) => {
     if (action.key === 'confirm') {

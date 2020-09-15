@@ -21,6 +21,7 @@ function removeAt(array: string[], index: number) {
   return copy
 }
 
+// @todo: refactor to functional component
 export default class TagsTextField extends React.Component<
   TagsTextFieldProps & Omit<React.HTMLProps<HTMLInputElement>, 'onBlur' | 'onChange' | 'value'>,
   State
@@ -94,6 +95,8 @@ export default class TagsTextField extends React.Component<
 
   render() {
     const {inputValue} = this.state
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {onChange, value = [], readOnly, markers, inputId, ...rest} = this.props
 
     return (

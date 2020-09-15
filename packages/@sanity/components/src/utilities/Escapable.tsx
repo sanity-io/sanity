@@ -36,6 +36,7 @@ function createListener<E extends Event>(eventName: 'keydown') {
 
 const onKeypress = createListener<KeyboardEvent>('keydown')
 
+// @todo: refactor to functional component
 export default class Escapable extends React.Component<EscapableProps> {
   removeListener?: () => void
 

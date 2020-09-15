@@ -13,12 +13,15 @@ type Props = {
   documentType?: {
     fields: {
       name: string
-      type: any
+      type: {
+        title: string
+      }
     }[]
   }
   markers: Marker[]
 }
 
+// @todo: refactor to functional component
 export default class ValidationList extends React.PureComponent<Props> {
   static defaultProps = {
     markers: [],
@@ -27,7 +30,8 @@ export default class ValidationList extends React.PureComponent<Props> {
     showLink: false,
     onFocus: () => undefined
   }
-  scrollTimeout: any
+
+  scrollTimeout?: NodeJS.Timer
 
   componentWillUnmount() {
     if (this.scrollTimeout) {
@@ -35,16 +39,18 @@ export default class ValidationList extends React.PureComponent<Props> {
     }
   }
 
-  handleClick = (_: React.MouseEvent<HTMLAnchorElement>, path: Path = []) => {
+  handleClick = (path: Path = []) => {
     const {onFocus, onClose} = this.props
     const pathString = path[0]
     const element = document.querySelector(`[data-focus-path="${pathString}"]`)
 
     if (element) {
       element.scrollIntoView({behavior: 'smooth', inline: 'center'})
+
       if (this.scrollTimeout) {
         clearTimeout(this.scrollTimeout)
       }
+
       this.scrollTimeout = setTimeout(() => {
         if (onFocus) onFocus(path)
         if (onClose) onClose()
@@ -77,6 +83,7 @@ export default class ValidationList extends React.PureComponent<Props> {
       <ul className={styles.root} data-kind={kind}>
         {errors.length > 0 &&
           errors.map((error, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <li className={styles.item} key={i}>
               <ValidationListItem
                 kind={kind}
@@ -91,6 +98,7 @@ export default class ValidationList extends React.PureComponent<Props> {
 
         {warnings.length > 0 &&
           warnings.map((warning, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <li className={styles.item} key={i}>
               <ValidationListItem
                 kind={kind}

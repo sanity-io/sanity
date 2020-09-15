@@ -8,6 +8,7 @@ interface ButtonGridProps {
   align?: 'start' | 'end'
 }
 
+// @todo: refactor to functional component
 export default class ButtonGrid extends React.PureComponent<
   ButtonGridProps & React.HTMLProps<HTMLDivElement>
 > {

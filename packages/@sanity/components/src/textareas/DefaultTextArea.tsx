@@ -10,6 +10,7 @@ interface DefaultTextAreaProps {
   inputId?: string
 }
 
+// @todo: refactor to functional component
 export default class DefaultTextArea extends React.Component<
   DefaultTextAreaProps & Omit<React.HTMLProps<HTMLTextAreaElement>, 'id'>
 > {
@@ -56,8 +57,10 @@ export default class DefaultTextArea extends React.Component<
     const {
       isClearable,
       onClear,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       customValidity = '',
       inputId,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       hasFocus,
       rows = 10,
       ...rest

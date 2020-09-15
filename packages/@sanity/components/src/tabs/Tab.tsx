@@ -17,6 +17,7 @@ interface State {
   isDOMFocused: boolean
 }
 
+// @todo: refactor to functional component
 export default class Tab extends React.PureComponent<TabProps, State> {
   element: HTMLButtonElement | null = null
   focusTimeout?: NodeJS.Timer

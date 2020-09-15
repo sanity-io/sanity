@@ -12,6 +12,7 @@ interface State {
   error: Error | null
 }
 
+// @todo: refactor to functional component
 export default class ImageLoader extends React.PureComponent<ImageLoaderProps, State> {
   state = {
     loadedImage: null,

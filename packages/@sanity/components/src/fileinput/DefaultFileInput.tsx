@@ -11,6 +11,7 @@ interface DefaultFileInputProps {
   style?: React.CSSProperties
 }
 
+// @todo: refactor to functional component
 export default class DefaultFileInput extends React.PureComponent<DefaultFileInputProps> {
   _inputId = uniqueId('FileSelect')
   componentDidMount() {

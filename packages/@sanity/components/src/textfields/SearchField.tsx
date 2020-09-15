@@ -12,6 +12,7 @@ interface SearchFieldFieldProps {
   value?: string
 }
 
+// @todo: refactor to functional component
 export default class SearchFieldField extends React.Component<SearchFieldFieldProps> {
   _inputId = uniqueId('searchfield')
 

@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import styles from 'part:@sanity/components/dialogs/content-style'
-import React from 'react'
+import React, {useEffect} from 'react'
 
 interface DialogContentProps {
   size?: 'small' | 'medium' | 'large' | 'auto'
@@ -8,15 +8,15 @@ interface DialogContentProps {
   children?: React.ReactNode
 }
 
-export default class DialogContent extends React.PureComponent<DialogContentProps> {
-  componentDidMount() {
+function DialogContent(props: DialogContentProps) {
+  const {size = 'auto', children, padding = 'medium'} = props
+
+  useEffect(() => {
     // eslint-disable-next-line no-console
     console.warn('DialogContent is deprecated. Use `<DefaultDialog padding size />` instead.')
-  }
+  }, [])
 
-  render() {
-    const {size = 'auto', children, padding = 'medium'} = this.props
-
-    return <div className={classNames(styles[size], styles[`padding_${padding}`])}>{children}</div>
-  }
+  return <div className={classNames(styles[size], styles[`padding_${padding}`])}>{children}</div>
 }
+
+export default DialogContent

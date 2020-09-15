@@ -7,7 +7,7 @@ import styles from './ValidationListItem.css'
 
 interface ValidationListItemProps {
   kind: string
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>, path?: Path) => void
+  onClick?: (path?: Path) => void
   showLink?: boolean
   path: string
   hasFocus?: boolean
@@ -15,6 +15,7 @@ interface ValidationListItemProps {
   marker: Marker
 }
 
+// @todo: refactor to functional component
 export default class ValidationListItem extends React.PureComponent<ValidationListItemProps> {
   static defaultProps = {
     kind: '',
@@ -34,7 +35,11 @@ export default class ValidationListItem extends React.PureComponent<ValidationLi
 
   handleKeyPress = (event: React.KeyboardEvent<HTMLAnchorElement>) => {
     if (event.key === 'Enter') {
-      this.handleClick(event as any)
+      // this.handleClick(event)
+      const {marker, onClick} = this.props
+      if (onClick) {
+        onClick(marker.path)
+      }
     }
   }
 
@@ -51,10 +56,10 @@ export default class ValidationListItem extends React.PureComponent<ValidationLi
     }
   }
 
-  handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  handleClick = () => {
     const {marker, onClick} = this.props
     if (onClick) {
-      onClick(event, marker.path)
+      onClick(marker.path)
     }
   }
 

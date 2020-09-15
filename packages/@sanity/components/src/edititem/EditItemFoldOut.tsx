@@ -14,6 +14,7 @@ interface EditItemFoldOutProps {
   onClose?: () => void
 }
 
+// @todo: refactor to functional component
 export default class EditItemFoldOut extends React.PureComponent<EditItemFoldOutProps> {
   render() {
     const {title = '', onClose, children} = this.props

@@ -1,7 +1,6 @@
 import Chance from 'chance'
 import {range} from 'lodash'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import {action} from 'part:@sanity/storybook/addons/actions'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React from 'react'
 

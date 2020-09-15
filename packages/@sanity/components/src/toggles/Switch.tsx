@@ -14,7 +14,7 @@ interface SwitchProps {
 export default React.forwardRef(function Switch(
   {
     disabled,
-    markers,
+    // markers,
     checked,
     label,
     description,

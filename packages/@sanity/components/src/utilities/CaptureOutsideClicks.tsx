@@ -5,6 +5,7 @@ interface CaptureOutsideClicksProps extends React.HTMLProps<HTMLDivElement> {
   wrapperElement?: string
 }
 
+// @todo: refactor to functional component
 export default class CaptureOutsideClicks extends React.Component<CaptureOutsideClicksProps> {
   hadMouseDown = false
 
@@ -45,6 +46,7 @@ export default class CaptureOutsideClicks extends React.Component<CaptureOutside
   }
 
   render() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {wrapperElement = 'div', onClickOutside: _, ...restProps} = this.props
 
     return React.createElement(wrapperElement, {

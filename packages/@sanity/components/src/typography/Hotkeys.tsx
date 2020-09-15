@@ -6,6 +6,7 @@ interface HotkeysProps {
   keys?: string[]
 }
 
+// @todo: refactor to functional component
 export default class Hotkeys extends React.PureComponent<HotkeysProps> {
   static defaultProps = {
     size: undefined
@@ -21,6 +22,7 @@ export default class Hotkeys extends React.PureComponent<HotkeysProps> {
     return (
       <span className={styles.root} data-size={size}>
         {keys.map((key, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <span className={styles.key} key={i}>
             {key}
           </span>

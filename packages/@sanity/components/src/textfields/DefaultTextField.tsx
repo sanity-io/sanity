@@ -21,10 +21,11 @@ interface DefaultTextFieldProps {
   isClearable?: boolean
   className?: string
   description?: string
-  hasFocus?: boolean
-  inputId?: string
+  // hasFocus?: boolean
+  // inputId?: string
 }
 
+// @todo: refactor to functional component
 export default class DefaultTextField extends React.Component<DefaultTextFieldProps> {
   _inputId?: string
 
@@ -47,13 +48,13 @@ export default class DefaultTextField extends React.Component<DefaultTextFieldPr
       className,
       level = 1,
       description,
-      hasFocus,
+      // hasFocus,
       onChange,
       onKeyPress,
       onFocus,
       onBlur,
-      value = '',
-      inputId
+      value = ''
+      // inputId
     } = this.props
 
     return (

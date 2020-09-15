@@ -16,6 +16,7 @@ interface ValidationStatusProps {
   markers: Marker[]
 }
 
+// @todo: refactor to functional component
 export default class ValidationStatus extends React.PureComponent<ValidationStatusProps> {
   static defaultProps = {
     markers: []
@@ -66,7 +67,7 @@ export default class ValidationStatus extends React.PureComponent<ValidationStat
     )
 
     return (
-      <Tooltip className={styles.root} disabled={hideTooltip} content={content as any}>
+      <Tooltip className={styles.root} disabled={hideTooltip} content={content}>
         <div className={styles.inner}>
           {validation && validation.length > 0 && (
             <div className={iconClassName}>

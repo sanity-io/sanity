@@ -7,17 +7,19 @@ interface StackedExampleProps {
   children: React.ReactNode
 }
 
-export default class StackedEscapable extends React.Component<StackedExampleProps> {
-  render() {
-    const {onEscape} = this.props
-    return (
-      <Stacked>
-        {isActive => (
-          <Escapable onEscape={event => (isActive || event.shiftKey) && onEscape(event)}>
-            {this.props.children}
-          </Escapable>
-        )}
-      </Stacked>
-    )
-  }
+function StackedEscapable(props: StackedExampleProps) {
+  const {children, onEscape} = props
+
+  return (
+    <Stacked>
+      {isActive => (
+        // eslint-disable-next-line react/jsx-no-bind
+        <Escapable onEscape={event => (isActive || event.shiftKey) && onEscape(event)}>
+          {children}
+        </Escapable>
+      )}
+    </Stacked>
+  )
 }
+
+export default StackedEscapable

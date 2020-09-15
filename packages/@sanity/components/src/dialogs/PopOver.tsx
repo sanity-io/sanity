@@ -31,7 +31,7 @@ interface PopOverProps {
   actions?: DialogAction[]
 }
 
-// @todo: Rename to `Popover`
+// @todo: refactor to functional component
 export default class PopOver extends React.PureComponent<PopOverProps> {
   static defaultProps = {
     title: undefined,

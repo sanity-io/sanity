@@ -47,6 +47,7 @@ interface State {
   tags: string[]
 }
 
+// @todo: refactor to functional component
 class DefaultTextFieldTagsImplementation extends React.PureComponent<
   DefaultTextFieldTagsImplementationProps,
   State
