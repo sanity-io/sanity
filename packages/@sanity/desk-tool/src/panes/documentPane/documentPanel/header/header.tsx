@@ -7,7 +7,7 @@ import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useState, useEffect} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
 import {DocumentView} from '../../types'
@@ -22,6 +22,7 @@ export interface DocumentPanelHeaderProps {
   idPrefix: string
   isClosable: boolean
   isCollapsed: boolean
+  isHistoryOpen: boolean
   isTimelineOpen: boolean
   markers: any
   menuItems: MenuItemType[]
@@ -33,14 +34,13 @@ export interface DocumentPanelHeaderProps {
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
   onTimelineOpen: () => void
+  rev: Chunk | null
   schemaType: any
   setFocusPath: (path: any) => void
   timelineMode: 'rev' | 'since' | 'closed'
   title: React.ReactNode
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
-  rev: Chunk | null
-  isHistoryOpen: boolean
 }
 
 const isActionButton = (item: MenuItemType) => (item as any).showAsAction
@@ -48,16 +48,39 @@ const isMenuButton = negate(isActionButton)
 
 // eslint-disable-next-line complexity
 export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
+  const {
+    activeViewId,
+    idPrefix,
+    isClosable,
+    isCollapsed,
+    isTimelineOpen,
+    markers,
+    menuItems,
+    menuItemGroups,
+    onCloseView,
+    onContextMenuAction,
+    onCollapse,
+    onExpand,
+    onSetActiveView,
+    onSplitPane,
+    onTimelineOpen,
+    rev,
+    schemaType,
+    setFocusPath,
+    timelineMode,
+    title,
+    versionSelectRef,
+    views
+  } = props
   const features = useDeskToolFeatures()
-  const contextMenuItems = props.menuItems.filter(isMenuButton)
+  const contextMenuItems = menuItems.filter(isMenuButton)
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
-  const {rev} = props
 
   const handleTitleClick = useCallback(() => {
-    if (props.isCollapsed && props.onExpand) props.onExpand()
-    if (!props.isCollapsed && props.onCollapse) props.onCollapse()
-  }, [props.isCollapsed, props.onExpand, props.onCollapse])
+    if (isCollapsed && onExpand) onExpand()
+    if (!isCollapsed && onCollapse) onCollapse()
+  }, [isCollapsed, onExpand, onCollapse])
 
   // This is needed to stop the ClickOutside-handler (in the Popover) to treat the click
   // as an outside-click.
@@ -65,15 +88,19 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     evt.stopPropagation()
   }, [])
 
-  const showTabs = features.splitViews && props.views.length > 1
-  const showVersionMenu = true // props.isHistoryOpen
-  const menuOpen = props.isTimelineOpen && props.timelineMode === 'rev'
+  const showTabs = features.splitViews && views.length > 1
+  const showVersionMenu = true // isHistoryOpen
+  const menuOpen = isTimelineOpen && timelineMode === 'rev'
+
+  // const setOpen = useCallback((val: boolean) => {
+  //   console.log('set open', val)
+  // }, [])
 
   return (
-    <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
+    <div className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
       <div className={styles.mainNav}>
         <div className={styles.title} onClick={handleTitleClick}>
-          <strong>{props.title}</strong>
+          <strong>{title}</strong>
         </div>
 
         <div className={styles.paneActions}>
@@ -86,19 +113,19 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           <div>
             <ValidationMenu
               isOpen={isValidationOpen}
-              markers={props.markers}
-              schemaType={props.schemaType}
-              setFocusPath={props.setFocusPath}
+              markers={markers}
+              schemaType={schemaType}
+              setFocusPath={setFocusPath}
               setOpen={setValidationOpen}
             />
           </div>
 
           <div>
             <DocumentPanelContextMenu
-              isCollapsed={props.isCollapsed}
-              itemGroups={props.menuItemGroups}
+              isCollapsed={isCollapsed}
+              itemGroups={menuItemGroups}
               items={contextMenuItems}
-              onAction={props.onContextMenuAction}
+              onAction={onContextMenuAction}
               open={isContextMenuOpen}
               setOpen={setContextMenuOpen}
             />
@@ -106,12 +133,12 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
           {features.splitViews && (
             <>
-              {props.onSplitPane && props.views.length > 1 && (
+              {onSplitPane && views.length > 1 && (
                 <div>
                   <Button
                     icon={SplitHorizontalIcon}
                     kind="simple"
-                    onClick={props.onSplitPane}
+                    onClick={onSplitPane}
                     padding="small"
                     title="Split pane right"
                     type="button"
@@ -119,12 +146,12 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                 </div>
               )}
 
-              {props.onSplitPane && props.isClosable && (
+              {onSplitPane && isClosable && (
                 <div>
                   <Button
                     icon={CloseIcon}
                     kind="simple"
-                    onClick={props.onCloseView}
+                    onClick={onCloseView}
                     padding="small"
                     title="Close pane"
                     type="button"
@@ -141,22 +168,22 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           {showTabs && (
             <div className={styles.tabsContainer}>
               <DocumentHeaderTabs
-                activeViewId={props.activeViewId}
-                idPrefix={props.idPrefix}
-                onSetActiveView={props.onSetActiveView}
-                views={props.views}
+                activeViewId={activeViewId}
+                idPrefix={idPrefix}
+                onSetActiveView={onSetActiveView}
+                views={views}
               />
             </div>
           )}
 
           {showVersionMenu && (
-            <div className={styles.versionSelectContainer} ref={props.versionSelectRef}>
+            <div className={styles.versionSelectContainer} ref={versionSelectRef}>
               <Button
                 kind="simple"
                 onMouseUp={ignoreClickOutside}
-                onClick={props.onTimelineOpen}
+                onClick={onTimelineOpen}
                 padding="small"
-                selected={props.isTimelineOpen && props.timelineMode === 'rev'}
+                selected={isTimelineOpen && timelineMode === 'rev'}
                 size="small"
               >
                 {/* eslint-disable-next-line no-nested-ternary */}
