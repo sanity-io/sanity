@@ -50,21 +50,10 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const showMetaChange = didMetaChange && !didAssetChange
   const annotationPath = getAnnotationPath({didAssetChange, didCropChange, didHotspotChange})
 
-  // Wrap asset with annotation card only if the asset changed
-  const wrapAsset = content =>
-    didAssetChange ? (
-      <DiffAnnotationCard className={styles.annotation} diff={diff} path={annotationPath}>
-        {content}
-      </DiffAnnotationCard>
-    ) : (
-      content
-    )
-
   const imageDiff = (
     <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
-      {prev &&
-        fromValue &&
-        wrapAsset(
+      {prev && fromValue && (
+        <DiffAnnotationCard className={styles.annotation} diff={diff} path="asset._ref">
           <ImagePreview
             is="from"
             asset={prev}
@@ -73,11 +62,11 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
             hotspot={showMetaChange && didHotspotChange ? fromValue.hotspot : undefined}
             crop={showMetaChange && didCropChange ? fromValue.crop : undefined}
           />
-        )}
+        </DiffAnnotationCard>
+      )}
       {prev && next && <ChangeArrow />}
-      {next &&
-        toValue &&
-        wrapAsset(
+      {next && toValue && (
+        <DiffAnnotationCard className={styles.annotation} diff={diff} path="asset._ref">
           <ImagePreview
             is="to"
             asset={next}
@@ -85,7 +74,8 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
             hotspot={showMetaChange && didHotspotChange ? toValue.hotspot : undefined}
             crop={showMetaChange && didCropChange ? toValue.crop : undefined}
           />
-        )}
+        </DiffAnnotationCard>
+      )}
     </div>
   )
 
