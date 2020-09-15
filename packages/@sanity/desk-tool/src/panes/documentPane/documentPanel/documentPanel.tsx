@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import {MenuItemGroupType} from 'part:@sanity/components/menus/default'
-import {PortalProvider} from 'part:@sanity/components/portal'
-import React, {createElement, useCallback, useEffect, useMemo, useRef} from 'react'
+import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
+import React, {createElement, useCallback, useMemo, useRef} from 'react'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView} from '../types'
@@ -43,9 +43,9 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
+  const parentPortal = usePortal()
   const features = useDeskToolFeatures()
-  const portalContainerRef = useRef<HTMLDivElement | null>(null)
-  const portalRef = useRef(document.createElement('div'))
+  const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
   const {toggleInspect, isHistoryOpen} = props
   const formRef = useRef<any>()
@@ -99,17 +99,10 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [formRef.current]
   )
 
-  useEffect(() => {
-    if (portalContainerRef.current) {
-      portalContainerRef.current.appendChild(portalRef.current)
-    }
-
-    return () => {
-      if (portalContainerRef.current) {
-        portalContainerRef.current.removeChild(portalRef.current)
-      }
-    }
-  }, [])
+  // Use a local portal container when split panes is supported
+  const portalElement: HTMLElement = features.splitPanes
+    ? portalRef.current || parentPortal.element
+    : parentPortal.element
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
@@ -147,7 +140,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
         />
       </div>
 
-      <PortalProvider element={portalRef.current}>
+      <PortalProvider element={portalElement}>
         <div className={styles.documentViewerContainer}>
           <div className={styles.documentScroller}>
             {activeView.type === 'form' && (
@@ -172,7 +165,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
               })}
           </div>
 
-          <div data-portal-container ref={portalContainerRef} />
+          <div data-portal ref={portalRef} />
         </div>
       </PortalProvider>
     </div>
