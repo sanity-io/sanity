@@ -207,7 +207,7 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
                 key={snack.id}
                 {...snack}
                 offset={this.offsets[index]}
-                onDismiss={id => this.handleDismissSnack(id)}
+                onDismiss={this.handleDismissSnack}
                 onSetHeight={this.handleSetHeight}
               />
             ))}

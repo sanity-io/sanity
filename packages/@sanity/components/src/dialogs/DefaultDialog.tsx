@@ -53,11 +53,14 @@ function DefaultDialog(props: DefaultDialogProps) {
     classNameProp
   )
 
-  const handleEscape = useCallback((event: KeyboardEvent) => {
-    // This code used to be `onEscape || onClose`
-    if (onEscape) onEscape(event)
-    else if (onClose) onClose()
-  }, [])
+  const handleEscape = useCallback(
+    (event: KeyboardEvent) => {
+      // This code used to be `onEscape || onClose`
+      if (onEscape) onEscape(event)
+      else if (onClose) onClose()
+    },
+    [onEscape, onClose]
+  )
 
   const renderCloseButton = onClose && showCloseButton
   const renderFloatingCloseButton = !title && renderCloseButton
@@ -87,8 +90,8 @@ function DefaultDialog(props: DefaultDialogProps) {
             <ClickOutside onClickOutside={isActive ? handleClickOutside : undefined}>
               {ref => (
                 <div className={styles.card} ref={ref}>
-                  {/* eslint-disable-next-line react/jsx-no-bind */}
                   <Escapable
+                    // eslint-disable-next-line react/jsx-no-bind
                     onEscape={event => (isActive || event.shiftKey) && handleEscape(event)}
                   />
                   <div className={styles.inner}>

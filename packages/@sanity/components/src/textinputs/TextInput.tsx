@@ -4,6 +4,7 @@ import defaultStyles from 'part:@sanity/components/textinputs/default-style'
 import React from 'react'
 import {DefaultTextInputProps} from './types'
 
+// @todo: refactor to functional component
 export default class DefaultTextInput extends React.PureComponent<DefaultTextInputProps> {
   _input: HTMLInputElement | null = null
 
@@ -42,13 +43,18 @@ export default class DefaultTextInput extends React.PureComponent<DefaultTextInp
     const {
       className: classNameProp,
       onClear,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       hasError = false,
       isClearable = false,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       isSelected = false,
       disabled = false,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       markers,
       styles: stylesProp,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       customValidity,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       focusPath,
       inputId = '',
       ...restProps

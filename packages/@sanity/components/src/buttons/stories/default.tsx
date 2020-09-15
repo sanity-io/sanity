@@ -12,13 +12,13 @@ const actionsProps = {
   onFocus: action('onFocus')
 }
 
-let buttonElement: any = null
+let buttonElement: HTMLButtonElement | null = null
 
 function testFocus() {
   if (buttonElement) buttonElement.focus()
 }
 
-function setButtonElement(element: any) {
+function setButtonElement(element: HTMLButtonElement | null) {
   buttonElement = element
 }
 
@@ -60,7 +60,7 @@ export function DefaultStory() {
         <div style={{width: '100%', maxWidth: 300}}>
           <div>
             <h2>kind="default"</h2>
-            <Button {...buttonProps} ref={setButtonElement}>
+            <Button {...buttonProps} ref={setButtonElement as any}>
               {children}
             </Button>
           </div>

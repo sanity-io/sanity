@@ -21,6 +21,7 @@ const DEFAULT_ICONS = {
   error: <WarningIcon />
 }
 
+// @todo: refactor to functional component
 export default class PanePopover extends React.PureComponent<PanePopoverProps> {
   iconKind = () => {
     const {icon, kind = 'info'} = this.props

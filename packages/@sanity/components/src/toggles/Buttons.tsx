@@ -14,6 +14,7 @@ interface ToggleButtonsProps {
   items?: ToggleButtonItem[]
 }
 
+// @todo: refactor to functional component
 export default class ToggleButtons extends React.Component<ToggleButtonsProps> {
   handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const {onChange, items} = this.props
@@ -32,7 +33,7 @@ export default class ToggleButtons extends React.Component<ToggleButtonsProps> {
           items.map((item, i) => {
             return (
               <ToggleButton
-                kind="simple"
+                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 icon={item.icon}
                 onClick={this.handleClick}

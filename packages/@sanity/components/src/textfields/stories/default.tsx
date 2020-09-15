@@ -19,7 +19,7 @@ export function DefaultStory() {
             onFocus={action('onFocus')}
             onClear={action('onClear')}
             isClearable={boolean('isClearable', false, 'props')}
-            hasFocus={boolean('hasFocus', false, 'props')}
+            // hasFocus={boolean('hasFocus', false, 'props')}
           />
         </Sanity>
       </div>

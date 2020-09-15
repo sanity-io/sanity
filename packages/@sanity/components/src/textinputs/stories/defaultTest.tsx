@@ -23,6 +23,7 @@ interface State {
   value: string
 }
 
+// @todo: refactor to functional component
 class DefaultTextInputTest extends React.PureComponent<DefaultTextInputProps, State> {
   constructor(props: DefaultTextInputProps) {
     super(props)

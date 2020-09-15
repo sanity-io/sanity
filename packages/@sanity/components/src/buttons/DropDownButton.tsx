@@ -62,6 +62,7 @@ function parentButtonIsMenuButton(node, id) {
   return false
 }
 
+// @todo: refactor to functional component
 export default class DropDownButton extends React.PureComponent<
   DropdownButtonProps & React.HTMLProps<HTMLButtonElement>,
   DropdownButtonState
