@@ -5,24 +5,33 @@ interface MetaInfoProps {
   title: string
   action?: string
   icon?: any
-  children?: any
+  children?: React.ReactNode
+  markRemoved?: boolean
 }
 
-export function MetaInfo({title, action, icon, children}: MetaInfoProps) {
+export function MetaInfo({
+  title,
+  action,
+  icon,
+  children,
+  markRemoved
+}: MetaInfoProps): React.ReactElement {
   const Icon = icon
+  const iconClass = markRemoved ? styles.iconRemoved : styles.icon
+  const titleClass = markRemoved ? styles.titleRemoved : styles.title
   return (
-    <div className={styles.root} data-action={action}>
+    <div className={styles.root}>
       {icon && (
-        <div className={styles.icon}>
+        <div className={iconClass}>
           <Icon />
         </div>
       )}
       <div className={styles.info}>
-        <h3 className={styles.title} title={title}>
+        <h3 className={titleClass} title={title}>
           {title}
         </h3>
         {action && <div>{action}</div>}
-        {children && children}
+        {children}
       </div>
     </div>
   )

@@ -1,3 +1,5 @@
+import {ObjectDiff} from '../../../diff'
+
 export interface Hotspot {
   height: number
   width: number
@@ -19,9 +21,25 @@ export interface Image {
   hotspot?: Hotspot
 }
 
+export interface SanityImageAsset {
+  _id: string
+  url: string
+  path: string
+  originalFilename?: string
+  metadata: {
+    dimensions: {
+      width: number
+      height: number
+      aspectRatio: number
+    }
+  }
+}
+
 export interface ImagePreviewProps {
-  value: any // TODO
-  action: 'changed' | 'added' | 'removed'
+  diff: ObjectDiff<Image>
+  asset: SanityImageAsset
   hotspot?: Hotspot
   crop?: Crop
+  is: 'from' | 'to'
+  action?: 'changed' | 'added' | 'removed'
 }
