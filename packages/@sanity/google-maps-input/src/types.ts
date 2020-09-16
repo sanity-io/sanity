@@ -13,6 +13,4 @@ export interface Geopoint {
   alt?: number
 }
 
-export interface GeopointSchemaType extends ObjectSchemaType {
-  name: 'geopoint'
-}
+export type GeopointSchemaType = ObjectSchemaType<Geopoint>
