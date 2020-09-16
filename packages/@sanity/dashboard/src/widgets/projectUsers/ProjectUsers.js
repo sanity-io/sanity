@@ -5,7 +5,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
-import ToolIcon from 'react-icons/lib/go/tools'
+import RobotIcon from 'part:@sanity/base/robot-icon'
 import styles from './ProjectUsers.css'
 
 function getInviteUrl(projectId) {
@@ -113,7 +113,7 @@ class ProjectUsers extends React.PureComponent {
             {users.map(user => {
               const membership = project.members.find(member => member.id === user.id)
               const media = membership.isRobot ? (
-                <ToolIcon className={styles.profileImage} />
+                <RobotIcon className={styles.profileImage} />
               ) : (
                 <div className={styles.avatar}>
                   {user.imageUrl && <img src={user.imageUrl} alt={user.displayName} />}

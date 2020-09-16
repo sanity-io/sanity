@@ -23,9 +23,6 @@
     "hints",
     "sanity-plugin"
   ],
-  "dependencies": {
-    "react-icons": "^2.2.7"
-  },
   "devDependencies": {
     "@sanity/base": "1.150.8",
     "@sanity/check": "1.150.1",
