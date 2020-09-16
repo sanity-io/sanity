@@ -14,6 +14,9 @@ export function getChangeVerb(diff: Diff): 'Added' | 'Removed' | 'Changed' {
   return 'Changed'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export function noop(): void {}
+
 function hasValue(value: unknown) {
   return value !== null && typeof value !== 'undefined' && value !== ''
 }

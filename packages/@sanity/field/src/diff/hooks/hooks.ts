@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import client from 'part:@sanity/base/client'
 import {observeForPreview} from 'part:@sanity/base/preview'
 import {Reference, SchemaType} from '../../types'
+import {noop} from '../helpers'
 
 interface PreviewSnapshot {
   title: string
@@ -11,7 +12,7 @@ export function useRefValue<T = unknown>(refId: string | undefined | null): T | 
   const [value, setValue] = useState<T | undefined>(undefined)
   useEffect(() => {
     if (!refId) {
-      return () => {}
+      return noop
     }
 
     const subscription = client.observable.getDocument(refId).subscribe(setValue)
