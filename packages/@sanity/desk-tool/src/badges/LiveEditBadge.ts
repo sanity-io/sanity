@@ -1,9 +1,11 @@
+import LiveIcon from './icons/live'
+
 export function LiveEditBadge(props) {
   return props.liveEdit
     ? {
-        label: 'Live',
-        color: 'danger'
-        // icon: ?
+        label: 'Live document',
+        color: 'success',
+        icon: LiveIcon
       }
     : null
 }
