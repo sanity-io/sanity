@@ -436,6 +436,10 @@ declare module 'part:@sanity/components/utilities/scroll-container' {
   export {default} from '@sanity/components/src/utilities/ScrollContainer'
 }
 
+declare module 'part:@sanity/components/utilities/escapable' {
+  export {default} from '@sanity/components/src/utilities/Escapable'
+}
+
 declare module 'part:@sanity/components/validation/list' {
   export {default} from '@sanity/components/src/validation/ValidationList'
 }
