@@ -14,7 +14,6 @@ import styles from './documentPanel.css'
 
 interface DocumentPanelProps {
   activeViewId: string
-  connectionState: string
   documentId: string
   documentType: string
   draft: Doc | null
