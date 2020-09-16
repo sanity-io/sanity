@@ -62,6 +62,7 @@ import PublicIcon from 'part:@sanity/base/public-icon'
 import PublishIcon from 'part:@sanity/base/publish-icon'
 import QuestionIcon from 'part:@sanity/base/question-icon'
 import ResetIcon from 'part:@sanity/base/reset-icon'
+import RobotIcon from 'part:@sanity/base/robot-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
@@ -239,6 +240,7 @@ const icons = [
   {title: 'PublishIcon', component: PublishIcon, partId: 'part:@sanity/base/publish-icon'},
   {title: 'QuestionIcon', component: QuestionIcon, partId: 'part:@sanity/base/question-icon'},
   {title: 'ResetIcon', component: ResetIcon, partId: 'part:@sanity/base/reset-icon'},
+  {title: 'RobotIcon', component: RobotIcon, partId: 'part:@sanity/base/robot-icon'},
   {
     title: 'SanityLogoIcon',
     component: SanityLogoIcon,

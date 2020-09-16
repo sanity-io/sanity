@@ -65,7 +65,6 @@
     "osenv": "^0.1.4",
     "p-timeout": "^2.0.1",
     "promise-props-recursive": "^1.0.0",
-    "react-icons": "^2.2.7",
     "resolve-from": "^4.0.0",
     "rimraf": "^2.7.1",
     "semver": "^6.1.2",
