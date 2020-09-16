@@ -1,6 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  padding: 0.25em;
+  padding: var(--extra-small-padding);
   overflow: auto;
-  height: 100%;
   box-sizing: border-box;
+  max-height: calc(100vh - 198px);
 }
