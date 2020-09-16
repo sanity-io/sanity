@@ -21,7 +21,10 @@ export function useRefValue<T = unknown>(refId: string | undefined | null): T | 
       subscription.unsubscribe()
     }
   }, [refId])
-  return value
+
+  // Always return undefined in the case of a falsey ref to prevent bug
+  // when going from an ID to an undefined state
+  return refId ? value : undefined
 }
 
 export function useRefPreview(
@@ -29,6 +32,7 @@ export function useRefPreview(
   schemaType: SchemaType
 ): PreviewSnapshot | undefined {
   const [preview, setPreview] = useState<PreviewSnapshot | undefined>(undefined)
+
   useEffect(() => {
     let subscription
     if (value) {
@@ -43,5 +47,6 @@ export function useRefPreview(
       }
     }
   }, [value, schemaType])
-  return preview
+
+  return value ? preview : undefined
 }
