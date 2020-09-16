@@ -1,6 +1,7 @@
 import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from 'part:@sanity/base/router'
+import HistoryIcon from 'part:@sanity/base/history-icon'
 
 export function HistoryRestoreAction({id, type, revision, onComplete}) {
   const {restore}: any = useDocumentOperation(id, type)
@@ -13,6 +14,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
       setConfirmDialogOpen(true)
     },
     title: 'Restore to this version',
+    icon: HistoryIcon,
     dialog:
       (!error &&
         isConfirmDialogOpen && {
