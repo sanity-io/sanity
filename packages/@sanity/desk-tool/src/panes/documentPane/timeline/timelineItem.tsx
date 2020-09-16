@@ -36,29 +36,34 @@ export function TimelineItem(props: {
   )
 
   return (
-    <button
+    <li
       className={styles.root}
       data-state={state}
       data-selection-bottom={isSelectionBottom}
       data-selection-top={isSelectionTop}
       data-type={type}
-      disabled={state === 'disabled' || state === 'selected'}
-      onClick={handleClick}
-      title={title}
-      type="button"
     >
-      <div className={styles.wrapper}>
-        <div className={styles.iconContainer}>{iconComponent && createElement(iconComponent)}</div>
-        <div className={styles.textContainer}>
-          <div className={styles.typeName}>
-            {formatTimelineEventLabel(type) || <code>{type}</code>}
+      <button
+        disabled={state === 'disabled' || state === 'selected'}
+        onClick={handleClick}
+        title={title}
+        type="button"
+      >
+        <div className={styles.wrapper}>
+          <div className={styles.iconContainer}>
+            {iconComponent && createElement(iconComponent)}
           </div>
-          <div className={styles.timestamp}>{timeAgo}</div>
+          <div className={styles.textContainer}>
+            <div className={styles.typeName}>
+              {formatTimelineEventLabel(type) || <code>{type}</code>}
+            </div>
+            <div className={styles.timestamp}>{timeAgo}</div>
+          </div>
+          <div className={styles.avatarStackContainer}>
+            <UserAvatarStack maxLength={3} userIds={authorUserIds} />
+          </div>
         </div>
-        <div className={styles.avatarStackContainer}>
-          <UserAvatarStack maxLength={3} userIds={authorUserIds} />
-        </div>
-      </div>
-    </button>
+      </button>
+    </li>
   )
 }

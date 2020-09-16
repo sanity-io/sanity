@@ -36,7 +36,7 @@ interface Props {
     type: string
     id: string
     title: string
-    options: {}
+    options: Record<string, unknown>
     component: React.ComponentType<any>
   }[]
   initialValue?: Doc
@@ -101,12 +101,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
   const value = editState.draft || editState.published || initialValue
 
   return (
-    <DocumentHistoryProvider
-      documentId={documentId}
-      draft={editState.draft}
-      published={editState.published}
-      value={value}
-    >
+    <DocumentHistoryProvider documentId={documentId} value={value}>
       <DocumentPane
         connectionState={connectionState}
         documentId={documentId}
