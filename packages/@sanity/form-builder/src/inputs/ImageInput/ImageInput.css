@@ -1,31 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .content {
-  display: grid;
-  grid-gap: var(--medium-padding);
-}
-
-.fieldWrapper {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-gap: var(--large-padding) var(--medium-padding);
-}
-
-.field {
-  composes: root from '../ObjectInput/styles/Field.css';
+  position: relative;
+  padding-bottom: calc(2 / 3 * 100%);
 }
 
 .assetWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 10rem;
-  position: relative;
-  max-height: 18rem;
-  overflow: hidden;
-  flex-grow: 1;
-  border-bottom: 1px;
-  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: color(var(--gray-lightest) alpha(50%));
   background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
     linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
@@ -34,6 +19,7 @@
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
   border-radius: var(--input-border-radius);
+  overflow: hidden;
 
   &::after {
     content: '';
@@ -47,17 +33,6 @@
     pointer-events: none;
   }
 
-  @media (--screen-medium) {
-    min-height: 12rem;
-    max-height: 27rem;
-    min-width: 12rem;
-    height: auto;
-
-    @nest .noContent & {
-      flex-basis: 100%;
-    }
-  }
-
   @nest &.readOnly {
     background-image: none;
     background: var(--input-bg-disabled);
@@ -66,6 +41,16 @@
   @nest &.focused {
     box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--brand-primary);
   }
+}
+
+.fieldWrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: var(--large-padding) var(--medium-padding);
+}
+
+.field {
+  composes: root from '../ObjectInput/styles/Field.css';
 }
 
 .progress {
@@ -82,13 +67,13 @@
 
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
-}
 
-.content + .functions {
-  margin-top: var(--small-padding);
+  @nest .content + & {
+    margin-top: var(--small-padding);
 
-  @media (--screen-medium) {
-    margin-top: var(--medium-padding);
+    @media (--screen-medium) {
+      margin-top: var(--medium-padding);
+    }
   }
 }
 
