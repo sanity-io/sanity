@@ -18,7 +18,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
   const validationErrorMarkers = validationMarkers.filter(marker => marker.level === 'error')
   const validationWarningwarnings = validationMarkers.filter(marker => marker.level === 'warning')
 
-  const handleClose = useCallback(() => setOpen(false), [])
+  const handleClose = useCallback(() => setOpen(false), [setOpen])
 
   if (validationErrorMarkers.length === 0 && validationWarningwarnings.length === 0) {
     return null
