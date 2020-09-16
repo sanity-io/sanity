@@ -48,7 +48,6 @@ function DefaultDialog(props: DefaultDialogProps) {
 
   const className = classNames(
     styles.root,
-    // styles[color],
     actions && actions.length > 0 && styles.hasFunctions,
     classNameProp
   )
@@ -69,8 +68,7 @@ function DefaultDialog(props: DefaultDialogProps) {
 
   const handleClickOutside = useCallback(() => {
     if (onClickOutside) onClickOutside()
-    if (onClose) onClose()
-  }, [onClickOutside, onClose])
+  }, [onClickOutside])
 
   const closeButtonColor =
     color && ['danger', 'success', 'warning'].includes(color) ? 'white' : undefined
