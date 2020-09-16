@@ -55,7 +55,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           size="small"
           padding="none"
         >
-          <PresenceOverlay>
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
             <FormBuilderInput
               focusPath={focusPath}
               level={0}

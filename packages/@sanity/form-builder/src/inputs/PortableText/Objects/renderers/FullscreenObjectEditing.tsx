@@ -51,7 +51,7 @@ export const FullscreenObjectEditing: FunctionComponent<Props> = ({
             {/* TODO: Styling */}
             {/* <div className={styles.formBuilderInputWrapper}> */}
             <div>
-              <PresenceOverlay>
+              <PresenceOverlay margins={[0, 0, 1, 0]}>
                 <FormBuilderInput
                   focusPath={focusPath}
                   level={0}
