@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, {cloneElement, useEffect, useRef, useState} from 'react'
+import React, {cloneElement, forwardRef, useEffect, useRef, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {Modifier} from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
@@ -19,9 +19,16 @@ const applyModifer: Modifier<'applyMaxSize', Record<string, unknown>> = {
   }
 }
 
+function setRef<T = unknown>(ref: (v: T) => void | React.MutableRefObject<T> | null, val: T) {
+  if (typeof ref === 'object' && ref !== null) (ref as any).current = val
+  if (typeof ref === 'function') ref(val)
+}
+
 interface PopoverProps {
+  arrowClassName?: string
   boundaryElement?: HTMLElement | null
-  children: React.ReactElement
+  cardClassName?: string
+  children?: React.ReactElement
   className?: string
   content?: React.ReactNode
   disabled?: boolean
@@ -31,99 +38,115 @@ interface PopoverProps {
   tone?: 'navbar'
 }
 
-export function Popover(
-  props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
-) {
-  const {
-    boundaryElement,
-    className,
-    content,
-    disabled,
-    placement = 'bottom',
-    style,
-    targetElement,
-    ...restProps
-  } = props
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
-    targetElement || null
-  )
-  const targetElementRef = useRef<HTMLElement | null>(targetElement || null)
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
-  const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
-  const popper = usePopper(referenceElement, popperElement, {
-    placement,
-    modifiers: [
-      {
-        name: 'arrow',
-        options: {
-          element: arrowElement,
-          padding: 4
-        }
-      },
-      {
-        name: 'preventOverflow',
-        options: {
-          altAxis: true,
-          boundary: boundaryElement || undefined,
-          padding: 8
-        }
-      },
-      {
-        name: 'offset',
-        options: {
-          offset: [0, 4]
-        }
-      },
-      {
-        ...maxSize,
-        options: {
-          padding: 8
-        }
-      },
-      applyModifer
-    ]
-  })
+export const Popover = forwardRef(
+  (
+    props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>,
+    ref
+  ): React.ReactElement => {
+    const {
+      arrowClassName,
+      boundaryElement,
+      cardClassName,
+      className,
+      content,
+      disabled,
+      placement = 'bottom',
+      style,
+      targetElement,
+      ...restProps
+    } = props
+    const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
+      targetElement || null
+    )
+    const targetElementRef = useRef<HTMLElement | null>(targetElement || null)
+    const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+    const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
+    const popper = usePopper(referenceElement, popperElement, {
+      placement,
+      modifiers: [
+        {
+          name: 'arrow',
+          options: {
+            element: arrowElement,
+            padding: 4
+          }
+        },
+        {
+          name: 'preventOverflow',
+          options: {
+            altAxis: true,
+            boundary: boundaryElement || undefined,
+            padding: 8
+          }
+        },
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 4]
+          }
+        },
+        {
+          ...maxSize,
+          options: {
+            padding: 8
+          }
+        },
+        applyModifer
+      ]
+    })
 
-  const {forceUpdate} = popper
+    const {forceUpdate} = popper
 
-  useEffect(() => {
-    if (targetElement && targetElementRef.current !== targetElement) {
-      setReferenceElement(targetElement)
+    useEffect(() => {
+      if (targetElement && targetElementRef.current !== targetElement) {
+        setReferenceElement(targetElement)
+      }
+
+      targetElementRef.current = targetElement || null
+    }, [targetElement])
+
+    // Force update when `content` or `referenceElement` changes
+    useEffect(() => {
+      if (forceUpdate) forceUpdate()
+    }, [forceUpdate, content, referenceElement])
+
+    if (disabled) {
+      return props.children || <></>
     }
 
-    targetElementRef.current = targetElement || null
-  }, [targetElement])
+    const children =
+      props.children && targetElement === undefined
+        ? cloneElement(props.children, {ref: setReferenceElement})
+        : props.children || <></>
 
-  // Force update when `content` or `referenceElement` changes
-  useEffect(() => {
-    if (forceUpdate) forceUpdate()
-  }, [forceUpdate, content, referenceElement])
+    const setReference = (el: HTMLDivElement | null) => {
+      setPopperElement(el)
+      setRef(ref as any, el)
+    }
 
-  if (disabled) {
-    return props.children
+    return (
+      <>
+        {children}
+
+        {props.open && (
+          <div
+            {...restProps}
+            className={classNames(styles.root, className)}
+            ref={setReference}
+            style={{...popper.styles.popper, ...(style || {})}}
+            {...popper.attributes.popper}
+          >
+            <div className={classNames(styles.card, cardClassName)}>{content}</div>
+            <PopoverArrow
+              className={arrowClassName}
+              ref={setArrowElement}
+              style={popper.styles.arrow}
+            />
+          </div>
+        )}
+      </>
+    )
   }
+)
 
-  const children =
-    targetElement === undefined
-      ? cloneElement(props.children, {ref: setReferenceElement})
-      : props.children
-
-  return (
-    <>
-      {children}
-
-      {props.open && (
-        <div
-          {...restProps}
-          className={classNames(styles.root, className)}
-          ref={setPopperElement}
-          style={{...popper.styles.popper, ...(style || {})}}
-          {...popper.attributes.popper}
-        >
-          <div className={styles.card}>{content}</div>
-          <PopoverArrow ref={setArrowElement} style={popper.styles.arrow} />
-        </div>
-      )}
-    </>
-  )
-}
+Popover.displayName = 'Popover'
