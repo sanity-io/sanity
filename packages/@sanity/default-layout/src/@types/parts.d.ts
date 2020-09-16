@@ -362,3 +362,7 @@ declare module 'part:@sanity/components/previews/create-document' {
 declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
 }
+
+declare module 'part:@sanity/components/utilities/escapable' {
+  export {default} from '@sanity/components/src/utilities/Escapable'
+}
