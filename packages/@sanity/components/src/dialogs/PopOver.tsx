@@ -69,7 +69,7 @@ export default function PopOver(props: PopOverProps) {
     padding = 'medium',
     placement = 'auto',
     size = 'medium',
-    useOverlay = true,
+    useOverlay = false,
     hasAnimation,
     referenceElement
   } = props
