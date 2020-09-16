@@ -203,8 +203,10 @@ export const globalPresence$: Observable<GlobalPresence[]> = allSessions$.pipe(
       if (debugIntrospect) {
         return true
       }
-      const isCurrent = userAndSession.sessions.some(sess => sess.sessionId === SESSION_ID)
-      return !isCurrent || userAndSession.sessions.length > 1
+
+      const isCurrent = userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID)
+
+      return !isCurrent
     })
   ),
   map(userAndSessions =>
