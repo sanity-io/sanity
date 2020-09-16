@@ -2,7 +2,6 @@ import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -28,10 +27,10 @@ function renderFullscreenContent(type) {
       return <div>{paragraphs}</div>
     case 'example':
       return (
-        <DialogContent size="medium">
+        <>
           <h1>With dialog content</h1>
           <p>{paragraph}</p>
-        </DialogContent>
+        </>
       )
     default:
       return 'Minimal'
