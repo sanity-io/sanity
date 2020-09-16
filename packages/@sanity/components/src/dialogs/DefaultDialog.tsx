@@ -5,7 +5,7 @@ import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {ContainerQuery} from 'part:@sanity/components/container-query'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import {Portal} from 'part:@sanity/components/portal'
-import React, {useCallback, useRef} from 'react'
+import React, {useCallback} from 'react'
 import Escapable from '../utilities/Escapable'
 import Stacked from '../utilities/Stacked'
 import {DefaultDialogActions} from './DefaultDialogActions'
@@ -43,8 +43,6 @@ function DefaultDialog(props: DefaultDialogProps) {
     size = 'medium',
     title
   } = props
-
-  const contentRef = useRef<HTMLDivElement | null>(null)
 
   const className = classNames(
     styles.root,
@@ -127,8 +125,8 @@ function DefaultDialog(props: DefaultDialogProps) {
                       </div>
                     )}
 
-                    <div className={contentClassName} ref={contentRef}>
-                      {children}
+                    <div className={contentClassName}>
+                      <div className={styles.contentWrapper}>{children}</div>
                     </div>
 
                     {actions && actions.length > 0 && (
