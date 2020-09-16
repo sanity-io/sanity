@@ -26,16 +26,16 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
     ...restProps
   } = props
 
-  const handleClickOutside = useCallback(() => setOpen(false), [setOpen])
+  const handleClose = useCallback(() => setOpen(false), [setOpen])
   const handleButtonClick = useCallback(() => setOpen(!open), [open, setOpen])
 
   return (
-    <ClickOutside onClickOutside={handleClickOutside}>
+    <ClickOutside onClickOutside={handleClose}>
       {ref => (
         <div {...restProps} ref={ref}>
           <Popover
             boundaryElement={boundaryElement}
-            content={menu as any}
+            content={menu}
             open={open}
             placement={placement}
           >
