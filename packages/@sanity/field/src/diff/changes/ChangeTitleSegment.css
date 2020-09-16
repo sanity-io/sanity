@@ -3,21 +3,23 @@
   max-width: 100px;
   text-overflow: ellipsis;
   overflow-x: hidden;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 
 .indexGroup {
   padding: 0;
   font-weight: 600;
+  vertical-align: middle;
   @nest ins& {
     text-decoration: none;
   }
   border-radius: 3px;
   padding: 1px 4px;
-}
-
-.indexGroup:not(:first-child) {
-  margin-left: 5px;
+  border-bottom: 1px solid white;
+  @nest &:hover {
+    border-radius: 3px 3px 1px 1px;
+    box-shadow: 0 2px 0 currentColor;
+  }
 }
 
 .index {
