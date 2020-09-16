@@ -3,6 +3,7 @@ import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/r
 import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import PublishIcon from 'part:@sanity/base/publish-icon'
 import TimeAgo from '../components/TimeAgo'
+import {useDocumentHistory} from '../panes/documentPane/documentHistory'
 
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
@@ -39,6 +40,7 @@ export function PublishAction(props) {
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id)
+  const {open: historyOpen, historyController} = useDocumentHistory()
 
   const hasValidationErrors = validationStatus.markers.some(marker => marker.level === 'error')
 
@@ -48,7 +50,7 @@ export function PublishAction(props) {
   const doPublish = React.useCallback(() => {
     publish.execute()
     setPublishState('publishing')
-  }, [publish])
+  }, [publish, historyController])
 
   React.useEffect(() => {
     if (publishScheduled && !syncState.isSyncing && !validationStatus.isValidating) {
@@ -67,6 +69,12 @@ export function PublishAction(props) {
 
   React.useEffect(() => {
     const didPublish = publishState === 'publishing' && !draft
+    if (didPublish) {
+      if (historyController.changesPanelActive()) {
+        // Re-open the panel
+        historyOpen()
+      }
+    }
     const nextState = didPublish ? 'published' : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
