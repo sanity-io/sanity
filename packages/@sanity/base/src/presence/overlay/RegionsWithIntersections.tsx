@@ -12,25 +12,6 @@ import {RegionWithIntersectionDetails} from '../types'
 import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
 import styles from './RegionsWithIntersections.css'
 
-const OVERLAY_STYLE: React.CSSProperties = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  pointerEvents: 'none',
-  background: DEBUG ? 'rgba(255, 0, 0, 0.25)' : '',
-  zIndex: 5
-}
-
-const OVERLAY_ITEM_STYLE: React.CSSProperties = {
-  background: DEBUG ? 'rgba(255, 0, 0, 0.25)' : '',
-  overflow: 'hidden',
-  pointerEvents: 'none',
-  outline: '1px solid #00b',
-  position: 'absolute'
-}
-
 interface WithIntersectionProps extends React.ComponentProps<'div'> {
   onIntersection: (id, IntersectionObserverEntry) => void
   io: ObservableIntersectionObserver
@@ -136,7 +117,7 @@ export function RegionsWithIntersections(props: Props) {
     : []) as RegionWithIntersectionDetails[]
 
   return (
-    <div ref={trackerRef} style={{position: 'relative'}}>
+    <div className={styles.root} ref={trackerRef}>
       <WithIntersection
         io={io}
         id="::top"
@@ -150,7 +131,11 @@ export function RegionsWithIntersections(props: Props) {
         }}
       />
       <div>{children}</div>
-      <div ref={overlayRef} className={styles.overlay} style={OVERLAY_STYLE}>
+      <div
+        ref={overlayRef}
+        className={styles.overlay}
+        style={{background: DEBUG ? 'rgba(255; 0; 0; 0.25)' : ''}}
+      >
         {overlayRef.current &&
           render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
       </div>
@@ -158,12 +143,18 @@ export function RegionsWithIntersections(props: Props) {
         const forceWidth = region.rect.width === 0
         return (
           <WithIntersection
+            className={styles.region}
             io={io}
             onIntersection={onIntersection}
             key={region.id}
             id={region.id}
             style={{
-              ...OVERLAY_ITEM_STYLE,
+              ...(DEBUG
+                ? {
+                    background: 'rgba(255, 0, 0, 0.25)',
+                    outline: '1px solid #00b'
+                  }
+                : {}),
               width: forceWidth ? 1 : region.rect.width,
               left: region.rect.left - (forceWidth ? 1 : 0),
               top: region.rect.top - INTERSECTION_ELEMENT_PADDING,
