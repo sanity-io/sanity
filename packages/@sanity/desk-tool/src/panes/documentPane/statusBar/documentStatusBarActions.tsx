@@ -58,7 +58,7 @@ function DocumentStatusBarActionsInner(props: Props) {
                   showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
                 }
                 icon={firstActionState.icon}
-                color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
+                color={firstActionState.disabled ? undefined : firstActionState.color || 'success'}
                 disabled={props.disabled || Boolean(firstActionState.disabled)}
                 aria-label={firstActionState.title}
                 onClick={firstActionState.onHandle}
