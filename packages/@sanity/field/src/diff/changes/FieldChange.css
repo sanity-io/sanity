@@ -14,7 +14,7 @@
 }
 
 .change:hover {
-  border-left-color: var(--state-warning-color);
+  border-left-color: var(--gray);
 }
 
 .error .change {
