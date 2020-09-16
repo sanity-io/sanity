@@ -25,7 +25,7 @@ module.exports = {
     'comma-dangle': 'off',
     'comma-spacing': ['error', {after: true, before: false}],
     'comma-style': ['error', 'last'],
-    complexity: ['warn', 9],
+    complexity: ['warn', 30],
     'computed-property-spacing': 'error',
     'consistent-return': 'error',
     'consistent-this': ['error', 'self'],
@@ -48,7 +48,7 @@ module.exports = {
     'guard-for-in': 'error',
     'handle-callback-err': 'error',
     'id-blacklist': 'off',
-    'id-length': ['warn', {exceptions: ['i', 'j', 'x', 'y', 'z'], min: 2}],
+    'id-length': 'off', // catch undescriptive names in code review
     'id-match': 'off',
     'implicit-arrow-linebreak': ['error', 'beside'],
     indent: ['error', 2, {SwitchCase: 1}],
@@ -60,8 +60,8 @@ module.exports = {
     'line-comment-position': 'off',
     'lines-around-comment': 'off',
     'lines-between-class-members': 'off', // turn on if supports methods only
-    'max-depth': ['error', 2],
-    'max-len': ['error', 150, 4],
+    'max-depth': ['error', 4],
+    'max-len': ['error', 150, 2],
     'max-lines': 'off',
     'max-nested-callbacks': ['error', 3],
     'max-params': ['error', 5],
@@ -74,7 +74,7 @@ module.exports = {
     'newline-per-chained-call': ['error', {ignoreChainWithDepth: 3}],
     'no-alert': 'error',
     'no-array-constructor': 'error',
-    'no-await-in-loop': 'error',
+    'no-await-in-loop': 'off', // should be caught in code reviews on dangerous usage
     'no-bitwise': 'error',
     'no-buffer-constructor': 'error',
     'no-caller': 'error',
