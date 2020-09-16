@@ -2,6 +2,7 @@ import * as React from 'react'
 import {FromToIndex, Annotation} from '../../types'
 import {DiffAnnotation} from '../annotations'
 import styles from './ChangeTitleSegment.css'
+import classNames from 'classnames'
 
 export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}): React.ReactElement {
   if (typeof segment === 'string') {
@@ -47,7 +48,7 @@ function CreatedTitleSegment({
   return (
     <DiffAnnotation
       annotation={annotation || null}
-      className={styles.indexGroup}
+      className={classNames(styles.indexGroup, annotation && styles.indexGroupWithAnnotation)}
       as="ins"
       description={description}
     >
@@ -68,7 +69,7 @@ function DeletedTitleSegment({
   return (
     <DiffAnnotation
       annotation={annotation || null}
-      className={styles.indexGroup}
+      className={classNames(styles.indexGroup, annotation && styles.indexGroupWithAnnotation)}
       as="del"
       description={description}
     >
@@ -94,7 +95,7 @@ function MovedTitleSegment({
       <span className={styles.indexGroup}>#{toIndex + 1}</span>
       <DiffAnnotation
         annotation={annotation || null}
-        className={styles.indexGroup}
+        className={classNames(styles.indexGroup, annotation && styles.indexGroupWithAnnotation)}
         as="span"
         description={description}
       >
