@@ -3,7 +3,7 @@
 import React from 'react'
 import {useDocumentHistory} from '../documentHistory'
 import styles from './documentStatusBar.css'
-import {DocumentStatusBarActions} from './documentStatusBarActions'
+import {DocumentStatusBarActions, HistoryStatusBarActions} from './documentStatusBarActions'
 import {DocumentStatusBarSparkline} from './documentStatusBarSparkline'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
@@ -18,6 +18,9 @@ export function DocumentStatusBar(props: Props) {
   const {open: openHistory, historyController} = useDocumentHistory()
   const editState = useEditState(props.id, props.type)
   const badges = editState ? resolveDocumentBadges(editState) : []
+
+  const showingRevision = historyController.onOlderRevision()
+  const revision = historyController.revTime?.id || ''
   return (
     <div className={styles.root}>
       <div className={styles.status} data-history-state={historyController.selectionState}>
@@ -25,12 +28,12 @@ export function DocumentStatusBar(props: Props) {
           className={styles.lastUpdatedButton}
           onClick={openHistory}
           type="button"
-          disabled={historyController.onOlderRevision()}
+          disabled={showingRevision}
         >
           <DocumentStatusBarSparkline
             editState={editState}
             badges={badges}
-            disabled={historyController.onOlderRevision()}
+            disabled={showingRevision}
             lastUpdated={props.lastUpdated}
           />
         </button>
@@ -38,7 +41,11 @@ export function DocumentStatusBar(props: Props) {
 
       <div className={styles.actions}>
         <div className={styles.actionsWrapper}>
-          <DocumentStatusBarActions id={props.id} type={props.type} />
+          {showingRevision ? (
+            <HistoryStatusBarActions id={props.id} type={props.type} revision={revision} />
+          ) : (
+            <DocumentStatusBarActions id={props.id} type={props.type} />
+          )}
         </div>
       </div>
     </div>
