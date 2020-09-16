@@ -1,4 +1,4 @@
-import {useEffect, useReducer} from 'react'
+import {useEffect, useReducer, useMemo, useState} from 'react'
 import {
   format,
   differenceInSeconds,
@@ -25,9 +25,11 @@ interface TimeAgoOpts {
 }
 
 export function useTimeAgo(time: Date | string, opts: TimeAgoOpts = {}): string {
-  const [resolved, setResolved] = useReducer(reduceState, null, () =>
-    formatRelativeTime(time, opts)
-  )
+  const [resolved, setResolved] = useState(() => formatRelativeTime(time, opts))
+
+  useEffect(() => {
+    setResolved(formatRelativeTime(time, opts))
+  }, [time, opts.minimal])
 
   useEffect(() => {
     const id: number | undefined = Number.isFinite(resolved.refreshInterval)
@@ -38,15 +40,9 @@ export function useTimeAgo(time: Date | string, opts: TimeAgoOpts = {}): string 
       : undefined
 
     return () => clearInterval(id)
-  }, [time, resolved.refreshInterval])
+  }, [time, opts.minimal, resolved.refreshInterval])
 
   return resolved.timestamp
-}
-
-function reduceState(prev: TimeSpec, next: TimeSpec) {
-  return prev.timestamp === next.timestamp && prev.refreshInterval === next.refreshInterval
-    ? prev
-    : next
 }
 
 // eslint-disable-next-line complexity
