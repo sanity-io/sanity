@@ -59,6 +59,8 @@ function diffWithType<A>(
       return diffArray(fromInput as ArrayInput<A>, toInput as ArrayInput<A>, options)
     case 'object':
       return diffObject(fromInput as ObjectInput<A>, toInput as ObjectInput<A>, options)
+    default:
+      throw new Error(`Unhandled diff type "${type}"`)
   }
 }
 
@@ -101,6 +103,8 @@ export function removedInput<A>(
       return removedArray(input, toValue, options)
     case 'object':
       return removedObject(input, toValue, options)
+    default:
+      throw new Error('Unhandled diff type')
   }
 }
 
@@ -143,5 +147,7 @@ export function addedInput<A>(
       return addedArray(input, fromValue, options)
     case 'object':
       return addedObject(input, fromValue, options)
+    default:
+      throw new Error('Unhandled diff type')
   }
 }

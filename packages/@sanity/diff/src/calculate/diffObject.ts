@@ -1,6 +1,6 @@
+import {replaceProperty} from '../helpers'
 import {ObjectDiff, ObjectInput, DiffOptions} from '../types'
 import {diffInput, removedInput, addedInput} from './diffInput'
-import {replaceProperty} from '../helpers'
 
 const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev', '_weak'])
 
@@ -12,14 +12,14 @@ export function diffObject<A>(
   const fields: ObjectDiff<A>['fields'] = {}
   let isChanged = false
 
-  for (let key of fromInput.keys) {
+  for (const key of fromInput.keys) {
     if (ignoredFields.has(key)) continue
 
-    let fromField = fromInput.get(key)!
+    const fromField = fromInput.get(key)!
 
-    let toField = toInput.get(key)
+    const toField = toInput.get(key)
     if (toField) {
-      let fieldDiff = diffInput(fromField, toField, options)
+      const fieldDiff = diffInput(fromField, toField, options)
       fields[key] = fieldDiff
       if (fieldDiff.isChanged) isChanged = true
     } else {
@@ -28,13 +28,13 @@ export function diffObject<A>(
     }
   }
 
-  for (let key of toInput.keys) {
+  for (const key of toInput.keys) {
     if (ignoredFields.has(key)) continue
 
     // Already handled above
     if (fromInput.get(key)) continue
 
-    let toField = toInput.get(key)!
+    const toField = toInput.get(key)!
     fields[key] = addedInput(toField, undefined, options)
     isChanged = true
   }
@@ -79,8 +79,8 @@ export function removedObject<A>(
 
     get fields(): ObjectDiff<A>['fields'] {
       const fields: ObjectDiff<A>['fields'] = {}
-      for (let key of input.keys) {
-        let value = input.get(key)!
+      for (const key of input.keys) {
+        const value = input.get(key)!
         fields[key] = removedInput(value, undefined, options)
       }
       return replaceProperty<typeof fields>(this, 'fields', fields)
@@ -103,8 +103,8 @@ export function addedObject<A>(
 
     get fields(): ObjectDiff<A>['fields'] {
       const fields: ObjectDiff<A>['fields'] = {}
-      for (let key of input.keys) {
-        let value = input.get(key)!
+      for (const key of input.keys) {
+        const value = input.get(key)!
         fields[key] = addedInput(value, undefined, options)
       }
       return replaceProperty<typeof fields>(this, 'fields', fields)
