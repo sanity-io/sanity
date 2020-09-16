@@ -28,23 +28,23 @@ const DragHandle = createDragHandle(() => (
     <Button icon={DragHandleIcon} kind="simple" padding="small" />
   </span>
 ))
-const CLOSE_ACTION = {
-  name: 'close',
-  title: 'Done',
-  inverted: true
-}
-const CANCEL_ACTION = {
-  name: 'close',
-  title: 'Cancel',
-  inverted: true
-}
-const DELETE_ACTION = {
-  name: 'delete',
-  title: 'Delete',
-  color: 'danger',
-  inverted: true,
-  secondary: true
-}
+// const CLOSE_ACTION = {
+//   name: 'close',
+//   title: 'Done',
+//   inverted: true
+// }
+// const CANCEL_ACTION = {
+//   name: 'close',
+//   title: 'Cancel',
+//   inverted: true
+// }
+// const DELETE_ACTION = {
+//   name: 'delete',
+//   title: 'Delete',
+//   color: 'danger',
+//   inverted: true,
+//   secondary: true
+// }
 type Props = {
   type: ArrayType
   value: ItemValue
@@ -198,11 +198,11 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         </div>
       )
     }
-    const isItemEmpty = isEmpty(item)
-    const actions = [
-      isItemEmpty ? CANCEL_ACTION : CLOSE_ACTION,
-      !isItemEmpty && !readOnly && DELETE_ACTION
-    ].filter(Boolean)
+    // const isItemEmpty = isEmpty(item)
+    // const actions = [
+    //   isItemEmpty ? CANCEL_ACTION : CLOSE_ACTION,
+    //   !isItemEmpty && !readOnly && DELETE_ACTION
+    // ].filter(Boolean)
     if (options.editModal === 'popover') {
       return (
         <div className={styles.popupAnchor}>
@@ -211,7 +211,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onClose={this.handleEditStop}
             onEscape={this.handleEditStop}
             onClickOutside={this.handleEditStop}
-            actions={actions}
+            // actions={actions}
             onAction={this.handleDialogAction}
             placement="auto"
           >
@@ -226,7 +226,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onClose={this.handleEditStop}
         key={item._key}
         title={title}
-        actions={actions}
+        // actions={actions}
         onAction={this.handleDialogAction}
       >
         <PresenceOverlay>{content}</PresenceOverlay>
