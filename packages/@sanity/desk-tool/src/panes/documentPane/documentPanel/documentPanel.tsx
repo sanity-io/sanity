@@ -11,6 +11,11 @@ import {getMenuItems} from './menuItems'
 import {FormView} from './views'
 
 import styles from './documentPanel.css'
+import {
+  DEFAULT_MARGINS,
+  MARGINS_NARROW_SCREEN_WITH_TABS,
+  MARGINS_NARROW_SCREEN_WITHOUT_TABS,
+} from './constants'
 
 interface DocumentPanelProps {
   activeViewId: string
@@ -45,14 +50,14 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
+  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
+
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
   const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
-  const {toggleInspect, isHistoryOpen} = props
   const formRef = useRef<any>()
-  const activeView = props.views.find(view => view.id === props.activeViewId) ||
-    props.views[0] || {type: 'form'}
+  const activeView = views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'}
 
   const {revTime} = historyController
 
@@ -102,6 +107,14 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const portalElement: HTMLElement = features.splitPanes
     ? portalRef.current || parentPortal.element
     : parentPortal.element
+
+  // Calculate the height of the header
+  const hasTabs = views.length > 1
+  const narrowScreenMargins = hasTabs
+    ? MARGINS_NARROW_SCREEN_WITH_TABS
+    : MARGINS_NARROW_SCREEN_WITHOUT_TABS
+  const screenIsNarrow = !features.splitPanes
+  const margins = screenIsNarrow ? narrowScreenMargins : DEFAULT_MARGINS
 
   return (
     <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
@@ -154,6 +167,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 ref={formRef}
                 schemaType={props.schemaType}
                 value={displayed}
+                margins={margins}
               />
             )}
 

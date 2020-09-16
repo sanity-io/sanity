@@ -28,6 +28,7 @@ interface Props {
   markers: Array<{path: any[]}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialFocusPath: unknown[] | null
+  margins: Array<number>
 }
 
 const noop = () => undefined
@@ -109,7 +110,7 @@ export class FormView extends React.PureComponent<Props> {
   }
 
   render() {
-    const {id, value, initialValue, markers, schemaType} = this.props
+    const {id, value, initialValue, markers, schemaType, margins} = this.props
     const {focusPath, filterField} = this.state
     const readOnly = this.isReadOnly()
     const documentId = value && value._id && value._id.replace(/^drafts\./, '')
@@ -129,7 +130,7 @@ export class FormView extends React.PureComponent<Props> {
 
     return (
       <div className={styles.root}>
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
+        <PresenceOverlay margins={margins}>
           <EditForm
             id={id}
             value={value || initialValue}
