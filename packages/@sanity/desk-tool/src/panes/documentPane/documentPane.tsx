@@ -221,7 +221,6 @@ export function DocumentPane(props: DocumentPaneProps) {
 
             <DocumentPanel
               activeViewId={activeViewId}
-              connectionState={connectionState}
               documentId={documentId}
               documentType={documentType}
               draft={draft}
