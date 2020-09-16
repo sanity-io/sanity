@@ -18,24 +18,15 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier/@typescript-eslint',
     'prettier',
-    'prettier/react'
+    'prettier/react',
+    './packages/eslint-config-sanity/typescript.js'
   ],
   rules: {
-    // --- causing parse errors with d.ts files, see https://github.com/typescript-eslint/typescript-eslint/issues/420
-    'no-useless-constructor': 'off',
-    '@typescript-eslint/no-useless-constructor': 'error',
-    // ---
-    '@typescript-eslint/no-use-before-define': 'off',
-    "@typescript-eslint/explicit-function-return-type": 'off',
-
-    '@typescript-eslint/no-var-requires': 'off', // covered by @typescript-eslint/no-var-requires
-    'react/jsx-filename-extension': ['error', {extensions: ['.tsx', '.js']}],
-
-    'import/no-extraneous-dependencies': 'off',
+    'import/no-extraneous-dependencies': 'off', // because of parts
     'import/no-unresolved': ['error', {ignore: ['.*:.*']}],
 
     'prettier/prettier': 'error',
-    'sort-imports': 'off'
+    'sort-imports': 'off' // prefer import/order
   },
   plugins: ['import', '@typescript-eslint', 'prettier', 'react']
 }
