@@ -152,9 +152,12 @@ export function DocumentPane(props: DocumentPaneProps) {
     [historyController, setRange, setTimelineMode]
   )
 
-  const loadMoreHistory = useCallback((state: boolean) => {
-    historyController.setLoadMore(state)
-  }, [])
+  const loadMoreHistory = useCallback(
+    (state: boolean) => {
+      historyController.setLoadMore(state)
+    },
+    [historyController]
+  )
 
   const handleTimelineClose = useCallback(() => {
     setTimelineMode('closed')
