@@ -31,34 +31,11 @@ export default class ValidationList extends React.PureComponent<Props> {
     onFocus: () => undefined
   }
 
-  scrollTimeout?: NodeJS.Timer
-
-  componentWillUnmount() {
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout)
-    }
-  }
-
   handleClick = (path: Path = []) => {
     const {onFocus, onClose} = this.props
-    const pathString = path[0]
-    const element = document.querySelector(`[data-focus-path="${pathString}"]`)
 
-    if (element) {
-      element.scrollIntoView({behavior: 'smooth', inline: 'center'})
-
-      if (this.scrollTimeout) {
-        clearTimeout(this.scrollTimeout)
-      }
-
-      this.scrollTimeout = setTimeout(() => {
-        if (onFocus) onFocus(path)
-        if (onClose) onClose()
-      }, 300)
-    } else {
-      if (onFocus) onFocus(path)
-      if (onClose) onClose()
-    }
+    if (onFocus) onFocus(path)
+    if (onClose) onClose()
   }
 
   resolvePathTitle(path: Path) {

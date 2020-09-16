@@ -7,7 +7,7 @@ import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
-import React, {useCallback, useState, useEffect} from 'react'
+import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
 import {DocumentView} from '../../types'
@@ -37,7 +37,7 @@ export interface DocumentPanelHeaderProps {
   rev: Chunk | null
   rootElement: HTMLDivElement | null
   schemaType: any
-  setFocusPath: (path: any) => void
+  scrollToFocusPath: (path: any) => void
   timelineMode: 'rev' | 'since' | 'closed'
   title: React.ReactNode
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -68,7 +68,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     rev,
     rootElement,
     schemaType,
-    setFocusPath,
+    scrollToFocusPath,
     timelineMode,
     title,
     versionSelectRef,
@@ -91,12 +91,9 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   }, [])
 
   const showTabs = features.splitViews && views.length > 1
+  // @todo: remove this
   const showVersionMenu = true // isHistoryOpen
   const menuOpen = isTimelineOpen && timelineMode === 'rev'
-
-  // const setOpen = useCallback((val: boolean) => {
-  //   console.log('set open', val)
-  // }, [])
 
   return (
     <div className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
@@ -118,7 +115,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
               isOpen={isValidationOpen}
               markers={markers}
               schemaType={schemaType}
-              setFocusPath={setFocusPath}
+              setFocusPath={scrollToFocusPath}
               setOpen={setValidationOpen}
             />
           </div>
