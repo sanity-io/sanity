@@ -3,7 +3,7 @@
 .root {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   text-align: center;
   height: 100%;
 }
