@@ -3,7 +3,6 @@ import React, {FunctionComponent, useMemo} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
@@ -53,24 +52,24 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           onEscape={onClose}
           onClose={onClose}
           title={type.title}
+          size="small"
+          padding="none"
         >
-          <DialogContent size="small" padding="none">
-            <PresenceOverlay>
-              <FormBuilderInput
-                focusPath={focusPath}
-                level={0}
-                markers={markers}
-                onBlur={onBlur}
-                onChange={handleChange}
-                onFocus={onFocus}
-                path={path}
-                presence={presence}
-                readOnly={readOnly || type.readOnly}
-                type={type as FormBuilderType}
-                value={object}
-              />
-            </PresenceOverlay>
-          </DialogContent>
+          <PresenceOverlay>
+            <FormBuilderInput
+              focusPath={focusPath}
+              level={0}
+              markers={markers}
+              onBlur={onBlur}
+              onChange={handleChange}
+              onFocus={onFocus}
+              path={path}
+              presence={presence}
+              readOnly={readOnly || type.readOnly}
+              type={type as FormBuilderType}
+              value={object}
+            />
+          </PresenceOverlay>
         </Popover>
       )}
     </Stacked>
