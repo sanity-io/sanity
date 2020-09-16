@@ -1,5 +1,21 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  position: relative;
+}
+
 .overlay {
-  margin-right: var(--medium-padding);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  zindex: 5;
+}
+
+.region {
+  overflow: hidden;
+  pointerevents: none;
+  position: absolute;
 }
