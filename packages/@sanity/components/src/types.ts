@@ -1,3 +1,5 @@
+import {Placement} from '@popperjs/core'
+
 // @todo: import these from `@sanity/field`?
 export type KeyedSegment = {
   _key: string
@@ -12,19 +14,7 @@ export interface Marker {
   item: {message: string}
 }
 
-export type Placement =
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
+export {Placement}
 
 export interface MediaDimensions {
   width?: number
