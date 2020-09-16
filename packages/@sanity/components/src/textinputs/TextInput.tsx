@@ -57,6 +57,7 @@ export default class DefaultTextInput extends React.PureComponent<DefaultTextInp
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       focusPath,
       inputId = '',
+      value = '',
       ...restProps
     } = this.props
 
@@ -73,6 +74,7 @@ export default class DefaultTextInput extends React.PureComponent<DefaultTextInp
       >
         <input
           {...restProps}
+          value={value}
           id={inputId}
           ref={this.setInput}
           className={classNames(styles.input)}
