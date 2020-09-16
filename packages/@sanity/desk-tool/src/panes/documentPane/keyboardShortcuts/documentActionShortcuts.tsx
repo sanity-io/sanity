@@ -14,6 +14,7 @@ interface ResponderProps extends React.ComponentProps<'div'> {
   states: any[]
   activeIndex: number
   onActionStart: (index: number) => void
+  rootRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
 function KeyboardShortcutResponder({
@@ -22,6 +23,7 @@ function KeyboardShortcutResponder({
   onKeyDown,
   activeIndex,
   onActionStart,
+  rootRef,
   ...rest
 }: ResponderProps) {
   const active = states[activeIndex]
@@ -36,6 +38,7 @@ function KeyboardShortcutResponder({
         event.preventDefault()
       }
       if (matchingStates.length > 1) {
+        // eslint-disable-next-line no-console
         console.warn(
           `Keyboard shortcut conflict: More than one document action matches the shortcut "${matchingState.shortcut}"`
         )
@@ -51,7 +54,7 @@ function KeyboardShortcutResponder({
     [states]
   )
   return (
-    <div onKeyDown={handleKeyDown} tabIndex={-1} {...rest}>
+    <div onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
       {active && active.dialog && <ActionStateDialog dialog={active.dialog} />}
     </div>
@@ -61,6 +64,7 @@ function KeyboardShortcutResponder({
 interface Props extends React.ComponentProps<'div'> {
   id: string
   type: string
+  rootRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
 export const DocumentActionShortcuts = React.memo((props: Props) => {

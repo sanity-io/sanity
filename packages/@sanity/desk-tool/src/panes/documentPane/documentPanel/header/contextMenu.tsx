@@ -6,6 +6,7 @@ import React, {useCallback, useMemo} from 'react'
 import styles from './contextMenu.css'
 
 interface DocumentPanelContextMenuProps {
+  boundaryElement: HTMLDivElement | null
   isCollapsed: boolean
   items: MenuItemType[]
   itemGroups: MenuItemGroupType[]
@@ -15,7 +16,7 @@ interface DocumentPanelContextMenuProps {
 }
 
 export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
-  const {isCollapsed, open, items, itemGroups, onAction, setOpen} = props
+  const {boundaryElement, isCollapsed, open, items, itemGroups, onAction, setOpen} = props
 
   const id = useMemo(
     () =>
@@ -39,6 +40,7 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
 
   return (
     <MenuButton
+      boundaryElement={boundaryElement || undefined}
       buttonProps={{
         'aria-label': 'Menu',
         'aria-haspopup': 'menu',

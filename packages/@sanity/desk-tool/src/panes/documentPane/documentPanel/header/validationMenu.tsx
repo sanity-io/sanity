@@ -4,6 +4,7 @@ import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import React, {useCallback} from 'react'
 
 interface ValidationMenuProps {
+  boundaryElement: HTMLDivElement | null
   isOpen: boolean
   markers: any[]
   schemaType: any
@@ -12,16 +13,16 @@ interface ValidationMenuProps {
 }
 
 export function ValidationMenu(props: ValidationMenuProps) {
-  const {isOpen, markers, schemaType, setFocusPath, setOpen} = props
+  const {boundaryElement, isOpen, markers, schemaType, setFocusPath, setOpen} = props
   const validationMarkers = markers.filter(marker => marker.type === 'validation')
   const validationErrorMarkers = validationMarkers.filter(marker => marker.level === 'error')
   const validationWarningwarnings = validationMarkers.filter(marker => marker.level === 'warning')
 
+  const handleClose = useCallback(() => setOpen(false), [])
+
   if (validationErrorMarkers.length === 0 && validationWarningwarnings.length === 0) {
     return null
   }
-
-  const handleClose = useCallback(() => setOpen(false), [])
 
   const popoverContent = (
     <ValidationList
@@ -35,6 +36,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
 
   return (
     <MenuButton
+      boundaryElement={boundaryElement}
       buttonProps={{
         color: validationErrorMarkers.length > 0 ? 'danger' : 'warning',
         kind: 'simple',
@@ -45,7 +47,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
       }}
       menu={popoverContent}
       open={isOpen}
-      placement="bottom-end"
+      placement="bottom"
       setOpen={setOpen}
     />
   )

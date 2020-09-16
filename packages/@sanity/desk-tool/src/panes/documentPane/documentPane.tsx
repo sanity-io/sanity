@@ -67,7 +67,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     value,
     views = []
   } = props
-
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
   const {setRange, timeline, historyController} = useDocumentHistory()
   const historyState = historyController.selectionState
@@ -213,6 +213,7 @@ export function DocumentPane(props: DocumentPaneProps) {
           isCollapsed && styles.isCollapsed,
           isSelected ? styles.isActive : styles.isDisabled
         ])}
+        rootRef={rootRef}
       >
         <div className={styles.documentAndChangesContainer}>
           <div className={styles.documentContainer}>
@@ -242,6 +243,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               onTimelineOpen={handleTimelineRev}
               paneTitle={paneTitle}
               published={published}
+              rootElement={rootRef.current}
               schemaType={schemaType}
               timelineMode={timelineMode}
               toggleInspect={toggleInspect}
