@@ -10,6 +10,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
   const [error, setError] = React.useState<Error | null>(null)
   return {
     label: 'Restore',
+    color: 'primary',
     onHandle: () => {
       setConfirmDialogOpen(true)
     },
