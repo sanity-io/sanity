@@ -7,6 +7,7 @@ import {groupBy} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import {Path} from '@sanity/util/lib/typedefs/path'
+import scrollIntoView from 'smooth-scroll-into-view-if-needed'
 
 export interface Rect {
   height: number
@@ -27,17 +28,33 @@ interface Props {
 }
 
 const DEBUG = false
-
+//
+// const getOffsetParents = (source, target) => {
+//   let el = source
+//   while (el && el !== target) {
+//
+//   }
+// }
 const getOffsetsTo = (source, target) => {
   let el = source
-  let top = -el.scrollTop
+  let top = 0
   let left = 0
+  let relativeScrollTop = 0
+
   while (el && el !== target) {
-    top += el.offsetTop - el.scrollTop
+    if (el.scrollHeight === el.offsetHeight) {
+      // accumulate relative scroll top until we hit a scroll container
+      relativeScrollTop += el.offsetTop
+    } else {
+      // we reached a scroll container, make sure we clamp the top to be within the bounds
+      top +=
+        el.offsetTop + Math.min(el.offsetHeight - 12, Math.max(0, relativeScrollTop - el.scrollTop))
+      relativeScrollTop = 0
+    }
     left += el.offsetLeft
     el = el.offsetParent
   }
-  return {top, left}
+  return {top: top + relativeScrollTop, left}
 }
 
 function getRelativeRect(element, parent): Rect {
@@ -110,8 +127,8 @@ export function ConnectorsOverlay(props: Props) {
               <svg
                 key={changedField.id}
                 onClick={() => {
-                  // if (changedField?.data) changedField?.data.scrollTo()
-                  // if (changedRegion?.data) changedRegion?.data.scrollTo()
+                  scrollIntoView(changedField?.element)
+                  scrollIntoView(changedRegion?.element)
                 }}
                 className={styles.svg}
                 style={{
