@@ -2,7 +2,6 @@
 import React, {Fragment} from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
@@ -135,13 +134,13 @@ storiesOf('@sanity/desk-tool', module)
     const isNetworkError = boolean('isNetworkError')
     const message = text('message', 'An error occured')
     return (
-      <Dialog color="danger" title="Error" isOpen centered>
+      <Dialog color="danger" title="Error" isOpen centered size="medium">
         {!isNetworkError && <p>{message}</p>}
         {isNetworkError && (
-          <DialogContent size="medium">
+          <>
             <p>An error occured while attempting to reach the Sanity API.</p>
             <pre>Cors check goes here</pre>
-          </DialogContent>
+          </>
         )}
 
         <Button onClick={() => console.log('retry')}>Retry</Button>
