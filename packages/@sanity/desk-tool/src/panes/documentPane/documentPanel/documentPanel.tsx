@@ -14,7 +14,7 @@ import styles from './documentPanel.css'
 import {
   DEFAULT_MARGINS,
   MARGINS_NARROW_SCREEN_WITH_TABS,
-  MARGINS_NARROW_SCREEN_WITHOUT_TABS,
+  MARGINS_NARROW_SCREEN_WITHOUT_TABS
 } from './constants'
 
 interface DocumentPanelProps {
@@ -57,7 +57,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
   const formRef = useRef<any>()
-  const activeView = views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'}
+  const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
 
   const {revTime} = historyController
 
@@ -94,14 +94,11 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [openHistory, toggleInspect]
   )
 
-  const setFocusPath = useCallback(
-    (path: any) => {
-      if (formRef.current) {
-        formRef.current.handleFocus(path)
-      }
-    },
-    [formRef.current]
-  )
+  const scrollToFocusPath = useCallback((path: any) => {
+    if (formRef.current) {
+      formRef.current.scrollToFocusPath(path)
+    }
+  }, [])
 
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement = features.splitPanes
@@ -137,7 +134,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           onTimelineOpen={props.onTimelineOpen}
           rootElement={props.rootElement}
           schemaType={props.schemaType}
-          setFocusPath={setFocusPath}
+          scrollToFocusPath={scrollToFocusPath}
           timelineMode={props.timelineMode}
           title={
             <DocumentHeaderTitle

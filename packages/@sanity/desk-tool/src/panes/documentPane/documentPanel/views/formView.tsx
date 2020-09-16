@@ -51,10 +51,9 @@ export class FormView extends React.PureComponent<Props> {
 
   componentDidMount() {
     const {initialFocusPath} = this.props
+
     if (initialFocusPath) {
-      this.setState({
-        focusPath: initialFocusPath
-      })
+      this.setState({focusPath: initialFocusPath})
       this.reportFocusPath(initialFocusPath)
     }
 
@@ -76,6 +75,22 @@ export class FormView extends React.PureComponent<Props> {
   handleFocus = (path: any[]) => {
     this.setState({focusPath: path})
     this.reportFocusPath(path)
+  }
+
+  scrollToFocusPath = (path: any[]) => {
+    const pathString = path[0]
+    const element = document.querySelector(`[data-focus-path="${pathString}"]`)
+
+    if (element) {
+      element.scrollIntoView({behavior: 'smooth', inline: 'center'})
+
+      // @todo: replace this with `element.focus({preventScroll: true})`
+      setTimeout(() => {
+        this.handleFocus(path)
+      }, 300)
+    } else {
+      this.handleFocus(path)
+    }
   }
 
   reportFocusPath(path) {
