@@ -48,7 +48,7 @@ function buildSegments<A>(
   fromInput: StringInput<A>,
   toInput: StringInput<A>
 ): StringDiffSegment<A>[] {
-  let segments: StringDiffSegment<A>[] = []
+  const segments: StringDiffSegment<A>[] = []
 
   const dmpDiffs = dmp.diff_main(fromInput.value, toInput.value)
   dmp.diff_cleanupSemantic(dmpDiffs)
@@ -56,7 +56,7 @@ function buildSegments<A>(
   let fromIdx = 0
   let toIdx = 0
 
-  for (let [op, text] of dmpDiffs) {
+  for (const [op, text] of dmpDiffs) {
     switch (op) {
       case DIFF_EQUAL:
         segments.push({type: 'stringSegment', action: 'unchanged', text})
@@ -64,7 +64,7 @@ function buildSegments<A>(
         toIdx += text.length
         break
       case DIFF_DELETE:
-        for (let segment of fromInput.sliceAnnotation(fromIdx, fromIdx + text.length)) {
+        for (const segment of fromInput.sliceAnnotation(fromIdx, fromIdx + text.length)) {
           segments.push({
             type: 'stringSegment',
             action: 'removed',
@@ -75,7 +75,7 @@ function buildSegments<A>(
         fromIdx += text.length
         break
       case DIFF_INSERT:
-        for (let segment of toInput.sliceAnnotation(toIdx, toIdx + text.length)) {
+        for (const segment of toInput.sliceAnnotation(toIdx, toIdx + text.length)) {
           segments.push({
             type: 'stringSegment',
             action: 'added',
@@ -85,6 +85,8 @@ function buildSegments<A>(
         }
         toIdx += text.length
         break
+      default:
+        throw new Error(`Unhandled diff-match-patch operation "${op}"`)
     }
   }
 

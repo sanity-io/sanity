@@ -1,3 +1,8 @@
 {
-  "extends": ["../../../.eslintrc.js"]
+  "extends": ["../../../.eslintrc.js"],
+  "rules": {
+    "complexity": "off",
+    "max-depth": "off",
+    "id-length": "off"
+  }
 }

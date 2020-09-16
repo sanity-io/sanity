@@ -11,7 +11,7 @@ type Subsequence<E> = {
   nextIndices: number[]
 }
 
-export function getLongestCommonSubsequence<E>(previous: E[], next: E[]) {
+export function getLongestCommonSubsequence<E>(previous: E[], next: E[]): Subsequence<E> {
   const matrix = getLengthMatrix(previous, next)
   const result = backtrack(matrix, previous, next)
   return result
@@ -24,7 +24,7 @@ function getLengthMatrix<E>(previous: E[], next: E[]): LengthMatrix {
   let y = 0
 
   // initialize empty matrix of len1+1 x len2+1
-  let matrix: LengthMatrix = new Array(len1 + 1)
+  const matrix: LengthMatrix = new Array(len1 + 1)
   for (x = 0; x < len1 + 1; x++) {
     matrix[x] = [len2 + 1]
     for (y = 0; y < len2 + 1; y++) {

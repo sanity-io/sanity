@@ -10,7 +10,7 @@ export default class StringWrapper<A> implements StringInput<A> {
     this.annotation = annotation
   }
 
-  sliceAnnotation(start: number, end: number) {
+  sliceAnnotation(start: number, end: number): {text: string; annotation: A}[] {
     return [{text: this.value.slice(start, end), annotation: this.annotation}]
   }
 }

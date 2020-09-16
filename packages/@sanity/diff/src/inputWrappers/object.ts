@@ -1,5 +1,5 @@
 import {ObjectInput, Input} from '../types'
-import {wrap} from '.'
+import {wrap} from './index'
 
 export default class ObjectWrapper<A> implements ObjectInput<A> {
   type: 'object' = 'object'
@@ -15,14 +15,17 @@ export default class ObjectWrapper<A> implements ObjectInput<A> {
     this.keys = Object.keys(value)
   }
 
-  get(key: string) {
-    let input = this.fields[key]
+  get(key: string): Input<A> | undefined {
+    const input = this.fields[key]
     if (input) {
       return input
-    } else {
-      if (!this.value.hasOwnProperty(key)) return
-      let raw = this.value[key]
-      return (this.fields[key] = wrap(raw, this.annotation))
     }
+
+    if (!this.value.hasOwnProperty(key)) {
+      return undefined
+    }
+
+    const raw = this.value[key]
+    return (this.fields[key] = wrap(raw, this.annotation))
   }
 }
