@@ -8,7 +8,7 @@ import React from 'react'
 // Import icons
 import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import FaCalendarIcon from 'react-icons/lib/fa/calendar'
+import CalendarIcon from 'part:@sanity/base/calendar-icon'
 
 export function WithIconsStory() {
   const currentTabId = select(
@@ -19,7 +19,7 @@ export function WithIconsStory() {
   )
   const tabs = [
     {icon: EditIcon, id: 'tab-edit', label: 'Content'},
-    {icon: FaCalendarIcon, id: 'tab-seo', label: 'SEO'},
+    {icon: CalendarIcon, id: 'tab-seo', label: 'SEO'},
     {icon: EyeIcon, id: 'tab-preview', label: 'Preview'}
   ]
   return (
