@@ -1,5 +1,5 @@
 import {Modifier} from '@popperjs/core'
-import React, {useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {usePopper} from 'react-popper'
 import styles from 'part:@sanity/components/selects/searchable-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
@@ -12,11 +12,8 @@ import Escapable from '../utilities/Escapable'
 import Stacked from '../utilities/Stacked'
 import SelectMenu from './SelectMenu'
 
-// interface Item {}
-
-type Item = unknown
-
 // @todo
+type Item = unknown
 type Value = any
 
 interface StatelessSearchableSelectProps {
@@ -74,8 +71,11 @@ const StatelessSearchableSelect = React.forwardRef(
       onHighlightIndexChange,
       openItemElement,
       readOnly,
+      renderItem: renderItemProp,
       ...rest
     } = props
+
+    const itemsLen = items.length
 
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
@@ -94,74 +94,95 @@ const StatelessSearchableSelect = React.forwardRef(
       ]
     })
 
-    const handleSelect = (item: Item) => {
-      if (onChange) onChange(item)
-    }
+    const handleSelect = useCallback(
+      (item: Item) => {
+        if (onChange) onChange(item)
+      },
+      [onChange]
+    )
 
-    const handleArrowClick = (event?: React.MouseEvent<HTMLDivElement>) => {
+    const handleClose = useCallback(
+      (event?: Event) => {
+        if (onClose) onClose(event)
+      },
+      [onClose]
+    )
+
+    const handleArrowClick = useCallback(() => {
       if (isOpen) {
         handleClose()
       } else if (onOpen) onOpen()
-    }
+    }, [handleClose, isOpen, onOpen])
 
-    const handleArrowKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Enter') {
-        handleArrowClick()
-      }
-    }
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (onInputChange) onInputChange(event.target.value)
-    }
-
-    // eslint-disable-next-line complexity
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === 'ArrowDown' && !isOpen) {
-        if (onOpen) onOpen()
-      }
-
-      if (items.length === 0) {
-        return
-      }
-
-      const lastIndex = items.length - 1
-
-      if (event.key === 'ArrowUp') {
-        event.preventDefault()
-
-        const nextIndex = highlightIndex - 1
-
-        if (onHighlightIndexChange) {
-          onHighlightIndexChange(nextIndex < 0 ? lastIndex : nextIndex)
+    const handleArrowKeyPress = useCallback(
+      (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter') {
+          handleArrowClick()
         }
-      }
+      },
+      [handleArrowClick]
+    )
 
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
+    const handleInputChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (onInputChange) onInputChange(event.target.value)
+      },
+      [onInputChange]
+    )
 
-        if (!isOpen && onOpen) onOpen()
-
-        const nextIndex = highlightIndex + 1
-
-        if (onHighlightIndexChange) {
-          onHighlightIndexChange(nextIndex > lastIndex ? 0 : nextIndex)
+    const handleKeyDown = useCallback(
+      // eslint-disable-next-line complexity
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'ArrowDown' && !isOpen) {
+          if (onOpen) onOpen()
         }
-      }
-    }
 
-    const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === 'Enter' && highlightIndex > -1 && items[highlightIndex]) {
-        if (onChange) onChange(items[highlightIndex])
-      }
-    }
+        if (itemsLen === 0) {
+          return
+        }
 
-    const handleClose = (event?: Event) => {
-      if (onClose) onClose(event)
-    }
+        const lastIndex = itemsLen - 1
 
-    const renderItem = (item: Item) => {
-      return <div className={styles.item}>{props.renderItem(item)}</div>
-    }
+        if (event.key === 'ArrowUp') {
+          event.preventDefault()
+
+          const nextIndex = highlightIndex - 1
+
+          if (onHighlightIndexChange) {
+            onHighlightIndexChange(nextIndex < 0 ? lastIndex : nextIndex)
+          }
+        }
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault()
+
+          if (!isOpen && onOpen) onOpen()
+
+          const nextIndex = highlightIndex + 1
+
+          if (onHighlightIndexChange) {
+            onHighlightIndexChange(nextIndex > lastIndex ? 0 : nextIndex)
+          }
+        }
+      },
+      [highlightIndex, isOpen, itemsLen, onHighlightIndexChange, onOpen]
+    )
+
+    const handleKeyUp = useCallback(
+      (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && highlightIndex > -1 && items[highlightIndex]) {
+          if (onChange) onChange(items[highlightIndex])
+        }
+      },
+      [highlightIndex, items, onChange]
+    )
+
+    const renderItem = useCallback(
+      (item: Item) => {
+        return <div className={styles.item}>{renderItemProp(item)}</div>
+      },
+      [renderItemProp]
+    )
 
     return (
       <>
@@ -228,20 +249,20 @@ const StatelessSearchableSelect = React.forwardRef(
                   >
                     <div
                       className={
-                        items.length === 0 ? styles.listContainerNoResult : styles.listContainer
+                        itemsLen === 0 ? styles.listContainerNoResult : styles.listContainer
                       }
                     >
                       <Escapable onEscape={handleClose} />
                       <div
                         className={
-                          items.length === 0 && !isLoading
+                          itemsLen === 0 && !isLoading
                             ? styles.noResultText
                             : styles.noResultTextHidden
                         }
                       >
                         No results
                       </div>
-                      {items.length > 0 && (
+                      {itemsLen > 0 && (
                         <SelectMenu
                           items={items}
                           value={value}
