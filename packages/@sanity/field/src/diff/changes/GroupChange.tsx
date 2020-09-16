@@ -1,5 +1,5 @@
-import {useDocumentOperation} from '@sanity/react-hooks'
 import * as React from 'react'
+import {useDocumentOperation} from '@sanity/react-hooks'
 import {useHover} from '../../utils/useHover'
 import {GroupChangeNode, OperationsAPI} from '../../types'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
@@ -16,8 +16,9 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
   const handleRevertChanges = React.useCallback(() => undoChange(group, rootDiff, docOperations), [
-    documentId,
-    group
+    group,
+    rootDiff,
+    docOperations
   ])
 
   return (
@@ -28,7 +29,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
 
       <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
         {changes.map(change => (
-          <ChangeResolver key={change.key} change={change} isGrouped />
+          <ChangeResolver key={change.key} change={change} />
         ))}
 
         <div ref={hoverRef} className={styles.revertChangesButtonContainer}>

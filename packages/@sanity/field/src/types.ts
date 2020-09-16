@@ -93,17 +93,8 @@ export interface ArrayItemMetadata {
 export type DiffComponent<T extends Diff = Diff> = ComponentType<DiffProps<T>>
 export type DiffComponentOptions<T extends Diff = Diff> = {
   component: DiffComponent<T>
-  showHeader: ShowDiffHeader
+  showHeader?: boolean
 }
-
-/* eslint-disable no-bitwise, no-shadow */
-export enum ShowDiffHeader {
-  Never,
-  WhenMoved = 1 << 1,
-  WhenNotGrouped = 1 << 2,
-  Always = 1 << 3
-}
-/* eslint-enable no-bitwise, no-shadow */
 
 export type DiffProps<T extends Diff = Diff> = {
   diff: T

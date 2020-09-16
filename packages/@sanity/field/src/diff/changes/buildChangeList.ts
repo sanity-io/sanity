@@ -3,6 +3,7 @@ import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
+import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {
   ArrayDiff,
   ArraySchemaType,
@@ -10,7 +11,6 @@ import {
   ChangeTitlePath,
   Diff,
   DiffComponent,
-  DiffComponentOptions,
   FieldChangeNode,
   ItemDiff,
   MultiFieldSet,
@@ -18,13 +18,14 @@ import {
   ObjectField,
   ObjectSchemaType,
   Path,
-  SchemaType,
-  ShowDiffHeader
+  SchemaType
 } from '../../types'
 
 interface DiffContext {
   itemDiff?: ItemDiff
   parentDiff?: ArrayDiff | ObjectDiff
+  parentSchema?: ArraySchemaType | ObjectSchemaType
+  fieldFilter?: string[]
 }
 
 export function buildChangeList(
@@ -54,16 +55,17 @@ export function buildObjectChangeList(
   diff: ObjectDiff,
   path: Path = [],
   titlePath: ChangeTitlePath = [],
-  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+  diffContext: DiffContext = {}
 ): ChangeNode[] {
   const changes: ChangeNode[] = []
 
+  const childContext: DiffContext = {...diffContext, parentSchema: schemaType}
   const fieldSets = schemaType.fieldsets || schemaType.fields.map(field => ({single: true, field}))
   for (const fieldSet of fieldSets) {
     if (fieldSet.single) {
-      changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, diffContext))
+      changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, childContext))
     } else {
-      changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, diffContext))
+      changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, childContext))
     }
   }
 
@@ -169,7 +171,7 @@ export function buildArrayChangeList(
       diff.items.indexOf(itemDiff)
 
     const itemPath = path.concat(segment)
-    const itemContext: DiffContext = {itemDiff, parentDiff: diff}
+    const itemContext: DiffContext = {itemDiff, parentDiff: diff, parentSchema: schemaType}
     const itemTitlePath = titlePath.concat({
       hasMoved: itemDiff.hasMoved,
       toIndex: itemDiff.toIndex,
@@ -223,7 +225,7 @@ function getFieldChange(
   diff: Diff,
   path: Path,
   titlePath: ChangeTitlePath,
-  {itemDiff, parentDiff}: DiffContext = {}
+  {itemDiff, parentDiff, parentSchema}: DiffContext = {}
 ): FieldChangeNode[] {
   const {fromValue, toValue, type} = diff
 
@@ -241,13 +243,22 @@ function getFieldChange(
     error = getValueError(toValue, schemaType)
   }
 
-  let showHeader: DiffComponentOptions['showHeader'] = ShowDiffHeader.Always
+  let showHeader = true
   let component: DiffComponent | undefined
+
   const diffComponent = resolveDiffComponent(schemaType)
-  if (diffComponent) {
+  if (diffComponent && typeof diffComponent === 'function') {
+    // Just a diff component with default options
+    component = diffComponent
+  } else if (diffComponent) {
+    // Diff component with options
+    component = diffComponent.component
     showHeader =
-      typeof diffComponent === 'function' ? ShowDiffHeader.Always : diffComponent.showHeader
-    component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
+      typeof diffComponent.showHeader === 'undefined' ? showHeader : diffComponent.showHeader
+  }
+
+  if (parentSchema && parentSchema.jsonType === 'array' && hasPTMemberType(parentSchema)) {
+    showHeader = Boolean(itemDiff && itemDiff.fromIndex !== itemDiff.toIndex && itemDiff.hasMoved)
   }
 
   return [
