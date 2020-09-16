@@ -1,23 +1,11 @@
 import classNames from 'classnames'
 import React, {cloneElement, forwardRef, useEffect, useRef, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Modifier} from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
 import {Placement} from '../types'
 import {PopoverArrow} from './popoverArrow'
 
 import styles from './popover.css'
-
-const applyModifer: Modifier<'applyMaxSize', Record<string, unknown>> = {
-  name: 'applyMaxSize',
-  enabled: true,
-  phase: 'beforeWrite',
-  requires: ['maxSize'],
-  fn({state}) {
-    const {height} = state.modifiersData.maxSize
-    state.styles.popper.maxHeight = `${height}px`
-  }
-}
 
 function setRef<T = unknown>(ref: (v: T) => void | React.MutableRefObject<T> | null, val: T) {
   if (typeof ref === 'object' && ref !== null) (ref as any).current = val
@@ -90,8 +78,7 @@ export const Popover = forwardRef(
           options: {
             padding: 8
           }
-        },
-        applyModifer
+        }
       ]
     })
 
