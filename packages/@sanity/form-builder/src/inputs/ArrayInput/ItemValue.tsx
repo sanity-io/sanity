@@ -195,7 +195,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
       return (
         <div>
           <EditItemFold title={title} onClose={this.handleEditStop}>
-            <PresenceOverlay>{content}</PresenceOverlay>
+            <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
           </EditItemFold>
         </div>
       )
@@ -217,7 +217,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onAction={this.handleDialogAction}
             placement="auto"
           >
-            <PresenceOverlay>{content}</PresenceOverlay>
+            <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
           </Popover>
         </div>
       )
@@ -231,7 +231,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         // actions={actions}
         onAction={this.handleDialogAction}
       >
-        <PresenceOverlay>{content}</PresenceOverlay>
+        <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
       </DefaultDialog>
     )
   }

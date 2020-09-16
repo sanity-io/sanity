@@ -50,7 +50,7 @@ export function DefaultObjectEditing(props: Props) {
           title={type.title}
           size="medium"
         >
-          <PresenceOverlay>
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
             <FormBuilderInput
               focusPath={focusPath}
               level={0}
