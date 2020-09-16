@@ -1,9 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-/* @todo coder styling, fix me  */
 .crumb {
-  flex: 1;
+  display: flex;
   font-size: 13px;
+  margin: 0 0 0.5em;
 
   @nest & strong {
     font-weight: 600;

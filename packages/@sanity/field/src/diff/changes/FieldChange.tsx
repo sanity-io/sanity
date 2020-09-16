@@ -4,7 +4,6 @@ import {FieldChangeNode, OperationsAPI, ShowDiffHeader} from '../../types'
 import {DiffContext} from '../context/DiffContext'
 import {FallbackDiff} from '../fallback/FallbackDiff'
 import {ValueError} from './ValueError'
-import {ChangeHeader} from './ChangeHeader'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {RevertChangesButton} from './RevertChangesButton'
@@ -12,6 +11,7 @@ import {undoChange} from './undoChange'
 
 import styles from './FieldChange.css'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
+import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 
 function hasFlag(value: ShowDiffHeader, flag: number) {
   // eslint-disable-next-line no-bitwise
@@ -43,7 +43,7 @@ export function FieldChange({
 
   return (
     <div className={rootClass}>
-      {showHeader && <ChangeHeader titlePath={change.titlePath} />}
+      {showHeader && <ChangeBreadcrumb titlePath={change.titlePath} />}
 
       <DiffInspectWrapper change={change}>
         <div className={styles.change}>
