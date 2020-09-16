@@ -4,13 +4,14 @@ import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import Menu from 'part:@sanity/components/menus/default'
 import {Popover} from 'part:@sanity/components/popover'
+import Escapable from 'part:@sanity/components/utilities/escapable'
 import React from 'react'
 
 import styles from './LoginStatus.css'
 
 interface MenuItem {
   action: string
-  icon: React.ComponentType<{}>
+  icon: React.ComponentType<Record<string, unknown>>
   title: string
 }
 
@@ -37,7 +38,7 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
     this.setState(state => ({isOpen: !state.isOpen}))
   }
 
-  handleClickOutside = () => {
+  handleClose = () => {
     this.setState({isOpen: false})
   }
 
@@ -57,7 +58,7 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
     )
 
     return (
-      <ClickOutside onClickOutside={this.handleClickOutside}>
+      <ClickOutside onClickOutside={this.handleClose}>
         {ref => (
           <button
             className={styles.root}
@@ -81,6 +82,8 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
                 <ChevronDownIcon />
               </div>
             </div>
+
+            {this.state.isOpen && <Escapable onEscape={this.handleClose} />}
           </button>
         )}
       </ClickOutside>
