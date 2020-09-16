@@ -53,7 +53,6 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           onClose={onClose}
           title={type.title}
           size="small"
-          padding="none"
         >
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <FormBuilderInput
