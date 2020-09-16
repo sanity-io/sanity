@@ -1,7 +1,6 @@
 import React from 'react'
 import {PresenceOverlay, FieldPresence} from '@sanity/base/presence'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import Button from 'part:@sanity/components/buttons/default'
 import {setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import {FormBuilderInput} from 'part:@sanity/form-builder'
@@ -24,27 +23,25 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
   return (
     <>
       {isOpen && (
-        <Dialog onClose={() => setIsOpen(false)}>
+        <Dialog onClose={() => setIsOpen(false)} padding="medium">
           <PresenceOverlay>
-            <DialogContent padding="medium">
-              <div style={{padding: 10}}>
-                {type.fields.map((field, i) => (
-                  // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
-                  // for the given field type
-                  <FormBuilderInput
-                    level={level + 1}
-                    key={field.name}
-                    type={field.type}
-                    value={value && value[field.name]}
-                    onChange={patchEvent => handleFieldChange(field, patchEvent)}
-                    path={[field.name]}
-                    focusPath={focusPath}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                  />
-                ))}
-              </div>
-            </DialogContent>
+            <div style={{padding: 10}}>
+              {type.fields.map((field, i) => (
+                // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
+                // for the given field type
+                <FormBuilderInput
+                  level={level + 1}
+                  key={field.name}
+                  type={field.type}
+                  value={value && value[field.name]}
+                  onChange={patchEvent => handleFieldChange(field, patchEvent)}
+                  path={[field.name]}
+                  focusPath={focusPath}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                />
+              ))}
+            </div>
           </PresenceOverlay>
         </Dialog>
       )}
