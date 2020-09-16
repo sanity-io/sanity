@@ -17,7 +17,7 @@ function missingContext<T = any>(): T {
   throw new Error('Pane is missing router context')
 }
 
-export const exclusiveParams = ['view', 'since']
+export const exclusiveParams = ['view', 'since', 'rev']
 
 type PaneSegment = {id: string; payload?: unknown; params?: Record<string, any>}
 type RouterPanesState = Array<PaneSegment[]>
