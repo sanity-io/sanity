@@ -51,7 +51,7 @@ function PopoverExample({boundary, content, open, placement}: any) {
     <div ref={boundaryRef} style={{minWidth: 200, minHeight: 200, outline: '1px solid red'}}>
       <Popover
         boundaryElement={boundary === 'wrapper' ? boundaryRef.current : null}
-        content={popoverContent as any}
+        content={popoverContent}
         open={open}
         placement={placement}
       >
