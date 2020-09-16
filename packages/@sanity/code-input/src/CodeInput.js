@@ -25,6 +25,7 @@ import {
 import 'brace/mode/batchfile'
 import 'brace/mode/css'
 import 'brace/mode/html'
+import 'brace/mode/typescript'
 import 'brace/mode/javascript'
 import 'brace/mode/json'
 import 'brace/mode/jsx'
