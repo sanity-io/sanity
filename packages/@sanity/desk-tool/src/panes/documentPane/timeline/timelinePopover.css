@@ -1,0 +1,7 @@
+.root {
+  /* root */
+}
+
+.mounted {
+  transition: transform 200ms;
+}

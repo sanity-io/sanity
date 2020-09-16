@@ -41,21 +41,27 @@
 
 .root {
   position: relative;
-  -webkit-font-smoothing: inherit;
-  appearance: none;
-  font: inherit;
-  border-radius: var(--border-radius-medium);
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  display: block;
-  box-sizing: border-box;
+  min-width: 244px;
   background-color: var(--timeline-event-enabled-bg);
   color: var(--timeline-event-enabled-fg);
-  border: 0;
-  text-align: left;
-  min-width: 244px;
-  outline: none;
+  border-radius: var(--border-radius-medium);
+
+  @nest & > button {
+    -webkit-font-smoothing: inherit;
+    appearance: none;
+    font: inherit;
+    background: none;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: var(--border-radius-medium);
+    text-align: left;
+    outline: none;
+  }
 
   @nest &::before, &::after {
     content: '';

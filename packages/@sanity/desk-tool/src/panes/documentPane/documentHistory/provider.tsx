@@ -1,6 +1,6 @@
 import {useObservable} from '@sanity/react-hooks'
 import client from 'part:@sanity/base/client'
-import React, {useMemo, useCallback} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {usePaneRouter} from '../../../contexts/PaneRouterContext'
 import {Doc} from '../types'
 import {DocumentHistoryContext} from './context'
@@ -9,25 +9,22 @@ import {Timeline} from './history/timeline'
 
 interface DocumentHistoryProviderProps {
   children: React.ReactNode
-  draft: Doc | null
   documentId: string
-  published: Doc | null
   value: Doc | null
 }
 
 declare const __DEV__: boolean
 
 export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
+  const {children, documentId, value} = props
+
   const paneRouter = usePaneRouter()
 
-  const timeline = useMemo(
-    () =>
-      new Timeline({
-        publishedId: props.documentId,
-        enableTrace: __DEV__
-      }),
-    [props.documentId]
-  )
+  const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
+
+  const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
+    documentId
+  ])
 
   // note: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -36,10 +33,10 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
       () =>
         createObservableController({
           timeline,
-          documentId: props.documentId,
+          documentId,
           client
         }),
-      [props.documentId]
+      [documentId, timeline]
     )
   )!
 
@@ -65,7 +62,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
     [paneRouter]
   )
 
-  let displayed = props.value
+  let displayed = value
 
   if (historyController.onOlderRevision()) {
     displayed = historyController.displayed()
@@ -79,10 +76,12 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
         historyController,
         setRange,
         close,
-        open
+        open,
+        timelineMode,
+        setTimelineMode
       }}
     >
-      {props.children}
+      {children}
     </DocumentHistoryContext.Provider>
   )
 }

@@ -19,21 +19,6 @@ interface TimelineProps {
   bottomSelection: Chunk
 }
 
-export function sinceTimelineProps(since: Chunk, rev: Chunk) {
-  return {
-    topSelection: rev,
-    bottomSelection: since,
-    disabledBeforeSelection: true
-  }
-}
-
-export function revTimelineProps(rev: Chunk) {
-  return {
-    topSelection: rev,
-    bottomSelection: rev
-  }
-}
-
 // Must be a positive number
 const LOAD_MORE_OFFSET = 200
 
@@ -103,18 +88,17 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
             }
 
             const item = (
-              <li key={chunk.id}>
-                <TimelineItem
-                  chunk={chunk}
-                  isSelectionBottom={isSelectionBottom}
-                  isSelectionTop={isSelectionTop}
-                  state={state}
-                  onSelect={onSelect}
-                  title={chunk.id}
-                  type={chunk.type}
-                  timestamp={chunk.endTimestamp}
-                />
-              </li>
+              <TimelineItem
+                chunk={chunk}
+                isSelectionBottom={isSelectionBottom}
+                isSelectionTop={isSelectionTop}
+                key={chunk.id}
+                state={state}
+                onSelect={onSelect}
+                title={chunk.id}
+                type={chunk.type}
+                timestamp={chunk.endTimestamp}
+              />
             )
 
             // Flip it back to normal after we've rendered the active one.

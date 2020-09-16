@@ -1,4 +1,4 @@
-import {ChunkType} from '@sanity/field/diff'
+import {Chunk, ChunkType} from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import PlusIcon from 'part:@sanity/base/plus-icon'
@@ -32,4 +32,19 @@ export function formatTimelineEventLabel(type: ChunkType) {
 
 export function getTimelineEventIconComponent(type: ChunkType) {
   return ICON_COMPONENTS[type]
+}
+
+export function sinceTimelineProps(since: Chunk, rev: Chunk) {
+  return {
+    topSelection: rev,
+    bottomSelection: since,
+    disabledBeforeSelection: true
+  }
+}
+
+export function revTimelineProps(rev: Chunk) {
+  return {
+    topSelection: rev,
+    bottomSelection: rev
+  }
 }
