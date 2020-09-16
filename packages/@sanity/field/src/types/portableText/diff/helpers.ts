@@ -1,6 +1,6 @@
 import {startCase} from 'lodash'
 import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
-import {SchemaType, ObjectSchemaType} from '../../../types'
+import {SchemaType, ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
   PortableTextBlock,
@@ -11,9 +11,14 @@ import {
 
 export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
+export function hasPTMemberType(schemaType: ArraySchemaType): boolean {
+  return schemaType.of.some(isPTSchemaType)
+}
+
 export function isPTSchemaType(schemaType: SchemaType): boolean {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
 }
+
 export function isHeader(node: PortableTextBlock): boolean {
   return !!node.style && ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(node.style)
 }

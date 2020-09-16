@@ -1,6 +1,6 @@
-import {useDocumentOperation} from '@sanity/react-hooks'
 import React, {useCallback, useContext} from 'react'
-import {FieldChangeNode, OperationsAPI, ShowDiffHeader} from '../../types'
+import {useDocumentOperation} from '@sanity/react-hooks'
+import {FieldChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../context/DiffContext'
 import {FallbackDiff} from '../fallback/FallbackDiff'
 import {ValueError} from './ValueError'
@@ -13,18 +13,7 @@ import styles from './FieldChange.css'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 
-function hasFlag(value: ShowDiffHeader, flag: number) {
-  // eslint-disable-next-line no-bitwise
-  return (value & flag) === flag
-}
-
-export function FieldChange({
-  change,
-  isGrouped
-}: {
-  change: FieldChangeNode
-  isGrouped?: boolean
-}): React.ReactElement {
+export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {documentId, schemaType, rootDiff, isComparingCurrent} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
@@ -36,14 +25,9 @@ export function FieldChange({
   ])
 
   const rootClass = change.error ? styles.error : styles.root
-  const showHeader =
-    hasFlag(change.showHeader, ShowDiffHeader.Always) ||
-    (hasFlag(change.showHeader, ShowDiffHeader.WhenMoved) && change.itemDiff?.hasMoved) ||
-    (hasFlag(change.showHeader, ShowDiffHeader.WhenNotGrouped) && !isGrouped)
-
   return (
     <div className={rootClass}>
-      {showHeader && <ChangeBreadcrumb titlePath={change.titlePath} />}
+      {change.showHeader && <ChangeBreadcrumb titlePath={change.titlePath} />}
 
       <DiffInspectWrapper change={change}>
         <div className={styles.change}>
