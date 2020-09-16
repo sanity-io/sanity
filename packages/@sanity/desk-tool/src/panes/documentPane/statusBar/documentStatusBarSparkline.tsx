@@ -65,7 +65,7 @@ function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props)
             </div>
           )
         })}
-        <div className={styles.sparkline} />
+        <span className={styles.sparkline} />
       </div>
       <div className={styles.statusDetails}>
         <div className={styles.label}>{lastState.label}</div>
