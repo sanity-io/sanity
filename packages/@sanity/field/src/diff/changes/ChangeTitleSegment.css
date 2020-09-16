@@ -2,6 +2,8 @@
 .text:not(:only-child) {
   max-width: 100px;
   text-overflow: ellipsis;
+  overflow-x: hidden;
+  vertical-align: bottom;
 }
 
 .indexGroup {
