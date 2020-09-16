@@ -24,8 +24,8 @@
   --timeline-event-within-selection-bg: #e8f1fe;
   --timeline-event-within-selection-fg: #2276fc;
   --timeline-event-within-selection-border: #2276fc;
-  --timeline-event-within-selection-icon-bg: #2276fc;
-  --timeline-event-within-selection-icon-fg: #fff;
+  --timeline-event-within-selection-icon-bg: #fff;
+  --timeline-event-within-selection-icon-fg: #2276fc;
 
   --timeline-event-selected-bg: #2276fc;
   --timeline-event-selected-fg: #fff;
@@ -203,6 +203,7 @@
   @nest .root[data-state='withinSelection'] & {
     box-shadow: none;
     background-color: var(--timeline-event-within-selection-icon-bg);
+    border: 1px var(--timeline-event-within-selection-border) solid;
     color: var(--timeline-event-within-selection-icon-fg);
   }
 
