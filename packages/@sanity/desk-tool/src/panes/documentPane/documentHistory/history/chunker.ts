@@ -34,7 +34,7 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
 
     return {
       index: 0,
-      id: left.id,
+      id: right.id,
       type: left.type,
       start: left.start,
       end: right.end,
