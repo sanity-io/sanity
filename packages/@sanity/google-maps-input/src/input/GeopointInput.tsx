@@ -178,11 +178,12 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
           {modalOpen && (
             <Dialog
-              title="Place on map"
+              title="Place the marker on the map"
               onClose={this.handleCloseModal}
               onCloseClick={this.handleCloseModal}
               message="Select location by dragging the marker or search for a place"
               isOpen={modalOpen}
+              padding="none"
             >
               <div className={styles.dialogInner}>
                 <GoogleMapsLoadProxy>
