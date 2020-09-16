@@ -2,7 +2,6 @@ import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean, number} from 'part:@sanity/storybook/addons/knobs'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
@@ -29,10 +28,10 @@ function renderContent(type) {
       return <div>{paragraphs}</div>
     case 'example':
       return (
-        <DialogContent size="medium" padding="medium">
+        <>
           <h1>With dialog content</h1>
           <p>{paragraph}</p>
-        </DialogContent>
+        </>
       )
     default:
       return 'Minimal'
@@ -123,6 +122,7 @@ export function PopoverStory() {
           )}
           onClose={boolean('Has onClose', false, 'test') ? action('onClose') : undefined}
           placement={placement}
+          // size="medium"
         >
           {contentTest && renderContent(contentTest)}
         </PopOverDialog>
