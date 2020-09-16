@@ -26,7 +26,7 @@ export function FieldChange({
   isGrouped?: boolean
 }): React.ReactElement {
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {documentId, schemaType, rootDiff} = useContext(DocumentChangeContext)
+  const {documentId, schemaType, rootDiff, isComparingCurrent} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
   const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
@@ -57,9 +57,11 @@ export function FieldChange({
             </DiffErrorBoundary>
           )}
 
-          <div className={styles.revertChangesButtonContainer}>
-            <RevertChangesButton onClick={handleRevertChanges} />
-          </div>
+          {isComparingCurrent && (
+            <div className={styles.revertChangesButtonContainer}>
+              <RevertChangesButton onClick={handleRevertChanges} />
+            </div>
+          )}
         </div>
       </DiffInspectWrapper>
     </div>
