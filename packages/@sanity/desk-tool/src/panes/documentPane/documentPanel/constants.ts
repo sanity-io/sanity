@@ -1,0 +1,4 @@
+export const DEFAULT_MARGINS = [0, 0, 1, 0]
+
+export const MARGINS_NARROW_SCREEN_WITH_TABS = [74, 0, 64, 0]
+export const MARGINS_NARROW_SCREEN_WITHOUT_TABS = [53, 0, 64, 0]
