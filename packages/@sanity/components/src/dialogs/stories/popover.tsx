@@ -2,10 +2,9 @@ import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean, number} from 'part:@sanity/storybook/addons/knobs'
-import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-import React from 'react'
+import React, {useState} from 'react'
 import {DialogAction} from '../types'
 
 const chance = new Chance()
@@ -66,28 +65,6 @@ export function PopoverStory() {
   const top = number('Reference top', 50, percentRange, 'test')
   const width = number('Reference width', 150, sizeRange, 'test')
   const height = number('Reference height', 150, sizeRange, 'test')
-  const placement = select(
-    'Placement',
-    [
-      'auto',
-      'top',
-      'right',
-      'bottom',
-      'left',
-      'auto-start',
-      'top-start',
-      'right-start',
-      'bottom-start',
-      'left-start',
-      'auto-end',
-      'top-end',
-      'right-end',
-      'bottom-end',
-      'left-end'
-    ],
-    'auto',
-    'props'
-  )
 
   const refStyles: React.CSSProperties = {
     position: 'absolute',
@@ -100,34 +77,74 @@ export function PopoverStory() {
 
   const contentTest = select('content', dialogTestContent, 'minimal')
 
-  if (window) {
-    // Triggers update of popper.js (only reacts to scroll and resize by default)
-    const event = document.createEvent('HTMLEvents')
-    event.initEvent('resize', true, false)
-    window.dispatchEvent(event)
+  const props = {
+    actions: boolean('Actions', false, 'test') ? actions : [],
+    color: select('Color', [undefined, 'danger', 'default'], undefined, 'Props'),
+    onClose: boolean('Closeable', false, 'test') ? action('onClose') : undefined,
+    hasAnimation: boolean('Animate in', false, 'Props'),
+    onAction: action('onAction'),
+    onClickOutside: action('onClickOutside'),
+    padding: select('Padding', [undefined, 'none', 'small', 'medium', 'large'], undefined, 'Props'),
+    placement: select(
+      'Placement',
+      [
+        'auto',
+        'top',
+        'right',
+        'bottom',
+        'left',
+        'auto-start',
+        'top-start',
+        'right-start',
+        'bottom-start',
+        'left-start',
+        'auto-end',
+        'top-end',
+        'right-end',
+        'bottom-end',
+        'left-end'
+      ],
+      'auto',
+      'Props'
+    ),
+    title: text('Title', 'Title', 'Props'),
+    size: select(
+      'Size',
+      {
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large',
+        auto: 'Auto'
+      },
+      'auto',
+      'Props'
+    ),
+    useOverlay: boolean('Use overlay', false, 'Props')
   }
 
   return (
-    <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
-      <div style={refStyles}>
-        <PopOverDialog
-          actions={boolean('has actions', false, 'test') ? actions : []}
-          color={select('color', [undefined, 'danger', 'default'], undefined, 'props')}
-          title={text('Title', 'Title', 'props')}
-          padding={select(
-            'Padding',
-            [undefined, 'none', 'small', 'medium', 'large'],
-            undefined,
-            'props'
-          )}
-          onClose={boolean('Has onClose', false, 'test') ? action('onClose') : undefined}
-          placement={placement}
-          // size="medium"
-        >
-          {contentTest && renderContent(contentTest)}
-        </PopOverDialog>
+    <Sanity part="part:@sanity/components/dialogs/popover" propTables={[PopoverDialog]}>
+      <Example
+        {...props}
+        content={contentTest && renderContent(contentTest)}
+        refStyles={refStyles}
+      />
+    </Sanity>
+  )
+}
+
+function Example({content, refStyles, ...props}) {
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+
+  return (
+    <>
+      <PopoverDialog {...props} referenceElement={element}>
+        {content}
+      </PopoverDialog>
+
+      <div ref={setElement} style={refStyles}>
         Reference element
       </div>
-    </Sanity>
+    </>
   )
 }
