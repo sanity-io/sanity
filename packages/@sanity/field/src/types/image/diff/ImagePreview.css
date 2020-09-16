@@ -8,27 +8,29 @@
   grid-template-rows: 1fr auto;
 }
 
+.header {
+  padding: var(--small-padding) var(--small-padding) 0;
+}
+
 .imageWrapper {
   max-height: 190px;
   position: relative;
+  background-color: color(var(--gray-lightest) alpha(50%));
+  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
   display: flex;
-  flex: 1;
-  overflow: hidden;
-
-  /* "Border as padding" to fix absolutely positioned crop */
-  border: 0px solid transparent;
-  border-width: var(--small-padding) var(--small-padding) 0;
+  flex-direction: column;
 
   @nest & .image {
-    background-color: color(var(--gray-lightest) alpha(50%));
-    background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
-      linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
-      linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    flex: 1;
+    min-height: 0;
     object-fit: contain;
     width: 100%;
+    height: 100%;
 
     @nest &[data-action='removed'] {
       opacity: 0.5;
@@ -41,19 +43,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .imageWrapperChanged {
   composes: imageWrapper;
   opacity: 0.45;
-}
-
-.crop,
-.hotspot {
-  position: absolute;
-  border: 1px solid transparent;
 }
 
 .strikethrough {

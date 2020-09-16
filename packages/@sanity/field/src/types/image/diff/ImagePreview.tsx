@@ -21,26 +21,31 @@ export default function ImagePreview(props: ImagePreviewProps): React.ReactEleme
     .fit('max')
 
   const assetChanged = diff.fromValue?.asset?._ref !== diff.toValue?.asset?._ref
-  const className = is === 'from' && assetChanged ? styles.imageWrapperChanged : styles.imageWrapper
+  const imageWrapperClassName =
+    is === 'from' && assetChanged ? styles.imageWrapperChanged : styles.imageWrapper
   const metaAction = action === 'changed' ? undefined : action
 
   return (
     <div className={styles.root}>
-      <div className={className}>
-        <img
-          className={styles.image}
-          src={imageSource.toString() || ''}
-          alt={title}
-          data-action={metaAction}
-        />
+      <div className={styles.header}>
+        <div className={imageWrapperClassName}>
+          <img
+            className={styles.image}
+            src={imageSource.toString() || ''}
+            alt={title}
+            data-action={metaAction}
+          />
 
-        <HotspotCropSVG
-          className={styles.hotspotCrop}
-          crop={crop && !isDefaultCrop(crop) ? crop : undefined}
-          diff={diff}
-          hash={simpleHash(`${imageSource.toString() || ''}-${is}`)}
-          hotspot={hotspot && !isDefaultHotspot(hotspot) ? hotspot : undefined}
-        />
+          <HotspotCropSVG
+            className={styles.hotspotCrop}
+            crop={crop && !isDefaultCrop(crop) ? crop : undefined}
+            diff={diff}
+            hash={simpleHash(`${imageSource.toString() || ''}-${is}`)}
+            hotspot={hotspot && !isDefaultHotspot(hotspot) ? hotspot : undefined}
+            width={dimensions?.width}
+            height={dimensions?.height}
+          />
+        </div>
       </div>
 
       <MetaInfo title={title} icon={ImageIcon} markRemoved={assetChanged && is === 'from'}>

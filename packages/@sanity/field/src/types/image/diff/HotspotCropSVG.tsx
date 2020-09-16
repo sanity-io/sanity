@@ -8,22 +8,38 @@ interface HotspotCropSVGProps {
   diff: ObjectDiff<Image>
   hash: string
   hotspot?: Hotspot
+  width?: number
+  height?: number
 }
 
 export function HotspotCropSVG(
-  props: HotspotCropSVGProps & Omit<React.SVGProps<SVGElement>, 'ref'>
+  props: HotspotCropSVGProps & Omit<React.SVGProps<SVGElement>, 'ref' | 'width' | 'height'>
 ) {
-  const {crop, diff, hash, hotspot, ...restProps} = props
+  const {crop, diff, hash, hotspot, width = 100, height = 100, ...restProps} = props
   const cropColor = useDiffAnnotationColor(diff, 'crop')
   const hotspotColor = useDiffAnnotationColor(diff, 'hotspot')
 
   return (
-    <svg {...restProps} fill="none" viewBox="0 0 100 100">
+    <svg
+      {...restProps}
+      fill="none"
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+    >
       <defs>
         {crop && hotspot && (
           <mask id={`mask-hotspot-${hash}`}>
-            <rect x={0} y={0} width={100} height={100} fill="#fff" />
-            <HotspotSVG hotspot={hotspot} fill="#000" offset={1} />
+            <rect x={0} y={0} width={width} height={height} fill="#fff" />
+            <HotspotSVG
+              hotspot={hotspot}
+              fill="#000"
+              offset={1}
+              width={width}
+              height={height}
+              stroke="#000"
+              strokeWidth={3}
+            />
           </mask>
         )}
       </defs>
@@ -36,6 +52,8 @@ export function HotspotCropSVG(
             mask={hotspot ? `url(#mask-hotspot-${hash})` : undefined}
             stroke={cropColor.border}
             strokeWidth={1}
+            width={width}
+            height={height}
           />
         </DiffAnnotationTooltip>
       )}
@@ -47,6 +65,8 @@ export function HotspotCropSVG(
             fill={hexToRgba(hotspotColor.border, 0.25)}
             stroke={hotspotColor.border}
             strokeWidth={1}
+            width={width}
+            height={height}
           />
         </DiffAnnotationTooltip>
       )}
@@ -54,12 +74,20 @@ export function HotspotCropSVG(
   )
 }
 
-function CropSVG({crop, ...restProps}: {crop: Crop} & React.SVGProps<SVGRectElement>) {
+function CropSVG({
+  crop,
+  width,
+  height,
+  ...restProps
+}: {crop: Crop; width: number; height: number} & Omit<
+  React.SVGProps<SVGRectElement>,
+  'width' | 'height'
+>) {
   const rectProps = {
-    x: crop.left * 100,
-    y: crop.top * 100,
-    width: (1 - crop.right - crop.left) * 100,
-    height: (1 - crop.bottom - crop.top) * 100
+    x: crop.left * width,
+    y: crop.top * height,
+    width: (1 - crop.right - crop.left) * width,
+    height: (1 - crop.bottom - crop.top) * height
   }
 
   return <rect {...restProps} {...rectProps} style={{vectorEffect: 'non-scaling-stroke'}} />
@@ -68,13 +96,18 @@ function CropSVG({crop, ...restProps}: {crop: Crop} & React.SVGProps<SVGRectElem
 function HotspotSVG({
   hotspot,
   offset = 0,
+  width,
+  height,
   ...restProps
-}: {hotspot: Hotspot; offset?: number} & React.SVGProps<SVGEllipseElement>) {
+}: {hotspot: Hotspot; offset?: number; width: number; height: number} & Omit<
+  React.SVGProps<SVGEllipseElement>,
+  'width' | 'height'
+>) {
   const ellipseProps = {
-    cx: hotspot.x * 100,
-    cy: hotspot.y * 100,
-    rx: (hotspot.width / 2) * 100 + offset,
-    ry: (hotspot.height / 2) * 100 + offset
+    cx: hotspot.x * width,
+    cy: hotspot.y * height,
+    rx: (hotspot.width / 2) * width + offset,
+    ry: (hotspot.height / 2) * height + offset
   }
 
   return <ellipse {...restProps} {...ellipseProps} style={{vectorEffect: 'non-scaling-stroke'}} />
