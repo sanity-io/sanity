@@ -36,6 +36,7 @@ interface DocumentPanelProps {
   onTimelineOpen: () => void
   paneTitle?: string
   published: Doc | null
+  rootElement: HTMLDivElement | null
   schemaType: any
   timelineMode: 'rev' | 'since' | 'closed'
   toggleInspect: (val: boolean) => void
@@ -122,6 +123,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           onSetActiveView={props.onSetActiveView}
           onSplitPane={props.onSplitPane}
           onTimelineOpen={props.onTimelineOpen}
+          rootElement={props.rootElement}
           schemaType={props.schemaType}
           setFocusPath={setFocusPath}
           timelineMode={props.timelineMode}

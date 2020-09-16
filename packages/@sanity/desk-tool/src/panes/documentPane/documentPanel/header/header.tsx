@@ -35,6 +35,7 @@ export interface DocumentPanelHeaderProps {
   onSplitPane: () => void
   onTimelineOpen: () => void
   rev: Chunk | null
+  rootElement: HTMLDivElement | null
   schemaType: any
   setFocusPath: (path: any) => void
   timelineMode: 'rev' | 'since' | 'closed'
@@ -65,6 +66,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     onSplitPane,
     onTimelineOpen,
     rev,
+    rootElement,
     schemaType,
     setFocusPath,
     timelineMode,
@@ -112,6 +114,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
           <div>
             <ValidationMenu
+              boundaryElement={rootElement}
               isOpen={isValidationOpen}
               markers={markers}
               schemaType={schemaType}
@@ -122,6 +125,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
           <div>
             <DocumentPanelContextMenu
+              boundaryElement={rootElement}
               isCollapsed={isCollapsed}
               itemGroups={menuItemGroups}
               items={contextMenuItems}
