@@ -4,6 +4,7 @@
   position: relative;
   line-height: 1.5; /* To make sure the box shadow doesn't get cut off on multiline strings */
   box-shadow: 0 2px 0 var(--component-bg);
+  word-break: break-all;
 
   @nest &:first-of-type {
     border-top-left-radius: 1px;
