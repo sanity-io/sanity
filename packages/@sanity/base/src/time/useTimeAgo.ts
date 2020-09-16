@@ -1,4 +1,4 @@
-import {useEffect, useReducer, useMemo, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {
   format,
   differenceInSeconds,
@@ -24,23 +24,23 @@ interface TimeAgoOpts {
   minimal?: boolean
 }
 
-export function useTimeAgo(time: Date | string, opts: TimeAgoOpts = {}): string {
-  const [resolved, setResolved] = useState(() => formatRelativeTime(time, opts))
+export function useTimeAgo(time: Date | string, {minimal}: TimeAgoOpts = {}): string {
+  const [resolved, setResolved] = useState(() => formatRelativeTime(time, {minimal}))
 
   useEffect(() => {
-    setResolved(formatRelativeTime(time, opts))
-  }, [time, opts.minimal])
+    setResolved(formatRelativeTime(time, {minimal}))
+  }, [time, minimal])
 
   useEffect(() => {
     const id: number | undefined = Number.isFinite(resolved.refreshInterval)
       ? window.setInterval(
-          () => setResolved(formatRelativeTime(time, opts)),
+          () => setResolved(formatRelativeTime(time, {minimal})),
           resolved.refreshInterval
         )
       : undefined
 
     return () => clearInterval(id)
-  }, [time, opts.minimal, resolved.refreshInterval])
+  }, [time, minimal, resolved.refreshInterval])
 
   return resolved.timestamp
 }
