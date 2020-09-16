@@ -10,7 +10,7 @@
 
 .changeListOutlined {
   composes: changeList;
-  border-left-color: var(--state-warning-color);
+  border-left-color: var(--gray);
 }
 
 .changeHeader {
