@@ -11,11 +11,6 @@
 .status {
   display: flex;
   align-items: center;
-  color: var(--text-muted);
-
-  @nest &[data-history-state='active'] {
-    color: var(--gray-lighter);
-  }
 }
 
 .statusBadgesContainer {
@@ -38,7 +33,7 @@
   background: none;
   cursor: pointer;
   text-align: inherit;
-  padding: 4px;
+  padding: 0;
   margin: -5px 0 -4px -4px;
   outline: none;
   color: inherit;
