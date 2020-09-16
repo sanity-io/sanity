@@ -11,6 +11,21 @@ import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
 import TimeAgo from '../../../components/TimeAgo'
 
+// TODO create icon
+const BadgeIcon = () => {
+  const strokeStyle = {
+    stroke: 'currentColor',
+    strokeWidth: 1
+  }
+
+  return (
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.5 3.5L3.5 3.5L3.5 8.5L9 14L14 9L8.5 3.5Z" style={strokeStyle} />
+      <circle cx="7" cy="7" r="1" style={strokeStyle} />
+    </svg>
+  )
+}
+
 export interface Badge {
   label: string
   title: string
@@ -44,13 +59,9 @@ function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props)
               data-color={badge.color}
               title={badge.title}
             >
-              {Icon ? (
-                <span className={`${styles.icon} ${showSyncIndicator ? styles.isSyncing : ''}`}>
-                  <Icon />
-                </span>
-              ) : (
-                badge.label
-              )}
+              <span className={`${styles.icon} ${showSyncIndicator ? styles.isSyncing : ''}`}>
+                {Icon ? <Icon /> : <BadgeIcon />}
+              </span>
             </div>
           )
         })}
