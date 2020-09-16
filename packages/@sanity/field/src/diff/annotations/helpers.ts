@@ -99,10 +99,11 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
   return getDiffAt(fieldDiff, tail, parentPath.concat(segment))
 }
 
+/* eslint-disable no-console, @typescript-eslint/no-unused-vars */
 function warn(msg: string) {
-  // eslint-disable-next-line no-console
-  console.warn(msg)
+  //console.warn(msg)
 }
+/* eslint-enable no-console, @typescript-eslint/no-unused-vars */
 
 function itemMatchesKey(item: ItemDiff, key: KeyedSegment) {
   const itemDiff = item.diff
