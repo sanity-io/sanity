@@ -47,8 +47,8 @@ function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props)
   const lastState = states[states.length - 1]
   const syncState = timeline && useSyncState(timeline.publishedId)
   return (
-    <div className={styles.root}>
-      <div className={styles.statusBadges} data-disabled={disabled}>
+    <div className={styles.root} data-disabled={disabled}>
+      <div className={styles.statusBadges}>
         {states.map((badge, badgeIndex, arr) => {
           const showSyncIndicator = badgeIndex === arr.length - 1 && syncState.isSyncing
           const Icon = showSyncIndicator ? SyncIcon : badge.icon

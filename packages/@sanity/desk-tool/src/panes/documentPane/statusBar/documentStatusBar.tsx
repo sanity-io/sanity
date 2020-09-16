@@ -23,7 +23,7 @@ export function DocumentStatusBar(props: Props) {
   const revision = historyController.revTime?.id || ''
   return (
     <div className={styles.root}>
-      <div className={styles.status} data-history-state={historyController.selectionState}>
+      <div className={styles.status}>
         <button
           className={styles.lastUpdatedButton}
           onClick={openHistory}

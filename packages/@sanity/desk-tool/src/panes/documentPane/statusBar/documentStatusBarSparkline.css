@@ -17,6 +17,33 @@
 .root {
   display: flex;
   align-items: center;
+  padding: 4px;
+  border-radius: var(--border-radius-medium);
+  padding-right: var(--small-padding);
+
+  @nest &[data-disabled='true'] {
+    @nest & .badge {
+      background: var(--gray-lightest);
+      color: var(--gray-lighter);
+    }
+  }
+
+  @nest &:hover:not([data-disabled='true']) {
+    background: var(--gray-lightest);
+
+    @nest & .badge {
+      border-color: var(--gray-lightest);
+
+      @nest &:not(:first-of-type) {
+        color: var(--gray-darkest);
+        background: var(--gray-lighter);
+      }
+    }
+
+    @nest & .statusDetails {
+      color: var(--gray-darkest);
+    }
+  }
 }
 
 .statusBadges {
@@ -30,13 +57,6 @@
 
   @nest & > div + div:not(:last-child) {
     margin-left: var(--small-padding);
-  }
-
-  @nest &[data-disabled='true'] {
-    @nest & .badge {
-      background: var(--gray-lightest); /* TODO */
-      color: var(--gray-lighter); /* TODO */
-    }
   }
 }
 
@@ -60,7 +80,7 @@
   background-color: var(--gray);
   border: 1px solid var(--white);
   color: var(--white);
-  border-radius: var(--size);
+  border-radius: calc(var(--size) * 2);
   height: var(--size);
   width: var(--size);
   z-index: 10;
@@ -106,6 +126,7 @@
 .statusDetails {
   white-space: nowrap;
   margin: -2px 0 -1px;
+  color: var(--text-muted);
 }
 
 .label {
