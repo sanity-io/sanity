@@ -129,7 +129,7 @@ export class FormView extends React.PureComponent<Props> {
 
     return (
       <div className={styles.root}>
-        <PresenceOverlay>
+        <PresenceOverlay margins={[0, 0, 1, 0]}>
           <EditForm
             id={id}
             value={value || initialValue}
