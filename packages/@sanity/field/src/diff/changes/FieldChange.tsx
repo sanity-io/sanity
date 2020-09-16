@@ -11,6 +11,7 @@ import {RevertChangesButton} from './RevertChangesButton'
 import {undoChange} from './undoChange'
 
 import styles from './FieldChange.css'
+import {DiffInspectWrapper} from './DiffInspectWrapper'
 
 function hasFlag(value: ShowDiffHeader, flag: number) {
   // eslint-disable-next-line no-bitwise
@@ -44,21 +45,23 @@ export function FieldChange({
     <div className={rootClass}>
       {showHeader && <ChangeHeader titlePath={change.titlePath} />}
 
-      <div className={styles.change}>
-        {change.error ? (
-          <ValueError error={change.error} />
-        ) : (
-          <DiffErrorBoundary>
-            <DiffContext.Provider value={{path: change.path}}>
-              <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-            </DiffContext.Provider>
-          </DiffErrorBoundary>
-        )}
+      <DiffInspectWrapper change={change}>
+        <div className={styles.change}>
+          {change.error ? (
+            <ValueError error={change.error} />
+          ) : (
+            <DiffErrorBoundary>
+              <DiffContext.Provider value={{path: change.path}}>
+                <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+              </DiffContext.Provider>
+            </DiffErrorBoundary>
+          )}
 
-        <div className={styles.revertChangesButtonContainer}>
-          <RevertChangesButton onClick={handleRevertChanges} />
+          <div className={styles.revertChangesButtonContainer}>
+            <RevertChangesButton onClick={handleRevertChanges} />
+          </div>
         </div>
-      </div>
+      </DiffInspectWrapper>
     </div>
   )
 }
