@@ -46,7 +46,7 @@ export function buildChangeList(
     }
   }
 
-  return [getFieldChange(schemaType, diff, path, titlePath, context)]
+  return getFieldChange(schemaType, diff, path, titlePath, context)
 }
 
 export function buildObjectChangeList(
@@ -195,7 +195,7 @@ export function buildArrayChangeList(
 
     if (children.length === 0) {
       // This can happen when there are no changes to the actual element, it's just been moved
-      acc.push(getFieldChange(memberType, itemDiff.diff, itemPath, itemTitlePath, itemContext))
+      acc.push(...getFieldChange(memberType, itemDiff.diff, itemPath, itemTitlePath, itemContext))
     } else {
       acc.push(...children)
     }
@@ -224,14 +224,21 @@ function getFieldChange(
   path: Path,
   titlePath: ChangeTitlePath,
   {itemDiff, parentDiff}: DiffContext = {}
-): FieldChangeNode {
-  let error
-  if (typeof diff.fromValue !== 'undefined') {
-    error = getValueError(diff.fromValue, schemaType)
+): FieldChangeNode[] {
+  const {fromValue, toValue, type} = diff
+
+  // Treat undefined => [] as no change
+  if (type === 'array' && isEmpty(fromValue) && isEmpty(toValue)) {
+    return []
   }
 
-  if (!error && typeof diff.toValue !== 'undefined') {
-    error = getValueError(diff.toValue, schemaType)
+  let error
+  if (typeof fromValue !== 'undefined') {
+    error = getValueError(fromValue, schemaType)
+  }
+
+  if (!error && typeof toValue !== 'undefined') {
+    error = getValueError(toValue, schemaType)
   }
 
   let showHeader: DiffComponentOptions['showHeader'] = ShowDiffHeader.Always
@@ -243,19 +250,21 @@ function getFieldChange(
     component = typeof diffComponent === 'function' ? diffComponent : diffComponent.component
   }
 
-  return {
-    type: 'field',
-    diff,
-    path,
-    error,
-    itemDiff,
-    parentDiff,
-    titlePath,
-    schemaType,
-    showHeader,
-    key: pathToString(path) || 'root',
-    diffComponent: error ? undefined : component
-  }
+  return [
+    {
+      type: 'field',
+      diff,
+      path,
+      error,
+      itemDiff,
+      parentDiff,
+      titlePath,
+      schemaType,
+      showHeader,
+      key: pathToString(path) || 'root',
+      diffComponent: error ? undefined : component
+    }
+  ]
 }
 
 function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
@@ -263,4 +272,8 @@ function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
     change.titlePath = change.titlePath.slice(byLength)
     return change
   })
+}
+
+function isEmpty(item: unknown): boolean {
+  return (Array.isArray(item) && item.length === 0) || item === null || typeof item === 'undefined'
 }
