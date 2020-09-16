@@ -1,17 +1,14 @@
 import * as React from 'react'
-import {ObjectDiff} from '@sanity/field/diff'
-import {GeopointSchemaType, Geopoint} from '../types'
+import {DiffComponent, ObjectDiff, DiffProps as GenericDiffProps} from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
+import {Geopoint} from '../types'
 import {GeopointMove} from './GeopointMove'
 import styles from './GeopointFieldDiff.css'
 
-export interface DiffProps {
-  diff: ObjectDiff<Geopoint>
-  schemaType: GeopointSchemaType
-}
+export type DiffProps = GenericDiffProps<ObjectDiff<Geopoint>>
 
-export const GeopointFieldDiff: React.ComponentType<DiffProps> = ({diff, schemaType}) => {
+export const GeopointFieldDiff: DiffComponent<ObjectDiff<Geopoint>> = ({diff, schemaType}) => {
   return (
     <div className={styles.root}>
       <GoogleMapsLoadProxy>
