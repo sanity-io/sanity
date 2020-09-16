@@ -16,6 +16,10 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: var(--small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
 }
 
 .noAssets {
