@@ -1,6 +1,7 @@
 import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
+import Escapable from 'part:@sanity/components/utilities/escapable'
 import React, {useCallback} from 'react'
 import {ButtonProps} from '../buttons'
 import {Placement} from '../types'
@@ -45,6 +46,8 @@ export function MenuButton(props: MenuButtonProps & React.HTMLProps<HTMLDivEleme
               </Button>
             </div>
           </Popover>
+
+          {open && <Escapable onEscape={handleClose} />}
         </div>
       )}
     </ClickOutside>
