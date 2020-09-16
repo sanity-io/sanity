@@ -27,7 +27,7 @@ function PopoverExample({refIndex}: {refIndex: number}) {
 
   return (
     <Popover
-      content={popoverContent as any}
+      content={popoverContent}
       open={open}
       placement={placement}
       style={{transition: 'transform 200ms'}}
