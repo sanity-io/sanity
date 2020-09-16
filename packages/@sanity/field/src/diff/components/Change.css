@@ -23,6 +23,9 @@
   margin: 3px 0;
   border-bottom: 1px solid transparent;
   word-break: break-all;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
   @nest &::after {
     position: absolute;
