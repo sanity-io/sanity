@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes reveal {
+/* @keyframes popoverDialogScaleIn {
   0% {
     transform: scale(0.9);
   }
@@ -8,9 +8,9 @@
   100% {
     transform: scale(1);
   }
-}
+} */
 
-@keyframes fadeIn {
+@keyframes popoverDialogBackgroundFadeIn {
   0% {
     opacity: 0;
   }
@@ -37,126 +37,54 @@
   opacity: 0.75;
   z-index: var(--zindex-portal);
   pointer-events: none;
-  animation-name: fadeIn;
+  animation-name: popoverDialogBackgroundFadeIn;
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
 }
 
-.target {
-  position: absolute;
-  top: 0%;
-  left: 0%;
-  width: 100%;
-  height: 100%;
+.root {
+  width: calc(100% - 16px);
+
+  @nest &:not([data-size]), &[data-size='auto'] {
+    width: auto;
+  }
+
+  @nest &[data-size='small'] {
+    max-width: 20rem;
+  }
+
+  @nest &[data-size='medium'] {
+    max-width: 35rem;
+  }
+
+  @nest &[data-size='large'] {
+    max-width: 40rem;
+  }
+
+  @nest &[data-size='large'] {
+    max-width: 50rem;
+  }
 }
 
-.root {
-  position: relative;
-  z-index: var(--zindex-portal);
+.arrow {
+  /* Popover's arrow element */
+}
 
-  @nest .responsive & {
-    @media (--max-screen-medium) {
-      position: fixed;
-      box-sizing: border-box;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 100vh;
-      width: 100vw;
-      overflow: auto;
-    }
+.card {
+  @nest .root[data-color='danger'] & {
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
   }
 }
 
 .popperAnimation {
-  animation-name: reveal;
+  /* disabled for now*/
+
+  /* animation-name: popoverDialogScaleIn;
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
-  animation-iteration-count: once;
-}
-
-.arrow {
-  height: 0.5em;
-  width: 0.5em;
-  transform: translate(-50%, -50%) rotate(45deg);
-  background-color: var(--component-bg);
-  position: absolute;
-  z-index: 1;
-  clip-path: polygon(0 0, 100% 100%, 0 100%);
-
-  @nest .color_danger & {
-    background-color: var(--state-danger-color);
-  }
-
-  @nest .root[data-placement^='bottom'] & {
-    top: 0;
-    bottom: unset;
-    transform: translate(0, -50%) rotate(135deg);
-  }
-
-  @nest .root[data-placement^='top'] & {
-    top: unset;
-    bottom: 0;
-    transform: translate(-50%, 50%) rotate(-45deg);
-  }
-
-  @nest .root[data-placement^='right'] & {
-    right: unset;
-    left: 0;
-    transform: translate(-50%, 0) rotate(45deg);
-  }
-
-  @nest .root[data-placement^='left'] & {
-    left: unset;
-    right: 0;
-    transform: translate(50%, 0) rotate(225deg);
-  }
-}
-
-.arrowShadow {
-  composes: arrow;
-  clip-path: unset;
-  background-color: transparent;
-  z-index: -1;
-  box-shadow: 0 0 16px var(--shadow-base);
-  opacity: 0.1;
-}
-
-.filledArrow {
-  composes: arrow;
-}
-
-.popover {
-  z-index: 0;
-  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
-  background-color: var(--component-bg);
-  border-radius: var(--border-radius-large);
-  box-sizing: border-box;
-  position: relative;
-  color: var(--text-color);
-
-  @nest .color_danger & {
-    background-color: var(--state-danger-color);
-    color: var(--state-danger-color--inverted);
-  }
-
-  @nest .responsive & {
-    @media (--max-screen-medium) {
-      box-shadow: none;
-      position: fixed !important;
-      box-sizing: border-box;
-      top: 0 !important;
-      left: 0 !important;
-      height: 100vh !important;
-      width: 100vw !important;
-      margin: 0 !important;
-      transform: translate(0, 0) !important;
-      min-width: 100vw !important;
-      padding-bottom: 3rem;
-      overflow: hidden;
-    }
-  }
+  animation-iteration-count: once; */
 }
 
 .closeButtonContainer {
@@ -186,49 +114,20 @@
 }
 
 .content {
-  height: 100%;
-  box-sizing: border-box;
   overflow: auto;
-  max-height: calc(100vh - 10rem);
-  max-width: 90vw;
-
-  @nest .responsive & {
-    @media (--max-screen-medium) {
-      max-height: calc(100vh - var(--header-height)) !important;
-    }
-  }
-
-  @nest .padding_small & {
-    padding: var(--small-padding);
-  }
-
-  @nest .padding_medium & {
-    padding: var(--medium-padding);
-  }
-
-  @nest .padding_large & {
-    padding: var(--large-padding);
-  }
 }
 
-.contentWithActions {
-  composes: content;
-  padding-bottom: 5rem;
-}
+.contentWrapper {
+  @nest .root[data-padding='small'] & {
+    padding: var(--medium-padding) var(--small-padding);
+  }
 
-.responsive .head {
-  /* Mobile header */
-  font-size: 1em;
-  padding: 0.5em;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  left: 0;
-  z-index: 2;
+  @nest .root[data-padding='medium'] & {
+    padding: var(--large-padding) var(--medium-padding);
+  }
 
-  @media (--screen-medium) {
-    display: none;
+  @nest .root[data-padding='large'] & {
+    padding: var(--extra-large-padding) var(--large-padding);
   }
 }
 
@@ -248,51 +147,46 @@
     pointer-events: none;
   }
 
-  @nest .padding_small & {
+  @nest .root[data-padding='small'] & {
     padding: var(--small-padding);
   }
 
-  @nest .padding_medium & {
+  @nest .root[data-padding='medium'] & {
     padding: var(--medium-padding);
   }
 
-  @nest .padding_large & {
+  @nest .root[data-padding='large'] & {
     padding: var(--large-padding);
   }
 }
 
 .title {
   flex: 1;
+  min-width: 0;
 
   @nest & > h3 {
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
     font-weight: 700;
     margin: -2px 0 -1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
-  /* @nest .responsive & {
-    @media (--max-screen-medium) {
-      height: var(--header-height);
-      line-height: var(--header-height);
-      padding: 0 var(--small-padding);
-    }
-  } */
 }
 
 .footer {
   composes: footer from 'part:@sanity/components/dialogs/default-style';
-}
 
-.actions {
-  composes: actions from 'part:@sanity/components/dialogs/default-style';
-}
+  @nest .root[data-padding='small'] & {
+    padding: var(--small-padding);
+  }
 
-.primaryFunctions {
-  margin-top: 1em;
-}
+  @nest .root[data-padding='medium'] & {
+    padding: var(--medium-padding);
+  }
 
-.paddingDummy {
-  padding: 0;
-  margin: 0;
+  @nest .root[data-padding='large'] & {
+    padding: var(--large-padding);
+  }
 }

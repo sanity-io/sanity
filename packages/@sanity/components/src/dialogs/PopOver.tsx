@@ -1,17 +1,16 @@
-/* eslint-disable complexity */
-
 import classNames from 'classnames'
-import React from 'react'
+import {partition} from 'lodash'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import {Manager, Reference, Popper} from 'react-popper'
-import {partition} from 'lodash'
+import {ClickOutside} from 'part:@sanity/components/click-outside'
+import {Popover} from 'part:@sanity/components/popover'
+import React, {useCallback, useRef} from 'react'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
-import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
+import {Placement} from '../types'
 import {DialogAction} from './types'
 
 interface PopOverProps {
@@ -21,127 +20,119 @@ interface PopOverProps {
   onClickOutside?: () => void
   onEscape?: (event: KeyboardEvent) => void
   onAction?: (action: DialogAction) => void
-  modifiers?: Record<string, any>
-  placement?: string
+  placement?: Placement
   useOverlay?: boolean
   hasAnimation?: boolean
   color?: 'default' | 'danger'
   padding?: 'none' | 'small' | 'medium' | 'large'
-  referenceElement?: Element
+  referenceElement?: HTMLElement | null
   actions?: DialogAction[]
+  size?: 'small' | 'medium' | 'large' | 'auto'
 }
 
-// @todo: refactor to functional component
-export default class PopOver extends React.PureComponent<PopOverProps> {
-  static defaultProps = {
-    title: undefined,
-    onAction: () => undefined,
-    actions: [],
-    color: 'default',
-    padding: 'medium',
-    placement: 'auto',
-    useOverlay: true,
-    hasAnimation: false,
-    modifiers: {
-      preventOverflow: {
-        boundariesElement: 'viewport',
-        padding: 16
-      }
-    }
-  }
+function PopoverDialogActionButton({
+  action,
+  onAction
+}: {
+  action: DialogAction
+  onAction?: (a: DialogAction) => void
+}) {
+  const handleAction = useCallback(() => {
+    if (onAction) onAction(action)
+  }, [action, onAction])
 
-  createActionButton = (action: DialogAction, i: number) => {
-    const {onAction} = this.props
+  return (
+    <Button
+      onClick={handleAction}
+      color={action.color}
+      disabled={action.disabled}
+      kind={action.kind}
+      autoFocus={action.autoFocus}
+      className={action.secondary ? styles.actionSecondary : ''}
+      inverted={action.inverted}
+    >
+      {action.title}
+    </Button>
+  )
+}
 
-    return (
-      <Button
-        key={i}
-        onClick={() => onAction && onAction(action)}
-        data-action-index={i}
-        color={action.color}
-        disabled={action.disabled}
-        kind={action.kind}
-        autoFocus={action.autoFocus}
-        className={action.secondary ? styles.actionSecondary : ''}
-        inverted={action.inverted}
-      >
-        {action.title}
-      </Button>
-    )
-  }
+export default function PopOver(props: PopOverProps) {
+  const {
+    title,
+    color,
+    children,
+    actions,
+    onAction,
+    onClose,
+    onClickOutside,
+    onEscape,
+    padding = 'medium',
+    placement = 'auto',
+    size = 'medium',
+    useOverlay = true,
+    hasAnimation,
+    referenceElement
+  } = props
 
-  render() {
-    const {useOverlay, hasAnimation, referenceElement} = this.props
-    const {
-      title,
-      color,
-      children,
-      actions,
-      onClose,
-      onClickOutside,
-      onEscape,
-      modifiers,
-      padding
-    } = this.props
-    const [primary, secondary] = partition(actions, action => action.primary)
+  const handleEscape = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.shiftKey && onEscape) onEscape(event)
+    },
+    [onEscape]
+  )
 
-    // Undefined referenceElement causes Popper to think it is defined
-    const popperPropHack: {referenceElement?: any} = {}
-    if (referenceElement) {
-      popperPropHack.referenceElement = referenceElement
-    }
+  const localTargetRef = useRef(null)
 
-    return (
-      <Manager>
-        {!referenceElement && (
-          <Reference>{({ref}) => <div ref={ref} className={styles.target} />}</Reference>
-        )}
-        <Portal>
-          <Stacked>
-            {isActive => (
-              <div>
-                {useOverlay && <div className={styles.overlay} />}
-                <Popper
-                  placement={this.props.placement as any}
-                  modifiers={modifiers as any}
-                  {...popperPropHack}
-                >
-                  {({ref, style, placement, arrowProps}) => (
-                    <div
-                      ref={ref}
-                      style={style}
-                      data-placement={placement}
-                      className={classNames(
-                        styles.root,
-                        styles[`color_${color}`],
-                        styles[`padding_${padding}`]
+  const targetElement = referenceElement || localTargetRef.current || undefined
+
+  const [primary, secondary] = partition(actions, action => action.primary)
+
+  const secondaryActionButtons = secondary.map((action, actionIndex) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <PopoverDialogActionButton action={action} key={actionIndex} onAction={onAction} />
+  ))
+
+  const primaryActionButtons = primary.map((action, actionIndex) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <PopoverDialogActionButton action={action} key={actionIndex} onAction={onAction} />
+  ))
+
+  return (
+    <>
+      {!referenceElement && <div ref={localTargetRef} />}
+
+      <Portal>
+        <Stacked>
+          {isActive => (
+            <>
+              {useOverlay && <div className={styles.overlay} />}
+
+              {referenceElement && (
+                <ClickOutside onClickOutside={isActive ? onClickOutside : undefined}>
+                  {ref => (
+                    <Popover
+                      arrowClassName={classNames(
+                        styles.arrow,
+                        hasAnimation && styles.popperAnimation
                       )}
-                    >
-                      <div className={classNames(hasAnimation && styles.popperAnimation)}>
-                        <div
-                          className={title ? styles.filledArrow : styles.arrow}
-                          ref={arrowProps.ref}
-                          style={arrowProps.style}
-                        />
-                        <div
-                          className={styles.arrowShadow}
-                          ref={arrowProps.ref}
-                          style={arrowProps.style}
-                        />
-                        <Escapable
-                          onEscape={(event: KeyboardEvent) =>
-                            (isActive || event.shiftKey) && onEscape && onEscape(event)
-                          }
-                        />
-                        <CaptureOutsideClicks
-                          onClickOutside={isActive ? onClickOutside : undefined}
-                          className={styles.popover}
-                        >
+                      cardClassName={classNames(
+                        styles.card,
+                        hasAnimation && styles.popperAnimation
+                      )}
+                      className={styles.root}
+                      data-color={color}
+                      data-padding={padding}
+                      data-size={size}
+                      content={
+                        <>
+                          <Escapable onEscape={isActive ? handleEscape : undefined} />
+
                           {title && (
                             <div className={styles.header}>
                               <div className={styles.title}>
                                 <h3>{title}</h3>
                               </div>
+
                               {onClose && (
                                 <div className={styles.closeButtonContainer}>
                                   <Button
@@ -156,6 +147,7 @@ export default class PopOver extends React.PureComponent<PopOverProps> {
                               )}
                             </div>
                           )}
+
                           {!title && onClose && (
                             <div className={styles.floatingCloseButtonContainer}>
                               <Button
@@ -167,27 +159,32 @@ export default class PopOver extends React.PureComponent<PopOverProps> {
                               />
                             </div>
                           )}
-                          <div className={styles.content}>{children}</div>
+
+                          <div className={styles.content}>
+                            <div className={styles.contentWrapper}>{children}</div>
+                          </div>
+
                           {actions && actions.length > 0 && (
                             <div className={styles.footer}>
-                              <ButtonGrid
-                                align="end"
-                                secondary={primary.map(this.createActionButton)}
-                              >
-                                {secondary.map(this.createActionButton)}
+                              <ButtonGrid align="end" secondary={primaryActionButtons}>
+                                {secondaryActionButtons}
                               </ButtonGrid>
                             </div>
                           )}
-                        </CaptureOutsideClicks>
-                      </div>
-                    </div>
+                        </>
+                      }
+                      placement={placement}
+                      open
+                      ref={ref}
+                      targetElement={targetElement}
+                    />
                   )}
-                </Popper>
-              </div>
-            )}
-          </Stacked>
-        </Portal>
-      </Manager>
-    )
-  }
+                </ClickOutside>
+              )}
+            </>
+          )}
+        </Stacked>
+      </Portal>
+    </>
+  )
 }
