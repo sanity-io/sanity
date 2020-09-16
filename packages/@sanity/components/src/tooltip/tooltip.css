@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  z-index: 9999;
+  z-index: var(--zindex-popover + 1);
 }
 
 .card {
