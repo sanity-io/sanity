@@ -3,10 +3,9 @@
 /* eslint-disable react/jsx-handler-names */
 
 import * as React from 'react'
-import {ButtonColor} from 'part:@sanity/components/buttons/default'
+import Button, {ButtonColor} from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import DialogContent from 'part:@sanity/components/dialogs/content'
-import Button from 'part:@sanity/components/buttons/default'
+
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -103,10 +102,10 @@ export function ActionStateDialog(props: Props) {
         onClose={dialog.onClose}
         onClickOutside={dialog.onClose}
         showCloseButton={dialog.showCloseButton}
+        size="medium"
+        padding="large"
       >
-        <DialogContent size="medium" padding="large">
-          {dialog.content}
-        </DialogContent>
+        {dialog.content}
       </Dialog>
     )
   }
@@ -150,10 +149,13 @@ export function ActionStateDialog(props: Props) {
   const unknownDialog: any = dialog
   console.warn(`Unsupported dialog type ${unknownDialog.type}`)
   return (
-    <Dialog onClose={unknownDialog.onClose} onClickOutside={unknownDialog.onClose}>
-      <DialogContent size="medium" padding="large">
-        {unknownDialog.content || `Don't know how to render dialog of type ${unknownDialog.type}`}
-      </DialogContent>
+    <Dialog
+      onClose={unknownDialog.onClose}
+      onClickOutside={unknownDialog.onClose}
+      size="medium"
+      padding="large"
+    >
+      {unknownDialog.content || `Don't know how to render dialog of type ${unknownDialog.type}`}
     </Dialog>
   )
 }
