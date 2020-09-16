@@ -18,6 +18,10 @@
   border-bottom: 1px solid white;
 }
 
+.indexGroupWithAnnotation {
+  composes: indexGroup;
+}
+
 .indexGroupWithAnnotation:hover {
   border-radius: 3px 3px 1px 1px;
   box-shadow: 0 2px 0 currentColor;
