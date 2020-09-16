@@ -35,6 +35,18 @@
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
   border-radius: var(--input-border-radius);
 
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px var(--hairline-color);
+    pointer-events: none;
+  }
+
   @media (--screen-medium) {
     min-height: 12rem;
     max-height: 27rem;
