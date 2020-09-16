@@ -238,6 +238,9 @@ declare module 'part:@sanity/base/question-icon' {
 declare module 'part:@sanity/base/reset-icon' {
   export {default} from '@sanity/base/src/components/icons/Reset'
 }
+declare module 'part:@sanity/base/robot-icon' {
+  export {default} from '@sanity/base/src/components/icons/Robot'
+}
 declare module 'part:@sanity/base/sanity-logo-icon' {
   export {default} from '@sanity/base/src/components/icons/SanityLogo'
 }
