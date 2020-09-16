@@ -7,7 +7,7 @@ import {groupBy} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import {Path} from '@sanity/util/lib/typedefs/path'
-import scrollIntoView from 'smooth-scroll-into-view-if-needed'
+import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
 
 export interface Rect {
   height: number
@@ -28,18 +28,13 @@ interface Props {
 }
 
 const DEBUG = false
-//
-// const getOffsetParents = (source, target) => {
-//   let el = source
-//   while (el && el !== target) {
-//
-//   }
-// }
+
 const getOffsetsTo = (source, target) => {
   let el = source
   let top = 0
   let left = 0
   let relativeScrollTop = 0
+  let clamped: false | 'top' | 'bottom' = false
 
   while (el && el !== target) {
     if (el.scrollHeight === el.offsetHeight) {
@@ -47,14 +42,22 @@ const getOffsetsTo = (source, target) => {
       relativeScrollTop += el.offsetTop
     } else {
       // we reached a scroll container, make sure we clamp the top to be within the bounds
-      top +=
-        el.offsetTop + Math.min(el.offsetHeight - 12, Math.max(0, relativeScrollTop - el.scrollTop))
+      const actualTop = relativeScrollTop - el.scrollTop
+      const clampedTop = Math.min(el.offsetHeight - 12, Math.max(0, actualTop))
+      if (clampedTop < actualTop) {
+        clamped = 'bottom'
+      }
+      if (clampedTop > actualTop) {
+        clamped = 'top'
+      }
+      top += el.offsetTop + clampedTop
+
       relativeScrollTop = 0
     }
     left += el.offsetLeft
     el = el.offsetParent
   }
-  return {top: top + relativeScrollTop, left}
+  return {top: top + relativeScrollTop, left, clamped}
 }
 
 function getRelativeRect(element, parent): Rect {
@@ -70,6 +73,15 @@ function computeRect<T>(region: ReportedRegion<T>, anchorElement: HTMLElement): 
 }
 type RegionWithRect<T> = ReportedRegion<T> & {rect: Rect}
 
+function scrollIntoView(element) {
+  smoothScrollIntoViewIfNeeded(element, {
+    scrollMode: 'if-needed',
+    block: 'nearest',
+    duration: 100,
+    inline: 'start'
+  })
+}
+
 export function ConnectorsOverlay(props: Props) {
   const {children, trackerRef, ...rest} = props
 
@@ -82,6 +94,7 @@ export function ConnectorsOverlay(props: Props) {
     ? props.regions.map(region => computeRect(region, trackerRef.current!))
     : []
 
+  // console.log(regions.filter(region => region.rect.clamped).map(region => region.rect.clamped))
   const grouped = groupBy(regions, region => {
     if (region.id === 'changesPanel') {
       return 'changesPanel'

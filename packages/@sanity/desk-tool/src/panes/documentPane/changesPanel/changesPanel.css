@@ -12,7 +12,7 @@
 }
 
 .changeWrapper {
-  border-left: 2px solid #2276fc;
+  border-left: 1px solid var(--hairline-color);
   padding-left: 0.75em;
 }
 
