@@ -3,7 +3,6 @@ import React from 'react'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {Marker, Type as FormBuilderType} from '../../../../typedefs'
@@ -49,24 +48,23 @@ export function DefaultObjectEditing(props: Props) {
           onClose={onClose}
           showCloseButton
           title={type.title}
+          size="medium"
         >
-          <DialogContent size="medium">
-            <PresenceOverlay>
-              <FormBuilderInput
-                focusPath={focusPath}
-                level={0}
-                markers={markers}
-                onBlur={onBlur}
-                onChange={handleChange}
-                onFocus={onFocus}
-                path={path}
-                presence={presence}
-                readOnly={readOnly || type.readOnly}
-                type={type as FormBuilderType}
-                value={object}
-              />
-            </PresenceOverlay>
-          </DialogContent>
+          <PresenceOverlay>
+            <FormBuilderInput
+              focusPath={focusPath}
+              level={0}
+              markers={markers}
+              onBlur={onBlur}
+              onChange={handleChange}
+              onFocus={onFocus}
+              path={path}
+              presence={presence}
+              readOnly={readOnly || type.readOnly}
+              type={type as FormBuilderType}
+              value={object}
+            />
+          </PresenceOverlay>
         </DefaultDialog>
       )}
     </Stacked>
