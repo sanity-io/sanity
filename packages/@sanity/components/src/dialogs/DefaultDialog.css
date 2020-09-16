@@ -73,7 +73,6 @@
 }
 
 .card {
-  position: relative;
   composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
   border-radius: var(--dialog-border-radius);
   animation-name: reveal;
@@ -180,20 +179,12 @@
 .content {
   composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
-  box-sizing: border-box;
   background-color: var(--component-bg);
   color: var(--component-text-color);
 
-  @nest .root[data-dialog-padding='small'] & {
-    padding: var(--small-padding);
-  }
-
-  @nest .root[data-dialog-padding='medium'] & {
-    padding: var(--medium-padding);
-  }
-
-  @nest .root[data-dialog-padding='large'] & {
-    padding: var(--large-padding);
+  @nest .header + & {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
   }
 }
 
@@ -202,9 +193,18 @@
   border-radius: var(--dialog-border-radius);
 }
 
-.header + .content {
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+.contentWrapper {
+  @nest .root[data-dialog-padding='small'] & {
+    padding: var(--medium-padding) var(--small-padding);
+  }
+
+  @nest .root[data-dialog-padding='medium'] & {
+    padding: var(--large-padding) var(--medium-padding);
+  }
+
+  @nest .root[data-dialog-padding='large'] & {
+    padding: var(--extra-large-padding) var(--large-padding);
+  }
 }
 
 .title {
