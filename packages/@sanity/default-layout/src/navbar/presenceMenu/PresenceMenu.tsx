@@ -7,6 +7,7 @@ import {AvatarStack} from 'part:@sanity/components/avatar'
 import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
+import Escapable from 'part:@sanity/components/utilities/escapable'
 import React, {useCallback, useState} from 'react'
 import {PresenceListRow} from './PresenceListRow'
 
@@ -93,6 +94,8 @@ export function PresenceMenu() {
               </Button>
             </div>
           </Popover>
+
+          {open && <Escapable onEscape={handleClose} />}
         </div>
       )}
     </ClickOutside>
