@@ -1,5 +1,5 @@
 import {ArrayInput, Input} from '../types'
-import {wrap} from '.'
+import {wrap} from './index'
 
 export default class ArrayWrapper<A> implements ArrayInput<A> {
   type: 'array' = 'array'
@@ -15,13 +15,13 @@ export default class ArrayWrapper<A> implements ArrayInput<A> {
     this.length = value.length
   }
 
-  at(idx: number) {
+  at(idx: number): Input<A> {
     if (idx >= this.length) throw new Error('out of bounds')
-    let input = this.elements[idx]
+    const input = this.elements[idx]
     if (input) {
       return input
-    } else {
-      return (this.elements[idx] = wrap(this.value[idx], this.annotation))
     }
+
+    return (this.elements[idx] = wrap(this.value[idx], this.annotation))
   }
 }

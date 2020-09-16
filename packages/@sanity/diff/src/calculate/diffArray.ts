@@ -1,7 +1,7 @@
 import {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
+import {replaceProperty} from '../helpers'
 import {diffInput, removedInput, addedInput} from './diffInput'
 import {getLongestCommonSubsequence} from './lcs'
-import {replaceProperty} from '../helpers'
 
 export function diffArray<A>(
   fromInput: ArrayInput<A>,
@@ -80,13 +80,18 @@ function diffExactByPosition<A>(
   toInput: ArrayInput<A>,
   options: DiffOptions
 ): ItemDiff<A>[] | undefined {
-  if (fromInput.length !== toInput.length) return
+  if (fromInput.length !== toInput.length) {
+    return undefined
+  }
 
   const items: ItemDiff<A>[] = []
 
   for (let idx = 0; idx < fromInput.length; idx++) {
-    let diff = diffInput(fromInput.at(idx), toInput.at(idx), options)
-    if (diff.isChanged) return
+    const diff = diffInput(fromInput.at(idx), toInput.at(idx), options)
+    if (diff.isChanged) {
+      return undefined
+    }
+
     items.push({
       fromIndex: idx,
       toIndex: idx,
@@ -106,7 +111,7 @@ function diffArrayByReinsert<A>(
   const items: ItemDiff<A>[] = []
 
   for (let idx = 0; idx < toInput.length; idx++) {
-    let input = toInput.at(idx)
+    const input = toInput.at(idx)
 
     items.push({
       fromIndex: undefined,
@@ -117,7 +122,7 @@ function diffArrayByReinsert<A>(
   }
 
   for (let idx = 0; idx < fromInput.length; idx++) {
-    let input = fromInput.at(idx)
+    const input = fromInput.at(idx)
 
     items.push({
       fromIndex: idx,
@@ -149,10 +154,10 @@ function diffArrayByKey<A>(
     deletePositionInIndex(fromKeyIndex.index, key, fromIndex)
     deletePositionInIndex(toKeyIndex.index, key, toIndex)
 
-    let fromInput = fromArray.at(fromIndex)
-    let toInput = toArray.at(toIndex)
+    const fromInput = fromArray.at(fromIndex)
+    const toInput = toArray.at(toIndex)
 
-    let diff = diffInput(fromInput, toInput)
+    const diff = diffInput(fromInput, toInput)
     items.push({
       fromIndex,
       toIndex,
@@ -165,26 +170,26 @@ function diffArrayByKey<A>(
     }
   }
 
-  let lcs = getLongestCommonSubsequence(fromKeyIndex.keys, toKeyIndex.keys)
+  const lcs = getLongestCommonSubsequence(fromKeyIndex.keys, toKeyIndex.keys)
 
   for (let fromIndex = 0; fromIndex < fromKeyIndex.keys.length; fromIndex++) {
-    let key = fromKeyIndex.keys[fromIndex]
+    const key = fromKeyIndex.keys[fromIndex]
 
-    let subsequenceIdx = lcs.prevIndices.indexOf(fromIndex)
+    const subsequenceIdx = lcs.prevIndices.indexOf(fromIndex)
     if (subsequenceIdx !== -1) {
       // Part of the common subsequence => hasMoved:false
       diffCommon(key, fromIndex, lcs.nextIndices[subsequenceIdx], false)
       continue
     }
 
-    let toIndex = toKeyIndex.index.get(key)?.[0]
+    const toIndex = toKeyIndex.index.get(key)?.[0]
     if (toIndex !== undefined) {
       // Not a part of the subsequence, but is present in the to-version => hasMoved:true
       diffCommon(key, fromIndex, toIndex, true)
       continue
     }
 
-    let input = fromArray.at(fromIndex)
+    const input = fromArray.at(fromIndex)
 
     items.push({
       fromIndex,
@@ -197,9 +202,9 @@ function diffArrayByKey<A>(
   }
 
   // The remaining data in toKeyIndex are the new elements which has been added
-  for (let positions of toKeyIndex.index.values()) {
-    for (let toIndex of positions) {
-      let input = toArray.at(toIndex)
+  for (const positions of toKeyIndex.index.values()) {
+    for (const toIndex of positions) {
+      const input = toArray.at(toIndex)
       items.push({
         fromIndex: undefined,
         toIndex,
@@ -239,7 +244,7 @@ function compareItemDiff<A>(a: ItemDiff<A>, b: ItemDiff<A>): number {
 }
 
 function deletePositionInIndex(index: Map<Key, number[]>, key: Key, pos: number) {
-  let positions = index.get(key)!
+  const positions = index.get(key)!
   deleteArrayValue(positions, pos)
   if (positions.length === 0) {
     index.delete(key)
@@ -247,7 +252,7 @@ function deletePositionInIndex(index: Map<Key, number[]>, key: Key, pos: number)
 }
 
 function deleteArrayValue<E>(arr: E[], value: E) {
-  let idx = arr.indexOf(value)
+  const idx = arr.indexOf(value)
   if (idx === -1) throw new Error('value not found')
   arr.splice(idx, 1)
 }
@@ -265,18 +270,18 @@ type KeyIndex = {
  * - Numbers
  */
 function indexByKey<A>(arr: ArrayInput<A>): KeyIndex | undefined {
-  let index = new Map<Key, number[]>()
-  let keys: Key[] = []
-  let length = arr.length
+  const index = new Map<Key, number[]>()
+  const keys: Key[] = []
+  const length = arr.length
 
   for (let i = 0; i < length; i++) {
-    let item = arr.at(i)
+    const item = arr.at(i)
 
     let key: Key | null = null
 
     switch (item.type) {
       case 'string':
-        key = 's' + item.value
+        key = `s${item.value}`
         break
       case 'number':
         key = item.value
@@ -287,19 +292,22 @@ function indexByKey<A>(arr: ArrayInput<A>): KeyIndex | undefined {
       case 'null':
         key = 'n'
         break
-      case 'object': {
-        const keyField = item.get('_key')
-        if (keyField && keyField.type === 'string') {
-          key = 'k' + keyField.value
+      case 'object':
+        {
+          const keyField = item.get('_key')
+          if (keyField && keyField.type === 'string') {
+            key = `k${keyField.value}`
 
-          // We do not handle duplicate _key
-          if (index.has(key)) return
+            // We do not handle duplicate _key
+            if (index.has(key)) return undefined
+          }
         }
-      }
+        break
+      default:
     }
 
     // No key => abort
-    if (key === null) return
+    if (key === null) return undefined
 
     keys.push(key)
     let positions = index.get(key)
@@ -330,7 +338,7 @@ export function removedArray<A>(
     get items(): ArrayDiff<A>['items'] {
       const items: ArrayDiff<A>['items'] = []
       for (let i = 0; i < input.length; i++) {
-        let item = input.at(i)
+        const item = input.at(i)
         items.push({
           fromIndex: i,
           toIndex: undefined,
@@ -360,7 +368,7 @@ export function addedArray<A>(
     get items(): ArrayDiff<A>['items'] {
       const items: ArrayDiff<A>['items'] = []
       for (let i = 0; i < input.length; i++) {
-        let item = input.at(i)
+        const item = input.at(i)
         items.push({
           fromIndex: undefined,
           toIndex: i,
