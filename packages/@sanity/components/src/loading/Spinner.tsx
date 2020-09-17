@@ -5,38 +5,43 @@ import React from 'react'
 import {Portal} from '../utilities/Portal'
 
 interface SpinnerProps {
-  center: boolean
-  children: React.ReactNode
-  delay: number // delay in ms
-  fullscreen: boolean
-  inline: boolean
-  message: string
+  center?: boolean
+  delay?: number // delay in ms
+  fullscreen?: boolean
+  inline?: boolean
+  message?: string
 }
 
-export default class Spinner extends React.PureComponent<SpinnerProps> {
-  static defaultProps = {
-    center: false,
-    children: null,
-    delay: 300,
-    fullscreen: false,
-    inline: false,
-    message: undefined
-  }
-
+export default class Spinner extends React.PureComponent<
+  SpinnerProps & React.HTMLProps<HTMLDivElement>
+> {
   render() {
-    const {inline, message, fullscreen, center, delay, children} = this.props
+    const {
+      className: classNameProp,
+      inline,
+      message,
+      fullscreen,
+      center,
+      delay = 300,
+      children,
+      style = {},
+      ...restProps
+    } = this.props
+
     const className = classNames(
       inline ? styles.inline : styles.block,
       fullscreen && styles.fullscreen,
-      center && styles.center
+      center && styles.center,
+      classNameProp
     )
 
     const rootStyle = {
+      ...style,
       animationDelay: `${delay}ms`
     }
 
     const root = (
-      <div className={className} style={rootStyle}>
+      <div {...restProps} className={className} style={rootStyle}>
         <div className={styles.inner}>
           <span className={styles.iconContainer}>
             <SpinnerIcon />

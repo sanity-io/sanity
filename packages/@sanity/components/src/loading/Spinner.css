@@ -117,8 +117,6 @@
 .message {
   display: inline-block;
   vertical-align: top;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
   /* Optical alignment of the text */
   margin: -2px 0 -1px var(--small-padding);
 
