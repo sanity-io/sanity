@@ -178,6 +178,7 @@ function renderDock(
       data-dock={position}
       key={`sticky-${position}`}
       style={{
+        zIndex: 2,
         position: 'sticky',
         display: 'flex',
         flexDirection: 'column',
@@ -215,6 +216,7 @@ function renderInside(
       <React.Fragment key={withIntersection.region.id}>
         <div
           style={{
+            zIndex: 2,
             position: 'absolute',
             pointerEvents: 'all',
             ...ITEM_TRANSITION,
