@@ -1,11 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .groupChange {
+  @nest div + & {
+    margin-top: var(--extra-large-padding);
+  }
 }
 
 .changeList {
   position: relative;
-  padding: var(--extra-small-padding) 0 0 var(--small-padding);
+  padding: var(--small-padding) 0 0 var(--small-padding);
 
   @nest &::before {
     content: '';
@@ -28,9 +31,11 @@
 
 .changeHeader {
   display: flex;
-  margin: 0 0 var(--extra-small-padding);
+  padding: 0 0 var(--extra-small-padding);
+  margin-left: -1px;
 }
 
 .revertChangesButtonContainer {
+  margin-left: calc(0 - var(--extra-small-padding) - 2px);
   margin-top: var(--small-padding);
 }
