@@ -2,7 +2,6 @@ import React from 'react'
 import {useUser, useTimeAgo} from '@sanity/base/hooks'
 import {UserAvatar} from '@sanity/base/components'
 import {AnnotationDetails} from '../../types'
-import {useAnnotationColor} from './hooks'
 import styles from './DiffAnnotationTooltipContent.css'
 
 export function DiffAnnotationTooltipContent({
@@ -29,7 +28,6 @@ export function DiffAnnotationTooltipContent({
 
 function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {author, timestamp} = annotation
-  const color = useAnnotationColor(annotation)
   const {error, value: user} = useUser(author)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
@@ -40,7 +38,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
 
   return (
     <div className={styles.annotation}>
-      <div className={styles.user} style={{backgroundColor: color.background, color: color.text}}>
+      <div className={styles.user}>
         <span className={styles.avatarContainer}>
           <UserAvatar userId={author} />
         </span>

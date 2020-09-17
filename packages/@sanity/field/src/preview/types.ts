@@ -11,7 +11,7 @@ import {
 } from '../diff'
 
 export type PreviewComponent<T> = ComponentType<{
-  value: T
+  color?: UserColor
   schemaType: T extends Array<any>
     ? ArraySchemaType
     : T extends boolean
@@ -25,5 +25,5 @@ export type PreviewComponent<T> = ComponentType<{
     : T extends object
     ? ObjectSchemaType
     : any
-  color?: UserColor
+  value: T
 }>

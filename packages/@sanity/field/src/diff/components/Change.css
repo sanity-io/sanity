@@ -1,34 +1,7 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  box-shadow: 0 2px 0 var(--component-bg);
-  transition: box-shadow 0.2s linear;
-
-  @nest &:hover .segment {
-    border-bottom: 1px solid var(--component-bg);
-    box-shadow: 0 2px 0 currentColor;
-  }
-
-  @nest & > div {
-    display: inline-block;
-  }
-}
-
-.segment {
-  position: relative;
-  padding: 3px 7px;
-  border-radius: 1px;
-  margin: 3px 0;
-  border-bottom: 1px solid transparent;
-  word-break: break-all;
-  overflow: hidden;
+.from {
   text-decoration: none;
 }
 
-.add {
-  composes: segment;
-}
-
-.remove {
-  composes: segment;
+.to {
+  text-decoration: none;
 }

@@ -24,7 +24,7 @@
   font-size: 13px;
   padding: 0 4px;
   background: var(--component-bg);
-  border-radius: 2px;
+  border-radius: var(--border-radius-small);
   margin: 0 var(--small-padding);
   margin-top: 2px;
 

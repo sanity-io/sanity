@@ -1,9 +1,15 @@
 import * as React from 'react'
-import {FromToIndex, Annotation} from '../../types'
-import {DiffAnnotation} from '../annotations'
+import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
+import {DiffAnnotation, DiffAnnotationCard} from '../annotations'
 import styles from './ChangeTitleSegment.css'
 
-export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}): React.ReactElement {
+export function ChangeTitleSegment({
+  change,
+  segment
+}: {
+  change?: FieldChangeNode
+  segment: string | FromToIndex
+}): React.ReactElement {
   if (typeof segment === 'string') {
     return (
       <strong className={styles.text} title={segment}>
@@ -17,7 +23,7 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}): 
   const deleted = typeof toIndex === 'undefined'
   if (created) {
     // Item was created
-    return <CreatedTitleSegment annotation={annotation} toIndex={toIndex} />
+    return <CreatedTitleSegment annotation={annotation} change={change} toIndex={toIndex} />
   }
 
   if (deleted) {
@@ -37,21 +43,32 @@ export function ChangeTitleSegment({segment}: {segment: string | FromToIndex}): 
 
 function CreatedTitleSegment({
   annotation,
+  change,
   toIndex = 0
 }: {
   annotation: Annotation | undefined
+  change?: FieldChangeNode
   toIndex?: number
 }) {
   const readableIndex = toIndex + 1
-  const description = `Added in position ${readableIndex} by`
+  const description = `Added in position ${readableIndex}`
+  const content = <>#{readableIndex}</>
+
   return (
-    <DiffAnnotation
-      annotation={annotation || null}
-      className={annotation ? styles.indexGroupWithAnnotation : styles.indexGroup}
-      as="ins"
-      description={description}
-    >
-      #{readableIndex}
+    <DiffAnnotation annotation={annotation || null} as="ins" description={description}>
+      {change?.diff ? (
+        <DiffAnnotationCard
+          as="span"
+          className={annotation ? styles.indexGroupWithAnnotation : styles.indexGroup}
+          diff={change.diff}
+        >
+          {content}
+        </DiffAnnotationCard>
+      ) : (
+        <span className={annotation ? styles.indexGroupWithAnnotation : styles.indexGroup}>
+          {content}
+        </span>
+      )}
     </DiffAnnotation>
   )
 }
@@ -64,7 +81,7 @@ function DeletedTitleSegment({
   fromIndex?: number
 }) {
   const readableIndex = fromIndex + 1
-  const description = `Removed from position ${readableIndex} by`
+  const description = `Removed from position ${readableIndex}`
   return (
     <DiffAnnotation
       annotation={annotation || null}

@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 /* @todo coder styling, fix me  */
 .text:not(:only-child) {
   max-width: 100px;
@@ -7,15 +9,17 @@
 }
 
 .indexGroup {
+  display: inline-block;
   padding: 0;
   font-weight: 600;
   vertical-align: middle;
-  @nest ins& {
+  border-radius: var(--border-radius-small);
+  padding: 1px var(--extra-small-padding);
+  border-bottom: 1px solid var(--component-bg);
+
+  @nest ins & {
     text-decoration: none;
   }
-  border-radius: 3px;
-  padding: 1px 4px;
-  border-bottom: 1px solid white;
 }
 
 .indexGroupWithAnnotation {
@@ -23,14 +27,14 @@
 }
 
 .indexGroupWithAnnotation:hover {
-  border-radius: 3px 3px 1px 1px;
+  border-radius: var(--border-radius-small) var(--border-radius-small) 1px 1px;
   box-shadow: 0 2px 0 currentColor;
 }
 
 .index {
   display: inline-block;
-  background: #ddd;
-  border-radius: 3px;
-  font-weight: bold;
-  padding: 0.2em 0.5em;
+  background: var(--gray-lightest);
+  border-radius: var(--border-radius-medium);
+  font-weight: 700;
+  padding: var(--extra-small-padding) var(--small-padding);
 }

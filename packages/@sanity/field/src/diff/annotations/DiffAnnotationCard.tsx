@@ -1,9 +1,9 @@
 import React, {createElement} from 'react'
+import {Diff, Annotation} from '../../types'
+import {Path} from '../../paths'
 import {useAnnotationColor} from './hooks'
 import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
 import {getAnnotationAtPath} from './helpers'
-import {Diff, Annotation} from '../../types'
-import {Path} from '../../paths'
 
 interface BaseDiffAnnotationCardProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
@@ -31,5 +31,6 @@ export function DiffAnnotationCard(
   const annotation = diff ? getAnnotationAtPath(diff, path || []) : specifiedAnnotation
   const color = useAnnotationColor(annotation)
   const colorStyle = color ? {background: color.background, color: color.text} : {}
+
   return createElement(as, {...restProps, style: {...colorStyle, ...style}}, children)
 }

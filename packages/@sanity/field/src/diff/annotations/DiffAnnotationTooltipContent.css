@@ -1,7 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--extra-small-padding) var(--extra-small-padding) var(--small-padding) var(--small-padding);
+  padding: var(--extra-small-padding) var(--extra-small-padding) var(--small-padding)
+    var(--small-padding);
   font-size: var(--font-size-base);
   font-weight: normal;
   font-style: normal;
@@ -15,7 +16,7 @@
 }
 
 .user {
-  border-radius: 1em;
+  border-radius: calc(23px / 2); /* 23px = avatar size */
   display: flex;
   align-items: center;
   padding-right: var(--small-padding);

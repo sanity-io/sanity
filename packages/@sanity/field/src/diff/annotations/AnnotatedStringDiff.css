@@ -7,13 +7,13 @@
   word-break: break-all;
 
   @nest &:first-of-type {
-    border-top-left-radius: 1px;
-    border-bottom-left-radius: 1px;
+    border-top-left-radius: var(--border-radius-small);
+    border-bottom-left-radius: var(--border-radius-small);
   }
 
   @nest &:last-of-type {
-    border-top-right-radius: 1px;
-    border-bottom-right-radius: 1px;
+    border-top-right-radius: var(--border-radius-small);
+    border-bottom-right-radius: var(--border-radius-small);
   }
 
   @nest &:hover {
@@ -25,13 +25,13 @@
 .add {
   composes: segment;
   text-decoration: none;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; */
 }
 
 .remove {
   composes: segment;
   text-decoration: line-through;
-  mix-blend-mode: multiply;
+  /* mix-blend-mode: multiply; */
 }
 
 .empty {

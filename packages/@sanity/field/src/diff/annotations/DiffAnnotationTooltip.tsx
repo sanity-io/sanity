@@ -6,22 +6,21 @@ import {getAnnotationAtPath} from './helpers'
 
 interface BaseAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
-  style?: React.CSSProperties
-  className?: string
   description?: React.ReactNode | string
-  children?: React.ReactNode
 }
 
 export type DiffAnnotationTooltipProps = (AnnotationProps | AnnotatedDiffProps) &
   BaseAnnotationProps
 
-export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps): React.ReactElement {
-  const {className, as = 'div', children, description, style} = props
+export function DiffAnnotationTooltip(
+  props: DiffAnnotationTooltipProps & React.HTMLProps<HTMLElement>
+): React.ReactElement {
+  const {as = 'div', children, description, ...restProps} = props
   const annotation =
     'diff' in props ? getAnnotationAtPath(props.diff, props.path || []) : props.annotation
 
   if (!annotation) {
-    return createElement(as, {className, style}, children)
+    return createElement(as, restProps, children)
   }
 
   const content = (
@@ -30,7 +29,7 @@ export function DiffAnnotationTooltip(props: DiffAnnotationTooltipProps): React.
 
   return (
     <Tooltip content={content} placement="top" portal>
-      {createElement(as, {className, style}, children)}
+      {createElement(as, restProps, children)}
     </Tooltip>
   )
 }
