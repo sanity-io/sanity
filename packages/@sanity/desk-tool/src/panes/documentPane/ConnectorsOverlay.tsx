@@ -167,7 +167,7 @@ export function ConnectorsOverlay(props: Props) {
                           top: connectorFrom.top - changedField.rect.minTop - 27,
                           bottom: connectorFrom.top + changedField.rect.maxTop - 19
                         }}
-                        verticalCenter={verticalLineLeft}
+                        verticalCenter={verticalLineLeft + 2}
                         clampRight={{
                           top: connectorTo.top - changedRegion.rect.minTop - 28,
                           bottom: connectorTo.top + changedRegion.rect.maxTop - 19

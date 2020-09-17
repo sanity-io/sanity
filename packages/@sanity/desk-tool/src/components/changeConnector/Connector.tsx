@@ -12,7 +12,7 @@ const BLUE = blue()
 type Line = {from: Point; to: Point}
 
 const STROKE_WIDTH = 2
-const CORNER_RADIUS = 15
+const CORNER_RADIUS = 10
 
 const hLine = (top: number, from: number, to: number): Line => ({
   from: {top, left: from},
