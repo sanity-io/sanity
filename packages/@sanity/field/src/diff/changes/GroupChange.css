@@ -4,18 +4,31 @@
 }
 
 .changeList {
-  border-left: 1px solid var(--hairline-color);
-  padding-left: 0.75em;
+  position: relative;
+  padding-left: var(--small-padding);
+
+  @nest &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-left: 1px solid var(--hairline-color);
+  }
 }
 
 .changeListOutlined {
   composes: changeList;
-  border-left-color: var(--gray);
+
+  @nest &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
 }
 
 .changeHeader {
-  margin: 0 0 0.5em;
   display: flex;
+  margin: 0 0 var(--small-padding);
 }
 
 .revertChangesButtonContainer {

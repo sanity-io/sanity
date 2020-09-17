@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-bottom: 1em;
+  margin-bottom: var(--large-padding);
   overflow: hidden;
 }
 
@@ -11,7 +11,7 @@
 
 .change {
   position: relative;
-  padding-left: 0.75em;
+  padding-left: var(--small-padding);
 
   @nest &::before {
     content: '';
