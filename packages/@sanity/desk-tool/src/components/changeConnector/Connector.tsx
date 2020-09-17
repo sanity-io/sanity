@@ -1,102 +1,13 @@
 import React from 'react'
-import {ArrowHead, Direction} from './ArrowHead'
-
-interface Bounds {
-  height: number
-  width: number
-}
-
-const moveTo = (from: number, to: number) => `M${from},${to}`
-const lineTo = (from: number, to: number) => `L${from},${to}`
+import {linePath, quadraticBezierPath} from './svgHelpers'
 
 export interface Point {
   top: number
   left: number
 }
 
-function cubicBezierPath(
-  p1x: number,
-  p1y: number,
-  p2x: number,
-  p2y: number,
-  p3x: number,
-  p3y: number,
-  p4x: number,
-  p4y: number
-) {
-  return `M${p1x},${p1y}C${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y}`
-}
-
-function quadraticBezierPath(
-  p1x: number,
-  p1y: number,
-  p2x: number,
-  p2y: number,
-  p3x: number,
-  p3y: number
-) {
-  return `M${p1x},${p1y}Q${p2x},${p2y} ${p3x},${p3y}`
-}
-
-function linePath(p1x: number, p1y: number, p2x: number, p2y: number) {
-  return `M${p1x},${p1y}L${p2x},${p2y}`
-}
-
 const blue = (opacity = 1) => `rgba(34, 118, 252, ${opacity})`
 const BLUE = blue()
-
-const DEBUG = true
-
-const ARROW_EDGE_THRESHOLD = 10
-// when the arrow reaches the top / bottom threshold it will move this amount in pixels towards the midle
-const ARROW_PADDING = 20
-const padLeft = (point: Point, bounds: Bounds) => {
-  const distEdge = Math.min(point.top, bounds.height - point.top)
-  return {
-    ...point,
-    left: point.left + Math.min(ARROW_EDGE_THRESHOLD, Math.max(0, ARROW_PADDING - distEdge))
-  }
-}
-
-const padRight = (point: Point, bounds: Bounds) => {
-  const distEdge = Math.min(point.top, bounds.height - point.top)
-  return {
-    ...point,
-    left: point.left - Math.min(ARROW_EDGE_THRESHOLD, Math.max(0, ARROW_PADDING - distEdge))
-  }
-}
-
-const clamp = (point: Point, bounds: Bounds) => {
-  return {...point, top: Math.min(Math.max(0, point.top), bounds.height)}
-}
-
-function isNotNullable<T>(v: T | null): v is T {
-  return Boolean(v)
-}
-
-const ARROW_THRESHOLD = 20
-function getArrow(
-  point: Point,
-  bounds: Bounds
-): null | {point: Point; direction: Direction; color: string} {
-  const distTop = point.top - ARROW_THRESHOLD
-  if (distTop < 0) {
-    return {
-      point: clamp(point, bounds),
-      direction: 'n',
-      color: blue(1 / Math.max(0, ARROW_THRESHOLD / -distTop))
-    }
-  }
-  const distBottom = bounds.height - point.top - ARROW_THRESHOLD
-  if (distBottom < 0) {
-    return {
-      point: clamp(point, bounds),
-      direction: 's',
-      color: blue(1 / Math.max(0, ARROW_THRESHOLD / -distBottom))
-    }
-  }
-  return null
-}
 
 type Line = {from: Point; to: Point}
 
@@ -124,6 +35,7 @@ const connect = (p1: Point, p2: Point, dir: 'h' | 'v') => {
 interface Props {
   from: Point
   to: Point
+  verticalCenter?: number
   clampLeft: {top: number; bottom: number}
   clampRight: {top: number; bottom: number}
 }

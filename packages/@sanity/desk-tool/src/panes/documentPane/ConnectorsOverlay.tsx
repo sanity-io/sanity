@@ -28,6 +28,7 @@ interface Props {
 
 const DEBUG = false
 
+// todo: refactor this so it's easier to reason about
 const getOffsetsTo = (source, target) => {
   let el = source
   let top = 0
@@ -61,7 +62,7 @@ const getOffsetsTo = (source, target) => {
   return {top: top, left, minTop, maxTop}
 }
 
-function getRelativeRect(element, parent): Rect {
+function getRelativeRect(element, parent) {
   return {
     ...getOffsetsTo(element, parent),
     width: element.offsetWidth,
@@ -69,10 +70,13 @@ function getRelativeRect(element, parent): Rect {
   }
 }
 
-function computeRect<T>(region: ReportedRegion<T>, anchorElement: HTMLElement): RegionWithRect<T> {
+function computeRect<T>(
+  region: ReportedRegion<T>,
+  anchorElement: HTMLElement
+): RegionWithRectMetadata<T> {
   return {...region, rect: getRelativeRect(region.element, anchorElement)}
 }
-type RegionWithRect<T> = ReportedRegion<T> & {rect: Rect}
+type RegionWithRectMetadata<T> = ReportedRegion<T> & {rect: Rect & {minTop: number; maxTop: number}}
 
 function scrollIntoView(element) {
   smoothScrollIntoViewIfNeeded(element, {

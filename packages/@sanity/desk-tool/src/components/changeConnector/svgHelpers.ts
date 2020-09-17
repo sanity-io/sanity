@@ -6,7 +6,7 @@ export interface Point {
 export const moveTo = (from: number, to: number) => `M${from},${to}`
 export const lineTo = (from: number, to: number) => `L${from},${to}`
 
-const quadraticBezierPath = (
+export const quadraticBezierPath = (
   p1x: number,
   p1y: number,
   p2x: number,
