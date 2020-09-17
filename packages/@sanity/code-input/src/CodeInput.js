@@ -1,9 +1,9 @@
 import classNames from 'classnames'
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
-import {get, has} from 'lodash'
-import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import { get, has } from 'lodash'
+import { PatchEvent, set, insert, unset, setIfMissing } from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
@@ -25,6 +25,7 @@ import {
 import 'brace/mode/batchfile'
 import 'brace/mode/css'
 import 'brace/mode/html'
+import 'brace/mode/java'
 import 'brace/mode/javascript'
 import 'brace/mode/json'
 import 'brace/mode/jsx'
@@ -101,25 +102,25 @@ export default class CodeInput extends PureComponent {
   }
 
   handleCodeChange = code => {
-    const {type, onChange} = this.props
+    const { type, onChange } = this.props
     const path = ['code']
     const fixedLanguage = get(type, 'options.language')
 
     onChange(
       PatchEvent.from([
-        setIfMissing({_type: type.name, language: fixedLanguage}),
+        setIfMissing({ _type: type.name, language: fixedLanguage }),
         code ? set(code, path) : unset(path)
       ])
     )
   }
 
   handleToggleSelectLine = lineNumber => {
-    const {type, onChange, value} = this.props
+    const { type, onChange, value } = this.props
     const path = ['highlightedLines']
     const highlightedLines = (value && value.highlightedLines) || []
 
     let position = highlightedLines.indexOf(lineNumber)
-    const patches = [setIfMissing({_type: type.name}), setIfMissing([], ['highlightedLines'])]
+    const patches = [setIfMissing({ _type: type.name }), setIfMissing([], ['highlightedLines'])]
     const addLine = position === -1
 
     if (addLine) {
@@ -137,13 +138,13 @@ export default class CodeInput extends PureComponent {
       // (https://github.com/securingsincity/react-ace/issues/229)
       const editor = this.editor
 
-      // Remove all markers from editor
-      ;[true, false].forEach(inFront => {
-        const currentMarkers = editor.getSession().getMarkers(inFront)
-        Object.keys(currentMarkers).forEach(marker => {
-          editor.getSession().removeMarker(currentMarkers[marker].id)
+        // Remove all markers from editor
+        ;[true, false].forEach(inFront => {
+          const currentMarkers = editor.getSession().getMarkers(inFront)
+          Object.keys(currentMarkers).forEach(marker => {
+            editor.getSession().removeMarker(currentMarkers[marker].id)
+          })
         })
-      })
     } else {
       // Removed, but not the last element, remove single item
       patches.push(unset(path.concat(position)))
@@ -167,23 +168,23 @@ export default class CodeInput extends PureComponent {
   }
 
   handleLanguageChange = item => {
-    const {type, onChange} = this.props
+    const { type, onChange } = this.props
     const path = ['language']
     onChange(
       PatchEvent.from([
-        setIfMissing({_type: type.name}),
+        setIfMissing({ _type: type.name }),
         item ? set(item.value, path) : unset(path)
       ])
     )
   }
 
   handleFilenameChange = item => {
-    const {type, onChange} = this.props
+    const { type, onChange } = this.props
     const path = ['filename']
 
     onChange(
       PatchEvent.from([
-        setIfMissing({_type: type.name}),
+        setIfMissing({ _type: type.name }),
         item ? set(item.target.value, path) : unset(path)
       ])
     )
@@ -201,7 +202,7 @@ export default class CodeInput extends PureComponent {
       )
     }
 
-    return languageAlternatives.reduce((acc, {title, value}) => {
+    return languageAlternatives.reduce((acc, { title, value }) => {
       const alias = LANGUAGE_ALIASES[value]
       if (alias) {
         // eslint-disable-next-line no-console
@@ -212,7 +213,7 @@ export default class CodeInput extends PureComponent {
           alias
         )
 
-        return acc.concat({title, value: alias})
+        return acc.concat({ title, value: alias })
       }
 
       if (!SUPPORTED_LANGUAGES.find(lang => lang.value === value)) {
@@ -223,7 +224,7 @@ export default class CodeInput extends PureComponent {
         )
       }
 
-      return acc.concat({title, value})
+      return acc.concat({ title, value })
     }, [])
   }
 
@@ -237,7 +238,7 @@ export default class CodeInput extends PureComponent {
   renderEditor = () => {
     // console.log('CodeInput', this.props)
 
-    const {readOnly, value, type} = this.props
+    const { readOnly, value, type } = this.props
     const fixedLanguage = get(type, 'options.language')
     const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
@@ -264,7 +265,7 @@ export default class CodeInput extends PureComponent {
   }
 
   render() {
-    const {value, type, level, readOnly} = this.props
+    const { value, type, level, readOnly } = this.props
     const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
@@ -279,7 +280,7 @@ export default class CodeInput extends PureComponent {
       value && value.language ? languages.find(item => item.value === value.language) : undefined
 
     if (!selectedLanguage) {
-      languages.unshift({title: 'Select language'})
+      languages.unshift({ title: 'Select language' })
     }
 
     const languageField = type.fields.find(field => field.name === 'language')
