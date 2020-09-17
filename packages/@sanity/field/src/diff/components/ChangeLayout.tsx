@@ -18,9 +18,9 @@ export const ChangeArrow = () => (
 export function ChangeLayout({layout = 'inline', from, to, children}: ChangeLayoutProps) {
   return (
     <div className={styles.root} data-layout={layout}>
-      <div className={styles.from}>{from}</div>
+      {from && <div className={styles.from}>{from}</div>}
       {from && to && <ChangeArrow />}
-      <div className={styles.to}>{to}</div>
+      {to && <div className={styles.to}>{to}</div>}
       {children}
     </div>
   )

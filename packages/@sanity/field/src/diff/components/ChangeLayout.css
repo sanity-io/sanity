@@ -1,14 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  display: flex;
+  align-items: center;
   @nest &[data-layout='inline'] {
-    display: flex;
-    align-items: center;
   }
 
   @nest &[data-layout='grid'] {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    /* display: grid;
+    grid-template-columns: 1fr auto 1fr; */
   }
 }
 
