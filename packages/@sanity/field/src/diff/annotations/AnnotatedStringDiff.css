@@ -1,37 +1,34 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .segment {
+  line-height: calc(1.25em + 2px);
   position: relative;
-  line-height: 1.5; /* To make sure the box shadow doesn't get cut off on multiline strings */
-  box-shadow: 0 2px 0 var(--component-bg);
   word-break: break-all;
-
-  @nest &:first-of-type {
-    border-top-left-radius: var(--border-radius-small);
-    border-bottom-left-radius: var(--border-radius-small);
-  }
-
-  @nest &:last-of-type {
-    border-top-right-radius: var(--border-radius-small);
-    border-bottom-right-radius: var(--border-radius-small);
-  }
+  border-radius: var(--border-radius-small);
 
   @nest &:hover {
-    border-bottom: 1px solid var(--component-bg);
-    box-shadow: 0 2px 0 currentColor;
+    background-color: none !important;
+    background-image: linear-gradient(
+      to bottom,
+      var(--component-bg) 0,
+      var(--component-bg) 33.333%,
+      currentColor 33.333%,
+      currentColor 100%
+    );
+    background-size: 1px 3px;
+    background-repeat: repeat-x;
+    background-position-y: 18px;
+    padding-bottom: 3px;
   }
 }
 
 .add {
   composes: segment;
   text-decoration: none;
-  /* mix-blend-mode: multiply; */
 }
 
 .remove {
   composes: segment;
-  text-decoration: line-through;
-  /* mix-blend-mode: multiply; */
 }
 
 .empty {
