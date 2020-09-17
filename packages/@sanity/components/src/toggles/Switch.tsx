@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {useId} from '@reach/auto-id'
 import {Marker} from '../types'
 import styles from './Switch.css'
@@ -14,7 +14,7 @@ interface SwitchProps {
 export default React.forwardRef(function Switch(
   {
     disabled,
-    // markers,
+    markers,
     checked,
     label,
     description,
@@ -25,12 +25,22 @@ export default React.forwardRef(function Switch(
   ref: any
 ) {
   const elementId = useId()
+  const innerRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    if (typeof checked === 'undefined' && ref?.current) {
-      ref.current.indeterminate = true
+    if (innerRef?.current) {
+      innerRef.current.indeterminate = checked === undefined
     }
-  }, [])
+  }, [checked])
+
+  const setRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      innerRef.current = el
+      if (typeof ref === 'function') ref(el)
+      else if (ref && typeof ref === 'object') ref.current = el
+    },
+    [ref]
+  )
 
   return (
     <div className={styles.root}>
@@ -41,8 +51,8 @@ export default React.forwardRef(function Switch(
         className={styles.input}
         type="checkbox"
         disabled={disabled || readOnly}
-        checked={checked}
-        ref={ref}
+        checked={checked || false}
+        ref={setRef}
       />
       <div className={styles.switchWrapper}>
         <div className={styles.track} />

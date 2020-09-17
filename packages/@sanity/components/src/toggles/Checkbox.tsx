@@ -34,11 +34,14 @@ export default React.forwardRef(function Checkbox(
     }
   }, [checked])
 
-  const setRef = useCallback((el: HTMLInputElement | null) => {
-    innerRef.current = el
-    if (typeof ref === 'function') ref(el)
-    else if (ref && typeof ref === 'object') ref.current = el
-  }, [])
+  const setRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      innerRef.current = el
+      if (typeof ref === 'function') ref(el)
+      else if (ref && typeof ref === 'object') ref.current = el
+    },
+    [ref]
+  )
 
   return (
     <div className={styles.root}>
