@@ -41,9 +41,11 @@ interface InputProps {
   onChange: (patchEvent: unknown) => void
 }
 
-interface Focusable {
-  focus: () => void
-}
+// @todo
+// interface Focusable {
+//   focus: () => void
+// }
+type Focusable = any
 
 interface InputState {
   modalOpen: boolean

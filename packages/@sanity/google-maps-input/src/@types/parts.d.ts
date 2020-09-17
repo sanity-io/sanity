@@ -16,6 +16,12 @@ declare module 'config:@sanity/google-maps-input' {
   export default config
 }
 
+declare module 'part:@sanity/components/buttons/default-style'
+declare module 'part:@sanity/components/buttons/default' {
+  export * from '@sanity/components/src/buttons/DefaultButton'
+  export {default} from '@sanity/components/src/buttons/DefaultButton'
+}
+
 declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
