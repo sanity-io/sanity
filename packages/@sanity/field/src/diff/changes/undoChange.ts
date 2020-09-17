@@ -1,6 +1,12 @@
-import {Path, isKeyedObject, isTypedObject, isKeySegment, isIndexSegment} from '@sanity/types'
+import {isIndexSegment, isKeyedObject, isKeySegment, isTypedObject, Path} from '@sanity/types'
 import {diffItem} from 'sanity-diff-patch'
-import {pathToString, getItemKeySegment, getValueAtPath, findIndex} from '../../paths/helpers'
+import {
+  findIndex,
+  getItemKeySegment,
+  getValueAtPath,
+  isEmptyObject,
+  pathToString
+} from '../../paths/helpers'
 import {
   ArrayDiff,
   ChangeNode,
@@ -39,7 +45,7 @@ export function undoChange(
   if (change.type === 'field' && change.diff.action === 'added') {
     // The reverse of an add operation is an unset -
     // so we don't need to worry about moved items in this case
-    patches.push(...buildUnsetPatches(change.diff, change.path))
+    patches.push(...buildUnsetPatches(change.diff, rootDiff, change.path))
   } else if (
     change.type === 'field' &&
     change.itemDiff &&
@@ -58,8 +64,47 @@ export function undoChange(
   documentOperations.patch.execute(patches)
 }
 
-function buildUnsetPatches(diff: Diff, path: Path): PatchOperations[] {
-  return [{unset: [pathToString(path)]}]
+function buildUnsetPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
+  const previousValue = rootDiff.toValue as Record<string, unknown>
+
+  return [{unset: [pathToString(furthestEmptyAncestor(previousValue, path))]}]
+}
+
+/**
+ * Find the path to the furthest empty ancestor that's also a stub.
+ *
+ * Used for removing all stubs when unsetting a nested value.
+ *
+ * @param previousValue The state of the tree before the change was made.
+ * @param currentPath Path of the value to unset. Used for recursing.
+ * @param initialPath Same as the first value of currentPath.
+ */
+function furthestEmptyAncestor(
+  previousValue: Record<string, unknown>,
+  currentPath: Path,
+  initialPath?: Path
+): Path {
+  if (currentPath.length <= 0) {
+    /*
+     * This means we are at root and no ancestors are stubs. We
+     * can therefore safely unset only the actual value.
+     */
+    if (!initialPath) {
+      /*
+       * Will happen if the function is started with `currentPath = []`.
+       */
+      throw new Error('Root has no ancestor')
+    }
+
+    return initialPath
+  }
+
+  const ancestorPath = currentPath.slice(0, -1)
+  const ancestorValue = getValueAtPath(previousValue, ancestorPath)
+
+  return isStub(ancestorValue, ancestorPath, currentPath)
+    ? furthestEmptyAncestor(previousValue, ancestorPath, initialPath)
+    : currentPath
 }
 
 function buildMovePatches(
@@ -159,6 +204,60 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
     stubs.push({setIfMissing: {[pathStr]: stub as Record<string, unknown>}})
   }
   return stubs
+}
+
+/**
+ * Check if a single item is a stub.
+ *
+ * An item is a stub if its value is the same as what the
+ * value "would have been" if it was a stub.
+ *
+ * Or it can be an empty object or only containing other stubs.
+ *
+ * @param item The item to check whether is a stub.
+ * @param path The path to the item we're checking.
+ * @param ignorePath An optional path to forcefully mark as
+ *  a stub regardless of what it actually is.
+ */
+function isStub(item: unknown, path: Path, ignorePath?: Path): unknown {
+  if (ignorePath && pathToString(path) === pathToString(ignorePath)) {
+    return true
+  }
+
+  const isStubValue = getStubValue(item) === item
+
+  return isStubValue || isEmptyObject(item) || onlyContainsStubs(item, path, ignorePath)
+}
+
+/**
+ * Check if all items in an object or an array are stubs.
+ *
+ * @param item The item to check whether is a stub.
+ * @param path The path to the item we're checking.
+ * @param ignorePath An optional path to forcefully mark as
+ *  a stub regardless of what it actually is.
+ */
+function onlyContainsStubs(item: unknown, path: Path, ignorePath?: Path): boolean {
+  if (typeof item != 'object' && !Array.isArray(item)) {
+    return false
+  }
+
+  for (const child in item) {
+    /*
+     * An item can be a stub even though it has _type or _key. So only
+     * values other than these will count for checking whether it is
+     * a stub.
+     */
+    if (child === '_type' || child === '_key') {
+      continue
+    }
+
+    if (!isStub(item[child], [...path, child], ignorePath)) {
+      return false
+    }
+  }
+
+  return true
 }
 
 function getStubValue(item: unknown): unknown {
