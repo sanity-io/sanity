@@ -88,7 +88,7 @@ export function ChangesPanel({
         </div>
 
         <div className={styles.versionSelectContainer}>
-          <div ref={changesSinceSelectRef} style={{display: 'inline-block'}}>
+          <div className={styles.changesSinceSelectContainer} ref={changesSinceSelectRef}>
             <Button
               kind="simple"
               onMouseUp={ignoreClickOutside}
@@ -122,7 +122,11 @@ export function ChangesPanel({
               <div className={styles.changeAuthorsContainer}>
                 <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
                   {changeAnnotations.map(({author}) => (
-                    <UserAvatar key={author} userId={author} />
+                    <UserAvatar
+                      key={author}
+                      userId={author}
+                      // position="bottom"
+                    />
                   ))}
                 </AvatarStack>
               </div>
