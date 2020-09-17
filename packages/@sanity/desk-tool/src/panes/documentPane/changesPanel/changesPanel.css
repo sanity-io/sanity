@@ -46,7 +46,7 @@
 .body {
   flex: 1;
   min-height: 0;
-  padding: 1em;
+  padding: var(--large-padding) var(--medium-padding);
   overflow: auto;
 }
 

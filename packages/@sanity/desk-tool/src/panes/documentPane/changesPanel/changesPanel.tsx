@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import React, {useCallback} from 'react'
 import {
   ObjectDiff,
@@ -17,9 +16,11 @@ import {AvatarStack} from 'part:@sanity/components/avatar'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {formatTimelineEventLabel} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
+import {LoadingContent} from './content/loading'
+import {EmptyContent} from './content/empty'
+import {collectLatestAuthorAnnotations} from './helpers'
 
 import styles from './changesPanel.css'
-import {collectLatestAuthorAnnotations} from './helpers'
 
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -43,7 +44,7 @@ export function ChangesPanel({
   timelineMode
 }: ChangesPanelProps): React.ReactElement | null {
   const {close: closeHistory, historyController} = useDocumentHistory()
-  const diff: ObjectDiff | null = historyController.currentObjectDiff() as any
+  const diff: ObjectDiff | null = historyController.currentObjectDiff()
   const isComparingCurrent = !historyController.onOlderRevision()
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
@@ -85,6 +86,7 @@ export function ChangesPanel({
             />
           </div>
         </div>
+
         <div className={styles.versionSelectContainer}>
           <div ref={changesSinceSelectRef} style={{display: 'inline-block'}}>
             <Button
@@ -106,15 +108,14 @@ export function ChangesPanel({
               &darr;
             </Button>
           </div>
+
           {changeAnnotations.length > 0 && (
             <Tooltip
               content={
-                (
-                  <DiffAnnotationTooltipContent
-                    description="Changes by"
-                    annotations={changeAnnotations}
-                  />
-                ) as any
+                <DiffAnnotationTooltipContent
+                  description="Changes by"
+                  annotations={changeAnnotations}
+                />
               }
               placement="top"
             >
@@ -131,17 +132,42 @@ export function ChangesPanel({
       </header>
 
       <div className={styles.body}>
-        {loading || !diff ? (
-          <div>Loading…</div>
-        ) : (
-          <DocumentChangeContext.Provider value={documentContext}>
-            <div className={styles.changeList}>
-              <ChangeList diff={diff} schemaType={schemaType} />
-            </div>
-          </DocumentChangeContext.Provider>
-        )}
+        <Content
+          diff={diff}
+          documentContext={documentContext}
+          loading={loading}
+          schemaType={schemaType}
+        />
       </div>
     </div>
+  )
+}
+
+function Content({
+  diff,
+  documentContext,
+  loading,
+  schemaType
+}: {
+  diff: ObjectDiff | null
+  documentContext: DocumentChangeContextInstance
+  loading: boolean
+  schemaType: ObjectSchemaType
+}) {
+  if (loading || !diff) {
+    return <LoadingContent />
+  }
+
+  if (!diff.isChanged) {
+    return <EmptyContent />
+  }
+
+  return (
+    <DocumentChangeContext.Provider value={documentContext}>
+      <div className={styles.changeList}>
+        <ChangeList diff={diff} schemaType={schemaType} />
+      </div>
+    </DocumentChangeContext.Provider>
   )
 }
 
