@@ -338,6 +338,38 @@ const urlExample = {
   title: 'URL example'
 }
 
+const veryDeepStructure = {
+  name: 'deep',
+  title: 'Deep',
+  type: 'object',
+  fields: [
+    {
+      name: 'deeper',
+      type: 'object',
+      fields: [
+        {
+          name: 'evenDeeper',
+          type: 'object',
+          fields: [
+            {
+              name: 'deepest',
+              type: 'author'
+            }
+          ]
+        },
+        {
+          name: 'evenDeeperSibling',
+          type: 'image'
+        }
+      ]
+    },
+    {
+      name: 'deeperSibling',
+      type: 'string'
+    }
+  ]
+}
+
 export default {
   type: 'document',
   name: 'allInputs',
@@ -404,6 +436,9 @@ export default {
     textExample,
 
     // url,
-    urlExample
+    urlExample,
+
+    // very deep structure
+    veryDeepStructure
   ]
 }
