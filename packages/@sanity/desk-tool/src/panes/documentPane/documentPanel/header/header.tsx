@@ -90,9 +90,8 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     evt.stopPropagation()
   }, [])
 
-  const showTabs = features.splitViews && views.length > 1
-  // @todo: remove this
-  const showVersionMenu = true // isHistoryOpen
+  const showTabs = views.length > 1
+  const showVersionMenu = features.reviewChanges
   const menuOpen = isTimelineOpen && timelineMode === 'rev'
 
   return (
