@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.heading {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  margin: 0;
+  padding: 4px 0 1px;
+}
+
+.content {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  color: var(--text-muted);
+
+  @nest & > p {
+    margin: var(--small-padding) 0;
+  }
+}
