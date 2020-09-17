@@ -41,11 +41,15 @@ export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTML
     )
   }
 
-  const {children, ...restProps} = props
+  const {as = 'span', children, ...restProps} = props
   const color = getAnnotationColor(userColorManager, restProps.annotation)
 
   return (
-    <DiffAnnotationTooltip {...restProps} style={{background: color.background, color: color.text}}>
+    <DiffAnnotationTooltip
+      {...restProps}
+      as={as}
+      style={{background: color.background, color: color.text}}
+    >
       {children}
     </DiffAnnotationTooltip>
   )
