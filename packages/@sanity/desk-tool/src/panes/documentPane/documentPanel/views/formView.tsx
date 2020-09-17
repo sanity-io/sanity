@@ -28,7 +28,7 @@ interface Props {
   markers: Array<{path: any[]}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialFocusPath: unknown[] | null
-  margins: Array<number>
+  margins: [number, number, number, number]
 }
 
 const noop = () => undefined
