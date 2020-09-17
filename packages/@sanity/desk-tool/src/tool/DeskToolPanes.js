@@ -23,11 +23,11 @@ import styles from './DeskToolPanes.css'
 const COLLAPSED_WIDTH = 49
 
 function getPaneMinSize(pane) {
-  return pane.type === 'document' ? 500 : 320
+  return pane.type === 'document' ? 668 : 320
 }
 
 function getPaneDefaultSize(pane) {
-  return pane.type === 'document' ? 672 : 350
+  return pane.type === 'document' ? 668 : 350
 }
 
 function getWaitMessages(path) {

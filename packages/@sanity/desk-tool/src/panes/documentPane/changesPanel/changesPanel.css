@@ -29,6 +29,15 @@
   padding: var(--small-padding);
 }
 
+.changesSinceSelectContainer {
+  flex: 1;
+  min-width: 0;
+
+  @nest & > div {
+    display: inline-block;
+  }
+}
+
 .versionSelectContainer {
   padding: var(--extra-small-padding) var(--small-padding);
   padding-right: calc(var(--medium-padding) - var(--extra-small-padding) + 1px);
@@ -39,11 +48,6 @@
   @nest & > button {
     display: block;
   }
-}
-
-.changesSinceSelectContainer {
-  flex: 1;
-  min-width: 0;
 }
 
 .changeAuthorsContainer {
