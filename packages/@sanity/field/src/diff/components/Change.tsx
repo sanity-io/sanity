@@ -36,36 +36,26 @@ export function Change({
   }
 
   const from = hasValue(fromValue) ? (
-    <DiffAnnotationTooltip
-      as="del"
-      className={styles.remove}
-      annotation={annotation}
-      style={colorStyle}
-      description={description}
-    >
+    <ins className={styles.remove} style={colorStyle}>
       <PreviewComponent value={fromValue} schemaType={schemaType} />
-    </DiffAnnotationTooltip>
+    </ins>
   ) : (
     undefined
   )
 
   const to = hasValue(toValue) ? (
-    <DiffAnnotationTooltip
-      as="ins"
-      className={styles.add}
-      annotation={annotation}
-      style={colorStyle}
-      description={description}
-    >
+    <del className={styles.add} style={colorStyle}>
       <PreviewComponent value={toValue} schemaType={schemaType} />
-    </DiffAnnotationTooltip>
+    </del>
   ) : (
     undefined
   )
 
   return (
     <div className={containerClassName}>
-      <ChangeLayout from={from} to={to} layout={layout} />
+      <DiffAnnotationTooltip annotation={annotation} description={description}>
+        <ChangeLayout from={from} to={to} layout={layout} />
+      </DiffAnnotationTooltip>
     </div>
   )
 }
