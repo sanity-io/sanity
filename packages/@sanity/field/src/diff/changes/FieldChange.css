@@ -10,16 +10,31 @@
 }
 
 .change {
-  border-left: 1px solid var(--hairline-color);
+  position: relative;
   padding-left: 0.75em;
-}
 
-.change:hover {
-  border-left-color: var(--gray);
-}
+  @nest &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-left: 1px solid var(--hairline-color);
+  }
 
-.error .change {
-  border-left-color: var(--state-danger-color);
+  @nest &:hover::before {
+    border-left: 2px solid var(--gray-lighter);
+  }
+
+  @nest .revertHovered &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
+  @nest .error &::before {
+    /* @todo: should not be treated the same way as :hover */
+    border-left: 1px solid var(--state-danger-color);
+  }
 }
 
 .revertChangesButtonContainer {

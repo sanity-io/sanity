@@ -1,5 +1,6 @@
-import React, {useCallback, useContext} from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
+import classNames from 'classnames'
+import React, {useCallback, useContext, useState} from 'react'
 import {FieldChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../context/DiffContext'
 import {FallbackDiff} from '../fallback/FallbackDiff'
@@ -17,6 +18,7 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
   const DiffComponent = change.diffComponent || FallbackDiff
   const {documentId, schemaType, rootDiff, isComparingCurrent} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const [revertHovered, setRevertHovered] = useState(false)
 
   const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
     change,
@@ -24,7 +26,19 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
     docOperations
   ])
 
-  const rootClass = change.error ? styles.error : styles.root
+  const rootClass = classNames(
+    change.error ? styles.error : styles.root,
+    revertHovered && styles.revertHovered
+  )
+
+  const handleRevertButtonMouseEnter = () => {
+    setRevertHovered(true)
+  }
+
+  const handleRevertButtonMouseLeave = () => {
+    setRevertHovered(false)
+  }
+
   return (
     <div className={rootClass}>
       {change.showHeader && <ChangeBreadcrumb titlePath={change.titlePath} />}
@@ -43,7 +57,11 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
 
           {isComparingCurrent && (
             <div className={styles.revertChangesButtonContainer}>
-              <RevertChangesButton onClick={handleRevertChanges} />
+              <RevertChangesButton
+                onClick={handleRevertChanges}
+                onMouseEnter={handleRevertButtonMouseEnter}
+                onMouseLeave={handleRevertButtonMouseLeave}
+              />
             </div>
           )}
         </div>
