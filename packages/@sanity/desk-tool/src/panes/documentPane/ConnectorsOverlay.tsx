@@ -28,38 +28,33 @@ interface Props {
 
 const DEBUG = false
 
-// todo: refactor this so it's easier to reason about
-const getOffsetsTo = (source, target) => {
-  let el = source
+const isScrollContainer = el => el.scrollHeight !== el.offsetHeight
+
+const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
+  let el: HTMLElement | null = source
+  const bounds: {top: number; bottom: number} = {
+    top: 0,
+    bottom: 0
+  }
   let top = 0
   let left = 0
-  let relativeScrollTop = 0
-  let minTop = 0
-  let maxTop = Number.MAX_SAFE_INTEGER
-
+  let foundScrollContainer = false
   while (el && el !== target) {
-    if (el.scrollHeight === el.offsetHeight) {
-      // accumulate relative scroll top until we hit a scroll container
-      relativeScrollTop += el.offsetTop
-    } else {
-      // we reached a scroll container, make sure we clamp the top to be within the bounds
-      const actualTop = relativeScrollTop - el.scrollTop
-      const clampedTop = Math.min(el.offsetHeight - 12, Math.max(12, actualTop))
-      if (clampedTop > actualTop) {
-        minTop = actualTop - clampedTop
-      }
-      if (clampedTop < actualTop) {
-        maxTop = clampedTop - actualTop
-      }
-
-      relativeScrollTop = 0
+    if (foundScrollContainer) {
+      bounds.top += el.offsetTop
+      bounds.bottom += el.offsetTop
     }
 
+    if (isScrollContainer(el)) {
+      bounds.top = el.offsetTop
+      bounds.bottom = el.offsetTop + el.offsetHeight - 36 // todo: figure out why this is needed
+      foundScrollContainer = true
+    }
     top += el.offsetTop - el.scrollTop
-    left += el.offsetLeft
-    el = el.offsetParent
+    left += el.offsetLeft - el.scrollLeft
+    el = el.offsetParent as HTMLElement
   }
-  return {top: top, left, minTop, maxTop}
+  return {top, left, bounds}
 }
 
 function getRelativeRect(element, parent) {
@@ -76,7 +71,10 @@ function computeRect<T>(
 ): RegionWithRectMetadata<T> {
   return {...region, rect: getRelativeRect(region.element, anchorElement)}
 }
-type RegionWithRectMetadata<T> = ReportedRegion<T> & {rect: Rect & {minTop: number; maxTop: number}}
+
+type RegionWithRectMetadata<T> = ReportedRegion<T> & {
+  rect: Rect & {bounds: {top: number; bottom: number}}
+}
 
 function scrollIntoView(element) {
   smoothScrollIntoViewIfNeeded(element, {
@@ -99,7 +97,6 @@ export function ConnectorsOverlay(props: Props) {
     ? props.regions.map(region => computeRect(region, trackerRef.current!))
     : []
 
-  // console.log(regions.filter(region => region.rect.clamped).map(region => region.rect.clamped))
   const grouped = groupBy(regions, region => {
     if (region.id === 'changesPanel') {
       return 'changesPanel'
@@ -164,13 +161,13 @@ export function ConnectorsOverlay(props: Props) {
                         from={connectorFrom}
                         to={connectorTo}
                         clampLeft={{
-                          top: connectorFrom.top - changedField.rect.minTop - 27,
-                          bottom: connectorFrom.top + changedField.rect.maxTop - 19
+                          top: changedField.rect.bounds.top,
+                          bottom: changedRegion.rect.bounds.bottom
                         }}
                         verticalCenter={verticalLineLeft + 2}
                         clampRight={{
-                          top: connectorTo.top - changedRegion.rect.minTop - 28,
-                          bottom: connectorTo.top + changedRegion.rect.maxTop - 19
+                          top: changedRegion.rect.bounds.top,
+                          bottom: changedRegion.rect.bounds.bottom
                         }}
                       />
                       <path
@@ -179,11 +176,11 @@ export function ConnectorsOverlay(props: Props) {
                           vLine(
                             connectorTo.left,
                             Math.min(
-                              connectorTo.top + changedRegion.rect.maxTop - 19 - 8,
+                              connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
                               connectorTo.top - 8
                             ),
                             Math.min(
-                              connectorTo.top + changedRegion.rect.maxTop - 19 - 8,
+                              connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
                               connectorTo.top - 8 + changedRegion.rect.height
                             )
                           )
