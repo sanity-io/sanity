@@ -1,10 +1,9 @@
-import {UserColor} from '@sanity/base/user-color'
+import {useUserColorManager} from '@sanity/base/user-color'
 import * as React from 'react'
 import {StringDiffSegment, StringDiff} from '../../types'
 import {DiffAnnotation} from '../annotations'
 import styles from './AnnotatedStringDiff.css'
-import {getAnnotationAtPath} from './helpers'
-import {useAnnotationColor} from './hooks'
+import {getAnnotationColor} from './helpers'
 
 function FormattedPreviewText({
   isFirstSegment,
@@ -29,17 +28,15 @@ function FormattedPreviewText({
 }
 
 export function AnnotatedStringDiffSegment({
-  color,
   isFirstSegment,
   isLastSegment,
   segment
 }: {
-  color: UserColor
   isFirstSegment: boolean
   isLastSegment: boolean
   segment: StringDiffSegment
 }): React.ReactElement {
-  const style = {background: color.background, color: color.text}
+  const userColorManager = useUserColorManager()
 
   const text = (
     <FormattedPreviewText
@@ -50,13 +47,15 @@ export function AnnotatedStringDiffSegment({
   )
 
   if (segment.action === 'added') {
+    const color = getAnnotationColor(userColorManager, segment.annotation)
+
     return (
       <DiffAnnotation
         annotation={segment.annotation}
         as="ins"
         className={styles.add}
         description="Added by"
-        style={style}
+        style={{background: color.background, color: color.text}}
       >
         {text}
       </DiffAnnotation>
@@ -64,13 +63,15 @@ export function AnnotatedStringDiffSegment({
   }
 
   if (segment.action === 'removed') {
+    const color = getAnnotationColor(userColorManager, segment.annotation)
+
     return (
       <DiffAnnotation
         annotation={segment.annotation}
         as="del"
         className={styles.remove}
         description="Removed by"
-        style={style}
+        style={{background: color.background, color: color.text}}
       >
         {text}
       </DiffAnnotation>
@@ -82,14 +83,11 @@ export function AnnotatedStringDiffSegment({
 
 export function AnnotatedStringDiff({diff}: {diff: StringDiff}) {
   const len = diff.segments.length
-  const annotation = getAnnotationAtPath(diff, [])
-  const color = useAnnotationColor(annotation)
 
   return (
     <>
       {(diff.segments || []).map((segment, segmentIndex) => (
         <AnnotatedStringDiffSegment
-          color={color}
           isFirstSegment={segmentIndex === 0}
           isLastSegment={segmentIndex === len - 1}
           // eslint-disable-next-line react/no-array-index-key
