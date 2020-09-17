@@ -10,12 +10,12 @@
 
 .indexGroup {
   display: inline-block;
-  padding: 0;
   font-weight: 600;
   vertical-align: middle;
   border-radius: var(--border-radius-small);
   padding: 1px var(--extra-small-padding);
   border-bottom: 1px solid var(--component-bg);
+  margin: -1px 0 -2px;
 
   @nest ins & {
     text-decoration: none;

@@ -6,9 +6,10 @@ import styles from './DiffInspectWrapper.css'
 interface Props {
   children: React.ReactNode
   change: FieldChangeNode
+  className: string
 }
 
-export function DiffInspectWrapper({children, change}: Props): React.ReactElement {
+export function DiffInspectWrapper({children, className, change}: Props): React.ReactElement {
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
 
@@ -29,7 +30,7 @@ export function DiffInspectWrapper({children, change}: Props): React.ReactElemen
   }, [toggleInspect])
 
   return (
-    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {isInspecting ? <DiffInspector change={change} /> : children}
     </div>
   )

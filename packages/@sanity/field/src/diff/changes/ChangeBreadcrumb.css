@@ -2,8 +2,8 @@
 
 .crumb {
   display: flex;
-  font-size: 13px;
-  margin: 0 0 var(--small-padding);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
 
   @nest & strong {
     font-weight: 600;
@@ -16,6 +16,7 @@
 }
 
 .change__breadcrumb__separator {
-  margin: 0 var(--small-padding);
+  font-style: normal;
+  margin: 0 var(--extra-small-padding);
   color: var(--gray-light);
 }
