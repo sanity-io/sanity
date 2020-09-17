@@ -5,11 +5,12 @@
 import React from 'react'
 import Badge from 'part:@sanity/components/badges/default'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
-import styles from './documentStatusBarSparkline.css'
-import {useDocumentHistory} from '../documentHistory'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
+import HistoryIcon from 'part:@sanity/base/history-icon'
+import {useDocumentHistory} from '../documentHistory'
 import TimeAgo from '../../../components/TimeAgo'
+import styles from './documentStatusBarSparkline.css'
 
 // TODO create icon
 const BadgeIcon = () => {
@@ -40,15 +41,16 @@ interface Props {
 }
 
 function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props) {
+  const {timeline} = useDocumentHistory()
+  const lastState = states[states.length - 1]
+  const syncState = useSyncState(timeline?.publishedId)
+
   if (states.length === 0) {
     return null
   }
-  const {timeline} = useDocumentHistory()
-  const lastState = states[states.length - 1]
-  const syncState = timeline && useSyncState(timeline.publishedId)
   return (
     <div className={styles.root} data-disabled={disabled}>
-      <div className={styles.statusBadges}>
+      <div className={styles.statusBadges} data-syncing={syncState}>
         {states.map((badge, badgeIndex, arr) => {
           const showSyncIndicator = badgeIndex === arr.length - 1 && syncState.isSyncing
           const Icon = showSyncIndicator ? SyncIcon : badge.icon
@@ -56,11 +58,14 @@ function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props)
             <div
               key={String(badgeIndex)}
               className={styles.badge}
-              data-color={badge.color}
-              title={badge.title}
+              data-color={badge.label === 'Published' ? 'publish' : badge.color}
+              title={badge.label}
             >
               <span className={`${styles.icon} ${showSyncIndicator ? styles.isSyncing : ''}`}>
                 {Icon ? <Icon /> : <BadgeIcon />}
+              </span>
+              <span className={`${styles.icon} ${styles.hoverIcon}`}>
+                <HistoryIcon />
               </span>
             </div>
           )

@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import React from 'react'
+import {useEditState} from '@sanity/react-hooks'
+import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
+import Button from 'part:@sanity/components/buttons/default'
 import {useDocumentHistory} from '../documentHistory'
 import styles from './documentStatusBar.css'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './documentStatusBarActions'
 import {DocumentStatusBarSparkline} from './documentStatusBarSparkline'
-import {useEditState} from '@sanity/react-hooks'
-import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 
 interface Props {
   id: string
@@ -24,8 +25,11 @@ export function DocumentStatusBar(props: Props) {
   return (
     <div className={styles.root}>
       <div className={styles.status}>
-        <button
-          className={styles.lastUpdatedButton}
+        <Button
+          kind="simple"
+          padding="small"
+          size="small"
+          // className={styles.lastUpdatedButton}
           onClick={openHistory}
           type="button"
           disabled={showingRevision}
@@ -36,7 +40,7 @@ export function DocumentStatusBar(props: Props) {
             disabled={showingRevision}
             lastUpdated={props.lastUpdated}
           />
-        </button>
+        </Button>
       </div>
 
       <div className={styles.actions}>

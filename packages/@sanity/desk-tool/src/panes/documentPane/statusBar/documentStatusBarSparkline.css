@@ -17,9 +17,8 @@
 .root {
   display: flex;
   align-items: center;
-  padding: 4px;
-  border-radius: var(--border-radius-medium);
   padding-right: var(--small-padding);
+  text-align: left;
 
   @nest &[data-disabled='true'] {
     @nest & .badge {
@@ -29,14 +28,20 @@
   }
 
   @nest &:hover:not([data-disabled='true']) {
-    background: var(--gray-lightest);
-
     @nest & .badge {
-      border-color: var(--gray-lightest);
+      border-color: #eff0f5; /* @todo */
 
       @nest &:not(:first-of-type) {
         color: var(--gray-darkest);
         background: var(--gray-lighter);
+
+        @nest & .icon {
+          display: none;
+        }
+
+        @nest & .hoverIcon {
+          display: flex;
+        }
       }
     }
 
@@ -89,9 +94,22 @@
 
   @nest &:not(:first-of-type):not(:last-of-type) {
     margin-right: calc(var(--large-padding) * -1);
+
+    @nest & .icon {
+      opacity: 0;
+    }
+  }
+
+  @nest & .hoverIcon {
+    display: none;
   }
 
   @nest &[data-color='success'] {
+    background-color: var(--state-success-color--faded);
+    color: var(--state-success-color--inverted);
+  }
+
+  @nest &[data-color='publish'] {
     background-color: var(--state-success-color);
     color: var(--state-success-color--inverted);
   }
