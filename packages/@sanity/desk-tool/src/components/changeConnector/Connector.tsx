@@ -19,12 +19,12 @@ const hLine = (top: number, from: number, to: number): Line => ({
   to: {top, left: to}
 })
 
-const vLine = (left: number, from: number, to: number): Line => ({
+export const vLine = (left: number, from: number, to: number): Line => ({
   from: {top: from, left: left},
   to: {top: to, left: left}
 })
 
-const drawLine = (line: Line) => linePath(line.from.left, line.from.top, line.to.left, line.to.top)
+export const drawLine = (line: Line) => linePath(line.from.left, line.from.top, line.to.left, line.to.top)
 
 const connect = (p1: Point, p2: Point, dir: 'h' | 'v') => {
   const midLeft = dir === 'v' ? p2.left : p1.left

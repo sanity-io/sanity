@@ -131,7 +131,7 @@ export function createTracker() {
           }
           return items
         }, new Map<string, ReportedRegion<RegionData>>()),
-        debounceTime(100)
+        // debounceTime()
       )
       const sub = regions$
         .pipe(

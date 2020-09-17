@@ -6,7 +6,7 @@ import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import {Path} from '@sanity/util/lib/typedefs/path'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
-import {Connector} from '../../components/changeConnector/Connector'
+import {Connector, drawLine, vLine} from '../../components/changeConnector/Connector'
 
 export interface Rect {
   height: number
@@ -128,7 +128,7 @@ export function ConnectorsOverlay(props: Props) {
             }
             const changeMarkerLeft = changedRegion?.rect?.left
             const connectorFrom = {
-              left: changedField.rect.left + changedField.rect.width,
+              left: changedField.rect.left + changedField.rect.width - 1,
               top: changedField.rect.top - topEdge + 8
             }
             const connectorTo = {
@@ -172,6 +172,23 @@ export function ConnectorsOverlay(props: Props) {
                           top: connectorTo.top - changedRegion.rect.minTop - 28,
                           bottom: connectorTo.top + changedRegion.rect.maxTop - 19
                         }}
+                      />
+                      <path
+                        className={styles.connector}
+                        d={drawLine(
+                          vLine(
+                            connectorTo.left,
+                            Math.min(
+                              connectorTo.top + changedRegion.rect.maxTop - 19 - 8,
+                              connectorTo.top - 8
+                            ),
+                            Math.min(
+                              connectorTo.top + changedRegion.rect.maxTop - 19 - 8,
+                              connectorTo.top - 8 + changedRegion.rect.height
+                            )
+                          )
+                        )}
+                        strokeWidth={2}
                       />
                     </>
                   )}
