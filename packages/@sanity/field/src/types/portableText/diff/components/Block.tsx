@@ -97,33 +97,39 @@ export default function Block(props: Props): JSX.Element {
     // eslint-disable-next-line no-unused-expressions
     isSpan &&
       child.marks &&
-      (
-        child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || []
-      ).forEach(mark => {
-        const hasMarksDiff =
-          cDiff &&
-          (cDiff.fromValue === child || cDiff.toValue === child) &&
-          cDiff.isChanged &&
-          cDiff.fields.marks &&
-          cDiff.fields.marks.type === 'array'
-        if (hasMarksDiff) {
-          const didRemove = cDiff.fields.marks.action === 'removed'
+      (child.marks.filter(mark => isDecorator(mark, fromMap.schemaType as ObjectSchemaType)) || [])
+        // eslint-disable-next-line complexity
+        .forEach(mark => {
+          const hasMarksDiff =
+            cDiff &&
+            (cDiff.fromValue === child || cDiff.toValue === child) &&
+            cDiff.isChanged &&
+            cDiff.fields.marks &&
+            !(cDiff.action === 'removed' && cDiff.fields.marks.action === 'removed') &&
+            cDiff.fields.marks.type === 'array'
+          if (hasMarksDiff) {
+            const didRemove = cDiff.fields.marks.action === 'removed'
+            returned = (
+              <DiffAnnotation
+                annotation={cDiff.annotation}
+                as={didRemove ? 'del' : 'ins'}
+                description={`${didRemove ? 'Removed' : 'Added'} formatting`}
+              >
+                {returned}
+              </DiffAnnotation>
+            )
+          }
           returned = (
-            <DiffAnnotation
-              annotation={cDiff.annotation}
-              as={didRemove ? 'del' : 'ins'}
-              description={`${didRemove ? 'Removed' : 'Added'} formatting`}
+            <Decorator
+              key={`decorator-${child._key}-${mark}`}
+              block={block}
+              mark={mark}
+              span={child}
             >
               {returned}
-            </DiffAnnotation>
+            </Decorator>
           )
-        }
-        returned = (
-          <Decorator key={`decorator-${child._key}-${mark}`} block={block} mark={mark} span={child}>
-            {returned}
-          </Decorator>
-        )
-      })
+        })
     // Render annotations
     // eslint-disable-next-line no-unused-expressions
     isSpan &&
