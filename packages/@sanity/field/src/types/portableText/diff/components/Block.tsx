@@ -33,6 +33,8 @@ export default function Block(props: Props): JSX.Element {
     alert('Focus object here!')
   }
 
+  const color = useDiffAnnotationColor(diff, [])
+
   // eslint-disable-next-line complexity
   const renderBlock = ({
     block,
@@ -49,7 +51,6 @@ export default function Block(props: Props): JSX.Element {
     if (diff.action === 'changed' && diff.fields.style && diff.fields.style.action === 'changed') {
       fromStyle = diff.fromValue.style
       classNames.push(`changed_from_style_${fromStyle || 'undefined'}`)
-      const color = useDiffAnnotationColor(diff, [])
       const style = color ? {background: color.background, color: color.text} : {}
 
       returned = (
