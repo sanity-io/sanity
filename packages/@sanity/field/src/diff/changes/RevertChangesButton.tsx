@@ -1,13 +1,20 @@
+import classNames from 'classnames'
 import React from 'react'
-import Button, {ButtonProps} from 'part:@sanity/components/buttons/default'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 
+import styles from './RevertChangesButton.css'
+
 export function RevertChangesButton(
-  props: Omit<ButtonProps, 'icon' | 'kind' | 'padding' | 'size'>
+  props: Omit<React.HTMLProps<HTMLButtonElement>, 'type'>
 ): React.ReactElement {
+  const {className, ...restProps} = props
+
   return (
-    <Button {...props} icon={UndoIcon} kind="simple" padding="small" size="small">
-      Revert changes
-    </Button>
+    <button {...restProps} className={classNames(styles.root, className)} type="button">
+      <span className={styles.iconContainer}>
+        <UndoIcon />
+      </span>
+      <span className={styles.text}>Revert changes</span>
+    </button>
   )
 }
