@@ -22,33 +22,6 @@
   /*  */
 }
 
-.lastUpdatedButton {
-  -webkit-appearance: none;
-  -webkit-font-smoothing: inherit;
-  font: inherit;
-  display: flex;
-  align-items: center;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  cursor: pointer;
-  text-align: inherit;
-  padding: 0;
-  margin: -5px 0 -4px -4px;
-  outline: none;
-  color: inherit;
-  font-size: var(--font-size-tiny);
-  line-height: var(--line-height-tiny);
-
-  @nest &:disabled {
-    cursor: unset;
-  }
-
-  @nest & .lastStatus {
-    font-weight: 500;
-  }
-}
-
 .actions {
   /* grid unit */
 }
