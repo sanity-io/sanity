@@ -2,7 +2,6 @@
 
 .root {
   display: flex;
-  padding: var(--small-padding) 0;
   align-items: center;
 }
 
