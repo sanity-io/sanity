@@ -1,5 +1,6 @@
-import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
+import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
+import Spinner from 'part:@sanity/components/loading/spinner'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
 import {TimelineItemState} from './types'
@@ -20,7 +21,7 @@ interface TimelineProps {
 }
 
 // Must be a positive number
-const LOAD_MORE_OFFSET = 200
+const LOAD_MORE_OFFSET = 20
 
 export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
   (
@@ -28,23 +29,25 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
     ref
   ) => {
     const rootRef = useRef<HTMLDivElement | null>(null)
-    const loadingRef = useRef<HTMLDivElement | null>(null)
     const listRef = useRef<HTMLOListElement | null>(null)
+    const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
 
     let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
 
-    const loadMoreIfNeeded = useCallback(() => {
+    const checkIfLoadIsNeeded = useCallback(() => {
       const rootEl = rootRef.current
-      const loadingEl = loadingRef.current
 
-      if (loadingEl && rootEl) {
+      if (loadingElement && rootEl) {
         const {offsetHeight, scrollTop} = rootEl
         const bottomPosition = offsetHeight + scrollTop + LOAD_MORE_OFFSET
-        const isVisible = loadingEl.offsetTop < bottomPosition
+        const isVisible = loadingElement.offsetTop < bottomPosition
 
-        if (isVisible) onLoadMore(isVisible)
+        if (isVisible) {
+          // @todo: find out why, for some reason, it won't load without RAF wrapper
+          requestAnimationFrame(() => onLoadMore(isVisible))
+        }
       }
-    }, [onLoadMore])
+    }, [onLoadMore, loadingElement])
 
     // This is needed because we set the reference element both for
     // the provided `ref` from `forwardRef`, and the local `rootRef`.
@@ -59,7 +62,8 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
       [ref]
     )
 
-    useEffect(loadMoreIfNeeded, [loadMoreIfNeeded])
+    // Load whenever it's needed
+    useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
 
     // On mount: Scroll to selected timeline item
     useEffect(() => {
@@ -73,7 +77,7 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
     }, [])
 
     return (
-      <div className={styles.root} ref={setRef} onScroll={loadMoreIfNeeded}>
+      <div className={styles.root} ref={setRef} onScroll={checkIfLoadIsNeeded}>
         <ol className={styles.list} ref={listRef}>
           {timeline.mapChunks(chunk => {
             const isSelectionTop = topSelection === chunk
@@ -111,8 +115,8 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
         </ol>
 
         {!timeline.reachedEarliestEntry && (
-          <div className={styles.loading} ref={loadingRef}>
-            Loading events…
+          <div className={styles.loading} ref={setLoadingElement}>
+            <Spinner center />
           </div>
         )}
       </div>
