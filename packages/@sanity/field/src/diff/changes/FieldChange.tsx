@@ -41,30 +41,32 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
 
   return (
     <div className={rootClass}>
-      {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-
-      <DiffInspectWrapper change={change}>
-        <div className={styles.change}>
-          {change.error ? (
-            <ValueError error={change.error} />
-          ) : (
-            <DiffErrorBoundary>
-              <DiffContext.Provider value={{path: change.path}}>
-                <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-              </DiffContext.Provider>
-            </DiffErrorBoundary>
-          )}
-
-          {isComparingCurrent && (
-            <div className={styles.revertChangesButtonContainer}>
-              <RevertChangesButton
-                onClick={handleRevertChanges}
-                onMouseEnter={handleRevertButtonMouseEnter}
-                onMouseLeave={handleRevertButtonMouseLeave}
-              />
-            </div>
-          )}
+      {change.showHeader && (
+        <div className={styles.header}>
+          <ChangeBreadcrumb change={change} titlePath={change.titlePath} />
         </div>
+      )}
+
+      <DiffInspectWrapper change={change} className={styles.change}>
+        {change.error ? (
+          <ValueError error={change.error} />
+        ) : (
+          <DiffErrorBoundary>
+            <DiffContext.Provider value={{path: change.path}}>
+              <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+            </DiffContext.Provider>
+          </DiffErrorBoundary>
+        )}
+
+        {isComparingCurrent && (
+          <div className={styles.revertChangesButtonContainer}>
+            <RevertChangesButton
+              onClick={handleRevertChanges}
+              onMouseEnter={handleRevertButtonMouseEnter}
+              onMouseLeave={handleRevertButtonMouseLeave}
+            />
+          </div>
+        )}
       </DiffInspectWrapper>
     </div>
   )

@@ -1,7 +1,13 @@
 .from {
+  flex: 1;
+  min-width: 0;
+  display: block;
   text-decoration: none;
 }
 
 .to {
+  flex: 1;
+  min-width: 0;
+  display: block;
   text-decoration: none;
 }

@@ -16,11 +16,6 @@ const FallbackPreview: PreviewComponent<any> = ({color, value, schemaType}) => {
 
 export const FallbackDiff: DiffComponent<any> = ({diff, schemaType}) => {
   return (
-    <Change
-      diff={diff}
-      schemaType={schemaType}
-      previewComponent={FallbackPreview}
-      layout="inline"
-    />
+    <Change diff={diff} schemaType={schemaType} previewComponent={FallbackPreview} layout="grid" />
   )
 }
