@@ -18,7 +18,7 @@ interface RawRequestOptions {
   json?: boolean
   useGlobalApi?: boolean
   withCredentials?: boolean
-  query?: {[key: string]: string}
+  query?: {[key: string]: string | string[]}
   headers?: {[key: string]: string}
   timeout?: number
   body?: any
