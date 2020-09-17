@@ -34,7 +34,7 @@ export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTML
         as={as}
         annotation={annotation}
         description={description}
-        style={{background: color.background, color: color.text}}
+        style={{backgroundColor: color.background, color: color.text}}
       >
         {children}
       </DiffAnnotationTooltip>
@@ -48,7 +48,7 @@ export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTML
     <DiffAnnotationTooltip
       {...restProps}
       as={as}
-      style={{background: color.background, color: color.text}}
+      style={{backgroundColor: color.background, color: color.text}}
     >
       {children}
     </DiffAnnotationTooltip>

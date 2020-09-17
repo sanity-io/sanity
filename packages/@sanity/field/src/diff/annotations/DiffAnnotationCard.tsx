@@ -30,7 +30,7 @@ export function DiffAnnotationCard(
 
   const annotation = diff ? getAnnotationAtPath(diff, path || []) : specifiedAnnotation
   const color = useAnnotationColor(annotation)
-  const colorStyle = color ? {background: color.background, color: color.text} : {}
+  const colorStyle = color ? {backgroundColor: color.background, color: color.text} : {}
 
   return createElement(as, {...restProps, style: {...colorStyle, ...style}}, children)
 }
