@@ -15,9 +15,26 @@ export type DiffAnnotationTooltipProps = (AnnotationProps | AnnotatedDiffProps) 
 export function DiffAnnotationTooltip(
   props: DiffAnnotationTooltipProps & React.HTMLProps<HTMLElement>
 ): React.ReactElement {
-  const {as = 'div', children, description, ...restProps} = props
-  const annotation =
-    'diff' in props ? getAnnotationAtPath(props.diff, props.path || []) : props.annotation
+  if ('diff' in props) {
+    const {as = 'div', children, description, diff, path, ...restProps} = props
+    const annotation = getAnnotationAtPath(diff, path || [])
+
+    if (!annotation) {
+      return createElement(as, restProps, children)
+    }
+
+    const content = (
+      <DiffAnnotationTooltipContent description={description} annotations={[annotation]} />
+    )
+
+    return (
+      <Tooltip content={content} placement="top" portal>
+        {createElement(as, restProps, children)}
+      </Tooltip>
+    )
+  }
+
+  const {as = 'div', annotation, children, description, ...restProps} = props
 
   if (!annotation) {
     return createElement(as, restProps, children)

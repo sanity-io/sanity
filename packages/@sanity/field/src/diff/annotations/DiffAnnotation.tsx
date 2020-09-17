@@ -1,7 +1,8 @@
+import {useUserColorManager} from '@sanity/base/user-color'
 import * as React from 'react'
 import {Annotation, Diff, Path} from '../../types'
 import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
-import {getAnnotationAtPath} from './helpers'
+import {getAnnotationAtPath, getAnnotationColor} from './helpers'
 
 export interface AnnotationProps {
   annotation: Annotation | undefined | null
@@ -20,9 +21,12 @@ interface BaseAnnotationProps {
 export type DiffAnnotationProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
 
 export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTMLElement>) {
+  const userColorManager = useUserColorManager()
+
   if ('diff' in props) {
-    const {as = 'span', children, description, diff, path, ...restProps} = props
-    const annotation = getAnnotationAtPath(diff, path || [])
+    const {as = 'span', children, description, diff, path = [], ...restProps} = props
+    const annotation = getAnnotationAtPath(diff, path)
+    const color = getAnnotationColor(userColorManager, annotation)
 
     return (
       <DiffAnnotationTooltip
@@ -30,6 +34,7 @@ export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTML
         as={as}
         annotation={annotation}
         description={description}
+        style={{background: color.background, color: color.text}}
       >
         {children}
       </DiffAnnotationTooltip>
@@ -37,6 +42,11 @@ export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTML
   }
 
   const {children, ...restProps} = props
+  const color = getAnnotationColor(userColorManager, restProps.annotation)
 
-  return <DiffAnnotationTooltip {...restProps}>{children}</DiffAnnotationTooltip>
+  return (
+    <DiffAnnotationTooltip {...restProps} style={{background: color.background, color: color.text}}>
+      {children}
+    </DiffAnnotationTooltip>
+  )
 }
