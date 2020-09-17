@@ -39,21 +39,20 @@ interface Props {
   clampLeft: {top: number; bottom: number}
   clampRight: {top: number; bottom: number}
 }
-export function Connector(props: Props) {
-  const from = props.from
-  const to = props.to
+export function Connector(props: React.ComponentProps<'path'> & Props) {
+  const {from, to, verticalCenter: _, clampLeft, clampRight, ...rest} = props
   const verticalCenter =
     typeof props.verticalCenter === 'number'
       ? props.verticalCenter
       : from.left + (to.left - from.left) / 2
 
   const clampedFromTop = Math.min(
-    props.clampLeft.bottom + CORNER_RADIUS,
-    Math.max(from.top, props.clampLeft.top + CORNER_RADIUS)
+    clampLeft.bottom + CORNER_RADIUS,
+    Math.max(from.top, clampLeft.top + CORNER_RADIUS)
   )
   const clampedToTop = Math.min(
-    props.clampRight.bottom + CORNER_RADIUS,
-    Math.max(to.top, props.clampRight.top + CORNER_RADIUS)
+    clampRight.bottom + CORNER_RADIUS,
+    Math.max(to.top, clampRight.top + CORNER_RADIUS)
   )
 
   // vertical distance between the two horizontal lines
@@ -81,33 +80,30 @@ export function Connector(props: Props) {
     Math.min(clampedToTop - arcHeight, clampedToTop + CORNER_RADIUS)
   )
 
+  const path =
+    connect({top: clampedFromTop + shiftLeft * leftArrowDir, left: from.left}, hLine1.from, 'h') +
+    drawLine(hLine1) +
+    connect(hLine1.to, vMidLine.from, 'v') +
+    drawLine(vMidLine) +
+    connect(vMidLine.to, hLine2.from, 'h') +
+    drawLine(hLine2) +
+    connect(
+      hLine2.to,
+      {
+        top: clampedToTop + shiftRight * rightArrowDir,
+        left: to.left
+      },
+      'v'
+    )
   return (
     <>
+      <path d={path} fill="none" stroke={BLUE} strokeWidth={STROKE_WIDTH} />
       <path
-        d={
-          connect(
-            {top: clampedFromTop + shiftLeft * leftArrowDir, left: from.left},
-            hLine1.from,
-            'h'
-          ) +
-          drawLine(hLine1) +
-          connect(hLine1.to, vMidLine.from, 'v') +
-          drawLine(vMidLine) +
-          connect(vMidLine.to, hLine2.from, 'h') +
-          drawLine(hLine2) +
-          connect(
-            hLine2.to,
-            {
-              top: clampedToTop + shiftRight * rightArrowDir,
-              left: to.left
-            },
-            'v'
-          )
-        }
-        width={1}
+        d={path}
         fill="none"
-        stroke={BLUE}
-        strokeWidth={STROKE_WIDTH}
+        stroke="none"
+        strokeWidth={STROKE_WIDTH + 2}
+        style={{pointerEvents: 'all'}}
       />
     </>
   )

@@ -118,7 +118,7 @@ export function ConnectorsOverlay(props: Props) {
       <ScrollMonitor onScroll={handleScroll}>{children}</ScrollMonitor>
       {changesPanel &&
         fieldRegions
-          .filter(r => r.data)
+          .filter(r => r.data?.hasFocus)
           .map(changedField => {
             const changedRegion = changeRegions.find(r =>
               PathUtils.isEqual(r.data.path, changedField.data.path)
@@ -128,7 +128,7 @@ export function ConnectorsOverlay(props: Props) {
             }
             const changeMarkerLeft = changedRegion?.rect?.left
             const connectorFrom = {
-              left: changedField.rect.left - 1 + changedField.rect.width,
+              left: changedField.rect.left + changedField.rect.width,
               top: changedField.rect.top - topEdge + 8
             }
             const connectorTo = {
@@ -142,6 +142,7 @@ export function ConnectorsOverlay(props: Props) {
                 onClick={() => {
                   scrollIntoView(changedField?.element)
                   scrollIntoView(changedRegion?.element)
+                  // props.onRequestFocusPathChange(changedField.data.path)
                 }}
                 className={styles.svg}
                 style={{
@@ -158,19 +159,21 @@ export function ConnectorsOverlay(props: Props) {
               >
                 <React.Fragment key={`field-${changedField.id}`}>
                   {changedRegion && (
-                    <Connector
-                      from={connectorFrom}
-                      to={connectorTo}
-                      clampLeft={{
-                        top: connectorFrom.top - changedField.rect.minTop - 27,
-                        bottom: connectorFrom.top + changedField.rect.maxTop - 19
-                      }}
-                      verticalCenter={verticalLineLeft + 2}
-                      clampRight={{
-                        top: connectorTo.top - changedRegion.rect.minTop - 27,
-                        bottom: connectorTo.top + changedRegion.rect.maxTop - 19
-                      }}
-                    />
+                    <>
+                      <Connector
+                        from={connectorFrom}
+                        to={connectorTo}
+                        clampLeft={{
+                          top: connectorFrom.top - changedField.rect.minTop - 27,
+                          bottom: connectorFrom.top + changedField.rect.maxTop - 19
+                        }}
+                        verticalCenter={verticalLineLeft}
+                        clampRight={{
+                          top: connectorTo.top - changedRegion.rect.minTop - 28,
+                          bottom: connectorTo.top + changedRegion.rect.maxTop - 19
+                        }}
+                      />
+                    </>
                   )}
                 </React.Fragment>
               </svg>
