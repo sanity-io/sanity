@@ -7,13 +7,13 @@ const noop = () => {}
 
 type Props = {
   // eslint-disable-next-line react/no-unused-prop-types
-  block: PortableTextBlock
+  block?: PortableTextBlock
   children: React.ReactNode
   // eslint-disable-next-line react/no-unused-prop-types
   markDefKey: string
   onClick?: (event: SyntheticEvent<HTMLSpanElement>) => void
   // eslint-disable-next-line react/no-unused-prop-types
-  span: PortableTextChild
+  span?: PortableTextChild
 }
 
 export default function Annotation(props: Props): JSX.Element {

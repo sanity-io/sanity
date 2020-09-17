@@ -1,19 +1,76 @@
-import {startCase} from 'lodash'
+import {flatten, startCase, orderBy} from 'lodash'
+import {
+  diff_match_patch as DiffMatchPatch,
+  DIFF_DELETE,
+  DIFF_EQUAL,
+  DIFF_INSERT
+} from 'diff-match-patch'
 import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
 import {SchemaType, ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
+  MarkSymbolMap,
   PortableTextBlock,
   PortableTextDiff,
   PortableTextChild,
+  StringSegment,
   SpanTypeSchema
 } from './types'
+
+const dmp = new DiffMatchPatch()
 
 export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
 export function hasPTMemberType(schemaType: ArraySchemaType): boolean {
   return schemaType.of.some(isPTSchemaType)
 }
+export const MARK_SYMBOLS = [
+  // [startTag, endTag]
+  ['\uF000', '\uF001'],
+  ['\uF002', '\uF003'],
+  ['\uF004', '\uF005'],
+  ['\uF006', '\uF007'],
+  ['\uF008', '\uF009'],
+  ['\uF00A', '\uF00B'],
+  ['\uF00C', '\uF00D'],
+  ['\uF00F', '\uF010'],
+  ['\uF011', '\uF012'],
+  ['\uF013', '\uF014'],
+  ['\uF015', '\uF016'],
+  ['\uF017', '\uF018'],
+  ['\uF019', '\uF01A'],
+  ['\uF01B', '\uF01C'],
+  ['\uF01E', '\uF01F'],
+  ['\uF020', '\uF021']
+]
+
+export const ANNOTATION_SYMBOLS = [
+  // [startTag, endTag]
+  ['\uF050', '\uF051'],
+  ['\uF052', '\uF053'],
+  ['\uF054', '\uF055'],
+  ['\uF056', '\uF057'],
+  ['\uF058', '\uF059'],
+  ['\uF05A', '\uF05B'],
+  ['\uF05C', '\uF05D'],
+  ['\uF05F', '\uF060'],
+  ['\uF061', '\uF062'],
+  ['\uF063', '\uF064'],
+  ['\uF065', '\uF066'],
+  ['\uF067', '\uF068'],
+  ['\uF069', '\uF06A'],
+  ['\uF06B', '\uF06C'],
+  ['\uF06E', '\uF06F'],
+  ['\uF070', '\uF071']
+]
+
+const startMarkSymbols = MARK_SYMBOLS.map(set => set[0]).concat(
+  ANNOTATION_SYMBOLS.map(set => set[0])
+)
+const endMarkSymbols = MARK_SYMBOLS.map(set => set[1]).concat(ANNOTATION_SYMBOLS.map(set => set[1]))
+const allSymbols = startMarkSymbols.concat(endMarkSymbols)
+
+const markRegex = `/${allSymbols.join('|')}/g`
 
 export function isPTSchemaType(schemaType: SchemaType): boolean {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
@@ -192,7 +249,7 @@ function isRemoveAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolea
   )
 }
 
-function getChildSchemaType(fields: any[], child: PortableTextChild) {
+export function getChildSchemaType(fields: any[], child: PortableTextChild) {
   const childrenField = fields.find(f => f.name === 'children')
   const cSchemaType =
     (childrenField &&
@@ -209,7 +266,7 @@ export function diffDidRemove(blockDiff: ObjectDiff): boolean {
 
 export function getDecorators(spanSchemaType: SpanTypeSchema): {title: string; value: string}[] {
   if (spanSchemaType.decorators) {
-    return spanSchemaType.decorators
+    return orderBy(spanSchemaType.decorators, ['value'], ['asc'])
   }
   return []
 }
@@ -259,155 +316,205 @@ export function blockToText(block: PortableTextBlock | undefined | null): string
   return block.children.map(child => child.text || '').join('')
 }
 
-export function prepareDiffForPortableText(diff: ObjectDiff): PortableTextDiff {
+export function blockToSymbolizedText(
+  block: PortableTextBlock | undefined | null,
+  decoratorMap: MarkSymbolMap,
+  annotationMap: MarkSymbolMap
+): string {
+  if (!block) {
+    return ''
+  }
+  return block.children
+    .map(child => {
+      let returned = child.text || ''
+      if (child._type !== 'span') {
+        returned = `<inlineObject key='${child._key}'/>`
+      } else if (child.marks) {
+        child.marks.forEach(mark => {
+          const _isDecorator = !!decoratorMap[mark]
+          if (_isDecorator) {
+            returned = `${decoratorMap[mark][0]}${returned}${decoratorMap[mark][1]}`
+          } else if (annotationMap[mark]) {
+            returned = `${annotationMap[mark][0]}${returned}${annotationMap[mark][1]}`
+          }
+        })
+      }
+      return returned
+    })
+    .join('')
+}
+
+// eslint-disable-next-line complexity
+export function prepareDiffForPortableText(
+  diff: ObjectDiff,
+  schemaType: ObjectSchemaType
+): [PortableTextDiff, PortableTextDiff | undefined] {
   const _diff: PortableTextDiff = {
     ...diff,
     displayValue:
       diff.action === 'removed'
         ? (diff.fromValue as PortableTextBlock)
         : (diff.toValue as PortableTextBlock)
-  } // Make a copy so we don't manipulate the original diff object
-
-  // Add children that are removed to the display value
-  if (_diff.action !== 'removed') {
-    const childrenDiff = _diff.fields.children as ArrayDiff
-    const newChildren = [...(_diff?.toValue?.children || [])] as PortableTextChild[]
-    const removedChildrenDiffs =
-      (childrenDiff &&
-        childrenDiff.items.filter(item => item.diff && item.diff.action === 'removed')) ||
-      []
-    removedChildrenDiffs.forEach(rDiff => {
-      if (rDiff.fromIndex !== undefined) {
-        const fromValue = rDiff.diff.fromValue as PortableTextChild
-        if (fromValue._key) {
-          newChildren.splice(rDiff.fromIndex + 1, 0, fromValue)
-        }
-      }
-    })
-    _diff.displayValue = {..._diff.toValue, children: newChildren} as PortableTextBlock
   }
-  // Special condition when the only change is adding marks (then just remove all the other diffs - like created new spans)
-  const onlyMarksAreChanged = didChangeMarksOnly(_diff)
-  if (onlyMarksAreChanged) {
-    const childrenItem = _diff.fields.children
-    if (childrenItem && childrenItem.type === 'array') {
-      childrenItem.items.forEach(item => {
-        if (item.diff.type === 'object') {
-          const itemDiff = item.diff as ObjectDiff
-          Object.keys(itemDiff.fields).forEach(key => {
-            if (key !== 'marks') {
-              delete itemDiff.fields[key]
-            }
-          })
-        }
+
+  if (_diff.fromValue && _diff.toValue) {
+    const annotationMap: MarkSymbolMap = {}
+    const markMap: MarkSymbolMap = {}
+    const spanSchemaType = getChildSchemaType(schemaType.fields, {_key: 'bogus', _type: 'span'})
+    if (spanSchemaType) {
+      getDecorators(spanSchemaType).forEach((dec, index) => {
+        markMap[dec.value] = MARK_SYMBOLS[index]
       })
     }
+    _diff.toValue.markDefs.forEach((markDef, index) => {
+      annotationMap[markDef._key] = ANNOTATION_SYMBOLS[index]
+    })
+    const fromText = blockToSymbolizedText(
+      _diff.fromValue as PortableTextBlock,
+      markMap,
+      annotationMap
+    )
+    const toText = blockToSymbolizedText(_diff.toValue as PortableTextBlock, markMap, annotationMap)
+    const toPseudoValue = {
+      ..._diff.displayValue,
+      children: [
+        {
+          _type: 'span',
+          _key: 'pseudoSpanKey',
+          text: toText,
+          marks: []
+        }
+      ]
+    }
+    const fromPseudoValue = {
+      ..._diff.displayValue,
+      children: [
+        {
+          _type: 'span',
+          _key: 'pseudoSpanKey',
+          text: fromText,
+          marks: []
+        }
+      ]
+    }
+    const pseudoDiff = {
+      action: 'changed',
+      type: 'object',
+      displayValue: toPseudoValue,
+      fromValue: fromPseudoValue,
+      toValue: toPseudoValue,
+      isChanged: true,
+      fields: {
+        children: {
+          action: 'changed',
+          type: 'array',
+          isChanged: true,
+          items: [
+            {
+              diff: {
+                action: 'changed',
+                type: 'object',
+                isChanged: true,
+                fields: {
+                  text: {
+                    type: 'string',
+                    action: 'changed',
+                    isChanged: true,
+                    fromValue: fromText,
+                    toValue: toText,
+                    segments: buildSegments(fromText, toText).map(seg => ({
+                      ...seg,
+                      ...(_diff.action !== 'unchanged' && _diff.annotation
+                        ? {annotation: _diff.annotation} // Fallback // TODO:; this is a no-no
+                        : {})
+                    }))
+                  }
+                },
+                fromValue: fromPseudoValue.children[0],
+                toValue: toPseudoValue.children[0]
+              },
+              fromIndex: 0,
+              toIndex: 0,
+              hasMoved: false
+            }
+          ],
+          fromValue: fromPseudoValue.children,
+          toValue: toPseudoValue.children
+        }
+      }
+    }
+    return [_diff, pseudoDiff as PortableTextDiff]
   }
+  return [_diff as PortableTextDiff, undefined]
+}
 
-  // EXPERIMENTAL APPROACH TO BETTER SHOW DECORATOR CHANGES WHEN
-  // THERE ARE ALSO CHANGES IN THE TEXT.
+function buildSegments(fromInput: string, toInput: string): StringSegment[] {
+  const segments: StringSegment[] = []
 
-  // else if (marksAreChangedByAction(_diff, 'added') && _diff.toValue) {
-  //   console.log('Marks added, but there is more!')
-  //   // Is child split to add new span with mark?
-  //   const block = _diff.toValue as PortableTextBlock
-  //   // Find the span which has an added mark
-  //   const childrenDiff = _diff.fields.children as ArrayDiff
-  //   // console.log(
-  //   //   JSON.stringify(
-  //   //     childrenDiff.items.map(item => item.diff),
-  //   //     null,
-  //   //     2
-  //   //   )
-  //   // )
-  //   const addMarkItems = childrenDiff.items.filter(
-  //     item =>
-  //       item.diff.isChanged &&
-  //       item.diff.type === 'object' &&
-  //       item.diff.fields.marks &&
-  //       item.diff.fields.marks.toValue &&
-  //       Array.isArray(item.diff.fields.marks.toValue) &&
-  //       item.diff.fields.marks.toValue.length > 0
-  //   )
-  //   console.log('diff', _diff)
-  //   console.log('addMarkItems', addMarkItems)
-  //   // eslint-disable-next-line complexity
-  //   addMarkItems.forEach(item => {
-  //     const span = item.diff.toValue as PortableTextChild
-  //     let spanBeforeDiff
-  //     if (span) {
-  //       const spanIndex = block.children.findIndex(child => child._key === span._key)
-  //       const spanBefore = block.children[spanIndex - 1]
-  //       if (spanBefore) {
-  //         // Remove the text diff segment that is removed from the spanBefore but exists on the current span
-  //         const spanDiff = childrenDiff.items.find(i => i.diff.toValue === spanBefore)?.diff
-  //         // eslint-disable-next-line max-depth
-  //         if (spanDiff) {
-  //           const textDiff =
-  //             spanDiff.type === 'object' &&
-  //             !!spanDiff.fields.text &&
-  //             spanDiff.fields.text.type === 'string' &&
-  //             spanDiff.fields.text
-  //           // eslint-disable-next-line max-depth
-  //           if (textDiff && textDiff.segments[textDiff.segments.length - 1].action === 'removed') {
-  //             spanBeforeDiff = textDiff
-  //             textDiff.segments = textDiff.segments.slice(0, textDiff.segments.length - 1)
-  //           }
-  //         }
-  //       } else if (
-  //         item.diff.type === 'object' &&
-  //         item.diff.fields.text &&
-  //         item.diff.fields.text.type === 'string'
-  //       ) {
-  //         item.diff.fields.text.segments = item.diff.fields.text.segments.filter(
-  //           segment => segment.action !== 'removed'
-  //         )
-  //       }
-  //       const spanAfter = block.children[spanIndex + 1]
-  //       if (spanAfter) {
-  //         // Remove the text diff segment that is removed from the spanBefore but exists on the current span
-  //         const spanDiff = childrenDiff.items.find(i => i.diff.toValue === spanAfter)?.diff
-  //         // eslint-disable-next-line max-depth
-  //         if (spanDiff) {
-  //           const textDiff =
-  //             spanDiff.type === 'object' &&
-  //             !!spanDiff.fields.text &&
-  //             spanDiff.fields.text.type === 'string' &&
-  //             spanDiff.fields.text
-  //           // eslint-disable-next-line max-depth
-  //           if (textDiff && textDiff.segments[textDiff.segments.length - 1].action === 'added') {
-  //             // eslint-disable-next-line max-depth
-  //             if (
-  //               spanBeforeDiff &&
-  //               textDiff.segments.length === 1 &&
-  //               textDiff.segments[0].action === 'added' &&
-  //               spanBeforeDiff.fromValue.indexOf(
-  //                 textDiff.segments[textDiff.segments.length - 1].text
-  //               ) > -1 &&
-  //               spanBeforeDiff.fromValue.substring(
-  //                 spanBeforeDiff.fromValue.indexOf(
-  //                   textDiff.segments[textDiff.segments.length - 1].text
-  //                 )
-  //               ) === textDiff.segments[textDiff.segments.length - 1].text
-  //             ) {
-  //               textDiff.segments[textDiff.segments.length - 1].action = 'unchanged'
-  //             } else {
-  //               // Diff what's changed here!
-  //               console.log('diffing what is changed in the spanAfter', textDiff.segments)
-  //               console.log('spanBeforeDiff', spanBeforeDiff)
-  //               const blockFromValueText = blockToText(_diff.fromValue as PortableTextBlock)
-  //               const blockToValueText = blockToText(_diff.toValue as PortableTextBlock)
-  //               console.log('Value before:', blockFromValueText)
-  //               console.log('Value now:', blockToValueText)
-  //               // textDiff.segments = textDiff.segments.filter(seg => {
-  //               //   seg.text
-  //               // })
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   })
-  // }
-  return _diff as PortableTextDiff
+  const dmpDiffs = dmp.diff_main(fromInput, toInput)
+  dmp.diff_cleanupEfficiency(dmpDiffs)
+
+  let fromIdx = 0
+  let toIdx = 0
+
+  for (const [op, text] of dmpDiffs) {
+    switch (op) {
+      case DIFF_EQUAL:
+        segments.push({
+          type: 'stringSegment',
+          action: 'unchanged',
+          text
+        })
+        fromIdx += text.length
+        toIdx += text.length
+        break
+      case DIFF_DELETE:
+        segments.push({
+          type: 'stringSegment',
+          action: 'removed',
+          text: fromInput.substring(fromIdx, fromIdx + text.length)
+        })
+        fromIdx += text.length
+        break
+      case DIFF_INSERT:
+        segments.push({
+          type: 'stringSegment',
+          action: 'added',
+          text: toInput.substring(toIdx, toIdx + text.length)
+        })
+        toIdx += text.length
+        break
+      default:
+      // Do nothing
+    }
+  }
+  // Clean up so that marks / symbols are treated as an own segment
+  return flatten(
+    segments.map(seg => {
+      const newSegments: StringSegment[] = []
+      if (seg.text.length > 1) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // TODO: officially support string.matchAll or rewrite this!
+        const markMatches = [...seg.text.matchAll(markRegex)]
+        let lastIndex = -1
+        markMatches.forEach(match => {
+          if (match.index > lastIndex) {
+            newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, match.index)})
+            newSegments.push({...seg, text: match[0]})
+          }
+          if (match === markMatches[markMatches.length - 1]) {
+            newSegments.push({...seg, text: seg.text.substring(match.index + 1)})
+          }
+          lastIndex = match.index
+        })
+        if (markMatches.length === 0) {
+          newSegments.push(seg)
+        }
+      } else {
+        newSegments.push(seg)
+      }
+      return newSegments
+    })
+  )
 }
