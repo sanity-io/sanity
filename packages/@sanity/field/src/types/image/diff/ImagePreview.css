@@ -1,14 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  display: grid;
-  grid-template-areas: 'image' 'meta';
-  grid-template-rows: 1fr auto;
 }
 
 .header {
+  flex: 1;
+  min-height: 0;
   padding: var(--small-padding) var(--small-padding) 0;
 }
 

@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  /*  */
 }
 
 .annotation {
@@ -11,7 +10,7 @@
 .imageDiff {
   @nest &[data-diff-layout='double'] {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
 }
 
