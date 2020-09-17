@@ -31,13 +31,8 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
     revertHovered && styles.revertHovered
   )
 
-  const handleRevertButtonMouseEnter = () => {
-    setRevertHovered(true)
-  }
-
-  const handleRevertButtonMouseLeave = () => {
-    setRevertHovered(false)
-  }
+  const handleRevertButtonMouseEnter = React.useCallback(() => setRevertHovered(true), [])
+  const handleRevertButtonMouseLeave = React.useCallback(() => setRevertHovered(false), [])
 
   return (
     <div className={rootClass}>

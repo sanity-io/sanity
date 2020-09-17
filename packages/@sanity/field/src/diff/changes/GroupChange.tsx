@@ -11,7 +11,10 @@ import styles from './GroupChange.css'
 
 export function GroupChange({change: group}: {change: GroupChangeNode}): React.ReactElement {
   const {titlePath, changes} = group
-  const {documentId, schemaType, rootDiff} = React.useContext(DocumentChangeContext)
+  const {documentId, schemaType, rootDiff, isComparingCurrent} = React.useContext(
+    DocumentChangeContext
+  )
+
   const [hoverRef, isHoveringRevert] = useHover<HTMLDivElement>()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
@@ -32,9 +35,11 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
           <ChangeResolver key={change.key} change={change} />
         ))}
 
-        <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
-          <RevertChangesButton onClick={handleRevertChanges} />
-        </div>
+        {isComparingCurrent && (
+          <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
+            <RevertChangesButton onClick={handleRevertChanges} />
+          </div>
+        )}
       </div>
     </div>
   )
