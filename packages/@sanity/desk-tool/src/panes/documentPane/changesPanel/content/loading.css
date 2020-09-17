@@ -1,0 +1,15 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  color: var(--text-muted);
+}

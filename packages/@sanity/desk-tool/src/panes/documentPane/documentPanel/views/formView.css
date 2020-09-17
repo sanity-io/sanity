@@ -4,7 +4,7 @@
   max-width: 640px;
   flex-grow: 1;
   margin: 0 auto;
-  padding: 2em var(--medium-padding) 6em;
+  padding: var(--large-padding) var(--medium-padding) var(--extra-large-padding);
 }
 
 .typeMisMatchMessage {
