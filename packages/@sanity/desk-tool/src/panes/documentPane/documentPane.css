@@ -72,12 +72,13 @@
 
 .documentContainer {
   flex: 3;
-  min-width: 0;
+  min-width: 334px;
   position: relative;
 }
 
 .changesContainer {
   flex: 2;
-  min-width: 0;
-  border-left: 1px solid var(--hairline-color);
+  min-width: 334px;
+  max-width: 480px;
+  border-left: 1px dashed var(--hairline-color);
 }

@@ -88,25 +88,27 @@ export function ChangesPanel({
         </div>
 
         <div className={styles.versionSelectContainer}>
-          <div className={styles.changesSinceSelectContainer} ref={changesSinceSelectRef}>
-            <Button
-              kind="simple"
-              onMouseUp={ignoreClickOutside}
-              onClick={onTimelineOpen}
-              padding="small"
-              selected={isTimelineOpen && timelineMode === 'since'}
-              size="small"
-            >
-              {/* eslint-disable-next-line no-nested-ternary */}
-              {menuOpen ? (
-                <>Review changes since</>
-              ) : since ? (
-                <SinceText since={since} />
-              ) : (
-                <>Since unknown version</>
-              )}{' '}
-              &darr;
-            </Button>
+          <div className={styles.changesSinceSelectContainer}>
+            <div ref={changesSinceSelectRef}>
+              <Button
+                kind="simple"
+                onMouseUp={ignoreClickOutside}
+                onClick={onTimelineOpen}
+                padding="small"
+                selected={isTimelineOpen && timelineMode === 'since'}
+                size="small"
+              >
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {menuOpen ? (
+                  <>Review changes since</>
+                ) : since ? (
+                  <SinceText since={since} />
+                ) : (
+                  <>Since unknown version</>
+                )}{' '}
+                &darr;
+              </Button>
+            </div>
           </div>
 
           {changeAnnotations.length > 0 && (
