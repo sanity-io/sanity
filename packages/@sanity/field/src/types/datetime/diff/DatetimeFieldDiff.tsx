@@ -3,5 +3,7 @@ import {DiffComponent, StringDiff, Change} from '../../../diff'
 import {DatetimePreview} from '../preview'
 
 export const DatetimeFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
-  return <Change diff={diff} schemaType={schemaType} previewComponent={DatetimePreview} />
+  return (
+    <Change diff={diff} layout="grid" schemaType={schemaType} previewComponent={DatetimePreview} />
+  )
 }
