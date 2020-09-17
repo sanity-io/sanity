@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  @nest .root + & {
+  @nest div + & {
     margin-top: var(--extra-large-padding);
   }
 }
@@ -12,6 +12,7 @@
 
 .header {
   padding: 0 0 var(--extra-small-padding);
+  margin-left: -1px;
 }
 
 .change {
@@ -43,6 +44,6 @@
 }
 
 .revertChangesButtonContainer {
-  margin-left: -0.25em;
+  margin-left: calc(0 - var(--extra-small-padding) - 2px);
   margin-top: 0.25em;
 }
