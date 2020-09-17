@@ -14,6 +14,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const {title, options} = schemaType
   const Preview = options?.layout === 'checkbox' ? Checkbox : Switch
   const userColor = useDiffAnnotationColor(diff, []) || {background: '', text: '', border: ''}
+
   return (
     <DiffAnnotationTooltip as="div" className={styles.root} diff={diff}>
       <Preview checked={fromValue} color={userColor} />
