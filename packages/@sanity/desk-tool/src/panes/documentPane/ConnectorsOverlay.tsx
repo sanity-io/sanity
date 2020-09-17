@@ -1,13 +1,12 @@
 import React from 'react'
 import styles from './ConnectorsOverlay.css'
-import {connectorLinePath, linePathFromPoints} from '../../components/changeConnector/svgHelpers'
-import {Arrows} from '../../components/changeConnector/Arrows'
 import * as PathUtils from '@sanity/util/paths'
 import {groupBy} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import {Path} from '@sanity/util/lib/typedefs/path'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
+import {Connector} from '../../components/changeConnector/Connector'
 
 export interface Rect {
   height: number
@@ -34,7 +33,8 @@ const getOffsetsTo = (source, target) => {
   let top = 0
   let left = 0
   let relativeScrollTop = 0
-  let clamped: false | 'top' | 'bottom' = false
+  let minTop = 0
+  let maxTop = Number.MAX_SAFE_INTEGER
 
   while (el && el !== target) {
     if (el.scrollHeight === el.offsetHeight) {
@@ -43,21 +43,22 @@ const getOffsetsTo = (source, target) => {
     } else {
       // we reached a scroll container, make sure we clamp the top to be within the bounds
       const actualTop = relativeScrollTop - el.scrollTop
-      const clampedTop = Math.min(el.offsetHeight - 12, Math.max(0, actualTop))
-      if (clampedTop < actualTop) {
-        clamped = 'bottom'
-      }
+      const clampedTop = Math.min(el.offsetHeight - 12, Math.max(12, actualTop))
       if (clampedTop > actualTop) {
-        clamped = 'top'
+        minTop = actualTop - clampedTop
       }
-      top += el.offsetTop + clampedTop
+      if (clampedTop < actualTop) {
+        maxTop = clampedTop - actualTop
+      }
 
       relativeScrollTop = 0
     }
+
+    top += el.offsetTop - el.scrollTop
     left += el.offsetLeft
     el = el.offsetParent
   }
-  return {top: top + relativeScrollTop, left, clamped}
+  return {top: top, left, minTop, maxTop}
 }
 
 function getRelativeRect(element, parent): Rect {
@@ -105,6 +106,7 @@ export function ConnectorsOverlay(props: Props) {
   const changesPanel = grouped.changesPanel && grouped.changesPanel[0]
   // note: this assumes the changes panel header and the document panel always have the same height
   const topEdge = changesPanel?.rect?.top
+  const verticalLineLeft = changesPanel?.rect?.left
 
   const {fieldRegions = [], changeRegions = []} = grouped
   return (
@@ -122,7 +124,7 @@ export function ConnectorsOverlay(props: Props) {
             }
             const changeMarkerLeft = changedRegion?.rect?.left
             const connectorFrom = {
-              left: changedField.rect.left + changedField.rect.width,
+              left: changedField.rect.left - 1 + changedField.rect.width,
               top: changedField.rect.top - topEdge + 8
             }
             const connectorTo = {
@@ -130,12 +132,6 @@ export function ConnectorsOverlay(props: Props) {
               top: changedRegion.rect.top - topEdge + 8
             }
 
-            const connectorPath = connectorLinePath(
-              connectorFrom,
-              connectorTo,
-              10,
-              changesPanel.rect.left + 10
-            )
             return (
               <svg
                 key={changedField.id}
@@ -158,26 +154,19 @@ export function ConnectorsOverlay(props: Props) {
               >
                 <React.Fragment key={`field-${changedField.id}`}>
                   {changedRegion && (
-                    <g className={styles.connector}>
-                      <g
-                        className={`${styles.connectorPath}${
-                          changedField.data.hasFocus ? styles.hasFocus : ''
-                        }`}
-                      >
-                        <path d={connectorPath} fill="none" />
-                        {/* to make the active area wider */}
-                        <path d={connectorPath} strokeWidth={15} stroke="none" fill="none" />
-                        <Arrows
-                          from={connectorFrom}
-                          to={connectorTo}
-                          left={changesPanel.rect.left + 10}
-                          bounds={{
-                            width: 0,
-                            height: changesPanel.rect.height
-                          }}
-                        />
-                      </g>
-                    </g>
+                    <Connector
+                      from={connectorFrom}
+                      to={connectorTo}
+                      clampLeft={{
+                        top: connectorFrom.top - changedField.rect.minTop - 27,
+                        bottom: connectorFrom.top + changedField.rect.maxTop - 19
+                      }}
+                      verticalCenter={verticalLineLeft + 2}
+                      clampRight={{
+                        top: connectorTo.top - changedRegion.rect.minTop - 27,
+                        bottom: connectorTo.top + changedRegion.rect.maxTop - 19
+                      }}
+                    />
                   )}
                 </React.Fragment>
               </svg>

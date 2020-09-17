@@ -22,11 +22,17 @@ export const linePath = (p1x: number, p1y: number, p2x: number, p2y: number) =>
 export const linePathFromPoints = (p1: Point, p2: Point) =>
   `M${p1.left},${p1.top}L${p2.left},${p2.top}`
 
+type ArrowOptions = {
+  begin?: 'up' | 'down'
+  end?: 'up' | 'down'
+}
+
 export const connectorLinePath = (
   from: Point,
   to: Point,
   cornerRadius: number,
-  midLeft = from.left + (to.left - from.left) / 2
+  midLeft = from.left + (to.left - from.left) / 2,
+  arrows: ArrowOptions = {}
 ) => {
   const halfHeight = (to.top - from.top) / 2
 

@@ -29,10 +29,10 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                   <div key={cell + row} style={{position: 'relative'}}>
                     <div>
                       <div style={{position: 'absolute', left: -24}}>
-                        <PresenceScope path={path}>
-                          {/* Show presence items for this particular cell */}
-                          <FieldPresence />
-                        </PresenceScope>
+                        {/*<PresenceScope path={path}>*/}
+                        {/*  /!* Show presence items for this particular cell *!/*/}
+                        {/*  <FieldPresence />*/}
+                        {/*</PresenceScope>*/}
                       </div>
                       <input
                         type="text"

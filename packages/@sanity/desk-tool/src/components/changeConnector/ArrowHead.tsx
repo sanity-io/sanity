@@ -13,39 +13,43 @@ const DIRECTIONS: Record<Direction, number> = {
   nw: 315
 }
 
-const makeArrowHead = (size: number, top: number, left: number) =>
-  moveTo(left, top) +
-  lineTo(left + size, top) +
-  lineTo(left + size, top) +
-  lineTo(left, top) +
-  moveTo(left, top) +
-  lineTo(left, top + size) +
-  lineTo(left, top + size) +
-  lineTo(left, top)
+// up is default
+const makeArrowHead = (size: number, length: number, left: number, top: number) => {
+  const c = Math.sqrt(size ** 2 + size ** 2) / 2
+  return [
+    moveTo(left - c, top + c),
+    lineTo(left, top),
+    lineTo(left + c, top + c),
+    moveTo(left, top),
+    lineTo(left, top + length)
+  ].join('')
+}
 
 export function ArrowHead({
   size,
+  length,
   top,
   left,
+  strokeWidth,
   direction,
-  color,
-  opacity
+  color
 }: {
   size: number
+  length: number
+  strokeWidth: number
   top: number
   left: number
   direction: number | Direction
-  color?: string
-  opacity: number
+  color: string
 }) {
   const angle = typeof direction === 'number' ? direction : DIRECTIONS[direction]
-
   return (
     <path
-      d={makeArrowHead(size, top, left)}
-      fill={color}
-      style={{opacity, transition: 'opacity 200ms linear 0.3s'}}
-      transform={`rotate(${45 + angle}, ${left}, ${top})`}
+      d={makeArrowHead(size, length, left, top)}
+      stroke={color}
+      transform={`rotate(${angle}, ${left}, ${top})`}
+      strokeWidth={strokeWidth}
+      fill="none"
     />
   )
 }
