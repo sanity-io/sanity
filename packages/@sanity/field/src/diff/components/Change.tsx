@@ -5,6 +5,7 @@ import {DiffAnnotationTooltip, getAnnotationAtPath, useAnnotationColor} from '..
 import {Diff, SchemaType} from '../../types'
 import {getChangeVerb} from '../helpers'
 import {ChangeLayout} from './ChangeLayout'
+
 import styles from './Change.css'
 
 interface ChangeProps {
@@ -13,22 +14,18 @@ interface ChangeProps {
   schemaType: SchemaType
   path?: Path | string
   layout?: 'grid' | 'inline'
-  className?: string
 }
 
 export function Change({
   layout = 'inline',
   diff,
   path,
-  className,
   schemaType,
   previewComponent: PreviewComponent
 }: ChangeProps): React.ReactElement {
-  const containerClassName = className ? `${styles.root} ${className}` : styles.root
   const {fromValue, toValue, action} = diff
   const annotation = getAnnotationAtPath(diff, path || [])
   const color = useAnnotationColor(annotation)
-  const colorStyle = color ? {background: color.background, color: color.text} : {}
   const description = `${getChangeVerb(diff)} by`
 
   if (action === 'unchanged') {
@@ -36,28 +33,32 @@ export function Change({
   }
 
   const from = hasValue(fromValue) ? (
-    <ins className={styles.remove} style={colorStyle}>
-      <PreviewComponent value={fromValue} schemaType={schemaType} />
-    </ins>
+    <DiffAnnotationTooltip
+      as="del"
+      className={styles.from}
+      annotation={annotation}
+      description={description}
+    >
+      <PreviewComponent color={color} value={fromValue} schemaType={schemaType} />
+    </DiffAnnotationTooltip>
   ) : (
     undefined
   )
 
   const to = hasValue(toValue) ? (
-    <del className={styles.add} style={colorStyle}>
-      <PreviewComponent value={toValue} schemaType={schemaType} />
-    </del>
+    <DiffAnnotationTooltip
+      as="ins"
+      className={styles.to}
+      annotation={annotation}
+      description={description}
+    >
+      <PreviewComponent color={color} value={toValue} schemaType={schemaType} />
+    </DiffAnnotationTooltip>
   ) : (
     undefined
   )
 
-  return (
-    <div className={containerClassName}>
-      <DiffAnnotationTooltip annotation={annotation} description={description}>
-        <ChangeLayout from={from} to={to} layout={layout} />
-      </DiffAnnotationTooltip>
-    </div>
-  )
+  return <ChangeLayout from={from} to={to} layout={layout} />
 }
 
 function hasValue(value: unknown) {

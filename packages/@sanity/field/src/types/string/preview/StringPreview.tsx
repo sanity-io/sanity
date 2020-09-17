@@ -1,4 +1,14 @@
 import React from 'react'
 import {PreviewComponent} from '../../../preview/types'
 
-export const StringPreview: PreviewComponent<string> = ({value}) => <>{value}</>
+import styles from './StringPreview.css'
+
+export const StringPreview: PreviewComponent<string> = props => {
+  const {color, value} = props
+
+  return (
+    <span className={styles.root} style={{background: color?.background, color: color?.text}}>
+      {value}
+    </span>
+  )
+}

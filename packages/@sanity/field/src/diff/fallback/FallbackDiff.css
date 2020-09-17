@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-small);
+}
