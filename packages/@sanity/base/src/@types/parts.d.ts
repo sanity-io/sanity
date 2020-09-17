@@ -1,6 +1,7 @@
 /* eslint-disable import/no-duplicates */
 // @todo: define interface
 declare module 'part:@sanity/base/authentication-fetcher'
+declare module 'part:@sanity/components/dialogs/fullscreen-message?'
 
 declare module 'config:sanity' {
   interface SanityConfig {
@@ -12,6 +13,13 @@ declare module 'config:sanity' {
 
   const config: SanityConfig
   export default config
+}
+
+declare module 'sanity:versions' {
+  type PackageName = string
+  type VersionNumber = string
+  const versions: Record<PackageName, VersionNumber>
+  export default versions
 }
 
 declare module 'part:@sanity/base/configure-client?' {

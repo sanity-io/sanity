@@ -4,7 +4,10 @@ import semverCompare from 'semver-compare'
 import versions from 'sanity:versions'
 import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message?'
 import client from 'part:@sanity/base/client'
+import {requestIdleCallback, cancelIdleCallback} from '../actions/utils/requestIdleCallback'
 import FullscreenError from './FullscreenError'
+
+declare const __DEV__: boolean
 
 const fakeOutdatedModule = false
 const fakeOutdatedModuleSeverity = 'high'
@@ -21,11 +24,6 @@ if (fakeOutdatedModule) {
 
 let hasWarned = false
 
-const onIdle =
-  typeof window.requestIdleCallback === 'function'
-    ? window.requestIdleCallback
-    : cb => setTimeout(cb, 0)
-
 const buildQueryString = () => ({
   // eslint-disable-next-line id-length
   m: Object.keys(versions)
@@ -34,15 +32,16 @@ const buildQueryString = () => ({
 })
 
 const hashQuery = items => items.join(',').replace(/@?sanity[/-]/g, '')
-const storage = typeof sessionStorage === 'undefined' ? {} : sessionStorage
+const storage: Storage | Record<string, unknown> =
+  typeof sessionStorage === 'undefined' ? {} : sessionStorage
 
 const onVersionCheckError = err => {
   // eslint-disable-next-line no-console
   console.warn('Module versions check failed. Dependencies *might* be out of date.', err)
 }
 
-const breakify = lines => {
-  const nodes = []
+const breakify = (lines: string[]): React.ReactNode[] => {
+  const nodes: React.ReactNode[] = []
   for (let i = 0; i < lines.length; i++) {
     nodes.push(lines[i])
     if (i !== lines.length - 1) {
@@ -66,7 +65,18 @@ const getLatestInstalled = () => {
   return sorted[sorted.length - 1]
 }
 
-const checkVersions = (options = {}) => {
+interface VersionsResponse {
+  hash?: string
+  result: {
+    isSupported: boolean
+    isUpToDate: boolean
+    outdated?: {name: string; version: string; latest: string}[]
+    message?: string
+    helpUrl?: string
+  }
+}
+
+const checkVersions = (options: {getOutdated?: boolean} = {}): Promise<VersionsResponse> => {
   const {getOutdated} = options
   const query = buildQueryString()
   const hash = hashQuery(query.m)
@@ -91,18 +101,26 @@ const checkVersions = (options = {}) => {
     }))
 }
 
-class VersionChecker extends PureComponent {
-  constructor(...args) {
-    super(...args)
+class VersionChecker extends PureComponent<
+  Record<string, unknown>,
+  {result?: Omit<VersionsResponse['result'], 'outdated'>}
+> {
+  static checkVersions = checkVersions
+  static getLatestInstalled = getLatestInstalled
+
+  checkTimeout?: number
+
+  constructor(props) {
+    super(props)
     this.state = {}
     this.onResponse = this.onResponse.bind(this)
     this.handleClose = this.handleClose.bind(this)
   }
 
-  onResponse(res) {
+  onResponse(res: VersionsResponse) {
     // Don't include outdated modules in the stored result
     const result = omit(res.result, ['outdated'])
-    if (result.hash && storage) {
+    if (res.hash && storage) {
       storage.versionCheck = [res.hash, JSON.stringify(result)].join('|')
     }
 
@@ -111,7 +129,7 @@ class VersionChecker extends PureComponent {
       this.setState({result})
     }
 
-    if (__DEV__ && !res.result && res.result.outdated) {
+    if (__DEV__ && res.result && res.result.outdated) {
       const modules = res.result.outdated.map(mod => mod.name).join('\n  - ')
       const instructions = 'Run `sanity upgrade` to update them'
       // eslint-disable-next-line no-console
@@ -121,7 +139,7 @@ class VersionChecker extends PureComponent {
   }
 
   handleClose() {
-    this.setState({result: null})
+    this.setState({result: undefined})
   }
 
   componentDidMount() {
@@ -129,11 +147,17 @@ class VersionChecker extends PureComponent {
       return
     }
 
-    onIdle(() => {
+    this.checkTimeout = requestIdleCallback(() => {
       checkVersions()
         .then(this.onResponse)
         .catch(onVersionCheckError)
     })
+  }
+
+  componentWillUnmount() {
+    if (this.checkTimeout) {
+      cancelIdleCallback(this.checkTimeout)
+    }
   }
 
   render() {
@@ -158,8 +182,5 @@ class VersionChecker extends PureComponent {
     )
   }
 }
-
-VersionChecker.checkVersions = checkVersions
-VersionChecker.getLatestInstalled = getLatestInstalled
 
 export default VersionChecker
