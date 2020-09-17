@@ -86,6 +86,10 @@
   min-height: 0;
   max-height: calc(100% - 2rem);
 
+  /* for safari */
+  display: flex;
+  flex-direction: column;
+
   @nest .root:not([data-dialog-size]) {
     width: initial;
     height: initial;
@@ -172,8 +176,10 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
-  max-width: 100%;
-  max-height: 100%;
+
+  /* for safari */
+  flex: 1;
+  min-height: 0;
 }
 
 .content {
@@ -181,6 +187,9 @@
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   background-color: var(--component-bg);
   color: var(--component-text-color);
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
 
   @nest .header + & {
     border-top-left-radius: 0 !important;
