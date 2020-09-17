@@ -40,6 +40,8 @@
 }
 
 .documentScroller {
+  height: 100%;
+
   @media (--screen-medium) {
     height: 100%;
     overflow: auto;
