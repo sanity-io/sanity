@@ -12,10 +12,17 @@
   }
 }
 
+.from,
+.to {
+  @nest .root[data-layout='grid'] & {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .arrow {
   display: flex;
-  padding: 0 var(--small-padding);
-  flex: 0;
+  padding: 0 var(--extra-small-padding);
   align-items: center;
   font-size: var(--font-size-large);
   line-height: var(--line-height-large);

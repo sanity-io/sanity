@@ -11,12 +11,12 @@
 }
 
 .header {
-  padding: 0 0 var(--small-padding);
+  padding: 0 0 var(--extra-small-padding);
 }
 
 .change {
   position: relative;
-  padding-left: var(--small-padding);
+  padding: var(--extra-small-padding) 0 0 var(--small-padding);
 
   @nest &::before {
     content: '';

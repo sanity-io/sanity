@@ -31,7 +31,7 @@ export function MetaInfo({
           {title}
         </h3>
         {action && <div>{action}</div>}
-        {children}
+        <div className={styles.children}>{children}</div>
       </div>
     </div>
   )
