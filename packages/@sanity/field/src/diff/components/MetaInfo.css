@@ -1,19 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
   padding: var(--small-padding);
   composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
-  display: grid;
-  grid-template-areas: 'icon meta';
-  grid-template-columns: auto 1fr;
+  display: flex;
+  align-items: center;
 }
 
 .info {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
-  line-height: 1.3;
   padding-left: var(--small-padding);
 }
 
@@ -22,10 +19,10 @@
 }
 
 .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(var(--font-size-large) + 8px);
+  @nest & > svg {
+    display: block;
+    font-size: calc(35 / 16 * 1rem);
+  }
 }
 
 .iconRemoved {
@@ -34,9 +31,10 @@
 }
 
 .title {
-  font-size: inherit;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
   font-weight: 600;
-  margin: 0;
+  margin: -1px 0 0;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -45,4 +43,12 @@
 .titleRemoved {
   composes: title;
   composes: removed;
+}
+
+.children {
+  font-size: var(--font-size-tiny);
+  line-height: var(--line-height-tiny);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

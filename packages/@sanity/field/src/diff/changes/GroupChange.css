@@ -5,7 +5,7 @@
 
 .changeList {
   position: relative;
-  padding-left: var(--small-padding);
+  padding: var(--extra-small-padding) 0 0 var(--small-padding);
 
   @nest &::before {
     content: '';
@@ -28,7 +28,7 @@
 
 .changeHeader {
   display: flex;
-  margin: 0 0 var(--small-padding);
+  margin: 0 0 var(--extra-small-padding);
 }
 
 .revertChangesButtonContainer {
