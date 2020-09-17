@@ -1,12 +1,17 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-bottom: var(--large-padding);
-  overflow: hidden;
+  @nest .root + & {
+    margin-top: var(--extra-large-padding);
+  }
 }
 
 .error {
   composes: root;
+}
+
+.header {
+  padding: 0 0 var(--small-padding);
 }
 
 .change {

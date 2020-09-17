@@ -32,5 +32,5 @@
 }
 
 .revertChangesButtonContainer {
-  display: inline-block;
+  margin-top: var(--small-padding);
 }
