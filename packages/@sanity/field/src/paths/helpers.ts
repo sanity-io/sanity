@@ -153,3 +153,7 @@ export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined 
   const key = getItemKey(arrayItem)
   return key ? {_key: key} : undefined
 }
+
+export function isEmptyObject(item: unknown): boolean {
+  return typeof item === 'object' && item !== null && Object.keys(item).length <= 0
+}
