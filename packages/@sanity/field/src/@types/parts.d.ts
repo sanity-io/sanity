@@ -1,4 +1,5 @@
-// declare module 'part:*'
+/* eslint-disable import/export */
+
 declare module 'part:@sanity/base/authentication-fetcher'
 declare module 'part:@sanity/base/client'
 declare module 'part:@sanity/base/user'
@@ -60,6 +61,10 @@ declare module 'part:@sanity/base/link-icon' {
   export default LinkIcon
 }
 
+declare module 'part:@sanity/base/spinner-icon' {
+  export {default} from '@sanity/base/src/components/icons/SpinnerIcon'
+}
+
 declare module 'part:@sanity/base/trash-icon' {
   const TrashIcon: React.ComponentType<{}>
   export default TrashIcon
@@ -79,26 +84,15 @@ declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
 
+declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
-  const DefaultButton: React.ComponentClass<{
-    kind?: 'simple' | 'secondary'
-    color?: 'primary' | 'success' | 'danger' | 'white' | 'warning'
-    onBlur?: () => void
-    onClick?: () => void
-    children?: React.ReactNode
-    inverted?: boolean
-    icon?: React.ComponentType<{}>
-    loading?: boolean
-    className?: string
-    disabled?: boolean
-    tabIndex?: number
-    padding?: 'large' | 'default' | 'small' | 'none'
-    bleed?: boolean
-    selected?: boolean
-    size?: 'extra-small' | 'small' | 'medium' | 'large' | 'extra-large'
-  }>
+  export * from '@sanity/components/src/buttons/DefaultButton'
+  export {default} from '@sanity/components/src/buttons/DefaultButton'
+}
 
-  export default DefaultButton
+declare module 'part:@sanity/components/loading/spinner-style'
+declare module 'part:@sanity/components/loading/spinner' {
+  export {default} from '@sanity/components/src/loading/Spinner'
 }
 
 declare module 'part:@sanity/components/portal' {
