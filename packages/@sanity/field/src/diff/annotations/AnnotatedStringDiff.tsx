@@ -1,9 +1,7 @@
-import {useUserColorManager} from '@sanity/base/user-color'
 import * as React from 'react'
 import {StringDiffSegment, StringDiff} from '../../types'
 import {DiffAnnotation} from '../annotations'
 import styles from './AnnotatedStringDiff.css'
-import {getAnnotationColor} from './helpers'
 
 function FormattedPreviewText({
   isFirstSegment,
@@ -36,8 +34,6 @@ export function AnnotatedStringDiffSegment({
   isLastSegment: boolean
   segment: StringDiffSegment
 }): React.ReactElement {
-  const userColorManager = useUserColorManager()
-
   const text = (
     <FormattedPreviewText
       isFirstSegment={isFirstSegment}
@@ -47,15 +43,12 @@ export function AnnotatedStringDiffSegment({
   )
 
   if (segment.action === 'added') {
-    const color = getAnnotationColor(userColorManager, segment.annotation)
-
     return (
       <DiffAnnotation
         annotation={segment.annotation}
         as="ins"
         className={styles.add}
         description="Added by"
-        style={{background: color.background, color: color.text}}
       >
         {text}
       </DiffAnnotation>
@@ -63,15 +56,12 @@ export function AnnotatedStringDiffSegment({
   }
 
   if (segment.action === 'removed') {
-    const color = getAnnotationColor(userColorManager, segment.annotation)
-
     return (
       <DiffAnnotation
         annotation={segment.annotation}
         as="del"
         className={styles.remove}
         description="Removed by"
-        style={{background: color.background, color: color.text}}
       >
         {text}
       </DiffAnnotation>
