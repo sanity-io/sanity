@@ -81,9 +81,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     )
     .sort()
     .join('')
-  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(value)
+  let _value = value
+  if (Array.isArray(_value) && _value.length === 0) {
+    _value = undefined
+  }
+  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(_value)
   useEffect(() => {
-    setValueTouchedByMarkers(value ? [...value] : value)
+    setValueTouchedByMarkers(_value ? [..._value] : _value)
   }, [validationHash, value])
 
   const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(

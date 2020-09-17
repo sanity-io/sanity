@@ -14,12 +14,19 @@ type Props = {
 // eslint-disable-next-line complexity
 export default function Span(props: Props): JSX.Element {
   const {block, diff, span} = props
+
   let returned = <>{span.text}</>
   if (span.text === '' && block.children.length === 1) {
     if (diff && diff.action !== 'unchanged') {
       const didRemove = diff.action === 'removed'
+      const textDiff = diff.fields.text as StringDiff
+      // eslint-disable-next-line max-depth
+      if (textDiff && textDiff.isChanged) {
+        returned = <AnnotatedStringDiff diff={textDiff} />
+      }
       returned = (
         <span className={styles.empty}>
+          {returned}
           <DiffAnnotation
             annotation={diff.annotation}
             as={didRemove ? 'del' : 'ins'}

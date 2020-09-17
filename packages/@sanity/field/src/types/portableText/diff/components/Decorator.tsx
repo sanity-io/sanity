@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode
   mark: string
   // eslint-disable-next-line react/no-unused-prop-types
-  span: PortableTextChild
+  span?: PortableTextChild
 }
 export default function Decorator(props: Props): JSX.Element {
   return <span className={`${styles[props.mark]}`}>{props.children}</span>
