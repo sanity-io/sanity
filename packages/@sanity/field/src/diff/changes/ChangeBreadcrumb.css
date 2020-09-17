@@ -3,7 +3,7 @@
 .crumb {
   display: flex;
   font-size: 13px;
-  margin: 0 0 0.5em;
+  margin: 0 0 var(--small-padding);
 
   @nest & strong {
     font-weight: 600;

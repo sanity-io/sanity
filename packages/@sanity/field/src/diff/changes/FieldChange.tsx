@@ -31,12 +31,17 @@ export function FieldChange({change}: {change: FieldChangeNode}): React.ReactEle
     revertHovered && styles.revertHovered
   )
 
-  const handleRevertButtonMouseEnter = React.useCallback(() => setRevertHovered(true), [])
-  const handleRevertButtonMouseLeave = React.useCallback(() => setRevertHovered(false), [])
+  const handleRevertButtonMouseEnter = useCallback(() => {
+    setRevertHovered(true)
+  }, [])
+
+  const handleRevertButtonMouseLeave = useCallback(() => {
+    setRevertHovered(false)
+  }, [])
 
   return (
     <div className={rootClass}>
-      {change.showHeader && <ChangeBreadcrumb titlePath={change.titlePath} />}
+      {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
 
       <DiffInspectWrapper change={change}>
         <div className={styles.change}>

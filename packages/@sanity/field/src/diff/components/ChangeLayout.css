@@ -18,4 +18,6 @@
   flex: 0;
   align-items: center;
   font-size: var(--font-size-large);
+  line-height: var(--line-height-large);
+  color: var(--text-muted);
 }
