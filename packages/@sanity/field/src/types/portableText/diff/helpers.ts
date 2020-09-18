@@ -6,7 +6,7 @@ import {
   DIFF_INSERT
 } from 'diff-match-patch'
 import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
-import {SchemaType, ObjectSchemaType, ArraySchemaType} from '../../../types'
+import {SchemaType, ObjectSchemaType, ArraySchemaType, BlockSchemaType} from '../../../types'
 import {
   ChildMap,
   MarkSymbolMap,
@@ -72,7 +72,7 @@ const allSymbols = startMarkSymbols.concat(endMarkSymbols)
 
 const markRegex = `/${allSymbols.join('|')}/g`
 
-export function isPTSchemaType(schemaType: SchemaType): boolean {
+export function isPTSchemaType(schemaType: SchemaType): schemaType is BlockSchemaType {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
 }
 

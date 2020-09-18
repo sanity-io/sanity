@@ -1,7 +1,6 @@
 import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
-import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {
   ArrayDiff,
@@ -19,6 +18,8 @@ import {
   Path,
   SchemaType
 } from '../../types'
+import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
+import {isFieldChange} from '../helpers'
 
 interface DiffContext {
   itemDiff?: ItemDiff
@@ -154,6 +155,7 @@ export function buildArrayChangeList(
     return []
   }
 
+  const isPortableText = hasPTMemberType(schemaType)
   const list: ChangeNode[] = []
   const changes = changedOrMoved.reduce((acc, itemDiff) => {
     const memberTypes = getArrayDiffItemType(itemDiff.diff, schemaType)
@@ -193,6 +195,13 @@ export function buildArrayChangeList(
       itemTitlePath,
       itemContext
     ).map(attachItemDiff)
+
+    if (isPortableText) {
+      children.filter(isFieldChange).forEach((field, index, siblings) => {
+        field.showHeader = siblings.length === 1
+        field.showIndex = itemDiff.fromIndex !== itemDiff.toIndex && itemDiff.hasMoved
+      })
+    }
 
     if (children.length === 0) {
       // This can happen when there are no changes to the actual element, it's just been moved
@@ -256,10 +265,6 @@ function getFieldChange(
       typeof diffComponent.showHeader === 'undefined' ? showHeader : diffComponent.showHeader
   }
 
-  if (parentSchema && parentSchema.jsonType === 'array' && hasPTMemberType(parentSchema)) {
-    showHeader = Boolean(itemDiff && itemDiff.fromIndex !== itemDiff.toIndex && itemDiff.hasMoved)
-  }
-
   return [
     {
       type: 'field',
@@ -271,6 +276,7 @@ function getFieldChange(
       titlePath,
       schemaType,
       showHeader,
+      showIndex: true,
       key: pathToString(path) || 'root',
       diffComponent: error ? undefined : component
     }

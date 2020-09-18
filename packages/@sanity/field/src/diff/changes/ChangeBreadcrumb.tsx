@@ -12,12 +12,19 @@ export function ChangeBreadcrumb({
 }): React.ReactElement {
   return (
     <div className={styles.crumb}>
-      {titlePath.map((titleSegment, idx) => (
-        <Fragment key={idx}>
-          {idx > 0 && <em className={styles.change__breadcrumb__separator}> / </em>}
-          <ChangeTitleSegment change={change} segment={titleSegment} />
-        </Fragment>
-      ))}
+      {titlePath.map((titleSegment, idx) => {
+        const showSegment = typeof titleSegment === 'string' || !change || change.showIndex
+        if (!showSegment) {
+          return null
+        }
+
+        return (
+          <Fragment key={idx}>
+            {idx > 0 && <em className={styles.change__breadcrumb__separator}> / </em>}
+            <ChangeTitleSegment change={change} segment={titleSegment} />
+          </Fragment>
+        )
+      })}
     </div>
   )
 }
