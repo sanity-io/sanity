@@ -17,13 +17,12 @@ import {
   StringDiff,
   StringDiffSegment
 } from '../../types'
-import {FALLBACK_DIFF_COLOR} from './constants'
 
 export function getAnnotationColor(
   colorManager: UserColorManager,
   annotation?: Annotation | null
 ): UserColor {
-  return annotation ? colorManager.get(annotation.author) : FALLBACK_DIFF_COLOR
+  return colorManager.get(annotation?.author || null)
 }
 
 export function getAnnotationAtPath(diff: Diff, diffPath: string | Path): Annotation | undefined {
