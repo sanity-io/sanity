@@ -45,7 +45,7 @@ export function HotspotCropSVG(
       </defs>
 
       {crop && (
-        <DiffAnnotationTooltip as="g" diff={diff} path="crop" description="Crop changed by">
+        <DiffAnnotationTooltip as="g" diff={diff} path="crop" description="Crop changed">
           <CropSVG
             crop={crop}
             fill={hexToRgba(cropColor.border, 0.25)}
@@ -59,7 +59,7 @@ export function HotspotCropSVG(
       )}
 
       {hotspot && (
-        <DiffAnnotationTooltip as="g" diff={diff} path="hotspot" description="Hotspot changed by">
+        <DiffAnnotationTooltip as="g" diff={diff} path="hotspot" description="Hotspot changed">
           <HotspotSVG
             hotspot={hotspot}
             fill={hexToRgba(hotspotColor.border, 0.25)}

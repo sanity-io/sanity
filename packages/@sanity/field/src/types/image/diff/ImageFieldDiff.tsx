@@ -4,7 +4,8 @@ import {
   ObjectDiff,
   DiffAnnotationTooltip,
   DiffAnnotationCard,
-  ChangeList
+  ChangeList,
+  getAnnotationAtPath
 } from '../../../diff'
 import {useRefValue} from '../../../diff/hooks'
 import {ChangeArrow} from '../../../diff/components'
@@ -12,19 +13,24 @@ import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
 import {Image, SanityImageAsset} from './types'
 
-/* TODO:
-  - "No change" state
-*/
-
 const IMAGE_META_FIELDS = ['crop', 'hotspot']
 const BASE_IMAGE_FIELDS = ['asset', ...IMAGE_META_FIELDS]
 
 export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
-  const {fromValue, toValue, fields} = diff
+  const {fromValue, toValue, fields, isChanged} = diff
   const fromRef = fromValue?.asset?._ref
   const toRef = toValue?.asset?._ref
   const prev = useRefValue<SanityImageAsset>(fromRef)
   const next = useRefValue<SanityImageAsset>(toRef)
+  const assetAnnotation = getAnnotationAtPath(diff, ['asset', '_ref'])
+
+  if (!isChanged) {
+    return next ? (
+      <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
+        <ImagePreview is="to" asset={next} diff={diff} />
+      </DiffAnnotationCard>
+    ) : null
+  }
 
   // Get all the changed fields within this image field
   const changedFields = Object.keys(fields).filter(
@@ -48,12 +54,11 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const didMetaChange = didCropChange || didHotspotChange
   const showImageDiff = didAssetChange || didMetaChange
   const showMetaChange = didMetaChange && !didAssetChange
-  const annotationPath = getAnnotationPath({didAssetChange, didCropChange, didHotspotChange})
 
   const imageDiff = (
     <div className={styles.imageDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
       {prev && fromValue && (
-        <DiffAnnotationCard className={styles.annotation} diff={diff} path="asset._ref">
+        <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
           <ImagePreview
             is="from"
             asset={prev}
@@ -66,7 +71,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       )}
       {prev && next && <ChangeArrow />}
       {next && toValue && (
-        <DiffAnnotationCard className={styles.annotation} diff={diff} path="asset._ref">
+        <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
           <ImagePreview
             is="to"
             asset={next}
@@ -84,9 +89,8 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       {showImageDiff &&
         (didAssetChange ? (
           <DiffAnnotationTooltip
-            diff={diff}
-            path={annotationPath}
-            description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)} by`}
+            annotation={assetAnnotation}
+            description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)}`}
           >
             {imageDiff}
           </DiffAnnotationTooltip>
@@ -101,26 +105,4 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       )}
     </div>
   )
-}
-
-function getAnnotationPath(changes: {
-  didCropChange: boolean
-  didHotspotChange: boolean
-  didAssetChange: boolean
-}): string | undefined {
-  const {didAssetChange, didCropChange, didHotspotChange} = changes
-
-  if (didAssetChange) {
-    return 'asset._ref'
-  }
-
-  if (didCropChange) {
-    return 'crop'
-  }
-
-  if (didHotspotChange) {
-    return 'hotspot'
-  }
-
-  return undefined
 }
