@@ -5,7 +5,10 @@ import {AvatarPosition, AvatarStatus, AvatarSize} from './types'
 import styles from './Avatar.css'
 
 export interface AvatarProps {
-  color: string
+  color: {
+    dark: string
+    light: string
+  }
   src?: string
   title?: string
   initials?: string
@@ -22,7 +25,10 @@ const SVG_RADIUS = SVG_SIZE / 2
 
 export function Avatar(props: AvatarProps) {
   const {
-    color = 'currentColor',
+    color = {
+      dark: 'currentColor',
+      light: 'currentColor'
+    },
     src,
     title,
     initials,
@@ -33,6 +39,8 @@ export function Avatar(props: AvatarProps) {
     size = 'small',
     tone
   } = props
+
+  const backgroundColor = tone === 'navbar' ? color.dark : color.light
 
   const elementId = useId()
   const [arrowPosition, setArrowPosition] = useState<AvatarPosition | undefined>(
@@ -71,14 +79,14 @@ export function Avatar(props: AvatarProps) {
       data-size={size}
       data-status={status}
       data-tone={tone}
-      style={{backgroundColor: color}}
+      style={{backgroundColor}}
       title={title}
     >
       <div className={styles.arrow}>
         <svg width="11" height="7" viewBox="0 0 11 7" fill="none">
           <path
             d="M6.67948 1.50115L11 7L0 7L4.32052 1.50115C4.92109 0.736796 6.07891 0.736795 6.67948 1.50115Z"
-            fill={color}
+            fill={backgroundColor}
           />
         </svg>
       </div>
@@ -122,7 +130,7 @@ export function Avatar(props: AvatarProps) {
               cy={SVG_RADIUS}
               rx={SVG_RADIUS}
               ry={SVG_RADIUS}
-              stroke={color}
+              stroke={backgroundColor}
             />
           </svg>
         )}

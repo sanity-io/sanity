@@ -124,7 +124,7 @@
 .initials {
   width: 100%;
   height: 100%;
-  color: var(--text-color);
+  color: var(--component-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,6 +139,6 @@
   }
 
   @nest .root[data-tone='navbar'] & {
-    color: var(--main-navigation-color--inverted);
+    color: var(--component-text-color);
   }
 }

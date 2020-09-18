@@ -30,7 +30,10 @@ export function DefaultStory() {
         '',
         'Props'
       ) || undefined,
-    color: color('Color', '#0c0', 'Props'),
+    color: {
+      dark: color('Color (dark)', '#0f0', 'Props'),
+      light: color('Color (light)', '#0c0', 'Props')
+    },
     initials: text('Intitials', 'si', 'Props'),
     size: select(
       'Size',
