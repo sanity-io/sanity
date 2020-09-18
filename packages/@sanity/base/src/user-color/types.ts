@@ -1,16 +1,19 @@
+import {ColorTints} from '@sanity/color'
 import {Observable} from 'rxjs'
 
 // For better readability
-export type UserColorHue = string
 export type HexColor = string
+export type UserColorHue = string
+export type UserId = string
 
 export type UserColor = Readonly<{
   background: HexColor
-  text: HexColor
   border: HexColor
+  text: HexColor
+  tints: ColorTints
 }>
 
 export interface UserColorManager {
-  get: (userId: string) => UserColor
-  listen: (userId: string) => Observable<UserColor>
+  get: (userId: UserId | null) => UserColor
+  listen: (userId: UserId) => Observable<UserColor>
 }

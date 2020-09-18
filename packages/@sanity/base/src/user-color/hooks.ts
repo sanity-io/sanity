@@ -8,7 +8,8 @@ export function useUserColorManager(): UserColorManager {
   return useContext(UserColorManagerContext)
 }
 
-export function useUserColor(userId: string | null): UserColor | null {
+export function useUserColor(userId: string | null): UserColor {
   const manager = useUserColorManager()
-  return useObservable(userId === null ? of(null) : manager.listen(userId))
+
+  return useObservable(userId === null ? of(manager.get(null)) : manager.listen(userId))
 }

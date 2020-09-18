@@ -45,14 +45,17 @@ export function UserAvatar(props: Props) {
 
 function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}: LoadedUserProps) {
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
-  const userColor = useUserColor(user.id) || {border: ''}
+  const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
 
   return (
     <Avatar
       animateArrowFrom={animateArrowFrom}
       arrowPosition={position}
-      color={userColor.border}
+      color={{
+        dark: userColor.tints[400].hex,
+        light: userColor.tints[500].hex
+      }}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
       onImageLoadError={setImageLoadError}
