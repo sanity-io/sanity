@@ -40,11 +40,13 @@
   color: var(--text-color-secondary);
   display: flex;
   align-items: center;
-  padding-left: var(--medium-padding);
-  @nest &[data-presence="true"] {
+  padding-left: var(--small-padding);
+
+  @nest &[data-presence='true'] {
     @nest & .validationStatus {
       padding-right: var(--medium-padding);
     }
+
     @nest & .deleteButton {
       padding-left: var(--small-padding);
     }

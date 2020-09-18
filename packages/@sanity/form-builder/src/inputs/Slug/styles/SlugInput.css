@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .wrapper {
   width: 100%;
   display: flex;
@@ -6,8 +8,9 @@
 
 .input {
   flex-grow: 1;
+  min-width: 0;
 }
 
 .button {
-  margin-left: 0.5em;
+  margin-left: var(--extra-small-padding);
 }

@@ -1,8 +1,30 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --boolean-input-padding-narrow: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
 .root {
   display: flex;
+  align-items: center;
   border: var(--input-border-size) solid var(--input-border-color);
   border-radius: var(--input-border-radius);
-  padding: var(--medium-padding);
+  padding: var(--boolean-input-padding-narrow);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
+  }
+}
+
+.inputWrapper {
+  flex: 1;
+  min-width: 0;
+
+  @nest &[data-layout='checkbox'] {
+    padding: 2px 0;
+  }
+
+  @nest &[data-layout='switch'] {
+    margin: -2px 0;
+  }
 }
