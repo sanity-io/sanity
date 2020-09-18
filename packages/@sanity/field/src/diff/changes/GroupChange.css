@@ -39,3 +39,6 @@
   margin-left: calc(0 - var(--extra-small-padding) - 2px);
   margin-top: var(--small-padding);
 }
+
+.portableText {
+}
