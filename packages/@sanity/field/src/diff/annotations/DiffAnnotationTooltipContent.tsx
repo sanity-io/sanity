@@ -8,7 +8,7 @@ import {getAnnotationColor} from './helpers'
 
 export function DiffAnnotationTooltipContent({
   annotations,
-  description = 'Changed by'
+  description = 'Changed'
 }: {
   annotations: AnnotationDetails[]
   description?: React.ReactNode
