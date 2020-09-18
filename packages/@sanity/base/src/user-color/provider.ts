@@ -1,18 +1,15 @@
-import React, {createContext, useContext} from 'react'
+import React from 'react'
+import {UserColorManagerContext} from './context'
 import {UserColorManager} from './types'
-import {userColorManager} from './singleton'
 
-interface ProviderProps {
+interface UserColorManagerProviderProps {
   children: React.ReactNode
   manager: UserColorManager
 }
 
-const UserColorManagerContext = createContext<UserColorManager>(userColorManager)
-
-export function useUserColorManager(): UserColorManager {
-  return useContext(UserColorManagerContext)
-}
-
-export function UserColorManagerProvider({children, manager}: ProviderProps) {
+export function UserColorManagerProvider({
+  children,
+  manager
+}: UserColorManagerProviderProps): React.ReactElement {
   return React.createElement(UserColorManagerContext.Provider, {value: manager}, children)
 }
