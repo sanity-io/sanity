@@ -7,6 +7,7 @@ import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import {Path} from '@sanity/util/lib/typedefs/path'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
 import {Connector, drawLine, vLine} from '../../components/changeConnector/Connector'
+import {Arrow} from '../../components/changeConnector/Arrow'
 
 export interface Rect {
   height: number
@@ -85,6 +86,9 @@ function scrollIntoView(element) {
   })
 }
 
+const ADJUST_MARGIN_TOP = -3
+const ADJUST_MARGIN_BOTTOM = 10
+
 export function ConnectorsOverlay(props: Props) {
   const {children, trackerRef, ...rest} = props
 
@@ -133,6 +137,14 @@ export function ConnectorsOverlay(props: Props) {
               top: changedRegion.rect.top - topEdge + 8
             }
 
+            const clampLeft = {
+              top: changedField.rect.bounds.top + ADJUST_MARGIN_TOP + 8,
+              bottom: changedRegion.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM
+            }
+            const clampRight = {
+              top: changedRegion.rect.bounds.top,
+              bottom: changedRegion.rect.bounds.bottom
+            }
             return (
               <svg
                 key={changedField.id}
@@ -160,16 +172,63 @@ export function ConnectorsOverlay(props: Props) {
                       <Connector
                         from={connectorFrom}
                         to={connectorTo}
-                        clampLeft={{
-                          top: changedField.rect.bounds.top,
-                          bottom: changedRegion.rect.bounds.bottom
-                        }}
-                        verticalCenter={verticalLineLeft + 2}
-                        clampRight={{
-                          top: changedRegion.rect.bounds.top,
-                          bottom: changedRegion.rect.bounds.bottom
-                        }}
+                        clampLeft={clampLeft}
+                        clampRight={clampRight}
+                        verticalCenter={verticalLineLeft + 3}
                       />
+                      {/* arrow left top */}
+                      {connectorFrom.top + changedField.rect.height - 8 < clampLeft.top && (
+                        <Arrow
+                          className={styles.connector}
+                          top={Math.max(clampLeft.top)}
+                          left={connectorFrom.left}
+                          length={5}
+                          wingLength={8}
+                          direction="n"
+                        />
+                      )}
+                      {/* arrow left bottom */}
+                      {connectorFrom.top - 8 > clampLeft.bottom + ADJUST_MARGIN_BOTTOM + 10 && (
+                        <Arrow
+                          className={styles.connector}
+                          top={
+                            clampLeft.bottom +
+                            ADJUST_MARGIN_BOTTOM +
+                            10 /*todo: make the arrow anchor customizable to remove this */
+                          }
+                          left={connectorFrom.left}
+                          length={5}
+                          wingLength={8}
+                          direction="s"
+                        />
+                      )}
+                      {/* arrow right top */}
+                      {connectorTo.top + changedRegion.rect.height - 8 < clampRight.top && (
+                        <Arrow
+                          className={styles.connector}
+                          top={Math.max(clampRight.top)}
+                          left={connectorTo.left}
+                          length={5}
+                          wingLength={8}
+                          direction="n"
+                        />
+                      )}
+                      {/* arrow right bottom */}
+                      {connectorTo.top - 8 > clampRight.bottom + ADJUST_MARGIN_BOTTOM + 10 && (
+                        <Arrow
+                          className={styles.connector}
+                          top={
+                            clampRight.bottom +
+                            ADJUST_MARGIN_BOTTOM +
+                            10 /*todo: make the arrow anchor customizable to remove this */
+                          }
+                          left={connectorTo.left}
+                          length={5}
+                          wingLength={8}
+                          direction="s"
+                        />
+                      )}
+                      {/* this is the bar marking the line in the changes panel */}
                       <path
                         className={styles.connector}
                         d={drawLine(
