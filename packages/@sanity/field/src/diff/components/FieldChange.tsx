@@ -1,18 +1,18 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import classNames from 'classnames'
 import React, {useCallback, useContext, useState} from 'react'
-import {FieldChangeNode, OperationsAPI} from '../../types'
+import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../context/DiffContext'
-import {FallbackDiff} from '../fallback/FallbackDiff'
-import {ValueError} from './ValueError'
+import {FieldChangeNode, OperationsAPI} from '../../types'
+import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
+import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {DocumentChangeContext} from './DocumentChangeContext'
+import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
-import {undoChange} from './undoChange'
+import {ValueError} from './ValueError'
 
 import styles from './FieldChange.css'
-import {DiffInspectWrapper} from './DiffInspectWrapper'
-import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 
 export function FieldChange({change}: {change: FieldChangeNode}) {
   const DiffComponent = change.diffComponent || FallbackDiff

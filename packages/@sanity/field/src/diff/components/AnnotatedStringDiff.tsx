@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {StringDiffSegment, StringDiff} from '../../types'
-import {DiffAnnotation} from '../annotations'
+import {DiffAnnotation} from './DiffAnnotation'
 import styles from './AnnotatedStringDiff.css'
 
 function FormattedPreviewText({

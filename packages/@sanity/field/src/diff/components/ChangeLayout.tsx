@@ -1,5 +1,6 @@
 import React from 'react'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
+
 import styles from './ChangeLayout.css'
 
 export interface ChangeLayoutProps {
