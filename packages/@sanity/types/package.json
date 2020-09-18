@@ -1,0 +1,35 @@
+{
+  "name": "@sanity/types",
+  "version": "1.150.7",
+  "description": "Type definitions for common Sanity data structures",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "typescript"
+  ],
+  "dependencies": {
+    "@types/react": "^16.9.49"
+  },
+  "devDependencies": {
+    "rimraf": "^2.7.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}
