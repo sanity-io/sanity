@@ -26,7 +26,7 @@ export function Change({
   const {fromValue, toValue, action} = diff
   const annotation = getAnnotationAtPath(diff, path || [])
   const color = useAnnotationColor(annotation)
-  const description = `${getChangeVerb(diff)} by`
+  const description = getChangeVerb(diff)
 
   if (action === 'unchanged') {
     return <PreviewComponent value={toValue} schemaType={schemaType} />

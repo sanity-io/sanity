@@ -48,7 +48,7 @@ export function AnnotatedStringDiffSegment({
         annotation={segment.annotation}
         as="ins"
         className={styles.add}
-        description="Added by"
+        description="Added"
       >
         {text}
       </DiffAnnotation>
@@ -61,7 +61,7 @@ export function AnnotatedStringDiffSegment({
         annotation={segment.annotation}
         as="del"
         className={styles.remove}
-        description="Removed by"
+        description="Removed"
       >
         {text}
       </DiffAnnotation>
