@@ -2,9 +2,6 @@ export type DiffOptions = {}
 
 export type ValueType = 'array' | 'boolean' | 'null' | 'number' | 'object' | 'string' | 'undefined'
 
-export type PathSegment = string | number | {_key: string}
-export type Path = PathSegment[]
-
 export type Input<T> =
   | NumberInput<T>
   | BooleanInput<T>
