@@ -1,9 +1,14 @@
 import * as React from 'react'
-import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../../types'
+import {useDocumentOperation} from '@sanity/react-hooks'
+import UndoIcon from 'part:@sanity/base/undo-icon'
+import Button from 'part:@sanity/components/buttons/default'
+import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {Path} from '../../paths'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
+import {undoChange} from '../changes/undoChange'
 import {ChangeResolver} from './ChangeResolver'
+import {DocumentChangeContext} from './DocumentChangeContext'
 
 interface Props {
   schemaType: ObjectSchemaType
@@ -12,11 +17,20 @@ interface Props {
 }
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
+  const {documentId} = React.useContext(DocumentChangeContext)
+  const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const {path} = React.useContext(DiffContext)
+  const allChanges = buildObjectChangeList(schemaType, diff, path, [])
+
+  const handleRevertAllChanges = React.useCallback(
+    () => undoChange(allChanges[0], diff, docOperations),
+    [allChanges[0], diff, docOperations]
+  )
+
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
 
-  const {path} = React.useContext(DiffContext)
   const changes = React.useMemo(() => getFlatChangeList(schemaType, diff, path, fields), [
     schemaType,
     fields,
@@ -27,12 +41,21 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   if (changes.length === 0) {
     return null
   }
+  // @todo move?
+  const revertAllChangesContainerStyle = {display: 'grid', marginTop: '1rem'}
 
   return (
     <>
       {changes.map(change => (
         <ChangeResolver change={change} key={change.key} />
       ))}
+      {changes.length > 1 && (
+        <div style={revertAllChangesContainerStyle}>
+          <Button icon={UndoIcon} kind="secondary" onClick={handleRevertAllChanges}>
+            Revert all changes
+          </Button>
+        </div>
+      )}
     </>
   )
 }
