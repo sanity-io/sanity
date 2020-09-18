@@ -90,7 +90,7 @@
   --preview-placeholder-text-color: color(var(--gray-light) a(50%));
 
   /* Icon */
-  --icon-size: 1.5625rem; /* 25px based on 16px */
+  --icon-size: calc(25 / 16 * 1rem); /* 25px based on 16px */
 
   /* Misc */
   --line-height-computed: calc(var(--font-size-base) * var(--line-height-base));

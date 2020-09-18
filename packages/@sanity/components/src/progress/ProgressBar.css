@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --progress-bar-height: 25px;
+  --progress-bar-height: calc(25 / 16 * 1em);
   --progress-bar-color: var(--black);
   --progress-bar-color-inverted: color(var(--brand-primary) contrast(80%));
 }

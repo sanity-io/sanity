@@ -68,7 +68,7 @@
     padding: var(--extra-small-padding);
 
     @nest & > svg {
-      font-size: 25px;
+      font-size: calc(25 / 16 * 1em);
       display: block;
     }
   }
