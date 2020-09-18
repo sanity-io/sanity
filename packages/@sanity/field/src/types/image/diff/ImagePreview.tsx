@@ -1,23 +1,39 @@
-import React from 'react'
+import React, {SyntheticEvent} from 'react'
+import {useDocumentValues} from '@sanity/base/hooks'
+import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
 import sanityClient from 'part:@sanity/base/client'
 import ImageIcon from 'part:@sanity/base/image-icon'
 import {MetaInfo} from '../../../diff'
-import {isDefaultCrop, isDefaultHotspot, simpleHash} from './helpers'
+import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
-import {ImagePreviewProps} from './types'
+import {ImagePreviewProps, MinimalAsset} from './types'
 
 import styles from './ImagePreview.css'
 
+const ASSET_FIELDS = ['originalFilename']
 const imageBuilder = imageUrlBuilder(sanityClient)
 
+// To trigger error state, change `src` attribute to random string ("foo")
+// To trigger slow loading, use a throttling proxy (charles) or browser devtools
+
+// To trigger deleted state, set `id` to valid, non-existant image asset ID,
+// eg: 'image-1217bc35db5030739b7be571c79d3c401551911d-300x200-png'
+
 export default function ImagePreview(props: ImagePreviewProps): React.ReactElement {
-  const {asset, action, diff, hotspot, crop, is} = props
-  const title = asset.originalFilename || 'Untitled'
-  const dimensions = asset.metadata?.dimensions
+  const {id, action, diff, hotspot, crop, is} = props
+  const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
+  const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
+  const dimensions = getImageDimensions(id)
+
+  // undefined = still loading, null = its gone
+  const assetIsDeleted = asset === null
+
+  const title = (asset && asset.originalFilename) || 'Untitled'
   const imageSource = imageBuilder
-    .image(asset)
-    .height(300)
+    .image(id)
+    .height(190) // Should match container max-height
+    .dpr(getDeviceDpr())
     .fit('max')
 
   const assetChanged = diff.fromValue?.asset?._ref !== diff.toValue?.asset?._ref
@@ -29,12 +45,23 @@ export default function ImagePreview(props: ImagePreviewProps): React.ReactEleme
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={imageWrapperClassName}>
-          <img
-            className={styles.image}
-            src={imageSource.toString() || ''}
-            alt={title}
-            data-action={metaAction}
-          />
+          {!assetIsDeleted && !imageError && (
+            <img
+              className={styles.image}
+              src={imageSource.toString() || ''}
+              alt={title}
+              data-action={metaAction}
+              onError={setImageError}
+              width={dimensions.width}
+              height={dimensions.height}
+            />
+          )}
+
+          {(assetIsDeleted || imageError) && (
+            <div className={styles.error}>
+              {assetIsDeleted ? 'Image is deleted' : 'Error loading image'}
+            </div>
+          )}
 
           <HotspotCropSVG
             className={styles.hotspotCrop}
@@ -42,8 +69,8 @@ export default function ImagePreview(props: ImagePreviewProps): React.ReactEleme
             diff={diff}
             hash={simpleHash(`${imageSource.toString() || ''}-${is}`)}
             hotspot={hotspot && !isDefaultHotspot(hotspot) ? hotspot : undefined}
-            width={dimensions?.width}
-            height={dimensions?.height}
+            width={dimensions.width}
+            height={dimensions.height}
           />
         </div>
       </div>
@@ -53,7 +80,7 @@ export default function ImagePreview(props: ImagePreviewProps): React.ReactEleme
           <div>{metaAction}</div>
         ) : (
           <div>
-            {dimensions.height} × {dimensions.width}
+            {dimensions.width} × {dimensions.height}
           </div>
         )}
       </MetaInfo>

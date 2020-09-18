@@ -1,5 +1,3 @@
-import {Crop, Hotspot} from './types'
-
 // @todo: use `polished` for this?
 export function hexToRgba(hex: string, opacity: number): string {
   const rgba = (/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || ([] as string[]))
@@ -7,16 +5,6 @@ export function hexToRgba(hex: string, opacity: number): string {
     .map(num => parseInt(num, 16))
     .concat(opacity)
   return `rgba(${rgba.join(', ')})`
-}
-
-export function isDefaultCrop(crop: Crop) {
-  const {top, right, left, bottom} = crop
-  return top === 0 && right === 0 && left === 0 && bottom === 0
-}
-
-export function isDefaultHotspot(hotspot: Hotspot) {
-  const {x, y, width, height} = hotspot
-  return x === 0.5 && y === 0.5 && width === 1 && height === 1
 }
 
 // @todo: replace this
@@ -38,4 +26,9 @@ export function simpleHash(str: string): string {
   }
 
   return hash.toString()
+}
+
+export function getDeviceDpr(): number {
+  const base = Math.ceil(window.devicePixelRatio || 1)
+  return Math.min(3, Math.max(1, base))
 }

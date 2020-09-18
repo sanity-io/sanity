@@ -52,6 +52,12 @@
   }
 }
 
+.error {
+  composes: image;
+  margin: 50px 0;
+  text-align: center;
+}
+
 .hotspotCrop {
   display: block;
   position: absolute;

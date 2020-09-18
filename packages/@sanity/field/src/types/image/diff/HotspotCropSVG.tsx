@@ -1,13 +1,13 @@
+import {Image, ImageCrop, ImageHotspot} from '@sanity/types'
 import React from 'react'
 import {DiffAnnotationTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../diff'
 import {hexToRgba} from './helpers'
-import {Crop, Hotspot, Image} from './types'
 
 interface HotspotCropSVGProps {
-  crop?: Crop
+  crop?: ImageCrop
   diff: ObjectDiff<Image>
   hash: string
-  hotspot?: Hotspot
+  hotspot?: ImageHotspot
   width?: number
   height?: number
 }
@@ -79,7 +79,7 @@ function CropSVG({
   width,
   height,
   ...restProps
-}: {crop: Crop; width: number; height: number} & Omit<
+}: {crop: ImageCrop; width: number; height: number} & Omit<
   React.SVGProps<SVGRectElement>,
   'width' | 'height'
 >) {
@@ -99,7 +99,7 @@ function HotspotSVG({
   width,
   height,
   ...restProps
-}: {hotspot: Hotspot; offset?: number; width: number; height: number} & Omit<
+}: {hotspot: ImageHotspot; offset?: number; width: number; height: number} & Omit<
   React.SVGProps<SVGEllipseElement>,
   'width' | 'height'
 >) {
