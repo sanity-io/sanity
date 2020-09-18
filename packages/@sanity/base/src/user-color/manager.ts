@@ -1,9 +1,15 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
 import {color as SanityColor, ColorHueKey, COLOR_HUES} from '@sanity/color'
-import {UserColorHue, ManagerOptions, UserColorManager, UserColor} from './types'
+import {UserColorHue, UserColorManager, UserColor} from './types'
 
 type UserId = string
+
+export interface UserColorManagerOptions {
+  userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user?: {id: string} | null}>}
+  colors?: Readonly<Record<UserColorHue, UserColor>>
+  currentUserColor?: UserColorHue
+}
 
 const defaultCurrentUserHue: ColorHueKey = 'purple'
 
@@ -21,7 +27,7 @@ const defaultColors = defaultHues.reduce((colors, hue) => {
   return colors
 }, {} as Record<ColorHueKey, UserColor>)
 
-export function createUserColorManager(options?: ManagerOptions): UserColorManager {
+export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
   const colors = (options && options.colors) || defaultColors
   const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserHue
   if (!colors.hasOwnProperty(currentUserColor)) {

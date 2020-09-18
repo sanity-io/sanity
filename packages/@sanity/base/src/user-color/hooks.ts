@@ -1,7 +1,12 @@
+import {useContext} from 'react'
 import {of} from 'rxjs'
 import {useObservable} from '../util/useObservable'
-import {useUserColorManager} from './provider'
-import {UserColor} from './types'
+import {UserColorManagerContext} from './context'
+import {UserColor, UserColorManager} from './types'
+
+export function useUserColorManager(): UserColorManager {
+  return useContext(UserColorManagerContext)
+}
 
 export function useUserColor(userId: string | null): UserColor | null {
   const manager = useUserColorManager()
