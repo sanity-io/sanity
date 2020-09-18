@@ -81,4 +81,12 @@
 .fileIcon {
   font-size: 3em;
   margin-right: var(--medium-padding);
+  display: flex;
+  align-items: center;
+}
+
+.fileLabel {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  margin-bottom: var(--small-padding);
 }
