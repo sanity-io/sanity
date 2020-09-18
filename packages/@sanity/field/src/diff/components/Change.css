@@ -1,9 +1,11 @@
 .from {
   display: block;
   text-decoration: none;
+  word-break: break-all;
 }
 
 .to {
   display: block;
   text-decoration: none;
+  word-break: break-all;
 }
