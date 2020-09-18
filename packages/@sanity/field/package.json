@@ -26,6 +26,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@sanity/asset-utils": "^1.1.0",
     "@sanity/base": "1.150.7",
     "@sanity/components": "1.150.7",
     "@sanity/diff": "1.150.7",
