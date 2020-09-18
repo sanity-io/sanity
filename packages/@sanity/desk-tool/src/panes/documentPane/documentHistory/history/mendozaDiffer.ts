@@ -171,7 +171,7 @@ function wrapValue(
 
 function extractAnnotationForFromInput(
   timeline: Timeline,
-  firstChunk: Chunk,
+  firstChunk: Chunk | null,
   value: Value<Meta>
 ): Annotation {
   let tx: Transaction | null = null
@@ -184,7 +184,7 @@ function extractAnnotationForFromInput(
     if (!tx) return null
 
     chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunk.index)
-  } else {
+  } else if (firstChunk) {
     // Otherwise, it must have disappeared in the first transaction:
     tx = timeline.transactionByIndex(firstChunk.start)
     chunk = firstChunk
@@ -217,7 +217,7 @@ function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): An
 
 export function diffValue(
   timeline: Timeline,
-  firstChunk: Chunk,
+  firstChunk: Chunk | null,
   from: Value<Meta>,
   fromRaw: unknown,
   to: Value<Meta>,

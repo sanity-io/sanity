@@ -369,11 +369,12 @@ export class Timeline {
 
     const initialValue = getValue(draftValue, publishedValue)
     const initialAttributes = getAttrs(initialDoc)
-    const firstChunk = this._chunks.get(firstIdx)
+    let firstChunk: Chunk | null = null
 
     // Loop over all of the chunks:
     for (let chunkIdx = firstIdx; chunkIdx <= lastIdx; chunkIdx++) {
       const chunk = this._chunks.get(chunkIdx)
+      if (!firstChunk) firstChunk = chunk
 
       for (let idx = chunk.start; idx < chunk.end; idx++) {
         const transaction = this._transactions.get(idx)
