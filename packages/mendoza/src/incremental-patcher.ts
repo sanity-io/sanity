@@ -343,12 +343,13 @@ export function rebaseValue<T>(left: Value<T>, right: Value<T>): Value<T> {
   let rightType = getType(right)
   if (leftType !== rightType) return right
 
-  let model = new Model(right.startMeta)
+  let leftModel = new Model(left.endMeta)
+  let rightModel = new Model(right.endMeta)
 
   switch (leftType) {
     case 'object': {
-      let leftObj = model.asObject(left)
-      let rightObj = model.asObject(right)
+      let leftObj = leftModel.asObject(left)
+      let rightObj = rightModel.asObject(right)
 
       // Number of fields which are identical in left and right.
       let identicalFieldCount = 0
@@ -369,8 +370,8 @@ export function rebaseValue<T>(left: Value<T>, right: Value<T>): Value<T> {
       return isIdentical ? left : right
     }
     case 'array': {
-      let leftArr = model.asArray(left)
-      let rightArr = model.asArray(right)
+      let leftArr = leftModel.asArray(left)
+      let rightArr = rightModel.asArray(right)
 
       if (leftArr.elements.length !== rightArr.elements.length) {
         break
