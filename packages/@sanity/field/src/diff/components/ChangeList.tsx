@@ -2,7 +2,7 @@ import * as React from 'react'
 import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../../types'
 import {Path} from '../../paths'
 import {DiffContext} from '../context/DiffContext'
-import {buildObjectChangeList} from './buildChangeList'
+import {buildObjectChangeList} from '../changes/buildChangeList'
 import {ChangeResolver} from './ChangeResolver'
 
 interface Props {

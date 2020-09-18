@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react'
 import {ChangeTitlePath, FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
+
 import styles from './ChangeBreadcrumb.css'
 
 export function ChangeBreadcrumb({
