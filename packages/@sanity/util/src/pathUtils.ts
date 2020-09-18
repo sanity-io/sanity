@@ -1,14 +1,20 @@
-/* eslint-disable */
 import getRandomValues from 'get-random-values'
-import {KeyedSegment, Path, PathSegment} from './typedefs/path'
+import {
+  IndexTuple,
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
+  KeyedSegment,
+  Path,
+  PathSegment
+} from '@sanity/types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 
 export const FOCUS_TERMINATOR = '$'
 
-// eslint-disable-next-line complexity
-export function get(obj: any, path: Path | string, defaultVal?: unknown) {
+export function get(obj: unknown, path: Path | string, defaultVal?: unknown): unknown {
   const select = typeof path === 'string' ? fromString(path) : path
   if (!Array.isArray(select)) {
     throw new Error('Path must be an array or a string')
@@ -45,26 +51,27 @@ export function get(obj: any, path: Path | string, defaultVal?: unknown) {
   return acc
 }
 
-export function isEqual(path: Path, otherPath: Path) {
+export function isEqual(path: Path, otherPath: Path): boolean {
   return (
     path.length === otherPath.length &&
     path.every((segment, i) => isSegmentEqual(segment, otherPath[i]))
   )
 }
 
-export function isSegmentEqual(pathSegment: PathSegment, otherPathSegment: PathSegment) {
-  const pathSegmentType = typeof pathSegment
-  const otherPathSegmentType = typeof otherPathSegment
-  if (pathSegmentType !== otherPathSegmentType) {
-    return false
+export function isSegmentEqual(segmentA: PathSegment, segmentB: PathSegment): boolean {
+  if (isKeySegment(segmentA) && isKeySegment(segmentB)) {
+    return segmentA._key === segmentB._key
   }
-  if (pathSegmentType === 'string' || pathSegmentType === 'number') {
-    return pathSegment === otherPathSegment
+
+  if (isIndexSegment(segmentA)) {
+    return Number(segmentA) === Number(segmentB)
   }
-  if (!pathSegment || !otherPathSegment) {
-    return false
+
+  if (isIndexTuple(segmentA) && isIndexTuple(segmentB)) {
+    return segmentA[0] === segmentB[0] && segmentA[1] === segmentB[1]
   }
-  return (pathSegment as KeyedSegment)._key === (otherPathSegment as KeyedSegment)._key
+
+  return segmentA === segmentB
 }
 
 export function hasFocus(focusPath: Path, path: Path): boolean {
@@ -137,6 +144,11 @@ export function toString(path: Path): string {
       return `${target}[_key=="${segment._key}"]`
     }
 
+    if (Array.isArray(segment)) {
+      const [from, to] = segment
+      return `${target}[${from}:${to}]`
+    }
+
     throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
   }, '')
 }
@@ -163,6 +175,10 @@ function normalizePathSegment(segment: string): PathSegment {
     return normalizeKeySegment(segment)
   }
 
+  if (isIndexTuple(segment)) {
+    return normalizeIndexTupleSegment(segment)
+  }
+
   return segment
 }
 
@@ -170,21 +186,14 @@ function normalizeIndexSegment(segment: string): PathSegment {
   return Number(segment.replace(/[^\d]/g, ''))
 }
 
-function normalizeKeySegment(segment: string): PathSegment {
+function normalizeKeySegment(segment: string): KeyedSegment {
   const segments = segment.match(reKeySegment)
   return {_key: segments[1]}
 }
 
-function isIndexSegment(segment: any): segment is number {
-  return typeof segment === 'number' || /^\[\d+\]$/.test(segment)
-}
-
-function isKeySegment(segment: any): segment is KeyedSegment {
-  if (typeof segment === 'string') {
-    return reKeySegment.test(segment.trim())
-  }
-
-  return segment && segment._key
+function normalizeIndexTupleSegment(segment: string): IndexTuple {
+  const [from, to] = segment.split(':').map(seg => (seg === '' ? seg : Number(seg)))
+  return [from, to]
 }
 
 const getByteHexTable = (() => {
@@ -209,7 +218,7 @@ function whatwgRNG(length = 16) {
   return rnds8
 }
 
-export function randomKey(length) {
+export function randomKey(length: number): string {
   const table = getByteHexTable()
   return whatwgRNG(length)
     .reduce((str, n) => str + table[n], '')
