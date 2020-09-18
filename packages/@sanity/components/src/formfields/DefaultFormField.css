@@ -38,32 +38,27 @@
   }
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--small-padding);
+}
+
+.headerMain {
+  flex: 1;
+  min-width: 0;
+  padding: var(--extra-small-padding) 0;
+}
+
 .title {
   display: flex;
   align-items: center;
+  margin-top: -1px;
 }
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin-top: var(--extra-small-padding);  
-
-  /* @nest .inline & {
-    font-size: var(--font-size-tiny);
-  } */
-
-  /* @nest .label + & {
-    margin-top: calc(var(--small-padding) / 4);
-  } */
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  padding: 0 0 var(--small-padding);
-}
-
-.headerMain {
-  flex-grow: 1;
+  margin-top: var(--extra-small-padding);
 }
 
 .validationStatus {

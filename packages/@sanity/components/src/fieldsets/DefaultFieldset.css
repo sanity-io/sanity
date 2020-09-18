@@ -8,25 +8,25 @@
 .fieldWrapper {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-gap: var(--large-padding) var(--medium-padding);
+  grid-gap: 2rem var(--medium-padding);
 }
 
 .fieldset {
   margin: 0;
   padding: 0;
   border: none;
-  /* user agent sets min-width this to --webkit-min-content */
   min-width: 0;
 }
 
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: var(--small-padding);
+  padding-bottom: var(--small-padding);
 }
 
 .headerMain {
   flex-grow: 1;
+  padding: var(--extra-small-padding) 0;
 }
 
 .headerStatus {
@@ -142,7 +142,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 0;
+  margin: -1px 0 0;
   padding: 0;
   user-select: none;
   cursor: default;
