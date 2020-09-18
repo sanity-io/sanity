@@ -61,6 +61,10 @@ interface InnerProps {
   animateArrowFrom?: AvatarPosition
 }
 
+function calcAvatarStackWidth(len: number) {
+  return -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * len
+}
+
 export function FieldPresenceInner({
   presence,
   position = 'inside',
@@ -92,12 +96,15 @@ export function FieldPresenceInner({
       : null
   ].filter(Boolean)
 
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * maxAvatars
+  const maxWidth = calcAvatarStackWidth(maxAvatars)
+  const currWidth = Math.min(calcAvatarStackWidth(uniquePresence.length), maxWidth)
 
   return (
-    <div className={styles.root}>
-      <PresenceTooltip items={uniquePresence} placement="top-end">
-        <div className={styles.inner} style={{minWidth}}>
+    <div className={styles.root} style={{width: maxWidth}}>
+      <div />
+
+      <PresenceTooltip items={uniquePresence} placement="top">
+        <div className={styles.inner} style={{width: currWidth}}>
           {avatars.map(
             (av, i) =>
               av && (

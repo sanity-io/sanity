@@ -16,6 +16,6 @@
 
 .region {
   overflow: hidden;
-  pointerevents: none;
+  pointer-events: none;
   position: absolute;
 }

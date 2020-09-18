@@ -7,7 +7,7 @@ export const MAX_AVATARS_GLOBAL = 3
 export const DEFAULT_MAX_AVATARS_FIELDS = 3
 
 // distance between avatars in pixels (negative number means overlap)
-export const AVATAR_DISTANCE = -5
+export const AVATAR_DISTANCE = -4
 
 // height/width of the avatars in pixels
 export const AVATAR_SIZE = 23
@@ -28,10 +28,10 @@ export const SNAP_TO_DOCK_DISTANCE_TOP = 8
 export const SNAP_TO_DOCK_DISTANCE_BOTTOM = 8
 
 // The avatar will move to the right when this close (in pixels) to the top
-export const SLIDE_RIGHT_THRESHOLD_TOP = 22
+export const SLIDE_RIGHT_THRESHOLD_TOP = 20
 
 // The avatar will move to the right when this close (in pixels) to the bottom
-export const SLIDE_RIGHT_THRESHOLD_BOTTOM = 22
+export const SLIDE_RIGHT_THRESHOLD_BOTTOM = 20
 
 // Switch on debug mode (will display regions)
 export const DEBUG = false

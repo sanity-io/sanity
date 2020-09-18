@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/no-multi-comp */
 
-import * as React from 'react'
-import {CSSProperties} from 'react'
+import React from 'react'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
   AVATAR_ARROW_HEIGHT,
@@ -18,7 +16,7 @@ import {FieldPresenceInner} from '../FieldPresence'
 import {TrackerComponentProps} from '../../components/react-track-elements'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 
-const ITEM_TRANSITION: CSSProperties = {
+const ITEM_TRANSITION: React.CSSProperties = {
   transitionProperty: 'transform',
   transitionDuration: '200ms',
   transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)'
@@ -96,7 +94,7 @@ function group(
   }
 }
 
-const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
+const Spacer = ({height, ...rest}: {height: number; style?: React.CSSProperties}) => (
   <div style={{height: Math.max(0, height), ...rest?.style}} />
 )
 
@@ -106,48 +104,54 @@ const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
 export function StickyOverlay(props: Props) {
   const {regions, children, trackerRef, margins = DEFAULT_MARGINS} = props
+
+  const renderCallback = React.useCallback(
+    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
+      const grouped = group(
+        regionsWithIntersectionDetails.filter(item => item.region.data.presence.length > 0)
+      )
+      const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
+      const bottomSpacing = sum(
+        [...grouped.inside, ...grouped.bottom].map(n => n.region.rect.height + n.spacerHeight)
+      )
+
+      // todo: this needs cleaning up, should process all the needed layout data in one go
+      const counts = grouped.inside.reduce(
+        (_counts, withIntersection) => {
+          const {distanceTop, distanceBottom} = withIntersection
+
+          const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
+          const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
+          return {
+            nearTop: _counts.nearTop + (nearTop ? withIntersection.region.data.presence.length : 0),
+            nearBottom:
+              _counts.nearBottom + (nearBottom ? withIntersection.region.data.presence.length : 0)
+          }
+        },
+        {nearTop: 0, nearBottom: 0}
+      )
+
+      return (
+        <>
+          {[
+            renderDock('top', margins, grouped.top, counts.nearTop),
+            <Spacer key="spacerTop" height={topSpacing} />,
+            ...renderInside(grouped.inside, containerWidth),
+            <Spacer key="spacerBottom" height={bottomSpacing} />,
+            renderDock('bottom', margins, grouped.bottom, counts.nearBottom)
+          ]}
+        </>
+      )
+    },
+    [margins]
+  )
+
   return (
     <RegionsWithIntersections
       margins={margins}
       regions={regions}
       trackerRef={trackerRef}
-      render={(regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
-        const grouped = group(
-          regionsWithIntersectionDetails.filter(item => item.region.data.presence.length > 0)
-        )
-        const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
-        const bottomSpacing = sum(
-          [...grouped.inside, ...grouped.bottom].map(n => n.region.rect.height + n.spacerHeight)
-        )
-
-        // todo: this needs cleaning up, should process all the needed layout data in one go
-        const counts = grouped.inside.reduce(
-          (counts, withIntersection) => {
-            const {distanceTop, distanceBottom} = withIntersection
-
-            const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
-            const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
-            return {
-              nearTop:
-                counts.nearTop + (nearTop ? withIntersection.region.data.presence.length : 0),
-              nearBottom:
-                counts.nearBottom + (nearBottom ? withIntersection.region.data.presence.length : 0)
-            }
-          },
-          {nearTop: 0, nearBottom: 0}
-        )
-        return (
-          <>
-            {[
-              renderDock('top', margins, grouped.top, counts.nearTop),
-              <Spacer key="spacerTop" height={topSpacing} />,
-              ...renderInside(grouped.inside, containerWidth),
-              <Spacer key="spacerBottom" height={bottomSpacing} />,
-              renderDock('bottom', margins, grouped.bottom, counts.nearBottom)
-            ]}
-          </>
-        )
-      }}
+      render={renderCallback}
     >
       {children}
     </RegionsWithIntersections>
