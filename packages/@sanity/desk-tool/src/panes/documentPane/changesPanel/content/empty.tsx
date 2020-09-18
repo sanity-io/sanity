@@ -6,7 +6,7 @@ export function EmptyContent() {
   return (
     <div className={styles.root}>
       <div className={styles.box}>
-        <h3 className={styles.heading}>There are no changes to this document</h3>
+        <h3 className={styles.heading}>There are no changes</h3>
 
         <div className={styles.content}>
           <p>
