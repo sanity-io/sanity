@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {ObjectDiff, ObjectSchemaType, ChangeNode} from '../../types'
 import {Path} from '../../paths'
-import {DiffContext} from '../context/DiffContext'
+import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {ChangeResolver} from './ChangeResolver'
 
