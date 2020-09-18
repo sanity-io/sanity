@@ -145,6 +145,10 @@
   white-space: nowrap;
   margin: -2px 0 -1px;
   color: var(--text-muted);
+
+  @nest &[data-disabled='true'] {
+    color: var(--gray-lighter);
+  }
 }
 
 .label {
