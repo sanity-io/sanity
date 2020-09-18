@@ -2,6 +2,8 @@ import React from 'react'
 import {DiffComponent, StringDiff, AnnotatedStringDiff, Change} from '../../../diff'
 import {StringPreview} from '../preview/StringPreview'
 
+import styles from './StringFieldDiff.css'
+
 export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   const {options} = schemaType
 
@@ -11,5 +13,9 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
     return <Change diff={diff} previewComponent={StringPreview} schemaType={schemaType} />
   }
 
-  return <AnnotatedStringDiff diff={diff} />
+  return (
+    <div className={styles.root}>
+      <AnnotatedStringDiff diff={diff} />
+    </div>
+  )
 }
