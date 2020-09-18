@@ -22,6 +22,7 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 import {Path} from '../../typedefs/path'
 import {Observable} from 'rxjs'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 
 type FieldT = {
   name: string
@@ -168,10 +169,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           <FileIcon />
         </div>
         <div>
-          {assetDocument.originalFilename}{' '}
-          <a href={`${assetDocument.url}?dl`} download>
+          <div className={styles.fileLabel}>
+            {assetDocument.originalFilename}{' '}
+          </div>
+          <AnchorButton href={`${assetDocument.url}?dl`} inverted size="small">
             Download
-          </a>
+          </AnchorButton>
         </div>
       </div>
     )
