@@ -73,6 +73,7 @@
 }
 
 .card {
+  position: relative;
   composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
   border-radius: var(--dialog-border-radius);
   animation-name: reveal;

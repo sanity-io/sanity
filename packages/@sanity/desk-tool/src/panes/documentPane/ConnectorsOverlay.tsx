@@ -33,9 +33,9 @@ const isScrollContainer = el => el.scrollHeight !== el.offsetHeight
 
 const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
   let el: HTMLElement | null = source
-  const bounds: {top: number; bottom: number} = {
+  const bounds: {top: number; height: number} = {
     top: 0,
-    bottom: 0
+    height: 0
   }
   let top = 0
   let left = 0
@@ -43,19 +43,18 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
   while (el && el !== target) {
     if (foundScrollContainer) {
       bounds.top += el.offsetTop
-      bounds.bottom += el.offsetTop
     }
 
     if (isScrollContainer(el)) {
       bounds.top = el.offsetTop
-      bounds.bottom = el.offsetTop + el.offsetHeight - 36 // todo: figure out why this is needed
+      bounds.height = el.offsetHeight
       foundScrollContainer = true
     }
     top += el.offsetTop - el.scrollTop
     left += el.offsetLeft - el.scrollLeft
     el = el.offsetParent as HTMLElement
   }
-  return {top, left, bounds}
+  return {top, left, bounds: {top: bounds.top, bottom: bounds.top + bounds.height}}
 }
 
 function getRelativeRect(element, parent) {
@@ -86,8 +85,8 @@ function scrollIntoView(element) {
   })
 }
 
-const ADJUST_MARGIN_TOP = -3
-const ADJUST_MARGIN_BOTTOM = 10
+const ADJUST_MARGIN_TOP = 10
+const ADJUST_MARGIN_BOTTOM = -10
 
 export function ConnectorsOverlay(props: Props) {
   const {children, trackerRef, ...rest} = props
@@ -137,13 +136,13 @@ export function ConnectorsOverlay(props: Props) {
               top: changedRegion.rect.top - topEdge + 8
             }
 
-            const clampLeft = {
-              top: changedField.rect.bounds.top + ADJUST_MARGIN_TOP + 8,
-              bottom: changedRegion.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM
+            const clampConnectorLeft = {
+              top: changedField.rect.bounds.top + ADJUST_MARGIN_TOP,
+              bottom: changedField.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM - 14 // todo: fix issue with clamping bottom in the connector
             }
-            const clampRight = {
-              top: changedRegion.rect.bounds.top,
-              bottom: changedRegion.rect.bounds.bottom
+            const clampConnectorRight = {
+              top: changedRegion.rect.bounds.top + ADJUST_MARGIN_TOP,
+              bottom: changedRegion.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM - 14
             }
             return (
               <svg
@@ -172,15 +171,49 @@ export function ConnectorsOverlay(props: Props) {
                       <Connector
                         from={connectorFrom}
                         to={connectorTo}
-                        clampLeft={clampLeft}
-                        clampRight={clampRight}
+                        clampLeft={clampConnectorLeft}
+                        clampRight={clampConnectorRight}
                         verticalCenter={verticalLineLeft + 3}
                       />
+                      {/*<line*/}
+                      {/*  x1={changedField.rect.left}*/}
+                      {/*  y1={changedField.rect.bounds.top}*/}
+                      {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                      {/*  y2={changedField.rect.bounds.top}*/}
+                      {/*  stroke="black"*/}
+                      {/*  strokeWidth={2}*/}
+                      {/*/>*/}
+                      {/*<line*/}
+                      {/*  x1={changedField.rect.left}*/}
+                      {/*  y1={clampConnectorLeft.top}*/}
+                      {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                      {/*  y2={clampConnectorLeft.top}*/}
+                      {/*  stroke="yellow"*/}
+                      {/*  strokeWidth={2}*/}
+                      {/*/>*/}
+                      {/*<line*/}
+                      {/*  x1={changedField.rect.left}*/}
+                      {/*  y1={changedField.rect.bounds.bottom}*/}
+                      {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                      {/*  y2={changedField.rect.bounds.bottom}*/}
+                      {/*  stroke="black"*/}
+                      {/*  strokeWidth={2}*/}
+                      {/*/>*/}
+
+                      {/*<line*/}
+                      {/*  x1={changedField.rect.left}*/}
+                      {/*  y1={clampConnectorLeft.bottom}*/}
+                      {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                      {/*  y2={clampConnectorLeft.bottom}*/}
+                      {/*  stroke="yellow"*/}
+                      {/*  strokeWidth={2}*/}
+                      {/*/>*/}
                       {/* arrow left top */}
-                      {connectorFrom.top + changedField.rect.height - 8 < clampLeft.top && (
+                      {connectorFrom.top + changedField.rect.height - 8 <
+                        clampConnectorLeft.top && (
                         <Arrow
                           className={styles.connector}
-                          top={Math.max(clampLeft.top)}
+                          top={Math.max(clampConnectorLeft.top)}
                           left={connectorFrom.left}
                           length={5}
                           wingLength={8}
@@ -188,14 +221,10 @@ export function ConnectorsOverlay(props: Props) {
                         />
                       )}
                       {/* arrow left bottom */}
-                      {connectorFrom.top - 8 > clampLeft.bottom + ADJUST_MARGIN_BOTTOM + 10 && (
+                      {connectorFrom.top > changedField.rect.bounds.bottom - 5 && (
                         <Arrow
                           className={styles.connector}
-                          top={
-                            clampLeft.bottom +
-                            ADJUST_MARGIN_BOTTOM +
-                            10 /*todo: make the arrow anchor customizable to remove this */
-                          }
+                          top={changedField.rect.bounds.bottom - 5}
                           left={connectorFrom.left}
                           length={5}
                           wingLength={8}
@@ -203,10 +232,11 @@ export function ConnectorsOverlay(props: Props) {
                         />
                       )}
                       {/* arrow right top */}
-                      {connectorTo.top + changedRegion.rect.height - 8 < clampRight.top && (
+                      {connectorTo.top + changedRegion.rect.height - 8 <
+                        clampConnectorRight.top && (
                         <Arrow
                           className={styles.connector}
-                          top={Math.max(clampRight.top)}
+                          top={Math.max(clampConnectorRight.top)}
                           left={connectorTo.left}
                           length={5}
                           wingLength={8}
@@ -214,14 +244,10 @@ export function ConnectorsOverlay(props: Props) {
                         />
                       )}
                       {/* arrow right bottom */}
-                      {connectorTo.top - 8 > clampRight.bottom + ADJUST_MARGIN_BOTTOM + 10 && (
+                      {connectorTo.top > changedRegion.rect.bounds.bottom - 5 && (
                         <Arrow
                           className={styles.connector}
-                          top={
-                            clampRight.bottom +
-                            ADJUST_MARGIN_BOTTOM +
-                            10 /*todo: make the arrow anchor customizable to remove this */
-                          }
+                          top={changedRegion.rect.bounds.bottom - 5}
                           left={connectorTo.left}
                           length={5}
                           wingLength={8}
