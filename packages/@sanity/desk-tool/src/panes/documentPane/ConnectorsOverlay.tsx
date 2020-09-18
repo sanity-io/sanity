@@ -23,7 +23,7 @@ interface ChangeConnectorPayload {
 
 interface Props {
   children?: React.ReactNode
-  trackerRef: React.RefObject<HTMLDivElement>
+  trackerRef: any //todo: fix
   regions: ReportedRegion<ChangeConnectorPayload>[]
 }
 

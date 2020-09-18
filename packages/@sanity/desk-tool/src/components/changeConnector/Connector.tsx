@@ -24,7 +24,8 @@ export const vLine = (left: number, from: number, to: number): Line => ({
   to: {top: to, left: left}
 })
 
-export const drawLine = (line: Line) => linePath(line.from.left, line.from.top, line.to.left, line.to.top)
+export const drawLine = (line: Line) =>
+  linePath(line.from.left, line.from.top, line.to.left, line.to.top)
 
 const connect = (p1: Point, p2: Point, dir: 'h' | 'v') => {
   const midLeft = dir === 'v' ? p2.left : p1.left
@@ -39,7 +40,7 @@ interface Props {
   clampLeft: {top: number; bottom: number}
   clampRight: {top: number; bottom: number}
 }
-export function Connector(props: React.ComponentProps<'path'> & Props) {
+export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'from' | 'to'>) {
   const {from, to, verticalCenter: _, clampLeft, clampRight, ...rest} = props
   const verticalCenter =
     typeof props.verticalCenter === 'number'
@@ -98,6 +99,7 @@ export function Connector(props: React.ComponentProps<'path'> & Props) {
   return (
     <>
       <path d={path} fill="none" stroke={BLUE} strokeWidth={STROKE_WIDTH} />
+      {/* click area */}
       <path
         d={path}
         fill="none"

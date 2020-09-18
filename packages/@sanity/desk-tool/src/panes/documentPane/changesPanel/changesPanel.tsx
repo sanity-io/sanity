@@ -23,10 +23,9 @@ import styles from './changesPanel.css'
 
 import {Reporter} from '@sanity/base/lib/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
-import {Path} from '@sanity/util/lib/typedefs/path'
 import {ScrollContainer} from '@sanity/base/ScrollContainer'
 
-const ChangeFieldWrapper = (props: {path: Path; children: React.ReactNode}) => {
+const ChangeFieldWrapper = (props: {path: any; children: React.ReactNode}) => {
   return (
     <Reporter id={`change-${PathUtils.toString(props.path)}`} data={{path: props.path}}>
       {props.children}
