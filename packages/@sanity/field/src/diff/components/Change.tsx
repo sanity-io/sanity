@@ -33,32 +33,26 @@ export function Change({
   }
 
   const from = hasValue(fromValue) ? (
-    <DiffAnnotationTooltip
-      as="del"
-      className={styles.from}
-      annotation={annotation}
-      description={description}
-    >
+    <del className={styles.from}>
       <PreviewComponent color={color} value={fromValue} schemaType={schemaType} />
-    </DiffAnnotationTooltip>
+    </del>
   ) : (
     undefined
   )
 
   const to = hasValue(toValue) ? (
-    <DiffAnnotationTooltip
-      as="ins"
-      className={styles.to}
-      annotation={annotation}
-      description={description}
-    >
+    <ins className={styles.to}>
       <PreviewComponent color={color} value={toValue} schemaType={schemaType} />
-    </DiffAnnotationTooltip>
+    </ins>
   ) : (
     undefined
   )
 
-  return <ChangeLayout from={from} to={to} layout={layout} />
+  return (
+    <DiffAnnotationTooltip annotation={annotation} description={description}>
+      <ChangeLayout from={from} to={to} layout={layout} />
+    </DiffAnnotationTooltip>
+  )
 }
 
 function hasValue(value: unknown) {
