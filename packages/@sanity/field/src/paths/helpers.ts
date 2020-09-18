@@ -41,7 +41,6 @@ export function pathToString(path: Path): string {
   }, '')
 }
 
-// eslint-disable-next-line complexity
 export function getValueAtPath(rootValue: unknown, path: Path): unknown {
   const segment = path[0]
   if (!segment) {
