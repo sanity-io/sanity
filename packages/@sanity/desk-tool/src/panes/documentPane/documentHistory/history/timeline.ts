@@ -369,6 +369,7 @@ export class Timeline {
 
     const initialValue = getValue(draftValue, publishedValue)
     const initialAttributes = getAttrs(initialDoc)
+    const firstChunk = this._chunks.get(firstIdx)
 
     // Loop over all of the chunks:
     for (let chunkIdx = firstIdx; chunkIdx <= lastIdx; chunkIdx++) {
@@ -379,7 +380,6 @@ export class Timeline {
 
         const meta = {
           chunk,
-          chunkIndex: chunkIdx,
           transactionIndex: idx
         }
 
@@ -415,7 +415,7 @@ export class Timeline {
     const finalValue = incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
     const finalAttributes = getAttrs(finalDoc)
 
-    return diffValue(this, initialValue, initialAttributes, finalValue, finalAttributes)
+    return diffValue(this, firstChunk, initialValue, initialAttributes, finalValue, finalAttributes)
   }
 }
 

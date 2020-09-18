@@ -3,8 +3,9 @@ import {Input, ArrayInput, ObjectInput, StringInput, wrap, Diff, diffInput} from
 import {Value, ArrayContent, ObjectContent, StringContent} from 'mendoza/lib/incremental-patcher'
 import {Timeline} from './timeline'
 import {isSameAnnotation} from './utils'
+import {Transaction} from './types'
 
-export type Meta = {chunk: Chunk; chunkIndex: number; transactionIndex: number} | null
+export type Meta = {chunk: Chunk; transactionIndex: number} | null
 
 export type AnnotationExtractor = (value: Value<Meta>) => Annotation
 
@@ -168,15 +169,28 @@ function wrapValue(
   return wrap(raw, annotation)
 }
 
-function extractAnnotationForFromInput(timeline: Timeline, value: Value<Meta>): Annotation {
+function extractAnnotationForFromInput(
+  timeline: Timeline,
+  firstChunk: Chunk,
+  value: Value<Meta>
+): Annotation {
+  let tx: Transaction | null = null
+  let chunk: Chunk | null = null
+
   if (value.endMeta) {
     // The next transaction is where it disappeared:
     const nextTxIndex = value.endMeta.transactionIndex + 1
-    const tx = timeline.transactionByIndex(nextTxIndex)
+    tx = timeline.transactionByIndex(nextTxIndex)
     if (!tx) return null
 
-    const chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunkIndex)
+    chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunk.index)
+  } else {
+    // Otherwise, it must have disappeared in the first transaction:
+    tx = timeline.transactionByIndex(firstChunk.start)
+    chunk = firstChunk
+  }
 
+  if (tx && chunk) {
     return {
       chunk,
       timestamp: tx.timestamp,
@@ -203,13 +217,14 @@ function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): An
 
 export function diffValue(
   timeline: Timeline,
+  firstChunk: Chunk,
   from: Value<Meta>,
   fromRaw: unknown,
   to: Value<Meta>,
   toRaw: unknown
 ): Diff<Annotation> {
   const fromInput = wrapValue(from, fromRaw, value =>
-    extractAnnotationForFromInput(timeline, value)
+    extractAnnotationForFromInput(timeline, firstChunk, value)
   )
   const toInput = wrapValue(to, toRaw, value => extractAnnotationForToInput(timeline, value))
   return diffInput(fromInput, toInput)
