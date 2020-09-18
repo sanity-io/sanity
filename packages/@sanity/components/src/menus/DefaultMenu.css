@@ -23,7 +23,7 @@
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
   position: relative;
-  line-height: 25px;
+  line-height: calc(25 / 16 * 1em);
 }
 
 .isDisabled {

@@ -21,7 +21,7 @@
 
     @nest & svg {
       vertical-align: top;
-      font-size: 1.5625em; /* 25px */
+      font-size: calc(25 / 16 * 1em); /* 25px */
       line-height: 1;
     }
 
