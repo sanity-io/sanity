@@ -3,4 +3,8 @@
 .root {
   padding: var(--small-padding);
   border-radius: var(--border-radius-small);
+
+  @nest del & {
+    text-decoration: line-through;
+  }
 }
