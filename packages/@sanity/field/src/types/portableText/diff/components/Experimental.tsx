@@ -138,7 +138,7 @@ export default function Block(props: Props): JSX.Element {
       returned = (
         <DiffAnnotation
           annotation={marksDiff.annotation}
-          description={`Formatting ${marksDiff.action} by`}
+          description={`Formatting ${marksDiff.action}`}
         >
           {returned}
         </DiffAnnotation>
@@ -263,14 +263,14 @@ export default function Block(props: Props): JSX.Element {
         } else if (seg.action === 'removed') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffAnnotation annotation={seg.annotation} as="del" description="Text removed by">
+            <DiffAnnotation annotation={seg.annotation} as="del" description="Removed">
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffAnnotation>
           )
         } else if (seg.action === 'added') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffAnnotation annotation={seg.annotation} as="ins" description="Text added by">
+            <DiffAnnotation annotation={seg.annotation} as="ins" description="Added">
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffAnnotation>
           )

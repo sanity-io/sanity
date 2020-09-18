@@ -105,7 +105,7 @@ function MovedTitleSegment({
 }) {
   const indexDiff = toIndex - fromIndex
   const indexSymbol = indexDiff < 0 ? '↑' : '↓'
-  const description = `Moved ${Math.abs(indexDiff)} position ${indexDiff < 0 ? 'up' : 'down'} by`
+  const description = `Moved ${Math.abs(indexDiff)} position ${indexDiff < 0 ? 'up' : 'down'}`
   return (
     <>
       <span className={styles.indexGroup}>#{toIndex + 1}</span>
