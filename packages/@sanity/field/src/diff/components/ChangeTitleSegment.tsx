@@ -1,6 +1,8 @@
 import * as React from 'react'
 import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
-import {DiffAnnotation, DiffAnnotationCard} from '../annotations'
+import {DiffAnnotation} from './DiffAnnotation'
+import {DiffAnnotationCard} from './DiffAnnotationCard'
+
 import styles from './ChangeTitleSegment.css'
 
 export function ChangeTitleSegment({

@@ -1,15 +1,16 @@
 import * as React from 'react'
 import classNames from 'classnames'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {isPTSchemaType} from '../../types/portableText/diff'
-import {useHover} from '../../utils/useHover'
-import {GroupChangeNode, OperationsAPI} from '../../types'
+import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
+import {isPTSchemaType} from '../../types/portableText/diff'
+import {GroupChangeNode, OperationsAPI} from '../../types'
+import {useHover} from '../../utils/useHover'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {RevertChangesButton} from './RevertChangesButton'
-import {undoChange} from './undoChange'
+
 import styles from './GroupChange.css'
 
 export function GroupChange({change: group}: {change: GroupChangeNode}): React.ReactElement {

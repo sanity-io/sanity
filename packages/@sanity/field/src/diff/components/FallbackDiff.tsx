@@ -2,7 +2,7 @@ import React from 'react'
 import Preview from 'part:@sanity/base/preview'
 import {PreviewComponent} from '../../preview/types'
 import {DiffComponent} from '../../types'
-import {Change} from '../components'
+import {Change} from './Change'
 
 import styles from './FallbackDiff.css'
 

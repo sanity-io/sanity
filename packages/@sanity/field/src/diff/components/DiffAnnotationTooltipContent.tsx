@@ -3,8 +3,9 @@ import {useUser, useTimeAgo} from '@sanity/base/hooks'
 import {UserAvatar} from '@sanity/base/components'
 import {useUserColorManager} from '@sanity/base/user-color'
 import {AnnotationDetails} from '../../types'
+import {getAnnotationColor} from '../annotations'
+
 import styles from './DiffAnnotationTooltipContent.css'
-import {getAnnotationColor} from './helpers'
 
 export function DiffAnnotationTooltipContent({
   annotations,

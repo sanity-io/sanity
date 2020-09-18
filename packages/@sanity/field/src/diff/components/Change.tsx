@@ -1,10 +1,11 @@
 import React from 'react'
 import {Path} from '../../paths'
 import {PreviewComponent as IPreviewComponent} from '../../preview/types'
-import {DiffAnnotationTooltip, getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Diff, SchemaType} from '../../types'
 import {getChangeVerb} from '../helpers'
 import {ChangeLayout} from './ChangeLayout'
+import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
 
 import styles from './Change.css'
 
