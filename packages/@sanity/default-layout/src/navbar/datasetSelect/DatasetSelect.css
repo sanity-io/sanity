@@ -46,7 +46,7 @@
     position: absolute;
     top: var(--extra-small-padding);
     right: var(--extra-small-padding);
-    font-size: 25px;
+    font-size: calc(25 / 25 * 1em);
     pointer-events: none;
   }
 }
