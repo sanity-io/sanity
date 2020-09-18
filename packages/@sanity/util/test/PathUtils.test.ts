@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks,@typescript-eslint/ban-ts-ignore */
+/* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
 import {test} from 'tap'
 import {fromString, toString, get} from '../src/pathUtils'
 
@@ -6,10 +6,16 @@ const srcObject = {
   title: 'Hei',
   nested: {'0': 'Zero-Key'},
   nullVal: null,
-  body: [{_key: 'foo', title: 'Foo'}, {_key: 'bar', children: [{_key: 'child1', text: 'Heisann'}]}],
+  body: [
+    {_key: 'foo', title: 'Foo'},
+    {_key: 'bar', children: [{_key: 'child1', text: 'Heisann'}]}
+  ],
   multiDimensional: [
     [[{_key: 'abc', title: 'hai'}], [{_key: 'def', title: 'def'}]],
-    [[13, 14], [15, 16]]
+    [
+      [13, 14],
+      [15, 16]
+    ]
   ]
 }
 
