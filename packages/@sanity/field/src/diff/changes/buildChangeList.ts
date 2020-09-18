@@ -1,3 +1,4 @@
+import {Path, MultiFieldSet} from '@sanity/types'
 import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
@@ -11,11 +12,9 @@ import {
   DiffComponent,
   FieldChangeNode,
   ItemDiff,
-  MultiFieldSet,
   ObjectDiff,
   ObjectField,
   ObjectSchemaType,
-  Path,
   SchemaType
 } from '../../types'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'

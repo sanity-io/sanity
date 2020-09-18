@@ -1,7 +1,7 @@
+import {Path} from '@sanity/types'
 import React, {createElement} from 'react'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {Path} from '../../paths'
 import {Diff, Annotation} from '../../types'
+import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
 
 interface BaseDiffAnnotationCardProps {

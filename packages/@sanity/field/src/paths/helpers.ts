@@ -1,9 +1,16 @@
-import {KeyedObject, TypedObject} from '../diff'
-import {Path, PathSegment, KeyedSegment, IndexTuple} from './types'
+import {
+  IndexTuple,
+  isIndexSegment,
+  isIndexTuple,
+  isKeyedObject,
+  isKeySegment,
+  KeyedSegment,
+  Path,
+  PathSegment
+} from '@sanity/types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
-const reIndexTuple = /^\d*:\d*$/
 
 export function pathToString(path: Path): string {
   if (!Array.isArray(path)) {
@@ -116,31 +123,6 @@ export function normalizeIndexTupleSegment(segment: string): IndexTuple {
   return [from, to]
 }
 
-export function isIndexSegment(segment: PathSegment): segment is number {
-  return typeof segment === 'number' || (typeof segment === 'string' && /^\[\d+\]$/.test(segment))
-}
-
-export function isKeySegment(segment: PathSegment): segment is KeyedSegment {
-  if (typeof segment === 'string') {
-    return reKeySegment.test(segment.trim())
-  }
-
-  return typeof segment === 'object' && '_key' in segment
-}
-
-export function isIndexTuple(segment: PathSegment): segment is IndexTuple {
-  if (typeof segment === 'string' && reIndexTuple.test(segment)) {
-    return true
-  }
-
-  if (!Array.isArray(segment) || segment.length !== 2) {
-    return false
-  }
-
-  const [from, to] = segment
-  return (typeof from === 'number' || from === '') && (typeof to === 'number' || to === '')
-}
-
 export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
   if (pathA.length !== pathB.length) {
     return false
@@ -171,14 +153,4 @@ export function getItemKey(arrayItem: unknown): string | undefined {
 export function getItemKeySegment(arrayItem: unknown): KeyedSegment | undefined {
   const key = getItemKey(arrayItem)
   return key ? {_key: key} : undefined
-}
-
-export function isKeyedObject(item: unknown): item is KeyedObject {
-  return typeof item === 'object' && item !== null && typeof (item as KeyedObject)._key === 'string'
-}
-
-export function isTypedObject(item: unknown): item is TypedObject {
-  return (
-    typeof item === 'object' && item !== null && typeof (item as TypedObject)._type === 'string'
-  )
 }

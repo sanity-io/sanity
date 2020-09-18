@@ -1,15 +1,6 @@
-/* eslint-disable complexity */
+import {Path, isKeyedObject, isTypedObject, isKeySegment, isIndexSegment} from '@sanity/types'
 import {diffItem} from 'sanity-diff-patch'
-import {
-  pathToString,
-  getItemKeySegment,
-  isKeyedObject,
-  isTypedObject,
-  getValueAtPath,
-  isKeySegment,
-  isIndexSegment,
-  findIndex
-} from '../../paths/helpers'
+import {pathToString, getItemKeySegment, getValueAtPath, findIndex} from '../../paths/helpers'
 import {
   ArrayDiff,
   ChangeNode,
@@ -20,7 +11,6 @@ import {
   ObjectDiff,
   OperationsAPI,
   PatchOperations,
-  Path,
   SetDiffPatch,
   UnsetDiffPatch
 } from '../../types'

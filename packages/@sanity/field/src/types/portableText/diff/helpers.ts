@@ -1,4 +1,5 @@
 import {flatten, startCase, orderBy} from 'lodash'
+import {Block, SchemaType} from '@sanity/types'
 import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
@@ -6,7 +7,7 @@ import {
   DIFF_INSERT
 } from 'diff-match-patch'
 import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
-import {SchemaType, ObjectSchemaType, ArraySchemaType, BlockSchemaType} from '../../../types'
+import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
   MarkSymbolMap,
@@ -72,7 +73,7 @@ const allSymbols = startMarkSymbols.concat(endMarkSymbols)
 
 const markRegex = `/${allSymbols.join('|')}/g`
 
-export function isPTSchemaType(schemaType: SchemaType): schemaType is BlockSchemaType {
+export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
 }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Path} from '../../paths'
+import {Path} from '@sanity/types'
 import {PreviewComponent as IPreviewComponent} from '../../preview/types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Diff, SchemaType} from '../../types'

@@ -1,5 +1,6 @@
+import {TypedObject} from '@sanity/types'
 import schema from 'part:@sanity/base/schema'
-import {ArraySchemaType, Diff, SchemaType, TypedObject, ReferenceSchemaType} from '../diff'
+import {Diff, ArraySchemaType, SchemaType, ReferenceSchemaType} from '../diff'
 
 export function getReferencedType(referenceType: ReferenceSchemaType): SchemaType | undefined {
   if (!referenceType.to) {
@@ -16,11 +17,14 @@ export function getReferencedType(referenceType: ReferenceSchemaType): SchemaTyp
   return targetType
 }
 
-export function resolveTypeName(value: unknown) {
+export function resolveTypeName(value: unknown): string {
   return isTypedObject(value) ? value._type : resolveJSType(value)
 }
 
-export function getArrayDiffItemType(diff: Diff, schemaType: ArraySchemaType) {
+export function getArrayDiffItemType(
+  diff: Diff,
+  schemaType: ArraySchemaType
+): {fromType?: SchemaType; toType?: SchemaType} {
   if (diff.action === 'added') {
     return {
       toType: resolveArrayMemberType(schemaType, diff.toValue)

@@ -1,4 +1,5 @@
 import {ComponentType} from 'react'
+import {Reference} from '@sanity/types'
 import {UserColor} from '@sanity/base/user-color'
 import {
   ArraySchemaType,
@@ -6,7 +7,6 @@ import {
   StringSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
-  Reference,
   ReferenceSchemaType
 } from '../diff'
 
