@@ -9,7 +9,7 @@ export function ChangeTitleSegment({
 }: {
   change?: FieldChangeNode
   segment: string | FromToIndex
-}): React.ReactElement {
+}) {
   if (typeof segment === 'string') {
     return (
       <strong className={styles.text} title={segment}>

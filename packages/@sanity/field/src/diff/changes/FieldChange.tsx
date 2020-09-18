@@ -14,7 +14,7 @@ import styles from './FieldChange.css'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 
-export function FieldChange({change}: {change: FieldChangeNode}): React.ReactElement {
+export function FieldChange({change}: {change: FieldChangeNode}) {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {documentId, schemaType, rootDiff, isComparingCurrent} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI

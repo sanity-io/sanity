@@ -162,6 +162,12 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   diffComponent?: DiffComponent<ArrayDiff<V>> | DiffComponentOptions<ArrayDiff<V>>
 }
 
+export interface BlockSchemaType extends ObjectSchemaType {
+  jsonType: 'object'
+  name: 'block'
+  of?: SchemaType[]
+}
+
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
@@ -238,7 +244,8 @@ export interface FieldChangeNode {
   error?: FieldValueError
   titlePath: ChangeTitlePath
   schemaType: SchemaType
-  showHeader: DiffComponentOptions['showHeader']
+  showHeader: boolean
+  showIndex: boolean
   diffComponent?: DiffComponent
 }
 
