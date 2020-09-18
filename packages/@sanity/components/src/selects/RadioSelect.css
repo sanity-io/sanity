@@ -1,15 +1,23 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --radio-select-padding-narrow: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
 .root {
   display: flex;
   border: var(--input-border-size) solid var(--input-border-color);
   border-radius: var(--input-border-radius);
-  padding: var(--medium-padding) var(--medium-padding) 0;
+  padding: var(--radio-select-padding-narrow) var(--radio-select-padding-narrow) 0;
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding) var(--medium-padding) 0;
+  }
 }
 
 .vertical {
   @nest & .item + .item {
-    margin-top: 0.5em;
+    margin-top: var(--small-padding);
   }
 }
 
@@ -21,6 +29,11 @@
 }
 
 .item {
-  margin-right: var(--medium-padding);
-  margin-bottom: var(--medium-padding);
+  margin-right: var(--radio-select-padding-narrow);
+  margin-bottom: var(--radio-select-padding-narrow);
+
+  @media (--screen-medium) {
+    margin-right: var(--medium-padding);
+    margin-bottom: var(--medium-padding);
+  }
 }

@@ -58,6 +58,7 @@ export default React.forwardRef(function Switch(
         <div className={styles.track} />
         <div className={styles.thumb} />
       </div>
+
       {label && (
         <div className={sharedStyles.label}>
           <div className={sharedStyles.titleWrapper}>

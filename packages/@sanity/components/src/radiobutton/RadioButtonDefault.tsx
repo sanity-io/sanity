@@ -26,7 +26,7 @@ export default function RadioButton({
 
   const handleChange = useCallback(() => {
     if (onChange) onChange(item)
-  }, [onChange])
+  }, [item, onChange])
 
   return (
     <div className={styles.root}>
