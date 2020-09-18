@@ -1,21 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-left: auto;
-  flex: 1 0 auto;
   display: flex;
   justify-content: flex-end;
   box-sizing: border-box;
   min-height: var(--avatar-height);
-  max-width: 125px;
-  width: 100%;
-  padding-left: var(--small-padding);
-}
+  width: 77px;
+  margin-left: var(--small-padding);
 
-.root[data-position='top'] {
-  align-self: flex-start;
-}
+  @nest &[data-max-avatars='1'] {
+    max-width: 23px;
+  }
 
-.root[data-position='bottom'] {
-  align-self: flex-end;
+  @nest &[data-position='top'] {
+    align-self: flex-start;
+  }
+
+  @nest &[data-position='bottom'] {
+    align-self: flex-end;
+  }
 }

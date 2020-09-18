@@ -6,20 +6,19 @@
   --focus-color: var(--brand-primary);
 
   /* Thumb */
-  --thumb-size: 1rem;
+  --thumb-size: calc(15 / 16 * 1rem);
   --thumb-color: var(--switch-color);
   --thumb-off-color: var(--white);
   --thumb-on-color: var(--white);
   --thumb-disabled-color: var(--input-color-disabled);
-  --thumb-offset: 4px;
+  --thumb-offset: calc(4 / 16 * 1rem);
   /* Track */
-  --track-height: 1.5rem;
-  --track-width: 2.5rem;
+  --track-height: calc(23 / 16 * 1rem);
+  --track-width: calc(39 / 16 * 1rem);
   --track-disabled-color: var(--input-bg-disabled);
   --track-color: var(--gray-light);
   --track-off-color: var(--gray);
   --track-on-color: var(--state-success-color);
-
 }
 
 .root {
@@ -48,17 +47,16 @@
   height: var(--track-height);
   width: var(--track-width);
   border-radius: var(--track-height);
-  border: 2px solid transparent;
 }
 
 .thumb {
   background: var(--thumb-off-color);
   position: absolute;
   left: var(--thumb-offset);
-  top: calc((100% - var(--thumb-size)) / 2);
+  top: var(--thumb-offset);
   height: var(--thumb-size);
   width: var(--thumb-size);
-  border-radius: 50%;
+  border-radius: calc(var(--thumb-size) / 2);
   cursor: default;
   composes: animation-default from 'part:@sanity/base/theme/animation-style';
   transform-origin: left;
@@ -72,14 +70,13 @@
   top: 0;
   height: var(--track-height);
   width: var(--track-width);
-  border-radius: var(--track-height);
+  border-radius: calc(var(--track-height) / 2);
   cursor: default;
-  border: 1px solid var(--white);
   box-sizing: border-box;
 }
 
 .input:focus + .switchWrapper {
-  border-color: var(--focus-color);
+  box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--focus-color);
 }
 
 .input:checked + .switchWrapper {
@@ -101,13 +98,13 @@
   @nest & .thumb {
     background: var(--thumb-disabled-color);
     cursor: auto;
-    opacity: 0.8;
+    opacity: 0.75;
   }
 
   @nest & .track {
     background: var(--track-disabled-color);
     cursor: default;
-    border: 1px solid var(--gray-light);
+    box-shadow: 0 0 0 1px var(--gray-light);
   }
 }
 
