@@ -17,8 +17,9 @@
     );
     background-size: 1px 3px;
     background-repeat: repeat-x;
-    background-position-y: 18px;
+    background-position-y: bottom;
     padding-bottom: 3px;
+    box-shadow: 0 0 0 1px var(--component-bg);
   }
 }
 
