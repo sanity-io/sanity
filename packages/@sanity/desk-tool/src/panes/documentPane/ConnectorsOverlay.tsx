@@ -175,13 +175,19 @@ export function ConnectorsOverlay(props: Props) {
                         d={drawLine(
                           vLine(
                             connectorTo.left,
-                            Math.min(
-                              connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
-                              connectorTo.top - 8
+                            Math.max(
+                              changedRegion.rect.bounds.top,
+                              Math.min(
+                                connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
+                                connectorTo.top - 8
+                              )
                             ),
-                            Math.min(
-                              connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
-                              connectorTo.top - 8 + changedRegion.rect.height
+                            Math.max(
+                              changedRegion.rect.bounds.top,
+                              Math.min(
+                                connectorTo.top + changedRegion.rect.bounds.bottom - 19 - 8,
+                                connectorTo.top - 8 + changedRegion.rect.height
+                              )
                             )
                           )
                         )}
