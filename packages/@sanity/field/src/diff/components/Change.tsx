@@ -30,7 +30,7 @@ export function Change({
   const description = getChangeVerb(diff)
 
   if (action === 'unchanged') {
-    return <PreviewComponent value={toValue} schemaType={schemaType} />
+    return <PreviewComponent color={color} value={toValue} schemaType={schemaType} />
   }
 
   const from = hasValue(fromValue) ? (
