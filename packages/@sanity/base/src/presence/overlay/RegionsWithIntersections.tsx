@@ -1,5 +1,4 @@
-/* eslint-disable react/no-multi-comp */
-import * as React from 'react'
+import React from 'react'
 import {tap} from 'rxjs/operators'
 import {
   SNAP_TO_DOCK_DISTANCE_BOTTOM,
@@ -106,6 +105,7 @@ export function RegionsWithIntersections(props: Props) {
               : distanceBottom <= SNAP_TO_DOCK_DISTANCE_BOTTOM
               ? 'bottom'
               : 'inside'
+
           return {
             distanceTop,
             distanceBottom,
@@ -126,7 +126,7 @@ export function RegionsWithIntersections(props: Props) {
           zIndex: 100,
           position: 'sticky',
           top: margins[0] - 1,
-          height: 2,
+          height: 1,
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
@@ -171,7 +171,7 @@ export function RegionsWithIntersections(props: Props) {
         style={{
           position: 'sticky',
           bottom: -1,
-          height: 2,
+          height: 1,
           backgroundColor: DEBUG ? 'blue' : 'none'
         }}
       />
