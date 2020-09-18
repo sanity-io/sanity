@@ -74,7 +74,6 @@ export function Avatar(props: AvatarProps) {
     <div
       aria-label={title}
       className={styles.root}
-      data-bg={color}
       data-arrow-position={arrowPosition}
       data-size={size}
       data-status={status}
