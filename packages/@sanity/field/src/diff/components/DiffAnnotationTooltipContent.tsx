@@ -4,7 +4,6 @@ import {UserAvatar} from '@sanity/base/components'
 import {useUserColorManager} from '@sanity/base/user-color'
 import {AnnotationDetails} from '../../types'
 import {getAnnotationColor} from '../annotations'
-
 import styles from './DiffAnnotationTooltipContent.css'
 
 export function DiffAnnotationTooltipContent({

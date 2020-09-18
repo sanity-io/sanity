@@ -1,3 +1,16 @@
+import {
+  Path,
+  Block,
+  Reference,
+  ReferenceSchemaType as BaseReferenceSchemaType,
+  ArraySchemaType as BaseArraySchemaType,
+  BaseSchemaType as BaseGenericSchemaType,
+  BlockSchemaType as BaseBlockSchemaType,
+  BooleanSchemaType as BaseBooleanSchemaType,
+  NumberSchemaType as BaseNumberSchemaType,
+  ObjectSchemaType as BaseObjectSchemaType,
+  StringSchemaType as BaseStringSchemaType
+} from '@sanity/types'
 import {ComponentType} from 'react'
 import {
   // Base diffs
@@ -14,7 +27,6 @@ import {
   StringSegmentChanged as AgnosticStringSegmentChanged,
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged
 } from '@sanity/diff'
-import {Path} from './paths'
 import {FieldValueError} from './validation'
 
 /**
@@ -98,7 +110,6 @@ export type DiffComponentOptions<T extends Diff = Diff> = {
 
 export type DiffProps<T extends Diff = Diff> = {
   diff: T
-  childChanges?: any
   schemaType: T extends ObjectDiff
     ? ObjectSchemaType
     : T extends ArrayDiff
@@ -124,48 +135,28 @@ export type DiffComponentResolver = (options: {
  */
 
 // Note: INCOMPLETE, but good enough for diffs
-export interface BaseSchemaType {
-  name: string
-  title?: string
-  description?: string
-  type?: SchemaType
+export interface BaseSchemaType extends BaseGenericSchemaType {
   diffComponent?: DiffComponent<any> | DiffComponentOptions<any>
 }
 
-export interface StringSchemaType extends BaseSchemaType {
-  jsonType: 'string'
-  options?: {
-    list?: {title?: string; value: string}[]
-    layout?: 'radio' | 'dropdown'
-    direction?: 'horizontal' | 'vertical'
-
-    // Actually just part of date time, but can't find a good way to differentiate
-    dateFormat?: string
-    timeFormat?: string
-  }
+export interface StringSchemaType extends BaseStringSchemaType {
+  diffComponent?: DiffComponent<StringDiff> | DiffComponentOptions<StringDiff>
 }
 
-export interface NumberSchemaType extends BaseSchemaType {
-  jsonType: 'number'
+export interface NumberSchemaType extends BaseNumberSchemaType {
+  diffComponent?: DiffComponent<NumberDiff> | DiffComponentOptions<NumberDiff>
 }
 
-export interface BooleanSchemaType extends BaseSchemaType {
-  jsonType: 'boolean'
-  options?: {
-    layout: 'checkbox' | 'switch'
-  }
+export interface BooleanSchemaType extends BaseBooleanSchemaType {
+  diffComponent?: DiffComponent<BooleanDiff> | DiffComponentOptions<BooleanDiff>
 }
 
-export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
-  jsonType: 'array'
-  of: Exclude<SchemaType, ArraySchemaType>[]
+export interface ArraySchemaType<V = unknown> extends BaseArraySchemaType {
   diffComponent?: DiffComponent<ArrayDiff<V>> | DiffComponentOptions<ArrayDiff<V>>
 }
 
-export interface BlockSchemaType extends ObjectSchemaType {
-  jsonType: 'object'
-  name: 'block'
-  of?: SchemaType[]
+export interface BlockSchemaType<O> extends BaseBlockSchemaType {
+  diffComponent?: DiffComponent<ObjectDiff<Block<O>>> | DiffComponentOptions<ObjectDiff<Block<O>>>
 }
 
 export interface ObjectField<T extends SchemaType = SchemaType> {
@@ -174,41 +165,13 @@ export interface ObjectField<T extends SchemaType = SchemaType> {
   type: T
 }
 
-export interface ObjectSchemaType<T extends object = Record<string, any>> extends BaseSchemaType {
-  jsonType: 'object'
-  fields: ObjectField[]
-  fieldsets?: Fieldset[]
+export interface ObjectSchemaType<T extends object = Record<string, any>>
+  extends BaseObjectSchemaType {
   diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
 }
 
-export interface SingleFieldSet {
-  single: true
-  field: ObjectField
-}
-
-export interface MultiFieldSet {
-  name: string
-  title?: string
-  description?: string
-  single?: false
-  options?: {
-    collapsible?: boolean
-    collapsed?: boolean
-    columns?: number
-  }
-  fields: ObjectField[]
-}
-
-export type Fieldset = SingleFieldSet | MultiFieldSet
-
-export interface Reference {
-  _ref: string
-  _key?: string
-  _weak?: boolean
-}
-
-export type ReferenceSchemaType = ObjectSchemaType<Reference> & {
-  to: SchemaType[]
+export interface ReferenceSchemaType extends BaseReferenceSchemaType {
+  diffComponent?: DiffComponent<ObjectDiff<Reference>> | DiffComponentOptions<ObjectDiff<Reference>>
 }
 
 export type SchemaType<A = unknown, O extends object = Record<string, any>> =
@@ -217,11 +180,6 @@ export type SchemaType<A = unknown, O extends object = Record<string, any>> =
   | NumberSchemaType
   | ObjectSchemaType<O>
   | StringSchemaType
-
-/**
- * Paths
- */
-export * from './paths/types'
 
 /**
  * "Changes" (presentation-oriented grouping of diffs)
@@ -308,25 +266,3 @@ export interface InsertDiffPatch {
 }
 
 export type DiffPatch = SetDiffPatch | UnsetDiffPatch | InsertDiffPatch
-
-/**
- * Document/object value types
- */
-export interface SanityDocument {
-  [key: string]: unknown
-  _id: string
-  _type: string
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-}
-
-export interface TypedObject {
-  [key: string]: unknown
-  _type: string
-}
-
-export interface KeyedObject {
-  [key: string]: unknown
-  _key: string
-}

@@ -1,8 +1,8 @@
+import {Reference} from '@sanity/types'
 import React from 'react'
 import Preview from 'part:@sanity/base/preview'
 import {getReferencedType} from '../../../schema/helpers'
 import {PreviewComponent} from '../../../preview/types'
-import {Reference} from '../../../diff'
 
 import styles from './ReferencePreview.css'
 
