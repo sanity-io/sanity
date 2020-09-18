@@ -1,5 +1,6 @@
+import {Path} from '@sanity/types'
 import {UserColor, useUserColorManager} from '@sanity/base/user-color'
-import {Annotation, Diff, Path} from '../../types'
+import {Annotation, Diff} from '../../types'
 import {getAnnotationColor, getAnnotationAtPath} from './helpers'
 
 export function useAnnotationColor(annotation?: Annotation | null): Readonly<UserColor> {

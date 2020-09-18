@@ -1,16 +1,9 @@
 import {UserColorManager, UserColor} from '@sanity/base/user-color'
-import {
-  stringToPath,
-  pathToString,
-  isIndexSegment,
-  isKeySegment,
-  isIndexTuple
-} from '../../paths/helpers'
+import {isIndexSegment, isKeySegment, isIndexTuple, Path, KeyedSegment} from '@sanity/types'
+import {stringToPath, pathToString} from '../../paths/helpers'
 import {
   Annotation,
   Diff,
-  Path,
-  KeyedSegment,
   ItemDiff,
   ArrayDiff,
   ObjectDiff,
