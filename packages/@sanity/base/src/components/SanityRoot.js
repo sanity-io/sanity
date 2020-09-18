@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useRef, useState} from 'react'
 import config from 'config:sanity'
 import RootComponent from 'part:@sanity/base/root'
 import {PortalProvider} from 'part:@sanity/components/portal'
@@ -13,41 +13,26 @@ import DevServerStatus from './DevServerStatus'
 function SanityRoot() {
   const {projectId, dataset} = config.api || {}
   const rootRef = useRef(null)
-  const portalRef = useRef(document.createElement('div'))
-
-  // attach the global portal element
-  useEffect(() => {
-    // set a data attribute for debugging
-    portalRef.current.setAttribute('data-portal', '')
-
-    if (rootRef.current) {
-      rootRef.current.appendChild(portalRef.current)
-    }
-
-    return () => {
-      if (rootRef.current) {
-        rootRef.current.removeChild(portalRef.current)
-      }
-    }
-  }, [])
+  const [portalElement, setPortalElement] = useState(() => document.createElement('div'))
 
   if (!projectId || !dataset) {
     return <MissingProjectConfig />
   }
 
   return (
-    <div className={styles.root} ref={rootRef}>
-      <PortalProvider element={portalRef.current}>
-        <UserColorManagerProvider manager={userColorManager}>
-          <SnackbarProvider>
+    <UserColorManagerProvider manager={userColorManager}>
+      <PortalProvider element={portalElement}>
+        <SnackbarProvider>
+          <div className={styles.root} ref={rootRef}>
             <DevServerStatus />
             <ErrorHandler />
             <RootComponent />
             <VersionChecker />
-          </SnackbarProvider>
-        </UserColorManagerProvider>
+          </div>
+          <div data-portal="" ref={setPortalElement} />
+        </SnackbarProvider>
       </PortalProvider>
-    </div>
+    </UserColorManagerProvider>
   )
 }
 

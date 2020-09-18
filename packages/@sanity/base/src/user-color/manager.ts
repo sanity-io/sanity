@@ -1,11 +1,10 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
 import {color as SanityColor, ColorHueKey, COLOR_HUES} from '@sanity/color'
-import {UserColorHue, UserColorManager, UserColor} from './types'
-
-type UserId = string
+import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 export interface UserColorManagerOptions {
+  anonymousColor?: UserColor
   userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user?: {id: string} | null}>}
   colors?: Readonly<Record<UserColorHue, UserColor>>
   currentUserColor?: UserColorHue
@@ -18,23 +17,33 @@ const defaultCurrentUserHue: ColorHueKey = 'purple'
 const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
   hue => hue !== 'green' && hue !== 'red' && hue !== 'gray'
 )
+
 const defaultColors = defaultHues.reduce((colors, hue) => {
   colors[hue] = {
     background: SanityColor[hue][100].hex,
     border: SanityColor[hue][300].hex,
-    text: SanityColor[hue][700].hex
+    text: SanityColor[hue][700].hex,
+    tints: SanityColor[hue]
   }
   return colors
 }, {} as Record<ColorHueKey, UserColor>)
 
+const defaultAnonymousColor: UserColor = {
+  background: SanityColor.gray[100].hex,
+  border: SanityColor.gray[300].hex,
+  text: SanityColor.gray[700].hex,
+  tints: SanityColor.gray
+}
+
 export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
-  const colors = (options && options.colors) || defaultColors
+  const userColors = (options && options.colors) || defaultColors
+  const anonymousColor = options?.anonymousColor || defaultAnonymousColor
   const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserHue
-  if (!colors.hasOwnProperty(currentUserColor)) {
+  if (!userColors.hasOwnProperty(currentUserColor)) {
     throw new Error(`'colors' must contain 'currentUserColor' (${currentUserColor})`)
   }
 
-  const colorHues: UserColorHue[] = Object.keys(colors)
+  const colorHues: UserColorHue[] = Object.keys(userColors)
   const subscriptions = new Map<UserId, Observable<UserColor>>()
   const previouslyAssigned = new Map<UserId, UserColorHue>()
   const assignedCounts: Record<UserColorHue, number> = colorHues.reduce((counts, color) => {
@@ -46,7 +55,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   // but is useful for debugging and poses a minimal overhead
   const assigned = new Map<UserId, UserColorHue>()
 
-  let currentUserId: string | null
+  let currentUserId: UserId | null
 
   if (options?.userStore) {
     options.userStore.currentUser
@@ -56,11 +65,15 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
 
   return {get, listen}
 
-  function get(userId: string): UserColor {
-    return colors[getUserHue(userId)]
+  function get(userId: UserId | null): UserColor {
+    if (!userId) {
+      return anonymousColor
+    }
+
+    return userColors[getUserHue(userId)]
   }
 
-  function getUserHue(userId: string): UserColorHue {
+  function getUserHue(userId: UserId): UserColorHue {
     if (userId === currentUserId) {
       return currentUserColor
     }
@@ -113,7 +126,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   }
 
   function getUnusedColor(): UserColorHue | undefined {
-    return colorHues.find(color => assignedCounts[color] === 0)
+    return colorHues.find(colorHue => assignedCounts[colorHue] === 0)
   }
 
   function hasUnusedColor(): boolean {
@@ -124,13 +137,13 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
     let leastUses = +Infinity
     let leastUsed: UserColorHue[] = []
 
-    colorHues.forEach(color => {
-      const uses = assignedCounts[color]
+    colorHues.forEach(colorHue => {
+      const uses = assignedCounts[colorHue]
       if (uses === leastUses) {
-        leastUsed.push(color)
+        leastUsed.push(colorHue)
       } else if (uses < leastUses) {
         leastUses = uses
-        leastUsed = [color]
+        leastUsed = [colorHue]
       }
     })
 
@@ -141,8 +154,8 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
 
   function getObservableColor(userId: string, hue: UserColorHue): Observable<UserColor> {
     return new Observable<UserColor>(subscriber => {
-      const color = colors[hue]
-      subscriber.next(color)
+      const userColor = userColors[hue]
+      subscriber.next(userColor)
       return () => {
         subscriptions.delete(userId)
         unassignHue(userId, hue)
