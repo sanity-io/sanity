@@ -172,10 +172,10 @@ export default withValuePath(
               {hasSourceField && (
                 <Button
                   className={styles.button}
-                  inverted
                   disabled={readOnly || loading || !this.hasSource()}
                   loading={loading}
                   onClick={this.handleGenerateSlug}
+                  kind="simple"
                 >
                   Generate
                 </Button>
