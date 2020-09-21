@@ -1,11 +1,5 @@
+import {Path} from '@sanity/types'
 import {Placement} from '@popperjs/core'
-
-// @todo: import these from `@sanity/field`?
-export type KeyedSegment = {
-  _key: string
-}
-export type PathSegment = string | number | KeyedSegment
-export type Path = PathSegment[]
 
 export interface Marker {
   path: Path

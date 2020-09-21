@@ -1,5 +1,6 @@
 import React from 'react'
-import {Marker, Path} from '../types'
+import {Path} from '@sanity/types'
+import {Marker} from '../types'
 import ValidationListItem from './ValidationListItem'
 
 import styles from './ValidationList.css'
