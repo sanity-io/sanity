@@ -44,7 +44,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   return (
     <div className={styles.root}>
       {didAssetChange && (
-        <DiffTooltip as="div" diff={diff} path="asset._ref" className={styles.tooltip}>
+        <DiffTooltip diff={diff} path="asset._ref">
           <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
             {prev && (
               <div

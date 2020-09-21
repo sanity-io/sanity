@@ -45,29 +45,33 @@ export function HotspotCropSVG(
       </defs>
 
       {crop && (
-        <DiffTooltip as="g" diff={diff} path="crop" description="Crop changed">
-          <CropSVG
-            crop={crop}
-            fill={hexToRgba(cropColor.border, 0.25)}
-            mask={hotspot ? `url(#mask-hotspot-${hash})` : undefined}
-            stroke={cropColor.border}
-            strokeWidth={1}
-            width={width}
-            height={height}
-          />
+        <DiffTooltip diff={diff} path="crop" description="Crop changed">
+          <g>
+            <CropSVG
+              crop={crop}
+              fill={hexToRgba(cropColor.border, 0.25)}
+              mask={hotspot ? `url(#mask-hotspot-${hash})` : undefined}
+              stroke={cropColor.border}
+              strokeWidth={1}
+              width={width}
+              height={height}
+            />
+          </g>
         </DiffTooltip>
       )}
 
       {hotspot && (
-        <DiffTooltip as="g" diff={diff} path="hotspot" description="Hotspot changed">
-          <HotspotSVG
-            hotspot={hotspot}
-            fill={hexToRgba(hotspotColor.border, 0.25)}
-            stroke={hotspotColor.border}
-            strokeWidth={1}
-            width={width}
-            height={height}
-          />
+        <DiffTooltip diff={diff} path="hotspot" description="Hotspot changed">
+          <g>
+            <HotspotSVG
+              hotspot={hotspot}
+              fill={hexToRgba(hotspotColor.border, 0.25)}
+              stroke={hotspotColor.border}
+              strokeWidth={1}
+              width={width}
+              height={height}
+            />
+          </g>
         </DiffTooltip>
       )}
     </svg>

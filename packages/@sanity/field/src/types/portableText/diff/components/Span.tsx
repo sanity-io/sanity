@@ -30,7 +30,7 @@ export default function Span(props: Props): JSX.Element {
           <DiffCard
             annotation={diff.annotation}
             as={didRemove ? 'del' : 'ins'}
-            description={`${didRemove ? 'Removed' : 'Added'} empty text`}
+            tooltip={{description: `${didRemove ? 'Removed' : 'Added'} empty text`}}
           >
             &crarr;
           </DiffCard>

@@ -1,61 +1,47 @@
-import React from 'react'
-import {Path} from '@sanity/types'
-import {PreviewComponent as IPreviewComponent} from '../../preview/types'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {Diff, SchemaType} from '../../types'
-import {getChangeVerb} from '../helpers'
-import {FromTo} from './FromTo'
+import {Path, SchemaType} from '@sanity/types'
+import React, {createElement} from 'react'
+import {getChangeVerb, Diff} from '../../diff'
+import {PreviewComponent} from '../../preview/types'
+import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
+import {FromTo} from './FromTo'
 
-import styles from './DiffFromTo.css'
-
-interface ChangeProps {
-  previewComponent: IPreviewComponent<any>
+interface DiffFromToProps {
+  cardClassName?: string
   diff: Diff
-  schemaType: SchemaType
-  path?: Path | string
   layout?: 'grid' | 'inline'
+  path?: Path | string
+  previewComponent: PreviewComponent<any>
+  schemaType: SchemaType
 }
 
-export function DiffFromTo({
-  layout = 'inline',
-  diff,
-  path,
-  schemaType,
-  previewComponent: PreviewComponent
-}: ChangeProps): React.ReactElement {
-  const {fromValue, toValue, action} = diff
-  const annotation = getAnnotationAtPath(diff, path || [])
-  const color = useAnnotationColor(annotation)
-  const description = getChangeVerb(diff)
-
-  if (action === 'unchanged') {
-    return <PreviewComponent color={color} value={toValue} schemaType={schemaType} />
-  }
-
-  const from = hasValue(fromValue) ? (
-    <del className={styles.from}>
-      <PreviewComponent color={color} value={fromValue} schemaType={schemaType} />
-    </del>
-  ) : (
-    undefined
-  )
-
-  const to = hasValue(toValue) ? (
-    <ins className={styles.to}>
-      <PreviewComponent color={color} value={toValue} schemaType={schemaType} />
-    </ins>
-  ) : (
-    undefined
-  )
+export function DiffFromTo(props: DiffFromToProps) {
+  const {cardClassName, diff, layout, path, previewComponent, schemaType} = props
+  const changeVerb = getChangeVerb(diff)
 
   return (
-    <DiffTooltip annotation={annotation} description={description}>
-      <FromTo from={from} to={to} layout={layout} />
+    <DiffTooltip description={changeVerb} diff={diff} path={path}>
+      <FromTo
+        from={
+          diff.fromValue !== undefined && diff.fromValue !== null ? (
+            <DiffCard className={cardClassName} diff={diff} path={path}>
+              <del>{createElement(previewComponent, {schemaType, value: diff.fromValue})}</del>
+            </DiffCard>
+          ) : (
+            undefined
+          )
+        }
+        layout={layout}
+        to={
+          diff.toValue !== undefined && diff.toValue !== null ? (
+            <DiffCard className={cardClassName} diff={diff} path={path}>
+              <ins>{createElement(previewComponent, {schemaType, value: diff.toValue})}</ins>
+            </DiffCard>
+          ) : (
+            undefined
+          )
+        }
+      />
     </DiffTooltip>
   )
-}
-
-function hasValue(value: unknown) {
-  return value !== null && typeof value !== 'undefined' && value !== ''
 }

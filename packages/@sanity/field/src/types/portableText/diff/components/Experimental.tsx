@@ -72,8 +72,8 @@ export default function Experimental(props: Props): JSX.Element {
       returned = (
         <div className={styles.styleIsChanged}>
           <div className={styles.changedBlockStyleNotice}>
-            <DiffTooltip diff={diff.fields.style} as={'div'}>
-              Changed block style from '{fromStyle}'
+            <DiffTooltip diff={diff.fields.style}>
+              <div>Changed block style from '{fromStyle}'</div>
             </DiffTooltip>
           </div>
           <div style={style}>{returned}</div>
@@ -136,7 +136,10 @@ export default function Experimental(props: Props): JSX.Element {
     const isRemoved = marksDiff && marksDiff.action === 'removed'
     if (marksDiff && marksDiff.action !== 'unchanged') {
       returned = (
-        <DiffCard annotation={marksDiff.annotation} description={`Formatting ${marksDiff.action}`}>
+        <DiffCard
+          annotation={marksDiff.annotation}
+          tooltip={{description: `Formatting ${marksDiff.action}`}}
+        >
           {returned}
         </DiffCard>
       )
@@ -171,7 +174,7 @@ export default function Experimental(props: Props): JSX.Element {
           <DiffCard
             annotation={annotationDiff.annotation}
             as="ins"
-            description={`Annotation ${annotationDiff.action} by`}
+            tooltip={{description: `Annotation ${annotationDiff.action} by`}}
           >
             {returned}
           </DiffCard>
@@ -260,14 +263,14 @@ export default function Experimental(props: Props): JSX.Element {
         } else if (seg.action === 'removed') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffCard annotation={seg.annotation} as="del" description="Removed">
+            <DiffCard annotation={seg.annotation} as="del" tooltip={{description: 'Removed'}}>
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
         } else if (seg.action === 'added') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffCard annotation={seg.annotation} as="ins" description="Added">
+            <DiffCard annotation={seg.annotation} as="ins" tooltip={{description: 'Added'}}>
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
