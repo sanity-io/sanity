@@ -160,11 +160,11 @@ function Content({
   loading: boolean
   schemaType: ObjectSchemaType
 }) {
-  if (loading || !diff) {
+  if (loading) {
     return <LoadingContent />
   }
 
-  if (!diff.isChanged) {
+  if (!diff || !diff.isChanged) {
     return <EmptyContent />
   }
 
