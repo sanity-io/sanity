@@ -494,20 +494,18 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
     segments.map(seg => {
       const newSegments: StringSegment[] = []
       if (seg.text.length > 1) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // TODO: officially support string.matchAll or rewrite this!
         const markMatches = [...seg.text.matchAll(markRegex)]
         let lastIndex = -1
         markMatches.forEach(match => {
-          if (match.index > lastIndex) {
-            newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, match.index)})
+          const index = match.index || 0
+          if (index > lastIndex) {
+            newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, index)})
             newSegments.push({...seg, text: match[0]})
           }
           if (match === markMatches[markMatches.length - 1]) {
-            newSegments.push({...seg, text: seg.text.substring(match.index + 1)})
+            newSegments.push({...seg, text: seg.text.substring(index + 1)})
           }
-          lastIndex = match.index
+          lastIndex = index
         })
         if (markMatches.length === 0) {
           newSegments.push(seg)
@@ -517,5 +515,5 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
       }
       return newSegments
     })
-  )
+  ).filter(seg => seg.text)
 }
