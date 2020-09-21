@@ -11,14 +11,15 @@ const isPrimitive = value =>
   typeof value === 'undefined' ||
   typeof value === 'number'
 
+const FOCUS_STYLE = {
+  paddingRight: 8,
+  borderRight: '2px solid #2276fc'
+}
 const ChangeBar = React.forwardRef((props: React.ComponentProps<'div'>, ref: any) => {
   return (
     <div
       ref={ref}
-      style={{
-        paddingRight: 8,
-        borderRight: '2px solid #2276fc'
-      }}
+      style={props.hasFocus ? FOCUS_STYLE : {}}
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
     >
@@ -86,10 +87,6 @@ export const CoreChangeIndicator = ({
   const isChanged =
     (isPrimitive(value) && isPrimitive(value) && value !== compareValue) ||
     (compareDeep && !isEqual(value, compareValue))
-
-  if (!isChanged) {
-    return <>{children}</>
-  }
 
   return (
     <Reporter
