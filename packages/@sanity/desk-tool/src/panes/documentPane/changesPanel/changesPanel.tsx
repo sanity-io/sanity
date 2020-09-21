@@ -174,8 +174,6 @@ function Content({
   return (
     <DocumentChangeContext.Provider value={documentContext}>
       <ChangeList diff={diff} schemaType={schemaType} />
-      {/*todo: figure out why this messes up the connector*/}
-      <div style={{height: 2000}} />
     </DocumentChangeContext.Provider>
   )
 }

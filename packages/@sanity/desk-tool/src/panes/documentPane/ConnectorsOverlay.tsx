@@ -35,7 +35,7 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
   let el: HTMLElement | null = source
   const bounds: {top: number; height: number} = {
     top: 0,
-    height: 0
+    height: Number.MAX_SAFE_INTEGER
   }
   let top = 0
   let left = 0
@@ -54,7 +54,14 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
     left += el.offsetLeft - el.scrollLeft
     el = el.offsetParent as HTMLElement
   }
-  return {top, left, bounds: {top: bounds.top, bottom: bounds.top + bounds.height}}
+  return {
+    top,
+    left,
+    bounds: {
+      top: bounds.top,
+      bottom: bounds.top + bounds.height
+    }
+  }
 }
 
 function getRelativeRect(element, parent) {
