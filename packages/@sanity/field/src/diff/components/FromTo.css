@@ -3,10 +3,10 @@
 .root {
   display: flex;
   align-items: center;
-  @nest &[data-layout='inline'] {
+  @nest &[data-from-to-layout='inline'] {
   }
 
-  @nest &[data-layout='grid'] {
+  @nest &[data-from-to-layout='grid'] {
     /* display: grid;
     grid-template-columns: 1fr auto 1fr; */
   }
@@ -14,7 +14,7 @@
 
 .from,
 .to {
-  @nest .root[data-layout='grid'] & {
+  @nest .root[data-from-to-layout='grid'] & {
     flex: 1;
     min-width: 0;
   }
