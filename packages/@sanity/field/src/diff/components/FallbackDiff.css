@@ -2,7 +2,4 @@
 
 .root {
   padding: var(--small-padding);
-  border-radius: var(--border-radius-small);
-  background-color: color(var(--gray-lightest) alpha(75%));
-  color: var(--gray-darker);
 }
