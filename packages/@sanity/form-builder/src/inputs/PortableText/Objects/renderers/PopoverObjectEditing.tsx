@@ -8,7 +8,7 @@ import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {Marker, Type as FormBuilderType} from '../../../../typedefs'
-import {Path} from '../../../../typedefs/path'
+import {Path} from '@sanity/types'
 import {PatchEvent} from '../../../../PatchEvent'
 
 interface Props {

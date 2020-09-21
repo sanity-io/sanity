@@ -1,28 +1,22 @@
 /* eslint-disable complexity */
 import React from 'react'
-import {get} from '@sanity/util/paths'
+import {uniqueId} from 'lodash'
+import {Path, SanityDocument} from '@sanity/types'
+import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
+import LinkIcon from 'part:@sanity/base/link-icon'
+import {IntentLink} from 'part:@sanity/base/router'
+import Button from 'part:@sanity/components/buttons/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import {Reference, Type, Marker} from '../../typedefs'
-import {Path} from '../../typedefs/path'
 import {ObservableI} from '../../typedefs/observable'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import {IntentLink} from 'part:@sanity/base/router'
-import styles from './styles/ReferenceInput.css'
-import Button from 'part:@sanity/components/buttons/default'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {uniqueId} from 'lodash'
+import styles from './styles/ReferenceInput.css'
 
-type SanityDocument = {
-  _id: string
-  _type: string
-  [key: string]: any
-}
 type SearchHit = {
   _id: string
   _type: string
@@ -37,7 +31,7 @@ type SearchOptions = {
 }
 type FilterResolver = (options: {
   document: SanityDocument
-  parent?: object | object[]
+  parent?: Record<string, unknown> | Record<string, unknown>[]
   parentPath: Path
 }) => SearchOptions
 type SearchTypeOptions = {
@@ -59,7 +53,7 @@ export type Props = {
   readOnly?: boolean
   onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
   onFocus: (path: any[]) => void
-  getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>
+  getPreviewSnapshot: (reference, type) => ObservableI<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
   presence: any
@@ -173,7 +167,7 @@ export default withValuePath(
         const {filter, filterParams: params} = options
         if (typeof filter === 'function') {
           const parentPath = getValuePath().slice(0, -1)
-          const parent = get(document, parentPath)
+          const parent = get(document, parentPath) as Record<string, unknown>
           return filter({document, parentPath, parent})
         }
 
@@ -190,14 +184,17 @@ export default withValuePath(
           'search',
           onSearch(query, type, options).subscribe({
             next: (items: Array<SearchHit>) => {
-              const updatedCache = items.reduce((cache, item) => {
-                cache[item._id] = item
-                return cache
-              }, Object.assign({}, this.state.refCache))
-              this.setState({
-                hits: items,
-                isFetching: false,
-                refCache: updatedCache
+              this.setState(prev => {
+                const updatedCache = items.reduce((cache, item) => {
+                  cache[item._id] = item
+                  return cache
+                }, Object.assign({}, prev.refCache))
+
+                return {
+                  hits: items,
+                  isFetching: false,
+                  refCache: updatedCache
+                }
               })
             },
             error: (err: SearchError) => {

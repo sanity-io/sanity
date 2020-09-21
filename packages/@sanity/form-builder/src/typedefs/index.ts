@@ -1,4 +1,4 @@
-import {Path} from './path'
+import {Path} from '@sanity/types'
 
 export type Type = {
   type: Type

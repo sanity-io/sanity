@@ -7,7 +7,7 @@ import {
   IncPatch,
   DecPatch
 } from '../typedefs/patch'
-import {Path, PathSegment} from '../typedefs/path'
+import {Path, PathSegment} from '@sanity/types'
 
 export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   return {

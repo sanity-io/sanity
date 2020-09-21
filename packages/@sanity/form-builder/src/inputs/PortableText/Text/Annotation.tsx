@@ -6,7 +6,7 @@ import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-e
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
-import {Path} from '../../../typedefs/path'
+import {Path} from '@sanity/types'
 
 import styles from './Annotation.css'
 

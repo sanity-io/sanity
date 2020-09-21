@@ -1,6 +1,6 @@
 import {PortableTextBlock} from '@sanity/portable-text-editor'
 import {Marker} from '../../typedefs'
-import {Path} from '../../typedefs/path'
+import {Path} from '@sanity/types'
 
 export type ObjectEditData = {
   editorPath: Path // The object representation in the editor (i.e. an text for an annotation)

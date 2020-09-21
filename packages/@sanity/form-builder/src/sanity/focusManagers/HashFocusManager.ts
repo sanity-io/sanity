@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import {Path} from '../../typedefs/path'
+import {Path} from '@sanity/types'
 import {toFormBuilder, toGradient} from '../utils/convertPath'
 
 type ChildArgs = {

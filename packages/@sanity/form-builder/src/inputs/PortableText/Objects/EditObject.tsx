@@ -1,5 +1,6 @@
 /* eslint-disable react/no-find-dom-node */
 import React, {useState, useEffect} from 'react'
+import {isKeySegment, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   PortableTextBlock,
@@ -13,7 +14,6 @@ import {get, debounce} from 'lodash'
 import {applyAll} from '../../../simplePatch'
 import {ModalType} from '../../ArrayInput/typedefs'
 import {Marker} from '../../../typedefs'
-import {Path} from '../../../typedefs/path'
 import {Patch} from '../../../typedefs/patch'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
@@ -30,7 +30,7 @@ interface Props {
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, editPath: Path) => void
   onClose: () => void
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   presence: FormFieldPresence[]
   readOnly: boolean
   value: PortableTextBlock[] | undefined
@@ -58,16 +58,14 @@ export const EditObject = ({
 
   // Try finding the relevant block
   const blockKey =
-    Array.isArray(formBuilderPath) &&
-    formBuilderPath[0] &&
-    typeof formBuilderPath[0] === 'object' &&
-    formBuilderPath[0]._key
+    Array.isArray(formBuilderPath) && isKeySegment(formBuilderPath[0]) && formBuilderPath[0]._key
+
   const block =
     value && blockKey && Array.isArray(value) && value.find(blk => blk._key === blockKey)
   const child =
     block &&
     block.children &&
-    block.children.find(cld => typeof editorPath[2] === 'object' && cld._key === editorPath[2]._key)
+    block.children.find(cld => isKeySegment(editorPath[2]) && cld._key === editorPath[2]._key)
 
   if (block) {
     // Get object, type, and relevant editor element

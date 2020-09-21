@@ -11,7 +11,7 @@ import {
 } from '@sanity/portable-text-editor'
 import classNames from 'classnames'
 import React from 'react'
-import {Path} from '../../../typedefs/path'
+import {Path} from '@sanity/types'
 import ActionMenu from './ActionMenu'
 import BlockStyleSelect from './BlockStyleSelect'
 import InsertMenu from './InsertMenu'

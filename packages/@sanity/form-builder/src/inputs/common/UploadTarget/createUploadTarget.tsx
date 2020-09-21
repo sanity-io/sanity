@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Path} from '../../../typedefs/path'
+import {Path} from '@sanity/types'
 import {sortBy} from 'lodash'
 import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
 import {Type} from '../../../typedefs'

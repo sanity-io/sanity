@@ -1,5 +1,6 @@
 /* eslint-disable react/require-default-props */
 import classNames from 'classnames'
+import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -14,14 +15,13 @@ import {
   usePortableTextEditorSelection,
   HotkeyOptions
 } from '@sanity/portable-text-editor'
+import {Path, isKeySegment} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
-import {Subject} from 'rxjs'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
-import {Path} from '../../typedefs/path'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
@@ -38,11 +38,11 @@ type Props = {
   hasFocus: boolean
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  markers: Array<Marker>
+  markers: Marker[]
   onBlur: () => void
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   onCopy?: OnCopyFn
-  onFocus: (Path) => void
+  onFocus: (path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patche$: Subject<EditorPatch>
@@ -93,11 +93,11 @@ export default function PortableTextInput(props: Props) {
       const blockSegment = focusPath[0]
 
       // Annotation focus paths
-      if (isMarkdef && blockSegment && typeof blockSegment === 'object') {
+      if (isMarkdef && isKeySegment(blockSegment)) {
         const block = value && value.find(blk => blk._key === blockSegment._key)
         const markDefSegment = focusPath[2]
         // eslint-disable-next-line max-depth
-        if (block && markDefSegment && typeof markDefSegment === 'object') {
+        if (block && isKeySegment(markDefSegment)) {
           const span = block.children.find(
             child => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
           )
@@ -221,7 +221,7 @@ export default function PortableTextInput(props: Props) {
     } else {
       // Object blocks
       const blockMarkers = markers.filter(
-        marker => typeof marker.path[0] === 'object' && marker.path[0]._key === block._key
+        marker => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
       )
       returned = (
         <BlockObject
@@ -246,7 +246,7 @@ export default function PortableTextInput(props: Props) {
     }
     // eslint-disable-next-line react/prop-types
     const inlineMarkers = markers.filter(
-      marker => typeof marker.path[2] === 'object' && marker.path[2]._key === child._key
+      marker => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
     )
     return (
       <InlineObject
@@ -264,7 +264,7 @@ export default function PortableTextInput(props: Props) {
   function renderAnnotation(annotation, annotationType, attributes, defaultRender) {
     // eslint-disable-next-line react/prop-types
     const annotationMarkers = markers.filter(
-      marker => typeof marker.path[2] === 'object' && marker.path[2]._key === annotation._key
+      marker => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
     )
     return (
       <Annotation
