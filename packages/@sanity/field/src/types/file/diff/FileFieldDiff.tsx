@@ -64,9 +64,24 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   return (
     <div className={styles.root}>
-      {didAssetChange && (
+      {/* Removed only */}
+      {from && !to && (
+        <DiffTooltip diff={diff} path="asset._ref" description="Removed">
+          {from}
+        </DiffTooltip>
+      )}
+
+      {/* Removed and added */}
+      {from && to && (
         <DiffTooltip diff={diff} path="asset._ref">
           <FromTo from={from} layout="grid" to={to} />
+        </DiffTooltip>
+      )}
+
+      {/* Added only */}
+      {!from && to && (
+        <DiffTooltip diff={diff} path="asset._ref" description="Added">
+          {to}
         </DiffTooltip>
       )}
 
