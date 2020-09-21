@@ -1,9 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: block;
+  display: inline-block;
   padding: var(--extra-small-padding) var(--small-padding);
   border-radius: var(--border-radius-small);
+  word-break: break-all;
 
   @nest del & {
     text-decoration: line-through;
