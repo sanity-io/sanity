@@ -62,8 +62,6 @@ export default function Navbar(props: Props) {
   const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
   const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
 
-  console.log('showToolMenu', showToolMenu)
-
   return (
     <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
