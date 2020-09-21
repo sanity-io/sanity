@@ -2,7 +2,7 @@ import React from 'react'
 import {
   BooleanDiff,
   DiffAnnotationTooltip,
-  ChangeArrow,
+  FromToArrow,
   DiffComponent,
   useDiffAnnotationColor
 } from '../../../diff'
@@ -20,7 +20,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
       <Preview checked={fromValue} color={userColor} />
       {toValue !== undefined && toValue !== null && (
         <>
-          <ChangeArrow />
+          <FromToArrow />
           <div className={styles.label}>
             <Preview checked={toValue} color={userColor} />
             {title && <div className={styles.title}>{title}</div>}
