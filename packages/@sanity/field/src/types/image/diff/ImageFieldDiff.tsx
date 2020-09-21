@@ -8,7 +8,7 @@ import {
   ChangeList,
   getAnnotationAtPath
 } from '../../../diff'
-import {ChangeArrow} from '../../../diff/components'
+import {FromToArrow} from '../../../diff/components'
 import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
 
@@ -66,7 +66,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
           />
         </DiffAnnotationCard>
       )}
-      {fromRef && toRef && <ChangeArrow />}
+      {fromRef && toRef && <FromToArrow />}
       {toValue && toRef && (
         <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
           <ImagePreview

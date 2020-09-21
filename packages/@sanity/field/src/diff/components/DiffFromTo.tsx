@@ -4,7 +4,7 @@ import {PreviewComponent as IPreviewComponent} from '../../preview/types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Diff, SchemaType} from '../../types'
 import {getChangeVerb} from '../helpers'
-import {ChangeLayout} from './ChangeLayout'
+import {FromTo} from './FromTo'
 import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
 
 import styles from './DiffFromTo.css'
@@ -51,7 +51,7 @@ export function DiffFromTo({
 
   return (
     <DiffAnnotationTooltip annotation={annotation} description={description}>
-      <ChangeLayout from={from} to={to} layout={layout} />
+      <FromTo from={from} to={to} layout={layout} />
     </DiffAnnotationTooltip>
   )
 }

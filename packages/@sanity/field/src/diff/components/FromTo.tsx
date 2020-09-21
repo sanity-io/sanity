@@ -1,26 +1,26 @@
 import React from 'react'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
 
-import styles from './ChangeLayout.css'
+import styles from './FromTo.css'
 
-export interface ChangeLayoutProps {
+export interface FromToProps {
   layout?: 'grid' | 'inline'
   from?: React.ReactElement | boolean | null | ''
   to?: React.ReactElement | boolean | null | ''
   children?: React.ReactNode
 }
 
-export const ChangeArrow = () => (
+export const FromToArrow = () => (
   <div className={styles.arrow}>
     <ArrowIcon />
   </div>
 )
 
-export function ChangeLayout({layout = 'inline', from, to, children}: ChangeLayoutProps) {
+export function FromTo({layout = 'inline', from, to, children}: FromToProps) {
   return (
     <div className={styles.root} data-layout={layout}>
       {from && <div className={styles.from}>{from}</div>}
-      {from && to && <ChangeArrow />}
+      {from && to && <FromToArrow />}
       {to && <div className={styles.to}>{to}</div>}
       {children}
     </div>
