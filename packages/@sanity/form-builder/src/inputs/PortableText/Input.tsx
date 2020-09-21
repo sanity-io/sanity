@@ -32,7 +32,7 @@ import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-import {ChangeIndicatorScope, ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 
 type Props = {
   focusPath: Path
@@ -249,9 +249,14 @@ export default function PortableTextInput(props: Props) {
       )
     }
     return (
-      <ChangeIndicatorScope path={[{_key: block._key}]}>
-        <ChangeIndicator compareDeep>{returned}</ChangeIndicator>
-      </ChangeIndicatorScope>
+      <ChangeIndicatorWithProvidedFullPath
+        compareDeep
+        value={block}
+        hasFocus={attributes.focused}
+        path={attributes.path}
+      >
+        {returned}
+      </ChangeIndicatorWithProvidedFullPath>
     )
   }
 

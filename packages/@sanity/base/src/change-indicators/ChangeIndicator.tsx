@@ -11,15 +11,16 @@ const isPrimitive = value =>
   typeof value === 'undefined' ||
   typeof value === 'number'
 
-const FOCUS_STYLE = {
+const CHANGED_STYLE = {
   paddingRight: 8,
   borderRight: '2px solid #2276fc'
 }
+
 const ChangeBar = React.forwardRef((props: React.ComponentProps<'div'>, ref: any) => {
   return (
     <div
       ref={ref}
-      style={props.hasFocus ? FOCUS_STYLE : {}}
+      style={props.isChanged ? CHANGED_STYLE : {}}
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
     >
@@ -51,6 +52,8 @@ export function ChangeIndicatorProvider(props: {
   children: React.ReactNode
 }) {
   const parentContext = React.useContext(ChangeIndicatorContext)
+  const fullPath = parentContext.fullPath.concat(props.path)
+
   return (
     <ChangeIndicatorContext.Provider
       value={{
@@ -58,7 +61,7 @@ export function ChangeIndicatorProvider(props: {
         compareValue: props.compareValue,
         focusPath: parentContext.focusPath ? parentContext.focusPath : props.focusPath,
         path: props.path,
-        fullPath: parentContext.fullPath.concat(props.path)
+        fullPath: fullPath
       }}
     >
       {props.children}
@@ -68,9 +71,9 @@ export function ChangeIndicatorProvider(props: {
 
 interface CoreProps {
   fullPath: Path
-  focusPath: Path
   compareDeep: boolean
   value: any
+  hasFocus: boolean
   compareValue: any
   children?: React.ReactNode
 }
@@ -79,7 +82,7 @@ export const CoreChangeIndicator = ({
   fullPath,
   value,
   compareValue,
-  focusPath,
+  hasFocus,
   compareDeep,
   children
 }: CoreProps) => {
@@ -95,11 +98,34 @@ export const CoreChangeIndicator = ({
       data={{
         path: fullPath,
         isChanged,
-        hasFocus: PathUtils.startsWith(fullPath, focusPath),
+        hasFocus,
         children,
         scrollTo
       }}
     />
+  )
+}
+
+export const ChangeIndicatorWithProvidedFullPath = ({
+  path,
+  value,
+  hasFocus,
+  compareDeep,
+  children
+}: any) => {
+  const parentContext = React.useContext(ChangeIndicatorContext)
+
+  const fullPath = parentContext.fullPath.concat(path)
+  return (
+    <CoreChangeIndicator
+      value={value}
+      compareValue={PathUtils.get(parentContext.compareValue, path)}
+      hasFocus={hasFocus}
+      fullPath={fullPath}
+      compareDeep={compareDeep}
+    >
+      {children}
+    </CoreChangeIndicator>
   )
 }
 
@@ -117,7 +143,7 @@ export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
       fullPath={fullPath}
       value={value}
       compareValue={compareValue}
-      focusPath={focusPath}
+      hasFocus={PathUtils.isEqual(fullPath, focusPath)}
       compareDeep={props.compareDeep}
     >
       {props.children}
