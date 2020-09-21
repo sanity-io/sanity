@@ -4,9 +4,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
-import DatasetSelect from '../datasetSelect/DatasetSelect'
-import {HAS_SPACES} from '../../util/spaces'
-import {Router, Tool, User} from '../../types'
+import DatasetSelect from '../navbar/datasetSelect/DatasetSelect'
+import {HAS_SPACES} from '../util/spaces'
+import {Router, Tool, User} from '../types'
 
 import styles from './SideMenu.css'
 
@@ -59,16 +59,14 @@ function SideMenu(props: Props) {
         </div>
 
         <div className={styles.toolSwitcher}>
-          {tools.length > 1 && (
-            <ToolMenu
-              activeToolName={activeToolName}
-              direction="vertical"
-              isVisible={isOpen}
-              onSwitchTool={onSwitchTool}
-              router={router}
-              tools={tools}
-            />
-          )}
+          <ToolMenu
+            activeToolName={activeToolName}
+            direction="vertical"
+            isVisible={isOpen}
+            onSwitchTool={onSwitchTool}
+            router={router}
+            tools={tools}
+          />
         </div>
 
         <div className={styles.menuBottom}>
