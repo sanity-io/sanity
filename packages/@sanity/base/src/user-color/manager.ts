@@ -40,7 +40,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   const anonymousColor = options?.anonymousColor || defaultAnonymousColor
   const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserHue
   if (!userColors.hasOwnProperty(currentUserColor)) {
-    throw new Error(`'userColors' must contain 'currentUserColor' (${currentUserColor})`)
+    throw new Error(`'colors' must contain 'currentUserColor' (${currentUserColor})`)
   }
 
   const colorHues: UserColorHue[] = Object.keys(userColors)
