@@ -1,12 +1,13 @@
 import React, {useCallback} from 'react'
 import {
-  ObjectDiff,
-  ObjectSchemaType,
-  DocumentChangeContext,
-  DiffTooltip,
   ChangeList,
   Chunk,
-  DocumentChangeContextInstance
+  DiffTooltip,
+  DocumentChangeContext,
+  DocumentChangeContextInstance,
+  NoChanges,
+  ObjectDiff,
+  ObjectSchemaType
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar} from '@sanity/base/components'
@@ -16,7 +17,6 @@ import {useTimeAgo} from '@sanity/base/hooks'
 import {formatTimelineEventLabel} from '../timeline'
 import {useDocumentHistory} from '../documentHistory'
 import {LoadingContent} from './content/loading'
-import {EmptyContent} from './content/empty'
 import {collectLatestAuthorAnnotations} from './helpers'
 
 import styles from './changesPanel.css'
@@ -155,15 +155,13 @@ function Content({
     return <LoadingContent />
   }
 
-  if (!diff || !diff.isChanged) {
-    return <EmptyContent />
+  if (!diff) {
+    return <NoChanges />
   }
 
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <div className={styles.changeList}>
-        <ChangeList diff={diff} schemaType={schemaType} />
-      </div>
+      <ChangeList diff={diff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
   )
 }
