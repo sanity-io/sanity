@@ -1,5 +1,5 @@
-import {TypedObject} from '@sanity/types'
 import schema from 'part:@sanity/base/schema'
+import {isTypedObject} from '@sanity/types'
 import {Diff, ArraySchemaType, SchemaType, ReferenceSchemaType} from '../diff'
 
 export function getReferencedType(referenceType: ReferenceSchemaType): SchemaType | undefined {
@@ -61,10 +61,6 @@ function resolveArrayMemberType(
   }
 
   return schemaType.of.length === 1 ? schemaType.of[0] : undefined
-}
-
-function isTypedObject(val: unknown): val is TypedObject {
-  return typeof val === 'object' && val !== null && typeof (val as TypedObject)._type === 'string'
 }
 
 function resolveJSType(val: unknown) {
