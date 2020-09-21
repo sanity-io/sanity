@@ -75,7 +75,7 @@
 }
 
 .datasetSelectContainer {
-  padding: 0 var(--medium-padding) var(--small-padding);
+  padding: 0 var(--small-padding) var(--small-padding);
 }
 
 .toolSwitcher {

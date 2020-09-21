@@ -9,6 +9,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
+import {DatasetSelect} from '../components'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
 import Branding from './branding/Branding'
@@ -16,7 +17,6 @@ import LoginStatus from './loginStatus/LoginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
 import {PresenceMenu} from './presenceMenu'
 import SearchContainer from './search/SearchContainer'
-import DatasetSelect from './datasetSelect/DatasetSelect'
 
 import styles from './Navbar.css'
 
@@ -61,6 +61,8 @@ export default function Navbar(props: Props) {
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
   const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
   const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
+
+  console.log('showToolMenu', showToolMenu)
 
   return (
     <div className={className} data-search-open={searchIsOpen}>

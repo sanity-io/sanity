@@ -3,7 +3,7 @@
 .root {
   text-decoration: none;
   color: inherit;
-  padding: 0.5em;
+  padding: var(--small-padding);
   box-sizing: border-box;
   position: relative;
   border-radius: var(--border-radius-medium);

@@ -23,7 +23,6 @@ interface Props {
 }
 
 interface State {
-  isVisible: boolean
   menuOpen: boolean
   currentSpace: {name: string} | null
 }
@@ -38,8 +37,7 @@ class DatasetSelect extends React.PureComponent<Props, State> {
 
   state = {
     menuOpen: false,
-    currentSpace: null,
-    isVisible: false
+    currentSpace: null
   }
 
   componentDidMount() {
@@ -64,14 +62,15 @@ class DatasetSelect extends React.PureComponent<Props, State> {
 
   handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.router.navigate({space: event.target.value})
+
     this.setState({menuOpen: false}, () => {
       window.location.reload()
     })
   }
 
   render() {
-    const {tone} = this.props
-    const {currentSpace, isVisible} = this.state
+    const {isVisible, tone} = this.props
+    const {currentSpace} = this.state
     const tabIndex = isVisible ? 0 : -1
 
     return (
@@ -87,7 +86,10 @@ class DatasetSelect extends React.PureComponent<Props, State> {
             </option>
           ))}
         </select>
-        <ChevronDownIcon />
+
+        <div className={styles.iconContainer}>
+          <ChevronDownIcon />
+        </div>
       </div>
     )
   }

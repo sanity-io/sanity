@@ -19,7 +19,7 @@
     font: inherit;
     font-size: var(--font-size-base);
     line-height: calc((var(--line-height-base) * 1rem) - 3px);
-    padding: var(--small-padding) calc(var(--small-padding) + 2rem) var(--small-padding)
+    padding: var(--small-padding) calc(var(--small-padding) + (25 / 16 * 1rem)) var(--small-padding)
       var(--small-padding);
     border: 0;
     border-radius: var(--border-radius-base);
@@ -41,12 +41,16 @@
       color: inherit;
     }
   }
+}
+
+.iconContainer {
+  position: absolute;
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+  pointer-events: none;
 
   @nest & > svg {
-    position: absolute;
-    top: var(--extra-small-padding);
-    right: var(--extra-small-padding);
-    font-size: calc(25 / 25 * 1em);
-    pointer-events: none;
+    display: block;
+    font-size: calc(25 / 16 * 1em);
   }
 }
