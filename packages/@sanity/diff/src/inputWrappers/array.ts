@@ -24,4 +24,8 @@ export default class ArrayWrapper<A> implements ArrayInput<A> {
 
     return (this.elements[idx] = wrap(this.value[idx], this.annotation))
   }
+
+  annotationAt(): A {
+    return this.annotation
+  }
 }

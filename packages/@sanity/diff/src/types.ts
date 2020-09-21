@@ -47,6 +47,7 @@ export interface ArrayInput<A> extends BaseInput<A> {
   value: unknown[]
   length: number
   at(idx: number): Input<A>
+  annotationAt(idx: number): A
 }
 
 type AddedDiff<A, V> = {
@@ -147,4 +148,5 @@ export type ItemDiff<A> = {
   toIndex: number | undefined
   hasMoved: boolean
   diff: Diff<A>
+  annotation: A
 }
