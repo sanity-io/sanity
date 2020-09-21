@@ -2,7 +2,7 @@ import {Path} from '@sanity/types'
 import React, {createElement} from 'react'
 import {Diff, Annotation} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
+import {AnnotationProps, AnnotatedDiffProps} from './DiffCard'
 
 interface BaseDiffAnnotationCardProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements

@@ -2,7 +2,7 @@ import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {createElement} from 'react'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
-import {AnnotationProps, AnnotatedDiffProps} from './DiffAnnotation'
+import {AnnotationProps, AnnotatedDiffProps} from './DiffCard'
 
 interface BaseAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements

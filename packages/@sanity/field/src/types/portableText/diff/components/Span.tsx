@@ -1,6 +1,6 @@
 import React from 'react'
 import {PortableTextChild, PortableTextBlock} from '../types'
-import {DiffAnnotation, DiffString, ObjectDiff, StringDiff} from '../../../../diff'
+import {DiffCard, DiffString, ObjectDiff, StringDiff} from '../../../../diff'
 import styles from './Span.css'
 
 type Props = {
@@ -27,13 +27,13 @@ export default function Span(props: Props): JSX.Element {
       returned = (
         <span className={styles.empty}>
           {returned}
-          <DiffAnnotation
+          <DiffCard
             annotation={diff.annotation}
             as={didRemove ? 'del' : 'ins'}
             description={`${didRemove ? 'Removed' : 'Added'} empty text`}
           >
             &crarr;
-          </DiffAnnotation>
+          </DiffCard>
         </span>
       )
     } else {

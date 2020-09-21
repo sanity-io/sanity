@@ -19,9 +19,9 @@ interface BaseAnnotationProps {
   description?: React.ReactNode | string
 }
 
-export type DiffAnnotationProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
+export type DiffCardProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
 
-export function DiffAnnotation(props: DiffAnnotationProps & React.HTMLProps<HTMLElement>) {
+export function DiffCard(props: DiffCardProps & React.HTMLProps<HTMLElement>) {
   const userColorManager = useUserColorManager()
 
   if ('diff' in props) {

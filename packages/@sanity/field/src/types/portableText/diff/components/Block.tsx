@@ -2,12 +2,7 @@ import React, {SyntheticEvent} from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap, PortableTextDiff} from '../types'
 import {isDecorator, isHeader, childIsSpan, UNKNOWN_TYPE_NAME} from '../helpers'
 
-import {
-  ObjectDiff,
-  DiffAnnotation,
-  DiffAnnotationTooltip,
-  useDiffAnnotationColor
-} from '../../../../diff'
+import {ObjectDiff, DiffCard, DiffAnnotationTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {ObjectSchemaType} from '../../../../types'
 import Annotation from './Annotation'
 import Decorator from './Decorator'
@@ -111,13 +106,13 @@ export default function Block(props: Props): JSX.Element {
           if (hasMarksDiff) {
             const didRemove = cDiff.fields.marks.action === 'removed'
             returned = (
-              <DiffAnnotation
+              <DiffCard
                 annotation={cDiff.annotation}
                 as={didRemove ? 'del' : 'ins'}
                 description={`${didRemove ? 'Removed' : 'Added'} formatting`}
               >
                 {returned}
-              </DiffAnnotation>
+              </DiffCard>
             )
           }
           returned = (
