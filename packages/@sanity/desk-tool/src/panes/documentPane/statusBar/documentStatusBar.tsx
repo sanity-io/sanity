@@ -21,6 +21,7 @@ export function DocumentStatusBar(props: Props) {
   const badges = editState ? resolveDocumentBadges(editState) : []
 
   const showingRevision = historyController.onOlderRevision()
+  const changePanelActive = historyController.changesPanelActive()
   const revision = historyController.revTime?.id || ''
   return (
     <div className={styles.root}>
@@ -29,15 +30,14 @@ export function DocumentStatusBar(props: Props) {
           kind="simple"
           padding="small"
           size="small"
-          // className={styles.lastUpdatedButton}
           onClick={openHistory}
           type="button"
-          disabled={showingRevision}
+          disabled={showingRevision || changePanelActive}
         >
           <DocumentStatusBarSparkline
             editState={editState}
             badges={badges}
-            disabled={showingRevision}
+            disabled={showingRevision || changePanelActive}
             lastUpdated={props.lastUpdated}
           />
         </Button>
