@@ -8,6 +8,7 @@ import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
+import {NoChanges} from './NoChanges'
 import styles from './ChangeList.css'
 
 interface Props {
@@ -20,6 +21,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const {documentId} = React.useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const {path} = React.useContext(DiffContext)
+  const isRoot = path.length === 0
 
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
@@ -41,7 +43,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   )
 
   if (changes.length === 0) {
-    return null
+    return isRoot ? <NoChanges /> : null
   }
 
   return (

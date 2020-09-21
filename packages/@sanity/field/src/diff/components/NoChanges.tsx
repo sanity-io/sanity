@@ -1,8 +1,8 @@
 import React from 'react'
 
-import styles from './empty.css'
+import styles from './NoChanges.css'
 
-export function EmptyContent() {
+export function NoChanges() {
   return (
     <div className={styles.root}>
       <div className={styles.box}>
