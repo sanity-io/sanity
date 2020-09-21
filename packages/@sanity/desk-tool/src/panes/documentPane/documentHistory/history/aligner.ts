@@ -6,7 +6,8 @@ import {
   TransactionLogEvent,
   DocumentRemoteMutationVersionEvent,
   Attributes,
-  CombinedDocument
+  CombinedDocument,
+  Doc
 } from './types'
 import {Timeline} from './timeline'
 
@@ -47,6 +48,22 @@ function align(history: TransactionLogEvent, state: VersionState): number {
   // that it's consistent.
 
   return 0
+}
+
+function startFromSnapshot(state: VersionState, doc: Doc) {
+  state.hasAttrs = true
+
+  if (doc) {
+    state.attrs = {...doc}
+    if (typeof state.attrs._rev != 'string') throw new Error('snapshot has no _rev')
+    state.rev = state.attrs._rev
+    delete state.attrs._rev
+  } else {
+    state.attrs = null
+    state.rev = null
+  }
+
+  state.events = []
 }
 
 /**
@@ -95,20 +112,7 @@ export class Aligner {
     if (evt.type === 'snapshot') {
       this._maybeInvalidateHistory()
 
-      state.hasAttrs = true
-
-      if (evt.document) {
-        state.attrs = {...evt.document}
-        if (typeof state.attrs._rev != 'string') throw new Error('snapshot has no _rev')
-        state.rev = state.attrs._rev
-        delete state.attrs._rev
-      } else {
-        state.attrs = null
-        state.rev = null
-      }
-
-      state.events = []
-
+      startFromSnapshot(state, evt.document)
       return
     }
 
@@ -116,9 +120,10 @@ export class Aligner {
       if (state.aligned) {
         this._apply(state, evt)
         this.timeline.addRemoteMutation(evt)
-      } else {
-        if (!state.hasAttrs) throw new Error('received mutation before snapshot')
+      } else if (state.hasAttrs) {
         state.events.push(evt)
+      } else {
+        startFromSnapshot(state, evt.head)
       }
     }
   }
