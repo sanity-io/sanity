@@ -18,9 +18,10 @@ const UndoIcon = (): React.ReactElement => (
     height="1em"
   >
     <path
-      d="M5 9L14.5 9C16.9853 9 19 11.0147 19 13.5V13.5C19 15.9853 16.9853 18 14.5 18L5 18M5 9L9 13M5 9L9 5"
+      d="M5 9L14.5 9C16.9853 9 19 11.0147 19 13.5V13.5C19 15.9853 16.9853 18 14.5 18L5 18"
       style={strokeStyle}
     />
+    <path d="M9 13L5 9L9 5" style={strokeStyle} />
   </svg>
 )
 
