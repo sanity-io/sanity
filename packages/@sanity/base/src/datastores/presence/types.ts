@@ -1,7 +1,7 @@
+import {Path} from '@sanity/types'
 import {User} from '../user'
 
 export type Status = 'online' | 'editing' | 'inactive'
-export type PathElement = string | number | {_key: string}
 
 // Low level data/transport format
 export interface Session {
@@ -16,7 +16,7 @@ export interface PresenceLocation {
   type: 'document'
   documentId: string
   lastActiveAt: LastActiveAt
-  path: PathElement[]
+  path: Path
 }
 
 export interface UserSessionPair {
@@ -29,7 +29,7 @@ type LastActiveAt = string // iso date
 // Presence data prepared for a single document
 export interface DocumentPresence {
   user: User
-  path: PathElement[]
+  path: Path
   lastActiveAt: LastActiveAt
 }
 

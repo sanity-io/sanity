@@ -42,6 +42,7 @@
     "@sanity/state-router": "1.150.1",
     "@sanity/structure": "1.150.1",
     "@sanity/transaction-collator": "1.150.1",
+    "@sanity/types": "1.150.7",
     "@sanity/util": "1.150.1",
     "@sanity/uuid": "1.150.1",
     "@sanity/validation": "1.150.1",
