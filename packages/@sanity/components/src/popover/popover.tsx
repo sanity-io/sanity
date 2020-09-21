@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, {cloneElement, forwardRef, useEffect, useRef, useState} from 'react'
+import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import maxSize from 'popper-max-size-modifier'
 import {Placement} from '../types'
@@ -35,21 +35,20 @@ export const Popover = forwardRef(
       arrowClassName,
       boundaryElement,
       cardClassName,
+      children,
       className,
       content,
       disabled,
+      open,
       placement = 'bottom',
       style,
       targetElement,
       ...restProps
     } = props
-    const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
-      targetElement || null
-    )
-    const targetElementRef = useRef<HTMLElement | null>(targetElement || null)
+    const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
     const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
-    const popper = usePopper(referenceElement, popperElement, {
+    const popper = usePopper(targetElement || referenceElement, popperElement, {
       placement,
       modifiers: [
         {
@@ -84,38 +83,30 @@ export const Popover = forwardRef(
 
     const {forceUpdate} = popper
 
-    useEffect(() => {
-      if (targetElement && targetElementRef.current !== targetElement) {
-        setReferenceElement(targetElement)
-      }
-
-      targetElementRef.current = targetElement || null
-    }, [targetElement])
-
     // Force update when `content` or `referenceElement` changes
     useEffect(() => {
       if (forceUpdate) forceUpdate()
-    }, [forceUpdate, content, referenceElement])
+    }, [forceUpdate, content, referenceElement, targetElement])
+
+    const setReference = useCallback(
+      (el: HTMLDivElement | null) => {
+        setPopperElement(el)
+        setRef(ref as any, el)
+      },
+      [ref]
+    )
 
     if (disabled) {
-      return props.children || <></>
-    }
-
-    const children =
-      props.children && targetElement === undefined
-        ? cloneElement(props.children, {ref: setReferenceElement})
-        : props.children || <></>
-
-    const setReference = (el: HTMLDivElement | null) => {
-      setPopperElement(el)
-      setRef(ref as any, el)
+      return children || <></>
     }
 
     return (
       <>
-        {children}
+        {children && !targetElement
+          ? cloneElement(children, {ref: setReferenceElement})
+          : children || <></>}
 
-        {props.open && (
+        {open && (
           <div
             {...restProps}
             className={classNames(styles.root, className)}
