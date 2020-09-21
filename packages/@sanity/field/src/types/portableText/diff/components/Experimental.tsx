@@ -14,7 +14,7 @@ import {
 
 import {
   ArrayDiff,
-  DiffAnnotation,
+  DiffCard,
   DiffAnnotationTooltip,
   ObjectDiff,
   useDiffAnnotationColor
@@ -136,12 +136,9 @@ export default function Experimental(props: Props): JSX.Element {
     const isRemoved = marksDiff && marksDiff.action === 'removed'
     if (marksDiff && marksDiff.action !== 'unchanged') {
       returned = (
-        <DiffAnnotation
-          annotation={marksDiff.annotation}
-          description={`Formatting ${marksDiff.action}`}
-        >
+        <DiffCard annotation={marksDiff.annotation} description={`Formatting ${marksDiff.action}`}>
           {returned}
-        </DiffAnnotation>
+        </DiffCard>
       )
     }
     if (!isRemoved) {
@@ -171,13 +168,13 @@ export default function Experimental(props: Props): JSX.Element {
     returned = (
       <Annotation block={block} markDefKey={mark} onClick={handleObjectFocus}>
         {annotationDiff && annotationDiff.action !== 'unchanged' ? (
-          <DiffAnnotation
+          <DiffCard
             annotation={annotationDiff.annotation}
             as="ins"
             description={`Annotation ${annotationDiff.action} by`}
           >
             {returned}
-          </DiffAnnotation>
+          </DiffCard>
         ) : (
           returned
         )}
@@ -263,16 +260,16 @@ export default function Experimental(props: Props): JSX.Element {
         } else if (seg.action === 'removed') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffAnnotation annotation={seg.annotation} as="del" description="Removed">
+            <DiffCard annotation={seg.annotation} as="del" description="Removed">
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
-            </DiffAnnotation>
+            </DiffCard>
           )
         } else if (seg.action === 'added') {
           // TODO: find annotation
           returnedChildren.push(
-            <DiffAnnotation annotation={seg.annotation} as="ins" description="Added">
+            <DiffCard annotation={seg.annotation} as="ins" description="Added">
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
-            </DiffAnnotation>
+            </DiffCard>
           )
         }
       })

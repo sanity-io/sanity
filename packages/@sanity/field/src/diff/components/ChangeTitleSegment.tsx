@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
-import {DiffAnnotation} from './DiffAnnotation'
+import {DiffCard} from './DiffCard'
 import {DiffAnnotationCard} from './DiffAnnotationCard'
 
 import styles from './ChangeTitleSegment.css'
@@ -57,7 +57,7 @@ function CreatedTitleSegment({
   const content = <>#{readableIndex}</>
 
   return (
-    <DiffAnnotation annotation={annotation || null} as="ins" description={description}>
+    <DiffCard annotation={annotation || null} as="ins" description={description}>
       {change?.diff ? (
         <DiffAnnotationCard
           as="span"
@@ -71,7 +71,7 @@ function CreatedTitleSegment({
           {content}
         </span>
       )}
-    </DiffAnnotation>
+    </DiffCard>
   )
 }
 
@@ -85,14 +85,14 @@ function DeletedTitleSegment({
   const readableIndex = fromIndex + 1
   const description = `Removed from position ${readableIndex}`
   return (
-    <DiffAnnotation
+    <DiffCard
       annotation={annotation || null}
       className={annotation ? styles.indexGroupWithAnnotation : styles.indexGroup}
       as="del"
       description={description}
     >
       #{readableIndex}
-    </DiffAnnotation>
+    </DiffCard>
   )
 }
 
@@ -111,7 +111,7 @@ function MovedTitleSegment({
   return (
     <>
       <span className={styles.indexGroup}>#{toIndex + 1}</span>
-      <DiffAnnotation
+      <DiffCard
         annotation={annotation || null}
         className={annotation ? styles.indexGroupWithAnnotation : styles.indexGroup}
         as="span"
@@ -119,7 +119,7 @@ function MovedTitleSegment({
       >
         {indexSymbol}
         {Math.abs(indexDiff)}
-      </DiffAnnotation>
+      </DiffCard>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {StringDiffSegment, StringDiff} from '../../types'
-import {DiffAnnotation} from './DiffAnnotation'
+import {DiffCard} from './DiffCard'
 
 import styles from './DiffString.css'
 
@@ -45,27 +45,22 @@ export function DiffStringSegment({
 
   if (segment.action === 'added') {
     return (
-      <DiffAnnotation
-        annotation={segment.annotation}
-        as="ins"
-        className={styles.add}
-        description="Added"
-      >
+      <DiffCard annotation={segment.annotation} as="ins" className={styles.add} description="Added">
         {text}
-      </DiffAnnotation>
+      </DiffCard>
     )
   }
 
   if (segment.action === 'removed') {
     return (
-      <DiffAnnotation
+      <DiffCard
         annotation={segment.annotation}
         as="del"
         className={styles.remove}
         description="Removed"
       >
         {text}
-      </DiffAnnotation>
+      </DiffCard>
     )
   }
 
