@@ -4,9 +4,9 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
-import DatasetSelect from '../navbar/datasetSelect/DatasetSelect'
-import {HAS_SPACES} from '../util/spaces'
+import {DatasetSelect} from '../components'
 import {Router, Tool, User} from '../types'
+import {HAS_SPACES} from '../util/spaces'
 
 import styles from './SideMenu.css'
 
