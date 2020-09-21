@@ -294,7 +294,9 @@ export class Timeline {
       }
     }
 
-    return this.reachedEarliestEntry ? 'invalid' : 'loading'
+    if (!this.reachedEarliestEntry) return 'loading'
+
+    return this._chunks.first
   }
 
   isLatestChunk(chunk: Chunk) {
