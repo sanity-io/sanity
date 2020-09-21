@@ -106,12 +106,16 @@ function MovedTitleSegment({
 }) {
   const indexDiff = toIndex - fromIndex
   const indexSymbol = indexDiff < 0 ? '↑' : '↓'
-  const description = `Moved ${Math.abs(indexDiff)} position ${indexDiff < 0 ? 'up' : 'down'}`
+  const positions = Math.abs(indexDiff)
+  const description = `Moved ${positions} position${positions === 1 ? '' : 's'} ${
+    indexDiff < 0 ? 'up' : 'down'
+  }`
+
   return (
     <>
       <span className={styles.indexGroup}>#{toIndex + 1}</span>
       <DiffCard
-        annotation={annotation || null}
+        annotation={annotation}
         className={styles.indexGroup}
         as="span"
         tooltip={{description}}
