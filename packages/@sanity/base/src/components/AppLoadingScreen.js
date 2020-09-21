@@ -73,39 +73,45 @@ const AppLoaderStyles = `
   }
   
   @keyframes bottom {
-    0%, 85% {
-      stroke-dashoffset: 85;
+    0%,
+    85% {
+      stroke-dashoffset: 265;
       opacity: 0;
     }
-    15%, 64% {
-      stroke-dashoffset: -5;
-      opacity: .5;
+    15%,
+    64% {
+      stroke-dashoffset: 175;
+      opacity: 0.5;
     }
   }
   @keyframes middle {
-    11%, 75% {
+    11%,
+    75% {
       stroke-dashoffset: 100;
       opacity: 0;
     }
     15% {
       opacity: 1;
     }
-    25%, 63% {
+    25%,
+    63% {
       stroke-dashoffset: 225;
       opacity: 1;
     }
   }
   @keyframes top {
-    22%, 70% {
+    22%,
+    70% {
       opacity: 0;
-      stroke-dashoffset: 72;
+      stroke-dashoffset: 226;
     }
     25% {
-      opacity: .5;
+      opacity: 0.5;
     }
-    35%, 54% {
-      stroke-dashoffset: -5;
-      opacity: .5;
+    35%,
+    54% {
+      stroke-dashoffset: 149;
+      opacity: 0.5;
     }
   }
 `
