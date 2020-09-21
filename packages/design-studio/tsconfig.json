@@ -12,6 +12,5 @@
       }
     ]
   },
-  "include": ["../@sanity/base/src/@types/*.d.ts", "./typings/*.d.ts"],
-  "files": ["./schemas/index.ts"]
+  "include": ["./typings/*.d.ts", "../@sanity/base/src/@types/*.d.ts", "./**/*.tsx", "./**/*.ts"]
 }
