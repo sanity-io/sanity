@@ -1,5 +1,12 @@
 // Note: INCOMPLETE, but it's a start
 
+export interface Schema {
+  name: string
+  get: (name: string) => SchemaType
+  has: (name: string) => boolean
+  getTypeNames: () => string[]
+}
+
 export interface BaseSchemaType {
   name: string
   title?: string
