@@ -1,6 +1,6 @@
 import React from 'react'
 import {PortableTextChild, PortableTextBlock} from '../types'
-import {AnnotatedStringDiff, DiffAnnotation, ObjectDiff, StringDiff} from '../../../../diff'
+import {DiffAnnotation, DiffString, ObjectDiff, StringDiff} from '../../../../diff'
 import styles from './Span.css'
 
 type Props = {
@@ -22,7 +22,7 @@ export default function Span(props: Props): JSX.Element {
       const textDiff = diff.fields.text as StringDiff
       // eslint-disable-next-line max-depth
       if (textDiff && textDiff.isChanged) {
-        returned = <AnnotatedStringDiff diff={textDiff} />
+        returned = <DiffString diff={textDiff} />
       }
       returned = (
         <span className={styles.empty}>
@@ -42,7 +42,7 @@ export default function Span(props: Props): JSX.Element {
   } else if (diff) {
     const textDiff = diff.fields.text as StringDiff
     if (textDiff && textDiff.isChanged) {
-      returned = <AnnotatedStringDiff diff={textDiff} />
+      returned = <DiffString diff={textDiff} />
     }
   }
   return <span className={styles.root}>{returned}</span>

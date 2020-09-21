@@ -1,7 +1,8 @@
 import * as React from 'react'
 import {StringDiffSegment, StringDiff} from '../../types'
 import {DiffAnnotation} from './DiffAnnotation'
-import styles from './AnnotatedStringDiff.css'
+
+import styles from './DiffString.css'
 
 function FormattedPreviewText({
   isFirstSegment,
@@ -25,7 +26,7 @@ function FormattedPreviewText({
   )
 }
 
-export function AnnotatedStringDiffSegment({
+export function DiffStringSegment({
   isFirstSegment,
   isLastSegment,
   segment
@@ -71,13 +72,13 @@ export function AnnotatedStringDiffSegment({
   return text
 }
 
-export function AnnotatedStringDiff({diff}: {diff: StringDiff}) {
+export function DiffString({diff}: {diff: StringDiff}) {
   const len = diff.segments.length
 
   return (
     <>
       {(diff.segments || []).map((segment, segmentIndex) => (
-        <AnnotatedStringDiffSegment
+        <DiffStringSegment
           isFirstSegment={segmentIndex === 0}
           isLastSegment={segmentIndex === len - 1}
           // eslint-disable-next-line react/no-array-index-key
