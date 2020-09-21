@@ -1,5 +1,6 @@
+import {Path} from '@sanity/types'
 import {ReportedRegion} from '../components/react-track-elements'
-import {PathElement, Session, Status, User} from '../datastores/presence/types'
+import {Session, Status, User} from '../datastores/presence/types'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
@@ -27,12 +28,12 @@ export type PresentUser = {
 
 export interface Location {
   documentId: string
-  path: PathElement[]
+  path: Path
 }
 
 export interface FormFieldPresence {
   user: User
-  path: PathElement[]
+  path: Path
   sessionId: string
   lastActiveAt: string
 }
