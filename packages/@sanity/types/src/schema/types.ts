@@ -1,5 +1,7 @@
 // Note: INCOMPLETE, but it's a start
 
+import {SlugOptions} from '../slug'
+
 export interface Schema {
   name: string
   get: (name: string) => SchemaType
@@ -47,6 +49,11 @@ export interface BlockSchemaType extends ObjectSchemaType {
   jsonType: 'object'
   name: 'block'
   of?: SchemaType[]
+}
+
+export interface SlugSchemaType extends ObjectSchemaType {
+  jsonType: 'object'
+  options?: SlugOptions
 }
 
 export interface ObjectField<T extends SchemaType = SchemaType> {
