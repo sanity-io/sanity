@@ -207,7 +207,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         </div>
 
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <Reporter id="changesPanel" className={styles.changesContainer}>
+          <Reporter id="changesPanel" className={styles.changesContainer} data={{}}>
             <ChangesPanel
               changesSinceSelectRef={changesSinceSelectRef}
               documentId={documentId}

@@ -3,7 +3,7 @@ import {ChangeIndicatorContext} from './ChangeIndicatorContext'
 import {Reporter} from './elementTracker'
 import isEqual from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
-import {Path} from '@sanity/util/lib/typedefs/path'
+import {Path} from '@sanity/types'
 
 const isPrimitive = value =>
   typeof value === 'string' ||
@@ -16,18 +16,26 @@ const CHANGED_STYLE = {
   borderRight: '2px solid #2276fc'
 }
 
-const ChangeBar = React.forwardRef((props: React.ComponentProps<'div'>, ref: any) => {
-  return (
-    <div
-      ref={ref}
-      style={props.isChanged ? CHANGED_STYLE : {}}
-      onMouseEnter={props.onMouseEnter}
-      onMouseLeave={props.onMouseLeave}
-    >
-      {props.children}
-    </div>
-  )
-})
+const ChangeBar = React.forwardRef(
+  (
+    props: React.ComponentProps<'div'> & {
+      isChanged: boolean
+      children: React.ReactNode
+    },
+    ref: any
+  ) => {
+    return (
+      <div
+        ref={ref}
+        style={props.isChanged ? CHANGED_STYLE : {}}
+        onMouseEnter={props.onMouseEnter}
+        onMouseLeave={props.onMouseLeave}
+      >
+        {props.children}
+      </div>
+    )
+  }
+)
 
 export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactNode}) {
   const parentContext = React.useContext(ChangeIndicatorContext)

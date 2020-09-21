@@ -4,7 +4,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {groupBy} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
-import {Path} from '@sanity/util/lib/typedefs/path'
+import {Path} from '@sanity/types'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
 import {Connector, drawLine, vLine} from '../../components/changeConnector/Connector'
 import {Arrow} from '../../components/changeConnector/Arrow'
@@ -24,7 +24,7 @@ interface ChangeConnectorPayload {
 interface Props {
   children?: React.ReactNode
   trackerRef: any //todo: fix
-  regions: ReportedRegion<ChangeConnectorPayload>[]
+  regions: ReportedRegion<any>[]
 }
 
 const DEBUG = false

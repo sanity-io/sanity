@@ -33,7 +33,7 @@ export type TrackerComponentProps<ComponentProps, RegionData> = ComponentProps &
   trackerRef: React.RefObject<HTMLElement | null>
 }
 
-export type TrackerProps<ComponentProps, RegionData = {}> = {
+export type TrackerProps<ComponentProps = {}, RegionData = {}> = {
   component: React.ComponentType<TrackerComponentProps<ComponentProps, RegionData>>
   children: React.ReactNode
   style?: React.CSSProperties
@@ -130,7 +130,7 @@ export function createTracker() {
             items.delete(event.id)
           }
           return items
-        }, new Map<string, ReportedRegion<RegionData>>()),
+        }, new Map<string, ReportedRegion<RegionData>>())
         // debounceTime()
       )
       const sub = regions$

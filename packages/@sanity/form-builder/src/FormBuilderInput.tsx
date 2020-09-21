@@ -9,7 +9,6 @@ import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
-import {trimChildPath} from '@sanity/util/lib/pathUtils'
 
 const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
@@ -183,7 +182,7 @@ export class FormBuilderInput extends React.Component<Props> {
 
   getChildFocusPath() {
     const {path, focusPath} = this.props
-    return trimChildPath(path, focusPath)
+    return PathUtils.trimChildPath(path, focusPath)
   }
 
   render() {
@@ -220,7 +219,7 @@ export class FormBuilderInput extends React.Component<Props> {
         .filter(marker => PathUtils.startsWith(path, marker.path))
         .map(marker => ({
           ...marker,
-          path: trimChildPath(path, marker.path)
+          path: PathUtils.trimChildPath(path, marker.path)
         }))
     }
     const childFocusPath = this.getChildFocusPath()
@@ -234,7 +233,7 @@ export class FormBuilderInput extends React.Component<Props> {
             .filter(presence => PathUtils.startsWith(path, presence.path))
             .map(presence => ({
               ...presence,
-              path: trimChildPath(path, presence.path)
+              path: PathUtils.trimChildPath(path, presence.path)
             }))
 
     const childCompareValue = PathUtils.get(compareValue, path)

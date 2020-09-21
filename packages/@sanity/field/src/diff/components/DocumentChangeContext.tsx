@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {ObjectDiff, SchemaType, Path} from '../../types'
+import {ObjectDiff, SchemaType} from '../../types'
+import {Path} from '@sanity/types'
 
 export type DocumentChangeContextInstance = {
   documentId: string

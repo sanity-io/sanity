@@ -1,5 +1,5 @@
 import React from 'react'
-import {Path} from '@sanity/util/lib/typedefs/path'
+import {Path} from '@sanity/types'
 
 interface ChangeIndicatorContext {
   value?: any
