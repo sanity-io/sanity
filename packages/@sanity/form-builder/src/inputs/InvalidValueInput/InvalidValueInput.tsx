@@ -2,13 +2,16 @@ import React from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import styles from '../ObjectInput/styles/UnknownFields.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import {ItemValue} from '../ArrayInput/typedefs'
 import Warning from '../Warning'
 import CONVERTERS from './converters'
+import {UntypedValueInput} from './UntypedValueInput'
 
 function getConverters(value, actualType, validTypes) {
   if (!(actualType in CONVERTERS)) {
     return []
   }
+
   return Object.keys(CONVERTERS[actualType])
     .filter(targetType => validTypes.includes(targetType))
     .map(targetType => ({
@@ -18,15 +21,14 @@ function getConverters(value, actualType, validTypes) {
     }))
     .filter(converter => converter.test(value))
 }
+
 type InvalidValueProps = {
   actualType?: string
-  validTypes?: any[]
-  value?: any
-  onChange?: (...args: any[]) => any
+  validTypes?: string[]
+  value?: unknown
+  onChange?: (event: PatchEvent, valueOverride?: ItemValue) => void
 }
-export default class InvalidValue extends React.PureComponent<InvalidValueProps, {}> {
-  element: any
-
+export default class InvalidValueInput extends React.PureComponent<InvalidValueProps, {}> {
   handleClearClick = () => {
     this.props.onChange(PatchEvent.from(unset()))
   }
@@ -46,6 +48,7 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
         </div>
       )
     }
+
     return (
       <div>
         Only the following types are valid here according to schema:{' '}
@@ -57,8 +60,20 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
       </div>
     )
   }
+
   render() {
-    const {value, actualType, validTypes} = this.props
+    const {value, actualType, validTypes, onChange} = this.props
+
+    if (typeof value === 'object' && value !== null && !('_type' in value)) {
+      return (
+        <UntypedValueInput
+          value={value as Record<string, unknown>}
+          validTypes={validTypes}
+          onChange={onChange}
+        />
+      )
+    }
+
     const converters = getConverters(value, actualType, validTypes)
     const message = (
       <>
@@ -81,6 +96,7 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
         </div>
       </>
     )
+
     return <Warning heading="Content has invalid type" message={message} />
   }
 }

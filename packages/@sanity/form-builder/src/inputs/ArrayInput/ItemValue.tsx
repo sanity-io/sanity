@@ -22,6 +22,7 @@ import {Presence, Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import InvalidItem from './InvalidItem'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -113,15 +114,16 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const {onRemove, value} = this.props
     onRemove(value)
   }
-  handleChange = (event: PatchEvent) => {
+  handleChange = (event: PatchEvent, valueOverride?: ItemValue) => {
     const {onChange, value} = this.props
-    onChange(event, value)
+    onChange(event, typeof valueOverride === 'undefined' ? value : valueOverride)
   }
   getMemberType(): Type | null {
     const {value, type} = this.props
     const itemTypeName = resolveTypeName(value)
-    const memberType = type.of.find(memberType => memberType.name === itemTypeName)
-    return memberType
+    return itemTypeName === 'object' && type.of.length === 1
+      ? type.of[0]
+      : type.of.find(memberType => memberType.name === itemTypeName)
   }
   getTitle(): string {
     const {readOnly} = this.props
@@ -160,7 +162,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
-    const childPresence = presence.filter(presence => presence.path.length > 1)
+    const childPresence = presence.filter(child => child.path.length > 1)
     const content = (
       <FormBuilderInput
         type={memberType}
@@ -238,7 +240,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     )
   }
   renderItem() {
-    const {value, markers, type, readOnly, presence, focusPath} = this.props
+    const {value, markers, type, readOnly, presence, focusPath, onChange} = this.props
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
@@ -259,8 +261,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
     const memberType = this.getMemberType()
     if (!memberType) {
-      return null
+      return <InvalidItem onChange={this.handleChange} type={type} value={value} />
     }
+
     return (
       <div className={styles.inner}>
         {!isGrid && isSortable && <DragHandle />}

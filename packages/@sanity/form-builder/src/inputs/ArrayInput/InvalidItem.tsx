@@ -1,33 +1,24 @@
 import React from 'react'
-import {resolveTypeName} from '../../utils/resolveTypeName'
-import InvalidValue from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
-type Type = {
-  name: string
-  of: Array<Type>
+import {resolveTypeName} from '../../utils/resolveTypeName'
+import InvalidValueInput from '../InvalidValueInput'
+import {ArrayType, ItemValue} from './typedefs'
+
+interface Props {
+  type: ArrayType
+  value: unknown
+  onChange: (event: PatchEvent, valueOverride?: ItemValue) => void
 }
-export default class Item extends React.PureComponent<{}, {}> {
-  props: {
-    // note: type here is the *array* type
-    type: Type
-    value: any
-    onChange: (arg0: PatchEvent, value: any) => void
-  }
-  handleChange = (event: PatchEvent) => {
-    const {onChange, value} = this.props
-    onChange(event, value)
-  }
-  render() {
-    const {type, value} = this.props
-    const actualType = resolveTypeName(value)
-    const validTypes = type.of.map(ofType => ofType.name)
-    return (
-      <InvalidValue
-        actualType={actualType}
-        validTypes={validTypes}
-        onChange={this.handleChange}
-        value={value}
-      />
-    )
-  }
+
+export default function InvalidItem({value, type, onChange}: Props) {
+  const actualType = resolveTypeName(value)
+  const validTypes = type.of.map(ofType => ofType.name)
+  return (
+    <InvalidValueInput
+      actualType={actualType}
+      validTypes={validTypes}
+      onChange={onChange}
+      value={value}
+    />
+  )
 }
