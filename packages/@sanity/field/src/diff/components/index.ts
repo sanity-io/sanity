@@ -1,7 +1,5 @@
 export * from './ChangeList'
 export * from './ChangeResolver'
-export * from './DiffAnnotationCard'
-export * from './DiffAnnotationTooltipContent'
 export * from './DiffCard'
 export * from './DiffFromTo'
 export * from './DiffString'

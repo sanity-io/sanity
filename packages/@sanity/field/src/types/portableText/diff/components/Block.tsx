@@ -51,8 +51,8 @@ export default function Block(props: Props): JSX.Element {
       returned = (
         <div className={styles.styleIsChanged}>
           <div className={styles.changedBlockStyleNotice}>
-            <DiffTooltip diff={diff.fields.style} as={'div'}>
-              Changed block style from '{fromStyle}'
+            <DiffTooltip diff={diff.fields.style}>
+              <div>Changed block style from '{fromStyle}'</div>
             </DiffTooltip>
           </div>
           <div style={style}>{returned}</div>
@@ -109,7 +109,7 @@ export default function Block(props: Props): JSX.Element {
               <DiffCard
                 annotation={cDiff.annotation}
                 as={didRemove ? 'del' : 'ins'}
-                description={`${didRemove ? 'Removed' : 'Added'} formatting`}
+                tooltip={{description: `${didRemove ? 'Removed' : 'Added'} formatting`}}
               >
                 {returned}
               </DiffCard>

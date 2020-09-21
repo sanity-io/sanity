@@ -45,7 +45,13 @@ export function DiffStringSegment({
 
   if (segment.action === 'added') {
     return (
-      <DiffCard annotation={segment.annotation} as="ins" className={styles.add} description="Added">
+      <DiffCard
+        annotation={segment.annotation}
+        as="ins"
+        className={styles.add}
+        disableHoverEffect
+        tooltip={{description: 'Added'}}
+      >
         {text}
       </DiffCard>
     )
@@ -57,7 +63,8 @@ export function DiffStringSegment({
         annotation={segment.annotation}
         as="del"
         className={styles.remove}
-        description="Removed"
+        disableHoverEffect
+        tooltip={{description: 'Removed'}}
       >
         {text}
       </DiffCard>

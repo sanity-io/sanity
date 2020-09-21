@@ -39,11 +39,7 @@ export default function InlineObject(props: Props): JSX.Element {
       </span>
     )
     // Wrap in tooltip
-    returned = (
-      <DiffTooltip diff={diff} as={'span'}>
-        {returned}
-      </DiffTooltip>
-    )
+    returned = <DiffTooltip diff={diff}>{returned}</DiffTooltip>
   }
   return returned
 }

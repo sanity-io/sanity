@@ -1,51 +1,86 @@
-import {Tooltip} from 'part:@sanity/components/tooltip'
-import React, {createElement} from 'react'
-import {getAnnotationAtPath} from '../annotations'
-import {DiffAnnotationTooltipContent} from './DiffAnnotationTooltipContent'
-import {AnnotationProps, AnnotatedDiffProps} from './DiffCard'
+import {UserAvatar} from '@sanity/base/components'
+import {useUser, useTimeAgo} from '@sanity/base/hooks'
+import {useUserColorManager} from '@sanity/base/user-color'
+import {Path} from '@sanity/types'
+import React from 'react'
+import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
+import {Diff, getAnnotationColor, getAnnotationAtPath} from '../../diff'
+import {AnnotationDetails} from '../../types'
 
-interface BaseAnnotationProps {
-  as?: React.ElementType | keyof JSX.IntrinsicElements
-  description?: React.ReactNode | string
+import styles from './DiffTooltip.css'
+
+interface DiffTooltipProps {
+  children: React.ReactElement
+  description?: React.ReactNode
+  diff: Diff
+  path?: Path | string
+  placement?: TooltipPlacement
 }
 
-export type DiffTooltipProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
+interface DiffTooltipWithAnnotationsProps {
+  annotations: AnnotationDetails[]
+  children: React.ReactElement
+  description?: React.ReactNode
+  placement?: TooltipPlacement
+}
 
-export function DiffTooltip(
-  props: DiffTooltipProps & React.HTMLProps<HTMLElement>
-): React.ReactElement {
+export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotationsProps) {
   if ('diff' in props) {
-    const {as = 'div', children, description, diff, path, ...restProps} = props
-    const annotation = getAnnotationAtPath(diff, path || [])
+    const {diff, path = [], ...restProps} = props
+    const annotation = getAnnotationAtPath(diff, path)
 
-    if (!annotation) {
-      return createElement(as, restProps, children)
-    }
-
-    const content = (
-      <DiffAnnotationTooltipContent description={description} annotations={[annotation]} />
-    )
-
-    return (
-      <Tooltip content={content} placement="top" portal>
-        {createElement(as, restProps, children)}
-      </Tooltip>
-    )
+    return <DiffTooltipWithAnnotation {...restProps} annotations={annotation ? [annotation] : []} />
   }
 
-  const {as = 'div', annotation, children, description, ...restProps} = props
+  return <DiffTooltipWithAnnotation {...props} />
+}
 
-  if (!annotation) {
-    return createElement(as, restProps, children)
+function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
+  const {annotations, children, description = 'Changed', placement = 'top'} = props
+
+  if (!annotations) {
+    return children
   }
 
   const content = (
-    <DiffAnnotationTooltipContent description={description} annotations={[annotation]} />
+    <div className={styles.root}>
+      <div className={styles.description}>{description}</div>
+      {annotations.map((annotation, idx) => (
+        <AnnotationItem annotation={annotation} key={idx} />
+      ))}
+    </div>
   )
 
   return (
-    <Tooltip content={content} placement="top" portal>
-      {createElement(as, restProps, children)}
+    <Tooltip content={content} placement={placement} portal>
+      {children}
     </Tooltip>
+  )
+}
+
+function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
+  const {author, timestamp} = annotation
+  const userColorManager = useUserColorManager()
+  const {error, value: user} = useUser(author)
+  const color = getAnnotationColor(userColorManager, annotation)
+  const timeAgo = useTimeAgo(timestamp, {minimal: true})
+
+  // @todo handle?
+  if (error) {
+    return null
+  }
+
+  return (
+    <div className={styles.annotation}>
+      <div className={styles.user} style={{backgroundColor: color.background, color: color.text}}>
+        <span>
+          <UserAvatar userId={author} />
+        </span>
+        <span className={styles.displayName}>{user ? user.displayName : 'Loading…'}</span>
+      </div>
+      <time className={styles.timeAgo} dateTime={timestamp}>
+        {timeAgo}
+      </time>
+    </div>
   )
 }

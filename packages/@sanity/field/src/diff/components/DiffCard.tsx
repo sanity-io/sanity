@@ -1,57 +1,72 @@
-import {Path} from '@sanity/types'
 import {useUserColorManager} from '@sanity/base/user-color'
-import * as React from 'react'
-import {Annotation, Diff} from '../../types'
-import {getAnnotationAtPath, getAnnotationColor} from '../annotations'
+import {Path} from '@sanity/types'
+import classNames from 'classnames'
+import React, {createElement} from 'react'
+import {Annotation, Diff, getAnnotationAtPath, getAnnotationColor} from '../../diff'
 import {DiffTooltip} from './DiffTooltip'
 
-export interface AnnotationProps {
-  annotation: Annotation | undefined | null
-}
+import styles from './DiffCard.css'
 
-export interface AnnotatedDiffProps {
+interface DiffCardProps {
+  as?: React.ElementType | keyof JSX.IntrinsicElements
   diff: Diff
   path?: Path | string
+  tooltip?: {description?: React.ReactNode} | boolean
 }
 
-interface BaseAnnotationProps {
+interface DiffCardWithAnnotationProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
-  description?: React.ReactNode | string
+  annotation?: Annotation
+  disableHoverEffect?: boolean
+  tooltip?: {description?: React.ReactNode} | boolean
 }
 
-export type DiffCardProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
-
-export function DiffCard(props: DiffCardProps & React.HTMLProps<HTMLElement>) {
-  const userColorManager = useUserColorManager()
-
+export function DiffCard(
+  props: (DiffCardProps | DiffCardWithAnnotationProps) & React.HTMLProps<HTMLElement>
+) {
   if ('diff' in props) {
-    const {as = 'span', children, description, diff, path = [], ...restProps} = props
-    const annotation = getAnnotationAtPath(diff, path)
-    const color = getAnnotationColor(userColorManager, annotation)
+    const {diff, path, ...restProps} = props
+    const annotation = getAnnotationAtPath(diff, path || [])
 
+    return <DiffCardWithAnnotation {...restProps} annotation={annotation} />
+  }
+
+  return <DiffCardWithAnnotation {...props} />
+}
+
+function DiffCardWithAnnotation(props: DiffCardWithAnnotationProps & React.HTMLProps<HTMLElement>) {
+  const {
+    annotation,
+    as = 'div',
+    children,
+    className,
+    disableHoverEffect,
+    style = {},
+    tooltip,
+    ...restProps
+  } = props
+  const userColorManager = useUserColorManager()
+  const color = getAnnotationColor(userColorManager, annotation)
+
+  const elementProps = {
+    ...restProps,
+    className: classNames(styles.root, className),
+    'data-hover': disableHoverEffect ? undefined : '',
+    style: {backgroundColor: color.background, color: color.text, ...style}
+  }
+
+  const element = createElement(as, elementProps, children)
+
+  if (tooltip && annotation) {
     return (
       <DiffTooltip
-        {...restProps}
-        as={as}
-        annotation={annotation}
-        description={description}
-        style={{backgroundColor: color.background, color: color.text}}
+        annotations={[annotation]}
+        description={tooltip && typeof tooltip === 'object' && tooltip.description}
       >
-        {children}
+        {element}
       </DiffTooltip>
     )
   }
 
-  const {as = 'span', children, ...restProps} = props
-  const color = getAnnotationColor(userColorManager, restProps.annotation)
-
-  return (
-    <DiffTooltip
-      {...restProps}
-      as={as}
-      style={{backgroundColor: color.background, color: color.text}}
-    >
-      {children}
-    </DiffTooltip>
-  )
+  return element
 }

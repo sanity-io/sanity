@@ -1,7 +1,7 @@
 import {Image} from '@sanity/types'
 import * as React from 'react'
 import {
-  DiffAnnotationCard,
+  DiffCard,
   DiffComponent,
   DiffTooltip,
   ObjectDiff,
@@ -23,9 +23,9 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
 
   if (!isChanged) {
     return toRef ? (
-      <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
+      <DiffCard className={styles.annotation} annotation={assetAnnotation}>
         <ImagePreview id={toRef} is="to" diff={diff} />
-      </DiffAnnotationCard>
+      </DiffCard>
     ) : null
   }
 
@@ -55,7 +55,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const imageDiff = (
     <div className={styles.imageDiff} data-diff-layout={fromRef && toRef ? 'double' : 'single'}>
       {fromValue && fromRef && (
-        <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
+        <DiffCard className={styles.annotation} annotation={assetAnnotation}>
           <ImagePreview
             is="from"
             id={fromRef}
@@ -64,11 +64,11 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
             hotspot={showMetaChange && didHotspotChange ? fromValue.hotspot : undefined}
             crop={showMetaChange && didCropChange ? fromValue.crop : undefined}
           />
-        </DiffAnnotationCard>
+        </DiffCard>
       )}
       {fromRef && toRef && <FromToArrow />}
       {toValue && toRef && (
-        <DiffAnnotationCard className={styles.annotation} annotation={assetAnnotation}>
+        <DiffCard className={styles.annotation} annotation={assetAnnotation}>
           <ImagePreview
             is="to"
             id={toRef}
@@ -76,7 +76,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
             hotspot={showMetaChange && didHotspotChange ? toValue.hotspot : undefined}
             crop={showMetaChange && didCropChange ? toValue.crop : undefined}
           />
-        </DiffAnnotationCard>
+        </DiffCard>
       )}
     </div>
   )
@@ -86,7 +86,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       {showImageDiff &&
         (didAssetChange ? (
           <DiffTooltip
-            annotation={assetAnnotation}
+            annotations={assetAnnotation ? [assetAnnotation] : []}
             description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)}`}
           >
             {imageDiff}

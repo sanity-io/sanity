@@ -12,23 +12,11 @@
   display: inline-block;
   font-weight: 600;
   vertical-align: middle;
-  border-radius: var(--border-radius-small);
   padding: 1px var(--extra-small-padding);
-  border-bottom: 1px solid var(--component-bg);
-  margin: -1px 0 -2px;
-
-  @nest ins & {
-    text-decoration: none;
-  }
 }
 
-.indexGroupWithAnnotation {
-  composes: indexGroup;
-}
-
-.indexGroupWithAnnotation:hover {
-  border-radius: var(--border-radius-small) var(--border-radius-small) 1px 1px;
-  box-shadow: 0 2px 0 currentColor;
+ins.indexGroup {
+  text-decoration: none;
 }
 
 .index {

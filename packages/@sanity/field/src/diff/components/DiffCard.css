@@ -1,0 +1,41 @@
+.root {
+  position: relative;
+  border-radius: 2px;
+
+  @nest &[data-hover] {
+    @nest &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    @nest &:hover {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+
+      @nest &::after {
+        bottom: -3px;
+        border-top: 1px solid #fff;
+        border-bottom: 2px solid currentColor;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+    }
+
+    @nest [data-from-to-layout]:hover & {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+
+      @nest &::after {
+        bottom: -3px;
+        border-top: 1px solid #fff;
+        border-bottom: 2px solid currentColor;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+    }
+  }
+}

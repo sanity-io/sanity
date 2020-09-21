@@ -3,14 +3,13 @@ import {
   ObjectDiff,
   ObjectSchemaType,
   DocumentChangeContext,
-  DiffAnnotationTooltipContent,
+  DiffTooltip,
   ChangeList,
   Chunk,
   DocumentChangeContextInstance
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar} from '@sanity/base/components'
-import {Tooltip} from 'part:@sanity/components/tooltip'
 import Button from 'part:@sanity/components/buttons/default'
 import {AvatarStack} from 'part:@sanity/components/avatar'
 import {useTimeAgo} from '@sanity/base/hooks'
@@ -112,15 +111,7 @@ export function ChangesPanel({
           </div>
 
           {changeAnnotations.length > 0 && (
-            <Tooltip
-              content={
-                <DiffAnnotationTooltipContent
-                  description="Changes by"
-                  annotations={changeAnnotations}
-                />
-              }
-              placement="top"
-            >
+            <DiffTooltip annotations={changeAnnotations} description="Changes by" placement="top">
               <div className={styles.changeAuthorsContainer}>
                 <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
                   {changeAnnotations.map(({author}) => (
@@ -132,7 +123,7 @@ export function ChangesPanel({
                   ))}
                 </AvatarStack>
               </div>
-            </Tooltip>
+            </DiffTooltip>
           )}
         </div>
       </header>

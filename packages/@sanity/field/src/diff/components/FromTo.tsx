@@ -1,4 +1,5 @@
-import React from 'react'
+import classNames from 'classnames'
+import React, {forwardRef} from 'react'
 import ArrowIcon from 'part:@sanity/base/arrow-right'
 
 import styles from './FromTo.css'
@@ -16,13 +17,32 @@ export const FromToArrow = () => (
   </div>
 )
 
-export function FromTo({layout = 'inline', from, to, children}: FromToProps) {
-  return (
-    <div className={styles.root} data-layout={layout}>
-      {from && <div className={styles.from}>{from}</div>}
-      {from && to && <FromToArrow />}
-      {to && <div className={styles.to}>{to}</div>}
-      {children}
-    </div>
-  )
-}
+export const FromTo = forwardRef(
+  (
+    {
+      children,
+      className,
+      layout = 'inline',
+      from,
+      to,
+      ...restProps
+    }: FromToProps & React.HTMLProps<HTMLDivElement>,
+    ref
+  ) => {
+    return (
+      <div
+        {...restProps}
+        className={classNames(styles.root, className)}
+        data-from-to-layout={layout}
+        ref={ref as any}
+      >
+        {from && <div className={styles.from}>{from}</div>}
+        {from && to && <FromToArrow />}
+        {to && <div className={styles.to}>{to}</div>}
+        {children}
+      </div>
+    )
+  }
+)
+
+FromTo.displayName = 'FromTo'
