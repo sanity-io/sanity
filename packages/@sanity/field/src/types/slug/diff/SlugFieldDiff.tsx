@@ -1,5 +1,5 @@
 import React from 'react'
-import {DiffComponent, ObjectDiff, Change} from '../../../diff'
+import {DiffComponent, DiffFromTo, ObjectDiff} from '../../../diff'
 import {SlugPreview} from '../preview'
 
 interface Slug {
@@ -7,5 +7,7 @@ interface Slug {
 }
 
 export const SlugFieldDiff: DiffComponent<ObjectDiff<Slug>> = ({diff, schemaType}) => {
-  return <Change layout="grid" diff={diff} schemaType={schemaType} previewComponent={SlugPreview} />
+  return (
+    <DiffFromTo layout="grid" diff={diff} schemaType={schemaType} previewComponent={SlugPreview} />
+  )
 }

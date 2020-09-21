@@ -7,7 +7,7 @@ import {getChangeVerb} from '../helpers'
 import {ChangeLayout} from './ChangeLayout'
 import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
 
-import styles from './Change.css'
+import styles from './DiffFromTo.css'
 
 interface ChangeProps {
   previewComponent: IPreviewComponent<any>
@@ -17,7 +17,7 @@ interface ChangeProps {
   layout?: 'grid' | 'inline'
 }
 
-export function Change({
+export function DiffFromTo({
   layout = 'inline',
   diff,
   path,

@@ -2,7 +2,7 @@ import React from 'react'
 import Preview from 'part:@sanity/base/preview'
 import {PreviewComponent} from '../../preview/types'
 import {DiffComponent} from '../../types'
-import {Change} from './Change'
+import {DiffFromTo} from './DiffFromTo'
 
 import styles from './FallbackDiff.css'
 
@@ -16,6 +16,11 @@ const FallbackPreview: PreviewComponent<any> = ({color, value, schemaType}) => {
 
 export const FallbackDiff: DiffComponent<any> = ({diff, schemaType}) => {
   return (
-    <Change diff={diff} schemaType={schemaType} previewComponent={FallbackPreview} layout="grid" />
+    <DiffFromTo
+      diff={diff}
+      schemaType={schemaType}
+      previewComponent={FallbackPreview}
+      layout="grid"
+    />
   )
 }
