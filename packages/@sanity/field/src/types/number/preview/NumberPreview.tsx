@@ -4,11 +4,7 @@ import {PreviewComponent} from '../../../preview/types'
 import styles from './NumberPreview.css'
 
 export const NumberPreview: PreviewComponent<string> = props => {
-  const {color, value} = props
+  const {value} = props
 
-  return (
-    <span className={styles.root} style={{background: color?.background, color: color?.text}}>
-      {value}
-    </span>
-  )
+  return <span className={styles.root}>{value}</span>
 }
