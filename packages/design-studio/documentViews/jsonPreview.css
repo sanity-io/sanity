@@ -2,7 +2,6 @@
 
 .root {
   font-family: var(--font-family-monospace);
-  background: var(--code-bg);
   color: var(--code-color);
   padding: var(--medium-padding);
   margin: 0;

@@ -22,10 +22,12 @@
     "@sanity/desk-tool": "1.150.7",
     "@sanity/google-maps-input": "1.150.1",
     "@sanity/react-hooks": "1.150.7",
+    "@sanity/types": "1.150.7",
     "@sanity/vision": "1.150.6",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
-    "react-dom": "^16.9.0"
+    "react-dom": "^16.9.0",
+    "react-jason": "^1.1.0"
   },
   "devDependencies": {
     "typescript": "^4.0.2",
