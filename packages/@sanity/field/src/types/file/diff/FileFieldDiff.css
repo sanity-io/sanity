@@ -4,24 +4,12 @@
   /*  */
 }
 
-.annotation {
-  border-radius: var(--border-radius-small);
-
-  @nest &[data-action='removed'] {
-    text-decoration: line-through;
-  }
-}
-
-.fileDiff {
-  @nest &[data-diff-layout='double'] {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-  }
+.card {
+  display: block;
 }
 
 .sizeDiff {
   display: inline-block;
-  font-size: 13px;
   padding: 0 4px;
   background: var(--component-bg);
   border-radius: var(--border-radius-small);
