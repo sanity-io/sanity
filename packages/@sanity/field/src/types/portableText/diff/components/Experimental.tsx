@@ -41,7 +41,7 @@ type Props = {
   schemaType: ObjectSchemaType
 }
 
-export default function Block(props: Props): JSX.Element {
+export default function Experimental(props: Props): JSX.Element {
   const {diff, childMap, experimentalDiff, schemaType} = props
 
   const handleObjectFocus = (event: SyntheticEvent<HTMLSpanElement>) => {
@@ -276,7 +276,7 @@ export default function Block(props: Props): JSX.Element {
           )
         }
       })
-      return React.createElement('div', {}, ...returnedChildren)
+      return React.createElement('div', {key: block._key}, ...returnedChildren)
     }
     throw new Error('span schemaType not found')
   }
