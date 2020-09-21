@@ -6,9 +6,9 @@ import {DiffFromTo} from './DiffFromTo'
 
 import styles from './FallbackDiff.css'
 
-const FallbackPreview: PreviewComponent<any> = ({color, value, schemaType}) => {
+const FallbackPreview: PreviewComponent<any> = ({value, schemaType}) => {
   return (
-    <div className={styles.root} style={{background: color?.background, color: color?.text}}>
+    <div className={styles.root}>
       <Preview type={schemaType} value={value} layout="default" />
     </div>
   )
