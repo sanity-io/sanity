@@ -218,7 +218,7 @@ function whatwgRNG(length = 16) {
   return rnds8
 }
 
-export function randomKey(length: number): string {
+export function randomKey(length?: number): string {
   const table = getByteHexTable()
   return whatwgRNG(length)
     .reduce((str, n) => str + table[n], '')
