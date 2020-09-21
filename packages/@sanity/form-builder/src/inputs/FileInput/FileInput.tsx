@@ -19,7 +19,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {Path} from '../../typedefs/path'
+import {Path} from '@sanity/types'
 import {Observable} from 'rxjs'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
@@ -169,9 +169,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           <FileIcon />
         </div>
         <div>
-          <div className={styles.fileLabel}>
-            {assetDocument.originalFilename}{' '}
-          </div>
+          <div className={styles.fileLabel}>{assetDocument.originalFilename} </div>
           <AnchorButton href={`${assetDocument.url}?dl`} inverted size="small">
             Download
           </AnchorButton>

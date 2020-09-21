@@ -2,7 +2,7 @@ import React from 'react'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
 import {Marker} from '../../typedefs/index'
-import {Path} from '../../typedefs/path'
+import {Path} from '@sanity/types'
 import {RenderCustomMarkers} from './types'
 import styles from './Markers.css'
 

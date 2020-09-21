@@ -1,10 +1,10 @@
 /* eslint-disable complexity */
 import React from 'react'
 import shallowEquals from 'shallow-equals'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
-import generateHelpUrl from '@sanity/generate-help-url'
+import {Path, PathSegment} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {Path, PathSegment} from './typedefs/path'
+import generateHelpUrl from '@sanity/generate-help-url'
+import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'

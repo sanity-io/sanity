@@ -1,7 +1,7 @@
 // A simple focus path manager
 
 import React from 'react'
-import {Path} from '../../typedefs/path'
+import {Path} from '@sanity/types'
 
 type Props = {
   path: any | null

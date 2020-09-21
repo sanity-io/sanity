@@ -1,4 +1,4 @@
-import {Path} from './path'
+import {Path} from '@sanity/types'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore

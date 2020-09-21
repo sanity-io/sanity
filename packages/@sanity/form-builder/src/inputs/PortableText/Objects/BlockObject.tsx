@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, SyntheticEvent, useMemo} from 'react'
 import classNames from 'classnames'
+import {Path} from '@sanity/types'
 import {
   PortableTextEditor,
   PortableTextBlock,
@@ -10,7 +11,6 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 import {Marker} from '../../../typedefs'
-import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import styles from './BlockObject.css'

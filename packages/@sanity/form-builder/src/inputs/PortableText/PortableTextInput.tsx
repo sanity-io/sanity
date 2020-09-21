@@ -1,6 +1,7 @@
 import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
+import {Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
@@ -18,7 +19,6 @@ import {Patch} from '../../typedefs/patch'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {Path} from '../../typedefs/path'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import RespondToInvalidContent from './InvalidValue'
@@ -29,21 +29,29 @@ export type PatchWithOrigin = Patch & {
   timestamp: Date
 }
 
+type PatchSubscribe = (subscribeFn: PatchSubscriber) => void
+type PatchSubscriber = ({
+  patches
+}: {
+  patches: PatchWithOrigin[]
+  snapshot: PortableTextBlock[] | undefined
+}) => void
+
 type Props = {
   focusPath: Path
   hotkeys: HotkeyOptions
   level: number
-  markers: Array<Marker>
+  markers: Marker[]
   onBlur: () => void
-  onChange: (arg0: PatchEvent) => void
-  onFocus: (Path) => void
+  onChange: (event: PatchEvent) => void
+  onFocus: (path) => void
   onCopy?: OnCopyFn
   onPaste?: OnPasteFn
   readOnly: boolean | null
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
   presence: FormFieldPresence[]
-  subscribe: (arg0: ({patches: PatchEvent}) => void) => void
+  subscribe: PatchSubscribe
   type: Type
   value: PortableTextBlock[] | undefined
 }

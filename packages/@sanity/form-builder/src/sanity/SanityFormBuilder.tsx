@@ -2,7 +2,7 @@ import React from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import {Marker, Type} from '../typedefs'
-import {Path} from '../typedefs/path'
+import {Path} from '@sanity/types'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 

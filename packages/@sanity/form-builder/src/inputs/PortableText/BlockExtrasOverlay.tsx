@@ -1,12 +1,12 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
+import {isKeySegment, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
   usePortableTextEditor
 } from '@sanity/portable-text-editor'
 import PatchEvent from '../../../PatchEvent'
-import {Path} from '../../typedefs/path'
 import {Marker} from '../../typedefs'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
@@ -24,7 +24,7 @@ type Props = {
 }
 
 const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[] =>
-  markers.filter(marker => typeof marker.path[0] === 'object' && marker.path[0]._key === block._key)
+  markers.filter(marker => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key)
 
 export default function BlockExtrasOverlay(props: Props) {
   const {

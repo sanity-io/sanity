@@ -1,45 +1,44 @@
 import React from 'react'
+import {uniqueId} from 'lodash'
 import speakingurl from 'speakingurl'
-import {get} from '@sanity/util/paths'
+import {Path, SanityDocument, SlugParent, SlugifierFn, SlugSchemaType} from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
+import {Marker} from '../../typedefs'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/SlugInput.css'
-import {Path} from '../../typedefs/path'
-import {uniqueId} from 'lodash'
 
 // Fallback slugify function if not defined in field options
-function defaultSlugify(value, type) {
+const defaultSlugify: SlugifierFn = (value, type) => {
   const maxLength = (type.options && type.options.maxLength) || 200
   const slugifyOpts = {truncate: maxLength, symbols: true}
   return value ? speakingurl(value, slugifyOpts) : ''
 }
+
 const defaultState = {
   inputText: undefined,
   loading: false
 }
 
+interface Slug {
+  _type: 'slug'
+  current?: string
+}
+
 type Props = {
-  type: any
+  type: SlugSchemaType
   level: number
-  value: {
-    current: string
-  }
+  value: Slug
   readOnly?: boolean
-  document: {_id: string}
-  onChange: (ev: any) => void
+  document: SanityDocument
+  onChange: (ev: PatchEvent) => void
   onFocus: (path: Path) => void
   getValuePath: () => Path
-  markers: [
-    {
-      level: 'error'
-      type: string
-      item: any
-    }
-  ]
+  markers: Marker[]
   presence: any
 }
 
@@ -49,35 +48,43 @@ export default withValuePath(
       _textInput: any
       _isMounted: boolean
       _inputId = uniqueId('SlugInput')
+
       static defaultProps = {
         value: {current: undefined},
         readOnly: false,
         onChange() {},
         markers: []
       }
+
       state = defaultState
+
       componentDidMount() {
         this._isMounted = true
       }
+
       componentWillUnmount() {
         this._isMounted = false
       }
+
       updateCurrent(current) {
         const {onChange, type} = this.props
         if (!current) {
           onChange(PatchEvent.from(unset([])))
           return
         }
+
         onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(current, ['current'])))
       }
+
       slugify(sourceValue) {
         if (!sourceValue) {
           return Promise.resolve(sourceValue)
         }
         const {type} = this.props
-        const slugify = get(type, ['options', 'slugify'], defaultSlugify)
+        const slugify = type.options.slugify || defaultSlugify
         return Promise.resolve(slugify(sourceValue, type))
       }
+
       UNSAFE_componentWillReceiveProps(nextProps) {
         const {document} = nextProps
         // Reset state if document is changed
@@ -87,23 +94,28 @@ export default withValuePath(
           this.setState(defaultState)
         }
       }
+
       focus() {
         if (this._textInput) {
           this._textInput.focus()
         }
       }
+
       setTextInput = input => {
         this._textInput = input
       }
+
       handleChange = event => {
         this.updateCurrent(event.target.value)
       }
+
       handleFocusCurrent = event => {
         this.props.onFocus(['current'])
       }
+
       handleGenerateSlug = () => {
         const {type} = this.props
-        const source = get(type, ['options', 'source'])
+        const source = type.options?.source
         if (!source) {
           // eslint-disable-next-line no-console
           console.error(`Source is missing. Check source on type "${type.name}" in schema`)
@@ -123,19 +135,20 @@ export default withValuePath(
 
       hasSource = (): boolean => {
         const {type, document} = this.props
-        const source = get(type, ['options', 'source'], [])
-        return typeof source === 'function' ? true : Boolean(get(document, source))
+        const source = type.options?.source
+
+        return typeof source === 'function' ? true : Boolean(PathUtils.get(document, source))
       }
 
-      getNewFromSource = (): Promise<string> => {
+      getNewFromSource = (): Promise<string | undefined> => {
         const {getValuePath, type, document} = this.props
         const parentPath = getValuePath().slice(0, -1)
-        const parent = get(document, parentPath)
-        const source = get(type, ['options', 'source'], [])
+        const parent = PathUtils.get(document, parentPath) as SlugParent
+        const source = type.options?.source || ([] as Path)
         return Promise.resolve(
           typeof source === 'function'
             ? source(document, {parentPath, parent})
-            : get(document, source)
+            : (PathUtils.get(document, source) as string | undefined)
         )
       }
 
@@ -151,6 +164,7 @@ export default withValuePath(
           presence,
           labelFor: this._inputId
         }
+
         const validation = markers.filter(marker => marker.type === 'validation')
         const errors = validation.filter(marker => marker.level === 'error')
         return (
@@ -162,7 +176,6 @@ export default withValuePath(
                   ref={this.setTextInput}
                   customValidity={errors.length > 0 ? errors[0].item.message : ''}
                   disabled={loading}
-                  placeholder={type.placeholder}
                   onChange={this.handleChange}
                   onFocus={this.handleFocusCurrent}
                   value={typeof inputText === 'string' ? inputText : value.current}

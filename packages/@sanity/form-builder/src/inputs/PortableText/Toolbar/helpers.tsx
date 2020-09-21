@@ -21,7 +21,7 @@ import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import React from 'react'
-import {Path} from '../../../typedefs/path'
+import {Path} from '@sanity/types'
 import CustomIcon from './CustomIcon'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
