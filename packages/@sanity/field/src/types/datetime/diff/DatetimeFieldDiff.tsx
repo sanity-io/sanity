@@ -1,9 +1,14 @@
 import React from 'react'
-import {DiffComponent, StringDiff, Change} from '../../../diff'
+import {DiffComponent, DiffFromTo, StringDiff} from '../../../diff'
 import {DatetimePreview} from '../preview'
 
 export const DatetimeFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   return (
-    <Change diff={diff} layout="grid" schemaType={schemaType} previewComponent={DatetimePreview} />
+    <DiffFromTo
+      diff={diff}
+      layout="grid"
+      schemaType={schemaType}
+      previewComponent={DatetimePreview}
+    />
   )
 }
