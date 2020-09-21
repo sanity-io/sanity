@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.annotation {
+  display: inline-block;
+}
+
 .root {
   display: flex;
   align-items: center;

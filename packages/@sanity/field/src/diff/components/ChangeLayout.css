@@ -3,28 +3,46 @@
 .root {
   display: flex;
   align-items: center;
-  @nest &[data-layout='inline'] {
+  flex: 1;
+  overflow: hidden;
+  @nest &[data-layout='fluid'] {
+    align-items: center;
   }
 
-  @nest &[data-layout='grid'] {
-    /* display: grid;
-    grid-template-columns: 1fr auto 1fr; */
+  @nest &[data-layout='fixed'] {
+    flex: 1;
+  }
+
+  @nest &[data-direction='vertical'] {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  @nest &[data-direction='vertical'][data-layout='fixed'] {
+    align-items: stretch;
   }
 }
 
 .from,
 .to {
-  @nest .root[data-layout='grid'] & {
+  @nest .root[data-layout='fixed'] & {
     flex: 1;
     min-width: 0;
+    width: 100%;
   }
 }
 
 .arrow {
+  align-self: center;
   display: flex;
   padding: 0 var(--extra-small-padding);
   align-items: center;
   font-size: var(--font-size-large);
   line-height: var(--line-height-large);
   color: var(--text-muted);
+
+  @nest &[data-direction='vertical'] {
+    transform: rotate(90deg);
+    padding: var(--extra-small-padding) 0;
+  }
 }

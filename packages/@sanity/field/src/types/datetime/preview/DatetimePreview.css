@@ -4,6 +4,7 @@
   display: block;
   padding: var(--extra-small-padding) var(--small-padding);
   border-radius: var(--border-radius-small);
+  width: 100%;
 
   @nest del & {
     text-decoration: line-through;

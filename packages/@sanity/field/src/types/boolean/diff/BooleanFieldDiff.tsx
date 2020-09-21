@@ -16,17 +16,19 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const userColor = useDiffAnnotationColor(diff, []) || {background: '', text: '', border: ''}
 
   return (
-    <DiffAnnotationTooltip as="div" className={styles.root} diff={diff}>
-      <Preview checked={fromValue} color={userColor} />
-      {toValue !== undefined && toValue !== null && (
-        <>
-          <ChangeArrow />
-          <div className={styles.label}>
-            <Preview checked={toValue} color={userColor} />
-            {title && <div className={styles.title}>{title}</div>}
-          </div>
-        </>
-      )}
+    <DiffAnnotationTooltip as="div" diff={diff} className={styles.annotation}>
+      <div className={styles.root}>
+        <Preview checked={fromValue} color={userColor} />
+        {toValue !== undefined && toValue !== null && (
+          <>
+            <ChangeArrow />
+            <div className={styles.label}>
+              <Preview checked={toValue} color={userColor} />
+              {title && <div className={styles.title}>{title}</div>}
+            </div>
+          </>
+        )}
+      </div>
     </DiffAnnotationTooltip>
   )
 }

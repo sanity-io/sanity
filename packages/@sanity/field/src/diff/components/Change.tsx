@@ -14,11 +14,13 @@ interface ChangeProps {
   diff: Diff
   schemaType: SchemaType
   path?: Path | string
-  layout?: 'grid' | 'inline'
+  layout?: 'fluid' | 'fixed' | undefined
+  direction?: 'horizontal' | 'vertical'
 }
 
 export function Change({
-  layout = 'inline',
+  layout,
+  direction,
   diff,
   path,
   schemaType,
@@ -50,8 +52,13 @@ export function Change({
   )
 
   return (
-    <DiffAnnotationTooltip annotation={annotation} description={description}>
-      <ChangeLayout from={from} to={to} layout={layout} />
+    <DiffAnnotationTooltip
+      annotation={annotation}
+      description={description}
+      className={styles.annotation}
+      data-layout={layout || 'fluid'}
+    >
+      <ChangeLayout from={from} to={to} layout={layout} direction={direction} />
     </DiffAnnotationTooltip>
   )
 }

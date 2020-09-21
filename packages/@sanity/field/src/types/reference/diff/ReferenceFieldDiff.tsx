@@ -7,7 +7,7 @@ export const ReferenceFieldDiff: DiffComponent<ReferenceDiff> = ({diff, schemaTy
   return (
     <Change
       diff={diff}
-      layout="grid"
+      layout="fixed"
       path="_ref"
       previewComponent={ReferencePreview}
       schemaType={schemaType}

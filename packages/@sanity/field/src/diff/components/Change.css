@@ -1,11 +1,20 @@
-.from {
-  display: block;
-  text-decoration: none;
-  word-break: break-all;
+@import 'part:@sanity/base/theme/variables-style';
+
+.annotation {
+  @nest &[data-layout='fluid'] {
+    display: inline-block;
+  }
+
+  @nest &[data-layout='fixed'] {
+    display: flex;
+    justify-content: stretch;
+    flex: 1;
+  }
 }
 
+.from,
 .to {
-  display: block;
+  display: flex;
   text-decoration: none;
   word-break: break-all;
 }
