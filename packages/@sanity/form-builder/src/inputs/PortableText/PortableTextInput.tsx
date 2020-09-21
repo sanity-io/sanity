@@ -240,28 +240,26 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
             Jump to editor
           </button>
         )}
-        <ChangeIndicator compareDeep={!isFullscreen}>
-          <Input
-            focusPath={focusPath}
-            hasFocus={hasFocus}
-            hotkeys={hotkeys}
-            isFullscreen={isFullscreen}
-            markers={markers}
-            onBlur={onBlur}
-            onChange={onChange}
-            onCopy={onCopy}
-            onFocus={onFocus}
-            onPaste={onPaste}
-            onToggleFullscreen={handleToggleFullscreen}
-            patche$={patche$}
-            presence={presence}
-            readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
-            renderCustomMarkers={renderCustomMarkers}
-            type={props.type}
-            value={valueTouchedByMarkers}
-          />
-        </ChangeIndicator>
+        <Input
+          focusPath={focusPath}
+          hasFocus={hasFocus}
+          hotkeys={hotkeys}
+          isFullscreen={isFullscreen}
+          markers={markers}
+          onBlur={onBlur}
+          onChange={onChange}
+          onCopy={onCopy}
+          onFocus={onFocus}
+          onPaste={onPaste}
+          onToggleFullscreen={handleToggleFullscreen}
+          patche$={patche$}
+          presence={presence}
+          readOnly={readOnly}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          type={props.type}
+          value={valueTouchedByMarkers}
+        />
       </PortableTextEditor>
     ),
     [focusPath, hasFocus, isFullscreen, presence, readOnly, valueTouchedByMarkers]
