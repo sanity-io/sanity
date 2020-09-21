@@ -1,6 +1,6 @@
 import {Image, ImageCrop, ImageHotspot} from '@sanity/types'
 import React from 'react'
-import {DiffAnnotationTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../diff'
+import {DiffTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../diff'
 import {hexToRgba} from './helpers'
 
 interface HotspotCropSVGProps {
@@ -45,7 +45,7 @@ export function HotspotCropSVG(
       </defs>
 
       {crop && (
-        <DiffAnnotationTooltip as="g" diff={diff} path="crop" description="Crop changed">
+        <DiffTooltip as="g" diff={diff} path="crop" description="Crop changed">
           <CropSVG
             crop={crop}
             fill={hexToRgba(cropColor.border, 0.25)}
@@ -55,11 +55,11 @@ export function HotspotCropSVG(
             width={width}
             height={height}
           />
-        </DiffAnnotationTooltip>
+        </DiffTooltip>
       )}
 
       {hotspot && (
-        <DiffAnnotationTooltip as="g" diff={diff} path="hotspot" description="Hotspot changed">
+        <DiffTooltip as="g" diff={diff} path="hotspot" description="Hotspot changed">
           <HotspotSVG
             hotspot={hotspot}
             fill={hexToRgba(hotspotColor.border, 0.25)}
@@ -68,7 +68,7 @@ export function HotspotCropSVG(
             width={width}
             height={height}
           />
-        </DiffAnnotationTooltip>
+        </DiffTooltip>
       )}
     </svg>
   )

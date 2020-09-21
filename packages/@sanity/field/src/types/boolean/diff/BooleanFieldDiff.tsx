@@ -1,9 +1,9 @@
 import React from 'react'
 import {
   BooleanDiff,
-  DiffAnnotationTooltip,
-  FromToArrow,
   DiffComponent,
+  DiffTooltip,
+  FromToArrow,
   useDiffAnnotationColor
 } from '../../../diff'
 import {Checkbox, Switch} from '../preview'
@@ -16,7 +16,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const userColor = useDiffAnnotationColor(diff, []) || {background: '', text: '', border: ''}
 
   return (
-    <DiffAnnotationTooltip as="div" className={styles.root} diff={diff}>
+    <DiffTooltip as="div" className={styles.root} diff={diff}>
       <Preview checked={fromValue} color={userColor} />
       {toValue !== undefined && toValue !== null && (
         <>
@@ -27,6 +27,6 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
           </div>
         </>
       )}
-    </DiffAnnotationTooltip>
+    </DiffTooltip>
   )
 }

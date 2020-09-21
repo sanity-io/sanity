@@ -1,6 +1,6 @@
 import React, {SyntheticEvent} from 'react'
 import {PortableTextChild} from '../types'
-import {DiffAnnotationTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../../diff'
+import {DiffTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../../diff'
 import styles from './InlineObject.css'
 
 const noop = () => {
@@ -40,9 +40,9 @@ export default function InlineObject(props: Props): JSX.Element {
     )
     // Wrap in tooltip
     returned = (
-      <DiffAnnotationTooltip diff={diff} as={'span'}>
+      <DiffTooltip diff={diff} as={'span'}>
         {returned}
-      </DiffAnnotationTooltip>
+      </DiffTooltip>
     )
   }
   return returned

@@ -1,10 +1,10 @@
 import {Image} from '@sanity/types'
 import * as React from 'react'
 import {
-  DiffComponent,
-  ObjectDiff,
-  DiffAnnotationTooltip,
   DiffAnnotationCard,
+  DiffComponent,
+  DiffTooltip,
+  ObjectDiff,
   ChangeList,
   getAnnotationAtPath
 } from '../../../diff'
@@ -85,12 +85,12 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     <div className={styles.root}>
       {showImageDiff &&
         (didAssetChange ? (
-          <DiffAnnotationTooltip
+          <DiffTooltip
             annotation={assetAnnotation}
             description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)}`}
           >
             {imageDiff}
-          </DiffAnnotationTooltip>
+          </DiffTooltip>
         ) : (
           imageDiff
         ))}
