@@ -7,7 +7,10 @@ import {Transaction} from './types'
 
 export type Meta = {chunk: Chunk; transactionIndex: number} | null
 
-export type AnnotationExtractor = (value: Value<Meta>) => Annotation
+export type AnnotationExtractor = {
+  fromValue(value: Value<Meta>): Annotation
+  fromMeta(meta: Meta): Annotation
+}
 
 class ArrayContentWrapper implements ArrayInput<Annotation> {
   type: 'array' = 'array'
@@ -43,6 +46,11 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
       this.value[idx],
       this.extractor
     ))
+  }
+
+  annotationAt(idx: number): Annotation {
+    const meta = this.content.metas[idx]
+    return this.extractor.fromMeta(meta)
   }
 }
 
@@ -131,7 +139,7 @@ class StringContentWrapper implements StringInput<Annotation> {
         // eslint-disable-next-line max-depth
         if (subEnd <= 0) break
 
-        push(part.value.slice(subStart, subEnd), this.extractor(part))
+        push(part.value.slice(subStart, subEnd), this.extractor.fromValue(part))
       }
 
       idx += length
@@ -146,7 +154,7 @@ function wrapValue(
   raw: unknown,
   extractor: AnnotationExtractor
 ): Input<Annotation> {
-  const annotation = extractor(value)
+  const annotation = extractor.fromValue(value)
 
   if (value.content) {
     switch (value.content.type) {
@@ -172,47 +180,38 @@ function wrapValue(
 function extractAnnotationForFromInput(
   timeline: Timeline,
   firstChunk: Chunk | null,
-  value: Value<Meta>
+  meta: Meta
 ): Annotation {
-  let tx: Transaction | null = null
-  let chunk: Chunk | null = null
-
-  if (value.endMeta) {
+  if (meta) {
     // The next transaction is where it disappeared:
-    const nextTxIndex = value.endMeta.transactionIndex + 1
-    tx = timeline.transactionByIndex(nextTxIndex)
-    if (!tx) return null
-
-    chunk = timeline.chunkByTransactionIndex(nextTxIndex, value.endMeta.chunk.index)
+    return annotationForTransactionIndex(timeline, meta.transactionIndex + 1, meta.chunk.index)
   } else if (firstChunk) {
-    // Otherwise, it must have disappeared in the first transaction:
-    tx = timeline.transactionByIndex(firstChunk.start)
-    chunk = firstChunk
-  }
-
-  if (tx && chunk) {
-    return {
-      chunk,
-      timestamp: tx.timestamp,
-      author: tx.author
-    }
+    return annotationForTransactionIndex(timeline, firstChunk.start, firstChunk.index)
   }
 
   return null
 }
 
-function extractAnnotationForToInput(timeline: Timeline, value: Value<Meta>): Annotation {
-  if (value.startMeta) {
-    const tx = timeline.transactionByIndex(value.startMeta.transactionIndex)!
-
-    return {
-      chunk: value.startMeta.chunk,
-      timestamp: tx.timestamp,
-      author: tx.author
-    }
+function extractAnnotationForToInput(timeline: Timeline, meta: Meta): Annotation {
+  if (meta) {
+    return annotationForTransactionIndex(timeline, meta.transactionIndex, meta.chunk.index)
   }
 
   return null
+}
+
+function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx?: number) {
+  const tx = timeline.transactionByIndex(idx)
+  if (!tx) return null
+
+  const chunk = timeline.chunkByTransactionIndex(idx, chunkIdx)
+  if (!chunk) return null
+
+  return {
+    chunk,
+    timestamp: tx.timestamp,
+    author: tx.author
+  }
 }
 
 export function diffValue(
@@ -223,9 +222,22 @@ export function diffValue(
   to: Value<Meta>,
   toRaw: unknown
 ): Diff<Annotation> {
-  const fromInput = wrapValue(from, fromRaw, value =>
-    extractAnnotationForFromInput(timeline, firstChunk, value)
-  )
-  const toInput = wrapValue(to, toRaw, value => extractAnnotationForToInput(timeline, value))
+  const fromInput = wrapValue(from, fromRaw, {
+    fromValue(value) {
+      return extractAnnotationForFromInput(timeline, firstChunk, value.endMeta)
+    },
+    fromMeta(meta) {
+      return extractAnnotationForFromInput(timeline, firstChunk, meta)
+    }
+  })
+
+  const toInput = wrapValue(to, toRaw, {
+    fromValue(value) {
+      return extractAnnotationForToInput(timeline, value.startMeta)
+    },
+    fromMeta(meta) {
+      return extractAnnotationForToInput(timeline, meta)
+    }
+  })
   return diffInput(fromInput, toInput)
 }

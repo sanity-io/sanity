@@ -96,7 +96,8 @@ function diffExactByPosition<A>(
       fromIndex: idx,
       toIndex: idx,
       hasMoved: false,
-      diff
+      diff,
+      annotation: toInput.annotationAt(idx)
     })
   }
 
@@ -117,7 +118,8 @@ function diffArrayByReinsert<A>(
       fromIndex: undefined,
       toIndex: idx,
       hasMoved: false,
-      diff: addedInput(input, undefined, options)
+      diff: addedInput(input, undefined, options),
+      annotation: input.annotation
     })
   }
 
@@ -128,7 +130,8 @@ function diffArrayByReinsert<A>(
       fromIndex: idx,
       toIndex: undefined,
       hasMoved: false,
-      diff: removedInput(input, undefined, options)
+      diff: removedInput(input, undefined, options),
+      annotation: input.annotation
     })
   }
 
@@ -162,7 +165,8 @@ function diffArrayByKey<A>(
       fromIndex,
       toIndex,
       hasMoved,
-      diff
+      diff,
+      annotation: toArray.annotationAt(toIndex)
     })
 
     if (diff.isChanged || fromIndex !== toIndex) {
@@ -195,7 +199,8 @@ function diffArrayByKey<A>(
       fromIndex,
       toIndex: undefined,
       hasMoved: false,
-      diff: removedInput(input, undefined, options)
+      diff: removedInput(input, undefined, options),
+      annotation: fromArray.annotationAt(fromIndex)
     })
 
     isChanged = true
@@ -209,7 +214,8 @@ function diffArrayByKey<A>(
         fromIndex: undefined,
         toIndex,
         hasMoved: false,
-        diff: addedInput(input, undefined, options)
+        diff: addedInput(input, undefined, options),
+        annotation: toArray.annotationAt(toIndex)
       })
     }
 
@@ -343,7 +349,8 @@ export function removedArray<A>(
           fromIndex: i,
           toIndex: undefined,
           hasMoved: false,
-          diff: removedInput(item, undefined, options)
+          diff: removedInput(item, undefined, options),
+          annotation: input.annotationAt(i)
         })
       }
 
@@ -373,7 +380,8 @@ export function addedArray<A>(
           fromIndex: undefined,
           toIndex: i,
           hasMoved: false,
-          diff: addedInput(item, undefined, options)
+          diff: addedInput(item, undefined, options),
+          annotation: input.annotationAt(i)
         })
       }
 

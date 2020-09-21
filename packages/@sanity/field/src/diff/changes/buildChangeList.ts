@@ -176,7 +176,8 @@ export function buildArrayChangeList(
       hasMoved: itemDiff.hasMoved,
       toIndex: itemDiff.toIndex,
       fromIndex: itemDiff.fromIndex,
-      annotation: itemDiff.diff.action === 'unchanged' ? undefined : itemDiff.diff.annotation
+      annotation:
+        itemDiff.diff.action === 'unchanged' ? itemDiff.annotation : itemDiff.diff.annotation
     })
 
     const attachItemDiff = (change: ChangeNode): ChangeNode => {

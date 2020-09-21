@@ -433,6 +433,7 @@ export function prepareDiffForPortableText(
                 fromValue: fromPseudoValue.children[0],
                 toValue: toPseudoValue.children[0]
               },
+              annotation: null,
               fromIndex: 0,
               toIndex: 0,
               hasMoved: false

@@ -1,3 +1,8 @@
+/* eslint-disable default-case */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable no-else-return */
+/* eslint-disable no-lonely-if */
+/* eslint-disable prefer-const */
 import {ObjectModel} from './object-model'
 import {RawPatch} from './patch'
 import {Patcher} from './internal-patcher'
@@ -25,6 +30,7 @@ export type ObjectContent<T> = {
 export type ArrayContent<T> = {
   type: 'array'
   elements: Value<T>[]
+  metas: T[]
 }
 
 export type StringContent<T> = {
@@ -71,7 +77,8 @@ class Model<T>
   asArray(value: Value<T>): ArrayContent<T> {
     if (!value.content) {
       let elements = (value.data as unknown[]).map(item => this.wrapWithMeta(item, value.startMeta))
-      value.content = {type: 'array', elements}
+      let metas = elements.map(() => this.meta)
+      value.content = {type: 'array', elements, metas}
     }
 
     return value.content as ArrayContent<T>
@@ -185,11 +192,14 @@ class Model<T>
   }
 
   copyArray(value: Value<T> | null): ArrayContent<T> {
-    let elements = value ? this.asArray(value).elements : []
+    let arr = value ? this.asArray(value) : null
+    let elements = arr ? arr.elements : []
+    let metas = arr ? arr.metas : []
 
     return {
       type: 'array',
-      elements
+      elements,
+      metas
     }
   }
 
@@ -203,11 +213,13 @@ class Model<T>
 
   arrayAppendValue(target: ArrayContent<T>, value: Value<T>): void {
     target.elements.push(value)
+    target.metas.push(this.meta)
   }
 
   arrayAppendSlice(target: ArrayContent<T>, source: Value<T>, left: number, right: number): void {
-    let slice = this.asArray(source).elements.slice(left, right)
-    target.elements.push(...slice)
+    let arr = this.asArray(source)
+    target.elements.push(...arr.elements.slice(left, right))
+    target.metas.push(...arr.metas.slice(left, right))
   }
 
   stringAppendValue(target: StringContent<T>, value: Value<T>): void {
