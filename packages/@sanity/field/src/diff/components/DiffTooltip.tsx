@@ -9,11 +9,10 @@ interface BaseAnnotationProps {
   description?: React.ReactNode | string
 }
 
-export type DiffAnnotationTooltipProps = (AnnotationProps | AnnotatedDiffProps) &
-  BaseAnnotationProps
+export type DiffTooltipProps = (AnnotationProps | AnnotatedDiffProps) & BaseAnnotationProps
 
-export function DiffAnnotationTooltip(
-  props: DiffAnnotationTooltipProps & React.HTMLProps<HTMLElement>
+export function DiffTooltip(
+  props: DiffTooltipProps & React.HTMLProps<HTMLElement>
 ): React.ReactElement {
   if ('diff' in props) {
     const {as = 'div', children, description, diff, path, ...restProps} = props

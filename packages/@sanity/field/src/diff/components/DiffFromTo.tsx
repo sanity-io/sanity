@@ -5,7 +5,7 @@ import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Diff, SchemaType} from '../../types'
 import {getChangeVerb} from '../helpers'
 import {FromTo} from './FromTo'
-import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
+import {DiffTooltip} from './DiffTooltip'
 
 import styles from './DiffFromTo.css'
 
@@ -50,9 +50,9 @@ export function DiffFromTo({
   )
 
   return (
-    <DiffAnnotationTooltip annotation={annotation} description={description}>
+    <DiffTooltip annotation={annotation} description={description}>
       <FromTo from={from} to={to} layout={layout} />
-    </DiffAnnotationTooltip>
+    </DiffTooltip>
   )
 }
 

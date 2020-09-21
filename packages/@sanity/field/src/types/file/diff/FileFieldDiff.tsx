@@ -3,11 +3,11 @@ import FileIcon from 'part:@sanity/base/file-icon'
 import {useRefValue} from '../../../diff/hooks'
 import {MetaInfo, FromToArrow} from '../../../diff/components'
 import {
+  ChangeList,
   DiffComponent,
+  DiffTooltip,
   ObjectDiff,
-  useDiffAnnotationColor,
-  DiffAnnotationTooltip,
-  ChangeList
+  useDiffAnnotationColor
 } from '../../../diff'
 import {File, FileAsset} from './types'
 import styles from './FileFieldDiff.css'
@@ -44,7 +44,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   return (
     <div className={styles.root}>
       {didAssetChange && (
-        <DiffAnnotationTooltip as="div" diff={diff} path="asset._ref" className={styles.tooltip}>
+        <DiffTooltip as="div" diff={diff} path="asset._ref" className={styles.tooltip}>
           <div className={styles.fileDiff} data-diff-layout={prev && next ? 'double' : 'single'}>
             {prev && (
               <div
@@ -79,7 +79,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
               </div>
             )}
           </div>
-        </DiffAnnotationTooltip>
+        </DiffTooltip>
       )}
 
       {nestedFields.length > 0 && (

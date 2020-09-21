@@ -2,7 +2,7 @@ import React, {SyntheticEvent} from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap, PortableTextDiff} from '../types'
 import {isDecorator, isHeader, childIsSpan, UNKNOWN_TYPE_NAME} from '../helpers'
 
-import {ObjectDiff, DiffCard, DiffAnnotationTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {ObjectDiff, DiffCard, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {ObjectSchemaType} from '../../../../types'
 import Annotation from './Annotation'
 import Decorator from './Decorator'
@@ -51,9 +51,9 @@ export default function Block(props: Props): JSX.Element {
       returned = (
         <div className={styles.styleIsChanged}>
           <div className={styles.changedBlockStyleNotice}>
-            <DiffAnnotationTooltip diff={diff.fields.style} as={'div'}>
+            <DiffTooltip diff={diff.fields.style} as={'div'}>
               Changed block style from '{fromStyle}'
-            </DiffAnnotationTooltip>
+            </DiffTooltip>
           </div>
           <div style={style}>{returned}</div>
         </div>

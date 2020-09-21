@@ -15,7 +15,7 @@ import {
 import {
   ArrayDiff,
   DiffCard,
-  DiffAnnotationTooltip,
+  DiffTooltip,
   ObjectDiff,
   useDiffAnnotationColor
 } from '../../../../diff'
@@ -72,9 +72,9 @@ export default function Experimental(props: Props): JSX.Element {
       returned = (
         <div className={styles.styleIsChanged}>
           <div className={styles.changedBlockStyleNotice}>
-            <DiffAnnotationTooltip diff={diff.fields.style} as={'div'}>
+            <DiffTooltip diff={diff.fields.style} as={'div'}>
               Changed block style from '{fromStyle}'
-            </DiffAnnotationTooltip>
+            </DiffTooltip>
           </div>
           <div style={style}>{returned}</div>
         </div>

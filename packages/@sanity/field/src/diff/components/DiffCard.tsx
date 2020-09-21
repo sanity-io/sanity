@@ -3,7 +3,7 @@ import {useUserColorManager} from '@sanity/base/user-color'
 import * as React from 'react'
 import {Annotation, Diff} from '../../types'
 import {getAnnotationAtPath, getAnnotationColor} from '../annotations'
-import {DiffAnnotationTooltip} from './DiffAnnotationTooltip'
+import {DiffTooltip} from './DiffTooltip'
 
 export interface AnnotationProps {
   annotation: Annotation | undefined | null
@@ -30,7 +30,7 @@ export function DiffCard(props: DiffCardProps & React.HTMLProps<HTMLElement>) {
     const color = getAnnotationColor(userColorManager, annotation)
 
     return (
-      <DiffAnnotationTooltip
+      <DiffTooltip
         {...restProps}
         as={as}
         annotation={annotation}
@@ -38,7 +38,7 @@ export function DiffCard(props: DiffCardProps & React.HTMLProps<HTMLElement>) {
         style={{backgroundColor: color.background, color: color.text}}
       >
         {children}
-      </DiffAnnotationTooltip>
+      </DiffTooltip>
     )
   }
 
@@ -46,12 +46,12 @@ export function DiffCard(props: DiffCardProps & React.HTMLProps<HTMLElement>) {
   const color = getAnnotationColor(userColorManager, restProps.annotation)
 
   return (
-    <DiffAnnotationTooltip
+    <DiffTooltip
       {...restProps}
       as={as}
       style={{backgroundColor: color.background, color: color.text}}
     >
       {children}
-    </DiffAnnotationTooltip>
+    </DiffTooltip>
   )
 }
