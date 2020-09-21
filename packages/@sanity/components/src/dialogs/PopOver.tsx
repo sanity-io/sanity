@@ -6,7 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
-import React, {useCallback, useRef} from 'react'
+import React, {useCallback, useState} from 'react'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
@@ -71,8 +71,11 @@ export default function PopOver(props: PopOverProps) {
     size = 'medium',
     useOverlay = false,
     hasAnimation,
-    referenceElement
+    referenceElement: referenceElementProp
   } = props
+
+  const [targetElement, setTargetElement] = useState<HTMLDivElement | null>(null)
+  const referenceElement = referenceElementProp || targetElement
 
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
@@ -80,10 +83,6 @@ export default function PopOver(props: PopOverProps) {
     },
     [onEscape]
   )
-
-  const localTargetRef = useRef(null)
-
-  const targetElement = referenceElement || localTargetRef.current || undefined
 
   const [primary, secondary] = partition(actions, action => action.primary)
 
@@ -99,7 +98,7 @@ export default function PopOver(props: PopOverProps) {
 
   return (
     <>
-      {!referenceElement && <div ref={localTargetRef} />}
+      {!referenceElementProp && <div ref={setTargetElement} />}
 
       <Portal>
         <Stacked>
@@ -176,7 +175,7 @@ export default function PopOver(props: PopOverProps) {
                       placement={placement}
                       open
                       ref={ref}
-                      targetElement={targetElement}
+                      targetElement={referenceElement}
                     />
                   )}
                 </ClickOutside>

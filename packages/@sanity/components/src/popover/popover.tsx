@@ -48,7 +48,9 @@ export const Popover = forwardRef(
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
     const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
-    const popper = usePopper(targetElement || referenceElement, popperElement, {
+    const popperReferenceElement = targetElement || referenceElement
+
+    const popper = usePopper(popperReferenceElement, popperElement, {
       placement,
       modifiers: [
         {
@@ -86,7 +88,7 @@ export const Popover = forwardRef(
     // Force update when `content` or `referenceElement` changes
     useEffect(() => {
       if (forceUpdate) forceUpdate()
-    }, [forceUpdate, content, referenceElement, targetElement])
+    }, [forceUpdate, content, popperReferenceElement])
 
     const setReference = useCallback(
       (el: HTMLDivElement | null) => {
