@@ -20,6 +20,18 @@ import {LoadingContent} from './content/loading'
 import {collectLatestAuthorAnnotations} from './helpers'
 
 import styles from './changesPanel.css'
+import {ScrollContainer} from '@sanity/base/ScrollContainer'
+
+import {Reporter} from '@sanity/base/lib/change-indicators'
+import * as PathUtils from '@sanity/util/paths'
+
+const ChangeFieldWrapper = (props: {path: any; children: React.ReactNode}) => {
+  return (
+    <Reporter id={`change-${PathUtils.toString(props.path)}`} data={{path: props.path}}>
+      {props.children}
+    </Reporter>
+  )
+}
 
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -50,6 +62,7 @@ export function ChangesPanel({
     () => ({
       documentId,
       schemaType,
+      FieldWrapper: ChangeFieldWrapper,
       rootDiff: diff,
       isComparingCurrent
     }),

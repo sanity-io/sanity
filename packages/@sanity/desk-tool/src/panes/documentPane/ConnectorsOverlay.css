@@ -1,0 +1,23 @@
+.svg {
+  z-index: 2000;
+}
+
+.connector {
+  pointer-events: all;
+  stroke: #2276fc;
+  stroke-width: 2;
+  @nest &:hover .connectorPath {
+    opacity: 1;
+  }
+}
+
+.connectorPath {
+  transition: opacity 200ms;
+  opacity: 0;
+  @nest &.hasFocus {
+    opacity: 1;
+  }
+}
+.hasFocus {
+  opacity: 1;
+}

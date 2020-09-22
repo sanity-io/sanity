@@ -5,6 +5,7 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import FieldStatus from '../fieldsets/FieldStatus'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {Marker} from '../types'
 
 interface DefaultFormFieldProps {
@@ -69,7 +70,9 @@ export default class DefaultFormField extends React.PureComponent<DefaultFormFie
           )}
         </label>
 
-        <div className={styles.content}>{children}</div>
+        <div className={styles.content}>
+          <ChangeIndicator>{children}</ChangeIndicator>
+        </div>
       </div>
     )
   }

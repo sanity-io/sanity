@@ -22,6 +22,7 @@ import {Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import InvalidItem from './InvalidItem'
 
 const DragHandle = createDragHandle(() => (
@@ -273,47 +274,49 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
 
     return (
-      <div className={styles.inner}>
-        {!isGrid && isSortable && <DragHandle />}
-        <div
-          tabIndex={0}
-          onClick={value._key && this.handleEditStart}
-          onKeyPress={this.handleKeyPress}
-          className={styles.previewWrapper}
-        >
+      <ChangeIndicatorScope path={[{_key: value._key}]}>
+        <div className={styles.inner}>
+          {!isGrid && isSortable && <DragHandle />}
           <div
-            tabIndex={-1}
-            ref={this.setFocusArea}
-            className={styles.previewWrapperHelper}
-            onFocus={this.handleFocus}
+            tabIndex={0}
+            onClick={value._key && this.handleEditStart}
+            onKeyPress={this.handleKeyPress}
+            className={styles.previewWrapper}
           >
-            {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-            <Preview layout={previewLayout} value={value} type={memberType} />
+            <div
+              tabIndex={-1}
+              ref={this.setFocusArea}
+              className={styles.previewWrapperHelper}
+              onFocus={this.handleFocus}
+            >
+              {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
+              <Preview layout={previewLayout} value={value} type={memberType} />
+            </div>
+          </div>
+
+          <div className={isGrid ? styles.functionsInGrid : styles.functions}>
+            <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
+            <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+            {value._ref && (
+              <IntentButton
+                className={styles.linkToReference}
+                icon={LinkIcon}
+                intent="edit"
+                kind={isGrid ? undefined : 'simple'}
+                padding="small"
+                params={{id: value._ref}}
+              />
+            )}
+            {!readOnly && (
+              <ConfirmButton
+                kind={isGrid ? undefined : 'simple'}
+                title="Remove this item"
+                onConfirm={this.handleRemove}
+              />
+            )}
           </div>
         </div>
-
-        <div className={isGrid ? styles.functionsInGrid : styles.functions}>
-          <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-          <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
-          {value._ref && (
-            <IntentButton
-              className={styles.linkToReference}
-              icon={LinkIcon}
-              intent="edit"
-              kind={isGrid ? undefined : 'simple'}
-              padding="small"
-              params={{id: value._ref}}
-            />
-          )}
-          {!readOnly && (
-            <ConfirmButton
-              kind={isGrid ? undefined : 'simple'}
-              title="Remove this item"
-              onConfirm={this.handleRemove}
-            />
-          )}
-        </div>
-      </div>
+      </ChangeIndicatorScope>
     )
   }
   render() {

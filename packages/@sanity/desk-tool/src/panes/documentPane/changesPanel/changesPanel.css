@@ -11,6 +11,11 @@
   border-bottom: 1px solid var(--hairline-color);
 }
 
+.changeWrapper {
+  border-left: 1px solid var(--hairline-color);
+  padding-left: 0.75em;
+}
+
 .mainNav {
   display: flex;
 }
@@ -60,6 +65,7 @@
 .body {
   flex: 1;
   min-height: 0;
+  margin-left: 4px;
   padding: var(--large-padding) var(--medium-padding);
   overflow: auto;
   position: relative;
