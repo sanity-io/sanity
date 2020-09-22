@@ -1,17 +1,28 @@
 import * as React from 'react'
-import {OverlayReporterContext} from './types'
+import {DelegateComponentType, OverlayReporterContext} from './types'
 
 export const createReporter = (Context: React.Context<OverlayReporterContext>) =>
   React.memo(function RegionReporter<Data>(props: {
+    // todo: fix wonky typings
     id: string
     data: Data
     children?: React.ReactNode
-    component: React.ComponentType<Data>
+    component?: DelegateComponentType<Data>
     style?: React.CSSProperties
+    className?: string
   }) {
-    const {id, component, data} = props
-    const ref = React.useRef<HTMLDivElement>()
+    const {id, component = 'div', data, ...rest} = props
+    const ref = React.useRef()
     const context = React.useContext(Context)
+
+    React.useEffect(() => {
+      context.dispatch({
+        type: 'update',
+        id,
+        data,
+        component
+      })
+    }, [props])
 
     React.useEffect(() => {
       context.dispatch({
@@ -26,20 +37,10 @@ export const createReporter = (Context: React.Context<OverlayReporterContext>) =
       }
     }, [])
 
-    React.useEffect(() => {
-      context.dispatch({
-        type: 'update',
-        id,
-        data,
-        component
-      })
-    }, [props])
-
-    const Component = component
-    return (
-      // note the wrapper here must be a block element for ResizeObserver to work properly
-      <div ref={ref} style={{visibility: 'hidden', ...props.style}}>
-        <Component {...data} />
-      </div>
-    )
+    return React.createElement(component, {
+      ref,
+      style: props.style,
+      ...data,
+      ...rest
+    })
   })
