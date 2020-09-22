@@ -48,7 +48,7 @@ export const InlineObject: FunctionComponent<Props> = ({
   const isEmpty = !value || isEqual(Object.keys(value), ['_key', '_type'])
 
   return (
-    <span className={classnames} onClick={handleOpen}>
+    <span className={classnames} onClick={handleOpen} data-pte-key={value._key}>
       <span
         className={styles.previewContainer}
         style={readOnly ? {cursor: 'default'} : {}} // TODO: Probably move to styles aka. className?

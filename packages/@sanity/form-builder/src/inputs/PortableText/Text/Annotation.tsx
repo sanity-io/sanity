@@ -4,9 +4,9 @@ import classNames from 'classnames'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {Path} from '@sanity/types'
 import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
-import {Path} from '@sanity/types'
 
 import styles from './Annotation.css'
 
