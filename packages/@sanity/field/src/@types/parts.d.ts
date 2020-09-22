@@ -90,9 +90,17 @@ declare module 'part:@sanity/components/buttons/default' {
   export {default} from '@sanity/components/src/buttons/DefaultButton'
 }
 
+declare module 'part:@sanity/components/click-outside' {
+  export * from '@sanity/components/src/clickOutside'
+}
+
 declare module 'part:@sanity/components/loading/spinner-style'
 declare module 'part:@sanity/components/loading/spinner' {
   export {default} from '@sanity/components/src/loading/Spinner'
+}
+
+declare module 'part:@sanity/components/popover' {
+  export * from '@sanity/components/src/popover'
 }
 
 declare module 'part:@sanity/components/portal' {

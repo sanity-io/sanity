@@ -2,6 +2,8 @@ import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {ClickOutside} from 'part:@sanity/components/click-outside'
+import {Popover} from 'part:@sanity/components/popover'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -22,6 +24,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const {path} = React.useContext(DiffContext)
   const isRoot = path.length === 0
+  const [confirmRevertAllOpen, setConfirmRevertAllOpen] = React.useState(false)
 
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
@@ -35,9 +38,26 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const changes = fields && fields.length === 0 ? [] : maybeFlatten(allChanges)
 
   const rootChange = allChanges[0]
-  const handleRevertAllChanges = React.useCallback(
-    () => undoChange(rootChange, diff, docOperations),
-    [rootChange, diff, docOperations]
+  const handleRevertAllChanges = React.useCallback(() => {
+    undoChange(rootChange, diff, docOperations)
+    setConfirmRevertAllOpen(false)
+  }, [rootChange, diff, docOperations])
+
+  const handleRevertAllChangesClick = React.useCallback(() => {
+    setConfirmRevertAllOpen(true)
+  }, [])
+
+  const handleRevertAllChangesClickOutside = React.useCallback(() => {
+    setConfirmRevertAllOpen(false)
+  }, [])
+
+  const handleRevertAllChangesKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape') {
+        setConfirmRevertAllOpen(false)
+      }
+    },
+    []
   )
 
   if (changes.length === 0) {
@@ -51,11 +71,40 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
       ))}
 
       {path.length === 0 && changes.length > 1 && (
-        <div className={styles.revertAllContainer}>
-          <Button color="danger" icon={UndoIcon} kind="secondary" onClick={handleRevertAllChanges}>
-            Revert all changes
-          </Button>
-        </div>
+        <ClickOutside onClickOutside={handleRevertAllChangesClickOutside}>
+          {ref => (
+            <div className={styles.footer} onKeyDown={handleRevertAllChangesKeyDown} ref={ref}>
+              <Popover
+                content={
+                  <div className={styles.confirmPopoverContent}>
+                    <Button
+                      // autoFocus
+                      color="danger"
+                      onClick={handleRevertAllChanges}
+                      kind="simple"
+                    >
+                      Yes, revert all changes
+                    </Button>
+                  </div>
+                }
+                open={confirmRevertAllOpen}
+                placement="top"
+              >
+                <div className={styles.revertAllContainer}>
+                  <Button
+                    color="danger"
+                    icon={UndoIcon}
+                    kind="secondary"
+                    onClick={handleRevertAllChangesClick}
+                    // selected={confirmRevertAllOpen}
+                  >
+                    Revert all changes
+                  </Button>
+                </div>
+              </Popover>
+            </div>
+          )}
+        </ClickOutside>
       )}
     </>
   )
