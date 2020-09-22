@@ -16,7 +16,13 @@ import styles from './FieldChange.css'
 
 export function FieldChange({change}: {change: FieldChangeNode}) {
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {documentId, schemaType, rootDiff, isComparingCurrent} = useContext(DocumentChangeContext)
+  const {
+    documentId,
+    schemaType,
+    rootDiff,
+    isComparingCurrent,
+    FieldWrapper = React.Fragment
+  } = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [revertHovered, setRevertHovered] = useState(false)
 
@@ -46,28 +52,29 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
           <ChangeBreadcrumb change={change} titlePath={change.titlePath} />
         </div>
       )}
+      <FieldWrapper path={change.path}>
+        <DiffInspectWrapper change={change} className={styles.change}>
+          {change.error ? (
+            <ValueError error={change.error} />
+          ) : (
+            <DiffErrorBoundary>
+              <DiffContext.Provider value={{path: change.path}}>
+                <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+              </DiffContext.Provider>
+            </DiffErrorBoundary>
+          )}
 
-      <DiffInspectWrapper change={change} className={styles.change}>
-        {change.error ? (
-          <ValueError error={change.error} />
-        ) : (
-          <DiffErrorBoundary>
-            <DiffContext.Provider value={{path: change.path}}>
-              <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-            </DiffContext.Provider>
-          </DiffErrorBoundary>
-        )}
-
-        {isComparingCurrent && (
-          <div className={styles.revertChangesButtonContainer}>
-            <RevertChangesButton
-              onClick={handleRevertChanges}
-              onMouseEnter={handleRevertButtonMouseEnter}
-              onMouseLeave={handleRevertButtonMouseLeave}
-            />
-          </div>
-        )}
-      </DiffInspectWrapper>
+          {isComparingCurrent && (
+            <div className={styles.revertChangesButtonContainer}>
+              <RevertChangesButton
+                onClick={handleRevertChanges}
+                onMouseEnter={handleRevertButtonMouseEnter}
+                onMouseLeave={handleRevertButtonMouseLeave}
+              />
+            </div>
+          )}
+        </DiffInspectWrapper>
+      </FieldWrapper>
     </div>
   )
 }

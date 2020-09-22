@@ -18,6 +18,9 @@ import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
+import {Tracker, Reporter} from '@sanity/base/lib/change-indicators'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
+
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
   documentId: string
@@ -160,7 +163,12 @@ export function DocumentPane(props: DocumentPaneProps) {
       ])}
       rootRef={rootRef}
     >
-      <div className={styles.documentAndChangesContainer}>
+      <Tracker
+        component={ConnectorsOverlay}
+        componentProps={{
+          className: styles.documentAndChangesContainer
+        }}
+      >
         <div className={styles.documentContainer}>
           {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
 
@@ -199,7 +207,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         </div>
 
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <div className={styles.changesContainer}>
+          <Reporter id="changesPanel" className={styles.changesContainer} data={{}}>
             <ChangesPanel
               changesSinceSelectRef={changesSinceSelectRef}
               documentId={documentId}
@@ -210,9 +218,9 @@ export function DocumentPane(props: DocumentPaneProps) {
               since={historyController.sinceTime}
               timelineMode={timelineMode}
             />
-          </div>
+          </Reporter>
         )}
-      </div>
+      </Tracker>
 
       <div className={styles.footerContainer}>
         <DocumentStatusBar

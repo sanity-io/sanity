@@ -15,9 +15,13 @@ import styles from './GroupChange.css'
 
 export function GroupChange({change: group}: {change: GroupChangeNode}): React.ReactElement {
   const {titlePath, changes} = group
-  const {documentId, schemaType, rootDiff, isComparingCurrent} = React.useContext(
-    DocumentChangeContext
-  )
+  const {
+    documentId,
+    schemaType,
+    FieldWrapper = React.Fragment,
+    rootDiff,
+    isComparingCurrent
+  } = React.useContext(DocumentChangeContext)
 
   const isPortableText = changes.every(
     change => isFieldChange(change) && isPTSchemaType(change.schemaType)
@@ -38,17 +42,19 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
         <ChangeBreadcrumb titlePath={titlePath} />
       </div>
 
-      <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
-        {changes.map(change => (
-          <ChangeResolver key={change.key} change={change} />
-        ))}
+      <FieldWrapper path={group.path}>
+        <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
+          {changes.map(change => (
+            <ChangeResolver key={change.key} change={change} />
+          ))}
 
-        {isComparingCurrent && (
-          <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
-            <RevertChangesButton onClick={handleRevertChanges} />
-          </div>
-        )}
-      </div>
+          {isComparingCurrent && (
+            <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
+              <RevertChangesButton onClick={handleRevertChanges} />
+            </div>
+          )}
+        </div>
+      </FieldWrapper>
     </div>
   )
 }

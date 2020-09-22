@@ -8,6 +8,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {Type, Marker} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 
 const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
@@ -240,22 +241,29 @@ export class FormBuilderInput extends React.Component<Props> {
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-          <InputComponent
-            {...rest}
-            {...leafProps}
-            isRoot={isRoot}
+          <ChangeIndicatorProvider
+            path={path}
+            focusPath={focusPath}
             value={value}
             compareValue={childCompareValue}
-            readOnly={readOnly || type.readOnly}
-            markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
-            type={type}
-            presence={childPresenceInfo}
-            onChange={this.handleChange}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            level={level}
-            ref={this.setInput}
-          />
+          >
+            <InputComponent
+              {...rest}
+              {...leafProps}
+              isRoot={isRoot}
+              value={value}
+              compareValue={childCompareValue}
+              readOnly={readOnly || type.readOnly}
+              markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
+              type={type}
+              presence={childPresenceInfo}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              level={level}
+              ref={this.setInput}
+            />
+          </ChangeIndicatorProvider>
         </FormFieldPresenceContext.Provider>
       </div>
     )

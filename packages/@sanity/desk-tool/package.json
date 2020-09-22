@@ -53,6 +53,7 @@
     "react-tiny-virtual-list": "^2.0.5",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0",
+    "smooth-scroll-into-view-if-needed": "^1.1.29",
     "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
