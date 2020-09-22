@@ -49,6 +49,7 @@ const DragHandle = createDragHandle(() => (
 type Props = {
   type: ArrayType
   value: ItemValue
+  compareValue?: any[]
   level: number
   markers: Array<Marker>
   layout?: 'media' | 'default'
@@ -158,7 +159,17 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
   }
   renderEditItemForm(item: ItemValue) {
-    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
+    const {
+      type,
+      markers,
+      focusPath,
+      onFocus,
+      onBlur,
+      readOnly,
+      filterField,
+      presence,
+      compareValue
+    } = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
@@ -171,6 +182,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onChange={this.handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
+        compareValue={compareValue}
         focusPath={focusPath}
         readOnly={readOnly || memberType.readOnly}
         markers={childMarkers}

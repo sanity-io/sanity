@@ -39,6 +39,7 @@ interface DocumentPaneProps {
   title?: string
   views: DocumentViewType[]
   value: Doc | null
+  compareValue: Doc | null
 }
 
 // eslint-disable-next-line complexity
@@ -63,6 +64,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     title: paneTitle,
     schemaType,
     value,
+    compareValue,
     views = []
   } = props
   const rootRef = useRef<HTMLDivElement | null>(null)
@@ -190,6 +192,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             timelineMode={timelineMode}
             toggleInspect={toggleInspect}
             value={value}
+            compareValue={isChangesOpen ? historyController.sinceAttributes() : compareValue}
             versionSelectRef={versionSelectRef}
             views={views}
           />

@@ -16,6 +16,7 @@ type SchemaType = any
 interface Props {
   id: string
   value: Doc
+  compareValue: Doc | null
 
   filterField: () => boolean
   focusPath: any[]
@@ -60,6 +61,7 @@ export const EditForm = memo((props: Props) => {
     onBlur,
     onFocus,
     onChange,
+    compareValue,
     readOnly,
     schema,
     type
@@ -71,6 +73,7 @@ export const EditForm = memo((props: Props) => {
         schema={schema}
         patchChannel={patchChannel}
         value={value || {_type: type}}
+        compareValue={compareValue}
         type={type}
         presence={presence}
         filterField={filterField}

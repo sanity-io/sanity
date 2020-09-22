@@ -24,6 +24,7 @@ interface Props {
   presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
+  compareValue?: any
   level: number
   isRoot?: boolean
   path: Array<PathSegment>
@@ -199,6 +200,7 @@ export class FormBuilderInput extends React.Component<Props> {
       type,
       level,
       focusPath,
+      compareValue,
       isRoot,
       presence: explicitPresence,
       ...rest
@@ -237,6 +239,8 @@ export class FormBuilderInput extends React.Component<Props> {
               path: trimChildPath(path, presence.path)
             }))
 
+    const childCompareValue = PathUtils.get(compareValue, path)
+
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <FormFieldPresenceContext.Provider value={childPresenceInfo}>
@@ -245,6 +249,7 @@ export class FormBuilderInput extends React.Component<Props> {
             {...leafProps}
             isRoot={isRoot}
             value={value}
+            compareValue={childCompareValue}
             readOnly={readOnly || type.readOnly}
             markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
             type={type}

@@ -43,6 +43,7 @@ function createProtoValue(type: Type): ItemValue {
 export type Props = {
   type: ArrayType
   value: Array<ItemValue>
+  compareValue: Array<ItemValue>
   markers: Array<Marker>
   level: number
   onChange: (event: PatchEvent) => void
@@ -160,6 +161,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       onBlur,
       onFocus,
       level,
+      compareValue,
       filterField,
       presence
     } = this.props
@@ -199,6 +201,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 type={type}
                 value={item}
                 level={level}
+                compareValue={compareValue}
                 markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}

@@ -46,6 +46,7 @@ interface DocumentPanelProps {
   timelineMode: 'rev' | 'since' | 'closed'
   toggleInspect: (val: boolean) => void
   value: any
+  compareValue: any
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
   views: DocumentView[]
 }
@@ -166,6 +167,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                 schemaType={props.schemaType}
                 value={displayed}
                 margins={margins}
+                compareValue={props.compareValue}
               />
             )}
 
