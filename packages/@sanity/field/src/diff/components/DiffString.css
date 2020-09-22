@@ -4,6 +4,10 @@
   line-height: calc(1.25em + 2px);
   position: relative;
   border-radius: var(--border-radius-small);
+}
+
+.changedSegment {
+  composes: segment;
 
   @nest &:hover {
     background-color: none !important;
@@ -23,16 +27,6 @@
   }
 }
 
-.add {
-  composes: segment;
+ins.changedSegment {
   text-decoration: none;
-}
-
-.remove {
-  composes: segment;
-}
-
-.empty {
-  white-space: pre-line;
-  white-space: break-spaces;
 }

@@ -4,51 +4,15 @@ import {DiffCard} from './DiffCard'
 
 import styles from './DiffString.css'
 
-function FormattedPreviewText({
-  isFirstSegment,
-  isLastSegment,
-  text
-}: {
-  isFirstSegment: boolean
-  isLastSegment: boolean
-  text: string
-}) {
-  const startsWithWhitespace = text.startsWith(' ')
-  const endsWithWhitespace = text.endsWith(' ')
-  const isWhitespace = text.trim().length === 0 ? styles.empty : false
-
-  return (
-    <>
-      {isFirstSegment && startsWithWhitespace && <>&nbsp;</>}
-      {isWhitespace ? <span className={styles.empty}>{text}</span> : text}
-      {isLastSegment && endsWithWhitespace && <>&nbsp;</>}
-    </>
-  )
-}
-
-export function DiffStringSegment({
-  isFirstSegment,
-  isLastSegment,
-  segment
-}: {
-  isFirstSegment: boolean
-  isLastSegment: boolean
-  segment: StringDiffSegment
-}): React.ReactElement {
-  const text = (
-    <FormattedPreviewText
-      isFirstSegment={isFirstSegment}
-      isLastSegment={isLastSegment}
-      text={segment.text}
-    />
-  )
+export function DiffStringSegment({segment}: {segment: StringDiffSegment}): React.ReactElement {
+  const {text} = segment
 
   if (segment.action === 'added') {
     return (
       <DiffCard
         annotation={segment.annotation}
         as="ins"
-        className={styles.add}
+        className={styles.changedSegment}
         disableHoverEffect
         tooltip={{description: 'Added'}}
       >
@@ -62,7 +26,7 @@ export function DiffStringSegment({
       <DiffCard
         annotation={segment.annotation}
         as="del"
-        className={styles.remove}
+        className={styles.changedSegment}
         disableHoverEffect
         tooltip={{description: 'Removed'}}
       >
@@ -71,18 +35,14 @@ export function DiffStringSegment({
     )
   }
 
-  return text
+  return <span className={styles.segment}>{text}</span>
 }
 
 export function DiffString({diff}: {diff: StringDiff}) {
-  const len = diff.segments.length
-
   return (
     <>
       {(diff.segments || []).map((segment, segmentIndex) => (
         <DiffStringSegment
-          isFirstSegment={segmentIndex === 0}
-          isLastSegment={segmentIndex === len - 1}
           // eslint-disable-next-line react/no-array-index-key
           key={segmentIndex}
           segment={segment}
