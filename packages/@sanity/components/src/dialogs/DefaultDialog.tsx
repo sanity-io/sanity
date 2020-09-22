@@ -10,6 +10,7 @@ import Escapable from '../utilities/Escapable'
 import Stacked from '../utilities/Stacked'
 import {DefaultDialogActions} from './DefaultDialogActions'
 import {DialogAction, DialogColor} from './types'
+import {ScrollContainer} from '@sanity/base/ScrollContainer'
 
 interface DefaultDialogProps {
   actions?: DialogAction[]
@@ -125,9 +126,9 @@ function DefaultDialog(props: DefaultDialogProps) {
                       </div>
                     )}
 
-                    <div className={contentClassName}>
+                    <ScrollContainer className={contentClassName}>
                       <div className={styles.contentWrapper}>{children}</div>
-                    </div>
+                    </ScrollContainer>
 
                     {actions && actions.length > 0 && (
                       <div className={styles.footer}>
