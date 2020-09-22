@@ -46,10 +46,6 @@ function getDisplayName(component) {
   return component.displayName || component.name || 'Unknown'
 }
 
-function trimChildPath(path, childPath) {
-  return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : EMPTY_PATH
-}
-
 export class FormBuilderInput extends React.Component<Props> {
   scrollTimeout: number
   _element: HTMLDivElement | null
@@ -185,7 +181,7 @@ export class FormBuilderInput extends React.Component<Props> {
 
   getChildFocusPath() {
     const {path, focusPath} = this.props
-    return trimChildPath(path, focusPath)
+    return PathUtils.trimChildPath(path, focusPath)
   }
 
   render() {
@@ -222,7 +218,7 @@ export class FormBuilderInput extends React.Component<Props> {
         .filter(marker => PathUtils.startsWith(path, marker.path))
         .map(marker => ({
           ...marker,
-          path: trimChildPath(path, marker.path)
+          path: PathUtils.trimChildPath(path, marker.path)
         }))
     }
     const childFocusPath = this.getChildFocusPath()
@@ -236,7 +232,7 @@ export class FormBuilderInput extends React.Component<Props> {
             .filter(presence => PathUtils.startsWith(path, presence.path))
             .map(presence => ({
               ...presence,
-              path: trimChildPath(path, presence.path)
+              path: PathUtils.trimChildPath(path, presence.path)
             }))
 
     const childCompareValue = PathUtils.get(compareValue, path)
