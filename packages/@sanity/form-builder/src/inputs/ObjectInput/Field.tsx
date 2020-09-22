@@ -33,7 +33,9 @@ export default class Field extends React.PureComponent<FieldProps> {
     }
   }
   focus() {
-    this._input.focus()
+    if (this._input && typeof this._input.focus === 'function') {
+      this._input.focus()
+    }
   }
   setInput = input => {
     this._input = input
