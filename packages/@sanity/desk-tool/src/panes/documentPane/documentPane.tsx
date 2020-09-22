@@ -18,8 +18,8 @@ import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
-import {Tracker, Reporter} from '@sanity/base/lib/change-indicators'
-import {ConnectorsOverlay} from './ConnectorsOverlay'
+import {Reporter} from '@sanity/base/lib/change-indicators'
+import {ChangeConnectorRoot} from '../../components/changeConnector/ChangeConnectorRoot'
 
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
@@ -72,7 +72,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   } = props
   const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
-  const {historyController, setTimelineMode, timelineMode} = useDocumentHistory()
+  const {historyController, setTimelineMode, timelineMode, open} = useDocumentHistory()
   const historyState = historyController.selectionState
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
@@ -163,11 +163,10 @@ export function DocumentPane(props: DocumentPaneProps) {
       ])}
       rootRef={rootRef}
     >
-      <Tracker
-        component={ConnectorsOverlay}
-        componentProps={{
-          className: styles.documentAndChangesContainer
-        }}
+      <ChangeConnectorRoot
+        onOpenReviewChanges={open}
+        isReviewChangesOpen={isChangesOpen}
+        className={styles.documentAndChangesContainer}
       >
         <div className={styles.documentContainer}>
           {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
@@ -220,7 +219,7 @@ export function DocumentPane(props: DocumentPaneProps) {
             />
           </Reporter>
         )}
-      </Tracker>
+      </ChangeConnectorRoot>
 
       <div className={styles.footerContainer}>
         <DocumentStatusBar

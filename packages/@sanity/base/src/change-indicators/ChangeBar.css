@@ -1,0 +1,31 @@
+@import 'part:@sanity/base/theme/variables-style';
+.root {
+  display: flex;
+  position: relative;
+}
+
+.field {
+  flex-grow: 1;
+}
+
+.hoverArea {
+  position: absolute;
+  right: -4px;
+  width: 8px;
+  height: 100%;
+}
+
+.changeBar {
+  height: 100%;
+  position: absolute;
+  right: -1px;
+  width: 2px;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.tooltip {
+  display: flex;
+  align-items: center;
+  padding: var(--small-padding);
+}
