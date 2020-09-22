@@ -1,9 +1,26 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  height: 300px;
+  position: relative;
+  min-height: 200px;
+  border-radius: var(--border-radius-small);
+  overflow: hidden;
+
+  @nest &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px var(--hairline-color);
+    pointer-events: none;
+  }
 }
 
 .root:empty {
-  background: #eee;
+  background: var(--hairline-color);
   display: table;
   width: 100%;
 }
