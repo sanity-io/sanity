@@ -36,6 +36,7 @@ function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
 type ObjectInputProps = {
   type?: any
   value?: {[key: string]: any}
+  compareValue?: {[key: string]: any}
   onChange?: (...args: any[]) => any
   onFocus: (...args: any[]) => any
   focusPath?: any[]
@@ -93,6 +94,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
       focusPath,
       onFocus,
       onBlur,
+      compareValue,
       filterField,
       presence
     } = this.props
@@ -108,6 +110,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         onChange={this.handleFieldChange}
         onFocus={onFocus}
         onBlur={onBlur}
+        compareValue={compareValue}
         markers={markers}
         focusPath={focusPath}
         level={level}

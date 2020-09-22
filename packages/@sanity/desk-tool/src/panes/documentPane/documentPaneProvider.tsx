@@ -119,6 +119,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         published={editState.published}
         schemaType={schemaType}
         value={value}
+        compareValue={editState.published}
         views={props.views}
       />
     </DocumentHistoryProvider>
