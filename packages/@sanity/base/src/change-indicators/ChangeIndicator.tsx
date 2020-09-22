@@ -11,31 +11,53 @@ const isPrimitive = value =>
   typeof value === 'undefined' ||
   typeof value === 'number'
 
-const CHANGED_STYLE = {
-  paddingRight: 8,
-  borderRight: '2px solid #2276fc'
-}
-
-const ChangeBar = React.forwardRef(
-  (
-    props: React.ComponentProps<'div'> & {
-      isChanged: boolean
-      children: React.ReactNode
-    },
-    ref: any
-  ) => {
-    return (
+const Bar = React.forwardRef((props: {isChanged: boolean; children: React.ReactNode}, ref) => {
+  return (
+    <div ref={ref} style={{position: 'relative', paddingRight: 6}}>
+      {props.children}
       <div
-        ref={ref}
-        style={props.isChanged ? CHANGED_STYLE : {}}
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
+        style={{
+          position: 'absolute',
+          right: 0,
+          bottom: 0,
+          top: 0,
+          width: 2,
+          backgroundColor: props.isChanged ? '#2276fc' : ''
+        }}
+      />
+    </div>
+  )
+})
+
+const ChangeBar = (
+  props: React.ComponentProps<'div'> & {
+    isChanged: boolean
+    hasFocus: boolean
+    fullPath: Path
+    children: React.ReactNode
+  }
+) => {
+  const [hasHover, setHover] = React.useState(false)
+  const onMouseEnter = React.useCallback(() => setHover(true), [])
+  const onMouseLeave = React.useCallback(() => setHover(false), [])
+  return (
+    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} style={{marginRight: 6}}>
+      <Reporter
+        id={`field-${PathUtils.toString(props.fullPath)}`}
+        component={Bar}
+        data={{
+          path: props.fullPath,
+          isChanged: props.isChanged,
+          hasFocus: props.hasFocus,
+          hasHover: hasHover,
+          scrollTo
+        }}
       >
         {props.children}
-      </div>
-    )
-  }
-)
+      </Reporter>
+    </div>
+  )
+}
 
 export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactNode}) {
   const parentContext = React.useContext(ChangeIndicatorContext)
@@ -100,17 +122,9 @@ export const CoreChangeIndicator = ({
     (compareDeep && !isEqual(value, compareValue))
 
   return (
-    <Reporter
-      id={`field-${PathUtils.toString(fullPath)}`}
-      component={ChangeBar}
-      data={{
-        path: fullPath,
-        isChanged,
-        hasFocus,
-        children,
-        scrollTo
-      }}
-    />
+    <ChangeBar isChanged={isChanged} fullPath={fullPath} hasFocus={hasFocus}>
+      {children}
+    </ChangeBar>
   )
 }
 

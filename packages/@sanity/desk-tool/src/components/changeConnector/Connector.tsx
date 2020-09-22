@@ -96,16 +96,42 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
       },
       'v'
     )
+
+  // todo: cleanup
+  const sensitivePath =
+    connect(
+      {top: clampedFromTop + shiftLeft * leftArrowDir, left: from.left - 4},
+      hLine1.from,
+      'h'
+    ) +
+    drawLine(hLine1) +
+    connect(hLine1.to, vMidLine.from, 'v') +
+    drawLine(vMidLine) +
+    connect(vMidLine.to, hLine2.from, 'h') +
+    drawLine(hLine2) +
+    connect(
+      hLine2.to,
+      {
+        top: clampedToTop + shiftRight * rightArrowDir,
+        left: to.left + 4
+      },
+      'v'
+    )
   return (
     <>
       <path d={path} fill="none" stroke={BLUE} strokeWidth={STROKE_WIDTH} />
       {/* click area */}
       <path
-        d={path}
+        d={sensitivePath}
         fill="none"
         stroke="none"
-        strokeWidth={STROKE_WIDTH + 2}
-        style={{pointerEvents: 'all'}}
+        onMouseEnter={props.onMouseEnter}
+        onMouseLeave={props.onMouseLeave}
+        strokeWidth={STROKE_WIDTH + 20}
+        style={{
+          pointerEvents: 'all',
+          backgroundColor: 'blue'
+        }}
       />
     </>
   )
