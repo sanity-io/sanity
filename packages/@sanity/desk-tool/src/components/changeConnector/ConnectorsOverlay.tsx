@@ -5,8 +5,8 @@ import {groupBy} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
 import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
-import {Connector, drawLine, vLine} from '../../components/changeConnector/Connector'
-import {Arrow} from '../../components/changeConnector/Arrow'
+import {Connector, drawLine, vLine} from './Connector'
+import {Arrow} from './Arrow'
 
 export interface Rect {
   height: number
@@ -142,7 +142,7 @@ export function ConnectorsOverlay(props: Props) {
           }
           const changeMarkerLeft = change?.rect?.left
           const connectorFrom = {
-            left: field.rect.left + field.rect.width - 1,
+            left: field.rect.left + field.rect.width,
             top: field.rect.top - topEdge + 8
           }
           const connectorTo = {

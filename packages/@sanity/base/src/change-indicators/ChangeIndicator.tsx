@@ -4,6 +4,7 @@ import {Reporter} from './elementTracker'
 import isEqual from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
+import {ChangeBar} from './ChangeBar'
 
 const isPrimitive = value =>
   typeof value === 'string' ||
@@ -11,25 +12,7 @@ const isPrimitive = value =>
   typeof value === 'undefined' ||
   typeof value === 'number'
 
-const Bar = React.forwardRef((props: {isChanged: boolean; children: React.ReactNode}, ref: any) => {
-  return (
-    <div ref={ref} style={{position: 'relative', paddingRight: 6}}>
-      {props.children}
-      <div
-        style={{
-          position: 'absolute',
-          right: 0,
-          bottom: 0,
-          top: 0,
-          width: 2,
-          backgroundColor: props.isChanged ? '#2276fc' : ''
-        }}
-      />
-    </div>
-  )
-})
-
-const ChangeBar = (
+const ChangeBarWrapper = (
   props: React.ComponentProps<'div'> & {
     isChanged: boolean
     hasFocus: boolean
@@ -41,10 +24,10 @@ const ChangeBar = (
   const onMouseEnter = React.useCallback(() => setHover(true), [])
   const onMouseLeave = React.useCallback(() => setHover(false), [])
   return (
-    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} style={{marginRight: 6}}>
+    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <Reporter
         id={`field-${PathUtils.toString(props.fullPath)}`}
-        component={Bar}
+        component={ChangeBar}
         data={{
           path: props.fullPath,
           isChanged: props.isChanged,
@@ -122,9 +105,9 @@ export const CoreChangeIndicator = ({
     (compareDeep && !isEqual(value, compareValue))
 
   return (
-    <ChangeBar isChanged={isChanged} fullPath={fullPath} hasFocus={hasFocus}>
+    <ChangeBarWrapper isChanged={isChanged} fullPath={fullPath} hasFocus={hasFocus}>
       {children}
-    </ChangeBar>
+    </ChangeBarWrapper>
   )
 }
 

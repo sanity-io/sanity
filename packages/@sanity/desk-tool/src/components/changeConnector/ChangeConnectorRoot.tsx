@@ -1,0 +1,28 @@
+import React from 'react'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
+import {Tracker, ConnectorContext} from '@sanity/base/lib/change-indicators'
+
+export function ChangeConnectorRoot({
+  children,
+  className,
+  isReviewChangesOpen,
+  onOpenReviewChanges
+}: {
+  isReviewChangesOpen: boolean
+  onOpenReviewChanges: () => void
+  className?: string
+  children: React.ReactNode
+}) {
+  return (
+    <ConnectorContext.Provider value={{isReviewChangesOpen, onOpenReviewChanges}}>
+      <Tracker
+        component={ConnectorsOverlay}
+        componentProps={{
+          className: className
+        }}
+      >
+        {children}
+      </Tracker>
+    </ConnectorContext.Provider>
+  )
+}
