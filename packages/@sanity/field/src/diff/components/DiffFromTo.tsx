@@ -24,7 +24,11 @@ export function DiffFromTo(props: DiffFromToProps) {
   const changeVerb = getChangeVerb(diff)
 
   if (action === 'unchanged') {
-    return <DiffCard>{createElement(previewComponent, {schemaType, value: diff.toValue})}</DiffCard>
+    return (
+      <DiffCard className={classNames(styles.card, cardClassName)}>
+        {createElement(previewComponent, {schemaType, value: diff.toValue})}
+      </DiffCard>
+    )
   }
 
   const from =
