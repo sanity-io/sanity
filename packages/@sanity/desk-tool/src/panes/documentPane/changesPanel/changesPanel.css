@@ -62,4 +62,5 @@
   min-height: 0;
   padding: var(--large-padding) var(--medium-padding);
   overflow: auto;
+  position: relative;
 }

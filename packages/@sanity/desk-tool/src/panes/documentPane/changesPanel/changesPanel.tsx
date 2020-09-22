@@ -127,15 +127,14 @@ export function ChangesPanel({
           )}
         </div>
       </header>
-
-      <div className={styles.body}>
+      <ScrollContainer className={styles.body}>
         <Content
           diff={diff}
           documentContext={documentContext}
           loading={loading}
           schemaType={schemaType}
         />
-      </div>
+      </ScrollContainer>
     </div>
   )
 }

@@ -942,10 +942,6 @@
       "path": "panes/SplitPaneWrapper"
     },
     {
-      "implements": "part:@sanity/components/utilities/scroll-container",
-      "path": "utilities/ScrollContainer"
-    },
-    {
       "implements": "part:@sanity/components/typography/hotkeys",
       "path": "typography/Hotkeys"
     },

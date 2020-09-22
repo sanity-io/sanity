@@ -15,6 +15,7 @@ import {
   OnCopyFn,
   PortableTextEditor
 } from '@sanity/portable-text-editor'
+import {ScrollContainer} from '@sanity/base/ScrollContainer'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import styles from './PortableTextInput.css'
@@ -164,7 +165,7 @@ function PortableTextSanityEditor(props: Props) {
             />
           </div>
         </div>
-        <div className={scClassNames}>
+        <ScrollContainer className={scClassNames}>
           <div className={editorWrapperClassNames}>
             <div className={editorClassNames}>
               <PortableTextEditable
@@ -182,7 +183,7 @@ function PortableTextSanityEditor(props: Props) {
             </div>
             <div className={styles.blockExtras}>{renderBlockExtras()}</div>
           </div>
-        </div>
+        </ScrollContainer>
       </div>
     ),
     [initialSelection, isFullscreen, value, markers, readOnly]

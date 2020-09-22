@@ -97,7 +97,6 @@
       "part:@sanity/components/utilities/image-loader": ["./utilities/ImageLoader"],
       "part:@sanity/components/utilities/poppable": ["./utilities/Poppable"],
       "part:@sanity/components/utilities/portal": ["./utilities/Portal"],
-      "part:@sanity/components/utilities/scroll-container": ["./utilities/ScrollContainer"],
       "part:@sanity/components/utilities/stacked": ["./utilities/Stacked"],
       "part:@sanity/components/utilities/stacked-escapable": ["./utilities/StackEscapable"],
       "part:@sanity/components/validation/list": ["./validation/ValidationList"],

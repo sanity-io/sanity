@@ -6,6 +6,7 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import {Portal} from 'part:@sanity/components/portal'
 import React from 'react'
+import {ScrollContainer} from '@sanity/base/ScrollContainer'
 import StackedEscapable from '../utilities/StackedEscapable'
 import {DialogAction} from './types'
 
@@ -92,7 +93,9 @@ export default class FullScreenDialog extends React.PureComponent<FullScreenDial
                 </header>
               )}
 
-              {this.props.children && <div className={styles.content}>{this.props.children}</div>}
+              {this.props.children && (
+                <ScrollContainer className={styles.content}>{this.props.children}</ScrollContainer>
+              )}
 
               {actions && actions.length > 0 && (
                 <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
