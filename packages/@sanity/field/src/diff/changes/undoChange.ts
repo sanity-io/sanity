@@ -6,7 +6,7 @@ import {
   getValueAtPath,
   isEmptyObject,
   pathToString
-} from '../../paths/helpers'
+} from '../../paths'
 import {
   ArrayDiff,
   ChangeNode,
@@ -20,6 +20,7 @@ import {
   SetDiffPatch,
   UnsetDiffPatch
 } from '../../types'
+import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
 
 const diffOptions = {diffMatchPatch: {enabled: false}}
 
@@ -34,18 +35,25 @@ export function undoChange(
 
   const patches: PatchOperations[] = []
 
-  // @todo Figure out if reverting the entire `objectDiff`/`arrayDiff` for a group
-  // would end up with the same result - in which case reverting the whole thing as
-  // a single diff is much faster
   if (change.type === 'group') {
-    change.changes.forEach(child => undoChange(child, rootDiff, documentOperations))
-    return
-  }
+    const allChanges = flattenChangeNode(change)
 
-  if (change.type === 'field' && change.diff.action === 'added') {
+    const unsetChanges = allChanges.filter(isAddedAction)
+
+    allChanges
+      .filter(child => !isAddedAction(child))
+      .forEach(child => undoChange(child, rootDiff, documentOperations))
+
+    patches.push(
+      ...buildUnsetPatches(
+        rootDiff,
+        unsetChanges.map(unsetChange => unsetChange.path)
+      )
+    )
+  } else if (change.diff.action === 'added') {
     // The reverse of an add operation is an unset -
     // so we don't need to worry about moved items in this case
-    patches.push(...buildUnsetPatches(change.diff, rootDiff, change.path))
+    patches.push(...buildUnsetPatches(rootDiff, [change.path]))
   } else if (
     change.type === 'field' &&
     change.itemDiff &&
@@ -64,10 +72,26 @@ export function undoChange(
   documentOperations.patch.execute(patches)
 }
 
-function buildUnsetPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
+function buildUnsetPatch(rootDiff: ObjectDiff, path: Path, concurrentUnsetPaths: Path[]): Path {
   const previousValue = rootDiff.toValue as Record<string, unknown>
 
-  return [{unset: [pathToString(furthestEmptyAncestor(previousValue, path))]}]
+  return furthestEmptyAncestor(previousValue, path, concurrentUnsetPaths)
+}
+
+function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations[] {
+  const patches: Path[] = []
+
+  for (let i = 0; i < paths.length; i++) {
+    const unsetByEarlierPatch = patches.some(patch => isSubpathOf(paths[i], patch))
+
+    if (unsetByEarlierPatch) {
+      continue
+    }
+
+    patches.push(buildUnsetPatch(rootDiff, paths[i], paths))
+  }
+
+  return [{unset: [...new Set(patches.map(pathToString))]}]
 }
 
 /**
@@ -77,11 +101,14 @@ function buildUnsetPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchO
  *
  * @param previousValue The state of the tree before the change was made.
  * @param currentPath Path of the value to unset. Used for recursing.
+ * @param ignorePaths An optional list of path to forcefully mark as
+ *  a stub regardless of what it actually is.
  * @param initialPath Same as the first value of currentPath.
  */
 function furthestEmptyAncestor(
   previousValue: Record<string, unknown>,
   currentPath: Path,
+  ignorePaths: Path[] = [],
   initialPath?: Path
 ): Path {
   if (currentPath.length <= 0) {
@@ -102,8 +129,24 @@ function furthestEmptyAncestor(
   const ancestorPath = currentPath.slice(0, -1)
   const ancestorValue = getValueAtPath(previousValue, ancestorPath)
 
-  return isStub(ancestorValue, ancestorPath, currentPath)
-    ? furthestEmptyAncestor(previousValue, ancestorPath, initialPath)
+  /*
+   * If the ancestor also is a stub we can add it to the ignore-list
+   * so it'll be "remembered" as a stub without us having to scan
+   * the whole tree again.
+   */
+  const updatedIgnorePaths = [
+    ancestorPath,
+
+    /*
+     * We can filter out all the subpaths from under this ancestor
+     * because since we ignore it higher up in the tree it doesn't
+     * matter anymore what the values of subpaths are.
+     */
+    ...ignorePaths.filter(path => !isSubpathOf(path, ancestorPath))
+  ]
+
+  return isStub(ancestorValue, ancestorPath, ignorePaths)
+    ? furthestEmptyAncestor(previousValue, ancestorPath, updatedIgnorePaths, initialPath)
     : currentPath
 }
 
@@ -207,57 +250,61 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
 }
 
 /**
- * Check if a single item is a stub.
- *
- * An item is a stub if its value is the same as what the
- * value "would have been" if it was a stub.
- *
- * Or it can be an empty object or only containing other stubs.
- *
- * @param item The item to check whether is a stub.
- * @param path The path to the item we're checking.
- * @param ignorePath An optional path to forcefully mark as
- *  a stub regardless of what it actually is.
- */
-function isStub(item: unknown, path: Path, ignorePath?: Path): unknown {
-  if (ignorePath && pathToString(path) === pathToString(ignorePath)) {
-    return true
-  }
-
-  const isStubValue = getStubValue(item) === item
-
-  return isStubValue || isEmptyObject(item) || onlyContainsStubs(item, path, ignorePath)
-}
-
-/**
  * Check if all items in an object or an array are stubs.
  *
  * @param item The item to check whether is a stub.
  * @param path The path to the item we're checking.
- * @param ignorePath An optional path to forcefully mark as
+ * @param ignorePaths An optional list of path to forcefully mark as
  *  a stub regardless of what it actually is.
  */
-function onlyContainsStubs(item: unknown, path: Path, ignorePath?: Path): boolean {
+function onlyContainsStubs(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
+  /*
+   * If we're trying to check for stubs inside something which isn't an object
+   * or an array we're checking a string for example and it they cannot
+   * contain stubs.
+   */
   if (typeof item != 'object' && !Array.isArray(item)) {
     return false
   }
 
   for (const child in item) {
+    if (!Object.prototype.hasOwnProperty.call(item, child)) {
+      continue
+    }
+
     /*
-     * An item can be a stub even though it has _type or _key. So only
-     * values other than these will count for checking whether it is
-     * a stub.
+     * _type or _key field alone doesn't affect whether the field is a stub or
+     * not.
      */
     if (child === '_type' || child === '_key') {
       continue
     }
 
-    if (!isStub(item[child], [...path, child], ignorePath)) {
+    const nextPath = [...path, pathSegmentOfCorrectType(item as Record<string, unknown>, child)]
+
+    if (!isStub(item[child], nextPath, ignorePaths)) {
       return false
     }
   }
 
   return true
+}
+
+function isStub(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
+  const isIgnoredPath =
+    Array.isArray(ignorePaths) &&
+    ignorePaths.some(ignorePath => pathToString(ignorePath) === pathToString(path))
+
+  const isEmptyArray = Array.isArray(item) && item.length <= 0
+
+  return (
+    isIgnoredPath ||
+    item === undefined ||
+    item === null ||
+    isEmptyArray ||
+    isEmptyObject(item) ||
+    onlyContainsStubs(item, path, ignorePaths)
+  )
 }
 
 function getStubValue(item: unknown): unknown {
