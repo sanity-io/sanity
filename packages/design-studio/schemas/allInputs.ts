@@ -75,12 +75,28 @@ const arrayOfReferencesExample = {
   ]
 }
 
-const arrayOfPrimitivesExample = {
+const arrayOfStringsExample = {
   type: 'array',
-  name: 'arrayOfPrimitivesExample',
-  title: 'Array (4)',
-  description: 'List of primitives',
+  name: 'arrayOfStringsExample',
+  title: 'Array (4a)',
+  description: 'List of strings',
   of: [{type: 'string'}]
+}
+
+const arrayOfNumbersExample = {
+  type: 'array',
+  name: 'arrayOfNumbersExample',
+  title: 'Array (4b)',
+  description: 'List of numbers',
+  of: [{type: 'number'}]
+}
+
+const arrayOfSlugsExample = {
+  type: 'array',
+  name: 'arrayOfSlugsExample',
+  title: 'Array (4b)',
+  description: 'List of slugs',
+  of: [{type: 'slug'}]
 }
 
 const arrayGridOfFlatImagesExample = {
@@ -383,7 +399,9 @@ export default {
     arrayListOfOptionsExample,
     arrayOfObjectsExample,
     arrayOfReferencesExample,
-    arrayOfPrimitivesExample,
+    arrayOfStringsExample,
+    arrayOfNumbersExample,
+    arrayOfSlugsExample,
     arrayGridOfFlatImagesExample,
     arrayGridOfImagesExample,
     arrayOfImagesExample,
