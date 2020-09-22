@@ -10,7 +10,14 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
   if (options?.list) {
     // When the string is considered to be an "enum", don't show individual
     // string segment changes, rather treat is as a "from -> to" diff
-    return <DiffFromTo diff={diff} previewComponent={StringPreview} schemaType={schemaType} />
+    return (
+      <DiffFromTo
+        cardClassName={styles.card}
+        diff={diff}
+        previewComponent={StringPreview}
+        schemaType={schemaType}
+      />
+    )
   }
 
   return (

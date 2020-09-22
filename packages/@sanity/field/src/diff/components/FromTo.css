@@ -3,7 +3,9 @@
 .root {
   display: flex;
   align-items: center;
+
   @nest &[data-from-to-layout='inline'] {
+    display: inline-flex;
   }
 
   @nest &[data-from-to-layout='grid'] {
@@ -14,6 +16,8 @@
 
 .from,
 .to {
+  max-width: calc(50% - 13px);
+
   @nest .root[data-from-to-layout='grid'] & {
     flex: 1;
     min-width: 0;
