@@ -5,11 +5,12 @@ import {Session, Status, User} from '../datastores/presence/types'
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
+export type RegionsWithComputedRects<T> = ReportedRegion<T> & {rect: Rect}
 export type RegionWithIntersectionDetails = {
   distanceTop: number
   distanceBottom: number
   position: 'top' | 'bottom' | 'inside'
-  region: ReportedRegion<FieldPresenceData>
+  region: RegionsWithComputedRects<FieldPresenceData>
 }
 
 export {ReportedRegion}
@@ -36,4 +37,11 @@ export interface FormFieldPresence {
   path: Path
   sessionId: string
   lastActiveAt: string
+}
+
+export interface Rect {
+  height: number
+  width: number
+  top: number
+  left: number
 }
