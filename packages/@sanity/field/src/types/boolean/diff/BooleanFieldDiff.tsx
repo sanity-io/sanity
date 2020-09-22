@@ -21,7 +21,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
         <Preview checked={fromValue} color={userColor} />
         {toValue !== undefined && toValue !== null && (
           <>
-            <FromToArrow />
+            <FromToArrow style={{padding: '0 2px'}} />
             <div className={styles.label}>
               <Preview checked={toValue} color={userColor} />
               {title && <div className={styles.title}>{title}</div>}

@@ -52,7 +52,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
 
       {path.length === 0 && changes.length > 1 && (
         <div className={styles.revertAllContainer}>
-          <Button icon={UndoIcon} kind="secondary" onClick={handleRevertAllChanges}>
+          <Button color="danger" icon={UndoIcon} kind="secondary" onClick={handleRevertAllChanges}>
             Revert all changes
           </Button>
         </div>

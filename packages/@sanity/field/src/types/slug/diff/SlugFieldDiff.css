@@ -2,6 +2,6 @@
 
 .card {
   display: inline-block;
-  padding: calc(var(--small-padding) - 2px) var(--small-padding) calc(var(--small-padding) - 1px);
+  padding: calc(var(--small-padding) - 3px) var(--small-padding) calc(var(--small-padding) - 2px);
   word-break: break-all;
 }

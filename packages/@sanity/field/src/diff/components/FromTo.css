@@ -1,34 +1,51 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  display: flex;
-  align-items: center;
+:root {
+  --from-to-arrow-width: 25px;
+}
 
+.root {
   @nest &[data-from-to-layout='inline'] {
     display: inline-flex;
+    max-width: 100%;
   }
 
   @nest &[data-from-to-layout='grid'] {
-    /* display: grid;
-    grid-template-columns: 1fr auto 1fr; */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--from-to-arrow-width) minmax(0, 1fr);
   }
 }
 
-.from,
-.to {
-  max-width: calc(50% - 13px);
-
-  @nest .root[data-from-to-layout='grid'] & {
-    flex: 1;
+.column {
+  @nest [data-from-to-layout='inline'] & {
     min-width: 0;
+    flex-shrink: 1;
+    flex-basis: 1;
   }
 }
 
 .arrow {
+  padding: calc(var(--extra-small-padding) + 2px) var(--extra-small-padding);
+}
+
+.column,
+.arrow {
   display: flex;
-  padding: 0 var(--extra-small-padding);
-  align-items: center;
-  font-size: var(--font-size-large);
-  line-height: var(--line-height-large);
-  color: var(--text-muted);
+
+  @nest & > * {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  @nest .root[data-from-to-align='top'] > & {
+    align-items: flex-start;
+  }
+
+  @nest .root[data-from-to-align='center'] > & {
+    align-items: center;
+  }
+
+  @nest .root[data-from-to-align='bottom'] > & {
+    align-items: flex-end;
+  }
 }
