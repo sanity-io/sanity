@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
-import React, {useEffect, useState, useMemo, useCallback} from 'react'
+import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   getPortableTextFeatures,
@@ -15,7 +15,7 @@ import {
   usePortableTextEditorSelection,
   HotkeyOptions
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment} from '@sanity/types'
+import {Path, isKeySegment, KeyedSegment} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/portal'
@@ -42,7 +42,7 @@ type Props = {
   onBlur: () => void
   onChange: (event: PatchEvent) => void
   onCopy?: OnCopyFn
-  onFocus: (path) => void
+  onFocus: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   patche$: Subject<EditorPatch>
@@ -83,6 +83,14 @@ export default function PortableTextInput(props: Props) {
   const [isActive, setIsActive] = useState(false)
   const [objectEditData, setObjectEditData]: [ObjectEditData, any] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
+  const popoverReferenceElement = useRef<HTMLElement | null>(null)
+
+  const setPopupReferenceElement = (key: string) => {
+    const refElement = document.querySelectorAll(`[data-pte-key="${key}"]`)[0]
+    if (refElement) {
+      popoverReferenceElement.current = refElement as HTMLElement
+    }
+  }
 
   // This will open the editing interfaces automatically according to the focusPath.
   // eslint-disable-next-line complexity
@@ -91,18 +99,19 @@ export default function PortableTextInput(props: Props) {
       const isChild = focusPath[1] === 'children'
       const isMarkdef = focusPath[1] === 'markDefs'
       const blockSegment = focusPath[0]
-
       // Annotation focus paths
       if (isMarkdef && isKeySegment(blockSegment)) {
-        const block = value && value.find(blk => blk._key === blockSegment._key)
+        // Get block from the editor value - as the props value may not be updated yet.
+        const block = (PortableTextEditor.getValue(editor) || []).find(
+          blk => blk._key === blockSegment._key
+        )
         const markDefSegment = focusPath[2]
-        // eslint-disable-next-line max-depth
         if (block && isKeySegment(markDefSegment)) {
           const span = block.children.find(
             child => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
           )
-          // eslint-disable-next-line max-depth
           if (span) {
+            setPopupReferenceElement(span._key)
             const spanPath = [blockSegment, 'children', {_key: span._key}]
             setIsActive(true)
             PortableTextEditor.select(editor, {
@@ -128,6 +137,8 @@ export default function PortableTextInput(props: Props) {
           kind = 'inlineObject'
           path = path.concat(focusPath.slice(1, 3))
         }
+        const lastSemgent = path.slice(-1)[0] as KeyedSegment
+        setPopupReferenceElement(lastSemgent._key)
         setIsActive(true)
         PortableTextEditor.select(editor, {
           focus: {path, offset: 0},
@@ -242,7 +253,7 @@ export default function PortableTextInput(props: Props) {
   function renderChild(child, childType, attributes, defaultRender) {
     const isSpan = child._type === ptFeatures.types.span.name
     if (isSpan) {
-      return defaultRender(child)
+      return <span data-pte-key={child._key}>{defaultRender(child)}</span>
     }
     // eslint-disable-next-line react/prop-types
     const inlineMarkers = markers.filter(
@@ -309,6 +320,7 @@ export default function PortableTextInput(props: Props) {
         onClose={handleClose}
         onFocus={handleEditObjectFormBuilderFocus}
         readOnly={readOnly}
+        popoverReferenceElement={popoverReferenceElement}
         presence={presence}
         value={value}
       />

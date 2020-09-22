@@ -232,7 +232,10 @@ export function getBlockStyleSelectProps(
   }
 }
 
-function getInsertMenuIcon(type: Type, fallbackIcon: Function): React.ComponentType {
+function getInsertMenuIcon(
+  type: Type,
+  fallbackIcon: () => React.ReactElement
+): React.ComponentType {
   const referenceIcon = get(type, 'to[0].icon')
 
   return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon

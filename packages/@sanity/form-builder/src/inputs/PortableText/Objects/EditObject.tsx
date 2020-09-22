@@ -33,6 +33,7 @@ interface Props {
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
   readOnly: boolean
+  popoverReferenceElement: React.MutableRefObject<HTMLElement>
   value: PortableTextBlock[] | undefined
 }
 
@@ -47,6 +48,7 @@ export const EditObject = ({
   onFocus,
   presence,
   readOnly,
+  popoverReferenceElement,
   value
 }: Props) => {
   const editor = usePortableTextEditor()
@@ -173,11 +175,6 @@ export const EditObject = ({
     return null
   }
 
-  const editorElement: HTMLElement = PortableTextEditor.findDOMNode(
-    editor,
-    child ? child : block
-  ) as HTMLElement
-
   // Render the various editing interfaces
   if (editModalLayout === 'fullscreen') {
     return (
@@ -196,7 +193,6 @@ export const EditObject = ({
       />
     )
   }
-
   if (editModalLayout === 'popover' || kind === 'annotation') {
     return (
       <PopoverObjectEditing
@@ -209,8 +205,8 @@ export const EditObject = ({
         onFocus={onFocus}
         path={formBuilderPath}
         presence={presence}
+        popoverReferenceElement={popoverReferenceElement}
         readOnly={readOnly}
-        referenceElement={editorElement}
         type={type}
       />
     )

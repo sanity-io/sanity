@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, useMemo} from 'react'
+import React, {FunctionComponent} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
@@ -20,9 +20,9 @@ interface Props {
   onClose: (event: React.SyntheticEvent) => void
   onFocus: (arg0: Path) => void
   path: Path
+  popoverReferenceElement: React.MutableRefObject<HTMLElement>
   presence: FormFieldPresence[]
   readOnly: boolean
-  referenceElement: HTMLElement
   type: Type
 }
 
@@ -37,17 +37,16 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   path,
   presence,
   readOnly,
-  referenceElement,
+  popoverReferenceElement,
   type
 }) => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
-  const element = useMemo(() => referenceElement, [])
   return (
     <Stacked>
       {() => (
         <Popover
           placement="bottom"
-          referenceElement={element}
+          referenceElement={popoverReferenceElement.current}
           onClickOutside={onClose}
           onEscape={onClose}
           onClose={onClose}
