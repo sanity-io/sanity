@@ -1,4 +1,13 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.footer {
+  margin-top: 2em;
+}
+
 .revertAllContainer {
   display: grid;
-  margin-top: 1rem;
+}
+
+.confirmPopoverContent {
+  padding: var(--small-padding);
 }
