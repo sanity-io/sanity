@@ -124,10 +124,12 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
       <path
         d={sensitivePath}
         fill="none"
+        // use to debug "clickable area" stroke="rgba(100, 100, 0, 0.4)"
+        // note: make sure to leave room for the scrollbar
         stroke="none"
         onMouseEnter={props.onMouseEnter}
         onMouseLeave={props.onMouseLeave}
-        strokeWidth={STROKE_WIDTH + 20}
+        strokeWidth={STROKE_WIDTH + 10}
         style={{
           pointerEvents: 'all',
           backgroundColor: 'blue'
