@@ -27,12 +27,10 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
 
-  const allChanges = React.useMemo(() => buildObjectChangeList(schemaType, diff, path, fields), [
-    schemaType,
-    fields,
-    path,
-    diff
-  ])
+  const allChanges = React.useMemo(
+    () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields}),
+    [schemaType, fields, path, diff]
+  )
 
   const changes = fields && fields.length === 0 ? [] : maybeFlatten(allChanges)
 
