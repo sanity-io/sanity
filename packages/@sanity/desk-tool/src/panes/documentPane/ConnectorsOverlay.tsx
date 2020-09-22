@@ -81,7 +81,7 @@ function scrollIntoView(element) {
   smoothScrollIntoViewIfNeeded(element, {
     scrollMode: 'if-needed',
     block: 'nearest',
-    duration: 100,
+    duration: 400,
     inline: 'start'
   })
 }
