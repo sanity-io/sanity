@@ -45,4 +45,13 @@
   @nest .iconContainer + & {
     margin-left: var(--extra-small-padding);
   }
+
+  @media (hover: hover) {
+    opacity: 0;
+    transition: opacity 100ms;
+
+    @nest .root:hover & {
+      opacity: 1;
+    }
+  }
 }
