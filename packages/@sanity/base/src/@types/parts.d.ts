@@ -63,4 +63,8 @@ declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
 }
 
+declare module 'part:@sanity/components/popover' {
+  export * from '@sanity/components/src/popover'
+}
+
 declare module 'all:part:*'
