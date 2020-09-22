@@ -1,11 +1,11 @@
 import {UserAvatar} from '@sanity/base/components'
 import {useUser, useTimeAgo} from '@sanity/base/hooks'
-import {useUserColorManager} from '@sanity/base/user-color'
 import {Path} from '@sanity/types'
 import React from 'react'
 import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
-import {Diff, getAnnotationColor, getAnnotationAtPath} from '../../diff'
+import {Diff, getAnnotationAtPath} from '../../diff'
 import {AnnotationDetails} from '../../types'
+import {useAnnotationColor} from '../annotations'
 
 import styles from './DiffTooltip.css'
 
@@ -60,9 +60,8 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
 function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {author, timestamp} = annotation
-  const userColorManager = useUserColorManager()
   const {error, value: user} = useUser(author)
-  const color = getAnnotationColor(userColorManager, annotation)
+  const color = useAnnotationColor(annotation)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
 
   // @todo handle?

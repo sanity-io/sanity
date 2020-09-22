@@ -1,8 +1,8 @@
-import {useUserColorManager} from '@sanity/base/user-color'
 import {Path} from '@sanity/types'
 import classNames from 'classnames'
 import React, {createElement, forwardRef} from 'react'
-import {Annotation, Diff, getAnnotationAtPath, getAnnotationColor} from '../../diff'
+import {Annotation, Diff, getAnnotationAtPath} from '../../diff'
+import {useAnnotationColor} from '../annotations'
 import {DiffTooltip} from './DiffTooltip'
 
 import styles from './DiffCard.css'
@@ -24,14 +24,14 @@ interface DiffCardWithAnnotationProps {
 }
 
 export const DiffCard = forwardRef((props: DiffCardProps & React.HTMLProps<HTMLElement>, ref) => {
-  if (props.diff) {
-    const {diff, path, ...restProps} = props
-    const annotation = getAnnotationAtPath(diff, path || [])
-
-    return <DiffCardWithAnnotation {...restProps} annotation={annotation} ref={ref} />
+  if (!props.diff) {
+    return <DiffCardWithAnnotation {...props} ref={ref} />
   }
 
-  return <DiffCardWithAnnotation {...props} ref={ref} />
+  const {diff, path = [], ...restProps} = props
+  const annotation = getAnnotationAtPath(diff, path)
+
+  return <DiffCardWithAnnotation {...restProps} annotation={annotation} ref={ref} />
 })
 
 DiffCard.displayName = 'DiffCard'
@@ -48,8 +48,8 @@ const DiffCardWithAnnotation = forwardRef(
       tooltip,
       ...restProps
     } = props
-    const userColorManager = useUserColorManager()
-    const color = getAnnotationColor(userColorManager, annotation)
+
+    const color = useAnnotationColor(annotation)
 
     const elementProps = {
       ...restProps,
