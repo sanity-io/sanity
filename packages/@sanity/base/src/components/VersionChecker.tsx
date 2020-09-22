@@ -92,7 +92,8 @@ const checkVersions = (options: {getOutdated?: boolean} = {}): Promise<VersionsR
   return client
     .request({
       uri: '/versions',
-      query: buildQueryString(),
+      // resolving the right client definition seems to be an issue :shrug:
+      query: buildQueryString() as any,
       json: true
     })
     .then(result => ({
