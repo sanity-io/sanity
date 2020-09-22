@@ -11,6 +11,7 @@ import {
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
+const EMPTY_PATH: Path = []
 
 export const FOCUS_TERMINATOR = '$'
 
@@ -122,6 +123,10 @@ export function trimRight(suffix: Path, path: Path): Path {
   }
 
   return path.slice(0, pathLen - i)
+}
+
+export function trimChildPath(path, childPath) {
+  return startsWith(path, childPath) ? trimLeft(path, childPath) : EMPTY_PATH
 }
 
 export function toString(path: Path): string {
