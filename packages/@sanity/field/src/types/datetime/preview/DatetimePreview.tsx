@@ -3,24 +3,11 @@ import format from 'date-fns/format'
 import {StringSchemaType} from '../../../diff'
 import {PreviewComponent} from '../../../preview/types'
 
-import styles from './DatetimePreview.css'
-
 export const DatetimePreview: PreviewComponent<string> = function DatetimePreview({
-  color,
   value,
   schemaType
 }) {
-  return (
-    <span
-      className={styles.root}
-      style={{
-        background: color?.background,
-        color: color?.text
-      }}
-    >
-      {formatDate(value, schemaType)}
-    </span>
-  )
+  return <>{formatDate(value, schemaType)}</>
 }
 
 function formatDate(value: string, schemaType: StringSchemaType): string {

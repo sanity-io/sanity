@@ -10,6 +10,7 @@ import {FromTo} from './FromTo'
 import styles from './DiffFromTo.css'
 
 interface DiffFromToProps {
+  align?: 'top' | 'center' | 'bottom'
   cardClassName?: string
   diff: Diff
   layout?: 'grid' | 'inline'
@@ -19,7 +20,7 @@ interface DiffFromToProps {
 }
 
 export function DiffFromTo(props: DiffFromToProps) {
-  const {cardClassName, diff, layout, path, previewComponent, schemaType} = props
+  const {align, cardClassName, diff, layout, path, previewComponent, schemaType} = props
   const {action} = diff
   const changeVerb = getChangeVerb(diff)
 
@@ -31,27 +32,37 @@ export function DiffFromTo(props: DiffFromToProps) {
     )
   }
 
-  const from =
-    diff.fromValue !== undefined && diff.fromValue !== null ? (
-      <DiffCard as="del" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
-        {createElement(previewComponent, {schemaType, value: diff.fromValue})}
-      </DiffCard>
-    ) : (
-      undefined
-    )
+  const from = diff.fromValue !== undefined && diff.fromValue !== null && (
+    <DiffCard as="del" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
+      {createElement(previewComponent, {schemaType, value: diff.fromValue})}
+    </DiffCard>
+  )
 
-  const to =
-    diff.toValue !== undefined && diff.toValue !== null ? (
-      <DiffCard as="ins" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
-        {createElement(previewComponent, {schemaType, value: diff.toValue})}
-      </DiffCard>
-    ) : (
-      undefined
+  const to = diff.toValue !== undefined && diff.toValue !== null && (
+    <DiffCard as="ins" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
+      {createElement(previewComponent, {schemaType, value: diff.toValue})}
+    </DiffCard>
+  )
+
+  if (from && !to) {
+    return (
+      <DiffTooltip description={changeVerb} diff={diff} path={path}>
+        {from}
+      </DiffTooltip>
     )
+  }
+
+  if (!from && to) {
+    return (
+      <DiffTooltip description={changeVerb} diff={diff} path={path}>
+        {to}
+      </DiffTooltip>
+    )
+  }
 
   return (
     <DiffTooltip description={changeVerb} diff={diff} path={path}>
-      <FromTo from={from} layout={layout} to={to} />
+      <FromTo align={align} from={from} layout={layout} to={to} />
     </DiffTooltip>
   )
 }

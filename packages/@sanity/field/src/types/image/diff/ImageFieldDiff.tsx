@@ -8,7 +8,7 @@ import {
   ChangeList,
   getAnnotationAtPath
 } from '../../../diff'
-import {FromToArrow} from '../../../diff/components'
+import {FromTo} from '../../../diff/components'
 import ImagePreview from './ImagePreview'
 import styles from './ImageFieldDiff.css'
 
@@ -52,34 +52,32 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const showImageDiff = didAssetChange || didMetaChange
   const showMetaChange = didMetaChange && !didAssetChange
 
-  const imageDiff = (
-    <div className={styles.imageDiff} data-diff-layout={fromRef && toRef ? 'double' : 'single'}>
-      {fromValue && fromRef && (
-        <DiffCard className={styles.annotation} annotation={assetAnnotation}>
-          <ImagePreview
-            is="from"
-            id={fromRef}
-            diff={diff}
-            action={assetAction}
-            hotspot={showMetaChange && didHotspotChange ? fromValue.hotspot : undefined}
-            crop={showMetaChange && didCropChange ? fromValue.crop : undefined}
-          />
-        </DiffCard>
-      )}
-      {fromRef && toRef && <FromToArrow />}
-      {toValue && toRef && (
-        <DiffCard className={styles.annotation} annotation={assetAnnotation}>
-          <ImagePreview
-            is="to"
-            id={toRef}
-            diff={diff}
-            hotspot={showMetaChange && didHotspotChange ? toValue.hotspot : undefined}
-            crop={showMetaChange && didCropChange ? toValue.crop : undefined}
-          />
-        </DiffCard>
-      )}
-    </div>
+  const from = fromValue && fromRef && (
+    <DiffCard className={styles.annotation} annotation={assetAnnotation}>
+      <ImagePreview
+        is="from"
+        id={fromRef}
+        diff={diff}
+        action={assetAction}
+        hotspot={showMetaChange && didHotspotChange ? fromValue.hotspot : undefined}
+        crop={showMetaChange && didCropChange ? fromValue.crop : undefined}
+      />
+    </DiffCard>
   )
+
+  const to = toValue && toRef && (
+    <DiffCard className={styles.annotation} annotation={assetAnnotation}>
+      <ImagePreview
+        is="to"
+        id={toRef}
+        diff={diff}
+        hotspot={showMetaChange && didHotspotChange ? toValue.hotspot : undefined}
+        crop={showMetaChange && didCropChange ? toValue.crop : undefined}
+      />
+    </DiffCard>
+  )
+
+  const imageDiff = <FromTo align="center" from={from} to={to} />
 
   return (
     <div className={styles.root}>
