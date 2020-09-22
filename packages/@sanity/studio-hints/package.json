@@ -1,6 +1,6 @@
 {
   "name": "@sanity/studio-hints",
-  "version": "1.150.7",
+  "version": "1.150.8",
   "description": "Plugin for rendering hints in the Studio",
   "main": "src/StudioHints.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -27,7 +27,7 @@
     "react-icons": "^2.2.7"
   },
   "devDependencies": {
-    "@sanity/base": "1.150.7",
+    "@sanity/base": "1.150.8",
     "@sanity/check": "1.150.1",
     "rimraf": "^2.7.1"
   },
