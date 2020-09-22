@@ -90,7 +90,7 @@ const ADJUST_MARGIN_TOP = 10
 const ADJUST_MARGIN_BOTTOM = -10
 
 export function ConnectorsOverlay(props: Props) {
-  const {children, trackerRef, ...rest} = props
+  const {children, regions: _, trackerRef, ...rest} = props
 
   const [hovered, setHovered] = React.useState<string | null>(null)
 
