@@ -1,8 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
-import {Path} from '@sanity/types'
-import {Marker} from '../../typedefs'
+import {isValidationMarker, Marker, Path} from '@sanity/types'
 import {RenderCustomMarkers} from './types'
 import styles from './BlockExtras.css'
 
@@ -20,15 +19,15 @@ export default class BlockExtras extends React.PureComponent<Props, {}> {
   }
   getValidationMarkers() {
     const {markers} = this.props
-    const validation = markers.filter(mrkr => mrkr.type === 'validation')
-    return validation.map<any>(mrkr => {
-      if (mrkr.path.length <= 1) {
-        return mrkr
+    const validation = markers.filter(isValidationMarker)
+    return validation.map(marker => {
+      if (marker.path.length <= 1) {
+        return marker
       }
-      const level = mrkr.level === 'error' ? 'errors' : 'warnings'
+      const level = marker.level === 'error' ? 'errors' : 'warnings'
       return {
-        ...mrkr,
-        item: mrkr.item.cloneWithMessage(`Contains ${level}`)
+        ...marker,
+        item: marker.item.cloneWithMessage(`Contains ${level}`)
       }
     })
   }

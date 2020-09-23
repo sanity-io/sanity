@@ -1,6 +1,11 @@
 import React, {useCallback} from 'react'
-import {ObjectSchemaType, Path} from '@sanity/types'
-import {Marker} from '../types'
+import {
+  ObjectSchemaType,
+  Path,
+  Marker,
+  isValidationErrorMarker,
+  isValidationWarningMarker
+} from '@sanity/types'
 import ValidationListItem from './ValidationListItem'
 
 import styles from './ValidationList.css'
@@ -26,9 +31,8 @@ function ValidationList(props: ValidationListProps) {
     // showLink,
   } = props
 
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const errors = validation.filter(marker => marker.level === 'error')
-  const warnings = validation.filter(marker => marker.level === 'warning')
+  const errors = markers.filter(isValidationErrorMarker)
+  const warnings = markers.filter(isValidationWarningMarker)
 
   const handleClick = useCallback(
     (path: Path = []) => {

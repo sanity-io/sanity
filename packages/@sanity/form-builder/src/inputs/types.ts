@@ -1,5 +1,6 @@
+import {Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Type, Marker} from '../typedefs'
+import {Type} from '../typedefs'
 import PatchEvent from '../PatchEvent'
 
 export type Props<T> = {

@@ -1,6 +1,6 @@
 /* eslint-disable react/no-find-dom-node */
 import React, {useState, useEffect} from 'react'
-import {isKeySegment, Path} from '@sanity/types'
+import {isKeySegment, Path, Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   PortableTextBlock,
@@ -13,7 +13,6 @@ import {get, debounce} from 'lodash'
 
 import {applyAll} from '../../../simplePatch'
 import {ModalType} from '../../ArrayInput/typedefs'
-import {Marker} from '../../../typedefs'
 import {Patch} from '../../../typedefs/patch'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'

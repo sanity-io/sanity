@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import {uniqueId} from 'lodash'
-import {Path, SanityDocument} from '@sanity/types'
+import {Path, Reference, Marker, SanityDocument, isValidationErrorMarker} from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -11,7 +11,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
-import {Reference, Type, Marker} from '../../typedefs'
+import {Type} from '../../typedefs'
 import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -247,8 +247,7 @@ export default withValuePath(
 
         const hasRef = value && value._ref
         const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
-        const validation = markers.filter(marker => marker.type === 'validation')
-        const errors = validation.filter(marker => marker.level === 'error')
+        const errors = markers.filter(isValidationErrorMarker)
         let inputValue = value ? previewSnapshot && previewSnapshot.title : undefined
         if (previewSnapshot && !previewSnapshot.title) {
           inputValue = 'Untitled document'

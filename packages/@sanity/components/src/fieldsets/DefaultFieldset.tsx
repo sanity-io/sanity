@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import React from 'react'
@@ -9,7 +9,6 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import {Marker} from '../types'
 import FieldStatus from './FieldStatus'
 
 interface FieldsetProps {

@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
+import {Path, Marker} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
-import {Marker, Type as FormBuilderType} from '../../../../typedefs'
+import {Type as FormBuilderType} from '../../../../typedefs'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Path} from '@sanity/types'
 import {PatchEvent} from '../../../../PatchEvent'
 
 type Props = {

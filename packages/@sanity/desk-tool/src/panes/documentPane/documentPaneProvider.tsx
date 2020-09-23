@@ -44,7 +44,7 @@ interface Props {
 }
 
 // eslint-disable-next-line complexity
-export const DocumentPaneProvider = withInitialValue((props: Props) => {
+export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvider(props: Props) {
   const documentIdRaw = props.options.id
   const documentId = getPublishedId(documentIdRaw)
   const documentTypeName = props.options.type

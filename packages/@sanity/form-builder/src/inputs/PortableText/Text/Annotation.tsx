@@ -4,9 +4,8 @@ import classNames from 'classnames'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
 
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {Path} from '@sanity/types'
+import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
 import {PatchEvent} from '../../../PatchEvent'
-import {Marker} from '../../../typedefs'
 
 import styles from './Annotation.css'
 
@@ -28,8 +27,7 @@ export const Annotation: FunctionComponent<Props> = ({
   value,
   onFocus
 }) => {
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const errors = validation.filter(marker => marker.level === 'error')
+  const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
     focused && styles.focused,

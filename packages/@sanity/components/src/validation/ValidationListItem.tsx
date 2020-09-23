@@ -1,8 +1,7 @@
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import classNames from 'classnames'
 import React, {useRef, useEffect, useCallback} from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import {Marker} from '../types'
 
 import styles from './ValidationListItem.css'
 

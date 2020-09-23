@@ -1,5 +1,4 @@
-import {Path} from '@sanity/types'
-import {Marker} from '../types'
+import {Path, Marker} from '@sanity/types'
 
 export interface DefaultTextInputProps extends React.HTMLProps<HTMLInputElement> {
   markers?: Marker[]

@@ -1,7 +1,6 @@
 import React from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {Marker} from '../../typedefs'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import Field from './Field'
@@ -9,6 +8,7 @@ import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
 import styles from './styles/ObjectInput.css'
+import {Marker} from '@sanity/types'
 
 function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
   // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"

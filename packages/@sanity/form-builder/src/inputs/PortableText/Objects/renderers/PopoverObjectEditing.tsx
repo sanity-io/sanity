@@ -6,9 +6,9 @@ import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {Path, Marker} from '@sanity/types'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker, Type as FormBuilderType} from '../../../../typedefs'
-import {Path} from '@sanity/types'
+import {Type as FormBuilderType} from '../../../../typedefs'
 import {PatchEvent} from '../../../../PatchEvent'
 
 interface Props {

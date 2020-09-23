@@ -1,22 +1,7 @@
-import {Path} from '@sanity/types'
-
 export type Type = {
   type: Type
   name: string
   title: string
   options: Record<string, any> | null
   [prop: string]: any
-}
-
-export type Reference = {
-  _type: string
-  _ref?: string
-  _weak?: true
-}
-
-export type Marker = {
-  path: Path
-  type: string
-  level?: string
-  item: any
 }

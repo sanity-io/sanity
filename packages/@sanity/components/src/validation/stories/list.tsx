@@ -1,30 +1,31 @@
+import React from 'react'
 import Chance from 'chance'
 import {range} from 'lodash'
+import {ValidationMarker} from '@sanity/types'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
-import React from 'react'
-import {Marker} from '../../types'
 
 const chance = new Chance()
 
-const mockMarkers = (length = 5): Marker[] => {
-  return range(length).map((marker, i) => {
-    return {
-      type: 'validation',
-      level: 'error',
-      path: [`test_${i}`],
-      item: {
-        paths: [],
-        path: ['title'],
-        message: chance.sentence(),
-        name: 'ValidationError'
+const mockMarkers = (length = 5): ValidationMarker[] => {
+  return range(length).map((marker, i) => ({
+    type: 'validation',
+    level: 'error',
+    path: [`test_${i}`],
+    item: {
+      paths: [],
+      path: ['title'],
+      message: chance.sentence(),
+      name: 'ValidationError',
+      cloneWithMessage() {
+        throw new Error('nope')
       }
     }
-  })
+  }))
 }
 
 export function ListStory() {

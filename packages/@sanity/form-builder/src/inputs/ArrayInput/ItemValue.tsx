@@ -1,5 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
+import {isValidationMarker, Marker, Path} from '@sanity/types'
+import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import Button from 'part:@sanity/components/buttons/default'
@@ -17,12 +19,10 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Path} from '@sanity/types'
-import {Marker, Type} from '../../typedefs'
+import {Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
-import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import InvalidItem from './InvalidItem'
 
 const DragHandle = createDragHandle(() => (
@@ -254,7 +254,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
-    const validation = markers.filter(marker => marker.type === 'validation')
+    const validation = markers.filter(isValidationMarker)
     const scopedValidation = validation
       .map(marker => {
         if (marker.path.length <= 1) {

@@ -1,16 +1,5 @@
-import {Path} from '@sanity/types'
-import {Placement} from '@popperjs/core'
-
 // Re-export Popper.js's `Placement` type
-export {Placement}
-
-// @todo: remove when @sanity/types has implemented this
-export interface Marker {
-  path: Path
-  type: string
-  level?: string
-  item: {message: string}
-}
+export {Placement} from '@popperjs/core'
 
 export * from './autocomplete/types'
 export * from './buttons/types'

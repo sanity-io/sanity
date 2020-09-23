@@ -1,12 +1,12 @@
 import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
+import {Marker} from '@sanity/types'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import classNames from 'classnames'
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import FieldStatus from '../fieldsets/FieldStatus'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import {Marker} from '../types'
 
 interface DefaultFormFieldProps {
   label?: string
