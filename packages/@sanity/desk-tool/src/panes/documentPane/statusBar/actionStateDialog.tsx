@@ -1,11 +1,8 @@
 import {ButtonColor, DialogAction} from '@sanity/components'
 import React, {useCallback} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-
-import styles from './documentStatusBar.css'
 
 // Todo: move these to action spec/core types
 interface ConfirmDialogProps {
