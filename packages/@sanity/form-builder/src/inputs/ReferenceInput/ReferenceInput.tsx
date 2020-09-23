@@ -22,6 +22,7 @@ type SearchHit = {
   _type: string
 }
 type PreviewSnapshot = {
+  _type: string
   title: string
   description: string
 }
@@ -223,7 +224,7 @@ export default withValuePath(
           <IntentLink
             title={previewSnapshot && `Open ${previewSnapshot.title}`}
             intent="edit"
-            params={{id: value._ref}}
+            params={{id: value._ref, type: previewSnapshot ? previewSnapshot._type : undefined}}
             className={styles.referenceLink}
           >
             <LinkIcon />
