@@ -37,30 +37,31 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   ])
 
   const content = (
+    <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
+      {changes.map(change => (
+        <ChangeResolver key={change.key} change={change} />
+      ))}
+
+      {isComparingCurrent && (
+        <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
+          <RevertChangesButton onClick={handleRevertChanges} />
+        </div>
+      )}
+    </div>
+  )
+
+  return (
     <div className={classNames(styles.groupChange, isPortableText && styles.portableText)}>
       <div className={styles.changeHeader}>
         <ChangeBreadcrumb titlePath={titlePath} />
       </div>
-
-      <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
-        {changes.map(change => (
-          <ChangeResolver key={change.key} change={change} />
-        ))}
-
-        {isComparingCurrent && (
-          <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
-            <RevertChangesButton onClick={handleRevertChanges} />
-          </div>
-        )}
-      </div>
+      {isNestedInDiff || !FieldWrapper ? (
+        content
+      ) : (
+        <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
+          {content}
+        </FieldWrapper>
+      )}
     </div>
-  )
-
-  return isNestedInDiff || !FieldWrapper ? (
-    content
-  ) : (
-    <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
-      {content}
-    </FieldWrapper>
   )
 }
