@@ -3,6 +3,9 @@
 .item {
   display: flex;
   align-items: center;
+  @nest &:not(:last-child) {
+    margin-bottom: var(--small-padding);
+  }
 }
 
 .label {
