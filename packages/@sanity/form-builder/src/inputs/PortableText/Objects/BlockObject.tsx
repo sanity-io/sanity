@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, SyntheticEvent, useMemo} from 'react'
 import classNames from 'classnames'
-import {Path} from '@sanity/types'
+import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
 import {
   PortableTextEditor,
   PortableTextBlock,
@@ -10,7 +10,6 @@ import {
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
-import {Marker} from '../../../typedefs'
 import {PatchEvent} from '../../../PatchEvent'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import styles from './BlockObject.css'
@@ -35,8 +34,7 @@ export const BlockObject: FunctionComponent<Props> = ({
   type,
   value
 }): JSX.Element => {
-  const validation = markers.filter(marker => marker.type === 'validation')
-  const errors = validation.filter(marker => marker.level === 'error')
+  const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
     focused && styles.focused,

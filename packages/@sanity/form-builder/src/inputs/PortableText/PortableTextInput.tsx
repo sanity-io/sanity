@@ -1,7 +1,7 @@
 import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
-import {Path} from '@sanity/types'
+import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
@@ -17,7 +17,6 @@ import {
 import {Subject} from 'rxjs'
 import {Patch} from '../../typedefs/patch'
 import PatchEvent from '../../PatchEvent'
-import {Marker} from '../../typedefs'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'

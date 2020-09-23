@@ -15,9 +15,9 @@ import {
   OnCopyFn,
   PortableTextEditor
 } from '@sanity/portable-text-editor'
+import {Marker} from '@sanity/types'
 import {ScrollContainer} from '@sanity/base/ScrollContainer'
 import PatchEvent from '../../PatchEvent'
-import {Marker} from '../../typedefs'
 import styles from './PortableTextInput.css'
 import Toolbar from './Toolbar/Toolbar'
 import {ExpandCollapseButton} from './expandCollapseButton'

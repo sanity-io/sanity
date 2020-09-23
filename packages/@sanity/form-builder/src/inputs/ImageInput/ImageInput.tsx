@@ -5,6 +5,7 @@ import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
+import {Marker, Path, Reference} from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -26,12 +27,11 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Package files
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import {Marker, Reference, Type} from '../../typedefs'
-import {Path} from '@sanity/types'
+import {Type} from '../../typedefs'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
@@ -86,8 +86,8 @@ export type Props = {
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
-  focusPath: Array<any>
-  markers: Array<Marker>
+  focusPath: Path
+  markers: Marker[]
   presence: any
 }
 

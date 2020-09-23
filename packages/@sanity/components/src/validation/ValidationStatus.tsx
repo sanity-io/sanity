@@ -1,9 +1,13 @@
 import React from 'react'
+import {
+  isValidationErrorMarker,
+  isValidationMarker,
+  isValidationWarningMarker,
+  Marker
+} from '@sanity/types'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-// import CheckIcon from 'part:@sanity/base/check-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import {Marker} from '../types'
 import ValidationList from './ValidationList'
 
 import styles from './ValidationStatus.css'
@@ -16,14 +20,14 @@ interface ValidationStatusProps {
 
 function ValidationStatus(props: ValidationStatusProps) {
   const {markers = [], showSummary = false, hideTooltip = false} = props
-  const validationMarkers = markers.filter(marker => marker.type === 'validation')
+  const validationMarkers = markers.filter(isValidationMarker)
 
   if (validationMarkers.length === 0) {
     return null
   }
 
-  const errorMarkers = validationMarkers.filter(marker => marker.level === 'error')
-  const warningMarkers = validationMarkers.filter(marker => marker.level === 'warning')
+  const errorMarkers = validationMarkers.filter(isValidationErrorMarker)
+  const warningMarkers = validationMarkers.filter(isValidationWarningMarker)
 
   const errorsStr = `error${errorMarkers.length === 1 ? '' : 's'}`
   const warningsStr = `warning${warningMarkers.length === 1 ? '' : 's'}`

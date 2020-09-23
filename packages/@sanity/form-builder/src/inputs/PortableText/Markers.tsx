@@ -1,8 +1,7 @@
 import React from 'react'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
-import {Marker} from '../../typedefs/index'
-import {Path} from '@sanity/types'
+import {Path, Marker, isValidationMarker} from '@sanity/types'
 import {RenderCustomMarkers} from './types'
 import styles from './Markers.css'
 
@@ -20,7 +19,7 @@ export default class Markers extends React.PureComponent<Props> {
     event.preventDefault()
     event.stopPropagation()
     const {onFocus, markers} = this.props
-    const validationMarkers = markers.filter((mrkr: Marker) => mrkr.type === 'validation')
+    const validationMarkers = markers.filter(isValidationMarker)
     onFocus(validationMarkers[0].path)
   }
   handleCancelEvent = (event: React.MouseEvent<HTMLDivElement>): void => {
@@ -32,8 +31,8 @@ export default class Markers extends React.PureComponent<Props> {
     if (markers.length === 0) {
       return null
     }
-    const customMarkers = markers.filter(mrkr => mrkr.type !== 'validation')
-    const validationMarkers = markers.filter(mrkr => mrkr.type === 'validation')
+    const customMarkers = markers.filter(mrkr => !isValidationMarker(mrkr))
+    const validationMarkers = markers.filter(isValidationMarker)
     return (
       <div onClick={this.handleCancelEvent} className={styles.root}>
         {validationMarkers.length > 0 && (

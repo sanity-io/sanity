@@ -1,15 +1,18 @@
 import React from 'react'
-import WithMaterializedDocument from './WithMaterializedDocument'
-import {Reference} from '../typedefs'
 import {Observable} from 'rxjs'
+import {Reference} from '@sanity/types'
+import WithMaterializedDocument from './WithMaterializedDocument'
+
 type Props = {
   reference: Reference
-  materialize: (arg0: string) => Observable<any>
+  materialize: (string: string) => Observable<any>
   children: (arg: any) => null | React.ReactNode
 }
+
 function getRefId(reference: Reference | null): string | null {
   return reference && reference._ref
 }
+
 export default function WithMaterializedReference(props: Props) {
   const {reference, children, ...rest} = props
   const documentId = getRefId(reference)

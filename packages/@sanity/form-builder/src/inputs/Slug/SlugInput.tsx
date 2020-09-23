@@ -1,17 +1,24 @@
 import React from 'react'
 import {uniqueId} from 'lodash'
 import speakingurl from 'speakingurl'
-import {Path, SanityDocument, SlugParent, SlugifierFn, SlugSchemaType} from '@sanity/types'
+import {
+  Path,
+  SanityDocument,
+  SlugParent,
+  SlugifierFn,
+  SlugSchemaType,
+  Marker,
+  isValidationErrorMarker
+} from '@sanity/types'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
-import {Marker} from '../../typedefs'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/SlugInput.css'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 
 // Fallback slugify function if not defined in field options
 const defaultSlugify: SlugifierFn = (value, type) => {
@@ -176,8 +183,7 @@ export default withValuePath(
           presence,
           labelFor: this._inputId
         }
-        const validation = markers.filter(marker => marker.type === 'validation')
-        const errors = validation.filter(marker => marker.level === 'error')
+        const errors = markers.filter(isValidationErrorMarker)
         return (
           <ChangeIndicatorProvider
             path={[]}

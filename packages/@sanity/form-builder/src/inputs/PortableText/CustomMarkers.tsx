@@ -1,14 +1,14 @@
 import React from 'react'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import CommentIcon from 'part:@sanity/base/comment-icon'
-import {Marker} from '../../typedefs'
+import {Marker} from '@sanity/types'
 
 type Props = {
   markers: Marker[]
 }
 // This is the fallback marker renderer if the block editor didn't get the 'renderCustomMarkers' prop
 // You will probably only see this when you first start to play with custom markers as a developer
-export default class Markers extends React.Component<Props, {}> {
+export default class Markers extends React.Component<Props> {
   static defaultProps = {
     markers: []
   }
@@ -27,7 +27,7 @@ export default class Markers extends React.Component<Props, {}> {
     }, click to log to console.`
 
     return (
-      <Tooltip content={(<>{text}</>) as any}>
+      <Tooltip content={text}>
         <CommentIcon onClick={this.handleCustomMarkerClick} />
       </Tooltip>
     )

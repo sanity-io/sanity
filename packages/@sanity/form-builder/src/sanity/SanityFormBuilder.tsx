@@ -1,21 +1,21 @@
 import React from 'react'
+import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
-import {Marker, Type} from '../typedefs'
-import {Path} from '@sanity/types'
+import {Type} from '../typedefs'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 type PatchChannel = {
   subscribe: () => () => {}
-  receivePatches: (patches: Array<any>) => void
+  receivePatches: (patches: any[]) => void
 }
 
 type Props = {
   value: any | null
   schema: any
   type: Type
-  markers: Array<Marker>
+  markers: Marker[]
   patchChannel: PatchChannel
   compareValue: any
   onFocus: (arg0: Path) => void

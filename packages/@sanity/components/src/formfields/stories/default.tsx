@@ -1,28 +1,33 @@
+import React from 'react'
 import Chance from 'chance'
 import {range} from 'lodash'
+import {ValidationMarker} from '@sanity/types'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import {number, text, boolean} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {CenteredContainer} from 'part:@sanity/storybook/components'
-import React from 'react'
 
 const chance = new Chance()
 
-const mockValidationMarkers = (level = 'error', length = 5) => {
-  return range(length).map((_, markerIndex) => {
-    return {
-      type: 'validation',
-      level,
-      path: [`field_${markerIndex}`],
-      item: {
-        paths: [],
-        path: ['title'],
-        message: chance.sentence(),
-        name: 'ValidationError'
+const mockValidationMarkers = (
+  level: ValidationMarker['level'] = 'error',
+  length = 5
+): ValidationMarker[] => {
+  return range(length).map((_, markerIndex) => ({
+    type: 'validation',
+    level,
+    path: [`field_${markerIndex}`],
+    item: {
+      paths: [],
+      path: ['title'],
+      message: chance.sentence(),
+      name: 'ValidationError',
+      cloneWithMessage() {
+        throw new Error('nope')
       }
     }
-  })
+  }))
 }
 
 export function DefaultFormFieldStory() {

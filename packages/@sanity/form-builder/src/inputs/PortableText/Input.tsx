@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -15,13 +16,12 @@ import {
   usePortableTextEditorSelection,
   HotkeyOptions
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, KeyedSegment} from '@sanity/types'
+import {Path, isKeySegment, KeyedSegment, Marker} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
-import {Marker} from '../../typedefs'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
@@ -32,7 +32,6 @@ import Header from './Text/Header'
 import Paragraph from './Text/Paragraph'
 import {RenderBlockActions, RenderCustomMarkers, ObjectEditData} from './types'
 import PortableTextSanityEditor from './Editor'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 
 type Props = {
   focusPath: Path

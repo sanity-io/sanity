@@ -1,6 +1,5 @@
 import {PortableTextBlock} from '@sanity/portable-text-editor'
-import {Marker} from '../../typedefs'
-import {Path} from '@sanity/types'
+import {Path, Marker} from '@sanity/types'
 
 export type ObjectEditData = {
   editorPath: Path // The object representation in the editor (i.e. an text for an annotation)
@@ -8,12 +7,12 @@ export type ObjectEditData = {
   kind: 'annotation' | 'blockObject' | 'inlineObject'
 }
 
-export type RenderCustomMarkers = (arg0: Marker[]) => JSX.Element
+export type RenderCustomMarkers = (markers: Marker[]) => JSX.Element
 
-export type RenderBlockActions = (arg0: {
+export type RenderBlockActions = (actions: {
   block: PortableTextBlock
   value: PortableTextBlock[] | undefined
-  set: (arg0: PortableTextBlock) => void
+  set: (block: PortableTextBlock) => void
   unset: () => void
-  insert: (arg0: PortableTextBlock | PortableTextBlock[]) => void
+  insert: (block: PortableTextBlock | PortableTextBlock[]) => void
 }) => JSX.Element
