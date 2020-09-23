@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable react/no-array-index-key */
-
+import {useId} from '@reach/auto-id'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
-import React from 'react'
-import {useId} from '@reach/auto-id'
-
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
+import React, {createElement, useCallback, useEffect, useRef, useState} from 'react'
 import useOnClickOutside from 'use-onclickoutside'
 import {ActionStateDialog} from './actionStateDialog'
 
@@ -16,6 +10,8 @@ import styles from './documentStatusBarActions.css'
 
 function getNext<T>(array: T[], fromIndex: number, dir = 1): T {
   const next = fromIndex + dir
+
+  // eslint-disable-next-line no-nested-ternary
   return array[next >= array.length ? 0 : next < 0 ? array.length - 1 : next]
 }
 
@@ -28,8 +24,10 @@ interface Props {
 }
 
 export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Props) {
-  const clickOutsideRef = React.useRef(null)
-  const listRef = React.useRef<HTMLUListElement>(null)
+  const clickOutsideRef = useRef(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  const idPrefix = useId()
+
   useOnClickOutside(clickOutsideRef, () => {
     if (!isOpen) {
       return
@@ -40,15 +38,14 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
       onClose()
     }
   })
-  const idPrefix = useId()
 
-  const [activeAction, setActiveAction] = React.useState(actionStates.find(s => !s.disabled))
+  const [activeAction, setActiveAction] = useState(actionStates.find(s => !s.disabled))
 
-  React.useEffect(() => {
+  useEffect(() => {
     setActiveAction(actionStates.find(s => !s.disabled))
-  }, [isOpen])
+  }, [actionStates, isOpen])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (listRef.current) {
       const el: HTMLUListElement | null = listRef.current.querySelector('[data-has-focus]')
       if (el) {
@@ -57,7 +54,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
     }
   }, [activeAction, actionStates])
 
-  const handleKeyDown = React.useCallback(
+  const handleKeyDown = useCallback(
     event => {
       if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
         return
@@ -95,9 +92,10 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
           >
             {actionStates.map((actionState, idx) => {
               return (
+                // eslint-disable-next-line react/no-array-index-key
                 <li key={idx} className={styles.menuItem} role="presentation">
                   <button
-                    {...(actionState === activeAction && {['data-has-focus']: true})}
+                    {...(actionState === activeAction && {'data-has-focus': true})}
                     aria-label={actionState.label}
                     className={styles.menuItemButton}
                     disabled={disabled || Boolean(actionState.disabled)}
@@ -110,7 +108,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
                     <div tabIndex={-1}>
                       {actionState.icon && (
                         <span className={styles.menuItemIcon}>
-                          {React.createElement(actionState.icon)}
+                          {createElement(actionState.icon)}
                         </span>
                       )}
                       <span className={styles.menuItemLabel}>{actionState.label}</span>

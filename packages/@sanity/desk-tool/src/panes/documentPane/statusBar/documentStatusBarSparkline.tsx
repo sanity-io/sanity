@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/no-array-index-key */
-
-import React from 'react'
-import Badge from 'part:@sanity/components/badges/default'
+import {useSyncState} from '@sanity/react-hooks'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 import SyncIcon from 'part:@sanity/base/sync-icon'
-import {useSyncState} from '@sanity/react-hooks'
 import HistoryIcon from 'part:@sanity/base/history-icon'
+import Badge from 'part:@sanity/components/badges/default'
+import React from 'react'
 import {useDocumentHistory} from '../documentHistory'
 import TimeAgo from '../../../components/TimeAgo'
 import styles from './documentStatusBarSparkline.css'
@@ -31,7 +27,7 @@ export interface Badge {
   label: string
   title: string
   color: 'success' | 'failure' | 'warning'
-  icon?: any
+  icon?: React.ComponentType
 }
 
 interface Props {
@@ -48,6 +44,7 @@ function DocumentStatusBarSparklineInner({states, disabled, lastUpdated}: Props)
   if (states.length === 0) {
     return null
   }
+
   return (
     <div className={styles.root} data-disabled={disabled}>
       <div className={styles.statusBadges} data-syncing={syncState}>
@@ -86,13 +83,17 @@ export function DocumentStatusBarSparkline(props: {
   disabled: boolean
   lastUpdated: string | undefined | null
 }) {
-  return props.badges ? (
-    <RenderBadgeCollectionState
-      component={DocumentStatusBarSparklineInner}
-      badges={props.badges}
-      badgeProps={props.editState}
-      disabled={props.disabled}
-      lastUpdated={props.lastUpdated}
-    />
-  ) : null
+  if (props.badges) {
+    return (
+      <RenderBadgeCollectionState
+        component={DocumentStatusBarSparklineInner}
+        badges={props.badges}
+        badgeProps={props.editState}
+        disabled={props.disabled}
+        lastUpdated={props.lastUpdated}
+      />
+    )
+  }
+
+  return null
 }
