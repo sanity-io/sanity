@@ -1,7 +1,7 @@
 import {ButtonColor, DialogAction} from '@sanity/components'
 import React, {useCallback} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import PopOverDialog from 'part:@sanity/components/dialogs/popover'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Todo: move these to action spec/core types
@@ -22,7 +22,7 @@ interface ModalDialogProps {
 }
 
 // Todo: move these to action spec/core types
-interface PopOverDialogProps {
+interface PopoverDialogProps {
   type: 'popover'
   content: React.ReactNode
   onClose: () => void
@@ -53,13 +53,14 @@ interface Props {
     | ConfirmDialogProps
     | LegacyDialogProps
     | ModalDialogProps
-    | PopOverDialogProps
+    | PopoverDialogProps
     | ErrorDialogProps
     | SuccessDialogProps
+  referenceElement: HTMLElement | null
 }
 
 export function ActionStateDialog(props: Props) {
-  const {dialog} = props
+  const {dialog, referenceElement} = props
 
   const handleDialogAction = useCallback(
     (action: DialogAction) => {
@@ -82,7 +83,7 @@ export function ActionStateDialog(props: Props) {
 
   if (dialog.type === 'confirm') {
     return (
-      <PopOverDialog
+      <PopoverDialog
         actions={[
           {
             key: 'confirm',
@@ -99,11 +100,12 @@ export function ActionStateDialog(props: Props) {
         onAction={handleDialogAction}
         onClickOutside={dialog.onCancel}
         placement="auto-end"
+        referenceElement={referenceElement}
         size="small"
         useOverlay={false}
       >
         <div>{dialog.message}</div>
-      </PopOverDialog>
+      </PopoverDialog>
     )
   }
 
@@ -123,14 +125,15 @@ export function ActionStateDialog(props: Props) {
 
   if (dialog.type === 'popover') {
     return (
-      <PopOverDialog
+      <PopoverDialog
         onClickOutside={dialog.onClose}
         placement="auto-end"
         useOverlay={false}
         hasAnimation
+        referenceElement={referenceElement}
       >
         {dialog.content}
-      </PopOverDialog>
+      </PopoverDialog>
     )
   }
 
@@ -169,7 +172,11 @@ export function ActionStateDialog(props: Props) {
       size="medium"
       padding="large"
     >
-      {unknownDialog.content || `Don't know how to render dialog of type ${unknownDialog.type}`}
+      {unknownDialog.content || (
+        <>
+          Unexpected dialog type (<code>{unknownDialog.type}</code>)
+        </>
+      )}
     </Dialog>
   )
 }

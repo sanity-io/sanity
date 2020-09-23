@@ -1,0 +1,72 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.actionsDropDown {
+  margin-left: var(--extra-small-padding);
+}
+
+.popoverContent {
+  padding: calc(var(--small-padding) / 2) 0;
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menuItem {
+  white-space: nowrap;
+}
+
+.menuItemButton {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  -webkit-appearance: none;
+  -webkit-font-smoothing: inherit;
+  font: inherit;
+  line-height: calc(25 / 16);
+  color: inherit;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+
+  @nest & > div {
+    outline: none;
+    padding: 0.5em 0.75em;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.menuItemIcon {
+  display: inline-block;
+  vertical-align: top;
+  width: 17px;
+  margin: 0 0.5em 0 0;
+
+  @nest & svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+    margin: calc(4 / 17 * 1em) 0;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: 0 calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.menuItemLabel {
+  flex: 1;
+  min-width: 0;
+  margin: -2px 0 -1px;
+}
+
+.menuItemHotkeys {
+  margin-left: var(--medium-padding);
+  line-height: 0;
+}

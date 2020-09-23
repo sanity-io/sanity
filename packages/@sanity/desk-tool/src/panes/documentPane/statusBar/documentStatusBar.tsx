@@ -1,11 +1,12 @@
-import React from 'react'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import Button from 'part:@sanity/components/buttons/default'
+import React from 'react'
 import {useDocumentHistory} from '../documentHistory'
-import styles from './documentStatusBar.css'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './documentStatusBarActions'
 import {DocumentStatusBarSparkline} from './documentStatusBarSparkline'
+
+import styles from './documentStatusBar.css'
 
 interface Props {
   id: string
