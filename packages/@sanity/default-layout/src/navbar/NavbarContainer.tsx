@@ -30,19 +30,7 @@ interface State {
   showToolMenuMinWidth: number
 }
 
-/* eslint-disable complexity */
-/* eslint-disable max-depth */
-/* eslint-disable no-lonely-if */
-function getNextState(
-  state: {
-    showLabel: boolean
-    showLabelMinWidth: number
-    showToolMenu: boolean
-    showToolMenuMinWidth: number
-  },
-  mostRight: {},
-  winWidth: number
-) {
+function getNextState(state: State, mostRight: number, winWidth: number): NextState {
   const {showLabel, showLabelMinWidth, showToolMenu, showToolMenuMinWidth} = state
   const mostRightIsVisible = mostRight && mostRight <= winWidth
   const nextState: NextState = {winWidth}
@@ -64,20 +52,19 @@ function getNextState(
     } else if (showToolMenuMinWidth < winWidth) {
       nextState.showToolMenu = true
     }
-  } else {
-    // most-right element is NOT within viewport
-    if (showLabel) {
-      nextState.showLabel = false
-    } else if (showToolMenu) {
-      nextState.showToolMenu = false
-    }
+
+    return nextState
+  }
+
+  // most-right element is NOT within viewport
+  if (showLabel) {
+    nextState.showLabel = false
+  } else if (showToolMenu) {
+    nextState.showToolMenu = false
   }
 
   return nextState
 }
-/* eslint-enable complexity */
-/* eslint-enable max-depth */
-/* eslint-enable no-lonely-if */
 
 class NavbarContainer extends React.PureComponent<Props, State> {
   state = {
@@ -100,7 +87,6 @@ class NavbarContainer extends React.PureComponent<Props, State> {
     this.tick()
   }
 
-  /* eslint-disable complexity */
   componentDidUpdate(prevProps: Props, prevState: State) {
     const {showLabel, showLabelMinWidth, showToolMenu, showToolMenuMinWidth} = this.state
     const didShowLabel = showLabelMinWidth === -1 && !prevState.showLabel && showLabel
@@ -111,7 +97,6 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       this.handleCustomResize(window.innerWidth)
     }
   }
-  /* eslint-enable complexity */
 
   componentWillUnmount() {
     if (this.io) {
@@ -143,10 +128,11 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       const mostRightRect = showToolMenu
         ? this.loginStatusElement.getBoundingClientRect()
         : this.searchElement.getBoundingClientRect()
-      this.setState(state => {
-        const nextState = getNextState(state, mostRightRect.left + mostRightRect.width, winWidth)
-        return nextState as State
-      })
+
+      this.setState(
+        prevState =>
+          getNextState(prevState, mostRightRect.left + mostRightRect.width, winWidth) as State
+      )
     }
   }
 
