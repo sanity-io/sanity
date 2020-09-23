@@ -1,23 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .svg {
-  z-index: 2000;
+  z-index: calc(var(--zindex-portal) - 1);
 }
 
 .connector {
-  pointer-events: all;
   stroke: #2276fc;
   stroke-width: 2;
-  @nest &:hover .connectorPath {
-    opacity: 1;
-  }
 }
 
-.connectorPath {
-  transition: opacity 200ms;
-  opacity: 0;
-  @nest &.hasFocus {
-    opacity: 1;
-  }
+.dangerConnector {
+  composes: connector;
+  stroke: var(--state-danger-color);
 }
+
 .hasFocus {
   opacity: 1;
 }

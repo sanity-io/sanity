@@ -52,7 +52,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
           <ChangeBreadcrumb change={change} titlePath={change.titlePath} />
         </div>
       )}
-      <FieldWrapper path={change.path}>
+      <FieldWrapper path={change.path} hasHover={revertHovered}>
         <DiffInspectWrapper change={change} className={styles.change}>
           {change.error ? (
             <ValueError error={change.error} />

@@ -123,16 +123,16 @@ export function ConnectorsOverlay(props: Props) {
   const [fieldRegions, changeRegions] = partition(regions, fieldRegion =>
     fieldRegion.id.startsWith('field-')
   )
-
   const combined = fieldRegions
     .filter(fieldRegion => fieldRegion.isChanged)
     .map(fieldRegion => ({
       field: fieldRegion,
       change: changeRegions.find(r => PathUtils.isEqual(r.path, fieldRegion.path))
     }))
+    .filter(({field, change}) => field && change)
     .map(({field, change}) => ({
-      hasHover: field.hasHover || field.hasHover,
-      hasFocus: field.hasFocus || field.hasFocus,
+      hasHover: field.hasHover || change!.hasHover,
+      hasFocus: field.hasFocus,
       field,
       change
     }))
@@ -168,6 +168,9 @@ export function ConnectorsOverlay(props: Props) {
             top: change.rect.bounds.top + ADJUST_MARGIN_TOP,
             bottom: change.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM - 14
           }
+          const connectorClassName = change.hasRevertHover
+            ? styles.dangerConnector
+            : styles.connector
           return (
             <svg
               key={field.id}
@@ -200,6 +203,7 @@ export function ConnectorsOverlay(props: Props) {
                       clampLeft={clampConnectorLeft}
                       clampRight={clampConnectorRight}
                       verticalCenter={verticalLineLeft! + 3}
+                      className={connectorClassName}
                     />
                     {/*<line*/}
                     {/*  x1={field.rect.left}*/}
@@ -237,7 +241,7 @@ export function ConnectorsOverlay(props: Props) {
                     {/* arrow left top */}
                     {connectorFrom.top + field.rect.height - 8 < clampConnectorLeft.top && (
                       <Arrow
-                        className={styles.connector}
+                        className={connectorClassName}
                         top={Math.max(clampConnectorLeft.top)}
                         left={connectorFrom.left}
                         length={5}
@@ -248,7 +252,7 @@ export function ConnectorsOverlay(props: Props) {
                     {/* arrow left bottom */}
                     {connectorFrom.top > field.rect.bounds.bottom - 5 && (
                       <Arrow
-                        className={styles.connector}
+                        className={connectorClassName}
                         top={field.rect.bounds.bottom - 5}
                         left={connectorFrom.left}
                         length={5}
@@ -259,7 +263,7 @@ export function ConnectorsOverlay(props: Props) {
                     {/* arrow right top */}
                     {connectorTo.top + change.rect.height - 8 < clampConnectorRight.top && (
                       <Arrow
-                        className={styles.connector}
+                        className={connectorClassName}
                         top={Math.max(clampConnectorRight.top)}
                         left={connectorTo.left}
                         length={5}
@@ -270,7 +274,7 @@ export function ConnectorsOverlay(props: Props) {
                     {/* arrow right bottom */}
                     {connectorTo.top > change.rect.bounds.bottom - 5 && (
                       <Arrow
-                        className={styles.connector}
+                        className={connectorClassName}
                         top={change.rect.bounds.bottom - 5}
                         left={connectorTo.left}
                         length={5}
@@ -280,7 +284,7 @@ export function ConnectorsOverlay(props: Props) {
                     )}
                     {/* this is the bar marking the line in the changes panel */}
                     <path
-                      className={styles.connector}
+                      className={connectorClassName}
                       d={drawLine(
                         vLine(
                           connectorTo.left,

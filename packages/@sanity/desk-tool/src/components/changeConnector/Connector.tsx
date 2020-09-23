@@ -6,9 +6,6 @@ export interface Point {
   left: number
 }
 
-const blue = (opacity = 1) => `rgba(34, 118, 252, ${opacity})`
-const BLUE = blue()
-
 type Line = {from: Point; to: Point}
 
 const STROKE_WIDTH = 2
@@ -119,7 +116,7 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
     )
   return (
     <>
-      <path d={path} fill="none" stroke={BLUE} strokeWidth={STROKE_WIDTH} />
+      <path d={path} fill="none" {...rest} />
       {/* click area */}
       <path
         d={sensitivePath}
@@ -131,8 +128,7 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
         onMouseLeave={props.onMouseLeave}
         strokeWidth={STROKE_WIDTH + 10}
         style={{
-          pointerEvents: 'all',
-          backgroundColor: 'blue'
+          pointerEvents: 'all'
         }}
       />
     </>

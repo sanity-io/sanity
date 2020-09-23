@@ -7,6 +7,7 @@ export interface TrackedChange {
   isChanged: boolean
   hasFocus: boolean
   hasHover: boolean
+  hasRevertHover: boolean
 }
 
 export interface TrackedArea {
