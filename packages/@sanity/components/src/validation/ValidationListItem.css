@@ -1,11 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.item {
+.root {
   display: flex;
   margin: 0;
   flex-grow: 1;
   width: 100%;
-  cursor: pointer;
   box-sizing: border-box;
   outline: none;
   color: inherit;
@@ -13,37 +12,35 @@
   line-height: 0;
 }
 
-.item[data-item-type='simple'] {
+.root[data-item-type='simple'] {
   user-select: none;
   cursor: unset;
   padding: var(--extra-small-padding) var(--medium-padding);
   border: 0;
-
-  @nest & .message {
-    color: var(--text-color);
-  }
 }
 
-.item.error {
+.root.error {
   @nest & .icon {
     color: var(--state-danger-color);
   }
 }
 
-.item.warning {
+.root.warning {
   @nest & .icon {
     color: var(--state-warning-color);
   }
 }
 
-.interactiveItem {
-  composes: item;
+.interactive {
+  composes: root;
+  cursor: pointer;
 
-  @nest &.error:not([data-item-type='simple']):hover {
+  @nest &.error:not([data-item-type='simple']):hover, &.error:not([data-item-type='simple']):focus {
     background-color: color(var(--state-danger-color) a(10%));
   }
 
-  @nest &.warning:not([data-item-type='simple']):hover, &:focus {
+  @nest &.warning:not([data-item-type='simple']):hover,
+    &.warning:not([data-item-type='simple']):focus {
     background-color: color(var(--state-warning-color) a(10%));
   }
 }
@@ -64,15 +61,9 @@
 
 .content {
   flex-grow: 1;
+  min-width: 0;
   padding-left: var(--small-padding);
   margin: -3px 0 -2px;
-
-  @nest .truncate & {
-    padding-top: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 .path {
@@ -88,5 +79,11 @@
 
   @nest .path + & {
     margin-top: calc(var(--extra-small-padding) / 2);
+  }
+
+  @nest .truncate & {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
