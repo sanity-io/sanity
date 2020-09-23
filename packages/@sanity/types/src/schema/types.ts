@@ -40,9 +40,19 @@ export interface BooleanSchemaType extends BaseSchemaType {
   }
 }
 
-export interface ArraySchemaType extends BaseSchemaType {
+export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: Exclude<SchemaType, ArraySchemaType>[]
+  options?: {
+    list?: {title?: string; value: V}[] | V[]
+    layout?: V extends string ? 'tags' : 'grid'
+    sortable?: boolean
+
+    /**
+     * @deprecated
+     */
+    editModal?: 'dialog' | 'fullscreen' | 'popover'
+  }
 }
 
 export interface BlockSchemaType extends ObjectSchemaType {
