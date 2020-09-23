@@ -1,2 +1,9 @@
-export {ReportedRegion} from './types'
-export {createTracker as create, TrackerComponentProps, TrackerProps} from './createTracker'
+import {createScope} from './createScope'
+
+export {createScope}
+
+const {Tracker, useReporter, useReportedValues} = createScope()
+
+export {Tracker, useReporter, useReportedValues}
+
+export type Reported<Value> = [string, Value]

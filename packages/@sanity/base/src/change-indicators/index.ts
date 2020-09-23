@@ -8,4 +8,11 @@ export {
   ChangeIndicatorWithProvidedFullPath
 } from './ChangeIndicator'
 
-export {Tracker, Reporter} from './elementTracker'
+export {
+  Tracker,
+  useReportedValues,
+  useReporter,
+  TrackedArea,
+  TrackedChange,
+  Reported
+} from './tracker'

@@ -8,10 +8,10 @@ interface Props {
   margins?: [number, number, number, number]
 }
 
-function OverlayEnabled(props: Props) {
+function OverlayEnabled({children, margins}: Props) {
   return (
-    <Tracker component={StickyOverlay as any} componentProps={{margins: props.margins}}>
-      {props.children}
+    <Tracker>
+      <StickyOverlay margins={margins}>{children}</StickyOverlay>
     </Tracker>
   )
 }

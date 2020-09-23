@@ -7,7 +7,7 @@ import {
   INTERSECTION_ELEMENT_PADDING,
   INTERSECTION_THRESHOLDS
 } from '../constants'
-import {RegionWithIntersectionDetails} from '../types'
+import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
 import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
 import styles from './RegionsWithIntersections.css'
 
@@ -33,21 +33,23 @@ const WithIntersection = (props: WithIntersectionProps) => {
 }
 
 type Props = {
-  regions: any[]
+  regions: ReportedRegionWithRect<FieldPresenceData>[]
   render: (
     regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
     containerWidth: number
   ) => React.ReactNode | null
   children: React.ReactNode
-  trackerRef: React.RefObject<any>
   margins: [number, number, number, number]
 }
 
 const toPx = (num: number) => `${num}px`
 const invert = (num: number) => -num
 
-export function RegionsWithIntersections(props: Props) {
-  const {regions, render, children, trackerRef, margins} = props
+export const RegionsWithIntersections = React.forwardRef(function RegionsWithIntersections(
+  props: Props,
+  ref: any
+) {
+  const {regions, render, children, margins} = props
 
   const overlayRef = React.useRef<HTMLDivElement | null>(null)
 
@@ -73,7 +75,7 @@ export function RegionsWithIntersections(props: Props) {
   const bottom = intersections['::bottom']
   const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] = (top && bottom
     ? regions
-        .filter(region => region.data?.presence?.length > 0)
+        .filter(region => region.presence?.length > 0)
         .map((region): RegionWithIntersectionDetails | null => {
           const intersection = intersections[region.id]
           if (!intersection) {
@@ -117,7 +119,7 @@ export function RegionsWithIntersections(props: Props) {
     : []) as RegionWithIntersectionDetails[]
 
   return (
-    <div className={styles.root} ref={trackerRef}>
+    <div className={styles.root} ref={ref}>
       <WithIntersection
         io={io}
         id="::top"
@@ -177,4 +179,4 @@ export function RegionsWithIntersections(props: Props) {
       />
     </div>
   )
-}
+})
