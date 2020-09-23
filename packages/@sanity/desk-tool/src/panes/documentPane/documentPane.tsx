@@ -80,6 +80,18 @@ export function DocumentPane(props: DocumentPaneProps) {
     : []
   const isInspectOpen = paneRouter.params.inspect === 'on'
 
+  const toggleInspect = useCallback(
+    (toggle = !isInspectOpen) => {
+      const {inspect: oldInspect, ...params} = paneRouter.params
+      if (toggle) {
+        paneRouter.setParams({inspect: 'on', ...params})
+      } else {
+        paneRouter.setParams(params)
+      }
+    },
+    [isInspectOpen, paneRouter]
+  )
+
   const handleKeyUp = useCallback(
     (event: any) => {
       if (event.key === 'Escape' && showValidationTooltip) {
@@ -102,24 +114,10 @@ export function DocumentPane(props: DocumentPaneProps) {
         }
       }
     },
-    [features]
+    [features, showValidationTooltip, toggleInspect, value]
   )
 
-  const toggleInspect = useCallback(
-    (toggle = !isInspectOpen) => {
-      const {inspect: oldInspect, ...params} = paneRouter.params
-      if (toggle) {
-        paneRouter.setParams({inspect: 'on', ...params})
-      } else {
-        paneRouter.setParams(params)
-      }
-    },
-    [paneRouter]
-  )
-
-  const handleInspectClose = useCallback(() => {
-    toggleInspect(false)
-  }, [toggleInspect])
+  const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
   const handleSetActiveView = useCallback((id: string | null) => paneRouter.setView(id as any), [
     paneRouter
@@ -127,9 +125,7 @@ export function DocumentPane(props: DocumentPaneProps) {
 
   const handleClosePane = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
-  const handleSplitPane = useCallback(() => {
-    paneRouter.duplicateCurrent()
-  }, [paneRouter])
+  const handleSplitPane = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
   const changesSinceSelectRef = useRef<HTMLDivElement | null>(null)
   const versionSelectRef = useRef<HTMLDivElement | null>(null)
