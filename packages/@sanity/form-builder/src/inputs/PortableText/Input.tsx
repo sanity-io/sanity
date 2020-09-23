@@ -248,15 +248,17 @@ export default function PortableTextInput(props: Props) {
       marker => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
     )
     return (
-      <InlineObject
-        attributes={attributes}
-        markers={inlineMarkers}
-        onChange={handleFormBuilderEditObjectChange}
-        onFocus={onFocus}
-        readOnly={readOnly}
-        type={childType}
-        value={child}
-      />
+      <span data-pte-key={child._key}>
+        <InlineObject
+          attributes={attributes}
+          markers={inlineMarkers}
+          onChange={handleFormBuilderEditObjectChange}
+          onFocus={onFocus}
+          readOnly={readOnly}
+          type={childType}
+          value={child}
+        />
+      </span>
     )
   }
 
