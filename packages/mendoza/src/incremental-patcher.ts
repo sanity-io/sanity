@@ -93,7 +93,7 @@ class Model<T>
         utf8size: utf8stringSize(str),
         uses: [],
         startMeta: value.startMeta,
-        endMeta: this.meta
+        endMeta: value.endMeta
       }
       value.content = this.stringFromParts([part])
     }
