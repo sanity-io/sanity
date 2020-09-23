@@ -1,9 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .groupChange {
-  @nest div + & {
-    margin-top: var(--extra-large-padding);
-  }
+  margin-top: var(--extra-large-padding);
 }
 
 .changeList {
