@@ -37,12 +37,12 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   ])
 
   return (
-    <div className={classNames(styles.groupChange, isPortableText && styles.portableText)}>
-      <div className={styles.changeHeader}>
-        <ChangeBreadcrumb titlePath={titlePath} />
-      </div>
+    <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
+      <div className={classNames(styles.groupChange, isPortableText && styles.portableText)}>
+        <div className={styles.changeHeader}>
+          <ChangeBreadcrumb titlePath={titlePath} />
+        </div>
 
-      <FieldWrapper path={group.path}>
         <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
           {changes.map(change => (
             <ChangeResolver key={change.key} change={change} />
@@ -54,7 +54,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
             </div>
           )}
         </div>
-      </FieldWrapper>
-    </div>
+      </div>
+    </FieldWrapper>
   )
 }
