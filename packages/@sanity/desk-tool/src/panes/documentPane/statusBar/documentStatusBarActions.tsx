@@ -26,6 +26,7 @@ interface Props {
 function DocumentStatusBarActionsInner(props: Props) {
   const {states, showMenu} = props
   const [firstActionState, ...menuActionStates] = states
+  const [buttonContainerElement, setButtonContainerElement] = useState<HTMLDivElement | null>(null)
 
   return (
     <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
@@ -48,7 +49,7 @@ function DocumentStatusBarActionsInner(props: Props) {
             }
             placement="top"
           >
-            <div>
+            <div ref={setButtonContainerElement}>
               <Button
                 className={
                   showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
@@ -64,7 +65,12 @@ function DocumentStatusBarActionsInner(props: Props) {
             </div>
           </Tooltip>
 
-          {firstActionState.dialog && <ActionStateDialog dialog={firstActionState.dialog} />}
+          {firstActionState.dialog && (
+            <ActionStateDialog
+              dialog={firstActionState.dialog}
+              referenceElement={buttonContainerElement}
+            />
+          )}
         </div>
       )}
 
