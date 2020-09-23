@@ -1,10 +1,9 @@
-const KEY_I = 73
-const KEY_O = 79
-
+// ctrl + alt + i
 export function isInspectHotkey(event: KeyboardEvent): boolean {
-  return event.ctrlKey && event.keyCode === KEY_I && event.altKey && !event.shiftKey
+  return !event.shiftKey && event.ctrlKey && event.altKey && event.key === 'i'
 }
 
+// ctrl + alt + o
 export function isPreviewHotkey(event: KeyboardEvent): boolean {
-  return event.ctrlKey && event.keyCode === KEY_O && event.altKey && !event.shiftKey
+  return !event.shiftKey && event.ctrlKey && event.altKey && event.key === 'o'
 }
