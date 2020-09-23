@@ -9,7 +9,7 @@ const title = {
 const arrayListOfOptionsExample = {
   type: 'array',
   name: 'arrayListOfOptionsExample',
-  title: 'Array (1)',
+  title: 'Array (1a)',
   description: 'List of options',
   of: [
     {
@@ -23,6 +23,48 @@ const arrayListOfOptionsExample = {
       {value: 'baz', title: 'Baz'},
       {value: 'qux', title: 'Qux'},
       {value: 'nux', title: 'Nux'}
+    ]
+  }
+}
+
+const arrayListOfObjectOptionsExample = {
+  type: 'array',
+  name: 'arrayListOfObjectOptionsExample',
+  title: 'Array (1b)',
+  description: 'List of options (objects)',
+  of: [
+    {
+      type: 'object',
+      fields: [
+        {name: 'bodyPart', type: 'string'},
+        {name: 'isInternal', type: 'boolean'}
+      ]
+    }
+  ],
+  options: {
+    list: [
+      {value: {bodyPart: 'Head', isInternal: false}, title: 'Head'},
+      {value: {bodyPart: 'Foot', isInternal: false}, title: 'Foot'},
+      {value: {bodyPart: 'Heart', isInternal: true}, title: 'Heart'}
+    ]
+  }
+}
+
+const arrayListOfReferenceOptionsExample = {
+  type: 'array',
+  name: 'arrayListOfReferenceOptionsExample',
+  title: 'Array (1c)',
+  description: 'List of options (references)',
+  of: [
+    {
+      type: 'reference',
+      to: [{type: 'author'}]
+    }
+  ],
+  options: {
+    list: [
+      {value: {_type: 'reference', _ref: 'marius'}, title: 'Marius'},
+      {value: {_type: 'reference', _ref: 'espen'}, title: 'Espen'}
     ]
   }
 }
@@ -397,6 +439,8 @@ export default {
 
     // array
     arrayListOfOptionsExample,
+    arrayListOfObjectOptionsExample,
+    arrayListOfReferenceOptionsExample,
     arrayOfObjectsExample,
     arrayOfReferencesExample,
     arrayOfStringsExample,
