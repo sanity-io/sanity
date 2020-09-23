@@ -1,24 +1,21 @@
 import {Path} from '@sanity/types'
-import {ReportedRegion} from '../components/react-track-elements'
 import {Session, Status, User} from '../datastores/presence/types'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
-export type RegionsWithComputedRects<T> = ReportedRegion<T> & {rect: Rect}
+export type ReportedRegionWithRect<T> = T & {id: string; rect: Rect}
 export type RegionWithIntersectionDetails = {
   distanceTop: number
   distanceBottom: number
   position: 'top' | 'bottom' | 'inside'
-  region: RegionsWithComputedRects<FieldPresenceData>
+  region: ReportedRegionWithRect<FieldPresenceData>
 }
 
-export {ReportedRegion}
-
 export type FieldPresenceData = {
+  element: HTMLElement
   presence: FormFieldPresence[]
   maxAvatars: number
-  avatarComponent: React.ComponentType
 }
 
 export type PresentUser = {

@@ -1,6 +1,6 @@
 import React from 'react'
 import {ChangeIndicatorContext} from './ChangeIndicatorContext'
-import {Reporter} from './elementTracker'
+import {useReporter} from './tracker'
 import isEqual from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -23,21 +23,18 @@ const ChangeBarWrapper = (
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
   const onMouseLeave = React.useCallback(() => setHover(false), [])
+  const ref = React.useRef()
+
+  useReporter(`field-${PathUtils.toString(props.fullPath)}`, () => ({
+    element: ref.current!,
+    path: props.fullPath,
+    isChanged: props.isChanged,
+    hasFocus: props.hasFocus,
+    hasHover: hasHover
+  }))
   return (
-    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <Reporter
-        id={`field-${PathUtils.toString(props.fullPath)}`}
-        component={ChangeBar}
-        data={{
-          path: props.fullPath,
-          isChanged: props.isChanged,
-          hasFocus: props.hasFocus,
-          hasHover: hasHover,
-          scrollTo
-        }}
-      >
-        {props.children}
-      </Reporter>
+    <div ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <ChangeBar isChanged={props.isChanged}>{props.children}</ChangeBar>
     </div>
   )
 }

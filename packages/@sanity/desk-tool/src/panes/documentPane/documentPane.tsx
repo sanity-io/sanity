@@ -18,8 +18,8 @@ import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
-import {Reporter} from '@sanity/base/lib/change-indicators'
 import {ChangeConnectorRoot} from '../../components/changeConnector/ChangeConnectorRoot'
+import {ReportChangesPanel} from '../../components/changeConnector/ReportChangesPanel'
 
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
@@ -170,7 +170,6 @@ export function DocumentPane(props: DocumentPaneProps) {
       >
         <div className={styles.documentContainer}>
           {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
-
           <DocumentPanel
             activeViewId={activeViewId}
             documentId={documentId}
@@ -206,7 +205,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         </div>
 
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <Reporter id="changesPanel" className={styles.changesContainer} data={{}}>
+          <ReportChangesPanel className={styles.changesContainer}>
             <ChangesPanel
               changesSinceSelectRef={changesSinceSelectRef}
               documentId={documentId}
@@ -217,7 +216,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               since={historyController.sinceTime}
               timelineMode={timelineMode}
             />
-          </Reporter>
+          </ReportChangesPanel>
         )}
       </ChangeConnectorRoot>
 

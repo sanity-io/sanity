@@ -1,5 +1,7 @@
-import {create} from '../../components/react-track-elements'
+import {createScope, Reported} from '../../components/react-track-elements'
+import {FieldPresenceData} from '../types'
+export type ReportedPresenceData = Reported<FieldPresenceData>
 
-const {Tracker, Reporter} = create()
+const {Tracker, useReporter, useReportedValues} = createScope<FieldPresenceData>()
 
-export {Tracker, Reporter}
+export {Tracker, useReporter, useReportedValues}

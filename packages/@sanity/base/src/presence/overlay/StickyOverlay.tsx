@@ -12,15 +12,16 @@ import {
   SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
 import {
+  FieldPresenceData,
   FormFieldPresence,
   Rect,
-  RegionsWithComputedRects,
-  RegionWithIntersectionDetails,
-  ReportedRegion
+  ReportedRegionWithRect,
+  RegionWithIntersectionDetails
 } from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
-import {TrackerComponentProps} from '../../components/react-track-elements'
+
 import {RegionsWithIntersections} from './RegionsWithIntersections'
+import {ReportedPresenceData, useReportedValues} from './tracker'
 
 const ITEM_TRANSITION: React.CSSProperties = {
   transitionProperty: 'transform',
@@ -104,8 +105,6 @@ const Spacer = ({height, ...rest}: {height: number; style?: React.CSSProperties}
   <div style={{height: Math.max(0, height), ...rest?.style}} />
 )
 
-type Props = TrackerComponentProps<{margins: Margins}, {presence: FormFieldPresence[]}>
-
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
 const getOffsetsTo = (source, target) => {
@@ -128,20 +127,27 @@ function getRelativeRect(element, parent): Rect {
   }
 }
 
-function regionsWithComputedRects<T>(
-  regions: ReportedRegion<T>[],
+function regionsWithComputedRects(
+  regions: ReportedPresenceData[],
   parent
-): RegionsWithComputedRects<T>[] {
-  return regions.map(region => ({...region, rect: getRelativeRect(region.element, parent)}))
+): ReportedRegionWithRect<FieldPresenceData>[] {
+  return regions.map(([id, region]) => ({
+    ...region,
+    id,
+    rect: getRelativeRect(region.element, parent)
+  }))
 }
 
+type Props = {margins: Margins; children: React.ReactNode}
 export function StickyOverlay(props: Props) {
-  const {children, trackerRef, margins = DEFAULT_MARGINS} = props
-  const regions = regionsWithComputedRects(props.regions, trackerRef.current)
+  const {children, margins = DEFAULT_MARGINS} = props
+  const reportedValues = useReportedValues()
+  const ref = React.useRef()
+  const regions = ref.current ? regionsWithComputedRects(reportedValues, ref.current) : []
   const renderCallback = React.useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
       const grouped = group(
-        regionsWithIntersectionDetails.filter(item => item.region.data.presence.length > 0)
+        regionsWithIntersectionDetails.filter(item => item.region.presence.length > 0)
       )
       const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
       const bottomSpacing = sum(
@@ -156,9 +162,9 @@ export function StickyOverlay(props: Props) {
           const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
           const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
           return {
-            nearTop: _counts.nearTop + (nearTop ? withIntersection.region.data.presence.length : 0),
+            nearTop: _counts.nearTop + (nearTop ? withIntersection.region.presence.length : 0),
             nearBottom:
-              _counts.nearBottom + (nearBottom ? withIntersection.region.data.presence.length : 0)
+              _counts.nearBottom + (nearBottom ? withIntersection.region.presence.length : 0)
           }
         },
         {nearTop: 0, nearBottom: 0}
@@ -180,12 +186,7 @@ export function StickyOverlay(props: Props) {
   )
 
   return (
-    <RegionsWithIntersections
-      margins={margins}
-      regions={regions}
-      trackerRef={trackerRef}
-      render={renderCallback}
-    >
+    <RegionsWithIntersections ref={ref} margins={margins} regions={regions} render={renderCallback}>
       {children}
     </RegionsWithIntersections>
   )
@@ -200,7 +201,7 @@ function renderDock(
   const dir = position === 'top' ? 1 : -1
   const allPresenceItems = flatten(
     sortBy(regionsWithIntersectionDetails, r => r.region.rect.top * dir).map(
-      withIntersection => withIntersection.region.data?.presence || []
+      withIntersection => withIntersection.region.presence || []
     ) || []
   )
   const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
@@ -248,7 +249,7 @@ function renderInside(
 
     const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
 
-    const {presence, maxAvatars} = withIntersection.region.data
+    const {presence, maxAvatars} = withIntersection.region
     return (
       <React.Fragment key={withIntersection.region.id}>
         <div

@@ -14,35 +14,29 @@ import {
 } from './constants'
 import {splitRight} from './utils'
 import styles from './FieldPresence.css'
-import {PresenceRegion} from './overlay/PresenceOverlayRegion'
+import {useId} from '@reach/auto-id'
+
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
 import {FormFieldPresence} from './types'
+import {useReporter} from './overlay/tracker'
 
 export interface FieldPresenceProps {
   presence: FormFieldPresence[]
   maxAvatars: number
 }
 
-const FieldPresencePlaceholder = React.forwardRef<HTMLDivElement, FieldPresenceProps>(
-  function FieldPresencePlaceholder(props: FieldPresenceProps, ref) {
-    const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
-    return (
-      <div ref={ref} className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
-    )
-  }
-)
-
 function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-  return presence.length > 0 ? (
-    <PresenceRegion
-      presence={presence}
-      maxAvatars={maxAvatars}
-      component={FieldPresencePlaceholder}
-    />
-  ) : null
+  const ref = React.useRef(null)
+
+  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
+
+  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+  return (
+    <div ref={ref} className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
+  )
 }
 
 function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
