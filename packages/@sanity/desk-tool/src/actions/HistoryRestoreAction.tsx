@@ -27,11 +27,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
             router.navigateIntent('edit', {id, type})
             onComplete()
           },
-          message: (
-            <>
-              <strong>Are you sure</strong> you want to restore this document?
-            </>
-          )
+          message: <>Are you sure you want to restore this document?</>
         }) ||
       (error && {
         type: 'error',

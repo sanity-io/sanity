@@ -31,11 +31,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
         discardChanges.execute()
         onComplete()
       },
-      message: (
-        <>
-          <strong>Are you sure</strong> you want to discard all changes since last published?
-        </>
-      )
+      message: <>Are you sure you want to discard all changes since last published?</>
     }
   }
 }
