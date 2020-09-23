@@ -1,98 +1,89 @@
-import classNames from 'classnames'
-import React from 'react'
 import {Path} from '@sanity/types'
+import classNames from 'classnames'
+import React, {useRef, useEffect, useCallback} from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import {Marker} from '../types'
 
 import styles from './ValidationListItem.css'
 
 interface ValidationListItemProps {
-  kind: string
-  onClick?: (path?: Path) => void
-  showLink?: boolean
-  path: string
   hasFocus?: boolean
-  truncate?: boolean
+  kind?: 'simple'
   marker: Marker
+  onClick?: (path?: Path) => void
+  path: string
+  // showLink?: boolean
+  truncate?: boolean
 }
 
-// @todo: refactor to functional component
-export default class ValidationListItem extends React.PureComponent<ValidationListItemProps> {
-  static defaultProps = {
-    kind: '',
-    path: '',
-    onClick: undefined,
-    showLink: false,
-    truncate: false
-  }
+function ValidationListItem(props: ValidationListItemProps) {
+  const {hasFocus, kind, marker, onClick, path, truncate} = props
+  const hasOnClick = Boolean(props.onClick)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const hasFocusRef = useRef(hasFocus || false)
 
-  _element: HTMLAnchorElement | null = null
-
-  componentDidMount() {
-    if (this.props.hasFocus) {
-      this.focus()
-    }
-  }
-
-  handleKeyPress = (event: React.KeyboardEvent<HTMLAnchorElement>) => {
-    if (event.key === 'Enter') {
-      // this.handleClick(event)
-      const {marker, onClick} = this.props
-      if (onClick) {
+  const handleKeyPress = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter' && onClick) {
         onClick(marker.path)
       }
-    }
-  }
+    },
+    [marker.path, onClick]
+  )
 
-  focus() {
-    setTimeout(() => {
-      if (this._element) this._element.focus()
-    }, 200)
-  }
-
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: ValidationListItemProps) {
-    if (nextProps.hasFocus) {
-      this.focus()
-    }
-  }
-
-  handleClick = () => {
-    const {marker, onClick} = this.props
+  const handleClick = useCallback(() => {
     if (onClick) {
       onClick(marker.path)
     }
-  }
+  }, [marker.path, onClick])
 
-  setElement = (element: HTMLAnchorElement | null) => {
-    this._element = element
-  }
+  useEffect(() => {
+    if (hasFocusRef.current !== hasFocus) {
+      if (hasFocus && rootRef.current) rootRef.current.focus()
+      hasFocusRef.current = hasFocus || false
+    }
+  }, [hasFocus])
 
-  render() {
-    const {kind, marker, onClick, path, truncate} = this.props
+  const children = (
+    <>
+      <span className={styles.icon}>
+        <ErrorOutlineIcon />
+      </span>
 
+      <div className={styles.content}>
+        {path && <div className={styles.path}>{path}</div>}
+        {marker.item.message && <div className={styles.message}>{marker.item.message}</div>}
+      </div>
+    </>
+  )
+
+  const className = classNames(
+    hasOnClick ? styles.interactive : styles.root,
+    marker.level && styles[marker.level],
+    truncate && styles.truncate
+  )
+
+  if (!hasOnClick) {
     return (
-      <a
-        data-item-type={kind}
-        ref={this.setElement}
-        tabIndex={0}
-        onClick={this.handleClick}
-        onKeyPress={this.handleKeyPress}
-        className={classNames(
-          onClick ? styles.interactiveItem : styles.item,
-          marker.level && styles[marker.level],
-          truncate && styles.truncate
-        )}
-      >
-        <span className={styles.icon}>
-          <ErrorOutlineIcon />
-        </span>
-
-        <div className={styles.content}>
-          {path && <div className={styles.path}>{path}</div>}
-          {marker.item.message && <div className={styles.message}>{marker.item.message}</div>}
-        </div>
-      </a>
+      <div data-item-type={kind} ref={rootRef} className={className}>
+        {children}
+      </div>
     )
   }
+
+  return (
+    // @todo: use a <button> element
+    <div
+      data-item-type={kind}
+      ref={rootRef}
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyPress={handleKeyPress}
+      className={className}
+    >
+      {children}
+    </div>
+  )
 }
+
+export default ValidationListItem
