@@ -31,7 +31,23 @@ export default {
       of: [
         {
           type: 'block',
-          of: [objectExample]
+          of: [{...objectExample, validation: Rule => Rule.required()}],
+          marks: {
+            annotations: [
+              {
+                type: 'object',
+                name: 'link',
+                fields: [
+                  {
+                    type: 'string',
+                    name: 'href',
+                    title: 'URL',
+                    validation: Rule => Rule.required()
+                  }
+                ]
+              }
+            ]
+          }
         },
         imageExample
       ]
