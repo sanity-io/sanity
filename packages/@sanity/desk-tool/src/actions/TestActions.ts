@@ -1,16 +1,16 @@
-import * as React from 'react'
+import {useEffect, useState} from 'react'
 
 export const FOO = () => {
-  const [isDisabled, setDisabled] = React.useState(true)
-  const [counter, setCounter] = React.useState(0)
-  React.useEffect(() => {
+  const [isDisabled, setDisabled] = useState(true)
+  const [counter, setCounter] = useState(0)
+
+  useEffect(() => {
     const id = setInterval(() => {
-      setDisabled(() => !isDisabled)
+      setDisabled(val => !val)
       setCounter(p => p + 1)
     }, 2000)
-    return () => {
-      clearInterval(id)
-    }
+
+    return () => clearInterval(id)
   }, [])
 
   return {
@@ -30,20 +30,22 @@ export const BAZ = () => ({
 })
 
 export const QUX = () => {
-  const [isDisabled, setDisabled] = React.useState(false)
-  const [counter, setCounter] = React.useState(0)
-  React.useEffect(() => {
+  const [isDisabled, setDisabled] = useState(false)
+  const [counter, setCounter] = useState(0)
+
+  useEffect(() => {
     const id = setInterval(() => {
-      setDisabled(() => !isDisabled)
+      setDisabled(val => !val)
       setCounter(prev => prev + 1)
     }, 2000)
+
     return () => {
       clearInterval(id)
     }
   }, [])
 
   return {
-    label: `Hell2o ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
+    label: `Hello ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
     disabled: isDisabled
   }
 }

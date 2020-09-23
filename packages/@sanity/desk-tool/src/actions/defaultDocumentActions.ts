@@ -10,6 +10,6 @@ export {UnpublishAction}
 export {DuplicateAction}
 export {DeleteAction}
 
-export default function defaultResolveDocumentActions(props) {
+export default function defaultResolveDocumentActions() {
   return [PublishAction, DiscardChangesAction, UnpublishAction, DuplicateAction, DeleteAction]
 }
