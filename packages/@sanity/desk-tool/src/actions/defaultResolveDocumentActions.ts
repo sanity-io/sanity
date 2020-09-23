@@ -1,3 +1,5 @@
+import schema from 'part:@sanity/base/schema'
+import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import {
   PublishAction,
   DiscardChangesAction,
@@ -5,8 +7,6 @@ import {
   DuplicateAction,
   DeleteAction
 } from './defaultDocumentActions'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-import schema from 'part:@sanity/base/schema'
 
 // todo: this should be replaced with the defaultResolveDocumentActions function from ./defaultDocumentActions eventually,
 // it is kept here for now to preserve backwards compatibility with __experimental_actions

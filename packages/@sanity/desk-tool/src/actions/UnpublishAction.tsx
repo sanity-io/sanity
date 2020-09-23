@@ -1,6 +1,6 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
-import React from 'react'
+import React, {useCallback, useMemo} from 'react'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
 
 const DISABLED_REASON_TITLE = {
@@ -8,16 +8,23 @@ const DISABLED_REASON_TITLE = {
 }
 
 export function UnpublishAction({id, type, draft, published, onComplete, liveEdit}) {
-  if (liveEdit) {
-    return null
-  }
-
   const {unpublish}: any = useDocumentOperation(id, type)
   const [error, setError] = React.useState<Error | null>(null)
   const [didUnpublish, setDidUnpublish] = React.useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 
-  const getDialog = () => {
+  const handleCancel = useCallback(() => {
+    setConfirmDialogOpen(false)
+    onComplete()
+  }, [onComplete])
+
+  const handleConfirm = useCallback(() => {
+    setConfirmDialogOpen(false)
+    unpublish.execute()
+    onComplete()
+  }, [onComplete, unpublish])
+
+  const dialog = useMemo(() => {
     if (error) {
       return {
         type: 'error',
@@ -26,6 +33,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
         content: error.message
       }
     }
+
     if (didUnpublish) {
       return {
         type: 'success',
@@ -35,6 +43,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
         title: 'Succesfully unpublished the document'
       }
     }
+
     if (isConfirmDialogOpen) {
       return {
         type: 'legacy',
@@ -44,19 +53,26 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
           <ConfirmUnpublish
             draft={draft}
             published={published}
-            onCancel={() => {
-              setConfirmDialogOpen(false)
-              onComplete()
-            }}
-            onConfirm={async () => {
-              setConfirmDialogOpen(false)
-              unpublish.execute()
-              onComplete()
-            }}
+            onCancel={handleCancel}
+            onConfirm={handleConfirm}
           />
         )
       }
     }
+
+    return null
+  }, [
+    didUnpublish,
+    draft,
+    error,
+    handleCancel,
+    handleConfirm,
+    isConfirmDialogOpen,
+    onComplete,
+    published
+  ])
+
+  if (liveEdit) {
     return null
   }
 
@@ -65,9 +81,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     disabled: Boolean(unpublish.disabled),
     label: 'Unpublish',
     title: unpublish.disabled ? DISABLED_REASON_TITLE[unpublish.disabled] : '',
-    onHandle: () => {
-      setConfirmDialogOpen(true)
-    },
-    dialog: getDialog()
+    onHandle: () => setConfirmDialogOpen(true),
+    dialog
   }
 }
