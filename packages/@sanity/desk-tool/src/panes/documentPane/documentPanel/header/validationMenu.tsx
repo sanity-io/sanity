@@ -6,6 +6,7 @@ import React, {useCallback} from 'react'
 interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null
   isOpen: boolean
+  // @todo: replace with type from @sanity/types
   markers: any[]
   schemaType: any
   setFocusPath: (path: any) => void
@@ -30,7 +31,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
       markers={validationMarkers}
       onClose={handleClose}
       onFocus={setFocusPath}
-      showLink
+      // showLink
     />
   )
 
