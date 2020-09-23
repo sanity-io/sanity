@@ -79,8 +79,9 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   // The PortableTextEditor will not re-render unless the value is changed (which is good).
   // But, we want to re-render it when the markers changes too,
-  // (we render error indicators directly in the editor nodes)
+  // (we render error indicators directly in the editor nodes for inline objects and annotations)
   const validationHash = markers
+    .filter(marker => marker.type === 'validation')
     .map(marker =>
       JSON.stringify(marker.path)
         .concat(marker.type)
@@ -136,7 +137,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   }
 
   // Handle editor changes
-  // eslint-disable-next-line complexity
   const [hasFocus, setHasFocus] = useState(false)
   function handleEditorChange(change: EditorChange): void {
     switch (change.type) {
@@ -162,15 +162,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
       case 'error':
         setEditorErrorNotification(change)
         break
-      // case 'selection':
-      // case 'value':
-      // case 'ready':
-      // case 'patch':
-      // case 'unset':
-      // case 'loading':
-      //   break
-      // default:
-      //   throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
       default:
     }
   }

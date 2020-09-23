@@ -1,5 +1,4 @@
-import React, {useMemo, useCallback} from 'react'
-// import {Popover} from 'part:@sanity/components/popover'
+import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {
   HotkeyOptions,
@@ -131,7 +130,7 @@ function PortableTextSanityEditor(props: Props) {
     ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
   ].join(' ')
 
-  const renderBlockExtras = useCallback(
+  const blockExtras = useCallback(
     () => (
       <BlockExtrasOverlay
         isFullscreen={isFullscreen}
@@ -143,8 +142,15 @@ function PortableTextSanityEditor(props: Props) {
         value={value}
       />
     ),
-    [markers, isFullscreen]
+    [isFullscreen, value]
   )
+
+  // Needed for rendering the overlay in the correct place when toggling fullscreen.
+  const [forceUpdate, setForceUpdate] = useState(0)
+  useEffect(() => {
+    setForceUpdate(forceUpdate + 1)
+  }, [])
+
   const editor = useMemo(
     () => (
       <div className={styles.editorBox}>
@@ -181,12 +187,12 @@ function PortableTextSanityEditor(props: Props) {
                 spellCheck
               />
             </div>
-            <div className={styles.blockExtras}>{renderBlockExtras()}</div>
+            <div className={styles.blockExtras}>{blockExtras()}</div>
           </div>
         </ScrollContainer>
       </div>
     ),
-    [initialSelection, isFullscreen, value, markers, readOnly]
+    [initialSelection, isFullscreen, value, readOnly, forceUpdate]
   )
   return editor
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './Blockquote.css'
+
 type Props = {
   children: React.ReactNode
 }

@@ -42,13 +42,13 @@ export default function BlockExtrasOverlay(props: Props) {
   function renderBlockExtras(block: PortableTextBlock): JSX.Element {
     const blockMarkers = findBlockMarkers(block, markers)
 
-    // Return if no markers
-    if (blockMarkers.length === 0 && !renderBlockActions) {
-      return null
-    }
+    // // Return if no markers
+    // if (blockMarkers.length === 0 && !renderBlockActions) {
+    //   return null
+    // }
 
     // Try to find DOMNode and return if not
-    const element = PortableTextEditor.findDOMNode(editor, block) as HTMLElement
+    const element = document.querySelectorAll(`[data-pte-key="${block._key}"]`)[0] as HTMLElement
     if (!element) {
       return null
     }
@@ -70,9 +70,9 @@ export default function BlockExtrasOverlay(props: Props) {
       }
     }
 
-    if (blockMarkers.length === 0 && !actions) {
-      return null
-    }
+    // if (blockMarkers.length === 0 && !actions) {
+    //   return null
+    // }
 
     return (
       <div
@@ -90,6 +90,7 @@ export default function BlockExtrasOverlay(props: Props) {
           markers={blockMarkers}
           onFocus={onFocus}
           renderCustomMarkers={renderCustomMarkers}
+          value={value}
         />
       </div>
     )

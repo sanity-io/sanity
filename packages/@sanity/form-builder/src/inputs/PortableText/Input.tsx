@@ -1,9 +1,8 @@
 /* eslint-disable react/require-default-props */
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
-import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -16,7 +15,7 @@ import {
   usePortableTextEditorSelection,
   HotkeyOptions
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, KeyedSegment, Marker} from '@sanity/types'
+import {Path, isKeySegment, Marker} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/portal'
@@ -83,14 +82,6 @@ export default function PortableTextInput(props: Props) {
   const [isActive, setIsActive] = useState(false)
   const [objectEditData, setObjectEditData]: [ObjectEditData, any] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
-  const popoverReferenceElement = useRef<HTMLElement | null>(null)
-
-  const setPopupReferenceElement = (key: string) => {
-    const refElement = document.querySelectorAll(`[data-pte-key="${key}"]`)[0]
-    if (refElement) {
-      popoverReferenceElement.current = refElement as HTMLElement
-    }
-  }
 
   // This will open the editing interfaces automatically according to the focusPath.
   // eslint-disable-next-line complexity
@@ -111,7 +102,6 @@ export default function PortableTextInput(props: Props) {
             child => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
           )
           if (span) {
-            setPopupReferenceElement(span._key)
             const spanPath = [blockSegment, 'children', {_key: span._key}]
             setIsActive(true)
             PortableTextEditor.select(editor, {
@@ -137,8 +127,6 @@ export default function PortableTextInput(props: Props) {
           kind = 'inlineObject'
           path = path.concat(focusPath.slice(1, 3))
         }
-        const lastSemgent = path.slice(-1)[0] as KeyedSegment
-        setPopupReferenceElement(lastSemgent._key)
         setIsActive(true)
         PortableTextEditor.select(editor, {
           focus: {path, offset: 0},
@@ -225,7 +213,7 @@ export default function PortableTextInput(props: Props) {
       if (block.style === 'blockquote') {
         returned = <Blockquote>{returned}</Blockquote>
       } else if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(block.style)) {
-        returned = <Header style={block.style}>{returned}</Header>
+        returned = <Header block={block}>{returned}</Header>
       } else {
         returned = <Paragraph>{returned}</Paragraph>
       }
@@ -247,16 +235,7 @@ export default function PortableTextInput(props: Props) {
         />
       )
     }
-    return (
-      <ChangeIndicatorWithProvidedFullPath
-        compareDeep
-        value={block}
-        hasFocus={attributes.focused}
-        path={attributes.path}
-      >
-        {returned}
-      </ChangeIndicatorWithProvidedFullPath>
-    )
+    return <div data-pte-key={block._key}>{returned}</div>
   }
 
   function renderChild(child, childType, attributes, defaultRender) {
@@ -282,28 +261,26 @@ export default function PortableTextInput(props: Props) {
   }
 
   function renderAnnotation(annotation, annotationType, attributes, defaultRender) {
-    // eslint-disable-next-line react/prop-types
     const annotationMarkers = markers.filter(
       marker => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
     )
     return (
       <Annotation
-        key={annotation._key}
         attributes={attributes}
+        key={annotation._key}
         markers={annotationMarkers}
-        onFocus={onFocus}
         onChange={handleFormBuilderEditObjectChange}
+        onFocus={onFocus}
         readOnly={readOnly}
         type={annotationType}
         value={annotation}
       >
-        {defaultRender()}
+        <span data-pte-key={annotation._key}>{defaultRender()}</span>
       </Annotation>
     )
   }
 
-  // Use callback here in order to precisely track the related HTMLElement between renders (where to place popovers etc)
-  const renderEditObject = useCallback((): JSX.Element => {
+  function renderEditObject() {
     if (objectEditData === null) {
       return null
     }
@@ -329,39 +306,41 @@ export default function PortableTextInput(props: Props) {
         onClose={handleClose}
         onFocus={handleEditObjectFormBuilderFocus}
         readOnly={readOnly}
-        popoverReferenceElement={popoverReferenceElement}
         presence={presence}
         value={value}
       />
     )
-  }, [focusPath, isFullscreen, markers, objectEditData, presence, readOnly, value])
+  }
 
-  const ptEditor = (
-    <PortableTextSanityEditor
-      hotkeys={hotkeys}
-      initialSelection={initialSelection}
-      isFullscreen={isFullscreen}
-      markers={markers}
-      onBlur={onBlur}
-      onFocus={onFocus}
-      onFormBuilderChange={onChange}
-      onCopy={onCopy}
-      onPaste={onPaste}
-      onToggleFullscreen={handleToggleFullscreen}
-      portableTextFeatures={ptFeatures}
-      readOnly={isActive === false || readOnly}
-      renderAnnotation={renderAnnotation}
-      renderBlock={renderBlock}
-      renderBlockActions={renderBlockActions}
-      renderChild={renderChild}
-      renderCustomMarkers={renderCustomMarkers}
-      value={value}
-    />
+  const ptEditor = useMemo(
+    () => (
+      <PortableTextSanityEditor
+        hotkeys={hotkeys}
+        initialSelection={initialSelection}
+        isFullscreen={isFullscreen}
+        markers={markers}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        onFormBuilderChange={onChange}
+        onCopy={onCopy}
+        onPaste={onPaste}
+        onToggleFullscreen={handleToggleFullscreen}
+        portableTextFeatures={ptFeatures}
+        readOnly={isActive === false || readOnly}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderBlockActions={renderBlockActions}
+        renderChild={renderChild}
+        renderCustomMarkers={renderCustomMarkers}
+        value={value}
+      />
+    ),
+    [hasFocus, isFullscreen, value]
   )
 
   const editObject = useMemo(() => {
     return renderEditObject()
-  }, [focusPath, markers, objectEditData, presence, value])
+  }, [isFullscreen, focusPath, markers, objectEditData, presence, value])
 
   const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
   const fullscreenToggledEditor = (

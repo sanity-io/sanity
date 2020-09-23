@@ -34,6 +34,10 @@
 
 .hasFullScreen {
   overflow: visible;
+
+  @nest &.withChangeIndicatorsOnly {
+    margin-left: var(--block-extras-width);
+  }
 }
 
 .hasFullScreen .content {
