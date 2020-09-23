@@ -8,6 +8,7 @@ import PatchEvent, {set} from '../../PatchEvent'
 import {Type} from '../../typedefs'
 
 import styles from './styles/ImageToolInput.css'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 
 interface Hotspot {
   x: number
@@ -31,6 +32,7 @@ interface Value {
 interface ImageToolInputProps {
   imageUrl: string
   value?: Value
+  compareValue?: Value
   onChange: (arg0: PatchEvent) => void
   readOnly: boolean | null
   level: number
@@ -94,43 +96,50 @@ export default class ImageToolInput extends React.Component<
   }
 
   render() {
-    const {imageUrl, level, readOnly} = this.props
+    const {imageUrl, compareValue, level, readOnly} = this.props
     const {value} = this.state
 
     return (
       // @todo: render presence and markers
-      <DefaultFormField
-        // label?: string
-        label="Hotspot &amp; crop"
-        // className?: string
-        // inline?: boolean
-        // description?: string
-        // level?: number
-        level={level}
-        // children?: React.ReactNode
-        // wrapped?: boolean
-        // labelFor?: string
-        // markers?: Marker[]
-        // presence?: FormFieldPresence[]
+      <ChangeIndicatorProvider
+        path={['hotspot']}
+        focusPath={[]}
+        value={value?.current}
+        compareValue={compareValue}
       >
-        <div className={styles.imageToolContainer}>
-          <div>
+        <DefaultFormField
+          // label?: string
+          label="Hotspot &amp; crop"
+          // className?: string
+          // inline?: boolean
+          // description?: string
+          // level?: number
+          level={level}
+          // children?: React.ReactNode
+          // wrapped?: boolean
+          // labelFor?: string
+          // markers?: Marker[]
+          // presence?: FormFieldPresence[]
+        >
+          <div className={styles.imageToolContainer}>
             <div>
-              <ImageTool
-                value={value}
-                src={imageUrl}
-                readOnly={readOnly}
-                onChangeEnd={this.handleChangeEnd}
-                onChange={this.handleChange}
-              />
+              <div>
+                <ImageTool
+                  value={value}
+                  src={imageUrl}
+                  readOnly={readOnly}
+                  onChangeEnd={this.handleChangeEnd}
+                  onChange={this.handleChange}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.previewsContainer}>
-          <ImageToolInputPreviewGrid imageUrl={imageUrl} value={value} />
-        </div>
-      </DefaultFormField>
+          <div className={styles.previewsContainer}>
+            <ImageToolInputPreviewGrid imageUrl={imageUrl} value={value} />
+          </div>
+        </DefaultFormField>
+      </ChangeIndicatorProvider>
     )
   }
 }
