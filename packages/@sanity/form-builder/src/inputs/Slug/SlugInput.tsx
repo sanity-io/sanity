@@ -11,6 +11,7 @@ import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/SlugInput.css'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 
 // Fallback slugify function if not defined in field options
 const defaultSlugify: SlugifierFn = (value, type) => {
@@ -153,7 +154,16 @@ export default withValuePath(
       }
 
       render() {
-        const {value, type, level, markers, readOnly, presence} = this.props
+        const {
+          value,
+          compareValue,
+          focusPath,
+          type,
+          level,
+          markers,
+          readOnly,
+          presence
+        } = this.props
         const {loading, inputText} = this.state
         const hasSourceField = type.options && type.options.source
         const formFieldProps = {
@@ -164,37 +174,43 @@ export default withValuePath(
           presence,
           labelFor: this._inputId
         }
-
         const validation = markers.filter(marker => marker.type === 'validation')
         const errors = validation.filter(marker => marker.level === 'error')
         return (
-          <FormField {...formFieldProps}>
-            <div className={styles.wrapper}>
-              <div className={styles.input}>
-                <TextInput
-                  inputId={this._inputId}
-                  ref={this.setTextInput}
-                  customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                  disabled={loading}
-                  onChange={this.handleChange}
-                  onFocus={this.handleFocusCurrent}
-                  value={typeof inputText === 'string' ? inputText : value.current}
-                  readOnly={readOnly}
-                />
+          <ChangeIndicatorProvider
+            path={[]}
+            focusPath={focusPath}
+            value={value?.current}
+            compareValue={compareValue?.current}
+          >
+            <FormField {...formFieldProps}>
+              <div className={styles.wrapper}>
+                <div className={styles.input}>
+                  <TextInput
+                    inputId={this._inputId}
+                    ref={this.setTextInput}
+                    customValidity={errors.length > 0 ? errors[0].item.message : ''}
+                    disabled={loading}
+                    onChange={this.handleChange}
+                    onFocus={this.handleFocusCurrent}
+                    value={typeof inputText === 'string' ? inputText : value.current}
+                    readOnly={readOnly}
+                  />
+                </div>
+                {hasSourceField && (
+                  <Button
+                    className={styles.button}
+                    disabled={readOnly || loading || !this.hasSource()}
+                    loading={loading}
+                    onClick={this.handleGenerateSlug}
+                    kind="simple"
+                  >
+                    Generate
+                  </Button>
+                )}
               </div>
-              {hasSourceField && (
-                <Button
-                  className={styles.button}
-                  disabled={readOnly || loading || !this.hasSource()}
-                  loading={loading}
-                  onClick={this.handleGenerateSlug}
-                  kind="simple"
-                >
-                  Generate
-                </Button>
-              )}
-            </div>
-          </FormField>
+            </FormField>
+          </ChangeIndicatorProvider>
         )
       }
     }
