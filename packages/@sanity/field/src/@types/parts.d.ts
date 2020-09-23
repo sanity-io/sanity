@@ -35,7 +35,10 @@ declare module 'part:@sanity/base/schema' {
 declare module 'all:part:@sanity/base/diff-resolver' {
   import {ComponentType} from 'react'
 
-  type DiffComponentResolver = (options: {schemaType: any}) => ComponentType | undefined
+  type DiffComponentResolver = (options: {
+    schemaType: any
+    parentSchemaType?: any
+  }) => ComponentType | undefined
 
   const parts: DiffComponentResolver[]
   export default parts
