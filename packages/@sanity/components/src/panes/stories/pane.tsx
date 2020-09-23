@@ -1,17 +1,17 @@
 import ComposeIcon from 'part:@sanity/base/compose-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import {MenuItemType} from 'part:@sanity/components/menus/default'
 import Pane from 'part:@sanity/components/panes/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import React from 'react'
+import {MenuItem} from '../../menus/types'
 
 import styles from './pane.css'
 
-const menuItems: MenuItemType[] = [
+const menuItems: MenuItem[] = [
   {
     action: 'first',
     title: 'First item',

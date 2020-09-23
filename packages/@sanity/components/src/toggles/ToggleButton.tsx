@@ -1,9 +1,9 @@
 import React, {forwardRef} from 'react'
+import Button from 'part:@sanity/components/buttons/default'
+import {ButtonProps} from '../buttons/types'
 
 // @todo: give a deprecation warning?
 // import styles from 'part:@sanity/components/toggles/button-style'
-
-import Button, {ButtonProps} from 'part:@sanity/components/buttons/default'
 
 const ToggleButton = forwardRef((props: Omit<ButtonProps, 'kind'>, ref) => {
   const {children, ...restProps} = props

@@ -45,22 +45,26 @@ declare module 'all:part:@sanity/base/diff-resolver' {
 }
 
 declare module 'part:@sanity/base/arrow-right' {
-  const ArrowRightIcon: React.ComponentType<{}>
+  const ArrowRightIcon: React.ComponentType
   export default ArrowRightIcon
 }
 
+declare module 'part:@sanity/base/close-icon' {
+  export {default} from '@sanity/base/src/components/icons/CloseIcon'
+}
+
 declare module 'part:@sanity/base/file-icon' {
-  const FileIcon: React.ComponentType<{}>
+  const FileIcon: React.ComponentType
   export default FileIcon
 }
 
 declare module 'part:@sanity/base/image-icon' {
-  const ImageIcon: React.ComponentType<{}>
+  const ImageIcon: React.ComponentType
   export default ImageIcon
 }
 
 declare module 'part:@sanity/base/link-icon' {
-  const LinkIcon: React.ComponentType<{}>
+  const LinkIcon: React.ComponentType
   export default LinkIcon
 }
 
@@ -69,17 +73,17 @@ declare module 'part:@sanity/base/spinner-icon' {
 }
 
 declare module 'part:@sanity/base/trash-icon' {
-  const TrashIcon: React.ComponentType<{}>
+  const TrashIcon: React.ComponentType
   export default TrashIcon
 }
 
 declare module 'part:@sanity/base/undo-icon' {
-  const UndoIcon: React.ComponentType<{}>
+  const UndoIcon: React.ComponentType
   export default UndoIcon
 }
 
 declare module 'part:@sanity/base/error-outline-icon' {
-  const ErrorOutlineIcon: React.ComponentType<{}>
+  const ErrorOutlineIcon: React.ComponentType
   export default ErrorOutlineIcon
 }
 
@@ -87,6 +91,7 @@ declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
 
+declare module 'part:@sanity/components/buttons/button-grid'
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
   export * from '@sanity/components/src/buttons/DefaultButton'
@@ -95,6 +100,11 @@ declare module 'part:@sanity/components/buttons/default' {
 
 declare module 'part:@sanity/components/click-outside' {
   export * from '@sanity/components/src/clickOutside'
+}
+
+declare module 'part:@sanity/components/dialogs/popover-style'
+declare module 'part:@sanity/components/dialogs/popover' {
+  export {default} from '@sanity/components/src/dialogs/PopoverDialog'
 }
 
 declare module 'part:@sanity/components/loading/spinner-style'

@@ -1,9 +1,9 @@
-import * as React from 'react'
+import {DialogAction} from '@sanity/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import {ClickOutside} from 'part:@sanity/components/click-outside'
-import {Popover} from 'part:@sanity/components/popover'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
+import React, {useState, useCallback} from 'react'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -38,7 +38,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const changes = fields && fields.length === 0 ? [] : maybeFlatten(allChanges)
 
   const rootChange = allChanges[0]
-  const handleRevertAllChanges = React.useCallback(() => {
+
+  const revertAllChanges = React.useCallback(() => {
     undoChange(rootChange, diff, docOperations)
     setConfirmRevertAllOpen(false)
   }, [rootChange, diff, docOperations])
@@ -47,17 +48,16 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     setConfirmRevertAllOpen(true)
   }, [])
 
-  const handleRevertAllChangesClickOutside = React.useCallback(() => {
+  const closeRevertAllChangesConfirmDialog = React.useCallback(() => {
     setConfirmRevertAllOpen(false)
   }, [])
 
-  const handleRevertAllChangesKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Escape') {
-        setConfirmRevertAllOpen(false)
-      }
-    },
-    []
+  const handleConfirmDialogAction = useCallback((action: DialogAction) => {
+    if (action.action) action.action()
+  }, [])
+
+  const [revertAllContainerElement, setRevertAllContainerElement] = useState<HTMLDivElement | null>(
+    null
   )
 
   if (changes.length === 0) {
@@ -71,40 +71,43 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
       ))}
 
       {path.length === 0 && changes.length > 1 && (
-        <ClickOutside onClickOutside={handleRevertAllChangesClickOutside}>
-          {ref => (
-            <div className={styles.footer} onKeyDown={handleRevertAllChangesKeyDown} ref={ref}>
-              <Popover
-                content={
-                  <div className={styles.confirmPopoverContent}>
-                    <Button
-                      // autoFocus
-                      color="danger"
-                      onClick={handleRevertAllChanges}
-                      kind="simple"
-                    >
-                      Yes, revert all changes
-                    </Button>
-                  </div>
+        <div className={styles.footer}>
+          <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
+            <Button
+              color="danger"
+              icon={UndoIcon}
+              kind="secondary"
+              onClick={handleRevertAllChangesClick}
+              // selected={confirmRevertAllOpen}
+            >
+              Revert all changes
+            </Button>
+          </div>
+
+          {confirmRevertAllOpen && (
+            <PopoverDialog
+              actions={[
+                {
+                  color: 'danger',
+                  action: revertAllChanges,
+                  title: 'Revert all'
+                },
+                {
+                  kind: 'simple',
+                  action: closeRevertAllChangesConfirmDialog,
+                  title: 'Cancel'
                 }
-                open={confirmRevertAllOpen}
-                placement="top"
-              >
-                <div className={styles.revertAllContainer}>
-                  <Button
-                    color="danger"
-                    icon={UndoIcon}
-                    kind="secondary"
-                    onClick={handleRevertAllChangesClick}
-                    // selected={confirmRevertAllOpen}
-                  >
-                    Revert all changes
-                  </Button>
-                </div>
-              </Popover>
-            </div>
+              ]}
+              onAction={handleConfirmDialogAction}
+              referenceElement={revertAllContainerElement}
+              size="small"
+            >
+              <div className={styles.confirmPopoverContent}>
+                Are you sure you want to revert all {changes.length} changes?
+              </div>
+            </PopoverDialog>
           )}
-        </ClickOutside>
+        </div>
       )}
     </>
   )

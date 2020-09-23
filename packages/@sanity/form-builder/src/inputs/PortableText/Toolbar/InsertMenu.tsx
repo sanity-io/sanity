@@ -1,5 +1,6 @@
+import {ButtonProps} from '@sanity/components'
 import PlusIcon from 'part:@sanity/base/plus-icon'
-import Button, {ButtonProps} from 'part:@sanity/components/buttons/default'
+import Button from 'part:@sanity/components/buttons/default'
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useCallback} from 'react'
 import {BlockItem} from './types'

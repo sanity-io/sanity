@@ -1,5 +1,5 @@
+import {MenuItemGroup} from '@sanity/components'
 import classNames from 'classnames'
-import {MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
 import React, {createElement, useCallback, useMemo, useRef} from 'react'
 import {useDeskToolFeatures} from '../../../features'
@@ -31,7 +31,7 @@ interface DocumentPanelProps {
   isHistoryOpen: boolean
   isTimelineOpen: boolean
   markers: any
-  menuItemGroups: MenuItemGroupType[]
+  menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
   onCloseView: () => void
   onCollapse?: () => void

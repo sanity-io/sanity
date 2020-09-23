@@ -1,4 +1,5 @@
-import * as React from 'react'
+import React from 'react'
+import {MenuItem, MenuItemGroup} from '@sanity/components'
 import {
   useConnectionState,
   useDocumentOperation,
@@ -6,7 +7,6 @@ import {
   useValidationStatus
 } from '@sanity/react-hooks'
 import schema from 'part:@sanity/base/schema'
-import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {CodeBlock} from '../../components/CodeBlock'
 import withInitialValue from '../../utils/withInitialValue'
@@ -30,8 +30,8 @@ interface Props {
   isClosable: boolean
   onExpand?: () => void
   onCollapse?: () => void
-  menuItems: MenuItemType[]
-  menuItemGroups: MenuItemGroupType[]
+  menuItems: MenuItem[]
+  menuItemGroups: MenuItemGroup[]
   views: {
     type: string
     id: string

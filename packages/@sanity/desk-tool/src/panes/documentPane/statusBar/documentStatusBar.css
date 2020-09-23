@@ -31,11 +31,3 @@
   max-width: 15em;
   margin-left: auto;
 }
-
-.popOverText {
-  font-size: var(--font-size-base);
-  line-height: var(--font-size-base);
-  margin-bottom: var(--medium-padding);
-  text-align: center;
-  max-width: 18em;
-}

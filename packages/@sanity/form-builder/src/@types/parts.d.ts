@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function, class-methods-use-this, no-undef*/
 
-// declare module 'part:@sanity/components/*' {
-//   class GenericSanityComponent extends React.Component<any> {
-//     focus() {}
-//   }
-//   export default GenericSanityComponent
-// }
-
 declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
@@ -16,6 +9,8 @@ declare module 'part:@sanity/components/buttons/default' {
   export * from '@sanity/components/src/buttons/DefaultButton'
   export {default} from '@sanity/components/src/buttons/DefaultButton'
 }
+
+declare module 'part:@sanity/components/dialogs/popover-style'
 
 declare module 'part:@sanity/components/fieldsets/default' {
   export default class DefaultFieldset extends React.PureComponent<any> {

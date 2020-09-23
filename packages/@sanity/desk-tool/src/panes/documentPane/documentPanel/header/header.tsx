@@ -1,11 +1,11 @@
 import {useTimeAgo} from '@sanity/base/hooks'
+import {MenuItem, MenuItemGroup} from '@sanity/components'
 import {Chunk} from '@sanity/field/diff'
 import classNames from 'classnames'
 import {negate, upperFirst} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
@@ -25,10 +25,10 @@ export interface DocumentPanelHeaderProps {
   isHistoryOpen: boolean
   isTimelineOpen: boolean
   markers: any
-  menuItems: MenuItemType[]
-  menuItemGroups: MenuItemGroupType[]
+  menuItems: MenuItem[]
+  menuItemGroups: MenuItemGroup[]
   onCloseView: () => void
-  onContextMenuAction: (action: MenuItemType) => void
+  onContextMenuAction: (action: MenuItem) => void
   onCollapse?: () => void
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
@@ -44,7 +44,7 @@ export interface DocumentPanelHeaderProps {
   views: DocumentView[]
 }
 
-const isActionButton = (item: MenuItemType) => (item as any).showAsAction
+const isActionButton = (item: MenuItem) => (item as any).showAsAction
 const isMenuButton = negate(isActionButton)
 
 // eslint-disable-next-line complexity

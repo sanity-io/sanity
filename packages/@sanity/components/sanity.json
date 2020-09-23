@@ -625,7 +625,7 @@
     },
     {
       "implements": "part:@sanity/components/dialogs/popover",
-      "path": "dialogs/PopOver"
+      "path": "dialogs/PopoverDialog"
     },
     {
       "implements": "part:@sanity/components/dialogs/pane-popover",
@@ -633,7 +633,7 @@
     },
     {
       "implements": "part:@sanity/components/dialogs/popover-style",
-      "path": "dialogs/PopOver.css"
+      "path": "dialogs/PopoverDialog.css"
     },
 
     {
