@@ -158,7 +158,10 @@ export function ActionStateDialog(props: Props) {
   }
 
   const unknownDialog: any = dialog
+
+  // eslint-disable-next-line no-console
   console.warn(`Unsupported dialog type ${unknownDialog.type}`)
+
   return (
     <Dialog
       onClose={unknownDialog.onClose}

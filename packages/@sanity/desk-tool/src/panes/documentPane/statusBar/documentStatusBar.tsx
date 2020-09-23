@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 import React from 'react'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
@@ -19,10 +17,10 @@ export function DocumentStatusBar(props: Props) {
   const {open: openHistory, historyController} = useDocumentHistory()
   const editState = useEditState(props.id, props.type)
   const badges = editState ? resolveDocumentBadges(editState) : []
-
   const showingRevision = historyController.onOlderRevision()
   const changePanelActive = historyController.changesPanelActive()
   const revision = historyController.revTime?.id || ''
+
   return (
     <div className={styles.root}>
       <div className={styles.status}>

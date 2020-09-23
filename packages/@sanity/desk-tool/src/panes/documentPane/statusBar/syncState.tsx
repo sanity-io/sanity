@@ -19,11 +19,13 @@ export function SyncState(props: Props) {
   const isConnected = connectionState === 'connected'
 
   const icon = isSyncing || !isConnected ? <SyncIcon /> : <CheckIcon />
+
+  // eslint-disable-next-line no-nested-ternary
   const className = isSyncing
     ? styles.isSyncing
-    : !isConnected
-    ? styles.isDisconnected
-    : styles.statusIcon
+    : isConnected
+    ? styles.statusIcon
+    : styles.isDisconnected
 
   return <span className={className}>{icon}</span>
 }
