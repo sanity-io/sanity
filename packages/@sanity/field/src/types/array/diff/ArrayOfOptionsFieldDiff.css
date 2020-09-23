@@ -1,0 +1,16 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.item {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}
+
+.itemPreview {
+  margin-left: var(--small-padding);
+  line-height: 1;
+}
