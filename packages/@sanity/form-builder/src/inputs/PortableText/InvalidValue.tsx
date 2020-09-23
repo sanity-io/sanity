@@ -11,7 +11,7 @@ type InvalidValueProps = {
   onIgnore: () => void
 }
 
-export default class InvalidValue extends React.PureComponent<InvalidValueProps, {}> {
+export default class InvalidValue extends React.PureComponent<InvalidValueProps> {
   handleAction = (): void => {
     const resolution = this.props.resolution
     if (resolution) {

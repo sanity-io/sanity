@@ -1,5 +1,5 @@
 /* eslint-disable react/no-find-dom-node */
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useMemo, useLayoutEffect} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
@@ -21,6 +21,8 @@ import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {FullscreenObjectEditing} from './renderers/FullscreenObjectEditing'
 
 const PATCHES: WeakMap<PortableTextEditor, Patch[]> = new WeakMap()
+const IS_THROTTLING: WeakMap<PortableTextEditor, boolean> = new WeakMap()
+const THROTTLE_MS = 300
 
 interface Props {
   focusPath: Path
@@ -32,7 +34,6 @@ interface Props {
   onFocus: (path: Path) => void
   presence: FormFieldPresence[]
   readOnly: boolean
-  popoverReferenceElement: React.MutableRefObject<HTMLElement>
   value: PortableTextBlock[] | undefined
 }
 
@@ -47,67 +48,66 @@ export const EditObject = ({
   onFocus,
   presence,
   readOnly,
-  popoverReferenceElement,
   value
 }: Props) => {
   const editor = usePortableTextEditor()
   const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
   const {formBuilderPath, editorPath, kind} = objectEditData
 
-  let object
-  let type: Type
+  function findObjectAndType() {
+    let object
+    let type: Type
 
-  // Try finding the relevant block
-  const blockKey =
-    Array.isArray(formBuilderPath) && isKeySegment(formBuilderPath[0]) && formBuilderPath[0]._key
+    // Try finding the relevant block
+    const blockKey =
+      Array.isArray(formBuilderPath) && isKeySegment(formBuilderPath[0]) && formBuilderPath[0]._key
 
-  const block =
-    value && blockKey && Array.isArray(value) && value.find(blk => blk._key === blockKey)
-  const child =
-    block &&
-    block.children &&
-    block.children.find(cld => isKeySegment(editorPath[2]) && cld._key === editorPath[2]._key)
+    const block =
+      value && blockKey && Array.isArray(value) && value.find(blk => blk._key === blockKey)
+    const child =
+      block &&
+      block.children &&
+      block.children.find(cld => isKeySegment(editorPath[2]) && cld._key === editorPath[2]._key)
 
-  if (block) {
-    // Get object, type, and relevant editor element
-    switch (kind) {
-      case 'blockObject':
-        object = block
-        type = ptFeatures.types.blockObjects.find(t => t.name === block._type)
-        break
-      case 'inlineObject':
-        object = child
-        // eslint-disable-next-line max-depth
-        if (object) {
-          type = ptFeatures.types.inlineObjects.find(t => t.name === child._type)
-        }
-        break
-      case 'annotation':
-        // eslint-disable-next-line max-depth
-        if (child) {
-          const markDef =
-            child.marks &&
-            block.markDefs &&
-            block.markDefs.find(def => child.marks.includes(def._key))
+    if (block) {
+      // Get object, type, and relevant editor element
+      switch (kind) {
+        case 'blockObject':
+          object = block
+          type = ptFeatures.types.blockObjects.find(t => t.name === block._type)
+          break
+        case 'inlineObject':
+          object = child
           // eslint-disable-next-line max-depth
-          if (markDef) {
-            type = ptFeatures.types.annotations.find(t => t.name === markDef._type)
-            object = markDef
+          if (object) {
+            type = ptFeatures.types.inlineObjects.find(t => t.name === child._type)
           }
-        }
-        break
-      default:
-      // Nothing
+          break
+        case 'annotation':
+          // eslint-disable-next-line max-depth
+          if (child) {
+            const markDef =
+              child.marks &&
+              block.markDefs &&
+              block.markDefs.find(def => child.marks.includes(def._key))
+            // eslint-disable-next-line max-depth
+            if (markDef) {
+              type = ptFeatures.types.annotations.find(t => t.name === markDef._type)
+              object = markDef
+            }
+          }
+          break
+        default:
+        // Nothing
+      }
     }
+    return [object, type]
   }
 
-  const [stateValue, setStateValue] = useState(object)
-  const [isThrottling, setIsThrottling] = useState(undefined)
-
-  // This will cancel the throttle when the user is not producing anything for a short time
-  const cancelThrottle = debounce(() => {
-    setIsThrottling(false)
-  }, 500)
+  const objectAndType = useMemo(findObjectAndType, [value])
+  const [object, setObject] = useState(objectAndType[0])
+  const type = objectAndType[1]
+  const [timeoutInstance, setTimeoutInstance] = useState(undefined)
 
   function handleClose(): void {
     onClose()
@@ -116,47 +116,41 @@ export const EditObject = ({
   // Initialize weakmaps on mount, and send patches on unmount
   useEffect(() => {
     PATCHES.set(editor, [])
+    IS_THROTTLING.set(editor, false)
     return () => {
       sendPatches()
       PATCHES.delete(editor)
+      IS_THROTTLING.delete(editor)
     }
   }, [])
 
-  // Cancel throttle after editing activity has stopped
-  useEffect(() => {
-    if (isThrottling === true) {
-      cancelThrottle()
-    }
-  }, [isThrottling])
-
-  // Send away patches when we are no longer throttling
-  useEffect(() => {
-    if (isThrottling === false) {
-      sendPatches()
-    }
-  }, [isThrottling])
-
-  // Keep value from props in sync
-  useEffect(() => {
-    if (!isThrottling) {
-      setStateValue(object)
-    }
+  useLayoutEffect(() => {
+    setObject(objectAndType[0])
   }, [value])
 
   const editModalLayout: ModalType = get(type, 'options.editModal')
 
+  const cancelThrottle = debounce(() => {
+    IS_THROTTLING.set(editor, false)
+  }, THROTTLE_MS)
+
   function handleChange(patchEvent: PatchEvent): void {
-    const appliedValue = applyAll(stateValue, patchEvent.patches)
-    setStateValue(appliedValue)
+    setObject(applyAll(object, patchEvent.patches))
     const patches = PATCHES.get(editor)
+    IS_THROTTLING.set(editor, true)
     if (patches) {
-      const _patches = PATCHES.get(editor).concat(patchEvent.patches)
-      setIsThrottling(true)
-      PATCHES.set(editor, _patches)
+      PATCHES.set(editor, PATCHES.get(editor).concat(patchEvent.patches))
+      sendPatches()
     }
   }
 
   function sendPatches() {
+    if (IS_THROTTLING.get(editor) === true) {
+      cancelThrottle()
+      clearInterval(timeoutInstance)
+      setTimeoutInstance(setTimeout(sendPatches, THROTTLE_MS + 100))
+      return
+    }
     const patches = PATCHES.get(editor)
     if (!patches) {
       return
@@ -167,20 +161,19 @@ export const EditObject = ({
     setTimeout(() => {
       onChange(PatchEvent.from(_patches), formBuilderPath)
     })
+    cancelThrottle()
   }
 
-  // Render nothing if object or type wasn't found
   if (!object || !type) {
     return null
   }
 
-  // Render the various editing interfaces
   if (editModalLayout === 'fullscreen') {
     return (
       <FullscreenObjectEditing
         focusPath={focusPath}
         markers={markers}
-        object={stateValue}
+        object={object}
         onBlur={onBlur}
         onChange={handleChange}
         onClose={handleClose}
@@ -197,14 +190,13 @@ export const EditObject = ({
       <PopoverObjectEditing
         focusPath={focusPath}
         markers={markers}
-        object={stateValue}
+        object={object}
         onBlur={onBlur}
         onChange={handleChange}
         onClose={handleClose}
         onFocus={onFocus}
         path={formBuilderPath}
         presence={presence}
-        popoverReferenceElement={popoverReferenceElement}
         readOnly={readOnly}
         type={type}
       />
@@ -214,7 +206,7 @@ export const EditObject = ({
     <DefaultObjectEditing
       focusPath={focusPath}
       markers={markers}
-      object={stateValue}
+      object={object}
       onBlur={onBlur}
       onChange={handleChange}
       onClose={handleClose}

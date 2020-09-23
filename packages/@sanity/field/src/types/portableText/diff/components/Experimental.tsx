@@ -1,6 +1,12 @@
 import React, {SyntheticEvent} from 'react'
 import {flatten, uniq} from 'lodash'
-import {PortableTextBlock, PortableTextChild, ChildMap, PortableTextDiff} from '../types'
+import {
+  ChildMap,
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextDiff,
+  StringSegment
+} from '../types'
 import {
   ANNOTATION_SYMBOLS,
   childIsSpan,
@@ -95,49 +101,15 @@ export default function Experimental(props: Props): JSX.Element {
     return <div className={classNames.join(' ')}>{returned}</div>
   }
 
-  const findMarksDiff = (mark: string, text: string) => {
-    const spanDiff =
-      diff.fields.children &&
-      diff.fields.children.action === 'changed' &&
-      diff.fields.children.type === 'array' &&
-      (diff.fields.children.items.find(
-        // TODO: could this be done better? We cant exact match on string as they may be broken apart.
-        // Check for indexOf string for now
-        // eslint-disable-next-line complexity
-        item =>
-          item.diff &&
-          item.diff.type === 'object' &&
-          item.diff.fields.marks &&
-          item.diff.fields.marks.type === 'array' &&
-          item.diff.fields.text &&
-          item.diff.fields.text.type === 'string' &&
-          ((item.diff.fields.text.toValue && item.diff.fields.text.toValue.indexOf(text) > -1) ||
-            (item.diff.fields.text.fromValue &&
-              item.diff.fields.text.fromValue.indexOf(text) > -1)) &&
-          ((Array.isArray(item.diff.fields.marks.toValue) &&
-            item.diff.fields.marks.toValue.includes(mark)) ||
-            (Array.isArray(item.diff.fields.marks.fromValue) &&
-              item.diff.fields.marks.fromValue.includes(mark)))
-      )?.diff as ObjectDiff)
-    return (
-      spanDiff &&
-      spanDiff.fields.marks &&
-      spanDiff.fields.marks.type === 'array' &&
-      spanDiff.fields.marks.action !== 'unchanged' &&
-      spanDiff.fields.marks.items.find(
-        item => item.diff.toValue === mark || item.diff.fromValue === mark
-      )?.diff
-    )
-  }
-
   const renderDecorator = (mark: string, text: string, input: React.ReactElement) => {
     let returned = input
-    const marksDiff = findMarksDiff(mark, text)
+    const marksDiff = findMarksDiff(diff, mark, text)
     const isRemoved = marksDiff && marksDiff.action === 'removed'
     if (marksDiff && marksDiff.action !== 'unchanged') {
       returned = (
         <DiffCard
           annotation={marksDiff.annotation}
+          as="span"
           tooltip={{description: `Formatting ${marksDiff.action}`}}
         >
           {returned}
@@ -261,16 +233,24 @@ export default function Experimental(props: Props): JSX.Element {
             renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)
           )
         } else if (seg.action === 'removed') {
-          // TODO: find annotation
+          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg)
           returnedChildren.push(
-            <DiffCard annotation={seg.annotation} as="del" tooltip={{description: 'Removed'}}>
+            <DiffCard
+              annotation={textDiffAnnotation || seg.annotation}
+              as="del"
+              tooltip={{description: 'Removed text'}}
+            >
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
         } else if (seg.action === 'added') {
-          // TODO: find annotation
+          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg)
           returnedChildren.push(
-            <DiffCard annotation={seg.annotation} as="ins" tooltip={{description: 'Added'}}>
+            <DiffCard
+              annotation={textDiffAnnotation || seg.annotation}
+              as="ins"
+              tooltip={{description: 'Added text'}}
+            >
               {renderWithMarks(activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
@@ -316,4 +296,61 @@ export default function Experimental(props: Props): JSX.Element {
     block,
     children: (experimentalDiff.displayValue.children || []).map(child => renderChild(child))
   })
+}
+
+function findMarksDiff(diff: ObjectDiff, mark: string, text: string) {
+  const spanDiff =
+    diff.fields.children &&
+    diff.fields.children.action === 'changed' &&
+    diff.fields.children.type === 'array' &&
+    (diff.fields.children.items.find(
+      // TODO: could this be done better? We cant exact match on string as they may be broken apart.
+      // Check for indexOf string for now
+      // eslint-disable-next-line complexity
+      item =>
+        item.diff &&
+        item.diff.type === 'object' &&
+        item.diff.fields.marks &&
+        item.diff.fields.marks.type === 'array' &&
+        item.diff.fields.text &&
+        item.diff.fields.text.type === 'string' &&
+        ((item.diff.fields.text.toValue && item.diff.fields.text.toValue.indexOf(text) > -1) ||
+          (item.diff.fields.text.fromValue &&
+            item.diff.fields.text.fromValue.indexOf(text) > -1)) &&
+        ((Array.isArray(item.diff.fields.marks.toValue) &&
+          item.diff.fields.marks.toValue.includes(mark)) ||
+          (Array.isArray(item.diff.fields.marks.fromValue) &&
+            item.diff.fields.marks.fromValue.includes(mark)))
+    )?.diff as ObjectDiff)
+  return (
+    spanDiff &&
+    spanDiff.fields.marks &&
+    spanDiff.fields.marks.type === 'array' &&
+    spanDiff.fields.marks.action !== 'unchanged' &&
+    spanDiff.fields.marks.items.find(
+      item => item.diff.toValue === mark || item.diff.fromValue === mark
+    )?.diff
+  )
+}
+
+function findTextAnnotationFromSegment(diff: ObjectDiff, segment: StringSegment) {
+  const childrenDiff = diff.fields.children as ArrayDiff
+  const childItem = childrenDiff.items.find(
+    item =>
+      item.diff.isChanged &&
+      item.diff.type === 'object' &&
+      item.diff.fields.text &&
+      item.diff.fields.text.type === 'string' &&
+      item.diff.fields.text.action !== 'unchanged' &&
+      item.diff.fields.text.segments.find(seg => seg.text === segment.text)
+  )
+  if (
+    childItem &&
+    childItem.diff.type === 'object' &&
+    childItem.diff.fields.text &&
+    childItem.diff.fields.text.action !== 'unchanged'
+  ) {
+    return childItem.diff.fields.text.annotation
+  }
+  return undefined
 }
