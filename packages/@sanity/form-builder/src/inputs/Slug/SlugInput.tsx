@@ -33,7 +33,9 @@ interface Slug {
 type Props = {
   type: SlugSchemaType
   level: number
-  value: Slug
+  value?: Slug
+  compareValue?: Slug
+  focusPath: Path
   readOnly?: boolean
   document: SanityDocument
   onChange: (ev: PatchEvent) => void
