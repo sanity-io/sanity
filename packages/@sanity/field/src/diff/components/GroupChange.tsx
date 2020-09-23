@@ -6,6 +6,8 @@ import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
 import {GroupChangeNode, OperationsAPI} from '../../types'
 import {useHover} from '../../utils/useHover'
+import {pathsAreEqual} from '../../paths'
+import {DiffContext} from '../contexts/DiffContext'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
@@ -14,19 +16,17 @@ import {RevertChangesButton} from './RevertChangesButton'
 import styles from './GroupChange.css'
 
 export function GroupChange({change: group}: {change: GroupChangeNode}): React.ReactElement {
-  const {titlePath, changes} = group
-  const {
-    documentId,
-    schemaType,
-    FieldWrapper = React.Fragment,
-    rootDiff,
-    isComparingCurrent
-  } = React.useContext(DocumentChangeContext)
+  const {titlePath, changes, path: groupPath} = group
+  const {path: diffPath} = React.useContext(DiffContext)
+  const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = React.useContext(
+    DocumentChangeContext
+  )
 
   const isPortableText = changes.every(
     change => isFieldChange(change) && isPTSchemaType(change.schemaType)
   )
 
+  const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
   const [hoverRef, isHoveringRevert] = useHover<HTMLDivElement>()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
@@ -36,25 +36,31 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
     docOperations
   ])
 
-  return (
-    <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
-      <div className={classNames(styles.groupChange, isPortableText && styles.portableText)}>
-        <div className={styles.changeHeader}>
-          <ChangeBreadcrumb titlePath={titlePath} />
-        </div>
-
-        <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
-          {changes.map(change => (
-            <ChangeResolver key={change.key} change={change} />
-          ))}
-
-          {isComparingCurrent && (
-            <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
-              <RevertChangesButton onClick={handleRevertChanges} />
-            </div>
-          )}
-        </div>
+  const content = (
+    <div className={classNames(styles.groupChange, isPortableText && styles.portableText)}>
+      <div className={styles.changeHeader}>
+        <ChangeBreadcrumb titlePath={titlePath} />
       </div>
+
+      <div className={isHoveringRevert ? styles.changeListOutlined : styles.changeList}>
+        {changes.map(change => (
+          <ChangeResolver key={change.key} change={change} />
+        ))}
+
+        {isComparingCurrent && (
+          <div ref={hoverRef} className={styles.revertChangesButtonContainer}>
+            <RevertChangesButton onClick={handleRevertChanges} />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  return isNestedInDiff || !FieldWrapper ? (
+    content
+  ) : (
+    <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
+      {content}
     </FieldWrapper>
   )
 }
