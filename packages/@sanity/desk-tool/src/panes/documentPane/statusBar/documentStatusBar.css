@@ -8,20 +8,6 @@
   padding: 0.75em var(--medium-padding);
 }
 
-.status {
-  display: flex;
-  align-items: center;
-}
-
-.statusBadgesContainer {
-  /* container for <StatusBadges /> */
-  display: flex;
-}
-
-.sparklineContainer {
-  /*  */
-}
-
 .actions {
   /* grid unit */
 }

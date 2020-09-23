@@ -1,29 +1,21 @@
+import React, {useCallback, useState} from 'react'
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
-import React, {useCallback, useState} from 'react'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {ActionMenu} from './actionMenu'
 import {ActionStateDialog} from './actionStateDialog'
+import {DocumentStatusBarActionsProps, HistoryStatusBarActionsProps} from './types'
 
 import styles from './documentStatusBarActions.css'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
-interface Props {
-  states: any[]
-  disabled: boolean
-  isMenuOpen: boolean
-  showMenu: boolean
-  onMenuOpen: () => void
-  onMenuClose: () => void
-}
-
 // eslint-disable-next-line complexity
-function DocumentStatusBarActionsInner(props: Props) {
+function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   const {states, showMenu} = props
   const [firstActionState, ...menuActionStates] = states
   const [buttonContainerElement, setButtonContainerElement] = useState<HTMLDivElement | null>(null)
@@ -113,12 +105,6 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       disabled={connectionState !== 'connected'}
     />
   )
-}
-
-interface HistoryStatusBarActionsProps {
-  id: string
-  type: string
-  revision: string
 }
 
 const historyActions = [HistoryRestoreAction]

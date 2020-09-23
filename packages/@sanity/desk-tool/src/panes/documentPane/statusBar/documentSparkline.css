@@ -1,0 +1,181 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes DocumentStatusBar__spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+:root {
+  --size: 25px;
+  --timeline-event-enabled-icon-edited-bg: #fdefb6;
+  --timeline-event-enabled-icon-edited-fg: #978023;
+  --timeline-event-enabled-icon-published-bg: #3ab667;
+  --timeline-event-enabled-icon-published-fg: #fff;
+  --disabled-container-bg: var(--gray-lightest);
+  --disabled-container-fg: var(--component-bg);
+  --disabled-fg: var(--gray-lightest);
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  padding-right: var(--small-padding);
+}
+
+.primarySessionBadgeContainer {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  background: var(--component-bg);
+  height: 40px; /* same as reviewChangesButton button */
+  border: 1px solid transparent;
+}
+
+.reviewChangesButton {
+  border: 1px solid var(--gray-lighter);
+  border-radius: var(--border-radius-medium);
+  margin-left: var(--large-padding);
+  color: var(--text-muted);
+  text-align: left;
+  transform: translate3d(0, 0, 0);
+  display: block;
+  transition: transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
+  z-index: 0;
+
+  @nest & .inner {
+    display: flex;
+    align-items: center;
+    padding-right: var(--small-padding);
+  }
+
+  @nest &:hover:not(:disabled) {
+    background: var(--gray-dark);
+    border-color: var(--gray-dark);
+    @nest & .statusDetails {
+      color: var(--white);
+    }
+    @nest & .badge {
+      background: var(--white);
+      color: var(--gray-dark);
+      border-color: var(--gray-dark);
+
+      @nest & .icon {
+        display: none;
+      }
+
+      @nest & .hoverIcon {
+        display: flex;
+      }
+    }
+  }
+
+  @nest &[data-transition='in'] {
+    transform: translate3d(0px, 0, 0);
+  }
+
+  @nest &[data-transition='out'] {
+    transform: translate3d(calc(var(--size) * -3), 0, 0);
+    opacity: 0;
+  }
+}
+
+.sessionBadges {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  line-height: 1;
+  height: var(--size);
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+
+  @nest &[data-syncing='true'] .badge svg {
+    animation-name: DocumentStatusBar__spin;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: default;
+  flex: 1;
+  background-color: var(--gray);
+  border: 1px solid var(--white);
+  color: var(--white);
+  border-radius: calc(var(--size) * 2);
+  height: var(--size);
+  width: var(--size);
+  z-index: 10;
+  cursor: inherit;
+  transition: transform 0.3s linear;
+  box-sizing: border-box;
+
+  @nest &:not([data-type='publish']):not([data-type='live']):not(:last-of-type) .icon {
+    display: none;
+  }
+
+  @nest &[data-type='publish'] {
+    background-color: var(--timeline-event-enabled-icon-published-bg);
+    color: var(--timeline-event-enabled-icon-published-fg);
+  }
+
+  @nest &[data-type='live'] {
+    background-color: var(--timeline-event-enabled-icon-published-bg);
+    color: var(--timeline-event-enabled-icon-published-fg);
+  }
+
+  @nest &[data-type='editDraft'] {
+    background-color: var(--timeline-event-enabled-icon-edited-bg);
+    color: var(--timeline-event-enabled-icon-edited-fg);
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.hoverIcon {
+  display: none;
+}
+
+.statusDetails {
+  font-size: var(--font-size-xsmall);
+  white-space: nowrap;
+  margin-left: var(--small-padding);
+  color: var(--text-muted);
+}
+
+.label {
+  font-weight: 500;
+}
+
+.root[data-disabled='true'] {
+  @nest & .reviewChangesButton {
+    border-color: var(--disabled-container-bg);
+  }
+
+  @nest & .badge {
+    background: var(--disabled-container-bg);
+    color: var(--disabled-container-fg);
+  }
+
+  @nest & .statusDetails {
+    color: var(--disabled-fg);
+  }
+
+  @nest & [class*='DefaultBadge'] {
+    color: var(--disabled-container-fg);
+  }
+}
