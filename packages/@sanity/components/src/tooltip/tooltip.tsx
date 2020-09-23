@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import {Portal} from 'part:@sanity/components/portal'
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {TooltipPlacement} from './types'
 import {TooltipArrow} from './tooltipArrow'
+import {TooltipPlacement} from './types'
 
 import styles from './tooltip.css'
 
@@ -30,6 +30,7 @@ export function Tooltip(
     tone,
     ...restProps
   } = props
+  const leaveRafRef = useRef<number | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
@@ -58,11 +59,25 @@ export function Tooltip(
     ]
   })
 
-  const [isOpen, setIsOpen] = useState(false)
-  const onMouseEnter = () => setIsOpen(() => true)
-  const onMouseLeave = () => setIsOpen(() => false)
-
   const {forceUpdate} = popper
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleBlur = useCallback(() => setIsOpen(false), [])
+
+  const handleFocus = useCallback(() => setIsOpen(true), [])
+
+  const handleMouseEnter = useCallback(() => {
+    if (leaveRafRef.current !== null) {
+      cancelAnimationFrame(leaveRafRef.current)
+    }
+
+    setIsOpen(true)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    leaveRafRef.current = requestAnimationFrame(() => setIsOpen(false))
+  }, [])
 
   useEffect(() => {
     if (forceUpdate) forceUpdate()
@@ -77,6 +92,8 @@ export function Tooltip(
       {...restProps}
       className={classNames(styles.root, className)}
       data-tone={tone}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       ref={setPopperElement}
       style={popper.styles.popper}
       {...popper.attributes.popper}
@@ -88,7 +105,14 @@ export function Tooltip(
 
   return (
     <>
-      {React.cloneElement(children, {onMouseEnter, onMouseLeave, ref: setReferenceElement})}
+      {React.cloneElement(children, {
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+        ref: setReferenceElement
+      })}
+
       {isOpen && (
         <>
           {portalProp && <Portal>{popperNode}</Portal>}
