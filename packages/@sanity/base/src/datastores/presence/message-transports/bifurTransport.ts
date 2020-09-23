@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import {map, mergeMapTo, share, switchMapTo, tap, switchMap} from 'rxjs/operators'
-import {EMPTY, fromEvent, merge, Observable, defer} from 'rxjs'
+import {Observable, EMPTY} from 'rxjs'
+import {map, share} from 'rxjs/operators'
+import {BifurClient} from '@sanity/bifur-client'
 import {PresenceLocation} from '../types'
 import {Transport, TransportEvent, TransportMessage} from './transport'
 
@@ -58,23 +58,27 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
   throw new Error(`Got unknown presence event: ${JSON.stringify(event)}`)
 }
 
-export const createBifurTransport = (bifur, sessionId: string): Transport => {
+export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
   const incomingEvents$: Observable<TransportEvent> = bifur
-    .request('presence')
+    .request<IncomingBifurEvent<Location[]>>('presence')
     .pipe(map(handleIncomingMessage))
 
-  const dispatchMessage = (message: TransportMessage) => {
+  const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {
       return bifur.request('presence_rollcall', {session: sessionId})
     }
+
     if (message.type === 'state') {
       return bifur.request('presence_announce', {
         data: {locations: message.locations, sessionId}
       })
     }
+
     if (message.type === 'disconnect') {
       return bifur.request('presence_disconnect', {session: sessionId})
     }
+
+    return EMPTY
   }
 
   return [incomingEvents$.pipe(share()), dispatchMessage]
