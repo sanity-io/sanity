@@ -3,26 +3,26 @@
 .root {
   display: inline-flex;
   align-items: center;
-  border-radius: var(--border-radius-small);
+  border-radius: calc(var(--border-radius-medium) * 3);
   /* Optimised for 11px */
-  padding: 1px 3px;
-  line-height: calc(12 / 11);
+  padding: 2px 6px;
+  line-height: calc(12 / 10);
   text-transform: uppercase;
   font-weight: 600;
   box-sizing: border-box;
   white-space: nowrap;
   text-align: center;
-  border: 1px solid transparent;
+  /* border: 1px solid transparent; */
   transform: translateZ(0);
   cursor: default;
   background-color: var(--gray);
   border-color: var(--gray);
   color: var(--white);
+  font-size: var(--font-size-xsmall);
 
   @nest &[data-color='success'] {
-    background-color: var(--state-success-color);
-    border-color: var(--state-success-color);
-    color: var(--state-success-color--inverted);
+    background: color(var(--state-success-color) l(86%) s(65%));
+    color: color(var(--state-success-color) s(45%) b(30%));
   }
 
   @nest &[data-color='info'] {
@@ -41,5 +41,10 @@
     background-color: var(--state-danger-color);
     border-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);
+  }
+
+  @nest &[data-color='default'] {
+    background: var(--gray-lightest);
+    color: var(--gray-dark);
   }
 }

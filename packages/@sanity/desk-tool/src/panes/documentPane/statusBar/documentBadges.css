@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  align-items: center;
+  margin: 0 var(--medium-padding);
+
+  @nest & .documentBadge {
+    margin-right: var(--small-padding);
+  }
+}
