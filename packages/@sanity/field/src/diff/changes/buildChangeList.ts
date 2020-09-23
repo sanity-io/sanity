@@ -34,7 +34,7 @@ export function buildChangeList(
   titlePath: ChangeTitlePath = [],
   context: DiffContext = {}
 ): ChangeNode[] {
-  const diffComponent = resolveDiffComponent(schemaType)
+  const diffComponent = resolveDiffComponent(schemaType, context.parentSchema)
 
   if (!diffComponent) {
     if (schemaType.jsonType === 'object' && diff.type === 'object') {
@@ -254,7 +254,7 @@ function getFieldChange(
   let showHeader = true
   let component: DiffComponent | undefined
 
-  const diffComponent = resolveDiffComponent(schemaType)
+  const diffComponent = resolveDiffComponent(schemaType, parentSchema)
   if (diffComponent && typeof diffComponent === 'function') {
     // Just a diff component with default options
     component = diffComponent
