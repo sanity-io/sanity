@@ -21,6 +21,8 @@ const HOTSPOT_HANDLE_SIZE = 10
 function checkCropBoundaries(value, delta) {
   // Make the experience a little better. Still offsets when dragging back from outside
   if (
+    !value ||
+    !value.crop ||
     value.crop.top + delta.top < 0 ||
     value.crop.left + delta.left < 0 ||
     value.crop.right + delta.right < 0 ||
