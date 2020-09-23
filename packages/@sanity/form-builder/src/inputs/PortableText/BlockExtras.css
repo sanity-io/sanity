@@ -14,7 +14,6 @@
   margin-left: calc(100% - var(--block-extras-width));
   border-left: 2px solid transparent;
   padding: var(--small-padding) 0 var(--small-padding) calc(var(--small-padding) - 2px);
-  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -34,11 +33,8 @@
 
 .hasFullScreen {
   overflow: visible;
-
-  @nest &.withChangeIndicatorsOnly {
-    margin-left: var(--block-extras-width);
-  }
 }
+
 
 .hasFullScreen .content {
   margin-left: 100%;
