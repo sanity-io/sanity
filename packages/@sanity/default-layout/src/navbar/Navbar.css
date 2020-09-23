@@ -12,13 +12,13 @@
     /* prettier-ignore */
     grid-template-areas:  'hamburger   branding    createButton search              helpButton  presence    extras';
     /* prettier-ignore */
-    grid-template-columns: max-content max-content min-content  minmax(240px, 100%) min-content max-content max-content;
+    grid-template-columns: max-content max-content min-content  minmax(180px, 100%) min-content max-content max-content;
 
     @nest &.withToolMenu {
       /* prettier-ignore */
       grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus helpButton  presence    loginStatus';
       /* prettier-ignore */
-      grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  min-content max-content min-content;
+      grid-template-columns: max-content max-content   min-content  minmax(180px, 400px)  auto         max-content max-content  min-content max-content min-content;
     }
   }
 }
