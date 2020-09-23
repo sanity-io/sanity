@@ -307,6 +307,8 @@ declare module 'part:@sanity/components/dialogs/fullscreen' {
   export {default} from '@sanity/components/src/dialogs/FullscreenDialog'
 }
 
+declare module 'part:@sanity/components/dialogs/popover-style'
+
 declare module 'part:@sanity/components/lists/create-document' {
   export {default} from '@sanity/components/src/lists/CreateDocument'
 }

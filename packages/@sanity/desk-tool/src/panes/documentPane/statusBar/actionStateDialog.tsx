@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/jsx-handler-names */
-
-import * as React from 'react'
-import Button, {ButtonColor} from 'part:@sanity/components/buttons/default'
+import {ButtonColor, DialogAction} from '@sanity/components'
+import React, {useCallback} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
-
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -69,6 +64,21 @@ interface Props {
 export function ActionStateDialog(props: Props) {
   const {dialog} = props
 
+  const handleDialogAction = useCallback(
+    (action: DialogAction) => {
+      if (dialog.type === 'confirm') {
+        if (action.key === 'cancel') {
+          dialog.onCancel()
+        }
+
+        if (action.key === 'confirm') {
+          dialog.onConfirm()
+        }
+      }
+    },
+    [dialog]
+  )
+
   if (dialog.type === 'legacy') {
     return <>{dialog.content}</>
   }
@@ -76,22 +86,26 @@ export function ActionStateDialog(props: Props) {
   if (dialog.type === 'confirm') {
     return (
       <PopOverDialog
+        actions={[
+          {
+            key: 'confirm',
+            color: dialog.color || 'danger',
+            title: 'Confirm'
+          },
+          {
+            key: 'cancel',
+            kind: 'simple',
+            title: 'Cancel'
+          }
+        ]}
+        hasAnimation
+        onAction={handleDialogAction}
         onClickOutside={dialog.onCancel}
         placement="auto-end"
+        size="small"
         useOverlay={false}
-        hasAnimation
       >
-        <>
-          <div className={styles.popOverText}>{dialog.message}</div>
-          <ButtonGrid>
-            <Button onClick={dialog.onCancel} kind="simple">
-              Cancel
-            </Button>
-            <Button onClick={dialog.onConfirm} color={dialog.color || 'danger'}>
-              Confirm
-            </Button>
-          </ButtonGrid>
-        </>
+        <div>{dialog.message}</div>
       </PopOverDialog>
     )
   }

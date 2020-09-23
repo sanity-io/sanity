@@ -1,18 +1,19 @@
+import Chance from 'chance'
+import {range} from 'lodash'
 import React from 'react'
-import DefaultMenu, {MenuItemType} from 'part:@sanity/components/menus/default'
-import {action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
+import DefaultMenu from 'part:@sanity/components/menus/default'
+import {action} from 'part:@sanity/storybook'
 import {number, boolean} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
-import {range} from 'lodash'
-import Chance from 'chance'
+import {MenuItem} from '../types'
 
 const chance = new Chance()
 
 export function DefaultStory() {
   const icon = boolean('icons', false) ? SanityIcon : false
-  const items: MenuItemType[] = range(number('#items', 30)).map((item, i) => {
+  const items: MenuItem[] = range(number('#items', 30)).map((item, i) => {
     return {
       title: chance.name(),
       icon: icon || undefined,

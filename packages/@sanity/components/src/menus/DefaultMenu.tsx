@@ -9,9 +9,6 @@ import classNames from 'classnames'
 import DefaultMenuItem from './DefaultMenuItem'
 import {MenuItemGroup as MenuItemGroupType, MenuItem as MenuItemType} from './types'
 
-// export typings
-export {MenuItemGroupType, MenuItemType}
-
 interface DefaultMenuProps {
   id?: string
   onAction: (item: MenuItemType) => void

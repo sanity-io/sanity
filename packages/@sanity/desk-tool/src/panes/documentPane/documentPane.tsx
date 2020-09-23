@@ -1,9 +1,10 @@
-import {Chunk} from '@sanity/field/diff'
+import {MenuItemGroup} from '@sanity/components'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
-import {MenuItemGroupType} from 'part:@sanity/components/menus/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useCallback, useRef, useState} from 'react'
+import {ChangeConnectorRoot} from '../../components/changeConnector/ChangeConnectorRoot'
+import {ReportChangesPanel} from '../../components/changeConnector/ReportChangesPanel'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
@@ -18,9 +19,6 @@ import {Doc, DocumentViewType} from './types'
 
 import styles from './documentPane.css'
 
-import {ChangeConnectorRoot} from '../../components/changeConnector/ChangeConnectorRoot'
-import {ReportChangesPanel} from '../../components/changeConnector/ReportChangesPanel'
-
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
   documentId: string
@@ -32,7 +30,7 @@ interface DocumentPaneProps {
   isCollapsed: boolean
   isSelected: boolean
   markers: any[]
-  menuItemGroups: MenuItemGroupType[]
+  menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
   onExpand?: () => void
   onCollapse?: () => void

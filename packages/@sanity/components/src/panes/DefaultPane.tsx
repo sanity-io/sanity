@@ -2,7 +2,7 @@ import S, {InitialValueTemplateItem} from '@sanity/base/structure-builder'
 import classNames from 'classnames'
 import {negate} from 'lodash'
 import {MenuButton} from 'part:@sanity/components/menu-button'
-import Menu, {MenuItemType, MenuItemGroupType} from 'part:@sanity/components/menus/default'
+import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
@@ -11,6 +11,7 @@ import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import {ScrollContainer} from '@sanity/base/ScrollContainer'
 import React from 'react'
 import {childrenToElementArray} from '../helpers'
+import {MenuItem, MenuItemGroup} from '../menus/types'
 import Styleable from '../utilities/Styleable'
 
 import defaultStyles from './DefaultPane.css'
@@ -29,10 +30,10 @@ interface DefaultPaneProps {
   isSelected?: boolean
   isScrollable?: boolean
   hasSiblings?: boolean
-  onAction?: (item: MenuItemType) => boolean
-  renderActions?: (actions: MenuItemType[]) => React.ReactNode
-  menuItems?: MenuItemType[]
-  menuItemGroups?: MenuItemGroupType[]
+  onAction?: (item: MenuItem) => boolean
+  renderActions?: (actions: MenuItem[]) => React.ReactNode
+  menuItems?: MenuItem[]
+  menuItemGroups?: MenuItemGroup[]
   initialValueTemplates?: InitialValueTemplateItem[]
   index: number
   footer?: React.ReactNode
@@ -45,7 +46,7 @@ interface State {
   isMenuOpen: boolean
 }
 
-function getActionKey(action: MenuItemType, index: number) {
+function getActionKey(action: MenuItem, index: number) {
   const title = String(action.title)
 
   return (typeof action.action === 'string' ? action.action + title : title) || index
@@ -60,7 +61,7 @@ const noop = () => {
   /* intentional noop */
 }
 
-const isActionButton = (item: MenuItemType) => Boolean(item.showAsAction)
+const isActionButton = (item: MenuItem) => Boolean(item.showAsAction)
 const isMenuButton = negate(isActionButton)
 
 class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
@@ -143,7 +144,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     }
   }
 
-  handleMenuAction = (item: MenuItemType) => {
+  handleMenuAction = (item: MenuItem) => {
     this.setContextMenuOpen(false)
 
     if (typeof item.action === 'function') {
@@ -165,7 +166,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     handler(item.params, this)
   }
 
-  renderIntentAction = (action: MenuItemType, i: number): React.ReactElement => {
+  renderIntentAction = (action: MenuItem, i: number): React.ReactElement => {
     const {styles = {}} = this.props
 
     return (
@@ -182,7 +183,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     )
   }
 
-  renderActionMenuItem = (item: MenuItemType, index: number) => {
+  renderActionMenuItem = (item: MenuItem, index: number) => {
     if (!item) return null
 
     const {styles = {}} = this.props
@@ -213,7 +214,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     )
   }
 
-  renderAction = (action: MenuItemType, i: number): React.ReactNode => {
+  renderAction = (action: MenuItem, i: number): React.ReactNode => {
     if (action.intent) {
       return this.renderIntentAction(action, i)
     }
@@ -221,7 +222,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     const styles = this.props.styles || {}
 
     // @todo: typings
-    const items: MenuItemType[] = this.props.initialValueTemplates
+    const items: MenuItem[] = this.props.initialValueTemplates
       ? (S.menuItemsFromInitialValueTemplateItems(this.props.initialValueTemplates) as any)
       : []
 

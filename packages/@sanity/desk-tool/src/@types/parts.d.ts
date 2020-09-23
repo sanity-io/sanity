@@ -378,7 +378,7 @@ declare module 'part:@sanity/components/dialogs/fullscreen' {
 
 declare module 'part:@sanity/components/dialogs/popover-style'
 declare module 'part:@sanity/components/dialogs/popover' {
-  export {default} from '@sanity/components/src/dialogs/PopOver'
+  export {default} from '@sanity/components/src/dialogs/PopoverDialog'
 }
 
 declare module 'part:@sanity/components/loading/spinner-style'

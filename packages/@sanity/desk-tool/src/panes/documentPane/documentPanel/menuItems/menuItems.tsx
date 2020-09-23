@@ -1,10 +1,10 @@
-import React from 'react'
+import {MenuItem} from '@sanity/components'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
-import {MenuItemType} from 'part:@sanity/components/menus/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
+import React from 'react'
 import {DeskToolFeatures} from '../../../../features'
 import {Doc} from '../../types'
 
@@ -17,7 +17,7 @@ interface Params {
   value: Doc | null
 }
 
-const getHistoryMenuItem = (params: Params): MenuItemType | null => {
+const getHistoryMenuItem = (params: Params): MenuItem | null => {
   const {features, value, isHistoryOpen} = params
 
   if (!features.reviewChanges) return null
@@ -30,7 +30,7 @@ const getHistoryMenuItem = (params: Params): MenuItemType | null => {
   }
 }
 
-const getInspectItem = ({value}: Params): MenuItemType => ({
+const getInspectItem = ({value}: Params): MenuItem => ({
   action: 'inspect',
   title: (
     <span className={styles.menuItem}>
@@ -44,7 +44,7 @@ const getInspectItem = ({value}: Params): MenuItemType => ({
   isDisabled: !value
 })
 
-export const getProductionPreviewItem = ({value, rev}: Params): MenuItemType | null => {
+export const getProductionPreviewItem = ({value, rev}: Params): MenuItem | null => {
   if (!value || !resolveProductionPreviewUrl) {
     return null
   }
@@ -79,10 +79,10 @@ export const getProductionPreviewItem = ({value, rev}: Params): MenuItemType | n
   }
 }
 
-export const getMenuItems = (params: Params): MenuItemType[] => {
+export const getMenuItems = (params: Params): MenuItem[] => {
   const items = [getProductionPreviewItem, getHistoryMenuItem, getInspectItem]
     .filter(Boolean)
     .map(fn => fn(params))
 
-  return items.filter(i => i !== null) as MenuItemType[]
+  return items.filter(i => i !== null) as MenuItem[]
 }

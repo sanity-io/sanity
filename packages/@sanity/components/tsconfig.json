@@ -34,7 +34,7 @@
       "part:@sanity/components/dialogs/default": ["./dialogs/DefaultDialog"],
       "part:@sanity/components/dialogs/fullscreen": ["./dialogs/FullscreenDialog"],
       "part:@sanity/components/dialogs/fullscreen-message": ["./dialogs/FullscreenMessageDialog"],
-      "part:@sanity/components/dialogs/popover": ["./dialogs/PopOver"],
+      "part:@sanity/components/dialogs/popover": ["./dialogs/PopoverDialog"],
       "part:@sanity/components/dialogs/pane-popover": ["./dialogs/PanePopover"],
       "part:@sanity/components/edititem/fold": ["./edititem/EditItemFoldOut"],
       "part:@sanity/components/fieldsets/default": ["./fieldsets/DefaultFieldSet"],

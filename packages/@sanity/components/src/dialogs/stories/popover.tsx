@@ -17,19 +17,23 @@ const dialogTestContent = {
 }
 
 const paragraph = chance.paragraph()
-const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
+const paragraphs = range(0, 20).map(i => (
+  <p key={i} style={{margin: 0}}>
+    {chance.paragraph()}
+  </p>
+))
 
 function renderContent(type) {
   switch (type) {
     case 'paragraph':
-      return <p>{paragraph}</p>
+      return <p style={{margin: 0}}>{paragraph}</p>
     case 'longtext':
       return <div>{paragraphs}</div>
     case 'example':
       return (
         <>
-          <h1>With dialog content</h1>
-          <p>{paragraph}</p>
+          <h1 style={{margin: 0}}>With dialog content</h1>
+          <p style={{margin: 0}}>{paragraph}</p>
         </>
       )
     default:

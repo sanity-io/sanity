@@ -13,50 +13,24 @@ import Escapable from '../utilities/Escapable'
 import {Placement} from '../types'
 import {DialogAction} from './types'
 
-interface PopOverProps {
-  title?: string
+interface PopoverDialogProps {
+  actions?: DialogAction[]
   children: React.ReactNode
+  color?: 'default' | 'danger'
+  hasAnimation?: boolean
   onClose?: () => void
   onClickOutside?: () => void
   onEscape?: (event: KeyboardEvent) => void
   onAction?: (action: DialogAction) => void
-  placement?: Placement
-  useOverlay?: boolean
-  hasAnimation?: boolean
-  color?: 'default' | 'danger'
   padding?: 'none' | 'small' | 'medium' | 'large'
+  placement?: Placement
   referenceElement?: HTMLElement | null
-  actions?: DialogAction[]
   size?: 'small' | 'medium' | 'large' | 'auto'
+  title?: string
+  useOverlay?: boolean
 }
 
-function PopoverDialogActionButton({
-  action,
-  onAction
-}: {
-  action: DialogAction
-  onAction?: (a: DialogAction) => void
-}) {
-  const handleAction = useCallback(() => {
-    if (onAction) onAction(action)
-  }, [action, onAction])
-
-  return (
-    <Button
-      onClick={handleAction}
-      color={action.color}
-      disabled={action.disabled}
-      kind={action.kind}
-      autoFocus={action.autoFocus}
-      className={action.secondary ? styles.actionSecondary : ''}
-      inverted={action.inverted}
-    >
-      {action.title}
-    </Button>
-  )
-}
-
-export default function PopOver(props: PopOverProps) {
+function PopoverDialog(props: PopoverDialogProps) {
   const {
     title,
     color,
@@ -185,5 +159,33 @@ export default function PopOver(props: PopOverProps) {
         </Stacked>
       </Portal>
     </>
+  )
+}
+
+export default PopoverDialog
+
+function PopoverDialogActionButton({
+  action,
+  onAction
+}: {
+  action: DialogAction
+  onAction?: (a: DialogAction) => void
+}) {
+  const handleAction = useCallback(() => {
+    if (onAction) onAction(action)
+  }, [action, onAction])
+
+  return (
+    <Button
+      onClick={handleAction}
+      color={action.color}
+      disabled={action.disabled}
+      kind={action.kind}
+      autoFocus={action.autoFocus}
+      className={action.secondary ? styles.actionSecondary : ''}
+      inverted={action.inverted}
+    >
+      {action.title}
+    </Button>
   )
 }
