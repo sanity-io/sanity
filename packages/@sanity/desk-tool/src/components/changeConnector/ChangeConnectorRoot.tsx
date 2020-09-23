@@ -15,13 +15,8 @@ export function ChangeConnectorRoot({
 }) {
   return (
     <ConnectorContext.Provider value={{isReviewChangesOpen, onOpenReviewChanges}}>
-      <Tracker
-        component={ConnectorsOverlay}
-        componentProps={{
-          className: className
-        }}
-      >
-        {children}
+      <Tracker>
+        <ConnectorsOverlay className={className}>{children}</ConnectorsOverlay>
       </Tracker>
     </ConnectorContext.Provider>
   )

@@ -1,13 +1,17 @@
 import React from 'react'
 import styles from './ConnectorsOverlay.css'
 import * as PathUtils from '@sanity/util/paths'
-import {groupBy} from 'lodash'
+import {groupBy, partition} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
-import {ReportedRegion} from '@sanity/base/lib/components/react-track-elements'
 import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
 import {Connector, drawLine, vLine} from './Connector'
 import {Arrow} from './Arrow'
-
+import {
+  useReportedValues,
+  Reported,
+  TrackedChange,
+  TrackedArea
+} from '@sanity/base/lib/change-indicators'
 export interface Rect {
   height: number
   width: number
@@ -17,8 +21,7 @@ export interface Rect {
 
 interface Props {
   children?: React.ReactNode
-  trackerRef: any //todo: fix
-  regions: ReportedRegion<any>[]
+  className?: string
 }
 
 const DEBUG = false
@@ -67,13 +70,14 @@ function getRelativeRect(element, parent) {
 }
 
 function computeRect<T>(
-  region: ReportedRegion<T>,
+  [id, region]: Reported<TrackedChange>,
   anchorElement: HTMLElement
-): RegionWithRectMetadata<T> {
-  return {...region, rect: getRelativeRect(region.element, anchorElement)}
+): RegionWithRectMetadata {
+  return {...region, id, rect: getRelativeRect(region.element, anchorElement)}
 }
 
-type RegionWithRectMetadata<T> = ReportedRegion<T> & {
+type RegionWithRectMetadata = TrackedChange & {
+  id: string
   rect: Rect & {bounds: {top: number; bottom: number}}
 }
 
@@ -90,38 +94,45 @@ const ADJUST_MARGIN_TOP = 10
 const ADJUST_MARGIN_BOTTOM = -10
 
 export function ConnectorsOverlay(props: Props) {
-  const {children, regions: _, trackerRef, ...rest} = props
+  const {children, ...rest} = props
+
+  const trackerRef = React.useRef<HTMLDivElement>(null)
 
   const [hovered, setHovered] = React.useState<string | null>(null)
 
   const [, forceUpdate] = React.useReducer(n => n + 1, 0)
 
+  const [_changesPanel, _regions] = partition(
+    useReportedValues(),
+    (v): v is Reported<TrackedArea> => v[0] === 'changesPanel'
+  )
+  const changesPanel = _changesPanel && _changesPanel[0] && _changesPanel[0][1]
+
   const regions = trackerRef.current
-    ? props.regions.map(region => computeRect(region, trackerRef.current!))
+    ? _regions.map(region => computeRect(region, trackerRef.current!))
     : []
 
-  const grouped = groupBy(regions, region => {
-    if (region.id === 'changesPanel') {
-      return 'changesPanel'
-    }
-    return region.id.startsWith('field-') ? 'fieldRegions' : 'changeRegions'
-  })
+  const changesPanelRect = changesPanel
+    ? getRelativeRect(changesPanel.element, trackerRef.current)
+    : null
 
-  const changesPanel = grouped.changesPanel && grouped.changesPanel[0]
   // note: this assumes the changes panel header and the document panel always have the same height
-  const topEdge = changesPanel?.rect?.top
-  const verticalLineLeft = changesPanel?.rect?.left
+  const topEdge = changesPanelRect?.top
+  const verticalLineLeft = changesPanelRect?.left
 
-  const {fieldRegions = [], changeRegions = []} = grouped
+  const [fieldRegions, changeRegions] = partition(regions, fieldRegion =>
+    fieldRegion.id.startsWith('field-')
+  )
+
   const combined = fieldRegions
-    .filter(fieldRegion => fieldRegion.data.isChanged)
+    .filter(fieldRegion => fieldRegion.isChanged)
     .map(fieldRegion => ({
       field: fieldRegion,
-      change: changeRegions.find(r => PathUtils.isEqual(r.data.path, fieldRegion.data.path))
+      change: changeRegions.find(r => PathUtils.isEqual(r.path, fieldRegion.path))
     }))
     .map(({field, change}) => ({
-      hasHover: field.data.hasHover || field.data.hasHover,
-      hasFocus: field.data.hasFocus || field.data.hasFocus,
+      hasHover: field.hasHover || field.hasHover,
+      hasFocus: field.hasFocus || field.hasFocus,
       field,
       change
     }))
@@ -130,11 +141,10 @@ export function ConnectorsOverlay(props: Props) {
   const visibleConnector =
     combined.find(({field, hasHover}) => field.id === hovered || hasHover) ||
     combined.find(({hasFocus}) => hasFocus)
-
   return (
-    <div ref={trackerRef} {...rest}>
+    <div ref={trackerRef} {...rest} className={props.className}>
       <ScrollMonitor onScroll={forceUpdate}>{children}</ScrollMonitor>
-      {changesPanel &&
+      {changesPanelRect &&
         visibleConnector &&
         [visibleConnector].map(({field, change}) => {
           if (!change) {
@@ -143,11 +153,11 @@ export function ConnectorsOverlay(props: Props) {
           const changeMarkerLeft = change?.rect?.left
           const connectorFrom = {
             left: field.rect.left + field.rect.width,
-            top: field.rect.top - topEdge + 8
+            top: field.rect.top - topEdge! + 8
           }
           const connectorTo = {
             left: changeMarkerLeft,
-            top: change.rect.top - topEdge + 8
+            top: change.rect.top - topEdge! + 8
           }
 
           const clampConnectorLeft = {
@@ -164,18 +174,18 @@ export function ConnectorsOverlay(props: Props) {
               onClick={() => {
                 scrollIntoView(field?.element)
                 scrollIntoView(change?.element)
-                // props.onRequestFocusPathChange(changedField.data.path)
+                // props.onRequestFocusPathChange(changedField.path)
               }}
               className={styles.svg}
               style={{
                 pointerEvents: 'none',
                 position: 'absolute',
                 ...(DEBUG ? {backgroundColor: 'rgba(0, 100, 100, 0.2)'} : {}),
-                top: changesPanel.rect.top,
+                top: changesPanelRect.top,
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: changesPanel.rect.height,
+                height: changesPanelRect.height,
                 width: '100%'
               }}
             >
@@ -189,37 +199,37 @@ export function ConnectorsOverlay(props: Props) {
                       onMouseLeave={() => setHovered(null)}
                       clampLeft={clampConnectorLeft}
                       clampRight={clampConnectorRight}
-                      verticalCenter={verticalLineLeft + 3}
+                      verticalCenter={verticalLineLeft! + 3}
                     />
                     {/*<line*/}
-                    {/*  x1={changedField.rect.left}*/}
-                    {/*  y1={changedField.rect.bounds.top}*/}
-                    {/*  x2={changedField.rect.left + changedField.rect.width}*/}
-                    {/*  y2={changedField.rect.bounds.top}*/}
+                    {/*  x1={field.rect.left}*/}
+                    {/*  y1={field.rect.bounds.top}*/}
+                    {/*  x2={field.rect.left + field.rect.width}*/}
+                    {/*  y2={field.rect.bounds.top}*/}
                     {/*  stroke="black"*/}
                     {/*  strokeWidth={2}*/}
                     {/*/>*/}
                     {/*<line*/}
-                    {/*  x1={changedField.rect.left}*/}
+                    {/*  x1={field.rect.left}*/}
                     {/*  y1={clampConnectorLeft.top}*/}
-                    {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                    {/*  x2={field.rect.left + field.rect.width}*/}
                     {/*  y2={clampConnectorLeft.top}*/}
                     {/*  stroke="yellow"*/}
                     {/*  strokeWidth={2}*/}
                     {/*/>*/}
                     {/*<line*/}
-                    {/*  x1={changedField.rect.left}*/}
-                    {/*  y1={changedField.rect.bounds.bottom}*/}
-                    {/*  x2={changedField.rect.left + changedField.rect.width}*/}
-                    {/*  y2={changedField.rect.bounds.bottom}*/}
+                    {/*  x1={field.rect.left}*/}
+                    {/*  y1={field.rect.bounds.bottom}*/}
+                    {/*  x2={field.rect.left + field.rect.width}*/}
+                    {/*  y2={field.rect.bounds.bottom}*/}
                     {/*  stroke="black"*/}
                     {/*  strokeWidth={2}*/}
                     {/*/>*/}
 
                     {/*<line*/}
-                    {/*  x1={changedField.rect.left}*/}
+                    {/*  x1={field.rect.left}*/}
                     {/*  y1={clampConnectorLeft.bottom}*/}
-                    {/*  x2={changedField.rect.left + changedField.rect.width}*/}
+                    {/*  x2={field.rect.left + field.rect.width}*/}
                     {/*  y2={clampConnectorLeft.bottom}*/}
                     {/*  stroke="yellow"*/}
                     {/*  strokeWidth={2}*/}
