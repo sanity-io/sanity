@@ -6,7 +6,7 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff} from '../../../diff'
+import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
@@ -416,4 +416,42 @@ export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] 
     ['asc']
   )
   return nonSpans
+}
+
+export function findMarksDiff(
+  diff: ObjectDiff,
+  mark: string,
+  text: string
+): StringDiff | undefined {
+  const spanDiff =
+    diff.fields.children &&
+    diff.fields.children.action === 'changed' &&
+    diff.fields.children.type === 'array' &&
+    (diff.fields.children.items.find(
+      // TODO: could this be done better? We cant exact match on string as they may be broken apart.
+      // Check for indexOf string for now
+      item =>
+        item.diff &&
+        item.diff.type === 'object' &&
+        item.diff.fields.marks &&
+        item.diff.fields.marks.type === 'array' &&
+        item.diff.fields.text &&
+        item.diff.fields.text.type === 'string' &&
+        ((item.diff.fields.text.toValue && item.diff.fields.text.toValue.indexOf(text) > -1) ||
+          (item.diff.fields.text.fromValue &&
+            item.diff.fields.text.fromValue.indexOf(text) > -1)) &&
+        ((Array.isArray(item.diff.fields.marks.toValue) &&
+          item.diff.fields.marks.toValue.includes(mark)) ||
+          (Array.isArray(item.diff.fields.marks.fromValue) &&
+            item.diff.fields.marks.fromValue.includes(mark)))
+    )?.diff as ObjectDiff)
+  const marksDiff =
+    spanDiff &&
+    spanDiff.fields.marks &&
+    spanDiff.fields.marks.type === 'array' &&
+    spanDiff.fields.marks.action !== 'unchanged' &&
+    spanDiff.fields.marks.items.find(
+      item => item.diff.toValue === mark || item.diff.fromValue === mark
+    )?.diff
+  return marksDiff && marksDiff.type === 'string' ? marksDiff : undefined
 }

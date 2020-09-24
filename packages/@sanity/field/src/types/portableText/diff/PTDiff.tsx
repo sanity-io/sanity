@@ -14,12 +14,10 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   schemaType: ObjectSchemaType
 }) {
   const ptDiff = createPortableTextDiff(diff, schemaType)
-  const portableTextDiff = useMemo(() => {
-    if (ptDiff) {
-      return <PortableText diff={ptDiff} schemaType={schemaType} />
-    }
-    return null
-  }, [ptDiff, schemaType])
+  const portableTextDiff = useMemo(() => <PortableText diff={ptDiff} schemaType={schemaType} />, [
+    ptDiff,
+    schemaType
+  ])
   const classNames = [styles.root, styles[diff.action]].join(' ')
   return <div className={classNames}>{portableTextDiff}</div>
 }
