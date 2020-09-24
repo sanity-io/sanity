@@ -1,9 +1,9 @@
 import React from 'react'
-import {ChangeIndicatorContext} from './ChangeIndicatorContext'
-import {useReporter} from './tracker'
 import isEqual from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
+import {useReporter} from './tracker'
+import {ChangeIndicatorContext} from './ChangeIndicatorContext'
 import {ChangeBar} from './ChangeBar'
 
 const isPrimitive = value =>
@@ -32,6 +32,7 @@ const ChangeBarWrapper = (
     hasFocus: props.hasFocus,
     hasHover: hasHover
   }))
+
   return (
     <div ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <ChangeBar isChanged={props.isChanged}>{props.children}</ChangeBar>
