@@ -53,7 +53,7 @@ function PopoverDialog(props: PopoverDialogProps) {
 
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
-      if (event.shiftKey && onEscape) onEscape(event)
+      if (onEscape) onEscape(event)
     },
     [onEscape]
   )
