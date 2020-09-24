@@ -173,6 +173,7 @@ function PortableTextSanityEditor(props: Props) {
         </div>
         <ScrollContainer className={scClassNames}>
           <div className={editorWrapperClassNames}>
+            <div className={styles.blockExtras}>{blockExtras()}</div>
             <div className={editorClassNames}>
               <PortableTextEditable
                 hotkeys={hotkeys}
@@ -187,7 +188,6 @@ function PortableTextSanityEditor(props: Props) {
                 spellCheck
               />
             </div>
-            <div className={styles.blockExtras}>{blockExtras()}</div>
           </div>
         </ScrollContainer>
       </div>
