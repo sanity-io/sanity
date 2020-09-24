@@ -3,15 +3,13 @@ import {flatten, uniq} from 'lodash'
 import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} from '../types'
 import {
   ANNOTATION_SYMBOLS,
-  childIsSpan,
   createChildMap,
   getChildSchemaType,
   getDecorators,
   getInlineObjects,
   INLINE_SYMBOLS,
   isDecorator,
-  MARK_SYMBOLS,
-  UNKNOWN_TYPE_NAME
+  MARK_SYMBOLS
 } from '../helpers'
 
 import {ArrayDiff, DiffCard, ObjectDiff} from '../../../../diff'
@@ -38,21 +36,9 @@ export default function PortableText(props: Props): JSX.Element {
   const childMap = useMemo(() => createChildMap(diff.origin, schemaType), [diff, schemaType])
   const block = diff.displayValue
 
-  const inlineObjects = diff.toValue ? getInlineObjects(diff.toValue as PortableTextBlock) : []
-
-  const renderObjectTypes = {}
-
-  Object.keys(childMap)
-    .map(key => childMap[key])
-    .forEach(mapEntry => {
-      const {child} = mapEntry
-      if (!childIsSpan(child) && child._type) {
-        renderObjectTypes[child._type] = renderInlineObject
-      } else {
-        // This should not happen at this point. But have a fallback for rendering missing types anyway.
-        renderObjectTypes[UNKNOWN_TYPE_NAME] = renderInvalidInlineObjectType
-      }
-    })
+  const inlineObjects = diff.origin.toValue
+    ? getInlineObjects(diff.origin.toValue as PortableTextBlock)
+    : []
 
   const renderChild = (child: PortableTextChild) => {
     const spanSchemaType = getChildSchemaType(schemaType.fields, child)
@@ -96,7 +82,7 @@ export default function PortableText(props: Props): JSX.Element {
         } else if (isInline) {
           const indexOfSymbol = INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
           const key = inlineObjects[indexOfSymbol]?._key
-          const originChild = diff.displayValue.children.find(
+          const originChild = (diff.origin.toValue || diff.origin.fromValue).children.find(
             cld => cld._key === key
           ) as PortableTextChild
           if (key) {
@@ -106,11 +92,12 @@ export default function PortableText(props: Props): JSX.Element {
               throw new Error('Schema type required')
             }
             returnedChildren.push(
-              renderInlineObject({
-                child: originChild,
-                diff: objectDiff,
-                schemaType: objectSchemaType
-              })
+              <InlineObject
+                key={`inline-object-${child._key}`}
+                object={originChild}
+                diff={objectDiff}
+                schemaType={objectSchemaType}
+              />
             )
           }
         } else if (seg.action === 'unchanged') {
@@ -146,10 +133,6 @@ export default function PortableText(props: Props): JSX.Element {
     throw new Error("'span' schemaType not found")
   }
 
-  function renderInvalidInlineObjectType() {
-    return <span>Invalid inline object type</span>
-  }
-
   return (
     <Block block={block} diff={diff}>
       {(diff.displayValue.children || []).map(child => renderChild(child))}
@@ -177,23 +160,6 @@ function findTextAnnotationFromSegment(diff: ObjectDiff, segment: StringSegment)
     return childItem.diff.fields.text.annotation
   }
   return undefined
-}
-
-function renderInlineObject(props: {
-  child: PortableTextChild
-  schemaType: ObjectSchemaType
-  diff: ObjectDiff
-}): React.ReactNode {
-  const {child, diff, schemaType} = props
-  const inlineObjectSchemaType = getChildSchemaType(schemaType.fields, child)
-  return (
-    <InlineObject
-      key={`inline-object-${child._key}`}
-      object={child}
-      diff={diff}
-      schemaType={inlineObjectSchemaType}
-    />
-  )
 }
 
 function renderWithMarks(

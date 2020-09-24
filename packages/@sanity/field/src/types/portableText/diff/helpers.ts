@@ -189,11 +189,6 @@ export function isDecorator(name: string, schemaType: SpanTypeSchema): boolean {
   return getDecorators(schemaType).some(dec => dec.value === name)
 }
 
-export function childIsSpan(child: PortableTextChild): boolean {
-  const isObject = typeof child === 'object'
-  return isObject && typeof child._type === 'string' && child._type === 'span'
-}
-
 export function blockToSymbolizedText(
   block: PortableTextBlock | undefined | null,
   decoratorMap: MarkSymbolMap,
