@@ -28,7 +28,7 @@ export default function Decorator({
     )
   }
   if (!isRemoved) {
-    returned = <span className={`${styles[mark]}`}>{children}</span>
+    returned = <span className={`${styles[mark]}`}>{returned}</span>
   }
   return returned
 }

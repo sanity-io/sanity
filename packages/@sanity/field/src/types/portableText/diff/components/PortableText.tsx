@@ -102,7 +102,7 @@ export default function PortableText(props: Props): JSX.Element {
           }
         } else if (seg.action === 'unchanged') {
           returnedChildren.push(
-            renderWithMarks(diff, activeMarks, removedMarks, seg.text, spanSchemaType)
+            renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)
           )
         } else if (seg.action === 'removed') {
           const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg)
@@ -112,7 +112,7 @@ export default function PortableText(props: Props): JSX.Element {
               as="del"
               tooltip={{description: 'Removed text'}}
             >
-              {renderWithMarks(diff, activeMarks, removedMarks, seg.text, spanSchemaType)}
+              {renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
         } else if (seg.action === 'added') {
@@ -123,7 +123,7 @@ export default function PortableText(props: Props): JSX.Element {
               as="ins"
               tooltip={{description: 'Added text'}}
             >
-              {renderWithMarks(diff, activeMarks, removedMarks, seg.text, spanSchemaType)}
+              {renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)}
             </DiffCard>
           )
         }
@@ -163,7 +163,7 @@ function findTextAnnotationFromSegment(diff: ObjectDiff, segment: StringSegment)
 }
 
 function renderWithMarks(
-  diff: PortableTextDiff,
+  diff: ObjectDiff,
   activeMarks: string[],
   removedMarks: string[],
   text: string,
@@ -178,13 +178,13 @@ function renderWithMarks(
     allMarks.forEach(mark => {
       if (isDecorator(mark, spanSchemaType)) {
         returned = (
-          <Decorator diff={diff.origin} mark={mark} text={text}>
+          <Decorator diff={diff} mark={mark} text={text}>
             {returned}
           </Decorator>
         )
       } else {
         returned = (
-          <Annotation diff={diff.origin} mark={mark}>
+          <Annotation diff={diff} mark={mark}>
             {returned}
           </Annotation>
         )
