@@ -18,10 +18,10 @@ interface PopoverDialogProps {
   children: React.ReactNode
   color?: 'default' | 'danger'
   hasAnimation?: boolean
-  onClose?: () => void
-  onClickOutside?: () => void
-  onEscape?: (event: KeyboardEvent) => void
   onAction?: (action: DialogAction) => void
+  onClickOutside?: () => void
+  onClose?: () => void
+  onEscape?: (event: KeyboardEvent) => void
   padding?: 'none' | 'small' | 'medium' | 'large'
   placement?: Placement
   referenceElement?: HTMLElement | null
@@ -32,20 +32,20 @@ interface PopoverDialogProps {
 
 function PopoverDialog(props: PopoverDialogProps) {
   const {
-    title,
-    color,
+    actions = [],
     children,
-    actions,
+    color,
+    hasAnimation,
     onAction,
-    onClose,
     onClickOutside,
+    onClose,
     onEscape,
     padding = 'medium',
     placement = 'auto',
+    referenceElement: referenceElementProp,
     size = 'medium',
-    useOverlay = false,
-    hasAnimation,
-    referenceElement: referenceElementProp
+    title,
+    useOverlay = false
   } = props
 
   const [targetElement, setTargetElement] = useState<HTMLDivElement | null>(null)
@@ -137,7 +137,7 @@ function PopoverDialog(props: PopoverDialogProps) {
                             <div className={styles.contentWrapper}>{children}</div>
                           </div>
 
-                          {actions && actions.length > 0 && (
+                          {actions.length > 0 && (
                             <div className={styles.footer}>
                               <ButtonGrid align="end" secondary={primaryActionButtons}>
                                 {secondaryActionButtons}
