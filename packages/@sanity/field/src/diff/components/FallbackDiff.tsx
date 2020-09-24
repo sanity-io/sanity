@@ -20,6 +20,7 @@ export const FallbackDiff: DiffComponent<any> = ({diff, schemaType}) => {
       diff={diff}
       schemaType={schemaType}
       previewComponent={FallbackPreview}
+      cardClassName={styles.card}
       layout="grid"
     />
   )

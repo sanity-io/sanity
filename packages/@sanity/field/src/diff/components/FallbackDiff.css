@@ -3,3 +3,7 @@
 .root {
   padding: var(--small-padding);
 }
+
+.card {
+  display: block;
+}
