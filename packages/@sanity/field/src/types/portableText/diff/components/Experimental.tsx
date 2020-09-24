@@ -169,9 +169,12 @@ export default function Experimental(props: Props): JSX.Element {
     text: string,
     spanSchemaType: SchemaType
   ) => {
+    if (text === '\n') {
+      return <br />
+    }
+    let returned = <>{text}</>
     const allMarks = uniq([...activeMarks, ...removedMarks]).sort()
     if (allMarks.length) {
-      let returned = <>{text}</>
       allMarks.forEach(mark => {
         if (isDecorator(mark, spanSchemaType)) {
           returned = renderDecorator(mark, text, returned)
@@ -179,9 +182,8 @@ export default function Experimental(props: Props): JSX.Element {
           returned = renderAnnotation(mark, block, returned)
         }
       })
-      return returned
     }
-    return text
+    return returned
   }
 
   const renderChild = (child: PortableTextChild) => {
