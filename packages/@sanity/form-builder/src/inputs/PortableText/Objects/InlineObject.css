@@ -2,15 +2,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: inline-block;
+  display: inline-flex;
   position: relative;
   padding: 0;
-  margin: 0 1px; /* Allow cursor to show in nearby text */
+  max-width: 120px;
 }
 
 .previewContainer {
   position: relative;
-  display: inline;
+  display: inline-block;;
   cursor: move;
   box-sizing: border-box;
   background-color: var(--form-builder-block-background);
@@ -18,6 +18,9 @@
   border-radius: 2px;
   pointer-events: none;
   box-shadow: inset 0 0 0 1px var(--hairline-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .previewContainer:hover {
