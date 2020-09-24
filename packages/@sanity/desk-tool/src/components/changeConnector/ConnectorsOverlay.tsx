@@ -12,16 +12,13 @@ import {
   TrackedChange,
   TrackedArea
 } from '@sanity/base/lib/change-indicators'
+import {Path} from '@sanity/types'
+
 export interface Rect {
   height: number
   width: number
   top: number
   left: number
-}
-
-interface Props {
-  children?: React.ReactNode
-  className?: string
 }
 
 const DEBUG = false
@@ -93,6 +90,11 @@ function scrollIntoView(element) {
 const ADJUST_MARGIN_TOP = 10
 const ADJUST_MARGIN_BOTTOM = -10
 
+interface Props {
+  children?: React.ReactNode
+  className?: string
+  onSetFocus: (nextFocusPath: Path) => void
+}
 export function ConnectorsOverlay(props: Props) {
   const {children, ...rest} = props
 
@@ -175,9 +177,8 @@ export function ConnectorsOverlay(props: Props) {
             <svg
               key={field.id}
               onClick={() => {
-                scrollIntoView(field?.element)
+                props.onSetFocus(field.path)
                 scrollIntoView(change?.element)
-                // props.onRequestFocusPathChange(changedField.path)
               }}
               className={styles.svg}
               style={{

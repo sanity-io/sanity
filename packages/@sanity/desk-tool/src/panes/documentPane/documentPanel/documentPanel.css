@@ -42,6 +42,7 @@
 .documentScroller {
   height: 100%;
   position: relative;
+  scroll-behavior: smooth;
 
   @media (--screen-medium) {
     height: 100%;

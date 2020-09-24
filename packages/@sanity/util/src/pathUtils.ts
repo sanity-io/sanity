@@ -85,7 +85,7 @@ export function hasItemFocus(focusPath: Path, item: PathSegment): boolean {
   return focusPath.length === 1 && isSegmentEqual(focusPath[0], item)
 }
 
-export function isExpanded(segment: PathSegment, focusPath: Path): boolean {
+ export function isExpanded(segment: PathSegment, focusPath: Path): boolean {
   const [head, ...tail] = focusPath
   return tail.length > 0 && isSegmentEqual(segment, head)
 }
