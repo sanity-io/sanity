@@ -1,33 +1,6 @@
-import React, {createElement, forwardRef, useCallback, useEffect, useContext, useRef} from 'react'
-
-type ScrollEventHandler = (event: Event) => void
-interface ScrollContextValue {
-  onScroll?: ScrollEventHandler
-}
-
-export const Context = React.createContext<ScrollContextValue>({})
-
-export function ScrollMonitor({
-  onScroll,
-  children
-}: {
-  onScroll: ScrollEventHandler
-  children?: React.ReactNode
-}) {
-  const parentContext = React.useContext(Context)
-  const handleScroll = React.useCallback(
-    (event: Event) => {
-      onScroll(event)
-
-      if (parentContext.onScroll) {
-        parentContext.onScroll(event)
-      }
-    },
-    [parentContext, onScroll]
-  )
-
-  return <Context.Provider value={{onScroll: handleScroll}}>{children}</Context.Provider>
-}
+import React, {createElement, forwardRef, useCallback, useEffect, useRef} from 'react'
+import {useScroll} from './hooks'
+import {ScrollEventHandler} from './types'
 
 interface ScrollContainerProps {
   as?: React.ElementType | keyof JSX.IntrinsicElements
@@ -44,7 +17,7 @@ export const ScrollContainer = forwardRef(
   (props: ScrollContainerProps & Omit<React.HTMLProps<HTMLElement>, 'onScroll'>, ref) => {
     const {as = 'div', onScroll, ...restProps} = props
     const rootRef = useRef<HTMLElement | null>(null)
-    const parentContext = useContext(Context)
+    const parentContext = useScroll()
 
     const handleScroll = useCallback(
       (event: Event) => {
