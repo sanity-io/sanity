@@ -3,6 +3,12 @@
 .root {
 }
 
+.changeList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: 2em;
+}
+
 .footer {
   margin-top: 2em;
 }

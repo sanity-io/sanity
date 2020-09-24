@@ -1,9 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  @nest div + & {
-    margin-top: var(--extra-large-padding);
-  }
 }
 
 .error {
@@ -12,7 +9,6 @@
 
 .header {
   padding: 0 0 var(--extra-small-padding);
-  margin-left: -1px;
 }
 
 .change {
