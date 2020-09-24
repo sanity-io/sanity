@@ -181,10 +181,6 @@
   display: flex;
   flex-direction: column;
 
-  /* @nest .fullscreenPortal & {
-    margin-bottom: var(--medium-padding);
-  } */
-
   @nest .readOnly & {
     background-color: var(--input-bg-disabled);
     color: var(--input-color-read-only);
@@ -275,6 +271,12 @@
 
   @nest .fullscreenPortal & {
     width: calc(100% - var(--block-extras-width));
+  }
+
+  @nest &:not(.hasBlockExtras) {
+    @nest .fullscreenPortal & {
+      width: 100%;
+    }
   }
 }
 
