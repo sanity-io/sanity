@@ -25,6 +25,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const {path} = React.useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = React.useState(false)
+  const [confirmRevertAllHover, setConfirmRevertAllHover] = React.useState(false)
 
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
@@ -48,6 +49,14 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     setConfirmRevertAllOpen(true)
   }, [])
 
+  const handleRevertAllChangesMouseEnter = React.useCallback(() => {
+    setConfirmRevertAllHover(true)
+  }, [])
+
+  const handleRevertAllChangesMouseLeave = React.useCallback(() => {
+    setConfirmRevertAllHover(false)
+  }, [])
+
   const closeRevertAllChangesConfirmDialog = React.useCallback(() => {
     setConfirmRevertAllOpen(false)
   }, [])
@@ -64,13 +73,18 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     return isRoot ? <NoChanges /> : null
   }
 
+  const showFooter = path.length === 0 && changes.length > 1
+
   return (
-    <>
+    <div
+      className={styles.root}
+      data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
+    >
       {changes.map(change => (
         <ChangeResolver change={change} key={change.key} />
       ))}
 
-      {path.length === 0 && changes.length > 1 && (
+      {showFooter && (
         <div className={styles.footer}>
           <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
             <Button
@@ -78,6 +92,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               icon={UndoIcon}
               kind="secondary"
               onClick={handleRevertAllChangesClick}
+              onMouseEnter={handleRevertAllChangesMouseEnter}
+              onMouseLeave={handleRevertAllChangesMouseLeave}
               // selected={confirmRevertAllOpen}
             >
               Revert all changes
@@ -109,7 +125,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

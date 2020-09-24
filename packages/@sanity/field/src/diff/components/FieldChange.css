@@ -33,6 +33,10 @@
     border-left: 2px solid var(--gray-light);
   }
 
+  @nest [data-revert-all-changes-hover] &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
   @nest .revertHovered &::before {
     border-left: 2px solid var(--state-danger-color);
   }
