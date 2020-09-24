@@ -12,6 +12,7 @@ import {
   TrackedChange,
   TrackedArea
 } from '@sanity/base/lib/change-indicators'
+import {VERTICAL_CONNECTOR_PADDING} from './constants'
 export interface Rect {
   height: number
   width: number
@@ -151,26 +152,45 @@ export function ConnectorsOverlay(props: Props) {
             return null
           }
           const changeMarkerLeft = change?.rect?.left
-          const connectorFrom = {
-            left: field.rect.left + field.rect.width,
-            top: field.rect.top - topEdge! + 8
-          }
-          const connectorTo = {
-            left: changeMarkerLeft,
-            top: change.rect.top - topEdge! + 8
+
+          const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
+          const fieldBottom = field.rect.top + field.rect.height - VERTICAL_CONNECTOR_PADDING
+          const changeTop = change.rect.top + VERTICAL_CONNECTOR_PADDING
+          const changeBottom = change.rect.top + change.rect.height - VERTICAL_CONNECTOR_PADDING
+
+          let connectorFromTop
+          let connectorToTop
+
+          if (fieldBottom < changeTop) {
+            connectorFromTop = fieldBottom
+            connectorToTop = changeTop
+          } else if (fieldTop > changeBottom) {
+            connectorFromTop = fieldTop
+            connectorToTop = changeBottom
+          } else {
+            connectorFromTop = Math.max(fieldTop, changeTop)
+            connectorToTop = Math.max(fieldTop, changeTop)
           }
 
-          const clampConnectorLeft = {
+          const connectorFrom = {
+            left: field.rect.left + field.rect.width,
+            top: connectorFromTop
+          }
+
+          const connectorTo = {
+            left: changeMarkerLeft,
+            top: connectorToTop
+          }
+
+          const clampConnector = {
             top: field.rect.bounds.top + ADJUST_MARGIN_TOP,
-            bottom: field.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM - 14 // todo: fix issue with clamping bottom in the connector
+            bottom: field.rect.bounds.bottom - ADJUST_MARGIN_TOP
           }
-          const clampConnectorRight = {
-            top: change.rect.bounds.top + ADJUST_MARGIN_TOP,
-            bottom: change.rect.bounds.bottom + ADJUST_MARGIN_BOTTOM - 14
-          }
+
           const connectorClassName = change.hasRevertHover
             ? styles.dangerConnector
             : styles.connector
+
           return (
             <svg
               key={field.id}
@@ -200,88 +220,60 @@ export function ConnectorsOverlay(props: Props) {
                       to={connectorTo}
                       onMouseEnter={() => setHovered(visibleConnector.field.id)}
                       onMouseLeave={() => setHovered(null)}
-                      clampLeft={clampConnectorLeft}
-                      clampRight={clampConnectorRight}
+                      clampLeft={clampConnector}
+                      clampRight={clampConnector}
                       verticalCenter={verticalLineLeft! + 3}
                       className={connectorClassName}
                     />
-                    {/*<line*/}
-                    {/*  x1={field.rect.left}*/}
-                    {/*  y1={field.rect.bounds.top}*/}
-                    {/*  x2={field.rect.left + field.rect.width}*/}
-                    {/*  y2={field.rect.bounds.top}*/}
-                    {/*  stroke="black"*/}
-                    {/*  strokeWidth={2}*/}
-                    {/*/>*/}
-                    {/*<line*/}
-                    {/*  x1={field.rect.left}*/}
-                    {/*  y1={clampConnectorLeft.top}*/}
-                    {/*  x2={field.rect.left + field.rect.width}*/}
-                    {/*  y2={clampConnectorLeft.top}*/}
-                    {/*  stroke="yellow"*/}
-                    {/*  strokeWidth={2}*/}
-                    {/*/>*/}
-                    {/*<line*/}
-                    {/*  x1={field.rect.left}*/}
-                    {/*  y1={field.rect.bounds.bottom}*/}
-                    {/*  x2={field.rect.left + field.rect.width}*/}
-                    {/*  y2={field.rect.bounds.bottom}*/}
-                    {/*  stroke="black"*/}
-                    {/*  strokeWidth={2}*/}
-                    {/*/>*/}
 
-                    {/*<line*/}
-                    {/*  x1={field.rect.left}*/}
-                    {/*  y1={clampConnectorLeft.bottom}*/}
-                    {/*  x2={field.rect.left + field.rect.width}*/}
-                    {/*  y2={clampConnectorLeft.bottom}*/}
-                    {/*  stroke="yellow"*/}
-                    {/*  strokeWidth={2}*/}
-                    {/*/>*/}
                     {/* arrow left top */}
-                    {connectorFrom.top + field.rect.height - 8 < clampConnectorLeft.top && (
+                    {fieldBottom <= clampConnector.top && (
                       <Arrow
                         className={connectorClassName}
-                        top={Math.max(clampConnectorLeft.top)}
+                        top={clampConnector.top}
                         left={connectorFrom.left}
                         length={5}
                         wingLength={8}
                         direction="n"
                       />
                     )}
+
                     {/* arrow left bottom */}
-                    {connectorFrom.top > field.rect.bounds.bottom - 5 && (
+                    {fieldTop >= clampConnector.bottom && (
                       <Arrow
                         className={connectorClassName}
-                        top={field.rect.bounds.bottom - 5}
+                        top={clampConnector.bottom}
                         left={connectorFrom.left}
                         length={5}
                         wingLength={8}
                         direction="s"
                       />
                     )}
+
                     {/* arrow right top */}
-                    {connectorTo.top + change.rect.height - 8 < clampConnectorRight.top && (
+                    {changeBottom <= clampConnector.top && (
                       <Arrow
                         className={connectorClassName}
-                        top={Math.max(clampConnectorRight.top)}
+                        top={clampConnector.top}
                         left={connectorTo.left}
                         length={5}
                         wingLength={8}
                         direction="n"
                       />
                     )}
+
                     {/* arrow right bottom */}
-                    {connectorTo.top > change.rect.bounds.bottom - 5 && (
+                    {changeTop > clampConnector.bottom && (
                       <Arrow
                         className={connectorClassName}
-                        top={change.rect.bounds.bottom - 5}
+                        top={clampConnector.bottom}
                         left={connectorTo.left}
                         length={5}
                         wingLength={8}
                         direction="s"
                       />
                     )}
+
                     {/* this is the bar marking the line in the changes panel */}
                     <path
                       className={connectorClassName}
@@ -291,15 +283,15 @@ export function ConnectorsOverlay(props: Props) {
                           Math.max(
                             change.rect.bounds.top,
                             Math.min(
-                              connectorTo.top + change.rect.bounds.bottom - 19 - 8,
-                              connectorTo.top - 8
+                              change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
+                              change.rect.top - topEdge!
                             )
                           ),
                           Math.max(
                             change.rect.bounds.top,
                             Math.min(
-                              connectorTo.top + change.rect.bounds.bottom - 19 - 8,
-                              connectorTo.top - 8 + change.rect.height
+                              change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
+                              change.rect.top - topEdge! + change.rect.height
                             )
                           )
                         )

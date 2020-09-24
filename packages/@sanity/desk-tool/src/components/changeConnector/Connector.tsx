@@ -45,11 +45,11 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
       : from.left + (to.left - from.left) / 2
 
   const clampedFromTop = Math.min(
-    clampLeft.bottom + CORNER_RADIUS,
+    clampLeft.bottom - CORNER_RADIUS,
     Math.max(from.top, clampLeft.top + CORNER_RADIUS)
   )
   const clampedToTop = Math.min(
-    clampRight.bottom + CORNER_RADIUS,
+    clampRight.bottom - CORNER_RADIUS,
     Math.max(to.top, clampRight.top + CORNER_RADIUS)
   )
 

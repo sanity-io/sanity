@@ -1,0 +1,1 @@
+export const VERTICAL_CONNECTOR_PADDING = 8
