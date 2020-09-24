@@ -3,6 +3,7 @@ import {Portal} from 'part:@sanity/components/portal'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {TooltipArrow} from './tooltipArrow'
+import {useTooltip} from './hooks'
 import {TooltipPlacement} from './types'
 
 import styles from './tooltip.css'
@@ -30,6 +31,7 @@ export function Tooltip(
     tone,
     ...restProps
   } = props
+  const ctx = useTooltip()
   const leaveRafRef = useRef<number | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -48,7 +50,7 @@ export function Tooltip(
         name: 'preventOverflow',
         options: {
           altAxis: true,
-          rootBoundary: 'viewport',
+          boundary: ctx.boundaryElement || undefined,
           padding: 4
         }
       },
