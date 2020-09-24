@@ -157,9 +157,9 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                   onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
                 >
                   <div
-                    tabIndex={-1}
+                    className={styles.labelContainer}
                     onClick={isCollapsible ? this.handleToggle : undefined}
-                    style={{outline: 'none', display: 'flex', alignItems: 'center'}}
+                    tabIndex={-1}
                   >
                     {isCollapsible && (
                       <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
@@ -171,6 +171,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                     </DefaultLabel>
                   </div>
                   <ValidationStatus
+                    className={styles.validationStatus}
                     markers={
                       showSummary
                         ? validation.filter(marker => marker.path.length <= level)
