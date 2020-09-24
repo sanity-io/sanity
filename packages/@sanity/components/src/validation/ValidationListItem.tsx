@@ -2,6 +2,7 @@ import {Marker, Path} from '@sanity/types'
 import classNames from 'classnames'
 import React, {useRef, useEffect, useCallback} from 'react'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
+import WarningOutlineIcon from 'part:@sanity/base/warning-outline-icon'
 
 import styles from './ValidationListItem.css'
 
@@ -46,7 +47,8 @@ function ValidationListItem(props: ValidationListItemProps) {
   const children = (
     <>
       <span className={styles.icon}>
-        <ErrorOutlineIcon />
+        {marker.level === 'error' && <ErrorOutlineIcon />}
+        {marker.level === 'warning' && <WarningOutlineIcon />}
       </span>
 
       <div className={styles.content}>
@@ -59,7 +61,8 @@ function ValidationListItem(props: ValidationListItemProps) {
   const className = classNames(
     hasOnClick ? styles.interactive : styles.root,
     marker.level && styles[marker.level],
-    truncate && styles.truncate
+    truncate && styles.truncate,
+    styles[`kind_${kind}`]
   )
 
   if (!hasOnClick) {
@@ -73,7 +76,7 @@ function ValidationListItem(props: ValidationListItemProps) {
   return (
     // @todo: use a <button> element
     <div
-      data-item-type={kind}
+      // data-item-type={kind}
       ref={rootRef}
       tabIndex={0}
       onClick={handleClick}
