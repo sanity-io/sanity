@@ -30,10 +30,11 @@ function insertAt(arr, index, item) {
   copy.splice(index + 1, 0, item)
   return copy
 }
-
+type Primitive = string | number | boolean
 type Props = {
   type: Type
-  value: Array<string | number | boolean>
+  value: Primitive[]
+  compareValue?: Primitive[]
   level: number
   onChange: (event: PatchEvent) => void
   onFocus: (arg0: Path) => void
@@ -112,6 +113,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       level,
       markers,
       value,
+      compareValue,
       focusPath,
       onChange,
       onFocus,
@@ -134,6 +136,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           level={level + 1}
           index={index}
           value={item}
+          compareValue={compareValue}
           readOnly={readOnly}
           markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
           isSortable={isSortable}
