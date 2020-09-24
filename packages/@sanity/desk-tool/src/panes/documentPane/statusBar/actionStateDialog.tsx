@@ -99,6 +99,7 @@ export function ActionStateDialog(props: Props) {
         hasAnimation
         onAction={handleDialogAction}
         onClickOutside={dialog.onCancel}
+        onEscape={dialog.onCancel}
         placement="auto-end"
         referenceElement={referenceElement}
         size="small"
@@ -127,6 +128,7 @@ export function ActionStateDialog(props: Props) {
     return (
       <PopoverDialog
         onClickOutside={dialog.onClose}
+        onEscape={dialog.onClose}
         placement="auto-end"
         useOverlay={false}
         hasAnimation
