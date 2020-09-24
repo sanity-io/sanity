@@ -1,4 +1,4 @@
 export * from './hooks'
-export * from './ScrollContainer'
+export * from './scrollContainer'
 export * from './scrollMonitor'
 export * from './types'
