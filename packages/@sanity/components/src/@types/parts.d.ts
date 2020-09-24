@@ -316,6 +316,9 @@ declare module 'part:@sanity/base/visibility-icon' {
 declare module 'part:@sanity/base/warning-icon' {
   export {default} from '@sanity/base/src/components/icons/Warning'
 }
+declare module 'part:@sanity/base/warning-outline-icon' {
+  export {default} from '@sanity/base/src/components/icons/WarningOutline'
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Because `@sanity/components` depends on `@sanity/base` we need these "ambient" definitions

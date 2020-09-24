@@ -148,6 +148,16 @@
   cursor: default;
 }
 
+.labelContainer {
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.validationStatus {
+  margin: -5px 0 -4px;
+}
+
 .label {
   padding-right: var(--small-padding);
 }
