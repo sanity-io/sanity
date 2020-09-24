@@ -10,7 +10,7 @@ export function NoChanges() {
 
         <div className={styles.content}>
           <p>
-            Either edit the document or change the selection in the timeline menu to see the changes
+            Edit the document or select an older version in the timeline to see a list of changes
             appear in this panel.
           </p>
         </div>

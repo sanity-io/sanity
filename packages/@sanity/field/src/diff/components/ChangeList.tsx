@@ -120,9 +120,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               referenceElement={revertAllContainerElement}
               size="small"
             >
-              <div className={styles.confirmPopoverContent}>
-                Are you sure you want to revert all {changes.length} changes?
-              </div>
+              Are you sure you want to revert all {changes.length} changes?
             </PopoverDialog>
           )}
         </div>
