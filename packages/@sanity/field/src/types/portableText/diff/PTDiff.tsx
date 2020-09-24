@@ -1,9 +1,8 @@
 import React, {useMemo} from 'react'
 
 import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../../diff'
-import Block from './components/Block'
-import Experimental from './components/Experimental'
-import {createChildMap, prepareDiffForPortableText} from './helpers'
+import PortableText from './components/PortableText'
+import {createPortableTextDiff} from './helpers'
 
 import styles from './PTDiff.css'
 
@@ -14,29 +13,13 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff: ObjectDiff
   schemaType: ObjectSchemaType
 }) {
-  const [ptDiff, experimentalDiff] = prepareDiffForPortableText(diff, schemaType)
-  const childMap = useMemo(() => createChildMap(ptDiff, schemaType), [ptDiff, schemaType])
-  const portableTextDiff = useMemo(
-    () => <Block diff={ptDiff} childMap={childMap} ptSchemaType={schemaType} />,
-    [ptDiff, childMap]
-  )
-  const experimentalPortableTextDiff = useMemo(() => {
-    if (experimentalDiff) {
-      return (
-        <Experimental
-          diff={ptDiff}
-          childMap={childMap}
-          experimentalDiff={experimentalDiff}
-          schemaType={schemaType}
-        />
-      )
+  const ptDiff = createPortableTextDiff(diff, schemaType)
+  const portableTextDiff = useMemo(() => {
+    if (ptDiff) {
+      return <PortableText diff={ptDiff} schemaType={schemaType} />
     }
     return null
-  }, [childMap, experimentalDiff, ptDiff, schemaType])
+  }, [ptDiff, schemaType])
   const classNames = [styles.root, styles[diff.action]].join(' ')
-  return (
-    <div className={classNames}>
-      {experimentalPortableTextDiff ? experimentalPortableTextDiff : portableTextDiff}
-    </div>
-  )
+  return <div className={classNames}>{portableTextDiff}</div>
 }
