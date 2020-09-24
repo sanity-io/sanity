@@ -29,6 +29,7 @@ type Props = {
   markers: Array<Marker>
   index: number
   value: string | number | boolean
+  compareValue?: (string | number | boolean)[]
   isSortable: boolean
   readOnly: boolean | null
   level: number
@@ -73,6 +74,7 @@ export default class Item extends React.PureComponent<Props> {
       focusPath,
       onFocus,
       onBlur,
+      compareValue,
       type,
       readOnly,
       isSortable,
@@ -86,6 +88,7 @@ export default class Item extends React.PureComponent<Props> {
             <FormBuilderInput
               value={value}
               path={[index]}
+              compareValue={compareValue}
               markers={markers}
               focusPath={focusPath}
               onFocus={onFocus}
