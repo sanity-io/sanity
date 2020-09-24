@@ -2,7 +2,6 @@
 import React, {FunctionComponent} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
-import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
@@ -20,7 +19,6 @@ interface Props {
   onClose: (event: React.SyntheticEvent) => void
   onFocus: (arg0: Path) => void
   path: Path
-  popoverReferenceElement: React.MutableRefObject<HTMLElement>
   presence: FormFieldPresence[]
   readOnly: boolean
   type: Type
@@ -37,39 +35,35 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   path,
   presence,
   readOnly,
-  popoverReferenceElement,
   type
 }) => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
+  const refElement = document.querySelectorAll(`[data-pte-key="${object._key}"]`)[0] as HTMLElement
   return (
-    <Stacked>
-      {() => (
-        <Popover
-          placement="bottom"
-          referenceElement={popoverReferenceElement.current}
-          onClickOutside={onClose}
-          onEscape={onClose}
-          onClose={onClose}
-          title={type.title}
-          size="small"
-        >
-          <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <FormBuilderInput
-              focusPath={focusPath}
-              level={0}
-              markers={markers}
-              onBlur={onBlur}
-              onChange={handleChange}
-              onFocus={onFocus}
-              path={path}
-              presence={presence}
-              readOnly={readOnly || type.readOnly}
-              type={type as FormBuilderType}
-              value={object}
-            />
-          </PresenceOverlay>
-        </Popover>
-      )}
-    </Stacked>
+    <Popover
+      placement="bottom"
+      referenceElement={refElement}
+      onClickOutside={onClose}
+      onEscape={onClose}
+      onClose={onClose}
+      title={type.title}
+      size="small"
+    >
+      <PresenceOverlay margins={[0, 0, 1, 0]}>
+        <FormBuilderInput
+          focusPath={focusPath}
+          level={0}
+          markers={markers}
+          onBlur={onBlur}
+          onChange={handleChange}
+          onFocus={onFocus}
+          path={path}
+          presence={presence}
+          readOnly={readOnly || type.readOnly}
+          type={type as FormBuilderType}
+          value={object}
+        />
+      </PresenceOverlay>
+    </Popover>
   )
 }
