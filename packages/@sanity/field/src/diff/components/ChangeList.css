@@ -1,5 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+}
+
 .footer {
   margin-top: 2em;
 }

@@ -17,6 +17,10 @@
     bottom: 0;
     border-left: 1px solid var(--gray-lighter);
   }
+
+  @nest [data-revert-all-changes-hover] &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
 }
 
 .changeListOutlined {
