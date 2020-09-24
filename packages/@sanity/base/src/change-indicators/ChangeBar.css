@@ -2,6 +2,8 @@
 
 :root {
   --change-bar-changed-color: var(--state-warning-color);
+  --change-bar-changed-focus-color: var(--focus-color);
+  --change-bar-changed-badge-animation-duration: 150ms;
 }
 
 .root {
@@ -19,7 +21,7 @@
   opacity: 1;
   transition: opacity 100ms;
 
-  @nest .root:not([data-changed]) > & {
+  @nest .root:not(.changed) > & {
     opacity: 0;
     pointer-events: none;
   }
@@ -31,9 +33,13 @@
   left: -1px;
   width: 2px;
   bottom: 0;
-  background: var(--change-bar-changed-color);
+  background-color: var(--change-bar-changed-color);
   border-bottom-right-radius: 2px;
   border-top-right-radius: 2px;
+
+  @nest .root.focus > .wrapper > & {
+    background-color: var(--change-bar-changed-focus-color);
+  }
 }
 
 .badge {
@@ -45,10 +51,20 @@
   height: 19px;
   border-radius: 9.5px;
   transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
-  transition: transform 100ms;
+  transition: transform var(--change-bar-changed-badge-animation-duration),
+    opacity var(--change-bar-changed-badge-animation-duration);
 
-  @nest .root[data-hover] > .wrapper > & {
+  @nest .root.hover > .wrapper > & {
     transform: translate3d(-0.5px, -10px, 0) scale(1);
+  }
+
+  @nest .root.reviewChangesOpen > .wrapper > & {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @nest .root.focus > .wrapper > & {
+    background-color: var(--change-bar-changed-focus-color);
   }
 }
 
@@ -59,6 +75,10 @@
   height: 27px;
   transform: translate3d(-0.5px, -4px, 0);
   color: var(--change-bar-changed-color);
+
+  @nest .root.focus > .wrapper > .badge > & {
+    color: var(--change-bar-changed-focus-color);
+  }
 }
 
 .badge__icon {
@@ -67,6 +87,12 @@
   margin: 1px;
   font-size: calc(17 / 16 * 1rem);
   color: var(--component-bg);
+  opacity: 0;
+  transition: opacity var(--change-bar-changed-badge-animation-duration);
+
+  @nest .root.hover > .wrapper > .badge > & {
+    opacity: 1;
+  }
 }
 
 .hitArea {

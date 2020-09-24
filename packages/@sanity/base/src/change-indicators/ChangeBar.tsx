@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import React, {useCallback, useState} from 'react'
 import {ConnectorContext} from './ChangeIndicatorContext'
@@ -36,7 +37,7 @@ function EditIconSmall(props: Omit<React.SVGProps<SVGElement>, 'ref'>) {
 }
 
 export const ChangeBar = React.forwardRef(
-  (props: {isChanged: boolean; children: React.ReactNode}, ref: any) => {
+  (props: {hasFocus: boolean; isChanged: boolean; children: React.ReactNode}, ref: any) => {
     const [hover, setHover] = useState(false)
     const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
 
@@ -52,13 +53,21 @@ export const ChangeBar = React.forwardRef(
     return (
       <div
         ref={ref}
-        className={styles.root}
-        data-changed={props.isChanged ? '' : undefined}
-        data-hover={hover ? '' : undefined}
+        className={classNames(
+          styles.root,
+          hover && styles.hover,
+          props.hasFocus && styles.focus,
+          props.isChanged && styles.changed,
+          isReviewChangesOpen && styles.reviewChangesOpen
+        )}
       >
         <div className={styles.field}>{props.children}</div>
 
-        <Tooltip content={tooltipContent} disabled={!props.isChanged} placement="top">
+        <Tooltip
+          content={tooltipContent}
+          disabled={!props.isChanged || isReviewChangesOpen}
+          placement="top"
+        >
           <div className={styles.wrapper}>
             <div className={styles.bar} />
 
