@@ -940,6 +940,10 @@
       "path": "components/icons/Warning"
     },
     {
+      "implements": "part:@sanity/base/warning-outline-icon",
+      "path": "components/icons/WarningOutline"
+    },
+    {
       "implements": "part:@sanity/base/danger-icon",
       "path": "components/icons/Danger"
     },
