@@ -178,7 +178,7 @@ export default function Block(props: Props): JSX.Element {
         key={`inline-object-${cProps.child._key}`}
         object={cProps.child}
         diff={cProps.diff}
-        onClick={handleObjectFocus}
+        // onClick={handleObjectFocus}
         schemaType={inlineObjectSchemaType}
       />
     )
