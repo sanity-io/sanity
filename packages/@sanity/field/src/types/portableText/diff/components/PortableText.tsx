@@ -4,6 +4,7 @@ import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} f
 import {
   ANNOTATION_SYMBOLS,
   createChildMap,
+  findMarksDiff,
   getChildSchemaType,
   getDecorators,
   getInlineObjects,
@@ -173,21 +174,30 @@ function renderWithMarks(
     return <br />
   }
   let returned = <>{text}</>
-  const allMarks = uniq([...activeMarks, ...removedMarks]).sort()
+  const allMarks = uniq([...activeMarks, ...removedMarks])
   if (allMarks.length) {
     allMarks.forEach(mark => {
       if (isDecorator(mark, spanSchemaType)) {
+        const marksDiff = findMarksDiff(diff, mark, text)
         returned = (
-          <Decorator diff={diff} mark={mark} text={text}>
+          <Decorator diff={marksDiff} mark={mark} text={text}>
             {returned}
           </Decorator>
         )
       } else {
-        returned = (
-          <Annotation diff={diff} mark={mark}>
-            {returned}
-          </Annotation>
-        )
+        const annotationDiff =
+          ((diff.fields.markDefs &&
+            diff.fields.markDefs.isChanged &&
+            diff.fields.markDefs.type === 'array' &&
+            diff.fields.markDefs.items.find(
+              item =>
+                item.diff &&
+                item.diff.type === 'object' &&
+                item.diff.toValue &&
+                item.diff.toValue._key &&
+                item.diff.toValue._key === mark
+            )?.diff) as ObjectDiff) || undefined
+        returned = <Annotation diff={annotationDiff}>{returned}</Annotation>
       }
     })
   }
