@@ -90,7 +90,7 @@ const startMarkSymbols = MARK_SYMBOLS.map(set => set[0]).concat(
 )
 const endMarkSymbols = MARK_SYMBOLS.map(set => set[1]).concat(ANNOTATION_SYMBOLS.map(set => set[1]))
 const allSymbols = startMarkSymbols.concat(endMarkSymbols).concat(INLINE_SYMBOLS)
-const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
+const symbolRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
