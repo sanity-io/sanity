@@ -1,34 +1,43 @@
-import React, {SyntheticEvent} from 'react'
-import {PortableTextBlock, PortableTextChild} from '../types'
+import React from 'react'
+import {DiffCard, ObjectDiff} from '../../../../diff'
 import styles from './Annotation.css'
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {}
-
-type Props = {
-  // eslint-disable-next-line react/no-unused-prop-types
-  block?: PortableTextBlock
-  children: React.ReactNode
-  // eslint-disable-next-line react/no-unused-prop-types
-  markDefKey: string
-  onClick?: (event: SyntheticEvent<HTMLSpanElement>) => void
-  // eslint-disable-next-line react/no-unused-prop-types
-  span?: PortableTextChild
-}
-
-export default function Annotation(props: Props): JSX.Element {
-  const {onClick} = props
-
-  // Click handler
-  const handleClick = onClick
-    ? (event: SyntheticEvent<HTMLSpanElement>) => {
-        onClick(event)
-      }
-    : noop
-
-  return (
-    <span className={styles.root} onClick={handleClick}>
-      {props.children}
+export default function Annotation({
+  diff,
+  mark,
+  children
+}: {
+  diff: ObjectDiff
+  mark: string
+  children: JSX.Element
+}) {
+  let returned = children
+  const annotationDiff =
+    diff.fields.markDefs &&
+    diff.fields.markDefs.isChanged &&
+    diff.fields.markDefs.type === 'array' &&
+    diff.fields.markDefs.items.find(
+      item =>
+        item.diff &&
+        item.diff.type === 'object' &&
+        item.diff.toValue &&
+        item.diff.toValue._key &&
+        item.diff.toValue._key === mark
+    )?.diff
+  returned = (
+    <span className={styles.root}>
+      {annotationDiff && annotationDiff.action !== 'unchanged' ? (
+        <DiffCard
+          annotation={annotationDiff.annotation}
+          as="ins"
+          tooltip={{description: `Annotation ${annotationDiff.action} by`}}
+        >
+          {returned}
+        </DiffCard>
+      ) : (
+        returned
+      )}
     </span>
   )
+  return returned
 }

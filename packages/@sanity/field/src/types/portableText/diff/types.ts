@@ -23,11 +23,10 @@ export type ChildMap = Record<
   {
     child: PortableTextChild
     diff: ObjectDiff | ArrayDiff
-    summary: string[]
     schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
   }
 >
-export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock}
+export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock; origin: ObjectDiff}
 
 export type MarkSymbolMap = Record<string, string[]>
 

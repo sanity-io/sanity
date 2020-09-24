@@ -1,12 +1,12 @@
-import {flatten, startCase, orderBy} from 'lodash'
-import {Block, SchemaType} from '@sanity/types'
+import {flatten, orderBy} from 'lodash'
+import {Block, ObjectField, SchemaType} from '@sanity/types'
 import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
+import {ArrayDiff, ObjectDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
@@ -100,63 +100,23 @@ export function isHeader(node: PortableTextBlock): boolean {
   return !!node.style && ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(node.style)
 }
 
-export function createChildMap(
-  blockDiff: PortableTextDiff,
-  schemaType: ObjectSchemaType
-): ChildMap {
+export function createChildMap(origin: ObjectDiff, schemaType: ObjectSchemaType): ChildMap {
   // Create a map from span to diff
-  const block = blockDiff.displayValue
+  const block = origin.toValue || origin.fromValue
   // Add removed children
   const childMap: ChildMap = {}
   const children = block.children || []
-  // eslint-disable-next-line complexity
   children.forEach(child => {
-    const summary: string[] = []
     // Fallback type for renderer (unkown types)
     if (typeof child !== 'object' || typeof child._type !== 'string') {
       child._type = UNKNOWN_TYPE_NAME
     }
     const cSchemaType = getChildSchemaType(schemaType.fields, child)
-    const cDiff = findChildDiff(blockDiff, child)
-
-    if (cDiff) {
-      const textDiff = cDiff.fields.text as StringDiff
-      if (textDiff && textDiff.isChanged) {
-        // eslint-disable-next-line max-depth
-        if (textDiff.action === 'changed') {
-          summary.push(`Changed '${textDiff.fromValue}' to  '${textDiff.toValue}'`)
-        } else {
-          const text = textDiff.toValue || textDiff.fromValue
-          summary.push(
-            `${startCase(textDiff.action)}${text ? '' : ' (empty) '} text ${
-              text ? `'${text}'` : ''
-            }`
-          )
-        }
-      }
-      if (isAddMark(cDiff, cSchemaType)) {
-        const marks = cDiff.fields.marks.toValue
-        summary.push(`Added mark ${(Array.isArray(marks) ? marks : []).join(', ')}`)
-      }
-      if (isAddAnnotation(cDiff, cSchemaType) || isRemoveAnnotation(cDiff, cSchemaType)) {
-        const mark =
-          (Array.isArray(cDiff.fields.marks.toValue) && cDiff.fields.marks.toValue[0]) || ''
-        const type = (block.markDefs || []).find(def => def._key === mark)
-        summary.push(`Added annotation to text '${child.text}' (${type ? type._type : 'unknown'})`)
-      }
-      if (isAddInlineObject(cDiff) || isChangeInlineObject(cDiff) || isRemoveInlineObject(cDiff)) {
-        summary.push(`${startCase(cDiff.action)} inline object`)
-      }
-    }
-    if (cDiff && summary.length === 0) {
-      summary.push(`Unkown diff ${JSON.stringify(cDiff)}`)
-    }
-
+    const cDiff = findChildDiff(origin, child)
     childMap[child._key] = {
       diff: cDiff,
       child,
-      schemaType: cSchemaType,
-      summary
+      schemaType: cSchemaType
     }
   })
   return childMap
@@ -170,36 +130,6 @@ export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): Objec
     )
     .map(item => item.diff)
     .map(childDiff => childDiff as ObjectDiff)[0]
-}
-
-function isAddInlineObject(cDiff: ObjectDiff) {
-  return (
-    cDiff.type === 'object' &&
-    cDiff.isChanged &&
-    cDiff.action === 'added' &&
-    cDiff.fromValue === undefined &&
-    !childIsSpan(cDiff.toValue as PortableTextChild)
-  )
-}
-
-function isChangeInlineObject(cDiff: ObjectDiff) {
-  return (
-    cDiff.type === 'object' &&
-    cDiff.isChanged &&
-    cDiff.action === 'changed' &&
-    cDiff.fromValue !== undefined &&
-    !childIsSpan(cDiff.toValue as PortableTextChild)
-  )
-}
-
-function isRemoveInlineObject(cDiff: ObjectDiff) {
-  return (
-    cDiff.type === 'object' &&
-    cDiff.isChanged &&
-    cDiff.action === 'removed' &&
-    cDiff.toValue === undefined &&
-    !childIsSpan(cDiff.fromValue as PortableTextChild)
-  )
 }
 
 export function isAddMark(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolean {
@@ -234,42 +164,10 @@ export function isRemoveMark(cDiff: ObjectDiff, cSchemaType?: SchemaType): boole
   )
 }
 
-function isAddAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolean {
-  if (!cSchemaType) {
-    return false
-  }
-  return !!(
-    cDiff.fields.marks &&
-    cDiff.fields.marks.isChanged &&
-    cDiff.fields.marks.action === 'added' &&
-    Array.isArray(cDiff.fields.marks.toValue) &&
-    cDiff.fields.marks.toValue.length > 0 &&
-    cSchemaType.jsonType === 'object' &&
-    cDiff.fields.marks.toValue.some(
-      mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
-    )
-  )
-}
-
-function isRemoveAnnotation(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolean {
-  if (!cSchemaType) {
-    return false
-  }
-  return !!(
-    cDiff.fields.marks &&
-    cDiff.fields.marks.isChanged &&
-    cDiff.fields.marks.action === 'removed' &&
-    cSchemaType.jsonType === 'object' &&
-    cDiff.fields.marks.fromValue &&
-    Array.isArray(cDiff.fields.marks.fromValue) &&
-    typeof cDiff.fields.marks.toValue !== 'undefined' &&
-    cDiff.fields.marks.fromValue.some(
-      mark => typeof mark === 'string' && cSchemaType && !isDecorator(mark, cSchemaType)
-    )
-  )
-}
-
-export function getChildSchemaType(fields: any[], child: PortableTextChild) {
+export function getChildSchemaType(
+  fields: ObjectField<SchemaType>[],
+  child: PortableTextChild
+): ObjectSchemaType<Record<string, any>> | undefined {
   const childrenField = fields.find(f => f.name === 'children')
   const cSchemaType =
     (childrenField &&
@@ -278,10 +176,6 @@ export function getChildSchemaType(fields: any[], child: PortableTextChild) {
       (childrenField.type.of.find(type => type.name === child._type) as ObjectSchemaType)) ||
     undefined
   return cSchemaType
-}
-
-export function diffDidRemove(blockDiff: ObjectDiff): boolean {
-  return blockDiff.action === 'removed'
 }
 
 export function getDecorators(spanSchemaType: SpanTypeSchema): {title: string; value: string}[] {
@@ -298,42 +192,6 @@ export function isDecorator(name: string, schemaType: SpanTypeSchema): boolean {
 export function childIsSpan(child: PortableTextChild): boolean {
   const isObject = typeof child === 'object'
   return isObject && typeof child._type === 'string' && child._type === 'span'
-}
-
-export function didChangeMarksOnly(diff: ObjectDiff): boolean {
-  const from = blockToText(diff.fromValue as PortableTextBlock)
-  const to = blockToText(diff.toValue as PortableTextBlock)
-  const childrenDiff = diff.fields.children as ArrayDiff
-  const hasMarkDiffs =
-    !!childrenDiff &&
-    childrenDiff.items.every(
-      item => item.diff.isChanged && item.diff.type === 'object' && item.diff.fields.marks
-    )
-  return from === to && hasMarkDiffs
-}
-
-export function marksAreChangedByAction(
-  diff: ObjectDiff,
-  action: 'added' | 'removed' | 'changed'
-): boolean {
-  const childrenDiff = diff.fields.children as ArrayDiff
-  const hasMarkDiffs =
-    !!childrenDiff &&
-    childrenDiff.items.some(
-      item =>
-        item.diff.isChanged &&
-        item.diff.type === 'object' &&
-        item.diff.fields.marks &&
-        item.diff.fields.marks.action === action
-    )
-  return hasMarkDiffs
-}
-
-export function blockToText(block: PortableTextBlock | undefined | null): string {
-  if (!block) {
-    return ''
-  }
-  return block.children.map(child => child.text || '').join('')
 }
 
 export function blockToSymbolizedText(
@@ -365,20 +223,21 @@ export function blockToSymbolizedText(
     .join('')
 }
 
-// eslint-disable-next-line complexity
-export function prepareDiffForPortableText(
+export function createPortableTextDiff(
   diff: ObjectDiff,
   schemaType: ObjectSchemaType
-): [PortableTextDiff, PortableTextDiff | undefined] {
+): PortableTextDiff {
+  const displayValue =
+    diff.action === 'removed'
+      ? (diff.fromValue as PortableTextBlock)
+      : (diff.toValue as PortableTextBlock)
   const _diff: PortableTextDiff = {
     ...diff,
-    displayValue:
-      diff.action === 'removed'
-        ? (diff.fromValue as PortableTextBlock)
-        : (diff.toValue as PortableTextBlock)
+    origin: diff,
+    displayValue
   }
 
-  if (_diff.fromValue && _diff.toValue) {
+  if (displayValue) {
     const annotationMap: MarkSymbolMap = {}
     const markMap: MarkSymbolMap = {}
     const inlineMap: InlineSymbolMap = {}
@@ -388,10 +247,11 @@ export function prepareDiffForPortableText(
         markMap[dec.value] = MARK_SYMBOLS[index]
       })
     }
-    _diff.toValue.markDefs.forEach((markDef, index) => {
+    const markDefs = displayValue.markDefs || []
+    markDefs.forEach((markDef, index) => {
       annotationMap[markDef._key] = ANNOTATION_SYMBOLS[index]
     })
-    const inlines = getInlineObjects(_diff.toValue as PortableTextBlock)
+    const inlines = getInlineObjects(displayValue as PortableTextBlock)
     inlines.forEach((nonSpan, index) => {
       inlineMap[nonSpan._key] = INLINE_SYMBOLS[index]
     })
@@ -408,7 +268,7 @@ export function prepareDiffForPortableText(
       inlineMap
     )
     const toPseudoValue = {
-      ..._diff.displayValue,
+      ...displayValue,
       children: [
         {
           _type: 'span',
@@ -419,7 +279,7 @@ export function prepareDiffForPortableText(
       ]
     }
     const fromPseudoValue = {
-      ..._diff.displayValue,
+      displayValue,
       children: [
         {
           _type: 'span',
@@ -430,6 +290,7 @@ export function prepareDiffForPortableText(
       ]
     }
     const pseudoDiff = {
+      origin: diff,
       action: 'changed',
       type: 'object',
       displayValue: toPseudoValue,
@@ -457,7 +318,7 @@ export function prepareDiffForPortableText(
                     segments: buildSegments(fromText, toText).map(seg => ({
                       ...seg,
                       ...(_diff.action !== 'unchanged' && _diff.annotation
-                        ? {annotation: _diff.annotation} // Fallback // TODO:; this is a no-no
+                        ? {annotation: _diff.annotation} // Fallback if we can't find a spesific original diff
                         : {})
                     }))
                   }
@@ -476,9 +337,9 @@ export function prepareDiffForPortableText(
         }
       }
     }
-    return [_diff, pseudoDiff as PortableTextDiff]
+    return pseudoDiff as PortableTextDiff
   }
-  return [_diff as PortableTextDiff, undefined]
+  throw new Error('Can not display this diff')
 }
 
 function buildSegments(fromInput: string, toInput: string): StringSegment[] {
@@ -551,6 +412,9 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
 }
 
 export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] {
+  if (!block.children) {
+    return []
+  }
   const nonSpans = orderBy(
     block.children.filter(chld => chld._type !== 'span'),
     ['_key'],
