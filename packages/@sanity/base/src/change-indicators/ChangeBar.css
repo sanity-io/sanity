@@ -19,8 +19,9 @@
   opacity: 1;
   transition: opacity 100ms;
 
-  @nest .root:not([data-changed]) {
+  @nest .root:not([data-changed]) > & {
     opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -46,7 +47,7 @@
   transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
   transition: transform 100ms;
 
-  @nest .root[data-hover] & {
+  @nest .root[data-hover] > .wrapper > & {
     transform: translate3d(-0.5px, -10px, 0) scale(1);
   }
 }
@@ -71,7 +72,7 @@
 .hitArea {
   position: absolute;
   left: calc(0 - var(--extra-small-padding));
-  width: calc(var(--extra-small-padding) + 2px + var(--medium-padding));
+  width: calc(var(--extra-small-padding) + var(--medium-padding));
   height: 100%;
   cursor: pointer;
 }
