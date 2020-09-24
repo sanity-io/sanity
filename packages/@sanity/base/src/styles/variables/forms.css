@@ -2,6 +2,9 @@
 @import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
+  /* Focus */
+  --focus-color: var(--brand-primary);
+
   /* Input */
   --input-bg: var(--component-bg);
   --input-bg-focus: var(--input-bg);
@@ -19,20 +22,17 @@
   --input-border-radius-large: var(--border-radius-large);
   --input-border-radius-small: var(--border-radius-small);
   --input-border-color-hover: var(--gray-light);
-  --input-border-color-focus: var(--brand-primary);
-  --input-border-color-active: var(--brand-primary);
+  --input-border-color-focus: var(--focus-color);
+  --input-border-color-active: var(--focus-color);
   --input-border-color-invalid: color(var(--state-danger-color) a(50%));
   --input-color-placeholder: var(--gray-lighter);
   --input-box-shadow-base: var(--gray);
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
-  --input-box-shadow--focus: 0 0 0 2px var(--brand-primary);
-  --input-box-shadow-thin--focus: 0 0 0 1px var(--brand-primary);
+  --input-box-shadow--focus: 0 0 0 2px var(--focus-color);
+  --input-box-shadow-thin--focus: 0 0 0 1px var(--focus-color);
   --input-box-shadow--invalid: none;
-  --input-box-shadow--invalid-focus: 0 0 0 1px var(--brand-primary);
-
-  /* Focus */
-  --focus-color: var(--brand-primary);
+  --input-box-shadow--invalid-focus: 0 0 0 1px var(--focus-color);
 
   /* Label */
   --label-color: var(--text-color);

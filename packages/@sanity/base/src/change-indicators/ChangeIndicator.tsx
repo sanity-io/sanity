@@ -35,7 +35,9 @@ const ChangeBarWrapper = (
 
   return (
     <div ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <ChangeBar isChanged={props.isChanged}>{props.children}</ChangeBar>
+      <ChangeBar hasFocus={props.hasFocus} isChanged={props.isChanged}>
+        {props.children}
+      </ChangeBar>
     </div>
   )
 }
