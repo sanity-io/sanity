@@ -10,6 +10,7 @@ import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
   ChildMap,
+  InlineSymbolMap,
   MarkSymbolMap,
   PortableTextBlock,
   PortableTextDiff,
@@ -65,12 +66,31 @@ export const ANNOTATION_SYMBOLS = [
   ['\uF070', '\uF071']
 ]
 
+export const INLINE_SYMBOLS = [
+  '\uF090',
+  '\uF091',
+  '\uF092',
+  '\uF093',
+  '\uF094',
+  '\uF095',
+  '\uF096',
+  '\uF097',
+  '\uF098',
+  '\uF099',
+  '\uF09A',
+  '\uF09B',
+  '\uF09C',
+  '\uF09D',
+  '\uF09E',
+  '\uF09F'
+]
+
 const startMarkSymbols = MARK_SYMBOLS.map(set => set[0]).concat(
   ANNOTATION_SYMBOLS.map(set => set[0])
 )
 const endMarkSymbols = MARK_SYMBOLS.map(set => set[1]).concat(ANNOTATION_SYMBOLS.map(set => set[1]))
-const allSymbols = startMarkSymbols.concat(endMarkSymbols)
-const markRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
+const allSymbols = startMarkSymbols.concat(endMarkSymbols).concat(INLINE_SYMBOLS)
+const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
@@ -319,7 +339,8 @@ export function blockToText(block: PortableTextBlock | undefined | null): string
 export function blockToSymbolizedText(
   block: PortableTextBlock | undefined | null,
   decoratorMap: MarkSymbolMap,
-  annotationMap: MarkSymbolMap
+  annotationMap: MarkSymbolMap,
+  inlineMap: InlineSymbolMap
 ): string {
   if (!block) {
     return ''
@@ -328,7 +349,7 @@ export function blockToSymbolizedText(
     .map(child => {
       let returned = child.text || ''
       if (child._type !== 'span') {
-        returned = `<inlineObject key='${child._key}'/>`
+        returned = inlineMap[child._key]
       } else if (child.marks) {
         child.marks.forEach(mark => {
           const _isDecorator = !!decoratorMap[mark]
@@ -360,6 +381,7 @@ export function prepareDiffForPortableText(
   if (_diff.fromValue && _diff.toValue) {
     const annotationMap: MarkSymbolMap = {}
     const markMap: MarkSymbolMap = {}
+    const inlineMap: InlineSymbolMap = {}
     const spanSchemaType = getChildSchemaType(schemaType.fields, {_key: 'bogus', _type: 'span'})
     if (spanSchemaType) {
       getDecorators(spanSchemaType).forEach((dec, index) => {
@@ -369,12 +391,22 @@ export function prepareDiffForPortableText(
     _diff.toValue.markDefs.forEach((markDef, index) => {
       annotationMap[markDef._key] = ANNOTATION_SYMBOLS[index]
     })
+    const inlines = getInlineObjects(_diff.toValue as PortableTextBlock)
+    inlines.forEach((nonSpan, index) => {
+      inlineMap[nonSpan._key] = INLINE_SYMBOLS[index]
+    })
     const fromText = blockToSymbolizedText(
       _diff.fromValue as PortableTextBlock,
       markMap,
-      annotationMap
+      annotationMap,
+      inlineMap
     )
-    const toText = blockToSymbolizedText(_diff.toValue as PortableTextBlock, markMap, annotationMap)
+    const toText = blockToSymbolizedText(
+      _diff.toValue as PortableTextBlock,
+      markMap,
+      annotationMap,
+      inlineMap
+    )
     const toPseudoValue = {
       ..._diff.displayValue,
       children: [
@@ -494,7 +526,7 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
     segments.map(seg => {
       const newSegments: StringSegment[] = []
       if (seg.text.length > 1) {
-        const markMatches = [...seg.text.matchAll(markRegex)]
+        const markMatches = [...seg.text.matchAll(symbolRegex)]
         let lastIndex = -1
         markMatches.forEach(match => {
           const index = match.index || 0
@@ -516,4 +548,13 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
       return newSegments
     })
   ).filter(seg => seg.text)
+}
+
+export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] {
+  const nonSpans = orderBy(
+    block.children.filter(chld => chld._type !== 'span'),
+    ['_key'],
+    ['asc']
+  )
+  return nonSpans
 }
