@@ -1,19 +1,21 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import React from 'react'
+import {SanityDocument} from '@sanity/types'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import React from 'react'
 import {InspectDialog} from './inspectDialog'
 
-interface Props {
-  document: {isLoading: boolean; snapshot: any}
+interface InspectHistoryDialogProps {
+  document: {isLoading: boolean; snapshot: SanityDocument | null}
+  idPrefix: string
   onClose: () => void
 }
 
-export class InspectHistoryDialog extends React.PureComponent<Props> {
-  render() {
-    const {onClose, document} = this.props
-    const {isLoading, snapshot} = document
-    return isLoading ? <Spinner /> : <InspectDialog value={snapshot} onClose={onClose} />
+export function InspectHistoryDialog(props: InspectHistoryDialogProps) {
+  const {document, idPrefix, onClose} = props
+  const {isLoading, snapshot} = document
+
+  if (isLoading) {
+    return <Spinner />
   }
+
+  return <InspectDialog idPrefix={idPrefix} value={snapshot} onClose={onClose} />
 }

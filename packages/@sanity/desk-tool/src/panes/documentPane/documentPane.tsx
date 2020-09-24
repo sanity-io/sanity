@@ -163,7 +163,10 @@ export function DocumentPane(props: DocumentPaneProps) {
         className={styles.documentAndChangesContainer}
       >
         <div className={styles.documentContainer}>
-          {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
+          {isInspectOpen && (
+            <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
+          )}
+
           <DocumentPanel
             activeViewId={activeViewId}
             documentId={documentId}
