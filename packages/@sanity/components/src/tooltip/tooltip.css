@@ -2,6 +2,7 @@
 
 .root {
   z-index: var(--zindex-popover + 1);
+  pointer-events: none;
 }
 
 .card {
