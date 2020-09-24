@@ -1,17 +1,17 @@
-import React from 'react'
 import {Popover} from 'part:@sanity/components/popover'
-
-import styles from './ChangeBar.css'
+import React, {useCallback} from 'react'
 import RestoreIcon from '../components/icons/History'
 import {ConnectorContext} from './ChangeIndicatorContext'
+
+import styles from './ChangeBar.css'
 
 export const ChangeBar = React.forwardRef(
   (props: {isChanged: boolean; children: React.ReactNode}, ref: any) => {
     const [isPopoverOpen, setPopoverOpen] = React.useState(false)
     const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
 
-    const handleMouseEnter = () => setPopoverOpen(true)
-    const handleMouseLeave = () => setPopoverOpen(false)
+    const handleMouseEnter = useCallback(() => setPopoverOpen(true), [])
+    const handleMouseLeave = useCallback(() => setPopoverOpen(false), [])
 
     const tooltipContent = (
       <div className={styles.tooltip}>
@@ -51,3 +51,5 @@ export const ChangeBar = React.forwardRef(
     )
   }
 )
+
+ChangeBar.displayName = 'ChangeBar'
