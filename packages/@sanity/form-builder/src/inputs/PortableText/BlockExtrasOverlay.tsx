@@ -110,7 +110,6 @@ function BlockExtrasWithBlockActionsAndHeight(
         markers={blockMarkers}
         onFocus={onFocus}
         renderCustomMarkers={renderCustomMarkers}
-        top={top}
         value={value}
       />
     </div>

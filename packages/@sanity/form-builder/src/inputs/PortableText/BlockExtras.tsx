@@ -20,19 +20,9 @@ type Props = {
   markers: Marker[]
   onFocus: (arg0: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
-  top: number
 }
 export default function BlockExtras(props: Props) {
-  const {
-    block,
-    blockActions,
-    height,
-    isFullscreen,
-    markers,
-    onFocus,
-    renderCustomMarkers,
-    top
-  } = props
+  const {block, blockActions, height, isFullscreen, markers, onFocus, renderCustomMarkers} = props
   const scopedValidation = getValidationMarkers(markers)
   const errors = scopedValidation.filter(mrkr => mrkr.level === 'error')
   const warnings = scopedValidation.filter(mrkr => mrkr.level === 'warning')
