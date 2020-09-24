@@ -1,6 +1,11 @@
 import S from '@sanity/desk-tool/structure-builder'
+import CogIcon from 'part:@sanity/base/cog-icon'
 import {JSONPreviewDocumentView} from '../documentViews/jsonPreview'
 
+const STRUCTURE_CUSTOM_TYPES = ['settings']
+const STRUCTURE_LIST_ITEM_DIVIDER = S.divider()
+
+// Add `JSON` tab to the `author` document form
 export const getDefaultDocumentNode = ({schemaType}) => {
   // Conditionally return a different configuration based on the schema type
   if (schemaType === 'author') {
@@ -13,4 +18,23 @@ export const getDefaultDocumentNode = ({schemaType}) => {
   return undefined
 }
 
-export default S.defaults()
+// The `Settings` root list item
+const settingsListItem = S.listItem()
+  .title('Settings')
+  .icon(CogIcon)
+  .child(
+    S.editor()
+      .id('settings')
+      .schemaType('settings')
+      .documentId('settings')
+  )
+
+// The default root list items (except custom ones)
+const defaultListItems = S.documentTypeListItems().filter(
+  listItem => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
+)
+
+export default () =>
+  S.list()
+    .title('Content')
+    .items([settingsListItem, STRUCTURE_LIST_ITEM_DIVIDER, ...defaultListItems])

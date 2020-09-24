@@ -6,8 +6,9 @@ import allInputs from './allInputs'
 import author from './author'
 import live from './live'
 import pt from './pt'
+import settings from './settings'
 
 export default createSchema({
   name: 'design-studio',
-  types: schemaTypes.concat([allInputs, author, live, pt])
+  types: schemaTypes.concat([allInputs, author, live, pt, settings])
 })
