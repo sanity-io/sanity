@@ -80,9 +80,11 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
       className={styles.root}
       data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
     >
-      {changes.map(change => (
-        <ChangeResolver change={change} key={change.key} />
-      ))}
+      <div className={styles.changeList}>
+        {changes.map(change => (
+          <ChangeResolver change={change} key={change.key} />
+        ))}
+      </div>
 
       {showFooter && (
         <div className={styles.footer}>

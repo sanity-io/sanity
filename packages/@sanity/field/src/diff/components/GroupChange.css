@@ -1,10 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .groupChange {
-  margin-top: var(--extra-large-padding);
 }
 
-.changeList {
+.content {
   position: relative;
   padding: var(--small-padding) 0 0 var(--small-padding);
 
@@ -17,14 +16,16 @@
     bottom: 0;
     border-left: 1px solid var(--gray-lighter);
   }
-
-  @nest [data-revert-all-changes-hover] &::before {
-    border-left: 2px solid var(--state-danger-color);
-  }
 }
 
-.changeListOutlined {
-  composes: changeList;
+.changeList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: 2em;
+}
+
+.contentOutlined {
+  composes: content;
 
   @nest &::before {
     border-left: 2px solid var(--state-danger-color);
