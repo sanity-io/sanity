@@ -3,10 +3,25 @@
 .root {
   display: flex;
   align-items: center;
+  outline: none;
+  border-radius: var(--border-radius-small);
 
-  @nest & > button {
+  @nest & > svg {
     display: block;
+    font-size: calc(25 / 16 * 1rem);
     pointer-events: none;
+  }
+
+  @nest &:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-color);
+  }
+
+  @nest &.error {
+    color: var(--state-danger-color);
+  }
+
+  @nest &.warning {
+    color: var(--state-warning-color);
   }
 }
 

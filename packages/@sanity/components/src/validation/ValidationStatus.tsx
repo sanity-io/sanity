@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 import {
   isValidationErrorMarker,
@@ -6,7 +7,7 @@ import {
   Marker
 } from '@sanity/types'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import Button from 'part:@sanity/components/buttons/default'
+import WarningOutlineIcon from 'part:@sanity/base/warning-outline-icon'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import ValidationList from './ValidationList'
 
@@ -18,8 +19,8 @@ interface ValidationStatusProps {
   markers: Marker[]
 }
 
-function ValidationStatus(props: ValidationStatusProps) {
-  const {markers = [], showSummary = false, hideTooltip = false} = props
+function ValidationStatus(props: ValidationStatusProps & React.HTMLProps<HTMLDivElement>) {
+  const {className, markers = [], showSummary = false, hideTooltip = false, ...restProps} = props
   const validationMarkers = markers.filter(isValidationMarker)
 
   if (validationMarkers.length === 0) {
@@ -39,8 +40,18 @@ function ValidationStatus(props: ValidationStatusProps) {
   const hasBoth = hasErrors && hasWarnings
 
   const children = (
-    <div className={styles.root}>
-      <Button color="danger" icon={ErrorOutlineIcon} kind="simple" padding="none" />
+    <div
+      {...restProps}
+      className={classNames(
+        styles.root,
+        className,
+        hasErrors && styles.error,
+        !hasErrors && hasWarnings && styles.warning
+      )}
+      tabIndex={0}
+    >
+      {hasErrors && <ErrorOutlineIcon />}
+      {!hasErrors && hasWarnings && <WarningOutlineIcon />}
     </div>
   )
 
@@ -89,7 +100,8 @@ function ValidationSummaryTooltipContent({
       <div
         className={!hasErrors && hasWarnings ? styles.tooltipWarningIcon : styles.tooltipErrorIcon}
       >
-        <ErrorOutlineIcon />
+        {hasErrors && <ErrorOutlineIcon />}
+        {!hasErrors && hasWarnings && <WarningOutlineIcon />}
       </div>
       <div className={styles.tooltipText}>{text}</div>
     </div>

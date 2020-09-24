@@ -12,7 +12,7 @@
   line-height: 0;
 }
 
-.root[data-item-type='simple'] {
+.root.kind_simple {
   user-select: none;
   cursor: unset;
   padding: var(--extra-small-padding) var(--medium-padding);
@@ -35,12 +35,11 @@
   composes: root;
   cursor: pointer;
 
-  @nest &.error:not([data-item-type='simple']):hover, &.error:not([data-item-type='simple']):focus {
+  @nest &.error:not(.kind_simple):hover, &.error:not(.kind_simple):focus {
     background-color: color(var(--state-danger-color) a(10%));
   }
 
-  @nest &.warning:not([data-item-type='simple']):hover,
-    &.warning:not([data-item-type='simple']):focus {
+  @nest &.warning:not(.kind_simple):hover, &.warning:not(.kind_simple):focus {
     background-color: color(var(--state-warning-color) a(10%));
   }
 }
@@ -49,7 +48,7 @@
   display: block;
   margin: -3px 0 -3px -3px;
 
-  @nest & svg {
+  @nest & > svg {
     font-size: calc(17 / 16 * 1em);
 
     @nest &[data-sanity-icon='true'] {
