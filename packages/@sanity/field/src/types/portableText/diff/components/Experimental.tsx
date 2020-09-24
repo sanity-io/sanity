@@ -25,10 +25,11 @@ import {
   ObjectDiff,
   useDiffAnnotationColor
 } from '../../../../diff'
+
 import {ObjectSchemaType, SchemaType} from '../../../../types'
 import Annotation from './Annotation'
 import Decorator from './Decorator'
-import InlineObject from './InlineObject'
+import {InlineObject} from './InlineObject'
 import Blockquote from './Blockquote'
 import Header from './Header'
 import Paragraph from './Paragraph'

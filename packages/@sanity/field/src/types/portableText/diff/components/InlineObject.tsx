@@ -1,45 +1,54 @@
-import React, {SyntheticEvent} from 'react'
+import classNames from 'classnames'
+import React from 'react'
 import {PortableTextChild} from '../types'
 import {DiffTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../../diff'
+
 import styles from './InlineObject.css'
 
-const noop = () => {
-  // Nothing
-}
-
-type Props = {
+interface InlineObjectProps {
   diff?: ObjectDiff
-  blockDiff?: ObjectDiff
   object: PortableTextChild
-  onClick?: (event: SyntheticEvent<HTMLSpanElement>) => void
+  onClick?: (event: React.MouseEvent<HTMLSpanElement>) => void
   children?: React.ReactNode
 }
-export default function InlineObject(props: Props): JSX.Element {
-  const children = props.children || props.object._type
-  const {diff, onClick} = props
-  let returned = <span className={styles.root}>{children}</span>
+
+export function InlineObject({children: childrenProp, diff, object, onClick}: InlineObjectProps) {
+  const children = childrenProp || object._type
+
   if (diff) {
-    const color = useDiffAnnotationColor(diff, [])
-    const style = color ? {background: color.background, color: color.text} : {}
-    const classNames = [styles.root, ...[diff.action === 'removed' ? [styles.removed] : []]].join(
-      ' '
-    )
+    return <InlineObjectWithDiff diff={diff} object={object} />
+  }
 
-    // Click handler
-    const handleClick = onClick
-      ? (event: SyntheticEvent<HTMLSpanElement>) => {
-          onClick(event)
-        }
-      : noop
+  return (
+    <span className={styles.root} onClick={onClick}>
+      {children}
+    </span>
+  )
+}
 
-    // Wrap in inline object
-    returned = (
-      <span className={classNames} style={style} onClick={handleClick}>
+interface InlineObjectWithDiffProps {
+  diff: ObjectDiff
+  object: PortableTextChild
+  onClick?: (event: React.MouseEvent<HTMLSpanElement>) => void
+  children?: React.ReactNode
+}
+
+function InlineObjectWithDiff({
+  children: childrenProp,
+  diff,
+  object,
+  onClick
+}: InlineObjectWithDiffProps) {
+  const children = childrenProp || object._type
+  const color = useDiffAnnotationColor(diff, [])
+  const style = color ? {background: color.background, color: color.text} : {}
+  const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
+
+  return (
+    <DiffTooltip diff={diff}>
+      <span className={className} style={style} onClick={onClick}>
         {children}
       </span>
-    )
-    // Wrap in tooltip
-    returned = <DiffTooltip diff={diff}>{returned}</DiffTooltip>
-  }
-  return returned
+    </DiffTooltip>
+  )
 }
