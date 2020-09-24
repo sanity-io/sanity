@@ -21,14 +21,6 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
   const toRef = toValue?.asset?._ref
   const assetAnnotation = getAnnotationAtPath(diff, ['asset', '_ref'])
 
-  if (!isChanged) {
-    return toRef ? (
-      <DiffCard className={styles.annotation} annotation={assetAnnotation}>
-        <ImagePreview id={toRef} is="to" diff={diff} />
-      </DiffCard>
-    ) : null
-  }
-
   // Get all the changed fields within this image field
   const changedFields = Object.keys(fields).filter(
     name => fields[name].isChanged && name !== '_type'
@@ -76,6 +68,24 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       />
     </DiffCard>
   )
+
+  if (!from && !to) {
+    return (
+      <div className={styles.root}>
+        <div className={styles.emptyMessage}>
+          <span>Image not set</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isChanged) {
+    return toRef ? (
+      <DiffCard className={styles.annotation} annotation={assetAnnotation}>
+        <ImagePreview id={toRef} is="to" diff={diff} />
+      </DiffCard>
+    ) : null
+  }
 
   const imageDiff = <FromTo align="center" from={from} to={to} />
 
