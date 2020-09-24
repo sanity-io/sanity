@@ -122,12 +122,12 @@ function PortableTextSanityEditor(props: Props) {
   const hasMarkers = markers.length > 0
   const scClassNames = [
     styles.scrollContainer,
-    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
+    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras])
   ].join(' ')
   const editorWrapperClassNames = [styles.editorWrapper].join(' ')
   const editorClassNames = [
     styles.editor,
-    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
+    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras])
   ].join(' ')
 
   const blockExtras = useCallback(

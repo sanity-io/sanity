@@ -272,11 +272,8 @@
   @nest .fullscreenPortal & {
     width: calc(100% - var(--block-extras-width));
   }
-
-  @nest &:not(.hasBlockExtras) {
-    @nest .fullscreenPortal & {
-      width: 100%;
-    }
+  @nest .fullscreenPortal .hasNoBlockExtras & {
+    width: 100%;
   }
 }
 
