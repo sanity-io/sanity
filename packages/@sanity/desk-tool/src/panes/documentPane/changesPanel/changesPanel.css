@@ -65,7 +65,6 @@
 .body {
   flex: 1;
   min-height: 0;
-  margin-left: 4px;
   padding: var(--large-padding) var(--medium-padding);
   overflow: auto;
   position: relative;
