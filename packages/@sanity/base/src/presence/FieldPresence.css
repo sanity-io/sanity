@@ -17,7 +17,3 @@
   height: 23px;
   min-width: 23px;
 }
-
-.root:empty {
-  padding: 0;
-}

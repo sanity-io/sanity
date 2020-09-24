@@ -1,3 +1,5 @@
 .card {
-  /* display: block; */
+  flex: 1;
+  min-width: 0;
+  display: block;
 }

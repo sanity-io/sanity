@@ -87,7 +87,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     ) : null
   }
 
-  const imageDiff = <FromTo align="center" from={from} to={to} />
+  const imageDiff = <FromTo align="center" from={from} layout="grid" to={to} />
 
   return (
     <div className={styles.root}>
