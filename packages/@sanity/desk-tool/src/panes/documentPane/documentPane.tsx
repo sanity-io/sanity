@@ -17,6 +17,7 @@ import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keybo
 import {DocumentStatusBar} from './statusBar'
 import {TimelinePopover} from './timeline'
 import {Doc, DocumentViewType} from './types'
+import {setLocation} from 'part:@sanity/base/datastore/presence'
 
 import styles from './documentPane.css'
 
@@ -81,9 +82,20 @@ export function DocumentPane(props: DocumentPaneProps) {
   )
   const isInspectOpen = paneRouter.params.inspect === 'on'
 
-  const handleFocus = useCallback((nextFocusPath: Path) => {
-    setFocusPath(nextFocusPath)
-  }, [])
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(nextFocusPath)
+      setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString()
+        }
+      ])
+    },
+    [documentId]
+  )
 
   const toggleInspect = useCallback(
     (toggle = !isInspectOpen) => {
