@@ -265,12 +265,11 @@
   top: 0;
   width: 100%;
 
-  /* This is needed for the change connectors to render properly */
-  border: 1px solid transparent;
-  box-sizing: content-box;
-
   @nest .fullscreenPortal & {
     width: calc(100% - var(--block-extras-width));
+    /* This is needed for the change connectors to render properly in fullscreen mode */
+    border: 1px solid transparent;
+    box-sizing: border-box;
   }
   @nest .fullscreenPortal .hasNoBlockExtras & {
     width: 100%;
