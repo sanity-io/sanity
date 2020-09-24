@@ -1,6 +1,6 @@
 import React, {SyntheticEvent} from 'react'
 import {PortableTextBlock, PortableTextChild, ChildMap, PortableTextDiff} from '../types'
-import {isDecorator, isHeader, childIsSpan, UNKNOWN_TYPE_NAME} from '../helpers'
+import {isDecorator, isHeader, childIsSpan, UNKNOWN_TYPE_NAME, getChildSchemaType} from '../helpers'
 
 import {ObjectDiff, DiffCard, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {ObjectSchemaType} from '../../../../types'
@@ -17,10 +17,11 @@ import styles from './Block.css'
 type Props = {
   diff: PortableTextDiff
   childMap: ChildMap
+  ptSchemaType: ObjectSchemaType
 }
 
 export default function Block(props: Props): JSX.Element {
-  const {diff, childMap} = props
+  const {diff, childMap, ptSchemaType} = props
 
   const handleObjectFocus = (event: SyntheticEvent<HTMLSpanElement>) => {
     // TODO: implement this later on when we can do focus in the editor pane
@@ -170,12 +171,15 @@ export default function Block(props: Props): JSX.Element {
     child: PortableTextChild
     diff: ObjectDiff
   }): React.ReactNode => {
+    const inlineObjectSchemaType = getChildSchemaType(ptSchemaType.fields, cProps.child)
+
     return (
       <InlineObject
         key={`inline-object-${cProps.child._key}`}
         object={cProps.child}
         diff={cProps.diff}
         onClick={handleObjectFocus}
+        schemaType={inlineObjectSchemaType}
       />
     )
   }

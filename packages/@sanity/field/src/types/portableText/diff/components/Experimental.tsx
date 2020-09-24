@@ -268,12 +268,15 @@ export default function Experimental(props: Props): JSX.Element {
     child: PortableTextChild
     diff: ObjectDiff
   }): React.ReactNode => {
+    const inlineObjectSchemaType = getChildSchemaType(schemaType.fields, cProps.child)
+
     return (
       <InlineObject
         key={`inline-object-${cProps.child._key}`}
         object={cProps.child}
         diff={cProps.diff}
         onClick={handleObjectFocus}
+        schemaType={inlineObjectSchemaType}
       />
     )
   }
