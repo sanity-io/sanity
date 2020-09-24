@@ -12,6 +12,8 @@ import {
   childIsSpan,
   getChildSchemaType,
   getDecorators,
+  getInlineObjects,
+  INLINE_SYMBOLS,
   isDecorator,
   isHeader,
   MARK_SYMBOLS,
@@ -58,6 +60,8 @@ export default function Experimental(props: Props): JSX.Element {
   }
 
   const color = useDiffAnnotationColor(diff, [])
+
+  const inlineObjects = diff.toValue ? getInlineObjects(diff.toValue as PortableTextBlock) : []
 
   const renderBlock = ({
     block,
@@ -198,7 +202,7 @@ export default function Experimental(props: Props): JSX.Element {
       // TODO: clean up this complexity!
       // eslint-disable-next-line complexity
       segments.forEach(seg => {
-        const isInline = seg.text.startsWith('<inlineObject')
+        const isInline = INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart =
           markSymbolsStart.includes(seg.text) || annotationSymbolsStart.includes(seg.text)
         const isMarkEnd =
@@ -220,8 +224,8 @@ export default function Experimental(props: Props): JSX.Element {
             activeMarks = activeMarks.slice(0, -1)
           }
         } else if (isInline) {
-          const keyMatch = seg.text.match(/key='([A-Za-z0-9 _]*)'/)
-          const key = keyMatch && keyMatch[1]
+          const indexOfSymbol = INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
+          const key = inlineObjects[indexOfSymbol]?._key
           const realChild = diff.displayValue.children.find(
             cld => cld._key === key
           ) as PortableTextChild

@@ -31,4 +31,6 @@ export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock}
 
 export type MarkSymbolMap = Record<string, string[]>
 
+export type InlineSymbolMap = Record<string, string>
+
 export type StringSegment = {type: string; action: string; text: string}
