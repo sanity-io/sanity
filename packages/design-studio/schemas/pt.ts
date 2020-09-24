@@ -49,7 +49,8 @@ export default {
             ]
           }
         },
-        imageExample
+        imageExample,
+        objectExample
       ]
     }
   ]
