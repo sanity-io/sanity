@@ -1160,6 +1160,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "containerQuery/story"
+    },
+    {
+      "implements": "part:@sanity/components/scroll",
+      "path": "scroll"
     }
   ]
 }

@@ -5,12 +5,12 @@ import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {ContainerQuery} from 'part:@sanity/components/container-query'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import {Portal} from 'part:@sanity/components/portal'
+import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {useCallback} from 'react'
 import Escapable from '../utilities/Escapable'
 import Stacked from '../utilities/Stacked'
 import {DefaultDialogActions} from './DefaultDialogActions'
 import {DialogAction, DialogColor} from './types'
-import {ScrollContainer} from '@sanity/base/ScrollContainer'
 
 interface DefaultDialogProps {
   actions?: DialogAction[]

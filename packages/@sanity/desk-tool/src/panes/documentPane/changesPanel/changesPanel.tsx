@@ -1,4 +1,5 @@
-import React, {useCallback} from 'react'
+import {useTimeAgo} from '@sanity/base/hooks'
+import {ChangeFieldWrapper} from '@sanity/base/lib/change-indicators/ChangeFieldWrapper'
 import {
   ChangeList,
   Chunk,
@@ -13,15 +14,15 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar} from '@sanity/base/components'
 import Button from 'part:@sanity/components/buttons/default'
 import {AvatarStack} from 'part:@sanity/components/avatar'
-import {useTimeAgo} from '@sanity/base/hooks'
-import {formatTimelineEventLabel} from '../timeline'
+import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {TooltipProvider} from 'part:@sanity/components/tooltip'
+import React, {useCallback, useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
+import {formatTimelineEventLabel} from '../timeline'
 import {LoadingContent} from './content/loading'
 import {collectLatestAuthorAnnotations} from './helpers'
 
 import styles from './changesPanel.css'
-import {ScrollContainer} from '@sanity/base/ScrollContainer'
-import {ChangeFieldWrapper} from '@sanity/base/lib/change-indicators/ChangeFieldWrapper'
 
 interface ChangesPanelProps {
   changesSinceSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -44,6 +45,7 @@ export function ChangesPanel({
   schemaType,
   timelineMode
 }: ChangesPanelProps): React.ReactElement | null {
+  const scrollRef = useRef<HTMLElement | null>(null)
   const {close: closeHistory, historyController} = useDocumentHistory()
   const diff: ObjectDiff | null = historyController.currentObjectDiff()
   const isComparingCurrent = !historyController.onOlderRevision()
@@ -130,14 +132,16 @@ export function ChangesPanel({
           )}
         </div>
       </header>
-      <ScrollContainer className={styles.body}>
-        <Content
-          diff={diff}
-          documentContext={documentContext}
-          loading={loading}
-          schemaType={schemaType}
-        />
-      </ScrollContainer>
+      <TooltipProvider boundaryElement={scrollRef.current}>
+        <ScrollContainer className={styles.body} ref={scrollRef}>
+          <Content
+            diff={diff}
+            documentContext={documentContext}
+            loading={loading}
+            schemaType={schemaType}
+          />
+        </ScrollContainer>
+      </TooltipProvider>
     </div>
   )
 }

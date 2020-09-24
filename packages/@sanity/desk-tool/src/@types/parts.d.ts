@@ -408,6 +408,10 @@ declare module 'part:@sanity/components/portal' {
   export * from '@sanity/components/src/portal'
 }
 
+declare module 'part:@sanity/components/scroll' {
+  export * from '@sanity/components/src/scroll'
+}
+
 declare module 'part:@sanity/components/snackbar/default' {
   export {default} from '@sanity/components/src/snackbar/DefaultSnackbar'
 }
@@ -430,10 +434,6 @@ declare module 'part:@sanity/components/tooltip' {
 
 declare module 'part:@sanity/components/typography/hotkeys' {
   export {default} from '@sanity/components/src/typography/Hotkeys'
-}
-
-declare module 'part:@sanity/components/utilities/scroll-container' {
-  export {default} from '@sanity/components/src/utilities/ScrollContainer'
 }
 
 declare module 'part:@sanity/components/utilities/escapable' {

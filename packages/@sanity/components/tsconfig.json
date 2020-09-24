@@ -69,6 +69,7 @@
       "part:@sanity/components/progress/circle": ["./progress/progressCircle"],
       "part:@sanity/components/menu-button": ["./menuButton"],
       "part:@sanity/components/radiobutton/default": ["./radiobutton/RadioButtonDefault"],
+      "part:@sanity/components/scroll": ["./scroll"],
       "part:@sanity/components/selects/custom": ["./selects/CustomSelect"],
       "part:@sanity/components/selects/default": ["./selects/DefaultSelect"],
       "part:@sanity/components/selects/menu": ["./selects/SelectMenu"],
