@@ -58,7 +58,7 @@ export const ChangeBar = React.forwardRef(
       >
         <div className={styles.field}>{props.children}</div>
 
-        <Tooltip content={tooltipContent} placement="top">
+        <Tooltip content={tooltipContent} disabled={!props.isChanged} placement="top">
           <div className={styles.wrapper}>
             <div className={styles.bar} />
 
