@@ -30,6 +30,10 @@ declare module 'part:@sanity/components/portal' {
   export * from '@sanity/components/src/portal'
 }
 
+declare module 'part:@sanity/components/scroll' {
+  export * from '@sanity/components/src/scroll'
+}
+
 declare module 'part:@sanity/components/selects/*' {
   export default class SanitySelectComponent extends React.Component<any> {
     focus: () => void

@@ -361,6 +361,10 @@ declare module 'part:@sanity/components/previews/create-document' {
   export {default} from '@sanity/components/src/previews/CreateDocumentPreview'
 }
 
+declare module 'part:@sanity/components/scroll' {
+  export * from '@sanity/components/src/scroll'
+}
+
 declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
 }

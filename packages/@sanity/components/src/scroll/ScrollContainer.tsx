@@ -75,7 +75,6 @@ export const ScrollContainer = forwardRef(
     }, [handleScroll])
 
     const setRef = (el: HTMLElement | null) => {
-      console.log('setRef', el)
       rootRef.current = el
       if (typeof ref === 'function') ref(el)
       else if (ref && typeof ref === 'object') ref.current = el

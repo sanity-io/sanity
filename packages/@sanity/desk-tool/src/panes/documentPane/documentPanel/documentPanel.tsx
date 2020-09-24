@@ -1,6 +1,7 @@
 import {MenuItemGroup} from '@sanity/components'
 import classNames from 'classnames'
 import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
+import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {createElement, useCallback, useMemo, useRef} from 'react'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
@@ -9,7 +10,6 @@ import {DocumentHeaderTitle} from './header/title'
 import {DocumentPanelHeader} from './header/header'
 import {getMenuItems} from './menuItems'
 import {FormView} from './views'
-import {ScrollContainer} from '@sanity/base/ScrollContainer'
 
 import styles from './documentPanel.css'
 import {

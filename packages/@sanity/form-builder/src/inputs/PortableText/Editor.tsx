@@ -1,5 +1,3 @@
-import React, {useMemo, useCallback, useEffect, useState} from 'react'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {
   HotkeyOptions,
   PortableTextBlock,
@@ -15,7 +13,9 @@ import {
   PortableTextEditor
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
-import {ScrollContainer} from '@sanity/base/ScrollContainer'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {ScrollContainer} from 'part:@sanity/components/scroll'
+import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
 import Toolbar from './Toolbar/Toolbar'
