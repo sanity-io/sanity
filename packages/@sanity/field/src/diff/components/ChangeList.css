@@ -16,7 +16,3 @@
 .revertAllContainer {
   display: grid;
 }
-
-.confirmPopoverContent {
-  /* padding: var(--small-padding); */
-}

@@ -4,12 +4,9 @@
   flex: 1;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .box {
-  max-width: 300px;
   padding-bottom: var(--extra-large-padding);
 }
 
