@@ -3,7 +3,7 @@ import styles from './ConnectorsOverlay.css'
 import * as PathUtils from '@sanity/util/paths'
 import {groupBy, partition} from 'lodash'
 import {ScrollMonitor} from '@sanity/base/ScrollContainer'
-import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
+import _scrollIntoView from 'scroll-into-view-if-needed'
 import {Connector, drawLine, vLine} from './Connector'
 import {Arrow} from './Arrow'
 import {
@@ -79,10 +79,9 @@ type RegionWithRectMetadata = TrackedChange & {
 }
 
 function scrollIntoView(element) {
-  smoothScrollIntoViewIfNeeded(element, {
+  _scrollIntoView(element, {
     scrollMode: 'if-needed',
     block: 'nearest',
-    duration: 400,
     inline: 'start'
   })
 }
