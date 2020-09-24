@@ -16,10 +16,10 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
 }) {
   const [ptDiff, experimentalDiff] = prepareDiffForPortableText(diff, schemaType)
   const childMap = useMemo(() => createChildMap(ptDiff, schemaType), [ptDiff, schemaType])
-  const portableTextDiff = useMemo(() => <Block diff={ptDiff} childMap={childMap} />, [
-    ptDiff,
-    childMap
-  ])
+  const portableTextDiff = useMemo(
+    () => <Block diff={ptDiff} childMap={childMap} ptSchemaType={schemaType} />,
+    [ptDiff, childMap]
+  )
   const experimentalPortableTextDiff = useMemo(() => {
     if (experimentalDiff) {
       return (

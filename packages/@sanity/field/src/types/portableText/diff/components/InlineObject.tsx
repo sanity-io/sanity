@@ -1,27 +1,36 @@
 import classNames from 'classnames'
+import SanityPreview from 'part:@sanity/base/preview'
 import React from 'react'
+import {DiffTooltip, ObjectDiff, ObjectSchemaType, useDiffAnnotationColor} from '../../../../diff'
 import {PortableTextChild} from '../types'
-import {DiffTooltip, ObjectDiff, useDiffAnnotationColor} from '../../../../diff'
 
 import styles from './InlineObject.css'
 
 interface InlineObjectProps {
   diff?: ObjectDiff
   object: PortableTextChild
-  onClick?: (event: React.MouseEvent<HTMLSpanElement>) => void
-  children?: React.ReactNode
+  schemaType?: ObjectSchemaType
 }
 
-export function InlineObject({children: childrenProp, diff, object, onClick}: InlineObjectProps) {
-  const children = childrenProp || object._type
+export function InlineObject({
+  diff,
+  object,
+  schemaType,
+  ...restProps
+}: InlineObjectProps & React.HTMLProps<HTMLSpanElement>) {
+  if (!schemaType) {
+    return <span>Unknown schema type: {object._type}</span>
+  }
 
   if (diff) {
-    return <InlineObjectWithDiff diff={diff} object={object} />
+    return (
+      <InlineObjectWithDiff {...restProps} diff={diff} object={object} schemaType={schemaType} />
+    )
   }
 
   return (
-    <span className={styles.root} onClick={onClick}>
-      {children}
+    <span {...restProps} className={styles.root}>
+      <SanityPreview type={schemaType} value={object} layout="inline" />
     </span>
   )
 }
@@ -29,25 +38,23 @@ export function InlineObject({children: childrenProp, diff, object, onClick}: In
 interface InlineObjectWithDiffProps {
   diff: ObjectDiff
   object: PortableTextChild
-  onClick?: (event: React.MouseEvent<HTMLSpanElement>) => void
-  children?: React.ReactNode
+  schemaType: ObjectSchemaType
 }
 
 function InlineObjectWithDiff({
-  children: childrenProp,
   diff,
   object,
-  onClick
-}: InlineObjectWithDiffProps) {
-  const children = childrenProp || object._type
+  schemaType,
+  ...restProps
+}: InlineObjectWithDiffProps & React.HTMLProps<HTMLSpanElement>) {
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
   const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
 
   return (
     <DiffTooltip diff={diff}>
-      <span className={className} style={style} onClick={onClick}>
-        {children}
+      <span {...restProps} className={className} style={style}>
+        <SanityPreview type={schemaType} value={object} layout="inline" />
       </span>
     </DiffTooltip>
   )
