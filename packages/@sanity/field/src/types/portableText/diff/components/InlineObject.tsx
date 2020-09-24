@@ -19,7 +19,11 @@ export function InlineObject({
   ...restProps
 }: InlineObjectProps & React.HTMLProps<HTMLSpanElement>) {
   if (!schemaType) {
-    return <span>Unknown schema type: {object._type}</span>
+    return (
+      <span {...restProps} className={styles.root}>
+        Unknown schema type: {object._type}
+      </span>
+    )
   }
 
   if (diff) {
