@@ -49,6 +49,10 @@ declare module 'part:@sanity/base/arrow-right' {
   export default ArrowRightIcon
 }
 
+declare module 'part:@sanity/base/chevron-down-icon' {
+  export {default} from '@sanity/base/src/components/icons/ChevronDown'
+}
+
 declare module 'part:@sanity/base/close-icon' {
   export {default} from '@sanity/base/src/components/icons/CloseIcon'
 }

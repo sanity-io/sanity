@@ -5,9 +5,41 @@
   box-shadow: inset 0 0 0 1px var(--hairline-color);
   padding: 0 2px;
   cursor: pointer;
+  white-space: nowrap;
+  align-items: center;
 }
 
 .removed {
-  /* opacity: 0.5; */
   text-decoration: line-through;
+}
+
+.popoverContent {
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.previewContainer {
+  display: inline-flex;
+  vertical-align: top;
+  max-width: 80px;
+  margin: 0;
+  padding: 0 0 3px;
+
+  @nest & > span:first-child {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    margin: 2px 0 -2px;
+  }
+
+  @nest & > svg {
+    display: block;
+    font-size: 17px;
+    line-height: 17px;
+    margin: 2px -2px -2px 2px;
+    opacity: 0.5;
+
+    @nest .root:hover & {
+      opacity: 1;
+    }
+  }
 }
