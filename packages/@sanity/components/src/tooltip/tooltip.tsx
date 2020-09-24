@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {Portal} from 'part:@sanity/components/portal'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import {TooltipArrow} from './tooltipArrow'
 import {useTooltip} from './hooks'
@@ -32,7 +32,6 @@ export function Tooltip(
     ...restProps
   } = props
   const ctx = useTooltip()
-  const leaveRafRef = useRef<number | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
@@ -60,26 +59,12 @@ export function Tooltip(
       }
     ]
   })
-
   const {forceUpdate} = popper
-
   const [isOpen, setIsOpen] = useState(false)
-
   const handleBlur = useCallback(() => setIsOpen(false), [])
-
   const handleFocus = useCallback(() => setIsOpen(true), [])
-
-  const handleMouseEnter = useCallback(() => {
-    if (leaveRafRef.current !== null) {
-      cancelAnimationFrame(leaveRafRef.current)
-    }
-
-    setIsOpen(true)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    leaveRafRef.current = requestAnimationFrame(() => setIsOpen(false))
-  }, [])
+  const handleMouseEnter = useCallback(() => setIsOpen(true), [])
+  const handleMouseLeave = useCallback(() => setIsOpen(false), [])
 
   useEffect(() => {
     if (forceUpdate) forceUpdate()
@@ -94,8 +79,6 @@ export function Tooltip(
       {...restProps}
       className={classNames(styles.root, className)}
       data-tone={tone}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       ref={setPopperElement}
       style={popper.styles.popper}
       {...popper.attributes.popper}

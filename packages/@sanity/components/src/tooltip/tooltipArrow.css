@@ -2,7 +2,6 @@
 
 .root {
   position: absolute;
-  pointer-events: none;
   width: 15px;
   height: 15px;
   fill: none;
