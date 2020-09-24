@@ -3,7 +3,6 @@
 .root {
   border-radius: var(--border-radius-small);
   box-shadow: inset 0 0 0 1px var(--hairline-color);
-  padding: 0 2px;
   cursor: pointer;
   white-space: nowrap;
   align-items: center;
@@ -20,22 +19,32 @@
 .previewContainer {
   display: inline-flex;
   vertical-align: top;
-  max-width: 80px;
+  max-width: 120px;
   margin: 0;
   padding: 0 0 3px;
 
   @nest & > span:first-child {
-    display: block;
+    display: flex;
     flex: 1;
     min-width: 0;
     margin: 2px 0 -2px;
+
+    /* Hacky override */
+    @nest & > span:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   @nest & > svg {
     display: block;
     font-size: 17px;
     line-height: 17px;
-    margin: 2px -2px -2px 2px;
+    margin: 2px 0 -2px 2px;
     opacity: 0.5;
 
     @nest .root:hover & {
