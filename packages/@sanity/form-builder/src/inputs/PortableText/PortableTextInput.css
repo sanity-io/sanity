@@ -265,9 +265,13 @@
 }
 
 .blockExtras {
-  position: absolute;
+  position: relative;
   top: 0;
   width: 100%;
+
+  /* This is needed for the change connectors to render properly */
+  border: 1px solid transparent;
+  box-sizing: content-box;
 
   @nest .fullscreenPortal & {
     width: calc(100% - var(--block-extras-width));
