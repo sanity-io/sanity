@@ -8,9 +8,17 @@
   }
 }
 
-.label {
+.flex {
   display: flex;
   align-items: center;
+}
+
+.checkboxes {
+  composes: flex;
+}
+
+.label {
+  composes: flex;
 }
 
 .itemPreview {
