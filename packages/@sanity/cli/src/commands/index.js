@@ -10,6 +10,7 @@ import listProjectsCommand from './projects/listProjectsCommand'
 import manageCommand from './manage/manageCommand'
 import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
+import codemodCommand from './codemod/codemodCommand'
 
 export default [
   initCommand,
@@ -23,5 +24,6 @@ export default [
   debugCommand,
   helpCommand,
   projectsGroup,
-  listProjectsCommand
+  listProjectsCommand,
+  codemodCommand
 ]
