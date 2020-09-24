@@ -116,7 +116,11 @@ export function ChangesPanel({
           </div>
 
           {changeAnnotations.length > 0 && (
-            <DiffTooltip annotations={changeAnnotations} description="Changes by" placement="top">
+            <DiffTooltip
+              annotations={changeAnnotations}
+              description="Changes by"
+              placement="bottom"
+            >
               <div className={styles.changeAuthorsContainer}>
                 <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
                   {changeAnnotations.map(({author}) => (
