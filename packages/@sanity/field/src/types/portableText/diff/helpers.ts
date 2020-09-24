@@ -167,7 +167,7 @@ export function isRemoveMark(cDiff: ObjectDiff, cSchemaType?: SchemaType): boole
 export function getChildSchemaType(
   fields: ObjectField<SchemaType>[],
   child: PortableTextChild
-): ObjectSchemaType<Record<string, any>> | undefined {
+): ObjectSchemaType<Record<string, SchemaType>> | undefined {
   const childrenField = fields.find(f => f.name === 'children')
   const cSchemaType =
     (childrenField &&
