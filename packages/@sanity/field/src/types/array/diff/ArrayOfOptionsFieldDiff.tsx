@@ -8,6 +8,7 @@ import {
   ArraySchemaType,
   Diff,
   DiffComponent,
+  DiffTooltip,
   FromToArrow,
   getAnnotationColor,
   ItemDiff,
@@ -48,12 +49,17 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
         .map((item, index) => {
           const {annotation, isPresent, value, memberType, title} = item
           const color = getAnnotationColor(colorManager, annotation)
+          const action = isPresent ? 'Added' : 'Removed'
           return (
             <div className={styles.item} key={getItemKey(diff, index)}>
-              <Checkbox checked={!isPresent} color={color} />
-              <FromToArrow />
+              <DiffTooltip annotations={annotation ? [annotation] : []} description={action}>
+                <div className={styles.checkboxes}>
+                  <Checkbox checked={!isPresent} color={color} />
+                  <FromToArrow />
+                  <Checkbox checked={isPresent} color={color} />
+                </div>
+              </DiffTooltip>
               <div className={styles.label}>
-                <Checkbox checked={isPresent} color={color} />
                 <ItemPreview value={title || value} memberType={memberType} />
               </div>
             </div>
