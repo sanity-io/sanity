@@ -1,4 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --change-bar-changed-color: var(--state-warning-color);
+}
+
 .root {
   display: flex;
   position: relative;
@@ -6,26 +11,80 @@
 
 .field {
   flex-grow: 1;
+  min-width: 0;
 }
 
-.hoverArea {
-  position: absolute;
-  right: -4px;
-  width: 8px;
-  height: 100%;
+.wrapper {
+  position: relative;
+  opacity: 1;
+  transition: opacity 100ms;
+
+  @nest .root:not([data-changed]) {
+    opacity: 0;
+  }
 }
 
-.changeBar {
-  height: 100%;
+.bar {
   position: absolute;
-  right: -1px;
+  top: 0;
+  left: -1px;
   width: 2px;
-  border-bottom-right-radius: 4px;
-  border-top-right-radius: 4px;
+  bottom: 0;
+  background: var(--change-bar-changed-color);
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
 }
 
-.tooltip {
-  display: flex;
-  align-items: center;
+.badge {
+  position: absolute;
+  background: var(--change-bar-changed-color);
+  top: 50%;
+  left: -9px;
+  width: 19px;
+  height: 19px;
+  border-radius: 9.5px;
+  transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
+  transition: transform 100ms;
+
+  @nest .root[data-hover] & {
+    transform: translate3d(-0.5px, -10px, 0) scale(1);
+  }
+}
+
+.badge__shape {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 27px;
+  transform: translate3d(-0.5px, -4px, 0);
+  color: var(--change-bar-changed-color);
+}
+
+.badge__icon {
+  display: block;
+  position: relative;
+  margin: 1px;
+  font-size: calc(17 / 16 * 1rem);
+  color: var(--component-bg);
+}
+
+.hitArea {
+  position: absolute;
+  left: calc(0 - var(--extra-small-padding));
+  width: calc(var(--extra-small-padding) + 2px + var(--medium-padding));
+  height: 100%;
+  cursor: pointer;
+}
+
+.tooltipContent {
   padding: var(--small-padding);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  color: var(--text-color-secondary);
+
+  @nest & > span {
+    display: block;
+    margin: -4px 0 -3px;
+  }
 }
