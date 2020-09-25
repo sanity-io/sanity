@@ -1,19 +1,19 @@
 import React from 'react'
-import * as PathUtils from '@sanity/util/paths'
-import {partition} from 'lodash'
-import {ScrollMonitor} from 'part:@sanity/components/scroll'
-import smoothScrollIntoViewIfNeeded from 'smooth-scroll-into-view-if-needed'
+import _scrollIntoView from 'scroll-into-view-if-needed'
 import {
   useReportedValues,
   Reported,
   TrackedChange,
   TrackedArea
 } from '@sanity/base/lib/change-indicators'
-import {VERTICAL_CONNECTOR_PADDING} from './constants'
+import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from './constants'
 import {Connector, drawLine, vLine} from './Connector'
 import {Arrow} from './Arrow'
 
 import styles from './ConnectorsOverlay.css'
+
+import {Path} from '@sanity/types'
+import {ScrollMonitor} from 'part:@sanity/components/scroll'
 
 export interface Rect {
   height: number

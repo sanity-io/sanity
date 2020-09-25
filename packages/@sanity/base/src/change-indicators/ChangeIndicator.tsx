@@ -1,5 +1,5 @@
 import React from 'react'
-import isEqual from 'react-fast-compare'
+import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
 import {useReporter} from './tracker'
@@ -25,13 +25,18 @@ const ChangeBarWrapper = (
   const onMouseLeave = React.useCallback(() => setHover(false), [])
   const ref = React.useRef()
 
-  useReporter(`field-${PathUtils.toString(props.fullPath)}`, () => ({
-    element: ref.current!,
-    path: props.fullPath,
-    isChanged: props.isChanged,
-    hasFocus: props.hasFocus,
-    hasHover: hasHover
-  }))
+  useReporter(
+    `field-${PathUtils.toString(props.fullPath)}`,
+    () => ({
+      element: ref.current!,
+      path: props.fullPath,
+      isChanged: props.isChanged,
+      hasFocus: props.hasFocus,
+      hasHover: hasHover
+    }),
+    // note: deepCompare should be ok here since we're not comparing deep values
+    deepCompare
+  )
 
   return (
     <div ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
@@ -102,7 +107,7 @@ export const CoreChangeIndicator = ({
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
     (isPrimitive(value) && isPrimitive(value) && value !== compareValue) ||
-    (compareDeep && !isEqual(value, compareValue))
+    (compareDeep && !deepCompare(value, compareValue))
 
   return (
     <ChangeBarWrapper isChanged={isChanged} fullPath={fullPath} hasFocus={hasFocus}>
