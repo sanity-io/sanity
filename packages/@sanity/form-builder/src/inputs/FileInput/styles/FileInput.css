@@ -6,7 +6,6 @@
 }
 
 .functions {
-  composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }
 
 .content + .functions {

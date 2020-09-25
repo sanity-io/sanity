@@ -5,7 +5,15 @@ import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
-import {Marker, Path, ImageAsset, Image as BaseImage, SanityDocument} from '@sanity/types'
+import {
+  Image as BaseImage,
+  ImageAsset,
+  ImageSchemaType,
+  Marker,
+  ObjectField,
+  Path,
+  SanityDocument
+} from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -31,7 +39,6 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Package files
 import {FormBuilderInput} from '../../FormBuilderInput'
-import {Type} from '../../typedefs'
 import {
   ResolvedUploader,
   Uploader,
@@ -48,11 +55,6 @@ import {urlToFile, base64ToFile} from './utils/image'
 import styles from './ImageInput.css'
 
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
-
-type FieldT = {
-  name: string
-  type: Type
-}
 
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
@@ -71,7 +73,7 @@ interface Image extends Partial<BaseImage> {
 export type Props = {
   value?: Image
   document?: Image
-  type: Type
+  type: ImageSchemaType
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
@@ -159,7 +161,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+  getUploadOptions = (file: File): ResolvedUploader[] => {
     const {type, resolveUploader} = this.props
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
@@ -247,7 +249,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
 
-  handleFieldChange = (event: PatchEvent, field: FieldT) => {
+  handleFieldChange = (event: PatchEvent, field: ObjectField) => {
     const {onChange, type} = this.props
     onChange(
       event.prefixAll(field.name).prepend(
@@ -361,7 +363,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   //   }
   // }
 
-  renderAdvancedEdit(fields: Array<FieldT>) {
+  renderAdvancedEdit(fields: ObjectField[]) {
     const {value, level, type, onChange, readOnly, materialize} = this.props
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
@@ -418,11 +420,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderFields(fields: Array<FieldT>) {
+  renderFields(fields: ObjectField[]) {
     return fields.map(field => this.renderField(field))
   }
 
-  renderField(field: FieldT) {
+  renderField(field: ObjectField) {
     const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (

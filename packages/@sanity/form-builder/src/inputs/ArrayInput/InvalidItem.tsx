@@ -1,11 +1,12 @@
 import React from 'react'
+import {ArraySchemaType} from '@sanity/types'
 import PatchEvent from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValueInput from '../InvalidValueInput'
-import {ArrayType, ItemValue} from './typedefs'
+import {ItemValue} from './typedefs'
 
 interface Props {
-  type: ArrayType
+  type: ArraySchemaType
   value: unknown
   onChange: (event: PatchEvent, valueOverride?: ItemValue) => void
 }

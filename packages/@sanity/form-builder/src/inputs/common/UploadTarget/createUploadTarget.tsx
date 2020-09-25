@@ -1,22 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Path} from '@sanity/types'
+import {Path, SchemaType} from '@sanity/types'
+import humanize from 'humanize-list'
 import {sortBy} from 'lodash'
-import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
-import {Type} from '../../../typedefs'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import styles from '../../../styles/UploadTarget.css'
-import humanize from 'humanize-list'
+import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
 import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
 import {imageUrlToBlob} from './imageUrlToBlob'
 
 type Props = {
-  type: Type
+  type: SchemaType
   children: React.ReactChildren | null
   className?: string
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   getUploadOptions: (file: File) => ResolvedUploader[]
   onUpload?: ({type: Type, file: File, uploader: Uploader}) => void
 }
@@ -29,7 +28,6 @@ type UploadTask = {
 type State = {
   rejected: UploadTask[]
   ambiguous: UploadTask[]
-  isMoving: boolean
   showPasteInput: boolean
   isDraggingOver: boolean
 }
@@ -76,7 +74,6 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
     state: State = {
       isDraggingOver: false,
       showPasteInput: false,
-      isMoving: false,
       rejected: [],
       ambiguous: []
     }

@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import {Path, Marker} from '@sanity/types'
+import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
-import {Type as FormBuilderType} from '../../../../typedefs'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -17,7 +16,7 @@ type Props = {
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
   onClose: (event: React.SyntheticEvent) => void
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
   readOnly: boolean
@@ -61,7 +60,7 @@ export function DefaultObjectEditing(props: Props) {
               path={path}
               presence={presence}
               readOnly={readOnly || type.readOnly}
-              type={type as FormBuilderType}
+              type={type as SchemaType}
               value={object}
             />
           </PresenceOverlay>

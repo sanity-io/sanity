@@ -1,10 +1,10 @@
 import React from 'react'
 import {get} from 'lodash'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Type} from '../../typedefs'
 import Warning from '../Warning'
 import Item from './Item'
 import styles from './styles/OptionsArrayInput.css'
@@ -42,17 +42,19 @@ function isEqual(item, otherItem) {
 function inArray(array, candidate) {
   return array ? array.some(item => isEqual(item, candidate)) : false
 }
+
 type OptionsArrayInputProps = {
-  type?: Type
-  markers?: any[]
-  value?: any[]
+  type: ArraySchemaType
+  markers?: Marker[]
+  value?: unknown[]
   level?: number
   readOnly?: boolean
   onChange?: (...args: any[]) => any
   presence: any
-  onFocus: (path: any[]) => void
+  onFocus: (path: Path) => void
 }
-export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps, {}> {
+
+export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
   handleChange = (isChecked, optionValue) => {
     const {type, value = []} = this.props
     const list = get(type.options, 'list')
@@ -99,8 +101,8 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
 
   render() {
     const {type, markers, value, level, readOnly, presence} = this.props
-    const options = get(type.options, 'list')
-    const direction = get(type.options, 'direction') // vertical and horizontal
+    const options = type.options?.list || []
+    const direction = type.options?.direction // vertical and horizontal
     return (
       <Fieldset
         legend={type.title}
@@ -125,7 +127,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
               return (
                 <div
                   className={direction === 'vertical' ? styles.itemVertical : undefined}
-                  key={option._key || index}
+                  key={isTitledListValue(option) ? option._key || index : index}
                 >
                   <Item
                     type={optionType}

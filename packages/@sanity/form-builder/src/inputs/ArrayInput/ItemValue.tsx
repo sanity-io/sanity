@@ -1,7 +1,8 @@
 /* eslint-disable complexity */
 import React from 'react'
-import {isValidationMarker, Marker, Path} from '@sanity/types'
+import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
+import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import Button from 'part:@sanity/components/buttons/default'
@@ -19,12 +20,10 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
-import {ArrayType, ItemValue} from './typedefs'
+import {ItemValue} from './typedefs'
 import InvalidItem from './InvalidItem'
-import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -49,7 +48,7 @@ const DragHandle = createDragHandle(() => (
 //   secondary: true
 // }
 type Props = {
-  type: ArrayType
+  type: ArraySchemaType
   value: ItemValue
   compareValue?: any[]
   level: number
@@ -121,7 +120,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const {onChange, value} = this.props
     onChange(event, typeof valueOverride === 'undefined' ? value : valueOverride)
   }
-  getMemberType(): Type | null {
+  getMemberType(): SchemaType | null {
     const {value, type} = this.props
     const itemTypeName = resolveTypeName(value)
     return itemTypeName === 'object' && type.of.length === 1
@@ -250,7 +249,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     )
   }
   renderItem() {
-    const {value, markers, type, readOnly, presence, focusPath, onChange} = this.props
+    const {value, markers, type, readOnly, presence, focusPath} = this.props
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false

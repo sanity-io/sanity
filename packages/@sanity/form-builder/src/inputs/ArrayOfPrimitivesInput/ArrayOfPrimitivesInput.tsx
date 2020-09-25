@@ -4,12 +4,11 @@ import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {Marker, Path} from '@sanity/types'
+import {ArraySchemaType, Marker, Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Type} from '../../typedefs'
 import Warning from '../Warning'
 import styles from './styles/ArrayOfPrimitivesInput.css'
 import getEmptyValue from './getEmptyValue'
@@ -32,7 +31,7 @@ function insertAt(arr, index, item) {
 }
 type Primitive = string | number | boolean
 type Props = {
-  type: Type
+  type: ArraySchemaType<Primitive>
   value: Primitive[]
   compareValue?: Primitive[]
   level: number
@@ -41,9 +40,10 @@ type Props = {
   onBlur: () => void
   focusPath: Path
   readOnly: boolean | null
-  markers: Array<Marker>
+  markers: Marker[]
   presence: any
 }
+
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: Fieldset | null
   _lastAddedIndex = -1
@@ -107,15 +107,13 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     )
   }
 
-  renderItem = (item, index) => {
+  renderItem = (item: Primitive, index: number) => {
     const {
       type,
       level,
       markers,
-      value,
       compareValue,
       focusPath,
-      onChange,
       onFocus,
       readOnly,
       onBlur,
@@ -126,6 +124,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     if (!itemMemberType) {
       return null
     }
+
     const isSortable = get(type, 'options.sortable') !== false
     const ListItem = isSortable ? SortableItem : DefaultItem
     const filteredMarkers = markers.filter(marker => startsWith([index], marker.path))
@@ -136,7 +135,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           level={level + 1}
           index={index}
           value={item}
-          compareValue={compareValue}
+          compareValue={(compareValue || [])[index]}
           readOnly={readOnly}
           markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
           isSortable={isSortable}

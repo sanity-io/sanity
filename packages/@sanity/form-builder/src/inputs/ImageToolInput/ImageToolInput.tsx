@@ -1,42 +1,28 @@
 import React from 'react'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
+import ImageLoader from 'part:@sanity/components/utilities/image-loader'
+import {ImageCrop, ImageHotspot, ObjectSchemaType} from '@sanity/types'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
-import ImageLoader from 'part:@sanity/components/utilities/image-loader'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 import PatchEvent, {set} from '../../PatchEvent'
-import {Type} from '../../typedefs'
 
 import styles from './styles/ImageToolInput.css'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
-
-interface Hotspot {
-  x: number
-  y: number
-  height: number
-  width: number
-}
-
-interface Crop {
-  left: number
-  right: number
-  top: number
-  bottom: number
-}
 
 interface Value {
-  hotspot?: Hotspot
-  crop?: Crop
+  hotspot?: ImageHotspot
+  crop?: ImageCrop
 }
 
 interface ImageToolInputProps {
   imageUrl: string
   value?: Value
   compareValue?: Value
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   readOnly: boolean | null
   level: number
-  type: Type
+  type: ObjectSchemaType
 }
 
 interface ImageToolInputState {

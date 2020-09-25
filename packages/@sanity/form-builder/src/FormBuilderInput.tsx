@@ -1,14 +1,12 @@
-/* eslint-disable complexity */
 import React from 'react'
 import shallowEquals from 'shallow-equals'
-import {Marker, Path, PathSegment} from '@sanity/types'
+import {Marker, Path, SchemaType} from '@sanity/types'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
-import {Type} from './typedefs'
 import {emptyArray, emptyObject} from './utils/empty'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 
 const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
@@ -16,10 +14,10 @@ const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
 
 interface Props {
-  value: any
-  type: Type
-  onChange: (arg0: PatchEvent) => void
-  onFocus: (arg0: Path) => void
+  value: unknown
+  type: SchemaType
+  onChange: (event: PatchEvent) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   readOnly: boolean
   presence?: FormFieldPresence[]
@@ -28,7 +26,7 @@ interface Props {
   compareValue?: any
   level: number
   isRoot?: boolean
-  path: Array<PathSegment>
+  path: Path
   filterField?: Function
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
@@ -105,7 +103,7 @@ export class FormBuilderInput extends React.Component<Props> {
     }
   }
 
-  resolveInputComponent(type: Type) {
+  resolveInputComponent(type: SchemaType) {
     return this.context.formBuilder.resolveInputComponent(type)
   }
 
@@ -230,10 +228,10 @@ export class FormBuilderInput extends React.Component<Props> {
       readOnly || !presence || presence.length === 0
         ? EMPTY_PRESENCE
         : presence
-            .filter(presence => PathUtils.startsWith(path, presence.path))
-            .map(presence => ({
-              ...presence,
-              path: PathUtils.trimChildPath(path, presence.path)
+            .filter(item => PathUtils.startsWith(path, item.path))
+            .map(item => ({
+              ...item,
+              path: PathUtils.trimChildPath(path, item.path)
             }))
 
     const childCompareValue = PathUtils.get(compareValue, path)

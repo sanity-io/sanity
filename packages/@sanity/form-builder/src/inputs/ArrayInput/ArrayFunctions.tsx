@@ -1,25 +1,27 @@
 import React from 'react'
+import {ArraySchemaType, SchemaType, isReferenceSchemaType} from '@sanity/types'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import {Type} from '../../typedefs'
-import styles from './styles/ArrayInput.css'
-import {ArrayType, ItemValue} from './typedefs'
-import PatchEvent from '../../PatchEvent'
 import PlusIcon from 'part:@sanity/base/plus-icon'
+import PatchEvent from '../../PatchEvent'
+import styles from './styles/ArrayInput.css'
+import {ItemValue} from './typedefs'
+
 type Props = {
-  type: ArrayType
+  type: ArraySchemaType
   children: Node | null
-  value: Array<ItemValue>
+  value: ItemValue[]
   readOnly: boolean | null
   onAppendItem: (itemValue: ItemValue) => void
   onPrependItem: (itemValue: ItemValue) => void
   onFocusItem: (item: ItemValue) => void
-  onCreateValue: (type: Type) => ItemValue
+  onCreateValue: (type: SchemaType) => ItemValue
   onChange: (event: PatchEvent) => void
 }
-export default class ArrayFunctions extends React.Component<Props, {}> {
-  handleDropDownAction = (menuItem: {type: Type}) => {
+
+export default class ArrayFunctions extends React.Component<Props> {
+  handleDropDownAction = (menuItem: {type: SchemaType}) => {
     this.handleInsertItem(menuItem.type)
   }
   handleAddBtnClick = () => {
@@ -33,7 +35,11 @@ export default class ArrayFunctions extends React.Component<Props, {}> {
   renderSelectType() {
     const items = this.props.type.of.map(memberDef => {
       // Use reference icon if reference is to one type only
-      const referenceIcon = (memberDef.to || []).length === 1 && memberDef.to[0].icon
+      const referenceIcon =
+        isReferenceSchemaType(memberDef) &&
+        (memberDef.to || []).length === 1 &&
+        memberDef.to[0].icon
+
       const icon = memberDef.icon || memberDef.type.icon || referenceIcon || PlusIcon
       return {
         title: memberDef.title || memberDef.type.name,

@@ -1,12 +1,11 @@
 import React from 'react'
-import {Path, Marker} from '@sanity/types'
+import {Path, Marker, SchemaType} from '@sanity/types'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import {FieldPresence} from '@sanity/base/presence'
-import {Type} from '../../typedefs'
 import PatchEvent, {set} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import getEmptyValue from './getEmptyValue'
@@ -17,24 +16,26 @@ const DragHandle = createDragHandle(() => (
     <Button icon={DragHandleIcon} kind="simple" padding="small" />
   </span>
 ))
+
 type Props = {
-  type: Type
-  onChange: (arg0: PatchEvent) => void
-  onRemove: (arg0: number) => void
-  onEnterKey: (arg0: number) => void
-  onEscapeKey: (arg0: number) => void
-  onFocus: (arg0: Path) => void
+  type: SchemaType
+  onChange: (event: PatchEvent) => void
+  onRemove: (item: number) => void
+  onEnterKey: (item: number) => void
+  onEscapeKey: (item: number) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   focusPath: Path
   markers: Array<Marker>
   index: number
   value: string | number | boolean
-  compareValue?: (string | number | boolean)[]
+  compareValue?: string | number | boolean
   isSortable: boolean
   readOnly: boolean | null
   level: number
   presence: any
 }
+
 export default class Item extends React.PureComponent<Props> {
   handleRemove = () => {
     const {index, onRemove} = this.props

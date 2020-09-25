@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition} from 'lodash'
-import {Marker, Path, File as BaseFile, FileAsset} from '@sanity/types'
+import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
@@ -19,13 +19,12 @@ import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import {Type} from '../../typedefs'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import styles from './styles/FileInput.css'
 
 type FieldT = {
   name: string
-  type: Type
+  type: SchemaType
 }
 
 interface UploadState {
@@ -38,7 +37,7 @@ interface File extends Partial<BaseFile> {
 
 export type Props = {
   value?: File
-  type: Type
+  type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver

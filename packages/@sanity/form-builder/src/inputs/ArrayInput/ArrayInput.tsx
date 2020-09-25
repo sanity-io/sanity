@@ -1,14 +1,13 @@
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {isPlainObject, get} from 'lodash'
-import {Marker, Path} from '@sanity/types'
+import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
-import {Type} from '../../typedefs'
 import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
@@ -16,7 +15,7 @@ import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import Details from '../common/Details'
 import Warning from '../Warning'
 import resolveListComponents from './resolveListComponents'
-import {ArrayType, ItemValue} from './typedefs'
+import {ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
 
@@ -25,26 +24,22 @@ import styles from './styles/ArrayInput.css'
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
-function createProtoValue(type: Type): ItemValue {
-  if (type.jsonType !== 'object') {
+function createProtoValue(type: SchemaType): ItemValue {
+  if (!isObjectSchemaType(type)) {
     throw new Error(
       `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
     )
   }
+
   const key = randomKey(12)
-  return type.name === 'object'
-    ? {_key: key}
-    : {
-        _type: type.name,
-        _key: key
-      }
+  return type.name === 'object' ? {_key: key} : {_type: type.name, _key: key}
 }
 
 export type Props = {
-  type: ArrayType
-  value: Array<ItemValue>
-  compareValue: Array<ItemValue>
-  markers: Array<Marker>
+  type: ArraySchemaType
+  value: ItemValue[]
+  compareValue: ItemValue[]
+  markers: Marker[]
   level: number
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
@@ -52,7 +47,7 @@ export type Props = {
   focusPath: Path
   readOnly: boolean
   filterField: () => any
-  resolveUploader?: (type: Type, file: File) => Uploader
+  resolveUploader?: (type: SchemaType, file: File) => Uploader
   presence: any
 }
 type ArrayInputState = {
@@ -145,7 +140,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     )
   }
 
-  getMemberTypeOfItem(item: ItemValue): Type {
+  getMemberTypeOfItem(item: ItemValue): SchemaType {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
     return type.of.find(memberType => memberType.name === itemTypeName)

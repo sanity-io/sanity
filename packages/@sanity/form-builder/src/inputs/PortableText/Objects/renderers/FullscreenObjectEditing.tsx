@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
-import {Path, Marker} from '@sanity/types'
+import {Path, Marker, SchemaType} from '@sanity/types'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Type as FormBuilderType} from '../../../../typedefs'
 import {PatchEvent} from '../../../../PatchEvent'
 
 type Props = {
@@ -17,7 +16,7 @@ type Props = {
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
   onClose: (event: React.SyntheticEvent) => void
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
   readOnly: boolean
@@ -62,7 +61,7 @@ export const FullscreenObjectEditing: FunctionComponent<Props> = ({
                   path={path}
                   presence={presence}
                   readOnly={readOnly || type.readOnly}
-                  type={type as FormBuilderType}
+                  type={type as SchemaType}
                   value={object}
                 />
               </PresenceOverlay>
