@@ -127,9 +127,6 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
         onMouseEnter={props.onMouseEnter}
         onMouseLeave={props.onMouseLeave}
         strokeWidth={STROKE_WIDTH + 10}
-        style={{
-          pointerEvents: 'all'
-        }}
       />
     </>
   )

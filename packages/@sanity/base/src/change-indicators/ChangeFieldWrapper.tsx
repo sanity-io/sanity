@@ -3,6 +3,7 @@ import React from 'react'
 import {useReporter} from './tracker'
 import {Path} from '@sanity/types'
 import {ConnectorContext} from './ChangeIndicatorContext'
+import deepCompare from 'react-fast-compare'
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel
  */
@@ -22,14 +23,19 @@ export const ChangeFieldWrapper = (props: {
   const onMouseLeave = React.useCallback(() => {
     setHover(false)
   }, [])
-  useReporter(`change-${PathUtils.toString(props.path)}`, () => ({
-    element: ref.current!,
-    path: props.path,
-    isChanged: true,
-    hasFocus: false,
-    hasHover: isHover,
-    hasRevertHover: props.hasHover
-  }))
+  useReporter(
+    `change-${PathUtils.toString(props.path)}`,
+    () => ({
+      element: ref.current!,
+      path: props.path,
+      isChanged: true,
+      hasFocus: false,
+      hasHover: isHover,
+      hasRevertHover: props.hasHover
+    }),
+    // note: deepCompare should be ok here since we're not comparing deep values
+    deepCompare
+  )
   return (
     <div
       ref={ref}

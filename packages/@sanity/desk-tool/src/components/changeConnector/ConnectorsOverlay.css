@@ -2,11 +2,18 @@
 
 .svg {
   z-index: calc(var(--zindex-portal) - 1);
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 .connector {
   stroke: #2276fc;
   stroke-width: 2;
+  pointer-events: all;
 }
 
 .dangerConnector {
