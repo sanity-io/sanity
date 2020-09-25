@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
+import {Schema, SchemaType} from '@sanity/types'
 import {fallbackInputs} from './fallbackInputs'
-import {Type} from './typedefs'
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -49,16 +49,17 @@ function memoize(method) {
 }
 
 interface Props {
-  schema: object
-  value: any
+  schema: Schema
+  value: unknown
   children: any
   filterField?: any
   patchChannel: {
     onPatch?: (patch: any) => void
   }
-  resolveInputComponent: (type: Type) => React.ComponentType
-  resolvePreviewComponent: (type: Type) => React.ComponentType
+  resolveInputComponent: (type: SchemaType) => React.ComponentType
+  resolvePreviewComponent: (type: SchemaType) => React.ComponentType
 }
+
 export default class FormBuilderContext extends React.Component<Props> {
   static createPatchChannel = () => {
     const channel = pubsub()

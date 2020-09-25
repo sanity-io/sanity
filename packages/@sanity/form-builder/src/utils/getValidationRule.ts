@@ -1,6 +1,19 @@
-import {Type} from '../typedefs'
+import {SchemaType} from '@sanity/types'
 
-export function getValidationRule(type: Type, ruleName: string) {
+interface Rule {
+  _rules: RuleSpec[]
+}
+
+interface RuleSpec {
+  flag: string
+  constraint?: unknown
+}
+
+// Note: consider this "internals"
+export function getValidationRule<T = SchemaType>(
+  type: T & {validation?: Rule[]},
+  ruleName: string
+): RuleSpec | null {
   if (!type || !type.validation || !type.validation.length) {
     return null
   }

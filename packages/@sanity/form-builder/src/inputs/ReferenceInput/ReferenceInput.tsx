@@ -1,7 +1,15 @@
 /* eslint-disable complexity */
 import React from 'react'
 import {uniqueId} from 'lodash'
-import {Path, Reference, Marker, SanityDocument, isValidationErrorMarker} from '@sanity/types'
+import {
+  isValidationErrorMarker,
+  Marker,
+  Path,
+  Reference,
+  ReferenceFilterSearchOptions,
+  ReferenceSchemaType,
+  SanityDocument
+} from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import LinkIcon from 'part:@sanity/base/link-icon'
@@ -12,7 +20,6 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
-import {Type} from '../../typedefs'
 import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -27,20 +34,7 @@ type PreviewSnapshot = {
   title: string
   description: string
 }
-type SearchOptions = {
-  filter?: string
-  params?: {[key: string]: any}
-}
-type FilterResolver = (options: {
-  document: SanityDocument
-  parent?: Record<string, unknown> | Record<string, unknown>[]
-  parentPath: Path
-}) => SearchOptions
-type SearchTypeOptions = {
-  // Mutually exclusive if `filter` is a resolver (enforced in schema validation)
-  filter?: string | FilterResolver
-  filterParams?: {[key: string]: any}
-}
+
 type SearchError = {
   message: string
   details?: {
@@ -51,12 +45,16 @@ type SearchError = {
 export type Props = {
   value?: Reference
   compareValue?: Reference
-  type: Type & {options?: SearchTypeOptions}
-  markers: Array<Marker>
+  type: ReferenceSchemaType
+  markers: Marker[]
   focusPath: Path
   readOnly?: boolean
-  onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
-  onFocus: (path: any[]) => void
+  onSearch: (
+    query: string,
+    type: ReferenceSchemaType,
+    options: ReferenceFilterSearchOptions
+  ) => ObservableI<Array<SearchHit>>
+  onFocus: (path: Path) => void
   getPreviewSnapshot: (reference, type) => ObservableI<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
@@ -161,14 +159,16 @@ export default withValuePath(
       handleOpen = () => {
         this.search('')
       }
-      resolveUserDefinedFilter = (): SearchOptions => {
+
+      resolveUserDefinedFilter = (): ReferenceFilterSearchOptions => {
         const {type, document, getValuePath} = this.props
         const options = type.options
         if (!options) {
           return {}
         }
 
-        const {filter, filterParams: params} = options
+        const filter = options.filter
+        const params = 'filterParams' in options ? options.filterParams : undefined
         if (typeof filter === 'function') {
           const parentPath = getValuePath().slice(0, -1)
           const parent = get(document, parentPath) as Record<string, unknown>

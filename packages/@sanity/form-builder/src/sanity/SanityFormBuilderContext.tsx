@@ -1,14 +1,15 @@
 // Default wiring for FormBuilderContext when used as a sanity part
 import React from 'react'
-import FormBuilderContext from '../FormBuilderContext'
+import {Schema} from '@sanity/types'
 import SanityPreview from 'part:@sanity/base/preview'
+import FormBuilderContext from '../FormBuilderContext'
 import inputResolver from './inputResolver/inputResolver'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 const previewResolver = () => SanityPreview
 type Props = {
   value: any | null
-  schema: Record<string, any>
+  schema: Schema
   patchChannel: any
   children: React.ReactElement
 }
