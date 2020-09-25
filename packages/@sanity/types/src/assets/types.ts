@@ -1,4 +1,5 @@
-import {Reference, SanityDocument} from '../documents'
+import {Reference} from '../reference'
+import {SanityDocument} from '../documents'
 
 export interface File {
   [key: string]: unknown // We allow meta-fields on file
@@ -102,4 +103,11 @@ export interface AssetSourceSpec {
   id: string
   name: string
   url?: string
+}
+
+export interface AssetSource {
+  name: string
+  title: string
+  component: React.ComponentType
+  icon?: React.ComponentType
 }
