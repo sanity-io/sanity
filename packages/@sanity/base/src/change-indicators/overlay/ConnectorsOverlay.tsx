@@ -1,7 +1,7 @@
 import React from 'react'
 import _scrollIntoView from 'scroll-into-view-if-needed'
 import {useReportedValues, Reported, TrackedChange, TrackedArea} from '../'
-import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from './constants'
+import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from '../constants'
 import {Connector, drawLine, vLine} from './Connector'
 import {Arrow} from './Arrow'
 
