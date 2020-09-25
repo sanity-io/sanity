@@ -67,4 +67,8 @@ declare module 'part:@sanity/components/popover' {
   export * from '@sanity/components/src/popover'
 }
 
+declare module 'part:@sanity/components/scroll' {
+  export * from '@sanity/components/src/scroll'
+}
+
 declare module 'all:part:*'
