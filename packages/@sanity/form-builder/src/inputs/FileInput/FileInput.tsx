@@ -1,9 +1,8 @@
-/* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Observable} from 'rxjs'
+import {Observable, Subscription} from 'rxjs'
 import {get, partition} from 'lodash'
-import {Marker, Path, Reference} from '@sanity/types'
+import {Marker, Path, File as BaseFile, FileAsset} from '@sanity/types'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
@@ -28,24 +27,27 @@ type FieldT = {
   name: string
   type: Type
 }
-type Value = {
-  _upload?: any
-  asset?: Reference
-  hotspot?: Record<string, any>
-  crop?: Record<string, any>
+
+interface UploadState {
+  progress: number
 }
+
+interface File extends Partial<BaseFile> {
+  _upload?: UploadState
+}
+
 export type Props = {
-  value?: Value
+  value?: File
   type: Type
   level: number
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  materialize: (arg0: string) => Observable<any>
+  materialize: (documentId: string) => Observable<FileAsset>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
-  focusPath: Array<any>
-  markers: Array<Marker>
+  focusPath: Path
+  markers: Marker[]
   presence: any
 }
 
@@ -63,14 +65,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   _focusArea: any
-  uploadSubscription: any
-  state = {
+  uploadSubscription: Subscription
+
+  state: FileInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
     uploadError: null,
     hasFocus: false
   }
-  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
+
+  handleRemoveButtonClick = () => {
     const {getValuePath} = this.context
     const {value} = this.props
     const parentPathSegment = getValuePath().slice(-1)[0]
@@ -113,6 +117,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   handleCancelUpload = () => {
     this.cancelUpload()
   }
+
   handleSelectFile = (files: FileList) => {
     this.uploadFirstAccepted(files)
   }
@@ -121,7 +126,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const {resolveUploader, type} = this.props
     let match: {
       uploader: Uploader
-      file: File
+      file: globalThis.File
     } | null
     Array.from(fileList).some(file => {
       const uploader = resolveUploader(type, file)
@@ -136,7 +141,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
   }
 
-  uploadWith(uploader: Uploader, file: File) {
+  uploadWith(uploader: Uploader, file: globalThis.File) {
     const {type, onChange} = this.props
     const options = {
       metadata: get(type, 'options.metadata'),
@@ -162,7 +167,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     })
   }
 
-  renderMaterializedAsset = (assetDocument: Record<string, any>) => {
+  renderMaterializedAsset = (assetDocument: FileAsset) => {
     return (
       <div className={styles.previewAsset}>
         <div className={styles.fileIcon}>
@@ -178,7 +183,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  renderUploadState(uploadState: any) {
+  renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
     const isComplete = uploadState.progress === 100
     const filename = get(uploadState, 'file.name')
@@ -216,9 +221,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       )
     )
   }
+
   handleStartAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: true})
   }
+
   handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
   }
@@ -232,13 +239,11 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
+  // eslint-disable-next-line class-methods-use-this
   renderSelectFileButton() {
     // Single asset source (just a normal button)
-    return (
-      <Button onClick={() => console.log('add select handling here')} inverted>
-        Select
-      </Button>
-    )
+    // @todo add select handling here
+    return <Button inverted>Select</Button>
   }
 
   renderFields(fields: Array<FieldT>) {
@@ -251,7 +256,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     })
     this.props.onFocus(event)
   }
-  handleBlur = event => {
+
+  handleBlur = () => {
     this.setState({
       hasFocus: false
     })
@@ -303,11 +309,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   setFocusArea = (el: any | null) => {
     this._focusArea = el
   }
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+
+  getUploadOptions = (file: globalThis.File): Array<ResolvedUploader> => {
     const {type, resolveUploader} = this.props
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
   }
+
   handleUpload = ({file, uploader}) => {
     this.uploadWith(uploader, file)
   }
