@@ -72,7 +72,7 @@ export function ChangeIndicatorProvider(props: {
       value={{
         value: props.value,
         compareValue: props.compareValue,
-        focusPath: parentContext.focusPath ? parentContext.focusPath : props.focusPath,
+        focusPath: props.focusPath || [],
         path: props.path,
         fullPath: fullPath
       }}
@@ -137,18 +137,20 @@ export const ChangeIndicatorWithProvidedFullPath = ({
 interface ContextProvidedProps {
   compareDeep?: boolean
   children?: React.ReactNode
+  disabled?: boolean
 }
 
 export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
   const context = React.useContext(ChangeIndicatorContext)
   const {value, compareValue, path, focusPath, fullPath} = context
-
-  return (
+  return props.disabled ? (
+    <>{props.children}</>
+  ) : (
     <CoreChangeIndicator
       fullPath={fullPath}
       value={value}
       compareValue={compareValue}
-      hasFocus={PathUtils.isEqual(fullPath, focusPath)}
+      hasFocus={PathUtils.isEqual(path, focusPath)}
       compareDeep={props.compareDeep}
     >
       {props.children}

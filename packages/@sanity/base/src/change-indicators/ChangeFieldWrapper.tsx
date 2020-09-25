@@ -2,7 +2,7 @@ import * as PathUtils from '@sanity/util/paths'
 import React from 'react'
 import {useReporter} from './tracker'
 import {Path} from '@sanity/types'
-
+import {ConnectorContext} from './ChangeIndicatorContext'
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel
  */
@@ -12,6 +12,8 @@ export const ChangeFieldWrapper = (props: {
   hasHover: boolean
 }) => {
   const ref = React.useRef<HTMLDivElement>(null)
+
+  const {onSetFocus} = React.useContext(ConnectorContext)
 
   const [isHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => {
@@ -29,7 +31,12 @@ export const ChangeFieldWrapper = (props: {
     hasRevertHover: props.hasHover
   }))
   return (
-    <div ref={ref} onMouseLeave={onMouseLeave} onMouseEnter={onMouseEnter}>
+    <div
+      ref={ref}
+      onClick={() => onSetFocus(props.path)}
+      onMouseLeave={onMouseLeave}
+      onMouseEnter={onMouseEnter}
+    >
       {props.children}
     </div>
   )

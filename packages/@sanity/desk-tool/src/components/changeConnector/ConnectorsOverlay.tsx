@@ -22,11 +22,6 @@ export interface Rect {
   left: number
 }
 
-interface Props {
-  children?: React.ReactNode
-  className?: string
-}
-
 const DEBUG = false
 
 const isScrollContainer = el => el.scrollHeight !== el.offsetHeight
@@ -72,88 +67,86 @@ function getRelativeRect(element, parent) {
   }
 }
 
-function computeRect<T>(
-  [id, region]: Reported<TrackedChange>,
-  anchorElement: HTMLElement
-): RegionWithRectMetadata {
-  return {...region, id, rect: getRelativeRect(region.element, anchorElement)}
-}
-
-type RegionWithRectMetadata = TrackedChange & {
-  id: string
-  rect: Rect & {bounds: {top: number; bottom: number}}
-}
-
 function scrollIntoView(element) {
-  smoothScrollIntoViewIfNeeded(element, {
+  _scrollIntoView(element, {
     scrollMode: 'if-needed',
     block: 'nearest',
-    duration: 400,
     inline: 'start'
   })
 }
 
-const ADJUST_MARGIN_TOP = 10
-const ADJUST_MARGIN_BOTTOM = -10
+function isChangeBar(v: Reported<TrackedArea | TrackedChange>): v is Reported<TrackedChange> {
+  return v[0] !== 'changePanel'
+}
 
-export function ConnectorsOverlay(props: Props) {
-  const {children, ...rest} = props
-
-  const trackerRef = React.useRef<HTMLDivElement>(null)
+interface Props {
+  rootRef: HTMLDivElement
+  onSetFocus: (nextFocusPath: Path) => void
+}
+export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Props) {
+  const {rootRef, onSetFocus} = props
 
   const [hovered, setHovered] = React.useState<string | null>(null)
 
+  const allReportedValues = useReportedValues()
   const [, forceUpdate] = React.useReducer(n => n + 1, 0)
+  const byId = new Map(allReportedValues)
 
-  const [_changesPanel, _regions] = partition(
-    useReportedValues(),
-    (v): v is Reported<TrackedArea> => v[0] === 'changesPanel'
-  )
-  const changesPanel = _changesPanel && _changesPanel[0] && _changesPanel[0][1]
+  const reportedChangesPanel = byId.get('changesPanel')
 
-  const regions = trackerRef.current
-    ? _regions.map(region => computeRect(region, trackerRef.current!))
-    : []
+  if (!reportedChangesPanel) {
+    return null
+  }
 
-  const changesPanelRect = changesPanel
-    ? getRelativeRect(changesPanel.element, trackerRef.current)
-    : null
+  const changesPanelRect = getRelativeRect(reportedChangesPanel.element, rootRef)
+  const changeBarsWithFocusOrHover = allReportedValues
+    .filter(isChangeBar)
+    .filter(
+      ([id, reportedChangeBar]) =>
+        reportedChangeBar.isChanged &&
+        (id === hovered || reportedChangeBar.hasHover || reportedChangeBar.hasFocus)
+    )
+
+  const visibleConnectors = changeBarsWithFocusOrHover
+    .map(([id, value]) => ({
+      field: {
+        id,
+        ...(id.startsWith('field-')
+          ? value
+          : (byId.get(`field-${id.substring(7)}`) as TrackedChange))
+      },
+      change: {
+        id,
+        ...(id.startsWith('change-')
+          ? value
+          : (byId.get(`change-${id.substring(6)}`) as TrackedChange))
+      }
+    }))
+    .filter(({field, change}) => field && change && field.element && change.element)
+    .map(({field, change}) => ({
+      hasHover: field.hasHover || change.hasHover,
+      hasFocus: field.hasFocus,
+      field: {...field, rect: getRelativeRect(field.element, rootRef)},
+      change: {...change, rect: getRelativeRect(change.element, rootRef)}
+    }))
 
   // note: this assumes the changes panel header and the document panel always have the same height
   const topEdge = changesPanelRect?.top
   const verticalLineLeft = changesPanelRect?.left
 
-  const [fieldRegions, changeRegions] = partition(regions, fieldRegion =>
-    fieldRegion.id.startsWith('field-')
-  )
-  const combined = fieldRegions
-    .filter(fieldRegion => fieldRegion.isChanged)
-    .map(fieldRegion => ({
-      field: fieldRegion,
-      change: changeRegions.find(r => PathUtils.isEqual(r.path, fieldRegion.path))
-    }))
-    .filter(({field, change}) => field && change)
-    .map(({field, change}) => ({
-      hasHover: field.hasHover || change!.hasHover,
-      hasFocus: field.hasFocus,
-      field,
-      change
-    }))
-    .filter(({hasFocus, hasHover, field}) => field.id === hovered || hasFocus || hasHover)
-
-  const visibleConnector =
-    combined.find(({field, hasHover}) => field.id === hovered || hasHover) ||
-    combined.find(({hasFocus}) => hasFocus)
   return (
-    <div ref={trackerRef} {...rest} className={props.className}>
-      <ScrollMonitor onScroll={forceUpdate}>{children}</ScrollMonitor>
-      {changesPanelRect &&
-        visibleConnector &&
-        [visibleConnector].map(({field, change}) => {
-          if (!change) {
-            return null
-          }
-          const changeMarkerLeft = change?.rect?.left
+    <ScrollMonitor onScroll={forceUpdate}>
+      <svg
+        className={styles.svg}
+        style={{
+          ...(DEBUG ? {backgroundColor: 'rgba(0, 100, 100, 0.2)'} : {}),
+          top: changesPanelRect.top,
+          height: changesPanelRect.height
+        }}
+      >
+        {visibleConnectors.map(({field, change}) => {
+          const changeMarkerLeft = change.rect.left
+          const fieldMarkerLeft = field.rect.left + field.rect.width
 
           const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
           const fieldBottom = field.rect.top + field.rect.height - VERTICAL_CONNECTOR_PADDING
@@ -185,8 +178,8 @@ export function ConnectorsOverlay(props: Props) {
           }
 
           const clampConnector = {
-            top: field.rect.bounds.top + ADJUST_MARGIN_TOP,
-            bottom: field.rect.bounds.bottom - ADJUST_MARGIN_TOP
+            top: field.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
+            bottom: field.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
 
           const connectorClassName = change.hasRevertHover
@@ -194,118 +187,138 @@ export function ConnectorsOverlay(props: Props) {
             : styles.connector
 
           return (
-            <svg
-              key={field.id}
-              onClick={() => {
-                scrollIntoView(field?.element)
-                scrollIntoView(change?.element)
-                // props.onRequestFocusPathChange(changedField.path)
-              }}
-              className={styles.svg}
-              style={{
-                pointerEvents: 'none',
-                position: 'absolute',
-                ...(DEBUG ? {backgroundColor: 'rgba(0, 100, 100, 0.2)'} : {}),
-                top: changesPanelRect.top,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: changesPanelRect.height,
-                width: '100%'
-              }}
-            >
-              <React.Fragment key={`field-${field.id}`}>
-                {change && (
-                  <>
-                    <Connector
-                      from={connectorFrom}
-                      to={connectorTo}
-                      onMouseEnter={() => setHovered(visibleConnector.field.id)}
-                      onMouseLeave={() => setHovered(null)}
-                      clampLeft={clampConnector}
-                      clampRight={clampConnector}
-                      verticalCenter={verticalLineLeft! + 3}
-                      className={connectorClassName}
+            <React.Fragment key={`field-${field.id}`}>
+              {change && (
+                <g
+                  onClick={() => {
+                    onSetFocus(field.path)
+                    // todo: this is needed because onSetFocus doesn't trigger scroll to focus if focus is already
+                    scrollIntoView(field?.element)
+                    scrollIntoView(change?.element)
+                  }}
+                  className={connectorClassName}
+                >
+                  <Connector
+                    from={connectorFrom}
+                    to={connectorTo}
+                    onMouseEnter={() => setHovered(field.id)}
+                    onMouseLeave={() => setHovered(null)}
+                    clampLeft={clampConnector}
+                    clampRight={clampConnector}
+                    verticalCenter={verticalLineLeft! + 3}
+                  />
+
+                  {/* arrow left top */}
+                  {fieldBottom <= clampConnector.top && (
+                    <Arrow
+                      top={clampConnector.top}
+                      left={connectorFrom.left}
+                      length={5}
+                      wingLength={8}
+                      direction="n"
                     />
+                  )}
 
-                    {/* arrow left top */}
-                    {fieldBottom <= clampConnector.top && (
-                      <Arrow
-                        className={connectorClassName}
-                        top={clampConnector.top}
-                        left={connectorFrom.left}
-                        length={5}
-                        wingLength={8}
-                        direction="n"
-                      />
-                    )}
+                  {/* arrow left bottom */}
+                  {fieldTop >= clampConnector.bottom && (
+                    <Arrow
+                      top={clampConnector.bottom}
+                      left={connectorFrom.left}
+                      length={5}
+                      wingLength={8}
+                      direction="s"
+                    />
+                  )}
 
-                    {/* arrow left bottom */}
-                    {fieldTop >= clampConnector.bottom && (
-                      <Arrow
-                        className={connectorClassName}
-                        top={clampConnector.bottom}
-                        left={connectorFrom.left}
-                        length={5}
-                        wingLength={8}
-                        direction="s"
-                      />
-                    )}
+                  {/* arrow right top */}
+                  {changeBottom <= clampConnector.top && (
+                    <Arrow
+                      top={clampConnector.top}
+                      left={connectorTo.left}
+                      length={5}
+                      wingLength={8}
+                      direction="n"
+                    />
+                  )}
 
-                    {/* arrow right top */}
-                    {changeBottom <= clampConnector.top && (
-                      <Arrow
-                        className={connectorClassName}
-                        top={clampConnector.top}
-                        left={connectorTo.left}
-                        length={5}
-                        wingLength={8}
-                        direction="n"
-                      />
-                    )}
+                  {/* arrow right bottom */}
+                  {changeTop > clampConnector.bottom && (
+                    <Arrow
+                      top={clampConnector.bottom}
+                      left={connectorTo.left}
+                      length={5}
+                      wingLength={8}
+                      direction="s"
+                    />
+                  )}
 
-                    {/* arrow right bottom */}
-                    {changeTop > clampConnector.bottom && (
-                      <Arrow
-                        className={connectorClassName}
-                        top={clampConnector.bottom}
-                        left={connectorTo.left}
-                        length={5}
-                        wingLength={8}
-                        direction="s"
-                      />
-                    )}
-
-                    {/* this is the bar marking the line in the changes panel */}
-                    <path
-                      className={connectorClassName}
-                      d={drawLine(
-                        vLine(
-                          connectorTo.left,
-                          Math.max(
-                            change.rect.bounds.top,
-                            Math.min(
-                              change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
-                              change.rect.top - topEdge!
-                            )
-                          ),
-                          Math.max(
-                            change.rect.bounds.top,
-                            Math.min(
-                              change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
-                              change.rect.top - topEdge! + change.rect.height
-                            )
+                  {/* this is the bar marking the line in the changes panel */}
+                  <path
+                    style={{pointerEvents: 'none'}}
+                    d={drawLine(
+                      vLine(
+                        connectorTo.left,
+                        Math.max(
+                          change.rect.bounds.top,
+                          Math.min(
+                            change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
+                            change.rect.top - topEdge!
+                          )
+                        ),
+                        Math.max(
+                          change.rect.bounds.top,
+                          Math.min(
+                            change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
+                            change.rect.top - topEdge! + change.rect.height
                           )
                         )
-                      )}
-                      strokeWidth={2}
-                    />
-                  </>
-                )}
-              </React.Fragment>
-            </svg>
+                      )
+                    )}
+                    strokeWidth={2}
+                  />
+                </g>
+              )}
+              {DEBUG_LAYER_BOUNDS && (
+                <>
+                  <line
+                    x1={field.rect.left}
+                    y1={field.rect.bounds.top}
+                    x2={field.rect.left + field.rect.width}
+                    y2={field.rect.bounds.top}
+                    stroke="black"
+                    strokeWidth={2}
+                  />
+                  <line
+                    x1={field.rect.left}
+                    y1={clampConnector.top}
+                    x2={field.rect.left + field.rect.width}
+                    y2={clampConnector.top}
+                    stroke="yellow"
+                    strokeWidth={2}
+                  />
+                  <line
+                    x1={field.rect.left}
+                    y1={field.rect.bounds.bottom}
+                    x2={field.rect.left + field.rect.width}
+                    y2={field.rect.bounds.bottom}
+                    stroke="black"
+                    strokeWidth={2}
+                  />
+
+                  <line
+                    x1={field.rect.left}
+                    y1={clampConnector.bottom}
+                    x2={field.rect.left + field.rect.width}
+                    y2={clampConnector.bottom}
+                    stroke="yellow"
+                    strokeWidth={2}
+                  />
+                </>
+              )}
+            </React.Fragment>
           )
         })}
-    </div>
+      </svg>
+    </ScrollMonitor>
   )
-}
+})

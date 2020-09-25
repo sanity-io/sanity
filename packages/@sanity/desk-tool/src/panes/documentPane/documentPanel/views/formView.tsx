@@ -7,7 +7,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
-import {setLocation} from 'part:@sanity/base/datastore/presence'
+import {Path} from '@sanity/types'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {Doc} from '../../types'
 import {EditForm} from './editForm'
@@ -28,14 +28,14 @@ interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   markers: Array<{path: any[]}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialFocusPath: unknown[] | null
+  focusPath: Path
+  onFocus: (path: Path) => void
   margins: [number, number, number, number]
 }
 
 const noop = () => undefined
 
 const INITIAL_STATE = {
-  focusPath: [] as unknown[],
   filterField: () => true
 }
 
@@ -51,13 +51,6 @@ export class FormView extends React.PureComponent<Props> {
   filterFieldFnSubscription: Subscription | null = null
 
   componentDidMount() {
-    const {initialFocusPath} = this.props
-
-    if (initialFocusPath) {
-      this.setState({focusPath: initialFocusPath})
-      this.reportFocusPath(initialFocusPath)
-    }
-
     if (filterFieldFn$) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.filterFieldFnSubscription = filterFieldFn$.subscribe((filterField: any) =>
@@ -70,39 +63,6 @@ export class FormView extends React.PureComponent<Props> {
     if (this.filterFieldFnSubscription) {
       this.filterFieldFnSubscription.unsubscribe()
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleFocus = (path: any[]) => {
-    this.setState({focusPath: path})
-    this.reportFocusPath(path)
-  }
-
-  scrollToFocusPath = (path: any[]) => {
-    const pathString = path[0]
-    const element = document.querySelector(`[data-focus-path="${pathString}"]`)
-
-    if (element) {
-      element.scrollIntoView({behavior: 'smooth', inline: 'center'})
-
-      // @todo: replace this with `element.focus({preventScroll: true})`
-      setTimeout(() => {
-        this.handleFocus(path)
-      }, 300)
-    } else {
-      this.handleFocus(path)
-    }
-  }
-
-  reportFocusPath(path) {
-    setLocation([
-      {
-        type: 'document',
-        documentId: this.props.id,
-        path,
-        lastActiveAt: new Date().toISOString()
-      }
-    ])
   }
 
   handleBlur = () => {
@@ -126,8 +86,18 @@ export class FormView extends React.PureComponent<Props> {
   }
 
   render() {
-    const {id, value, initialValue, markers, schemaType, compareValue, margins} = this.props
-    const {focusPath, filterField} = this.state
+    const {
+      id,
+      focusPath,
+      onFocus,
+      value,
+      initialValue,
+      markers,
+      schemaType,
+      compareValue,
+      margins
+    } = this.props
+    const {filterField} = this.state
     const readOnly = this.isReadOnly()
     const documentId = value && value._id && value._id.replace(/^drafts\./, '')
 
@@ -156,7 +126,7 @@ export class FormView extends React.PureComponent<Props> {
             markers={markers}
             onBlur={this.handleBlur}
             onChange={readOnly ? noop : this.props.onChange}
-            onFocus={this.handleFocus}
+            onFocus={onFocus}
             readOnly={readOnly}
             schema={schema}
             type={schemaType}

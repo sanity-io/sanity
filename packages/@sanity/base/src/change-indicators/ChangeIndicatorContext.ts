@@ -12,13 +12,15 @@ interface ChangeIndicatorContext {
 export interface ConnectorContext {
   isReviewChangesOpen: boolean
   onOpenReviewChanges: () => void
+  onSetFocus: (nextPath: Path) => void
 }
 export const ConnectorContext: React.Context<ConnectorContext> = React.createContext({
   isReviewChangesOpen: false as boolean,
-  onOpenReviewChanges: () => {}
+  onOpenReviewChanges: () => {},
+  onSetFocus: (nextPath: Path) => {}
 })
 
-const initial: ChangeIndicatorContext = {path: [], fullPath: [], focusPath: null}
+const initial: ChangeIndicatorContext = {path: [], fullPath: [], focusPath: []}
 
 export const ChangeIndicatorContext: React.Context<ChangeIndicatorContext> = React.createContext(
   initial
