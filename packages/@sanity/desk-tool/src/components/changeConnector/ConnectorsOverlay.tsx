@@ -14,6 +14,7 @@ import styles from './ConnectorsOverlay.css'
 
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
+import {sortBy} from 'lodash'
 
 export interface Rect {
   height: number
@@ -107,7 +108,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
         (id === hovered || reportedChangeBar.hasHover || reportedChangeBar.hasFocus)
     )
 
-  const visibleConnectors = changeBarsWithFocusOrHover
+  const enabledConnectors = changeBarsWithFocusOrHover
     .map(([id, value]) => ({
       field: {
         id,
@@ -133,6 +134,8 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   // note: this assumes the changes panel header and the document panel always have the same height
   const topEdge = changesPanelRect?.top
   const verticalLineLeft = changesPanelRect?.left
+
+  const visibleConnectors = sortBy(enabledConnectors, c => -c.field.path.length).slice(0, 1)
 
   return (
     <ScrollMonitor onScroll={forceUpdate}>
