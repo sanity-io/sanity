@@ -3,6 +3,7 @@ import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
 import styles from './BooleanInput.css'
@@ -23,41 +24,43 @@ const BooleanInput = React.forwardRef(
     )
 
     return (
-      <div className={styles.root} ref={ref}>
-        <div className={styles.inputWrapper} data-layout={layout}>
-          {layout === 'checkbox' && (
-            <Checkbox
-              ref={inputRef}
-              label={type.title}
-              readOnly={readOnly}
-              onChange={handleChange}
-              onFocus={onFocus}
-              checked={value}
-              description={type.description}
-            >
-              <ValidationStatus markers={markers} />
-            </Checkbox>
-          )}
+      <ChangeIndicator>
+        <div className={styles.root} ref={ref}>
+          <div className={styles.inputWrapper} data-layout={layout}>
+            {layout === 'checkbox' && (
+              <Checkbox
+                ref={inputRef}
+                label={type.title}
+                readOnly={readOnly}
+                onChange={handleChange}
+                onFocus={onFocus}
+                checked={value}
+                description={type.description}
+              >
+                <ValidationStatus markers={markers} />
+              </Checkbox>
+            )}
 
-          {layout === 'switch' && (
-            <Switch
-              ref={inputRef}
-              readOnly={readOnly}
-              checked={value}
-              label={type.title}
-              description={type.description}
-              onChange={handleChange}
-              onFocus={onFocus}
-            >
-              <ValidationStatus markers={markers} />
-            </Switch>
-          )}
+            {layout === 'switch' && (
+              <Switch
+                ref={inputRef}
+                readOnly={readOnly}
+                checked={value}
+                label={type.title}
+                description={type.description}
+                onChange={handleChange}
+                onFocus={onFocus}
+              >
+                <ValidationStatus markers={markers} />
+              </Switch>
+            )}
+          </div>
+
+          <FieldStatus maxAvatars={1} position="top">
+            <FieldPresence maxAvatars={1} presence={presence} />
+          </FieldStatus>
         </div>
-
-        <FieldStatus maxAvatars={1} position="top">
-          <FieldPresence maxAvatars={1} presence={presence} />
-        </FieldStatus>
-      </div>
+      </ChangeIndicator>
     )
   }
 )
