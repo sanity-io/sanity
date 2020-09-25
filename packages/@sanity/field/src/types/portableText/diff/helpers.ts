@@ -455,3 +455,19 @@ export function findMarksDiff(
     )?.diff
   return marksDiff && marksDiff.type === 'string' ? marksDiff : undefined
 }
+
+export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): ObjectDiff {
+  return (
+    ((diff.fields.markDefs &&
+      diff.fields.markDefs.isChanged &&
+      diff.fields.markDefs.type === 'array' &&
+      diff.fields.markDefs.items.find(
+        item =>
+          item.diff &&
+          item.diff.type === 'object' &&
+          item.diff.toValue &&
+          item.diff.toValue._key &&
+          item.diff.toValue._key === markDefKey
+      )?.diff) as ObjectDiff) || undefined
+  )
+}
