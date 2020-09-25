@@ -12,6 +12,7 @@ Options
   --dry Dry run (no changes are made to files)
   --extensions=EXT Transform files with these file extensions (comma separated list)
                    (default: js,ts,tsx)
+  --no-verify Skips verification steps before running codemod
 
 Examples
   # Show available code mods
@@ -48,7 +49,7 @@ export default {
     }
 
     const mod = mods[modName]
-    if (typeof mod.verify === 'function') {
+    if (typeof mod.verify === 'function' && cliFlags.verify !== false) {
       await mod.verify(context)
     }
 
