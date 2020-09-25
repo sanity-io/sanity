@@ -5,7 +5,7 @@ import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
-import {Marker, Path, Reference} from '@sanity/types'
+import {Marker, Path, ImageAsset, Image as BaseImage, SanityDocument} from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -32,7 +32,12 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 // Package files
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {Type} from '../../typedefs'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import {
+  ResolvedUploader,
+  Uploader,
+  UploaderResolver,
+  UploadOptions
+} from '../../sanity/uploads/typedefs'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -49,40 +54,28 @@ type FieldT = {
   type: Type
 }
 
-export type AssetDocumentProps = {
-  originalFilename?: string
-  label?: string
-  title?: string
-  description?: string
-  creditLine?: string
-  source?: {
-    id: string
-    name: string
-    url?: string
-  }
-}
-
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string | File
-  assetDocumentProps?: AssetDocumentProps
+  assetDocumentProps?: ImageAsset
 }
 
-export interface Value {
-  _upload?: any
-  asset?: Reference
-  hotspot?: any
-  crop?: any
+interface UploadState {
+  progress: number
+}
+
+export interface Image extends Partial<BaseImage> {
+  _upload?: UploadState
 }
 
 export type Props = {
-  value?: Value
-  document?: Value
+  value?: Image
+  document?: Image
   type: Type
   level: number
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   resolveUploader: UploaderResolver
-  materialize: (arg0: string) => Observable<Record<string, any>>
+  materialize: (documentId: string) => Observable<SanityDocument>
   onBlur: () => void
   onFocus: (path: Path) => void
   readOnly: boolean | null
@@ -148,7 +141,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return get(this.props.type, 'options.hotspot') === true
   }
 
-  getConstrainedImageSrc = (assetDocument: Record<string, any>): string => {
+  getConstrainedImageSrc = (assetDocument: ImageAsset): string => {
     const materializedSize = ImageTool.maxWidth || 1000
     const maxSize = materializedSize * getDevicePixelRatio()
     const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
@@ -191,7 +184,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File, assetDocumentProps: AssetDocumentProps = {}) {
+  uploadWith(uploader: Uploader, file: File, assetDocumentProps?: UploadOptions) {
     const {type, onChange} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
@@ -225,7 +218,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     })
   }
 
-  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
+  handleRemoveButtonClick = () => {
     const {getValuePath} = this.context
     const {value} = this.props
     const parentPathSegment = getValuePath().slice(-1)[0]
@@ -410,7 +403,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderMaterializedAsset = (assetDocument: Record<string, any>) => {
+  renderMaterializedAsset = (assetDocument: ImageAsset) => {
     const {value = {}} = this.props
     const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
     const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
@@ -450,7 +443,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderUploadState(uploadState: any) {
+  renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
     const isComplete =
       uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
@@ -597,7 +590,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               actionTitle="OK"
               onAction={() => this.setState({uploadError: null})}
               title="Upload error"
-              subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
+              subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
             />
           )}
           <div className={styles.content}>
