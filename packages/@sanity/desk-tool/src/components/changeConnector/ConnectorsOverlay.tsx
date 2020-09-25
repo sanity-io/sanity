@@ -146,7 +146,6 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
       >
         {visibleConnectors.map(({field, change}) => {
           const changeMarkerLeft = change.rect.left
-          const fieldMarkerLeft = field.rect.left + field.rect.width
 
           const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
           const fieldBottom = field.rect.top + field.rect.height - VERTICAL_CONNECTOR_PADDING
