@@ -1,16 +1,15 @@
 import {Reference, SanityDocument} from '../documents'
 
+export interface File {
+  [key: string]: unknown // We allow meta-fields on file
+  asset: Reference
+}
+
 export interface Image {
-  [key: string]: unknown
+  [key: string]: unknown // We allow meta-fields on image
   asset: Reference
   crop?: ImageCrop
   hotspot?: ImageHotspot
-}
-
-export interface AssetSourceSpec {
-  id: string
-  name: string
-  url?: string
 }
 
 export interface Asset extends SanityDocument {
@@ -98,3 +97,9 @@ export type SwatchName =
   | 'lightVibrant'
   | 'muted'
   | 'vibrant'
+
+export interface AssetSourceSpec {
+  id: string
+  name: string
+  url?: string
+}
