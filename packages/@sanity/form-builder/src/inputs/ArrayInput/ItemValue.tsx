@@ -24,6 +24,7 @@ import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
 import InvalidItem from './InvalidItem'
+import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -272,7 +273,6 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     if (!memberType) {
       return <InvalidItem onChange={this.handleChange} type={type} value={value} />
     }
-
     return (
       <ChangeIndicatorScope path={[{_key: value._key}]}>
         <div className={styles.inner}>
@@ -289,8 +289,10 @@ export default class RenderItemValue extends React.PureComponent<Props> {
               className={styles.previewWrapperHelper}
               onFocus={this.handleFocus}
             >
-              {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-              <Preview layout={previewLayout} value={value} type={memberType} />
+              <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+                {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
+                <Preview layout={previewLayout} value={value} type={memberType} />
+              </ContextProvidedChangeIndicator>
             </div>
           </div>
 
