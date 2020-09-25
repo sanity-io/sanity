@@ -1,9 +1,10 @@
 import React, {useMemo} from 'react'
 import {flatten, uniq} from 'lodash'
-import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} from '../types'
+import {PortableTextBlock, PortableTextChild, PortableTextDiff} from '../types'
 import {
   ANNOTATION_SYMBOLS,
   createChildMap,
+  findChildDiff,
   findAnnotationDiff,
   findMarksDiff,
   getChildSchemaType,
@@ -36,7 +37,7 @@ type Props = {
 export default function PortableText(props: Props): JSX.Element {
   const {diff, schemaType} = props
   const childMap = useMemo(() => createChildMap(diff.origin, schemaType), [diff, schemaType])
-  const block = diff.displayValue
+  const block = diff.origin.toValue || diff.origin.fromValue
 
   const inlineObjects = diff.origin.toValue
     ? getInlineObjects(diff.origin.toValue as PortableTextBlock)
@@ -55,10 +56,35 @@ export default function PortableText(props: Props): JSX.Element {
           childrenDiff.items[0].diff.fields.text.segments) ||
         []
       const returnedChildren: React.ReactNode[] = []
+
+      // Special case for new empty PT-block (single span child with empty text)
+      if (
+        block.children.length === 1 &&
+        block.children[0]._type === 'span' &&
+        typeof block.children[0].text === 'string' &&
+        child.text === '' &&
+        diff.origin.action !== 'unchanged'
+      ) {
+        const textDiff = findChildDiff(diff.origin, block.children[0]) || diff.origin
+        if (textDiff && textDiff.action !== 'unchanged') {
+          return (
+            <DiffCard
+              annotation={textDiff.annotation}
+              as={textDiff.action === 'removed' ? 'del' : 'ins'}
+              tooltip={{
+                description: `${textDiff.action} empty text`
+              }}
+            >
+              <span>&crarr;</span>
+            </DiffCard>
+          )
+        }
+      }
+
+      // Run through all the segments from the PortableTextDiff
+      // TODO: clean up this complexity?
       let activeMarks: string[] = []
       let removedMarks: string[] = []
-
-      // TODO: clean up this complexity!
       segments.forEach(seg => {
         const isInline = INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart = markSymbolsStart.concat(annotationSymbolsStart).includes(seg.text)
@@ -105,7 +131,7 @@ export default function PortableText(props: Props): JSX.Element {
             renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)
           )
         } else if (seg.action === 'removed') {
-          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg)
+          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg.text)
           returnedChildren.push(
             <DiffCard
               annotation={textDiffAnnotation || seg.annotation}
@@ -116,7 +142,7 @@ export default function PortableText(props: Props): JSX.Element {
             </DiffCard>
           )
         } else if (seg.action === 'added') {
-          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg)
+          const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg.text)
           returnedChildren.push(
             <DiffCard
               annotation={textDiffAnnotation || seg.annotation}
@@ -134,13 +160,13 @@ export default function PortableText(props: Props): JSX.Element {
   }
 
   return (
-    <Block block={block} diff={diff}>
+    <Block block={diff.displayValue} diff={diff}>
       {(diff.displayValue.children || []).map(child => renderChild(child))}
     </Block>
   )
 }
 
-function findTextAnnotationFromSegment(diff: ObjectDiff, segment: StringSegment) {
+function findTextAnnotationFromSegment(diff: ObjectDiff, text: string) {
   const childrenDiff = diff.fields.children as ArrayDiff
   const childItem = childrenDiff.items.find(
     item =>
@@ -149,7 +175,7 @@ function findTextAnnotationFromSegment(diff: ObjectDiff, segment: StringSegment)
       item.diff.fields.text &&
       item.diff.fields.text.type === 'string' &&
       item.diff.fields.text.action !== 'unchanged' &&
-      item.diff.fields.text.segments.find(seg => seg.text === segment.text)
+      item.diff.fields.text.segments.find(seg => seg.text === text)
   )
   if (
     childItem &&
