@@ -1,4 +1,4 @@
-import {createContext} from 'react'
-import {ScrollContextValue} from './types'
+import React from 'react'
+import {PubSub} from 'nano-pubsub'
 
-export const ScrollContext = createContext<ScrollContextValue>({})
+export const ScrollContext = React.createContext<null | PubSub<Event>>(null)
