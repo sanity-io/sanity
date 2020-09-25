@@ -1,5 +1,5 @@
 import React from 'react'
-import {useReporter} from '@sanity/base/lib/change-indicators'
+import {useReporter} from '../'
 
 export function ReportChangesPanel(props: React.ComponentProps<'div'>) {
   const ref = React.useRef<HTMLDivElement>(null)

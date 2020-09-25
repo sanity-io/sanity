@@ -1,6 +1,6 @@
 import React from 'react'
 import {ConnectorsOverlay} from './ConnectorsOverlay'
-import {Tracker, ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {Tracker, ConnectorContext} from '../'
 import {Path} from '@sanity/types'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 
