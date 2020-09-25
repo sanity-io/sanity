@@ -1,15 +1,16 @@
 import React from 'react'
-import _scrollIntoView from 'scroll-into-view-if-needed'
-import {useReportedValues, Reported, TrackedChange, TrackedArea} from '../'
-import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from '../constants'
-import {Connector, drawLine, vLine} from './Connector'
-import {Arrow} from './Arrow'
-
-import styles from './ConnectorsOverlay.css'
 
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
 import {sortBy} from 'lodash'
+import {TrackedChange, useReportedValues} from '../'
+import getRelativeRect from '../helpers/getRelativeRect'
+import isChangeBar from '../helpers/isChangeBar'
+import scrollIntoView from '../helpers/scrollIntoView'
+import styles from './ConnectorsOverlay.css'
+import {Arrow} from './Arrow'
+import {Connector, drawLine, vLine} from './Connector'
+import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from '../constants'
 
 export interface Rect {
   height: number
@@ -20,65 +21,11 @@ export interface Rect {
 
 const DEBUG = false
 
-const isScrollContainer = el => el.scrollHeight !== el.offsetHeight
-
-const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
-  let el: HTMLElement | null = source
-  const bounds: {top: number; height: number} = {
-    top: 0,
-    height: Number.MAX_SAFE_INTEGER
-  }
-  let top = 0
-  let left = 0
-  let foundScrollContainer = false
-  while (el && el !== target) {
-    if (foundScrollContainer) {
-      bounds.top += el.offsetTop
-    }
-
-    if (isScrollContainer(el)) {
-      bounds.top = el.offsetTop
-      bounds.height = el.offsetHeight
-      foundScrollContainer = true
-    }
-    top += el.offsetTop - el.scrollTop
-    left += el.offsetLeft - el.scrollLeft
-    el = el.offsetParent as HTMLElement
-  }
-  return {
-    top,
-    left,
-    bounds: {
-      top: bounds.top,
-      bottom: bounds.top + bounds.height
-    }
-  }
-}
-
-function getRelativeRect(element, parent) {
-  return {
-    ...getOffsetsTo(element, parent),
-    width: element.offsetWidth,
-    height: element.offsetHeight
-  }
-}
-
-function scrollIntoView(element) {
-  _scrollIntoView(element, {
-    scrollMode: 'if-needed',
-    block: 'nearest',
-    inline: 'start'
-  })
-}
-
-function isChangeBar(v: Reported<TrackedArea | TrackedChange>): v is Reported<TrackedChange> {
-  return v[0] !== 'changePanel'
-}
-
 interface Props {
   rootRef: HTMLDivElement
   onSetFocus: (nextFocusPath: Path) => void
 }
+
 export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Props) {
   const {rootRef, onSetFocus} = props
 
@@ -183,18 +130,17 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             ? styles.dangerConnector
             : styles.connector
 
+          const onConnectorClick = () => {
+            scrollIntoView(field)
+            scrollIntoView(change)
+
+            onSetFocus(field.path)
+          }
+
           return (
             <React.Fragment key={`field-${field.id}`}>
               {change && (
-                <g
-                  onClick={() => {
-                    onSetFocus(field.path)
-                    // todo: this is needed because onSetFocus doesn't trigger scroll to focus if focus is already
-                    scrollIntoView(field?.element)
-                    scrollIntoView(change?.element)
-                  }}
-                  className={connectorClassName}
-                >
+                <g onClick={onConnectorClick} className={connectorClassName}>
                   <Connector
                     from={connectorFrom}
                     to={connectorTo}
@@ -251,7 +197,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
 
                   {/* this is the bar marking the line in the changes panel */}
                   <path
-                    style={{pointerEvents: 'none'}}
+                    onClick={onConnectorClick}
                     d={drawLine(
                       vLine(
                         connectorTo.left,
