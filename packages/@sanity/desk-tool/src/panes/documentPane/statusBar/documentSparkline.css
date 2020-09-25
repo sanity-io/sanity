@@ -34,12 +34,12 @@
   background: var(--component-bg);
   height: 40px; /* same as reviewChangesButton button */
   border: 1px solid transparent;
+  margin-right: var(--large-padding);
 }
 
 .reviewChangesButton {
   border: 1px solid var(--gray-lighter);
   border-radius: var(--border-radius-medium);
-  margin-left: var(--large-padding);
   color: var(--text-muted);
   text-align: left;
   transform: translate3d(0, 0, 0);
@@ -135,6 +135,11 @@
   }
 
   @nest &[data-type='editDraft'] {
+    background-color: var(--timeline-event-enabled-icon-edited-bg);
+    color: var(--timeline-event-enabled-icon-edited-fg);
+  }
+
+  @nest &[data-type='unpublish'] {
     background-color: var(--timeline-event-enabled-icon-edited-bg);
     color: var(--timeline-event-enabled-icon-edited-fg);
   }
