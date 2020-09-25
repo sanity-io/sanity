@@ -1,6 +1,7 @@
+import {Observable} from 'rxjs'
+import {AssetSourceSpec} from '@sanity/types'
 import {Type} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
-import {Observable} from 'rxjs'
 
 export type UploadEvent = {
   type: 'uploadEvent'
@@ -16,11 +17,7 @@ export type UploadOptions = {
   title?: string
   description?: string
   creditLine?: string
-  source?: {
-    id: string
-    name: string
-    url?: string
-  }
+  source?: AssetSourceSpec
 }
 
 export type UploaderDef = {
