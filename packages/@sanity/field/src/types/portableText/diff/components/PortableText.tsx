@@ -122,7 +122,9 @@ export default function PortableText(props: Props): JSX.Element {
           }
         } else if (seg.action === 'unchanged') {
           returnedChildren.push(
-            renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)
+            <span key={`segment-${returnedChildren.length}`}>
+              {renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)}
+            </span>
           )
         } else if (seg.action === 'removed') {
           const textDiffAnnotation = findTextAnnotationFromSegment(diff, seg.text)
@@ -130,6 +132,7 @@ export default function PortableText(props: Props): JSX.Element {
             <DiffCard
               annotation={textDiffAnnotation || seg.annotation}
               as="del"
+              key={`segment-${returnedChildren.length}`}
               tooltip={{description: 'Removed text'}}
             >
               {renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)}
@@ -141,6 +144,7 @@ export default function PortableText(props: Props): JSX.Element {
             <DiffCard
               annotation={textDiffAnnotation || seg.annotation}
               as="ins"
+              key={`segment-${returnedChildren.length}`}
               tooltip={{description: 'Added text'}}
             >
               {renderWithMarks(diff.origin, activeMarks, removedMarks, seg.text, spanSchemaType)}
