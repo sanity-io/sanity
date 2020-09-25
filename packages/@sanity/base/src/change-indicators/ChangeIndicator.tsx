@@ -145,6 +145,28 @@ interface ContextProvidedProps {
   disabled?: boolean
 }
 
+export const ChangeIndicatorCompareValueProvider = (props: {
+  value: any
+  compareValue: any
+  children: React.ReactNode
+}) => {
+  const parentContext = React.useContext(ChangeIndicatorContext)
+
+  return (
+    <ChangeIndicatorContext.Provider
+      value={{
+        value: props.value,
+        compareValue: props.compareValue,
+        focusPath: parentContext.focusPath || [],
+        path: parentContext.path,
+        fullPath: parentContext.fullPath
+      }}
+    >
+      {props.children}
+    </ChangeIndicatorContext.Provider>
+  )
+}
+
 export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
   const context = React.useContext(ChangeIndicatorContext)
   const {value, compareValue, path, focusPath, fullPath} = context

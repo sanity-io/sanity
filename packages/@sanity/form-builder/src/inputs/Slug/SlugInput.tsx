@@ -10,7 +10,7 @@ import {
   Marker,
   isValidationErrorMarker
 } from '@sanity/types'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -120,7 +120,7 @@ export default withValuePath(
       }
 
       handleFocusCurrent = event => {
-        this.props.onFocus(['current'])
+        this.props.onFocus([])
       }
 
       handleGenerateSlug = () => {
@@ -185,9 +185,7 @@ export default withValuePath(
         }
         const errors = markers.filter(isValidationErrorMarker)
         return (
-          <ChangeIndicatorProvider
-            path={[]}
-            focusPath={focusPath}
+          <ChangeIndicatorCompareValueProvider
             value={value?.current}
             compareValue={compareValue?.current}
           >
@@ -218,7 +216,7 @@ export default withValuePath(
                 )}
               </div>
             </FormField>
-          </ChangeIndicatorProvider>
+          </ChangeIndicatorCompareValueProvider>
         )
       }
     }
