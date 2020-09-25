@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/code'
+import {MdCode as icon} from 'react-icons/md'
 
 export default {
   name: 'codeTest',

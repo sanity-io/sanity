@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/ti/infinity-outline'
+import {TiInfinityOutline as icon} from 'react-icons/ti'
 
 export default {
   name: 'recursiveDocument',

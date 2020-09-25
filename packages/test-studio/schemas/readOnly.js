@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/text-format'
+import {MdTextFormat as icon} from 'react-icons/md'
 import React from 'react'
 
 export default {

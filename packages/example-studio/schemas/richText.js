@@ -1,13 +1,19 @@
 import React from 'react'
-import icon from 'react-icons/lib/fa/font'
-import AuthorIcon from 'react-icons/lib/fa/user'
+import {FaFont as icon, FaUser as AuthorIcon} from 'react-icons/fa'
 import Highlight from '../parts/blockEditor/Highlight'
 import AuthorAnnotation from '../parts/blockEditor/AuthorAnnotation'
 import TitleStyle from '../parts/blockEditor/TitleStyle'
 
 const markerIcon = () => {
   return (
-    <svg x="0" y="0" width="1em" height="1em" viewBox="0 0 414.065 414.064" style={{verticalAlign: 'middle'}}>
+    <svg
+      x="0"
+      y="0"
+      width="1em"
+      height="1em"
+      viewBox="0 0 414.065 414.064"
+      style={{verticalAlign: 'middle'}}
+    >
       <path
         d="M251.948,286.342c4.427,2.147,10.875,2.523,13.3-3.205c25.512-60.286,87.315-209.611,87.315-209.611
         c1.754-4.497-0.375-9.884-4.729-11.969L221.203,0.888c-4.354-2.085-9.886-0.368-12.291,3.815
@@ -45,7 +51,10 @@ export default {
         {
           title: 'Block',
           type: 'block',
-          lists: [{type: 'Bullet', value: 'bullet'}, {type: 'Number', value: 'number'}],
+          lists: [
+            {type: 'Bullet', value: 'bullet'},
+            {type: 'Number', value: 'number'}
+          ],
           marks: {
             decorators: [
               {title: 'Strong', value: 'strong'},

@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/ti/sort-numerically'
+import {TiSortNumerically as icon} from 'react-icons/ti'
 
 export default {
   name: 'numbersTest',
@@ -45,11 +45,7 @@ export default {
       title: 'Test Number - List objects and numbers',
       type: 'number',
       options: {
-        list: [
-          {value: 1, title: 'One'},
-          {value: 2, title: 'Two'},
-          3
-        ]
+        list: [{value: 1, title: 'One'}, {value: 2, title: 'Two'}, 3]
       }
     },
     {

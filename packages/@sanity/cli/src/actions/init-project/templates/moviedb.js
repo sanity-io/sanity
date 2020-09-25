@@ -3,7 +3,7 @@ export const datasetUrl = 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz'
 
 export const dependencies = {
   '@sanity/google-maps-input': '^0.99.0',
-  'react-icons': '^2.2.5'
+  'react-icons': '^3.11.0'
 }
 
 export const generateSanityManifest = base => ({

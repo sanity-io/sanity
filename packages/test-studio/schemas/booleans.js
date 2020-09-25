@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/check-box'
+import {MdCheckBox as icon} from 'react-icons/md'
 
 export default {
   name: 'booleansTest',

@@ -1,4 +1,4 @@
-import BookIcon from 'react-icons/lib/fa/book'
+import {FaBook as BookIcon} from 'react-icons/fa'
 
 function formatSubtitle(thesis) {
   if (thesis.authorName && thesis.publicationYear) {

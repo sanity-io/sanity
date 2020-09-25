@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React from 'react'
-import icon from 'react-icons/lib/md/format-color-fill'
+import {MdFormatColorFill as icon} from 'react-icons/md'
 
 export default {
   name: 'colorTest',

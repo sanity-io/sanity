@@ -1,5 +1,5 @@
+import {MdPerson as icon} from 'react-icons/md'
 import AuthorPreview from '../parts/AuthorPreview'
-import icon from 'react-icons/lib/md/person'
 
 export default {
   name: 'author',

@@ -1,6 +1,6 @@
+import {FaVideoCamera as icon} from 'react-icons/fa'
 import VideoEmbedPreview from '../components/VideoEmbedPreview/VideoEmbedPreview'
 import VideoEmbedInput from '../components/VideoEmbedInput'
-import icon from 'react-icons/lib/fa/video-camera'
 
 export default {
   type: 'object',

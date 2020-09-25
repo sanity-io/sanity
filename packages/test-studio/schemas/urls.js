@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/link'
+import {MdLink as icon} from 'react-icons/md'
 
 export default {
   name: 'urlsTest',

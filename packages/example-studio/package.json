@@ -40,7 +40,7 @@
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-dom": "^16.9.0",
-    "react-icons": "^2.2.7",
+    "react-icons": "^3.11.0",
     "react-tooltip": "^3.5.0"
   },
   "devDependencies": {

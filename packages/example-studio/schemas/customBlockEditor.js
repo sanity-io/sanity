@@ -1,6 +1,5 @@
 import React from 'react'
-import icon from 'react-icons/lib/fa/font'
-import AuthorIcon from 'react-icons/lib/fa/user'
+import {FaFont as icon, FaUser as AuthorIcon} from 'react-icons/fa'
 import Highlight from '../parts/blockEditor/Highlight'
 import AuthorAnnotation from '../parts/blockEditor/AuthorAnnotation'
 import TitleStyle from '../parts/blockEditor/TitleStyle'
@@ -52,7 +51,10 @@ export default {
         {
           title: 'Block',
           type: 'block',
-          lists: [{type: 'Bullet', value: 'bullet'}, {type: 'Number', value: 'number'}],
+          lists: [
+            {type: 'Bullet', value: 'bullet'},
+            {type: 'Number', value: 'number'}
+          ],
           marks: {
             decorators: [
               {title: 'Strong', value: 'strong'},
