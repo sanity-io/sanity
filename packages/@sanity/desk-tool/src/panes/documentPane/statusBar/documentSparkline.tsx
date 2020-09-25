@@ -181,7 +181,16 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
           </div>
         </Button>
       )}
-      <DocumentBadges editState={editState} badges={badges} />
+      <div
+        className={styles.documentBadgesContainer}
+        style={{
+          // TODO: hacky solution. Should probably be fixed.
+          transform:
+            filteredSessions.length > 0 ? `translate3d(0, 0, 0)` : `translate3d(-100px, 0, 0)`
+        }}
+      >
+        <DocumentBadges editState={editState} badges={badges} />
+      </div>
     </div>
   )
 }
