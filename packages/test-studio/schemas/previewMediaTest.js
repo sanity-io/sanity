@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/tv'
+import {MdTv as icon} from 'react-icons/md'
 
 export default {
   name: 'previewMediaTest',

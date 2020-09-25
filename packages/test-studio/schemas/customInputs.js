@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/extension'
+import {MdExtension as icon} from 'react-icons/md'
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'

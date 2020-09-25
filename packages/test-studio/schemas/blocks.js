@@ -1,7 +1,9 @@
 import React from 'react'
-import icon from 'react-icons/lib/md/rate-review'
-import imageIcon from 'react-icons/lib/md/photo-library'
-import colorIcon from 'react-icons/lib/md/format-color-fill'
+import {
+  MdRateReview as icon,
+  MdPhotoLibrary as imageIcon,
+  MdFormatColorFill as colorIcon
+} from 'react-icons/md'
 import {BlockEditor} from 'part:@sanity/form-builder'
 
 const CustomEditor = React.forwardRef((props, ref) => {

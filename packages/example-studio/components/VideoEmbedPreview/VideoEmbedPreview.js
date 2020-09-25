@@ -2,9 +2,7 @@
 import React from 'react'
 import humanizeList from 'humanize-list'
 import PropTypes from 'prop-types'
-import FaFilm from 'react-icons/lib/fa/film'
-import FaYouTube from 'react-icons/lib/fa/youtube'
-import FaVimeo from 'react-icons/lib/fa/vimeo'
+import {FaFilm, FaYoutube, FaVimeo} from 'react-icons/fa'
 import styles from './VideoEmbedPreview.css'
 
 export const SUPPORTED_SERVICES = [
@@ -14,7 +12,7 @@ export const SUPPORTED_SERVICES = [
     id: 'youtube',
     title: 'YouTube',
     url: id => `https://www.youtube.com/embed/${id}?rel=0`,
-    icon: FaYouTube
+    icon: FaYoutube
   },
   {
     id: 'vimeo',

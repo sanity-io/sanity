@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/local-play'
+import {MdLocalPlay as icon} from 'react-icons/md'
 
 export default {
   name: 'screening',

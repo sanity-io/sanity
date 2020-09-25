@@ -1,5 +1,5 @@
 import React from 'react'
-import icon from 'react-icons/lib/md/pin-drop'
+import {MdPinDrop as icon} from 'react-icons/md'
 import config from 'config:@sanity/google-maps-input'
 
 export default {
@@ -49,9 +49,7 @@ export default {
           }
           return (
             <img
-              src={`https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=${location.lat},${
-                location.lng
-              }&size=${dimensions.width}x${dimensions.height}&key=${apiKey}`}
+              src={`https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=${location.lat},${location.lng}&size=${dimensions.width}x${dimensions.height}&key=${apiKey}`}
               alt={title}
             />
           )

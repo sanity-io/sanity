@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/email'
+import {MdEmail as icon} from 'react-icons/md'
 
 export default {
   name: 'emailsTest',

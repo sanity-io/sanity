@@ -1,5 +1,5 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import BookIcon from 'react-icons/lib/fa/book'
+import {FaBook as BookIcon} from 'react-icons/fa'
 
 const pickFirst = (obj, keys) => {
   if (!obj || typeof obj !== 'object') {

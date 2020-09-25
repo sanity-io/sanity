@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/go/microscope'
+import {GoMicroscope as icon} from 'react-icons/go'
 
 export default {
   name: 'proteinTest',

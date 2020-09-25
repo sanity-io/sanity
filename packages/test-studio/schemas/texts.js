@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/format-align-left'
+import {MdFormatAlignLeft as icon} from 'react-icons/md'
 
 export default {
   name: 'textsTest',

@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/md/center-focus-weak'
+import {MdCenterFocusWeak as icon} from 'react-icons/md'
 
 export default {
   name: 'focusTest',
@@ -23,7 +23,10 @@ export default {
       of: [
         {
           type: 'object',
-          fields: [{name: 'first', type: 'string'}, {name: 'focusTest', type: 'focusTest'}]
+          fields: [
+            {name: 'first', type: 'string'},
+            {name: 'focusTest', type: 'focusTest'}
+          ]
         }
       ]
     },

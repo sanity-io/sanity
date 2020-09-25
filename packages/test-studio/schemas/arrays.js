@@ -1,5 +1,5 @@
 import React from 'react'
-import icon from 'react-icons/lib/md/format-list-numbered'
+import {MdFormatListNumbered as icon} from 'react-icons/md'
 
 export const topLevelArrayType = {
   name: 'topLevelArrayType',

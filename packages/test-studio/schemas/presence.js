@@ -1,7 +1,7 @@
-import BookIcon from 'react-icons/lib/fa/book'
+import {range} from 'lodash'
+import {FaBook as BookIcon} from 'react-icons/fa'
 import {CustomInputWithDefaultPresence} from '../src/components/CustomInputWithDefaultPresence'
 import {CustomInputWithDialogOverlay} from '../src/components/CustomInputWithDialogOverlay'
-import {range} from 'lodash'
 
 export const objectWithNestedArray = {
   type: 'object',

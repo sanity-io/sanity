@@ -1,5 +1,5 @@
+import {MdExtension as icon} from 'react-icons/md'
 import CustomObjectInput from '../components/CustomObjectInput'
-import icon from 'react-icons/lib/md/extension'
 
 export default {
   type: 'document',
@@ -17,7 +17,10 @@ export default {
       name: 'metadata',
       type: 'object',
       title: 'Some metadata',
-      fields: [{name: 'name', type: 'string'}, {name: 'title', type: 'string'}]
+      fields: [
+        {name: 'name', type: 'string'},
+        {name: 'title', type: 'string'}
+      ]
     },
     {
       name: 'image',

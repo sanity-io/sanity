@@ -1,4 +1,4 @@
-import icon from 'react-icons/lib/ti/infinity'
+import {TiInfinity as icon} from 'react-icons/ti'
 
 export default {
   name: 'recursiveArraysTest',
