@@ -36,7 +36,7 @@
     "element-resize-detector": "^1.1.14",
     "exif-component": "^1.0.1",
     "lodash": "^4.17.15",
-    "nano-pubsub": "^1.0.2",
+    "nano-pubsub": "^2.0.0",
     "palx": "^1.0.3",
     "popper-max-size-modifier": "^0.2.0",
     "react-animate-height": "^2.0.6",
