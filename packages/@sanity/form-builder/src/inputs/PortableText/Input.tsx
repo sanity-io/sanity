@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -363,7 +364,14 @@ export default function PortableTextInput(props: Props) {
           onActivate={handleActivate}
           overlayClassName={styles.activateOnFocusOverlay}
         >
-          {ptEditor}
+          <ChangeIndicatorWithProvidedFullPath
+            compareDeep
+            value={value}
+            hasFocus={hasFocus}
+            path={[]}
+          >
+            {ptEditor}
+          </ChangeIndicatorWithProvidedFullPath>
         </ActivateOnFocus>
       )}
     </div>
