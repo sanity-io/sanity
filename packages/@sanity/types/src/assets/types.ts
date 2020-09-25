@@ -7,6 +7,12 @@ export interface Image {
   hotspot?: ImageHotspot
 }
 
+export interface AssetSourceSpec {
+  id: string
+  name: string
+  url?: string
+}
+
 export interface Asset extends SanityDocument {
   url: string
   path: string
@@ -16,6 +22,10 @@ export interface Asset extends SanityDocument {
   sha1hash: string
   size: number
   originalFilename?: string
+
+  // External asset source extensions
+  creditLine?: string
+  source?: AssetSourceSpec
 }
 
 export interface ImageAsset extends Asset {
