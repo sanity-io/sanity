@@ -99,7 +99,7 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
   // To enable transitions with position absolute and translate3d
   // give the session container the correct width based on amount of sessions
   const sessionContainerWidth =
-    syncState?.isSyncing || sessionsSliced.length === 1
+    sessionsSliced.length === 1
       ? SESSION_BADGE_SIZE
       : sessionsSliced.length * SESSION_BADGE_MARGIN + SESSION_BADGE_SIZE - SESSION_BADGE_MARGIN
 
@@ -166,9 +166,7 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
                     icon={icon}
                     style={{
                       ...SESSION_BADGE_STYLE,
-                      transform: syncState?.isSyncing
-                        ? `translate3d(0, 0, 0)`
-                        : `translate3d(${spacing}px, 0, 0)`
+                      transform: `translate3d(${spacing}px, 0, 0)`
                     }}
                   />
                 )
