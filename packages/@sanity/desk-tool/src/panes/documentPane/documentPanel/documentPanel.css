@@ -43,6 +43,10 @@
   height: 100%;
   position: relative;
 
+  @media not screen and (prefers-reduced-motion) {
+    scroll-behavior: smooth;
+  }
+
   @media (--screen-medium) {
     height: 100%;
     overflow: auto;

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {FormBuilder} from 'part:@sanity/form-builder'
@@ -34,6 +35,13 @@ export const EditForm = memo((props: Props) => {
   const presence = useDocumentPresence(props.id)
   const subscriptionRef = useRef<Subscription | null>(null)
   const patchChannel = useMemo(() => FormBuilder.createPatchChannel(), [])
+
+  useEffect(() => {
+    const el = document.querySelector(`[data-focus-path="${focusPath[0]}"]`)
+    if (el) {
+      scrollIntoView(el, {scrollMode: 'if-needed'})
+    }
+  }, [props.focusPath[0]])
 
   useEffect(() => {
     subscriptionRef.current = documentStore.pair

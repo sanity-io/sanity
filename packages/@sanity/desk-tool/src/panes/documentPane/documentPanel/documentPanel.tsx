@@ -10,6 +10,7 @@ import {DocumentHeaderTitle} from './header/title'
 import {DocumentPanelHeader} from './header/header'
 import {getMenuItems} from './menuItems'
 import {FormView} from './views'
+import {Path} from '@sanity/types'
 
 import styles from './documentPanel.css'
 import {
@@ -24,7 +25,6 @@ interface DocumentPanelProps {
   documentType: string
   draft: Doc | null
   idPrefix: string
-  initialFocusPath: any[]
   initialValue: Doc
   isClosable: boolean
   isCollapsed: boolean
@@ -33,6 +33,8 @@ interface DocumentPanelProps {
   markers: any
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
+  formInputFocusPath: Path
+  onFormInputFocus: (focusPath: Path) => void
   onCloseView: () => void
   onCollapse?: () => void
   onExpand?: () => void
@@ -52,13 +54,19 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
-  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
+  const {
+    toggleInspect,
+    isHistoryOpen,
+    views,
+    activeViewId,
+    onFormInputFocus,
+    formInputFocusPath
+  } = props
 
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
   const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
-  const formRef = useRef<any>()
   const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
 
   const {revTime} = historyController
@@ -96,12 +104,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [openHistory, toggleInspect]
   )
 
-  const scrollToFocusPath = useCallback((path: any) => {
-    if (formRef.current) {
-      formRef.current.scrollToFocusPath(path)
-    }
-  }, [])
-
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement = features.splitPanes
     ? portalRef.current || parentPortal.element
@@ -136,7 +138,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
           onTimelineOpen={props.onTimelineOpen}
           rootElement={props.rootElement}
           schemaType={props.schemaType}
-          scrollToFocusPath={scrollToFocusPath}
+          onSetFormInputFocus={props.onFormInputFocus}
           timelineMode={props.timelineMode}
           title={
             <DocumentHeaderTitle
@@ -158,12 +160,12 @@ export function DocumentPanel(props: DocumentPanelProps) {
             {activeView.type === 'form' && (
               <FormView
                 id={props.documentId}
-                initialFocusPath={props.initialFocusPath}
                 initialValue={props.initialValue}
+                focusPath={props.formInputFocusPath}
+                onFocus={props.onFormInputFocus}
                 markers={props.markers}
                 onChange={props.onChange}
                 readOnly={revTime !== null}
-                ref={formRef}
                 schemaType={props.schemaType}
                 value={displayed}
                 margins={margins}

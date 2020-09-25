@@ -3,6 +3,7 @@ import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useCallback, useRef, useState} from 'react'
+import {Path} from '@sanity/types'
 import {ChangeConnectorRoot} from '../../components/changeConnector/ChangeConnectorRoot'
 import {ReportChangesPanel} from '../../components/changeConnector/ReportChangesPanel'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
@@ -16,6 +17,7 @@ import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keybo
 import {DocumentStatusBar} from './statusBar'
 import {TimelinePopover} from './timeline'
 import {Doc, DocumentViewType} from './types'
+import {setLocation} from 'part:@sanity/base/datastore/presence'
 
 import styles from './documentPane.css'
 
@@ -75,10 +77,25 @@ export function DocumentPane(props: DocumentPaneProps) {
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
   const activeViewId = paneRouter.params.view || (views[0] && views[0].id)
-  const initialFocusPath = paneRouter.params.path
-    ? PathUtils.fromString(paneRouter.params.path)
-    : []
+  const [formInputFocusPath, setFocusPath] = React.useState<Path>(() =>
+    paneRouter.params.path ? PathUtils.fromString(paneRouter.params.path) : []
+  )
   const isInspectOpen = paneRouter.params.inspect === 'on'
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(nextFocusPath)
+      setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString()
+        }
+      ])
+    },
+    [documentId]
+  )
 
   const toggleInspect = useCallback(
     (toggle = !isInspectOpen) => {
@@ -158,6 +175,7 @@ export function DocumentPane(props: DocumentPaneProps) {
       rootRef={rootRef}
     >
       <ChangeConnectorRoot
+        onSetFocus={handleFocus}
         onOpenReviewChanges={open}
         isReviewChangesOpen={isChangesOpen}
         className={styles.documentAndChangesContainer}
@@ -173,7 +191,8 @@ export function DocumentPane(props: DocumentPaneProps) {
             documentType={documentType}
             draft={draft}
             idPrefix={paneKey}
-            initialFocusPath={initialFocusPath}
+            formInputFocusPath={formInputFocusPath}
+            onFormInputFocus={handleFocus}
             initialValue={initialValue}
             isClosable={isClosable}
             isCollapsed={isCollapsed}

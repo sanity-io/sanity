@@ -10,6 +10,7 @@ import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
+import {Path} from '@sanity/types'
 import {DocumentView} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
@@ -33,11 +34,11 @@ export interface DocumentPanelHeaderProps {
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
   onSplitPane: () => void
+  onSetFormInputFocus: (path: Path) => void
   onTimelineOpen: () => void
   rev: Chunk | null
   rootElement: HTMLDivElement | null
   schemaType: any
-  scrollToFocusPath: (path: any) => void
   timelineMode: 'rev' | 'since' | 'closed'
   title: React.ReactNode
   versionSelectRef: React.MutableRefObject<HTMLDivElement | null>
@@ -68,7 +69,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     rev,
     rootElement,
     schemaType,
-    scrollToFocusPath,
+    onSetFormInputFocus,
     timelineMode,
     title,
     versionSelectRef,
@@ -114,7 +115,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
               isOpen={isValidationOpen}
               markers={markers}
               schemaType={schemaType}
-              setFocusPath={scrollToFocusPath}
+              setFocusPath={onSetFormInputFocus}
               setOpen={setValidationOpen}
             />
           </div>

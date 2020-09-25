@@ -68,4 +68,8 @@
   padding: var(--large-padding) var(--medium-padding);
   overflow: auto;
   position: relative;
+
+  @media not screen and (prefers-reduced-motion) {
+    scroll-behavior: smooth;
+  }
 }
