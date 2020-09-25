@@ -57,6 +57,10 @@ declare module 'part:@sanity/base/close-icon' {
   export {default} from '@sanity/base/src/components/icons/CloseIcon'
 }
 
+declare module 'part:@sanity/base/warning-outline-icon' {
+  export {default} from '@sanity/base/src/components/icons/WarningOutline'
+}
+
 declare module 'part:@sanity/base/file-icon' {
   const FileIcon: React.ComponentType
   export default FileIcon

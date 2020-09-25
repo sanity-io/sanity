@@ -149,6 +149,9 @@ declare module 'part:@sanity/base/error-icon' {
 declare module 'part:@sanity/base/error-outline-icon' {
   export {default} from '@sanity/base/src/components/icons/ErrorOutline'
 }
+declare module 'part:@sanity/base/warning-outline-icon' {
+  export {default} from '@sanity/base/src/components/icons/WarningOutline'
+}
 declare module 'part:@sanity/base/eye-icon' {
   export {default} from '@sanity/base/src/components/icons/Eye'
 }
