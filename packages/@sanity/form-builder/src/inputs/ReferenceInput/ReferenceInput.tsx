@@ -3,6 +3,7 @@ import React from 'react'
 import {uniqueId} from 'lodash'
 import {Path, Reference, Marker, SanityDocument, isValidationErrorMarker} from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
@@ -49,8 +50,10 @@ type SearchError = {
 }
 export type Props = {
   value?: Reference
+  compareValue?: Reference
   type: Type & {options?: SearchTypeOptions}
   markers: Array<Marker>
+  focusPath: Path
   readOnly?: boolean
   onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
   onFocus: (path: any[]) => void
@@ -240,7 +243,16 @@ export default withValuePath(
         this._input = input
       }
       render() {
-        const {type, value, level, markers, readOnly, presence} = this.props
+        const {
+          type,
+          value,
+          level,
+          markers,
+          readOnly,
+          presence,
+          focusPath,
+          compareValue
+        } = this.props
         const {previewSnapshot, isFetching, isMissing, hits} = this.state
         const valueFromHit = value && hits.find(hit => hit._id === value._ref)
         const weakIs = value && value._weak ? 'weak' : 'strong'
@@ -256,49 +268,56 @@ export default withValuePath(
         const isLoadingSnapshot = value && value._ref && !previewSnapshot
         const placeholder = isLoadingSnapshot ? 'Loading…' : 'Type to search…'
         return (
-          <FormField
-            labelFor={this._inputId}
-            markers={markers}
-            label={type.title}
-            level={level}
-            description={type.description}
-            presence={presence}
+          <ChangeIndicatorProvider
+            path={[]}
+            focusPath={focusPath}
+            value={value?._ref}
+            compareValue={compareValue?._ref}
           >
-            <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
-              {hasWeakMismatch && (
-                <div className={styles.weakRefMismatchWarning}>
-                  Warning: This reference is <em>{weakIs}</em>, but should be{' '}
-                  <em>{weakShouldBe}</em> according to schema.
-                  <div>
-                    <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
+            <FormField
+              labelFor={this._inputId}
+              markers={markers}
+              label={type.title}
+              level={level}
+              description={type.description}
+              presence={presence}
+            >
+              <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
+                {hasWeakMismatch && (
+                  <div className={styles.weakRefMismatchWarning}>
+                    Warning: This reference is <em>{weakIs}</em>, but should be{' '}
+                    <em>{weakShouldBe}</em> according to schema.
+                    <div>
+                      <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
+                    </div>
                   </div>
-                </div>
-              )}
-              <SearchableSelect
-                inputId={this._inputId}
-                placeholder={readOnly ? '' : placeholder}
-                title={
-                  isMissing && hasRef
-                    ? `Referencing nonexistent document (id: ${value._ref || 'unknown'})`
-                    : previewSnapshot && previewSnapshot.description
-                }
-                customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                onOpen={this.handleOpen}
-                onFocus={this.handleFocus}
-                onSearch={this.handleSearch}
-                onChange={this.handleChange}
-                onClear={this.handleClear}
-                openItemElement={this.renderOpenItemElement}
-                value={valueFromHit || value}
-                inputValue={isMissing ? '<nonexistent reference>' : inputValue}
-                renderItem={this.renderHit}
-                isLoading={isFetching || isLoadingSnapshot}
-                items={hits}
-                ref={this.setInput}
-                readOnly={readOnly || isLoadingSnapshot}
-              />
-            </div>
-          </FormField>
+                )}
+                <SearchableSelect
+                  inputId={this._inputId}
+                  placeholder={readOnly ? '' : placeholder}
+                  title={
+                    isMissing && hasRef
+                      ? `Referencing nonexistent document (id: ${value._ref || 'unknown'})`
+                      : previewSnapshot && previewSnapshot.description
+                  }
+                  customValidity={errors.length > 0 ? errors[0].item.message : ''}
+                  onOpen={this.handleOpen}
+                  onFocus={this.handleFocus}
+                  onSearch={this.handleSearch}
+                  onChange={this.handleChange}
+                  onClear={this.handleClear}
+                  openItemElement={this.renderOpenItemElement}
+                  value={valueFromHit || value}
+                  inputValue={isMissing ? '<nonexistent reference>' : inputValue}
+                  renderItem={this.renderHit}
+                  isLoading={isFetching || isLoadingSnapshot}
+                  items={hits}
+                  ref={this.setInput}
+                  readOnly={readOnly || isLoadingSnapshot}
+                />
+              </div>
+            </FormField>
+          </ChangeIndicatorProvider>
         )
       }
     }
