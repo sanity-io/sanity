@@ -20,13 +20,8 @@ module.exports = {
   description,
   verify: async context => {
     const {workDir} = context
-    const iconPkgPath = resolveFrom.silent(workDir, 'react-icons/package.json')
-    const iconPkg = iconPkgPath && (await maybeReadJson(iconPkgPath))
-    const studioPkg = await maybeReadJson(path.join(workDir, 'package.json'))
-    if (iconPkg && semverCompare(iconPkg.version, '3.0.0') < 0) {
-      throw new Error('The installed version of react-icon seems to be < 3.0.0')
-    }
 
+    const studioPkg = await maybeReadJson(path.join(workDir, 'package.json'))
     const dependencies = (studioPkg && studioPkg.dependencies) || {}
     const dependencyVersion = (dependencies['react-icons'] || '').replace(/^[\^~]/, '')
     if (!dependencyVersion) {
@@ -35,6 +30,12 @@ module.exports = {
 
     if (semverCompare(dependencyVersion, '3.0.0') < 0) {
       throw new Error('react-icons declared in package.json dependencies is lower than 3.0.0')
+    }
+
+    const iconPkgPath = resolveFrom.silent(workDir, 'react-icons/package.json')
+    const iconPkg = iconPkgPath && (await maybeReadJson(iconPkgPath))
+    if (iconPkg && semverCompare(iconPkg.version, '3.0.0') < 0) {
+      throw new Error('The installed version of react-icon seems to be < 3.0.0')
     }
   }
 }
