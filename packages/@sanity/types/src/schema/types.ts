@@ -1,5 +1,6 @@
 // Note: INCOMPLETE, but it's a start
-
+import {ReferenceOptions} from '../reference'
+import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
 
 export interface Schema {
@@ -14,23 +15,43 @@ export interface BaseSchemaType {
   title?: string
   description?: string
   type?: SchemaType
+  readOnly?: boolean
+  icon?: React.ComponentType
+
+  /**
+   * @deprecated
+   */
+  placeholder?: string
+}
+
+export interface TitledListValue<V = unknown> {
+  _key?: string
+  title: string
+  value: V
+}
+
+interface EnumListProps<V = unknown> {
+  list?: TitledListValue<V>[] | V[]
+  layout?: 'radio' | 'dropdown'
+  direction?: 'horizontal' | 'vertical'
 }
 
 export interface StringSchemaType extends BaseSchemaType {
   jsonType: 'string'
-  options?: {
-    list?: {title?: string; value: string}[]
-    layout?: 'radio' | 'dropdown'
-    direction?: 'horizontal' | 'vertical'
-
+  options?: EnumListProps<string> & {
     // Actually just part of date time, but can't find a good way to differentiate
     dateFormat?: string
     timeFormat?: string
   }
 }
 
+export interface TextSchemaType extends StringSchemaType {
+  rows?: number
+}
+
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
+  options?: EnumListProps<number>
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -42,16 +63,17 @@ export interface BooleanSchemaType extends BaseSchemaType {
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
-  of: Exclude<SchemaType, ArraySchemaType>[]
+  of: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
   options?: {
-    list?: {title?: string; value: V}[] | V[]
+    list?: TitledListValue<V>[] | V[]
     layout?: V extends string ? 'tags' : 'grid'
+    direction?: 'horizontal' | 'vertical'
     sortable?: boolean
 
     /**
      * @deprecated
      */
-    editModal?: 'dialog' | 'fullscreen' | 'popover'
+    editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
   }
 }
 
@@ -100,6 +122,25 @@ export type Fieldset = SingleFieldSet | MultiFieldSet
 
 export interface ReferenceSchemaType extends ObjectSchemaType {
   to: SchemaType[]
+  weak?: boolean
+  options?: ReferenceOptions
+}
+
+export interface AssetSchemaTypeOptions {
+  accept?: string
+  storeOriginalFilename?: boolean
+}
+
+export interface FileSchemaType extends ObjectSchemaType {
+  options?: AssetSchemaTypeOptions
+}
+
+export interface ImageSchemaType extends ObjectSchemaType {
+  options?: AssetSchemaTypeOptions & {
+    hotspot?: boolean
+    metadata?: ('exif' | 'location' | 'lqip' | 'palette')[]
+    sources?: AssetSource[]
+  }
 }
 
 export type SchemaType =

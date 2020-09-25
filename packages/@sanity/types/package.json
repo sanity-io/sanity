@@ -4,6 +4,7 @@
   "description": "Type definitions for common Sanity data structures",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "sideEffects": false,
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
