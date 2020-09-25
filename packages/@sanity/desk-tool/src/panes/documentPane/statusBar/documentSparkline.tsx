@@ -6,7 +6,7 @@ import React from 'react'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
 import Button from 'part:@sanity/components/buttons/default'
-import {Chunk, ChunkType} from '@sanity/field/lib/diff'
+import {ChunkType} from '@sanity/field/lib/diff'
 import {useDocumentHistory} from '../documentHistory'
 import TimeAgo from '../../../components/TimeAgo'
 import {HistoryIcon, LiveIcon, PublishIcon} from '../../../badges/icons'
@@ -54,30 +54,37 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
   const {open: openHistory, historyController, timeline} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
   const syncState = useSyncState(timeline?.publishedId)
-
-  const lastSession = timeline.lastChunk()
-  const lastPublish =
-    lastSession?.type === 'publish'
-      ? lastSession
-      : (timeline.findLastPublishedBefore(lastSession) as any)
+  const isLiveDocument = type === 'live'
 
   const chunks = timeline.mapChunks(chunk => chunk)
-  // Make sure we only show draft sessions
-  const filteredSessions =
-    lastPublish === 'loading'
-      ? []
-      : chunks.filter(session => session.type === 'editDraft' && session.index > lastPublish?.index)
+  // Find the first unpublish or publish event and use it as the base event if it exists
+  const lastUnpublishOrPublishSession = chunks.find(
+    chunk => chunk.type === 'unpublish' || chunk.type === 'publish'
+  )
 
+  // Make sure we only show editDraft sessions (and count the unpublish as a draft session)
+  const filteredSessions = lastUnpublishOrPublishSession
+    ? chunks.filter(
+        session =>
+          (session.type === 'editDraft' || session.type === 'unpublish') &&
+          session.index >= lastUnpublishOrPublishSession.index
+      )
+    : chunks.filter(session => session.type === 'editDraft')
+
+  // Track the amount of sessions for the transition to work
   const prevSessionsCount = usePrevious(filteredSessions.length)
 
   React.useEffect(() => {
+    // If we have more sessions than before, transition the changes button in
     if (filteredSessions.length > prevSessionsCount) {
       setTransitionDirection('in')
     }
+    // If we have less sessions than before, or if there are no longer any draft sessions
+    // transition the changes button out
     if (prevSessionsCount > filteredSessions.length && filteredSessions.length === 0) {
       setTransitionDirection('out')
     }
-
+    // Reset the transition after 0.8s
     const animateTimer = setTimeout(() => {
       setTransitionDirection('')
     }, 800)
@@ -87,19 +94,23 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
   }, [filteredSessions.length, prevSessionsCount])
 
   // Only show a max number of edit sessions in the sessions button
-  const sessionsSliced = filteredSessions.slice(0, MAX_SESSIONS)
+  const sessionsSliced = filteredSessions.slice(0, MAX_SESSIONS).reverse()
 
-  // Give the session container the correct width based on sessions to enable transitions
+  // To enable transitions with position absolute and translate3d
+  // give the session container the correct width based on amount of sessions
   const sessionContainerWidth =
     syncState?.isSyncing || sessionsSliced.length === 1
       ? SESSION_BADGE_SIZE
       : sessionsSliced.length * SESSION_BADGE_MARGIN + SESSION_BADGE_SIZE - SESSION_BADGE_MARGIN
-  const isLiveDocument = type === 'live'
-  const showPublishedBadge = lastPublish && lastPublish !== 'loading' && !isLiveDocument
+
+  // Only show a published session badge if the base event was a publish event
+  // and we don't have a live document
+  const showPublishedSessionBadge =
+    lastUnpublishOrPublishSession?.type === 'publish' && !isLiveDocument
 
   return (
     <div className={styles.root} data-disabled={showingRevision}>
-      {showPublishedBadge && (
+      {showPublishedSessionBadge && (
         <div className={styles.primarySessionBadgeContainer}>
           <SessionBadge
             type="publish"
@@ -108,7 +119,9 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
           />
           <div className={styles.statusDetails}>
             <div className={styles.label}>Published</div>
-            {lastPublish.endTimestamp && <TimeAgo time={lastPublish?.endTimestamp} />}
+            {lastUnpublishOrPublishSession?.endTimestamp && (
+              <TimeAgo time={lastUnpublishOrPublishSession.endTimestamp} />
+            )}
           </div>
         </div>
       )}
@@ -149,7 +162,7 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
                   <SessionBadge
                     key={session.index}
                     title={title}
-                    type={session.type}
+                    type="editDraft" // always use editDraft
                     icon={icon}
                     style={{
                       ...SESSION_BADGE_STYLE,
