@@ -22,13 +22,41 @@ type Props = {
   renderCustomMarkers?: RenderCustomMarkers
 }
 export default function BlockExtras(props: Props) {
-  const {block, blockActions, height, isFullscreen, markers, onFocus, renderCustomMarkers} = props
-  const scopedValidation = getValidationMarkers(markers)
-  const errors = scopedValidation.filter(mrkr => mrkr.level === 'error')
-  const warnings = scopedValidation.filter(mrkr => mrkr.level === 'warning')
   const editor = usePortableTextEditor()
+  const {block, blockActions, height, isFullscreen, markers, onFocus, renderCustomMarkers} = props
+  const blockValidation = getValidationMarkers(markers)
+  const errors = blockValidation.filter(mrkr => mrkr.level === 'error')
+  const warnings = blockValidation.filter(mrkr => mrkr.level === 'warning')
   const selection = PortableTextEditor.getSelection(editor)
-  const hasFocus = selection && isEqual(selection.focus.path[0], {_key: block._key})
+  const hasFocus = !!selection && isEqual(selection.focus.path[0], {_key: block._key})
+  const content = (
+    <div className={styles.content} style={{height: `${height}px`}}>
+      {markers.length > 0 && (
+        <div className={styles.markers}>
+          <Markers
+            className={styles.markers}
+            markers={markers}
+            scopedValidation={blockValidation}
+            onFocus={onFocus}
+            renderCustomMarkers={renderCustomMarkers}
+          />
+        </div>
+      )}
+      {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
+    </div>
+  )
+  const returned = isFullscreen ? (
+    <ChangeIndicatorWithProvidedFullPath
+      compareDeep
+      value={block}
+      hasFocus={hasFocus}
+      path={[{_key: block._key}]}
+    >
+      {content}
+    </ChangeIndicatorWithProvidedFullPath>
+  ) : (
+    content
+  )
   return (
     <div
       className={classNames([
@@ -38,27 +66,7 @@ export default function BlockExtras(props: Props) {
         warnings.length > 0 && !errors.length && styles.withWarning
       ])}
     >
-      <ChangeIndicatorWithProvidedFullPath
-        compareDeep
-        value={block}
-        hasFocus={hasFocus}
-        path={[{_key: block._key}]}
-      >
-        <div className={styles.content} style={{height: `${height}px`}}>
-          {markers.length > 0 && (
-            <div className={styles.markers}>
-              <Markers
-                className={styles.markers}
-                markers={markers}
-                scopedValidation={scopedValidation}
-                onFocus={onFocus}
-                renderCustomMarkers={renderCustomMarkers}
-              />
-            </div>
-          )}
-          {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
-        </div>
-      </ChangeIndicatorWithProvidedFullPath>
+      {returned}
     </div>
   )
 }
