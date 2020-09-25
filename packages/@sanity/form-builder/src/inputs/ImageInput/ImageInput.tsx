@@ -64,7 +64,7 @@ interface UploadState {
   progress: number
 }
 
-export interface Image extends Partial<BaseImage> {
+interface Image extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
