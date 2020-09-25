@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {flatten, uniq} from 'lodash'
+import {flatten, uniq, startCase} from 'lodash'
 import {PortableTextBlock, PortableTextChild, PortableTextDiff} from '../types'
 import {
   ANNOTATION_SYMBOLS,
@@ -66,7 +66,7 @@ export default function PortableText(props: Props): JSX.Element {
               annotation={textDiff.annotation}
               as={textDiff.action === 'removed' ? 'del' : 'ins'}
               tooltip={{
-                description: `${textDiff.action} empty text`
+                description: `${startCase(textDiff.action)} empty text`
               }}
             >
               <span>{'\u21B2'}</span>
@@ -113,7 +113,7 @@ export default function PortableText(props: Props): JSX.Element {
             }
             returnedChildren.push(
               <InlineObject
-                key={`inline-object-${child._key}`}
+                key={`inline-object-${originChild._key}`}
                 object={originChild}
                 diff={objectDiff}
                 schemaType={objectSchemaType}
