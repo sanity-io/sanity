@@ -37,7 +37,7 @@ type Props = {
 export default function PortableText(props: Props): JSX.Element {
   const {diff, schemaType} = props
   const childMap = useMemo(() => createChildMap(diff.origin, schemaType), [diff, schemaType])
-  const block = diff.origin.toValue || diff.origin.fromValue
+  const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextBlock
 
   const inlineObjects = diff.origin.toValue
     ? getInlineObjects(diff.origin.toValue as PortableTextBlock)
@@ -58,13 +58,7 @@ export default function PortableText(props: Props): JSX.Element {
       const returnedChildren: React.ReactNode[] = []
 
       // Special case for new empty PT-block (single span child with empty text)
-      if (
-        block.children.length === 1 &&
-        block.children[0]._type === 'span' &&
-        typeof block.children[0].text === 'string' &&
-        child.text === '' &&
-        diff.origin.action !== 'unchanged'
-      ) {
+      if (isEmptyTextChange(block, diff)) {
         const textDiff = findChildDiff(diff.origin, block.children[0]) || diff.origin
         if (textDiff && textDiff.action !== 'unchanged') {
           return (
@@ -75,7 +69,7 @@ export default function PortableText(props: Props): JSX.Element {
                 description: `${textDiff.action} empty text`
               }}
             >
-              <span>&crarr;</span>
+              <span>{'\u21B2'}</span>
             </DiffCard>
           )
         }
@@ -214,4 +208,14 @@ function renderWithMarks(
     })
   }
   return returned
+}
+
+function isEmptyTextChange(block: PortableTextBlock, diff: PortableTextDiff) {
+  return (
+    block.children.length === 1 &&
+    block.children[0]._type === 'span' &&
+    typeof block.children[0].text === 'string' &&
+    block.children[0].text === '' &&
+    diff.origin.action !== 'unchanged'
+  )
 }
