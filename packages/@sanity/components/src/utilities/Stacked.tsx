@@ -13,7 +13,7 @@ interface StackedProps {
 
 export function createStack<T = unknown>() {
   let stack: T[] = []
-  const changes = pubsub()
+  const changes = pubsub<T>()
 
   function remove(instance: T) {
     stack = stack.filter(entry => entry !== instance)
