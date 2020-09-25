@@ -111,7 +111,7 @@ async function ensureProjectConfig(context) {
 
   // The API client wrapper extracts information from environment variables,
   // which means it could potentially hold any missing project ID / dataset
-  let {projectId, dataset} = context.apiClient({requireProject: false}).config()
+  let {projectId, dataset} = context.apiClient({requireProject: false, requireUser: false}).config()
 
   // The client wrapper returns `_dummy_` in the case where no dataset is configured,
   // to be able to do non-dataset requests without having the client complain.
