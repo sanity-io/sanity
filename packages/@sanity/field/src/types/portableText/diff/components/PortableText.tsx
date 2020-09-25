@@ -4,6 +4,7 @@ import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} f
 import {
   ANNOTATION_SYMBOLS,
   createChildMap,
+  findAnnotationDiff,
   findMarksDiff,
   getChildSchemaType,
   getDecorators,
@@ -53,17 +54,15 @@ export default function PortableText(props: Props): JSX.Element {
           childrenDiff.items[0].diff.fields.text.type === 'string' &&
           childrenDiff.items[0].diff.fields.text.segments) ||
         []
-      const returnedChildren: any[] = []
+      const returnedChildren: React.ReactNode[] = []
       let activeMarks: string[] = []
       let removedMarks: string[] = []
 
       // TODO: clean up this complexity!
       segments.forEach(seg => {
         const isInline = INLINE_SYMBOLS.includes(seg.text)
-        const isMarkStart =
-          markSymbolsStart.includes(seg.text) || annotationSymbolsStart.includes(seg.text)
-        const isMarkEnd =
-          markSymbolsEnd.includes(seg.text) || annotationSymbolsEnd.includes(seg.text)
+        const isMarkStart = markSymbolsStart.concat(annotationSymbolsStart).includes(seg.text)
+        const isMarkEnd = markSymbolsEnd.concat(annotationSymbolsEnd).includes(seg.text)
         if (isMarkStart) {
           const mark = markSymbolsFlattened.includes(seg.text[0])
             ? decoratorTypes[markSymbolsStart.indexOf(seg.text[0])]?.value
@@ -178,26 +177,13 @@ function renderWithMarks(
   if (allMarks.length) {
     allMarks.forEach(mark => {
       if (isDecorator(mark, spanSchemaType)) {
-        const marksDiff = findMarksDiff(diff, mark, text)
         returned = (
-          <Decorator diff={marksDiff} mark={mark} text={text}>
+          <Decorator diff={findMarksDiff(diff, mark, text)} mark={mark} text={text}>
             {returned}
           </Decorator>
         )
       } else {
-        const annotationDiff =
-          ((diff.fields.markDefs &&
-            diff.fields.markDefs.isChanged &&
-            diff.fields.markDefs.type === 'array' &&
-            diff.fields.markDefs.items.find(
-              item =>
-                item.diff &&
-                item.diff.type === 'object' &&
-                item.diff.toValue &&
-                item.diff.toValue._key &&
-                item.diff.toValue._key === mark
-            )?.diff) as ObjectDiff) || undefined
-        returned = <Annotation diff={annotationDiff}>{returned}</Annotation>
+        returned = <Annotation diff={findAnnotationDiff(diff, mark)}>{returned}</Annotation>
       }
     })
   }
