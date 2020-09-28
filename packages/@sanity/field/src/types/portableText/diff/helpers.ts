@@ -8,6 +8,8 @@ import {
 } from 'diff-match-patch'
 import {ArrayDiff, ObjectDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
+import * as TextSymbols from './symbols'
+
 import {
   InlineSymbolMap,
   MarkSymbolMap,
@@ -25,124 +27,17 @@ export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 export function hasPTMemberType(schemaType: ArraySchemaType): boolean {
   return schemaType.of.some(isPTSchemaType)
 }
-export const DECORATOR_SYMBOLS = [
-  // [startTag, endTag]
-  ['\uF000', '\uF001'],
-  ['\uF002', '\uF003'],
-  ['\uF004', '\uF005'],
-  ['\uF006', '\uF007'],
-  ['\uF008', '\uF009'],
-  ['\uF00A', '\uF00B'],
-  ['\uF00C', '\uF00D'],
-  ['\uF00F', '\uF010'],
-  ['\uF011', '\uF012'],
-  ['\uF013', '\uF014'],
-  ['\uF015', '\uF016'],
-  ['\uF017', '\uF018'],
-  ['\uF019', '\uF01A'],
-  ['\uF01B', '\uF01C'],
-  ['\uF01E', '\uF01F'],
-  ['\uF020', '\uF021']
-]
 
-export const ANNOTATION_SYMBOLS = [
-  // [startTag, endTag]
-  ['\uF050', '\uF051'],
-  ['\uF052', '\uF053'],
-  ['\uF054', '\uF055'],
-  ['\uF056', '\uF057'],
-  ['\uF058', '\uF059'],
-  ['\uF05A', '\uF05B'],
-  ['\uF05C', '\uF05D'],
-  ['\uF05F', '\uF060'],
-  ['\uF061', '\uF062'],
-  ['\uF063', '\uF064'],
-  ['\uF065', '\uF066'],
-  ['\uF067', '\uF068'],
-  ['\uF069', '\uF06A'],
-  ['\uF06B', '\uF06C'],
-  ['\uF06E', '\uF06F'],
-  ['\uF070', '\uF071'],
-  ['\uF072', '\uF073'],
-  ['\uF074', '\uF075'],
-  ['\uF076', '\uF077'],
-  ['\uF078', '\uF079'],
-  ['\uF07A', '\uF07B'],
-  ['\uF07C', '\uF07D'],
-  ['\uF07E', '\uF07F'],
-  ['\uF080', '\uF081'],
-  ['\uF082', '\uF083'],
-  ['\uF084', '\uF085'],
-  ['\uF086', '\uF087'],
-  ['\uF088', '\uF089'],
-  ['\uF08A', '\uF08B'],
-  ['\uF08C', '\uF08D'],
-  ['\uF08E', '\uF08F']
-]
-
-export const INLINE_SYMBOLS = [
-  '\uF090',
-  '\uF091',
-  '\uF092',
-  '\uF093',
-  '\uF094',
-  '\uF095',
-  '\uF096',
-  '\uF097',
-  '\uF098',
-  '\uF099',
-  '\uF09A',
-  '\uF09B',
-  '\uF09C',
-  '\uF09D',
-  '\uF09E',
-  '\uF09F',
-  '\uF0A0',
-  '\uF0A1',
-  '\uF0A2',
-  '\uF0A3',
-  '\uF0A4',
-  '\uF0A5',
-  '\uF0A6',
-  '\uF0A7',
-  '\uF0A8',
-  '\uF0A9',
-  '\uF0AA',
-  '\uF0AB',
-  '\uF0AC',
-  '\uF0AD',
-  '\uF0AE',
-  '\uF0AF',
-  '\uF0B0',
-  '\uF0B1',
-  '\uF0B2',
-  '\uF0B3',
-  '\uF0B4',
-  '\uF0B5',
-  '\uF0B6',
-  '\uF0B7',
-  '\uF0B8',
-  '\uF0B9',
-  '\uF0BA',
-  '\uF0BB',
-  '\uF0BC',
-  '\uF0BD',
-  '\uF0BE',
-  '\uF0BF'
-]
-
-export const CHILD_SYMBOL = '\uF0D0'
-
-const startMarkSymbols = DECORATOR_SYMBOLS.map(set => set[0]).concat(
-  ANNOTATION_SYMBOLS.map(set => set[0])
+const startMarkSymbols = TextSymbols.DECORATOR_SYMBOLS.map(set => set[0]).concat(
+  TextSymbols.ANNOTATION_SYMBOLS.map(set => set[0])
 )
-const endMarkSymbols = DECORATOR_SYMBOLS.map(set => set[1]).concat(
-  ANNOTATION_SYMBOLS.map(set => set[1])
+const endMarkSymbols = TextSymbols.DECORATOR_SYMBOLS.map(set => set[1]).concat(
+  TextSymbols.ANNOTATION_SYMBOLS.map(set => set[1])
 )
 const allSymbols = startMarkSymbols
   .concat(endMarkSymbols)
-  .concat(INLINE_SYMBOLS)
-  .concat(CHILD_SYMBOL)
+  .concat(TextSymbols.INLINE_SYMBOLS)
+  .concat(TextSymbols.CHILD_SYMBOL)
 const symbolRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
@@ -219,7 +114,7 @@ export function blockToSymbolizedText(
           }
         })
       }
-      return `${CHILD_SYMBOL}${returned}`
+      return `${TextSymbols.CHILD_SYMBOL}${returned}`
     })
     .join('')
 }
@@ -245,16 +140,16 @@ export function createPortableTextDiff(
     const spanSchemaType = getChildSchemaType(schemaType.fields, {_key: 'bogus', _type: 'span'})
     if (spanSchemaType) {
       getDecorators(spanSchemaType).forEach((dec, index) => {
-        decoratorMap[dec.value] = DECORATOR_SYMBOLS[index]
+        decoratorMap[dec.value] = TextSymbols.DECORATOR_SYMBOLS[index]
       })
     }
     const markDefs = displayValue.markDefs || []
     markDefs.forEach((markDef, index) => {
-      annotationMap[markDef._key] = ANNOTATION_SYMBOLS[index]
+      annotationMap[markDef._key] = TextSymbols.ANNOTATION_SYMBOLS[index]
     })
     const inlines = getInlineObjects(displayValue as PortableTextBlock)
     inlines.forEach((nonSpan, index) => {
-      inlineMap[nonSpan._key] = INLINE_SYMBOLS[index]
+      inlineMap[nonSpan._key] = TextSymbols.INLINE_SYMBOLS[index]
     })
     const fromText = blockToSymbolizedText(
       _diff.fromValue as PortableTextBlock,

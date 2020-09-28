@@ -1,4 +1,4 @@
-import {ArrayDiff, ObjectDiff} from '../../../diff'
+import {ObjectDiff} from '../../../diff'
 import {SchemaType, ObjectSchemaType} from '../../../types'
 
 export type PortableTextBlock = {
