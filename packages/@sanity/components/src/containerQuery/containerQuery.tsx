@@ -7,6 +7,8 @@ interface ContainerBreakpoint {
 }
 
 const CONTAINER_BREAKPOINTS: ContainerBreakpoint[] = [
+  {name: 'xsmall', minWidth: 220},
+  {name: 'small', minWidth: 320},
   {name: 'medium', minWidth: 512},
   {name: 'default', minWidth: 640},
   {name: 'large', minWidth: 960},
