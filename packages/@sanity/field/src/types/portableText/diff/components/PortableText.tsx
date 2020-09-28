@@ -157,7 +157,7 @@ function renderWithMarks({
   if (seg.text === '\n') {
     return <br />
   }
-  let returned = <>{seg.text.replace(/ /g, '\u00A0')}</> // Make sure we render trailing spaces correctly
+  let returned = <>{seg.text.replace(/ /g, '\u205F')}</> // Make sure we render trailing spaces correctly
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
   const marksDiff = spanDiff?.fields?.marks ? (spanDiff?.fields?.marks as ArrayDiff) : undefined
@@ -246,6 +246,8 @@ function renderWithMarks({
     diff.origin.fromValue
   ) {
     let marksChanged: string[] = []
+    // TODO: there is currently an issue where the marksDiff has a null-annotation.
+    // Figure this out!
     const diffThatShouldBeAnnotation =
       marksDiff && marksDiff.action !== 'unchanged' && marksDiff.annotation ? marksDiff : spanDiff // Fallback
     const fromPtDiffText = diff.fromValue.children[0].text
@@ -263,7 +265,7 @@ function renderWithMarks({
       const set = DECORATOR_SYMBOLS.concat(ANNOTATION_SYMBOLS).find(aSet => aSet.indexOf(sym) > -1)
       if (set) {
         const isMarkStart = sym === set[0]
-        // Note: If the mark is for an pt annotation, it not necessary to get the real value, just use the symbol.
+        // Note: If the mark is for an pt annotation, it not necessary to get the real value here, just use the symbol.
         const mark: string =
           decoratorTypes[
             isMarkStart ? decoratorSymbolsStart.indexOf(sym) : decoratorSymbolsEnd.indexOf(sym)
@@ -282,7 +284,9 @@ function renderWithMarks({
           annotation={diffThatShouldBeAnnotation.annotation}
           as={'ins'}
           tooltip={{
-            description: `${isAnnotation ? `Added annotation` : 'Changed  formatting'}`
+            description: `${
+              isAnnotation ? `${startCase(spanDiff.action)} annotation` : 'Changed  formatting'
+            }`
           }}
         >
           {returned}

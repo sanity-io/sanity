@@ -429,25 +429,22 @@ export function findSpanDiffFromChild(
   child: PortableTextChild
 ): ObjectDiff | undefined {
   // Find span in original diff which has a string segment similar to the one from the input
-  const candidates =
+  const candidate =
     diff.fields.children &&
     diff.fields.children.action === 'changed' &&
     diff.fields.children.type === 'array' &&
-    diff.fields.children.items.filter(
+    diff.fields.children.items.find(
       item =>
-        // Is Span
         item.diff &&
         item.diff.type === 'object' &&
-        ((item.diff.toValue && item.diff.toValue._key) === child._key ||
-          (item.diff.fromValue && item.diff.fromValue._key === child._key))
+        (item.diff.action === 'removed'
+          ? item.diff.fromValue && item.diff.fromValue._key === child._key
+          : (item.diff.toValue && item.diff.toValue._key) === child._key)
     )
-  if (!candidates || candidates.length === 0) {
-    return undefined
+  if (candidate) {
+    return candidate.diff as ObjectDiff
   }
-  if (candidates && candidates.length === 1) {
-    return candidates[0]?.diff as ObjectDiff
-  }
-  throw new Error('Several candidates found')
+  return undefined
 }
 
 export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): ObjectDiff | undefined {
