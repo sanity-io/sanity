@@ -76,9 +76,9 @@ export function isSegmentEqual(segmentA: PathSegment, segmentB: PathSegment): bo
 }
 
 export function hasFocus(focusPath: Path, path: Path): boolean {
-  const _withoutFirst =
+  const withoutTerminator =
     focusPath[focusPath.length - 1] === FOCUS_TERMINATOR ? focusPath.slice(0, -1) : focusPath
-  return isEqual(_withoutFirst, path)
+  return isEqual(withoutTerminator, path)
 }
 
 export function hasItemFocus(focusPath: Path, item: PathSegment): boolean {
