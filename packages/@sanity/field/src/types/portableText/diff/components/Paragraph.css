@@ -4,7 +4,7 @@
   composes: paragraph from 'part:@sanity/base/theme/typography/text-blocks-style';
   text-transform: none;
   white-space: wrap;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   margin: 0;
 
   @nest div[class~='pt-list-item-inner'] > & {

@@ -15,7 +15,7 @@ import {
   DECORATOR_SYMBOLS
 } from '../helpers'
 
-import {ArrayDiff, DiffCard, StringDiff} from '../../../../diff'
+import {ArrayDiff, DiffCard, ObjectDiff, StringDiff} from '../../../../diff'
 import {ObjectSchemaType, SchemaType} from '../../../../types'
 
 import Block from './Block'
@@ -32,7 +32,7 @@ const allSymbolsStart = decoratorSymbolsStart.concat(annotationSymbolsStart)
 const allSymbolsEnd = decoratorSymbolsEnd.concat(annotationSymbolsEnd)
 
 const allDecoratorSymbols = decoratorSymbolsStart.concat(decoratorSymbolsEnd)
-const markRegex = new RegExp(`${allSymbolsStart.concat(allSymbolsEnd).join('|')}`, 'g')
+const markRegex = new RegExp(`${allDecoratorSymbols.concat(allSymbolsEnd).join('|')}`, 'g')
 
 type Props = {
   diff: PortableTextDiff
@@ -80,7 +80,6 @@ export default function PortableText(props: Props): JSX.Element {
       }
       // Run through all the segments from the PortableTextDiff
       let childIndex = -1
-      const currentMarks: string[] = []
       segments.forEach(seg => {
         const isInline = INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart = allSymbolsStart.includes(seg.text)
@@ -92,28 +91,7 @@ export default function PortableText(props: Props): JSX.Element {
             childIndex++
           }
         } else if (isMarkStart || isMarkEnd) {
-          const markDefs = isRemoved
-            ? diff.origin.fromValue && diff.origin.fromValue.markDefs
-            : diff.origin.toValue && diff.origin.toValue.markDefs
-          const mark: string | undefined = allDecoratorSymbols.includes(seg.text)
-            ? decoratorTypes[
-                isMarkStart
-                  ? decoratorSymbolsStart.indexOf(seg.text)
-                  : decoratorSymbolsEnd.indexOf(seg.text)
-              ]?.value
-            : markDefs &&
-              markDefs[
-                isMarkStart
-                  ? annotationSymbolsStart.indexOf(seg.text)
-                  : annotationSymbolsEnd.indexOf(seg.text)
-              ]?._key
-          if (mark) {
-            if (isMarkStart) {
-              currentMarks.push(mark)
-            } else {
-              currentMarks.pop()
-            }
-          }
+          // Skip
         } else if (isInline) {
           const indexOfSymbol = INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
           const key = inlineObjects[indexOfSymbol]?._key
@@ -212,10 +190,55 @@ function renderWithMarks({
       )
     }
   }
+
+  // Deal with changed PT annotations
+  let didDealWithAnnotation = false
+  if (diff.origin.fields.markDefs && diff.origin.fields.markDefs.action !== 'unchanged') {
+    const markDefsDiffs = (
+      (diff.origin.fields.markDefs.type === 'array' &&
+        diff.origin.fields.markDefs.items.filter(
+          item => item.diff.type === 'object' && item.diff.isChanged
+        )) ||
+      []
+    ).map(item => item.diff) as ObjectDiff[]
+
+    markDefsDiffs.forEach(markDefsDiff => {
+      // Where was it changed from?
+      const fromBlock = diff.origin.fromValue as PortableTextBlock
+      const toBlock = diff.origin.toValue as PortableTextBlock
+      const span =
+        markDefsDiff.action === 'removed'
+          ? fromBlock.children.find(
+              cld => markDefsDiff.fromValue && cld.marks?.includes(markDefsDiff.fromValue._key)
+            )
+          : toBlock.children.find(
+              cld => markDefsDiff.toValue && cld.marks?.includes(markDefsDiff.toValue._key)
+            )
+      if (span && span._key === child._key && seg.text === span.text && markDefsDiff.fromValue) {
+        const annotationDiff = findAnnotationDiff(diff.origin, markDefsDiff.fromValue._key)
+        if (annotationDiff && annotationDiff.action !== 'unchanged') {
+          didDealWithAnnotation = true
+          returned = (
+            <DiffCard
+              annotation={annotationDiff.annotation}
+              as={'ins'}
+              tooltip={{
+                description: `${startCase(markDefsDiff.action)} annotation`
+              }}
+            >
+              {returned}
+            </DiffCard>
+          )
+        }
+      }
+    })
+  }
+
   // When we add a mark to a text in portable text, the diff will always report that the mark was added
   // when the text splits into new spans or merges back into the previous span.
   // This will compute the difference as a human would do.
   if (
+    !didDealWithAnnotation &&
     !hasTextChange &&
     spanDiff &&
     spanDiff.action !== 'unchanged' &&
@@ -223,8 +246,8 @@ function renderWithMarks({
     diff.origin.fromValue
   ) {
     let marksChanged: string[] = []
-    const diffAnnotation =
-      marksDiff && marksDiff.action !== 'unchanged' ? marksDiff.annotation : spanDiff.annotation
+    const diffThatShouldBeAnnotation =
+      marksDiff && marksDiff.action !== 'unchanged' && marksDiff.annotation ? marksDiff : spanDiff // Fallback
     const fromPtDiffText = diff.fromValue.children[0].text
     const ptDiffChildren = fromPtDiffText.split(CHILD_SYMBOL).filter(text => !!text)
     const ptDiffMatchString = ptDiffChildren.join('')
@@ -240,34 +263,26 @@ function renderWithMarks({
       const set = DECORATOR_SYMBOLS.concat(ANNOTATION_SYMBOLS).find(aSet => aSet.indexOf(sym) > -1)
       if (set) {
         const isMarkStart = sym === set[0]
-        const markDefs =
-          seg.action === 'removed'
-            ? diff.origin.fromValue && diff.origin.fromValue.markDefs
-            : diff.origin.toValue && diff.origin.toValue.markDefs
-        const mark: string | undefined = allDecoratorSymbols.includes(sym)
-          ? decoratorTypes[
-              isMarkStart ? decoratorSymbolsStart.indexOf(sym) : decoratorSymbolsEnd.indexOf(sym)
-            ]?.value
-          : markDefs &&
-            markDefs[
-              isMarkStart ? annotationSymbolsStart.indexOf(sym) : annotationSymbolsEnd.indexOf(sym)
-            ]?._key
+        // Note: If the mark is for an pt annotation, it not necessary to get the real value, just use the symbol.
+        const mark: string =
+          decoratorTypes[
+            isMarkStart ? decoratorSymbolsStart.indexOf(sym) : decoratorSymbolsEnd.indexOf(sym)
+          ]?.value || sym
         const notClosed = toTest.lastIndexOf(sym) > toTest.lastIndexOf(set[1])
-        if (mark && notClosed) {
+        if (notClosed) {
           marks.push(mark)
         }
       }
     })
     marksChanged = xor(activeMarks, uniq(marks))
-    // Test against last changed mark so we can render both changed formatting and changed annotations info
-    const isAnnotation = !isDecorator(marksChanged.slice(-1)[0], spanSchemaType)
     if (marksChanged.length > 0) {
+      const isAnnotation = !isDecorator(marksChanged.slice(-1)[0], spanSchemaType)
       returned = (
         <DiffCard
-          annotation={diffAnnotation}
+          annotation={diffThatShouldBeAnnotation.annotation}
           as={'ins'}
           tooltip={{
-            description: `Changed ${isAnnotation ? 'annotation' : 'formatting'}`
+            description: `${isAnnotation ? `Added annotation` : 'Changed  formatting'}`
           }}
         >
           {returned}
