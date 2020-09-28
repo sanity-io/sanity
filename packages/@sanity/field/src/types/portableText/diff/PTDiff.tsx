@@ -13,7 +13,7 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff: ObjectDiff
   schemaType: ObjectSchemaType
 }) {
-  const ptDiff = createPortableTextDiff(diff, schemaType)
+  const ptDiff = useMemo(() => createPortableTextDiff(diff, schemaType), [diff, schemaType])
   const portableTextDiff = useMemo(() => <PortableText diff={ptDiff} schemaType={schemaType} />, [
     ptDiff,
     schemaType

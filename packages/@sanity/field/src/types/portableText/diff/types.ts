@@ -1,5 +1,5 @@
 import {ArrayDiff, ObjectDiff} from '../../../diff'
-import {SchemaType} from '../../../types'
+import {SchemaType, ObjectSchemaType} from '../../../types'
 
 export type PortableTextBlock = {
   _key: string
@@ -16,16 +16,11 @@ export type PortableTextChild = {
   text?: string
 }
 
-export type SpanTypeSchema = SchemaType & {decorators?: {title: string; value: string}[]}
+export type SpanTypeSchema = SchemaType & {
+  decorators?: {title: string; value: string}[]
+  annotations?: ObjectSchemaType[]
+}
 
-export type ChildMap = Record<
-  string,
-  {
-    child: PortableTextChild
-    diff: ObjectDiff | ArrayDiff
-    schemaType?: SchemaType // May be removed from the PT schema (but data remains referring to removed types)
-  }
->
 export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock; origin: ObjectDiff}
 
 export type MarkSymbolMap = Record<string, string[]>
