@@ -9,33 +9,32 @@ type UploadPlaceholderProps = {
   fileType?: 'image' | 'file'
 }
 
-export default class UploadPlaceholder extends React.PureComponent<UploadPlaceholderProps, {}> {
-  render() {
-    const {hasFocus, fileType = 'file'} = this.props
-
-    return (
-      <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
-        <div className={styles.inner}>
-          <div className={styles.dropFile}>
-            <div className={styles.iconContainer}>
-              <UploadIcon />
-            </div>
-            <p className={styles.strong}>
-              <span>{`Drop ${fileType}`}</span>
-            </p>
+export default React.memo(function UploadPlaceholder({
+  hasFocus,
+  fileType = 'file'
+}: UploadPlaceholderProps) {
+  return (
+    <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
+      <div className={styles.inner}>
+        <div className={styles.dropFile}>
+          <div className={styles.iconContainer}>
+            <UploadIcon />
           </div>
-          <div className={styles.pasteFile}>
-            <div className={styles.iconContainer}>
-              <ClipboardImageIcon />
-            </div>
-            <div>
-              <p className={styles.strong}>
-                <span>{`Paste ${fileType}`}</span>
-              </p>
-            </div>
+          <p className={styles.strong}>
+            <span>{`Drop ${fileType}`}</span>
+          </p>
+        </div>
+        <div className={styles.pasteFile}>
+          <div className={styles.iconContainer}>
+            <ClipboardImageIcon />
+          </div>
+          <div>
+            <p className={styles.strong}>
+              <span>{`Paste ${fileType}`}</span>
+            </p>
           </div>
         </div>
       </div>
-    )
-  }
-}
+    </div>
+  )
+})
