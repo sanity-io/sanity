@@ -11,6 +11,8 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import FieldStatus from './FieldStatus'
 
+const EMPTY_ARRAY = []
+
 interface FieldsetProps {
   description?: string
   legend: string
@@ -30,6 +32,7 @@ interface FieldsetProps {
   styles?: Record<string, string>
   markers?: Marker[]
   presence: FormFieldPresence[]
+  useChangeIndicator?: boolean
 }
 
 interface State {
@@ -49,12 +52,13 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     fieldset: {},
     isCollapsed: false,
     isCollapsible: false, // can collapsing be toggled by user?
-    markers: [],
+    markers: EMPTY_ARRAY,
     onFocus: undefined,
     styles: undefined,
     tabIndex: undefined,
     transparent: undefined,
-    presence: []
+    useChangeIndicator: true,
+    presence: EMPTY_ARRAY
   }
 
   constructor(props: FieldsetProps) {
@@ -105,6 +109,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
       className,
       isCollapsible,
       isCollapsed: _ignore,
+      useChangeIndicator,
       children,
       tabIndex,
       transparent,
@@ -203,9 +208,13 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
             {!isCollapsible && (
               <div className={styles.content}>
-                <ChangeIndicator>
+                {useChangeIndicator ? (
+                  <ChangeIndicator>
+                    <div className={styles.fieldWrapper}>{children}</div>
+                  </ChangeIndicator>
+                ) : (
                   <div className={styles.fieldWrapper}>{children}</div>
-                </ChangeIndicator>
+                )}
               </div>
             )}
           </div>
