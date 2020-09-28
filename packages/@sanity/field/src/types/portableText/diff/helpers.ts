@@ -409,7 +409,7 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
       }
       return newSegments
     })
-  ).filter(seg => seg.text)
+  )
 }
 
 export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] {
@@ -450,7 +450,7 @@ export function findSpanDiffFromChild(
   throw new Error('Several candidates found')
 }
 
-export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): ObjectDiff {
+export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): ObjectDiff | undefined {
   return (
     ((diff.fields.markDefs &&
       diff.fields.markDefs.isChanged &&
@@ -459,9 +459,10 @@ export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): Object
         item =>
           item.diff &&
           item.diff.type === 'object' &&
-          item.diff.toValue &&
-          item.diff.toValue._key &&
-          item.diff.toValue._key === markDefKey
+          ((item.diff.toValue && item.diff.toValue._key && item.diff.toValue._key === markDefKey) ||
+            (item.diff.fromValue &&
+              item.diff.fromValue._key &&
+              item.diff.fromValue._key === markDefKey))
       )?.diff) as ObjectDiff) || undefined
   )
 }
