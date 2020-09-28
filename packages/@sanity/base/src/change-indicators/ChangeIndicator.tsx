@@ -177,7 +177,7 @@ export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
       fullPath={fullPath}
       value={value}
       compareValue={compareValue}
-      hasFocus={PathUtils.isEqual(path, focusPath)}
+      hasFocus={PathUtils.hasFocus(focusPath, path)}
       compareDeep={props.compareDeep}
     >
       {props.children}
