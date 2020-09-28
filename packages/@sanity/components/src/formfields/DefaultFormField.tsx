@@ -8,6 +8,8 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import FieldStatus from '../fieldsets/FieldStatus'
 
+const EMPTY_MARKERS = []
+
 interface DefaultFormFieldProps {
   label?: string
   className?: string
@@ -19,6 +21,7 @@ interface DefaultFormFieldProps {
   labelFor?: string
   markers?: Marker[]
   presence?: FormFieldPresence[]
+  useChangeIndicator?: boolean
 }
 
 export default class DefaultFormField extends React.PureComponent<DefaultFormFieldProps> {
@@ -32,7 +35,8 @@ export default class DefaultFormField extends React.PureComponent<DefaultFormFie
       inline,
       wrapped,
       className: classNameProp,
-      markers = [],
+      useChangeIndicator = true,
+      markers = EMPTY_MARKERS,
       presence
     } = this.props
 
@@ -71,7 +75,7 @@ export default class DefaultFormField extends React.PureComponent<DefaultFormFie
         </label>
 
         <div className={styles.content}>
-          <ChangeIndicator>{children}</ChangeIndicator>
+          {useChangeIndicator ? <ChangeIndicator>{children}</ChangeIndicator> : children}
         </div>
       </div>
     )
