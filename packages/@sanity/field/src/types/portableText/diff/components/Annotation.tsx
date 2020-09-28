@@ -6,7 +6,7 @@ export default function Annotation({diff, children}: {diff?: ObjectDiff; childre
   let returned = children
   returned = (
     <span className={styles.root}>
-      {diff && diff.action !== 'unchanged' ? (
+      {/* {diff && diff.action !== 'unchanged' ? (
         <DiffCard
           annotation={diff.annotation}
           as="ins"
@@ -16,7 +16,8 @@ export default function Annotation({diff, children}: {diff?: ObjectDiff; childre
         </DiffCard>
       ) : (
         returned
-      )}
+      )} */}
+      {returned}
     </span>
   )
   return returned

@@ -6,10 +6,9 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff, StringDiff} from '../../../diff'
+import {ArrayDiff, ObjectDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import {
-  ChildMap,
   InlineSymbolMap,
   MarkSymbolMap,
   PortableTextBlock,
@@ -26,7 +25,7 @@ export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 export function hasPTMemberType(schemaType: ArraySchemaType): boolean {
   return schemaType.of.some(isPTSchemaType)
 }
-export const MARK_SYMBOLS = [
+export const DECORATOR_SYMBOLS = [
   // [startTag, endTag]
   ['\uF000', '\uF001'],
   ['\uF002', '\uF003'],
@@ -132,11 +131,18 @@ export const INLINE_SYMBOLS = [
   '\uF0BF'
 ]
 
-const startMarkSymbols = MARK_SYMBOLS.map(set => set[0]).concat(
+export const CHILD_SYMBOL = '\uF0D0'
+
+const startMarkSymbols = DECORATOR_SYMBOLS.map(set => set[0]).concat(
   ANNOTATION_SYMBOLS.map(set => set[0])
 )
-const endMarkSymbols = MARK_SYMBOLS.map(set => set[1]).concat(ANNOTATION_SYMBOLS.map(set => set[1]))
-const allSymbols = startMarkSymbols.concat(endMarkSymbols).concat(INLINE_SYMBOLS)
+const endMarkSymbols = DECORATOR_SYMBOLS.map(set => set[1]).concat(
+  ANNOTATION_SYMBOLS.map(set => set[1])
+)
+const allSymbols = startMarkSymbols
+  .concat(endMarkSymbols)
+  .concat(INLINE_SYMBOLS)
+  .concat(CHILD_SYMBOL)
 const symbolRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
@@ -147,28 +153,6 @@ export function isHeader(node: PortableTextBlock): boolean {
   return !!node.style && ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(node.style)
 }
 
-export function createChildMap(origin: ObjectDiff, schemaType: ObjectSchemaType): ChildMap {
-  // Create a map from span to diff
-  const block = origin.toValue || origin.fromValue
-  // Add removed children
-  const childMap: ChildMap = {}
-  const children = block.children || []
-  children.forEach(child => {
-    // Fallback type for renderer (unkown types)
-    if (typeof child !== 'object' || typeof child._type !== 'string') {
-      child._type = UNKNOWN_TYPE_NAME
-    }
-    const cSchemaType = getChildSchemaType(schemaType.fields, child)
-    const cDiff = findChildDiff(origin, child)
-    childMap[child._key] = {
-      diff: cDiff,
-      child,
-      schemaType: cSchemaType
-    }
-  })
-  return childMap
-}
-
 export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): ObjectDiff {
   const childrenDiff = diff.fields.children as ArrayDiff
   return childrenDiff.items
@@ -177,38 +161,6 @@ export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): Objec
     )
     .map(item => item.diff)
     .map(childDiff => childDiff as ObjectDiff)[0]
-}
-
-export function isAddMark(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolean {
-  if (!cSchemaType) {
-    return false
-  }
-  return !!(
-    cDiff.fields.marks &&
-    cDiff.fields.marks.isChanged &&
-    cDiff.fields.marks.action === 'added' &&
-    Array.isArray(cDiff.fields.marks.toValue) &&
-    cDiff.fields.marks.toValue.length > 0 &&
-    cSchemaType.jsonType === 'object' &&
-    cDiff.fields.marks.toValue.some(
-      mark => typeof mark === 'string' && cSchemaType && isDecorator(mark, cSchemaType)
-    )
-  )
-}
-
-export function isRemoveMark(cDiff: ObjectDiff, cSchemaType?: SchemaType): boolean {
-  if (!cSchemaType) {
-    return false
-  }
-  return !!(
-    cDiff.fields.marks &&
-    cDiff.fields.marks.isChanged &&
-    cDiff.fields.marks.action === 'removed' &&
-    Array.isArray(cDiff.fields.marks.fromValue) &&
-    cDiff.fields.marks.fromValue.some(
-      mark => typeof mark === 'string' && cSchemaType && isDecorator(mark, cSchemaType)
-    )
-  )
 }
 
 export function getChildSchemaType(
@@ -228,6 +180,13 @@ export function getChildSchemaType(
 export function getDecorators(spanSchemaType: SpanTypeSchema): {title: string; value: string}[] {
   if (spanSchemaType.decorators) {
     return orderBy(spanSchemaType.decorators, ['value'], ['asc'])
+  }
+  return []
+}
+
+export function getAnnotations(spanSchemaType: SpanTypeSchema): ObjectSchemaType[] {
+  if (spanSchemaType.annotations) {
+    return orderBy(spanSchemaType.annotations, ['name'], ['asc'])
   }
   return []
 }
@@ -260,7 +219,7 @@ export function blockToSymbolizedText(
           }
         })
       }
-      return returned
+      return `${CHILD_SYMBOL}${returned}`
     })
     .join('')
 }
@@ -281,12 +240,12 @@ export function createPortableTextDiff(
 
   if (displayValue) {
     const annotationMap: MarkSymbolMap = {}
-    const markMap: MarkSymbolMap = {}
+    const decoratorMap: MarkSymbolMap = {}
     const inlineMap: InlineSymbolMap = {}
     const spanSchemaType = getChildSchemaType(schemaType.fields, {_key: 'bogus', _type: 'span'})
     if (spanSchemaType) {
       getDecorators(spanSchemaType).forEach((dec, index) => {
-        markMap[dec.value] = MARK_SYMBOLS[index]
+        decoratorMap[dec.value] = DECORATOR_SYMBOLS[index]
       })
     }
     const markDefs = displayValue.markDefs || []
@@ -299,13 +258,13 @@ export function createPortableTextDiff(
     })
     const fromText = blockToSymbolizedText(
       _diff.fromValue as PortableTextBlock,
-      markMap,
+      decoratorMap,
       annotationMap,
       inlineMap
     )
     const toText = blockToSymbolizedText(
       _diff.toValue as PortableTextBlock,
-      markMap,
+      decoratorMap,
       annotationMap,
       inlineMap
     )
@@ -465,42 +424,30 @@ export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] 
   return nonSpans
 }
 
-export function findMarksDiff(
+export function findSpanDiffFromChild(
   diff: ObjectDiff,
-  mark: string,
-  text: string
-): StringDiff | undefined {
-  const spanDiff =
+  child: PortableTextChild
+): ObjectDiff | undefined {
+  // Find span in original diff which has a string segment similar to the one from the input
+  const candidates =
     diff.fields.children &&
     diff.fields.children.action === 'changed' &&
     diff.fields.children.type === 'array' &&
-    (diff.fields.children.items.find(
-      // TODO: could this be done better? We cant exact match on string as they may be broken apart.
-      // Check for indexOf string for now
+    diff.fields.children.items.filter(
       item =>
+        // Is Span
         item.diff &&
         item.diff.type === 'object' &&
-        item.diff.fields.marks &&
-        item.diff.fields.marks.type === 'array' &&
-        item.diff.fields.text &&
-        item.diff.fields.text.type === 'string' &&
-        ((item.diff.fields.text.toValue && item.diff.fields.text.toValue.indexOf(text) > -1) ||
-          (item.diff.fields.text.fromValue &&
-            item.diff.fields.text.fromValue.indexOf(text) > -1)) &&
-        ((Array.isArray(item.diff.fields.marks.toValue) &&
-          item.diff.fields.marks.toValue.includes(mark)) ||
-          (Array.isArray(item.diff.fields.marks.fromValue) &&
-            item.diff.fields.marks.fromValue.includes(mark)))
-    )?.diff as ObjectDiff)
-  const marksDiff =
-    spanDiff &&
-    spanDiff.fields.marks &&
-    spanDiff.fields.marks.type === 'array' &&
-    spanDiff.fields.marks.action !== 'unchanged' &&
-    spanDiff.fields.marks.items.find(
-      item => item.diff.toValue === mark || item.diff.fromValue === mark
-    )?.diff
-  return marksDiff && marksDiff.type === 'string' ? marksDiff : undefined
+        ((item.diff.toValue && item.diff.toValue._key) === child._key ||
+          (item.diff.fromValue && item.diff.fromValue._key === child._key))
+    )
+  if (!candidates || candidates.length === 0) {
+    return undefined
+  }
+  if (candidates && candidates.length === 1) {
+    return candidates[0]?.diff as ObjectDiff
+  }
+  throw new Error('Several candidates found')
 }
 
 export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): ObjectDiff {
