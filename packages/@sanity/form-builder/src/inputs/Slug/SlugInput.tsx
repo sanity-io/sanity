@@ -163,16 +163,7 @@ export default withValuePath(
       }
 
       render() {
-        const {
-          value,
-          compareValue,
-          focusPath,
-          type,
-          level,
-          markers,
-          readOnly,
-          presence
-        } = this.props
+        const {value, compareValue, type, level, markers, readOnly, presence} = this.props
         const {loading, inputText} = this.state
         const hasSourceField = type.options && type.options.source
         const formFieldProps = {
