@@ -179,7 +179,7 @@ function renderWithMarks({
   if (seg.text === '\n') {
     return <br />
   }
-  let returned = <>{seg.text}</>
+  let returned = <>{seg.text.replace(/ /g, '\u00A0')}</> // Make sure we render trailing spaces correctly
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
   const marksDiff = spanDiff?.fields?.marks ? (spanDiff?.fields?.marks as ArrayDiff) : undefined
