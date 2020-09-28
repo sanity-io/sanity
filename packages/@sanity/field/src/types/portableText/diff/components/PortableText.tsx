@@ -1,32 +1,31 @@
 import React from 'react'
 import {startCase, uniq, xor} from 'lodash'
+import {ArrayDiff, DiffCard, ObjectDiff, StringDiff} from '../../../../diff'
+
+import {ObjectSchemaType, SchemaType} from '../../../../types'
 import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} from '../types'
+
+import * as TextSymbols from '../symbols'
+
 import {
-  ANNOTATION_SYMBOLS,
-  CHILD_SYMBOL,
   findChildDiff,
   findAnnotationDiff,
   findSpanDiffFromChild,
   getChildSchemaType,
   getDecorators,
   getInlineObjects,
-  INLINE_SYMBOLS,
-  isDecorator,
-  DECORATOR_SYMBOLS
+  isDecorator
 } from '../helpers'
-
-import {ArrayDiff, DiffCard, ObjectDiff, StringDiff} from '../../../../diff'
-import {ObjectSchemaType, SchemaType} from '../../../../types'
 
 import Block from './Block'
 import Annotation from './Annotation'
 import Decorator from './Decorator'
 import {InlineObject} from './InlineObject'
 
-const decoratorSymbolsStart = DECORATOR_SYMBOLS.map(set => set[0])
-const decoratorSymbolsEnd = DECORATOR_SYMBOLS.map(set => set[1])
-const annotationSymbolsStart = ANNOTATION_SYMBOLS.map(set => set[0])
-const annotationSymbolsEnd = ANNOTATION_SYMBOLS.map(set => set[1])
+const decoratorSymbolsStart = TextSymbols.DECORATOR_SYMBOLS.map(set => set[0])
+const decoratorSymbolsEnd = TextSymbols.DECORATOR_SYMBOLS.map(set => set[1])
+const annotationSymbolsStart = TextSymbols.ANNOTATION_SYMBOLS.map(set => set[0])
+const annotationSymbolsEnd = TextSymbols.ANNOTATION_SYMBOLS.map(set => set[1])
 
 const allSymbolsStart = decoratorSymbolsStart.concat(annotationSymbolsStart)
 const allSymbolsEnd = decoratorSymbolsEnd.concat(annotationSymbolsEnd)
@@ -73,7 +72,7 @@ export default function PortableText(props: Props): JSX.Element {
                 description: `${startCase(textDiff.action)} empty text`
               }}
             >
-              <span>{'\u21B2'}</span>
+              <span>{TextSymbols.EMPTY_BLOCK_SYMBOL}</span>
             </DiffCard>
           )
         }
@@ -81,10 +80,10 @@ export default function PortableText(props: Props): JSX.Element {
       // Run through all the segments from the PortableTextDiff
       let childIndex = -1
       segments.forEach(seg => {
-        const isInline = INLINE_SYMBOLS.includes(seg.text)
+        const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart = allSymbolsStart.includes(seg.text)
         const isMarkEnd = allSymbolsEnd.includes(seg.text)
-        const isChildStart = seg.text === CHILD_SYMBOL
+        const isChildStart = seg.text === TextSymbols.CHILD_SYMBOL
         const isRemoved = seg.action === 'removed'
         if (isChildStart) {
           if (!isRemoved) {
@@ -93,7 +92,7 @@ export default function PortableText(props: Props): JSX.Element {
         } else if (isMarkStart || isMarkEnd) {
           // Skip
         } else if (isInline) {
-          const indexOfSymbol = INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
+          const indexOfSymbol = TextSymbols.INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
           const key = inlineObjects[indexOfSymbol]?._key
           const originChild = (diff.origin.toValue || diff.origin.fromValue).children.find(
             cld => cld._key === key
@@ -140,7 +139,7 @@ export default function PortableText(props: Props): JSX.Element {
   )
 }
 
-// This will render a segment with proper formatting / annotation - and the diff information within.
+// Render text segment with proper formatting / annotation - and the diff information within that.
 function renderWithMarks({
   diff,
   child,
@@ -157,7 +156,7 @@ function renderWithMarks({
   if (seg.text === '\n') {
     return <br />
   }
-  let returned = <>{seg.text.replace(/ /g, '\u205F')}</> // Make sure we render trailing spaces correctly
+  let returned = <>{seg.text.replace(/ /g, TextSymbols.TRAILING_SPACE_SYMBOL)}</> // Make sure we render trailing spaces correctly
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
   const marksDiff = spanDiff?.fields?.marks ? (spanDiff?.fields?.marks as ArrayDiff) : undefined
@@ -236,7 +235,7 @@ function renderWithMarks({
 
   // When we add a mark to a text in portable text, the diff will always report that the mark was added
   // when the text splits into new spans or merges back into the previous span.
-  // This will compute the difference as a human would do.
+  // This will compute the difference by looking at the representation of the text only.
   if (
     !didDealWithAnnotation &&
     !hasTextChange &&
@@ -246,13 +245,16 @@ function renderWithMarks({
     diff.origin.fromValue
   ) {
     let marksChanged: string[] = []
-    // TODO: there is currently an issue where the marksDiff has a null-annotation.
-    // Figure this out!
+    // TODO: there is currently an issue where the marksDiff has a null-annotation when it shouldn't.
+    // Figure this out! In the meantime, fallback to spanDiff (where the annotation exists, but last edit will win)
     const diffThatShouldBeAnnotation =
       marksDiff && marksDiff.action !== 'unchanged' && marksDiff.annotation ? marksDiff : spanDiff // Fallback
     const fromPtDiffText = diff.fromValue.children[0].text
-    const ptDiffChildren = fromPtDiffText.split(CHILD_SYMBOL).filter(text => !!text)
-    const ptDiffMatchString = ptDiffChildren.join('')
+    const ptDiffChildren = fromPtDiffText
+      .split(TextSymbols.CHILD_SYMBOL)
+      .filter(text => !!text)
+      .join('')
+    const ptDiffMatchString = ptDiffChildren
     const controlString = ptDiffMatchString.substring(
       0,
       ptDiffMatchString.indexOf(seg.text) + seg.text.length
@@ -262,14 +264,15 @@ function renderWithMarks({
     const matches = [...toTest.matchAll(markRegex)]
     matches.forEach(match => {
       const sym = match[0]
-      const set = DECORATOR_SYMBOLS.concat(ANNOTATION_SYMBOLS).find(aSet => aSet.indexOf(sym) > -1)
+      const set = TextSymbols.DECORATOR_SYMBOLS.concat(TextSymbols.ANNOTATION_SYMBOLS).find(
+        aSet => aSet.indexOf(sym) > -1
+      )
       if (set) {
         const isMarkStart = sym === set[0]
-        // Note: If the mark is for an pt annotation, it not necessary to get the real value here, just use the symbol.
         const mark: string =
           decoratorTypes[
             isMarkStart ? decoratorSymbolsStart.indexOf(sym) : decoratorSymbolsEnd.indexOf(sym)
-          ]?.value || sym
+          ]?.value || sym // Annotation marks are uniqe anyway
         const notClosed = toTest.lastIndexOf(sym) > toTest.lastIndexOf(set[1])
         if (notClosed) {
           marks.push(mark)
@@ -285,7 +288,8 @@ function renderWithMarks({
           as={'ins'}
           tooltip={{
             description: `${
-              isAnnotation ? `${startCase(spanDiff.action)} annotation` : 'Changed  formatting'
+              // When the marksDiff is no longer reporting a null-diff-annotation, use the action from there as verb
+              isAnnotation ? `Changed annotation` : 'Changed formatting'
             }`
           }}
         >
