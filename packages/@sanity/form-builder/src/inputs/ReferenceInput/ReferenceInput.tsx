@@ -11,7 +11,7 @@ import {
   SanityDocument
 } from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
@@ -243,16 +243,7 @@ export default withValuePath(
         this._input = input
       }
       render() {
-        const {
-          type,
-          value,
-          level,
-          markers,
-          readOnly,
-          presence,
-          focusPath,
-          compareValue
-        } = this.props
+        const {type, value, level, markers, readOnly, presence, compareValue} = this.props
         const {previewSnapshot, isFetching, isMissing, hits} = this.state
         const valueFromHit = value && hits.find(hit => hit._id === value._ref)
         const weakIs = value && value._weak ? 'weak' : 'strong'
@@ -268,9 +259,7 @@ export default withValuePath(
         const isLoadingSnapshot = value && value._ref && !previewSnapshot
         const placeholder = isLoadingSnapshot ? 'Loading…' : 'Type to search…'
         return (
-          <ChangeIndicatorProvider
-            path={[]}
-            focusPath={focusPath}
+          <ChangeIndicatorCompareValueProvider
             value={value?._ref}
             compareValue={compareValue?._ref}
           >
@@ -317,7 +306,7 @@ export default withValuePath(
                 />
               </div>
             </FormField>
-          </ChangeIndicatorProvider>
+          </ChangeIndicatorCompareValueProvider>
         )
       }
     }
