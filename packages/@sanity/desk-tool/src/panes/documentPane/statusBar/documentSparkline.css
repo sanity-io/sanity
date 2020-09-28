@@ -34,44 +34,60 @@
   background: var(--component-bg);
   height: 40px; /* same as reviewChangesButton button */
   border: 1px solid transparent;
-  margin-right: var(--large-padding);
+
+  @nest .root[data-container-min~='xsmall'] & {
+    margin-right: var(--medium-padding);
+  }
+
+  @nest & .statusDetails {
+    display: block;
+  }
 }
 
 .reviewChangesButton {
-  border: 1px solid var(--gray-lighter);
-  border-radius: var(--border-radius-medium);
   color: var(--text-muted);
   text-align: left;
   transform: translate3d(0, 0, 0);
   display: block;
   transition: transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
   z-index: 0;
+  pointer-events: none;
+  cursor: not-allowed;
+
+  @nest .root[data-container-min~='xsmall'] & {
+    border: 1px solid var(--gray-lighter);
+    border-radius: var(--border-radius-medium);
+    pointer-events: unset;
+    cursor: unset;
+
+    @nest &:hover:not(:disabled) {
+      background: var(--gray-dark);
+      border-color: var(--gray-dark);
+
+      @nest & .statusDetails {
+        color: var(--white);
+      }
+
+      @nest & .badge {
+        background: var(--white);
+        color: var(--gray-dark);
+        border-color: var(--gray-dark);
+
+        @nest &:last-of-type .hoverIcon {
+          display: flex;
+        }
+
+        @nest & .icon {
+          display: none;
+        }
+      }
+    }
+  }
 
   @nest & .inner {
     display: flex;
     align-items: center;
     padding-right: var(--small-padding);
-  }
-
-  @nest &:hover:not(:disabled) {
-    background: var(--gray-dark);
-    border-color: var(--gray-dark);
-    @nest & .statusDetails {
-      color: var(--white);
-    }
-    @nest & .badge {
-      background: var(--white);
-      color: var(--gray-dark);
-      border-color: var(--gray-dark);
-
-      @nest & .icon {
-        display: none;
-      }
-
-      @nest & .hoverIcon {
-        display: flex;
-      }
-    }
   }
 
   @nest &[data-transition='in'] {
@@ -124,6 +140,10 @@
     display: none;
   }
 
+  @nest & .hoverIcon {
+    display: none;
+  }
+
   @nest &[data-type='publish'] {
     background-color: var(--timeline-event-enabled-icon-published-bg);
     color: var(--timeline-event-enabled-icon-published-fg);
@@ -160,10 +180,22 @@
   white-space: nowrap;
   margin-left: var(--small-padding);
   color: var(--text-muted);
+  display: none;
+
+  @nest .root[data-container-min~='xsmall'] .reviewChangesButton & {
+    display: block;
+  }
 }
 
 .label {
   font-weight: 500;
+}
+
+.documentBadgesContainer {
+  display: none;
+  @nest .root[data-container-min~='small'] & {
+    display: block;
+  }
 }
 
 .root[data-disabled='true'] {

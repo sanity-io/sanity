@@ -7,6 +7,7 @@ import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
 import Button from 'part:@sanity/components/buttons/default'
 import {ChunkType} from '@sanity/field/lib/diff'
+import {ContainerQuery} from 'part:@sanity/components/container-query'
 import {useDocumentHistory} from '../documentHistory'
 import TimeAgo from '../../../components/TimeAgo'
 import {HistoryIcon, LiveIcon, PublishIcon} from '../../../badges/icons'
@@ -109,7 +110,7 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
     lastUnpublishOrPublishSession?.type === 'publish' && !isLiveDocument
 
   return (
-    <div className={styles.root} data-disabled={showingRevision}>
+    <ContainerQuery className={styles.root} data-disabled={showingRevision}>
       {showPublishedSessionBadge && (
         <div className={styles.primarySessionBadgeContainer}>
           <SessionBadge
@@ -189,6 +190,6 @@ export function DocumentSparkline({type, badges, lastUpdated, editState}: Docume
       >
         <DocumentBadges editState={editState} badges={badges} />
       </div>
-    </div>
+    </ContainerQuery>
   )
 }
