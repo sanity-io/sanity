@@ -1,6 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  border-radius: var(--border-radius-small);
+  box-shadow: inset 0 0 0 1px var(--hairline-color);
+  cursor: pointer;
+  white-space: nowrap;
+  align-items: center;
+
   background-color: color(var(--text-color) a(10%));
   border-color: color(var(--text-color) a(100%));
   border-bottom: 2px dotted color(var(--text-color) a(100%));
@@ -10,4 +16,23 @@
     border-color: color(var(--text-color) a(100%));
   }
   cursor: pointer;
+}
+
+.popoverContent {
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.previewContainer {
+  display: inline-flex;
+  @nest & > svg {
+    display: block;
+    font-size: 17px;
+    line-height: 17px;
+    margin: 2px 0 -2px 2px;
+    opacity: 0.5;
+
+    @nest .root:hover & {
+      opacity: 1;
+    }
+  }
 }
