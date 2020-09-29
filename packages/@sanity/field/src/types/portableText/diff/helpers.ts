@@ -1,4 +1,4 @@
-import {flatten, orderBy} from 'lodash'
+import {flatten, isEqual, orderBy} from 'lodash'
 import {Block, ObjectField, SchemaType} from '@sanity/types'
 import {
   diff_match_patch as DiffMatchPatch,
@@ -357,4 +357,8 @@ export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): Object
               item.diff.fromValue._key === markDefKey))
       )?.diff) as ObjectDiff) || undefined
   )
+}
+
+export function isEmptyObject(object: PortableTextChild) {
+  return object && isEqual(Object.keys(object), ['_key', '_type'])
 }
