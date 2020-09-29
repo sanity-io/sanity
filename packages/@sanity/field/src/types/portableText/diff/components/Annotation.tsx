@@ -77,7 +77,8 @@ function AnnnotationWithDiff({
         <span {...restProps} className={className} onClick={handleClick} ref={ref} style={style}>
           <Popover content={popoverContent} open={open}>
             <span className={styles.previewContainer}>
-              {children} <ChevronDownIcon />
+              <span>{children} </span>
+              <ChevronDownIcon />
             </span>
           </Popover>
         </span>
