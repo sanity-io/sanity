@@ -3,6 +3,8 @@
 import classNames from 'classnames'
 import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
@@ -72,6 +74,7 @@ interface Image extends Partial<BaseImage> {
 
 export type Props = {
   value?: Image
+  compareValue?: Image
   document?: Image
   type: ImageSchemaType
   level: number
@@ -259,12 +262,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       )
     )
   }
+
   handleStartAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: true})
   }
+
   handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
   }
+
+  handleClearUploadError = () => {
+    this.setState({uploadError: null})
+  }
+
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
     const {onChange, type, resolveUploader} = this.props
     if (!assetFromSource) {
@@ -551,7 +561,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   // eslint-disable-next-line complexity
   render() {
-    const {type, value, level, materialize, markers, readOnly, presence} = this.props
+    const {type, value, compareValue, level, materialize, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -591,33 +601,40 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               kind="error"
               isPersisted
               actionTitle="OK"
-              onAction={() => this.setState({uploadError: null})}
+              onAction={this.handleClearUploadError}
               title="Upload error"
               subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
             />
           )}
           <div className={styles.content}>
-            <div
-              className={classNames(
-                styles.assetWrapper,
-                readOnly && styles.readOnly,
-                hasFocus && styles.focused
-              )}
+            <ChangeIndicatorCompareValueProvider
+              value={value?.asset?._ref}
+              compareValue={compareValue?.asset?._ref}
             >
-              {value && value._upload && (
-                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-              )}
-              {/* eslint-disable-next-line no-nested-ternary */}
-              {hasAsset ? (
-                <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                  {this.renderMaterializedAsset}
-                </WithMaterializedReference>
-              ) : readOnly ? (
-                <span>Field is read only</span>
-              ) : (
-                SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
-              )}
-            </div>
+              <ChangeIndicator
+                className={classNames(
+                  styles.assetWrapper,
+                  readOnly && styles.readOnly,
+                  hasFocus && styles.focused
+                )}
+              >
+                {value && value._upload && (
+                  <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+                )}
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {hasAsset ? (
+                  <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                    {this.renderMaterializedAsset}
+                  </WithMaterializedReference>
+                ) : readOnly ? (
+                  <span>Field is read only</span>
+                ) : (
+                  SUPPORT_DIRECT_UPLOADS && (
+                    <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
+                  )
+                )}
+              </ChangeIndicator>
+            </ChangeIndicatorCompareValueProvider>
           </div>
           <div className={styles.functions}>
             <ButtonGrid>
