@@ -12,9 +12,9 @@
   --color-button-spinner-bg: color(var(--color-button-bg) alpha(80%));
   /* :focus */
   --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
-  --color-button-focus-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--brand-primary);
+  --color-button-focus-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--focus-color);
   --color-button-navbar-focus-shadow: 0 0 0 1px var(--main-navigation-color),
-    0 0 0 3px var(--brand-primary);
+    0 0 0 3px var(--focus-color);
   /* :hover */
   --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
   /* :active */
