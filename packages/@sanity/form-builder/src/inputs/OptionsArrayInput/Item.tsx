@@ -1,5 +1,5 @@
 import React from 'react'
-import {SchemaType, isTitledListValue, TitledListValue} from '@sanity/types'
+import {SchemaType, isTitledListValue, TitledListValue, Path} from '@sanity/types'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import Preview from '../../Preview'
 import {resolveValueWithLegacyOptionsSupport} from './legacyOptionsSupport'
@@ -9,6 +9,8 @@ type Props = {
   value: TitledListValue | unknown
   checked: boolean
   onChange: (checked: boolean, item: any) => void
+  onFocus: (path: Path) => void
+  onBlur: () => void
   readOnly: boolean | null
 }
 
@@ -19,10 +21,12 @@ export default class Item extends React.PureComponent<Props> {
   }
 
   render() {
-    const {value, checked, type, readOnly} = this.props
+    const {value, checked, type, onFocus, onBlur, readOnly} = this.props
     return (
       <Checkbox
         onChange={this.handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
         checked={checked}
         readOnly={readOnly || type.readOnly}
         label={
