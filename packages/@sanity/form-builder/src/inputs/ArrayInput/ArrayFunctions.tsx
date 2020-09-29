@@ -1,14 +1,17 @@
-import React from 'react'
 import {ArraySchemaType, SchemaType, isReferenceSchemaType} from '@sanity/types'
+import classNames from 'classnames'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PlusIcon from 'part:@sanity/base/plus-icon'
+import React from 'react'
 import PatchEvent from '../../PatchEvent'
-import styles from './styles/ArrayInput.css'
 import {ItemValue} from './typedefs'
 
-type Props = {
+import styles from './ArrayFunctions.css'
+
+interface ArrayFunctionsProps {
+  className?: string
   type: ArraySchemaType
   children: Node | null
   value: ItemValue[]
@@ -20,18 +23,22 @@ type Props = {
   onChange: (event: PatchEvent) => void
 }
 
-export default class ArrayFunctions extends React.Component<Props> {
+export default class ArrayFunctions extends React.Component<ArrayFunctionsProps> {
   handleDropDownAction = (menuItem: {type: SchemaType}) => {
     this.handleInsertItem(menuItem.type)
   }
+
   handleAddBtnClick = () => {
     this.handleInsertItem(this.props.type.of[0])
   }
+
   handleInsertItem = type => {
     const {onCreateValue, onAppendItem} = this.props
     const item = onCreateValue(type)
+
     onAppendItem(item)
   }
+
   renderSelectType() {
     const items = this.props.type.of.map(memberDef => {
       // Use reference icon if reference is to one type only
@@ -47,19 +54,23 @@ export default class ArrayFunctions extends React.Component<Props> {
         icon
       }
     })
+
     return (
       <DropDownButton inverted items={items} onAction={this.handleDropDownAction}>
         Add
       </DropDownButton>
     )
   }
+
   render() {
-    const {type, readOnly, children} = this.props
+    const {className, type, readOnly, children} = this.props
+
     if (readOnly) {
       return null
     }
+
     return (
-      <div className={styles.functions}>
+      <div className={classNames(styles.root, className)}>
         <ButtonGrid align="start">
           {type.of.length === 1 ? (
             <Button inverted onClick={this.handleAddBtnClick}>

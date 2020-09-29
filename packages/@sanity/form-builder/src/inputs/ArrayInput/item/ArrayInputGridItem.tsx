@@ -6,15 +6,12 @@ import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sa
 import * as PathUtils from '@sanity/util/paths'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import React from 'react'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import PatchEvent from '../../../PatchEvent'
@@ -25,15 +22,9 @@ import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
 
-import styles from './ArrayInputListItem.css'
+import styles from './ArrayInputGridItem.css'
 
-const DragHandle = createDragHandle(() => (
-  <span className={styles.dragHandle}>
-    <Button icon={DragHandleIcon} kind="simple" padding="small" />
-  </span>
-))
-
-interface ArrayInputListItemProps {
+interface ArrayInputGridItemProps {
   type: ArraySchemaType
   value: ItemValue
   compareValue?: any[]
@@ -50,7 +41,7 @@ interface ArrayInputListItemProps {
   presence: FormFieldPresence[]
 }
 
-export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemProps> {
+export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemProps> {
   _focusArea: HTMLDivElement | null
 
   static defaultProps = {
@@ -66,7 +57,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     }
   }
 
-  componentDidUpdate(prevProps: ArrayInputListItemProps) {
+  componentDidUpdate(prevProps: ArrayInputGridItemProps) {
     const hadFocus = hasFocusInPath(prevProps.focusPath, prevProps.value)
     const hasFocus = hasFocusInPath(this.props.focusPath, this.props.value)
 
@@ -132,7 +123,6 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
   setFocus(path: Path = []) {
     const {value, onFocus} = this.props
-
     onFocus([{_key: value._key}, ...path])
   }
 
@@ -228,8 +218,6 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
   renderItem() {
     const {value, markers, type, readOnly, presence, focusPath} = this.props
-    const options = type.options || {}
-    const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
     const scopedValidation = validation
       .map(marker => {
@@ -242,7 +230,6 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
         })
       })
       .filter(Boolean)
-
     const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
     const memberType = this.getMemberType()
 
@@ -253,8 +240,6 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     return (
       <ChangeIndicatorScope path={[{_key: value._key}]}>
         <div className={styles.inner}>
-          {isSortable && <DragHandle />}
-
           <div
             tabIndex={0}
             onClick={value._key && this.handleEditStart}
@@ -269,12 +254,14 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
             >
               <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
                 {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-                <Preview layout="default" value={value} type={memberType} />
+                <Preview layout="media" value={value} type={memberType} />
               </ContextProvidedChangeIndicator>
             </div>
           </div>
 
           <div className={styles.functions}>
+            {!readOnly && <ConfirmButton title="Remove this item" onConfirm={this.handleRemove} />}
+
             <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
             <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
 
@@ -283,14 +270,9 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
                 className={styles.linkToReference}
                 icon={LinkIcon}
                 intent="edit"
-                kind="simple"
                 padding="small"
                 params={{id: value._ref}}
               />
-            )}
-
-            {!readOnly && (
-              <ConfirmButton kind="simple" title="Remove this item" onConfirm={this.handleRemove} />
             )}
           </div>
         </div>

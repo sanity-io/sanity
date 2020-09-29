@@ -149,7 +149,19 @@ const arrayGridOfFlatImagesExample = {
   of: [
     {
       type: 'image',
-      fields: [{name: 'caption', title: 'Caption', type: 'string', options: {isHighlighted: true}}]
+      title: 'Image',
+      fields: [
+        {
+          name: 'caption',
+          title: 'Caption',
+          type: 'string',
+          options: {isHighlighted: true},
+          validation: Rule =>
+            Rule.required()
+              .min(10)
+              .max(80)
+        }
+      ]
     }
   ],
   options: {layout: 'grid'}
@@ -164,7 +176,25 @@ const arrayGridOfImagesExample = {
     {
       type: 'object',
       title: 'Image',
-      fields: [{type: 'image', name: 'image', title: 'Image'}],
+      fields: [
+        {
+          type: 'image',
+          name: 'image',
+          title: 'Image',
+          fields: [
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+              options: {isHighlighted: true},
+              validation: Rule =>
+                Rule.required()
+                  .min(10)
+                  .max(80)
+            }
+          ]
+        }
+      ],
       preview: {
         select: {
           media: 'image'
@@ -261,7 +291,19 @@ const imageExample = {
   title: 'Image example',
   options: {
     hotspot: true
-  }
+  },
+  fields: [
+    {
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+      options: {isHighlighted: true},
+      validation: Rule =>
+        Rule.required()
+          .min(10)
+          .max(80)
+    }
+  ]
 }
 
 const numberExample = {

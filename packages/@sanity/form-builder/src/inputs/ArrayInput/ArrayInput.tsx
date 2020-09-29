@@ -17,7 +17,7 @@ import Details from '../common/Details'
 import Warning from '../Warning'
 import resolveListComponents from './resolveListComponents'
 import {ItemValue} from './typedefs'
-import ArrayInputListItem from './item/ArrayInputListItem'
+import {ArrayInputItem} from './item'
 import randomKey from './randomKey'
 
 import styles from './ArrayInput.css'
@@ -197,20 +197,20 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
               className={isGrid ? styles.gridItem : listItemClassName}
               {...itemProps}
             >
-              <ArrayInputListItem
+              <ArrayInputItem
+                compareValue={compareValue}
+                filterField={filterField}
+                focusPath={focusPath}
+                level={level}
+                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                onBlur={onBlur}
+                onChange={this.handleItemChange}
+                onFocus={onFocus}
+                onRemove={this.handleRemoveItem}
+                presence={childPresence}
+                readOnly={readOnly || hasMissingKeys}
                 type={type}
                 value={item}
-                level={level}
-                compareValue={compareValue}
-                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                onRemove={this.handleRemoveItem}
-                onChange={this.handleItemChange}
-                focusPath={focusPath}
-                filterField={filterField}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                readOnly={readOnly || hasMissingKeys}
-                presence={childPresence}
               />
             </Item>
           )
@@ -403,6 +403,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           {value && value.length > 0 && this.renderList()}
           {this.renderUnknownValueTypes()}
           <ArrayFunctions
+            className={styles.functions}
             type={type}
             value={value}
             readOnly={readOnly}
