@@ -6,11 +6,24 @@ import {useReporter} from './tracker'
 import {ChangeIndicatorContext} from './ChangeIndicatorContext'
 import {ChangeBar} from './ChangeBar'
 
-const isPrimitive = value =>
+const isPrimitive = (value: unknown): boolean =>
   typeof value === 'string' ||
   typeof value === 'boolean' ||
   typeof value === 'undefined' ||
   typeof value === 'number'
+
+const canCompareShallow = (valueA: unknown, valueB: unknown): boolean => {
+  if (
+    typeof valueA === 'undefined' ||
+    typeof valueB === 'undefined' ||
+    typeof valueA === null ||
+    typeof valueB === null
+  ) {
+    return true
+  }
+
+  return isPrimitive(valueA) && isPrimitive(valueB)
+}
 
 const ChangeBarWrapper = (
   props: React.ComponentProps<'div'> & {
@@ -106,7 +119,7 @@ export const CoreChangeIndicator = ({
 }: CoreProps) => {
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
-    (isPrimitive(value) && isPrimitive(value) && value !== compareValue) ||
+    (canCompareShallow(value, compareValue) && value !== compareValue) ||
     (compareDeep && !deepCompare(value, compareValue))
 
   return (
