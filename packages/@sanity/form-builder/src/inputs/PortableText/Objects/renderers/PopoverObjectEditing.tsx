@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, useEffect, useState} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
 
@@ -16,6 +16,7 @@ import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
 
 interface Props {
+  editorPath: Path
   focusPath: Path
   markers: Marker[]
   object: PortableTextBlock | PortableTextChild
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export const PopoverObjectEditing: FunctionComponent<Props> = ({
+  editorPath,
   focusPath,
   markers,
   object,
@@ -44,7 +46,16 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
 }) => {
   const editor = usePortableTextEditor()
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
-  const refElement = PortableTextEditor.findDOMNode(editor, object) as HTMLElement
+  const getEditorElement = () => {
+    const [editorObject] = PortableTextEditor.findByPath(editor, editorPath)
+    return PortableTextEditor.findDOMNode(editor, editorObject) as HTMLElement
+  }
+  const [refElement, setRefElement] = useState(getEditorElement())
+
+  useEffect(() => {
+    setRefElement(getEditorElement())
+  }, [object])
+
   return (
     <Popover
       placement="bottom"
