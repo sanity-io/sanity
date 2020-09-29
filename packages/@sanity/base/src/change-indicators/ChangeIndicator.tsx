@@ -52,7 +52,12 @@ const ChangeBarWrapper = (
   )
 
   return (
-    <div ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div
+      ref={ref}
+      className={props.className}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <ChangeBar hasFocus={props.hasFocus} isChanged={props.isChanged}>
         {props.children}
       </ChangeBar>
@@ -101,15 +106,17 @@ export function ChangeIndicatorProvider(props: {
 }
 
 interface CoreProps {
+  className?: string
   fullPath: Path
   compareDeep: boolean
-  value: any
+  value: unknown
   hasFocus: boolean
-  compareValue: any
+  compareValue: unknown
   children?: React.ReactNode
 }
 
 export const CoreChangeIndicator = ({
+  className,
   fullPath,
   value,
   compareValue,
@@ -123,7 +130,12 @@ export const CoreChangeIndicator = ({
     (compareDeep && !deepCompare(value, compareValue))
 
   return (
-    <ChangeBarWrapper isChanged={isChanged} fullPath={fullPath} hasFocus={hasFocus}>
+    <ChangeBarWrapper
+      className={className}
+      isChanged={isChanged}
+      fullPath={fullPath}
+      hasFocus={hasFocus}
+    >
       {children}
     </ChangeBarWrapper>
   )
@@ -153,6 +165,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
 }
 
 interface ContextProvidedProps {
+  className?: string
   compareDeep?: boolean
   children?: React.ReactNode
   disabled?: boolean
@@ -192,6 +205,7 @@ export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
       compareValue={compareValue}
       hasFocus={PathUtils.hasFocus(focusPath, path)}
       compareDeep={props.compareDeep}
+      className={props.className}
     >
       {props.children}
     </CoreChangeIndicator>
