@@ -1,6 +1,7 @@
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {isPlainObject, get} from 'lodash'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
@@ -48,11 +49,13 @@ export type Props = {
   readOnly: boolean
   filterField: () => any
   resolveUploader?: (type: SchemaType, file: File) => Uploader
-  presence: any
+  presence: FormFieldPresence[]
 }
+
 type ArrayInputState = {
   isMoving: boolean
 }
+
 export default class ArrayInput extends React.Component<Props, ArrayInputState> {
   _element: any
   uploadSubscriptions: {
@@ -143,7 +146,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   getMemberTypeOfItem(item: ItemValue): SchemaType {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
-    return type.of.find(memberType => memberType.name === itemTypeName)
+    return type.of.find(memberType => memberType.name === itemTypeName) as SchemaType
   }
 
   renderList = () => {
@@ -160,12 +163,14 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       filterField,
       presence
     } = this.props
+
     const {isMoving} = this.state
     const options = type.options || {}
     const hasMissingKeys = value.some(item => !item._key)
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
     const {List, Item} = resolveListComponents(isSortable, isGrid)
+    const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
     const listProps = isSortable
       ? {
           helperClass: styles.movingItem,
@@ -175,7 +180,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           useDragHandle: !isGrid
         }
       : {}
-    const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
+
     return (
       <List className={readOnly ? styles.listReadOnly : styles.list} {...listProps}>
         {value.map((item, index) => {
@@ -223,28 +228,27 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   setElement = el => {
     this._element = el
   }
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+
+  getUploadOptions = (file: File): ResolvedUploader[] => {
     const {type, resolveUploader} = this.props
     if (!resolveUploader) {
       return []
     }
+
     return type.of
-      .map(memberType => {
-        const uploader = resolveUploader(memberType, file)
-        return (
-          uploader && {
-            type: memberType,
-            uploader
-          }
-        )
-      })
-      .filter(Boolean)
+      .map(memberType => ({
+        type: memberType,
+        uploader: resolveUploader(memberType, file)
+      }))
+      .filter(member => member.uploader)
   }
+
   handleFixMissingKeys = () => {
     const {onChange, value} = this.props
     const patches = value.map((val, i) => setIfMissing(randomKey(), [i, '_key']))
     onChange(PatchEvent.from(...patches))
   }
+
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
     const nonObjects = value
@@ -253,6 +257,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const patches = nonObjects.map(index => unset([index]))
     onChange(PatchEvent.from(...patches))
   }
+
   handleUpload = ({file, type, uploader}) => {
     const {onChange} = this.props
     const item = createProtoValue(type)
@@ -266,6 +271,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       [key]: events$.subscribe(onChange)
     }
   }
+
   renderUnknownValueTypes = () => {
     const {value, type, readOnly} = this.props
     const knownTypes = (type.of || []).map(t => t.name).filter(typeName => typeName !== 'object')
@@ -273,6 +279,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     if (!unknownValues || unknownValues.length < 1) {
       return null
     }
+
     const message = (
       <>
         These are not defined in the current schema as valid types for this array. This could mean
@@ -299,6 +306,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         })}
       </>
     )
+
     return (
       <div className={styles.unknownValueTypes}>
         <Warning message={message} values={unknownValues} />
@@ -337,6 +345,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         </Fieldset>
       )
     }
+
     const hasMissingKeys = (value || []).some(item => !item._key)
     if (hasMissingKeys) {
       return (
@@ -348,6 +357,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           onFocus={this.handleFocus}
           ref={this.setElement}
           markers={markers}
+          useChangeIndicator={false}
         >
           <div className={styles.missingKeysWarning}>
             Some items in this list are missing their keys. We need to fix this before the list can
@@ -373,6 +383,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
+
     return (
       <FieldSetComponent
         markers={markers}
@@ -385,6 +396,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         type={type}
         ref={this.setElement}
         presence={presence.filter(item => item.path[0] === '$')}
+        useChangeIndicator={false}
         {...uploadProps}
       >
         <div>

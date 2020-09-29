@@ -111,6 +111,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         presence={presence}
         level={level}
         onClick={this.handleFocus}
+        useChangeIndicator={false}
       >
         <div>
           <div
