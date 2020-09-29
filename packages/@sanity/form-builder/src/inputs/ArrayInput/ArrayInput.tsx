@@ -17,7 +17,7 @@ import Details from '../common/Details'
 import Warning from '../Warning'
 import resolveListComponents from './resolveListComponents'
 import {ItemValue} from './typedefs'
-import RenderItemValue from './ItemValue'
+import ArrayInputListItem from './item/ArrayInputListItem'
 import randomKey from './randomKey'
 
 import styles from './ArrayInput.css'
@@ -197,7 +197,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
               className={isGrid ? styles.gridItem : listItemClassName}
               {...itemProps}
             >
-              <RenderItemValue
+              <ArrayInputListItem
                 type={type}
                 value={item}
                 level={level}
