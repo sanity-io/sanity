@@ -55,6 +55,7 @@ type OptionsArrayInputProps = {
   onChange?: (...args: any[]) => any
   presence: any
   onFocus: (path: Path) => void
+  onBlur: () => void
 }
 
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
@@ -104,7 +105,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
   }
 
   render() {
-    const {type, markers, value, level, readOnly, presence} = this.props
+    const {type, markers, value, level, readOnly, presence, onFocus, onBlur} = this.props
     const options = type.options?.list || []
     const direction = type.options?.direction // vertical and horizontal
     return (
@@ -140,6 +141,8 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
                     value={option}
                     checked={checked}
                     onChange={this.handleChange}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
                   />
                 </div>
               )
