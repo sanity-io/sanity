@@ -265,15 +265,19 @@ function renderMarks({
   let returned = <>{children}</>
   const fromPtDiffText =
     (diff.origin.fromValue && diff.fromValue && diff.fromValue.children[0].text) || undefined // Always one child
-  // TODO: there is currently an issue where the marksDiff has a null-annotation when it shouldn't.
-  // Figure this out! In the meantime, fallback to spanDiff (where the annotation exists, but last edit will win)
-  const fallbackMarksAnnotation =
+
+  // There are cases where we have changed marks, but it's an indirect change in the diff data.
+  // For example when '<>normal-text</><>bold-text</>' and 'bold' is unbolded. Then 'bold' is added to first span,
+  // and 'bold' is removed from the second span: '<>normal-text-bold</><>-text</>'. No marks are changed.
+  // We do however want to indicate to the user that someone removed bold from 'bold'
+  // In these cases, fallback to the diff annotation information in the span itself.
+  const indirectMarksAnnotation =
     (spanDiff && spanDiff.action !== 'unchanged' && spanDiff.annotation) || undefined
 
   const marksDiff = spanDiff?.fields?.marks as ArrayDiff
   const marksAnnotation =
     (marksDiff && marksDiff.action !== 'unchanged' && marksDiff.annotation) ||
-    fallbackMarksAnnotation // TODO: remove!
+    indirectMarksAnnotation
 
   let marksChanged: string[] = []
   const ptDiffChildren = fromPtDiffText
