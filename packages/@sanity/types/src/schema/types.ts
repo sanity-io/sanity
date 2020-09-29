@@ -83,7 +83,7 @@ export interface BlockSchemaType extends ObjectSchemaType {
   of?: SchemaType[]
 }
 
-export interface SlugSchemaType extends ObjectSchemaType {
+export interface SlugSchemaType extends BaseSchemaType {
   jsonType: 'object'
   options?: SlugOptions
 }
@@ -100,6 +100,12 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fieldsets?: Fieldset[]
 }
 
+export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
+  options?: CollapseOptions & {
+    columns?: number
+  }
+}
+
 export interface SingleFieldSet {
   single: true
   field: ObjectField
@@ -110,9 +116,7 @@ export interface MultiFieldSet {
   title?: string
   description?: string
   single?: false
-  options?: {
-    collapsible?: boolean
-    collapsed?: boolean
+  options?: CollapseOptions & {
     columns?: number
   }
   fields: ObjectField[]
@@ -120,7 +124,18 @@ export interface MultiFieldSet {
 
 export type Fieldset = SingleFieldSet | MultiFieldSet
 
+export interface CollapseOptions {
+  collapsable?: boolean
+  collapsed?: boolean
+
+  /**
+   * @deprecated Use `collapsable`/`collapsed`
+   */
+  collapsible?: boolean
+}
+
 export interface ReferenceSchemaType extends ObjectSchemaType {
+  jsonType: 'object'
   to: SchemaType[]
   weak?: boolean
   options?: ReferenceOptions
