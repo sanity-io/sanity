@@ -24,7 +24,14 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
   const bounds = fromValue && toValue ? getBounds(fromValue, toValue, api) : undefined
 
   return (
-    <GoogleMap api={api} location={center} mapTypeControl={false} controlSize={20} bounds={bounds}>
+    <GoogleMap
+      api={api}
+      location={center}
+      mapTypeControl={false}
+      controlSize={20}
+      bounds={bounds}
+      scrollWheel={false}
+    >
       {map => <GeopointMove api={api} map={map} diff={diff} />}
     </GoogleMap>
   )

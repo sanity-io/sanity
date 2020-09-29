@@ -9,6 +9,7 @@ interface MapProps {
   bounds?: google.maps.LatLngBounds
   defaultZoom?: number
   mapTypeControl?: boolean
+  scrollWheel?: boolean
   controlSize?: number
   onClick?: (event: google.maps.MouseEvent) => void
   children?: (map: google.maps.Map) => React.ReactElement
@@ -20,7 +21,8 @@ interface MapState {
 
 export class GoogleMap extends React.PureComponent<MapProps, MapState> {
   static defaultProps = {
-    defaultZoom: 8
+    defaultZoom: 8,
+    scrollWheel: true
   }
 
   state: MapState = {map: undefined}
@@ -83,11 +85,12 @@ export class GoogleMap extends React.PureComponent<MapProps, MapState> {
   }
 
   constructMap(el: HTMLDivElement) {
-    const {defaultZoom, api, mapTypeControl, controlSize, bounds} = this.props
+    const {defaultZoom, api, mapTypeControl, controlSize, bounds, scrollWheel} = this.props
 
     const map = new api.Map(el, {
       zoom: defaultZoom,
       center: this.getCenter(),
+      scrollwheel: scrollWheel,
       streetViewControl: false,
       mapTypeControl,
       controlSize
