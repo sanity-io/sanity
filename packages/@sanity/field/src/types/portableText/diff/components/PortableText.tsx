@@ -120,7 +120,7 @@ export default function PortableText(props: Props): JSX.Element {
         } else if (seg.text) {
           // Render text
           returnedChildren.push(
-            <span key={`segment-${returnedChildren.length}`}>
+            <>
               {renderTextSegment({
                 diff: diff,
                 child: block.children[childIndex],
@@ -128,7 +128,7 @@ export default function PortableText(props: Props): JSX.Element {
                 seg,
                 spanSchemaType
               })}
-            </span>
+            </>
           )
         }
       })

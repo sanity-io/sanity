@@ -17,6 +17,7 @@ interface AnnotationProps {
 }
 
 export function Annotation({
+  children,
   diff,
   schemaType,
   ...restProps
@@ -28,11 +29,18 @@ export function Annotation({
       </span>
     )
   }
-
-  if (diff) {
-    return <AnnnotationWithDiff {...restProps} diff={diff} schemaType={schemaType} />
+  if (diff && diff.action !== 'unchanged') {
+    return (
+      <AnnnotationWithDiff {...restProps} diff={diff} schemaType={schemaType}>
+        {children}
+      </AnnnotationWithDiff>
+    )
   }
-  return <span {...restProps} />
+  return (
+    <span className={styles.root} {...restProps}>
+      {children}
+    </span>
+  )
 }
 
 interface AnnnotationWithDiffProps {
@@ -68,17 +76,13 @@ function AnnnotationWithDiff({
   const handleClickOutside = useCallback(() => {
     setOpen(false)
   }, [])
-  if (!diff || diff.action === 'unchanged') {
-    return <>children</>
-  }
   return (
     <ClickOutside onClickOutside={handleClickOutside}>
       {ref => (
         <span {...restProps} className={className} onClick={handleClick} ref={ref} style={style}>
           <Popover content={popoverContent} open={open}>
             <span className={styles.previewContainer}>
-              <span>{children} </span>
-              <ChevronDownIcon />
+              <span>{children}</span>
             </span>
           </Popover>
         </span>
