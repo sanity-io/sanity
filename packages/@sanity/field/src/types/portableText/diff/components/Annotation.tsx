@@ -83,6 +83,7 @@ function AnnnotationWithDiff({
           <Popover content={popoverContent} open={open}>
             <span className={styles.previewContainer}>
               <span>{children}</span>
+              <ChevronDownIcon />
             </span>
           </Popover>
         </span>

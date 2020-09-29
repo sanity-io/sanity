@@ -53,7 +53,7 @@ export default function PortableText(props: Props): JSX.Element {
     : []
 
   const renderChild = (child: PortableTextChild) => {
-    const spanSchemaType = getChildSchemaType(schemaType.fields, child)
+    const spanSchemaType = getChildSchemaType(schemaType.fields, child) as SpanTypeSchema
     let decoratorTypes: {title: string; value: string}[] = []
     if (spanSchemaType) {
       decoratorTypes = getDecorators(spanSchemaType)
@@ -65,6 +65,7 @@ export default function PortableText(props: Props): JSX.Element {
           childrenDiff.items[0].diff.fields.text.segments) ||
         []
       const returnedChildren: React.ReactNode[] = []
+      let annotationSegments: React.ReactNode[] = []
 
       // Special case for new empty PT-block (single span child with empty text)
       if (isEmptyTextChange(block, diff)) {
@@ -85,6 +86,8 @@ export default function PortableText(props: Props): JSX.Element {
       }
       // Run through all the segments from the PortableTextDiff
       let childIndex = -1
+      let currentAnnotation: {mark: string; object: PortableTextChild} | undefined
+      let isAnnotation = false
       segments.forEach(seg => {
         const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart = allSymbolsStart.includes(seg.text)
@@ -97,6 +100,20 @@ export default function PortableText(props: Props): JSX.Element {
           }
           // No output
         } else if (isMarkStart || isMarkEnd) {
+          if (isMarkStart && annotationSymbolsStart.includes(seg.text)) {
+            isAnnotation = true
+            const object =
+              block.markDefs && block.markDefs[annotationSymbolsStart.indexOf(seg.text)]
+            if (object) {
+              currentAnnotation = {
+                mark: object._key,
+                object
+              }
+            }
+          }
+          if (isMarkEnd && annotationSymbolsEnd.includes(seg.text)) {
+            isAnnotation = false
+          }
           // No output
         } else if (isInline) {
           // Render inline object
@@ -119,17 +136,53 @@ export default function PortableText(props: Props): JSX.Element {
           }
         } else if (seg.text) {
           // Render text
-          returnedChildren.push(
-            <>
-              {renderTextSegment({
+          if (isAnnotation) {
+            annotationSegments.push(
+              renderTextSegment({
                 diff: diff,
                 child: block.children[childIndex],
                 decoratorTypes,
                 seg,
                 spanSchemaType
-              })}
-            </>
-          )
+              })
+            )
+          } else {
+            // Render collected texts inside an annotation
+            if (annotationSegments.length > 0 && currentAnnotation) {
+              const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
+              const objectSchemaType =
+                currentAnnotation &&
+                spanSchemaType.annotations &&
+                spanSchemaType.annotations.find(
+                  type =>
+                    currentAnnotation &&
+                    currentAnnotation.object &&
+                    type.name === currentAnnotation.object._type
+                )
+              returnedChildren.push(
+                <Annotation
+                  object={currentAnnotation.object}
+                  diff={annotationDiff}
+                  schemaType={objectSchemaType}
+                >
+                  <>{annotationSegments}</>
+                </Annotation>
+              )
+            }
+            annotationSegments = []
+            // Render text segment
+            returnedChildren.push(
+              <>
+                {renderTextSegment({
+                  diff: diff,
+                  child: block.children[childIndex],
+                  decoratorTypes,
+                  seg,
+                  spanSchemaType
+                })}
+              </>
+            )
+          }
         }
       })
       return React.createElement('div', {key: block._key}, ...returnedChildren)
@@ -219,26 +272,6 @@ function renderTextSegment({
     activeMarks.forEach(mark => {
       if (isDecorator(mark, spanSchemaType)) {
         children = <Decorator mark={mark}>{children}</Decorator>
-      } else {
-        const annotationDiff = findAnnotationDiff(diff.origin, mark)
-        const annotationObject =
-          annotationDiff &&
-          ((annotationDiff.toValue || annotationDiff.fromValue) as PortableTextChild)
-        const objectSchemaType =
-          annotationObject &&
-          spanSchemaType.annotations &&
-          spanSchemaType.annotations.find(type => type.name === annotationObject._type)
-        if (annotationObject) {
-          children = (
-            <Annotation
-              object={annotationObject}
-              diff={annotationDiff}
-              schemaType={objectSchemaType}
-            >
-              {children}
-            </Annotation>
-          )
-        }
       }
     })
   }
