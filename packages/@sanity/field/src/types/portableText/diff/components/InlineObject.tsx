@@ -6,6 +6,7 @@ import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState} from 'react'
 import {ChangeList, ObjectDiff, ObjectSchemaType, useDiffAnnotationColor} from '../../../../diff'
 import {PortableTextChild} from '../types'
+import {isEmptyObject} from '../helpers'
 
 import styles from './InlineObject.css'
 
@@ -58,6 +59,7 @@ function InlineObjectWithDiff({
   const style = color ? {background: color.background, color: color.text} : {}
   const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
   const [open, setOpen] = useState(false)
+  const emptyObject = object && isEmptyObject(object)
 
   const handleClick = useCallback(() => {
     setOpen(true)
@@ -65,7 +67,8 @@ function InlineObjectWithDiff({
 
   const popoverContent = (
     <div className={styles.popoverContent}>
-      <ChangeList diff={diff} schemaType={schemaType} />
+      {emptyObject && <span>Empty {schemaType.title}</span>}
+      {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
     </div>
   )
 
