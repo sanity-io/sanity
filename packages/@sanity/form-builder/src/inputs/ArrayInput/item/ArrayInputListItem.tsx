@@ -16,15 +16,15 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import * as PathUtils from '@sanity/util/paths'
 
-import {FormBuilderInput} from '../../FormBuilderInput'
-import PatchEvent from '../../PatchEvent'
-import Preview from '../../Preview'
-import {resolveTypeName} from '../../utils/resolveTypeName'
-import ConfirmButton from './ConfirmButton'
-import {ItemValue} from './typedefs'
-import InvalidItem from './InvalidItem'
+import {FormBuilderInput} from '../../../FormBuilderInput'
+import PatchEvent from '../../../PatchEvent'
+import Preview from '../../../Preview'
+import {resolveTypeName} from '../../../utils/resolveTypeName'
+import ConfirmButton from '../ConfirmButton'
+import {ItemValue} from '../typedefs'
+import InvalidItem from '../InvalidItem'
 
-import styles from './ItemValue.css'
+import styles from './ArrayInputListItem.css'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
