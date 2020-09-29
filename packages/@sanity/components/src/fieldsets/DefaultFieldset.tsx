@@ -1,14 +1,16 @@
-/* eslint-disable complexity */
-
-import {Marker, Path} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
-import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import React from 'react'
-import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
-import ValidationStatus from 'part:@sanity/components/validation/status'
+import classNames from 'classnames'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {isValidationMarker, Marker, Path} from '@sanity/types'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps
+} from '@sanity/base/lib/change-indicators'
+import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
+import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import DefaultLabel from 'part:@sanity/components/labels/default'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import ValidationStatus from 'part:@sanity/components/validation/status'
 import FieldStatus from './FieldStatus'
 
 const EMPTY_ARRAY = []
@@ -32,7 +34,7 @@ interface FieldsetProps {
   styles?: Record<string, string>
   markers?: Marker[]
   presence: FormFieldPresence[]
-  useChangeIndicator?: boolean
+  changeIndicator: ChangeIndicatorContextProvidedProps | boolean
 }
 
 interface State {
@@ -57,7 +59,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     styles: undefined,
     tabIndex: undefined,
     transparent: undefined,
-    useChangeIndicator: true,
+    changeIndicator: true,
     presence: EMPTY_ARRAY
   }
 
@@ -109,7 +111,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
       className,
       isCollapsible,
       isCollapsed: _ignore,
-      useChangeIndicator,
+      changeIndicator,
       children,
       tabIndex,
       transparent,
@@ -125,19 +127,16 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
       ...this.props.styles
     }
 
-    const validation = markers.filter(marker => marker.type === 'validation')
-    // const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter(isValidationMarker)
 
-    const rootClassName = [
+    const rootClassName = classNames(
       styles.root,
       styles[`columns${columns}`],
       styles[`level${level}`],
       transparent && styles.transparent,
       this.props.onFocus && styles.canFocus,
       className
-    ]
-      .filter(Boolean)
-      .join(' ')
+    )
 
     // Only show a summary of validation issues if field is collapsible and has been collapsed
     const showSummary = isCollapsible && isCollapsed
@@ -208,8 +207,8 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
             {!isCollapsible && (
               <div className={styles.content}>
-                {useChangeIndicator ? (
-                  <ChangeIndicator>
+                {changeIndicator ? (
+                  <ChangeIndicator {...changeIndicator}>
                     <div className={styles.fieldWrapper}>{children}</div>
                   </ChangeIndicator>
                 ) : (

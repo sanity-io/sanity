@@ -1,5 +1,3 @@
-/* eslint-disable complexity */
-
 import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sanity/types'
@@ -231,17 +229,13 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     const options = type.options || {}
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
-    const scopedValidation = validation
-      .map(marker => {
-        if (marker.path.length <= 1) {
-          return marker
-        }
-        const level = marker.level === 'error' ? 'errors' : 'warnings'
-        return Object.assign({}, marker, {
-          item: marker.item.cloneWithMessage(`Contains ${level}`)
-        })
-      })
-      .filter(Boolean)
+    const scopedValidation = validation.map(marker => {
+      if (marker.path.length <= 1) {
+        return marker
+      }
+      const level = marker.level === 'error' ? 'errors' : 'warnings'
+      return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
+    })
 
     const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
     const memberType = this.getMemberType()

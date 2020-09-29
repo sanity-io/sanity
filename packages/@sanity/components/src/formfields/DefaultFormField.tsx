@@ -1,11 +1,14 @@
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
-import {Marker} from '@sanity/types'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import React from 'react'
 import classNames from 'classnames'
+import {Marker} from '@sanity/types'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps
+} from '@sanity/base/lib/change-indicators'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import React from 'react'
 import FieldStatus from '../fieldsets/FieldStatus'
 
 const EMPTY_MARKERS = []
@@ -21,63 +24,63 @@ interface DefaultFormFieldProps {
   labelFor?: string
   markers?: Marker[]
   presence?: FormFieldPresence[]
-  useChangeIndicator?: boolean
+  changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
 }
 
-export default class DefaultFormField extends React.PureComponent<DefaultFormFieldProps> {
-  render() {
-    const {
-      level = 1,
-      label,
-      labelFor,
-      description,
-      children,
-      inline,
-      wrapped,
-      className: classNameProp,
-      useChangeIndicator = true,
-      markers = EMPTY_MARKERS,
-      presence
-    } = this.props
+export default React.memo(function DefaultFormField({
+  level = 1,
+  label,
+  labelFor,
+  description,
+  children,
+  inline,
+  wrapped,
+  className,
+  changeIndicator = true,
+  markers = EMPTY_MARKERS,
+  presence
+}: DefaultFormFieldProps) {
+  const levelClass = `level_${level}`
 
-    const levelClass = `level_${level}`
+  const rootClassName = classNames(
+    className,
+    inline ? styles.inline : styles.block,
+    styles[levelClass],
+    wrapped && styles.wrapped
+  )
 
-    const className = classNames(
-      classNameProp,
-      inline ? styles.inline : styles.block,
-      styles[levelClass],
-      wrapped && styles.wrapped
-    )
-
-    return (
-      <div className={className}>
-        <label className={styles.inner} htmlFor={labelFor}>
-          {label && (
-            <div className={styles.header}>
-              <div className={styles.headerMain}>
-                <div className={styles.title}>
-                  {label && (
-                    <DefaultLabel className={styles.label} level={level}>
-                      {label}
-                    </DefaultLabel>
-                  )}
-                  <ValidationStatus markers={markers} />
-                </div>
-                {description && <div className={styles.description}>{description}</div>}
+  return (
+    <div className={rootClassName}>
+      <label className={styles.inner} htmlFor={labelFor}>
+        {label && (
+          <div className={styles.header}>
+            <div className={styles.headerMain}>
+              <div className={styles.title}>
+                {label && (
+                  <DefaultLabel className={styles.label} level={level}>
+                    {label}
+                  </DefaultLabel>
+                )}
+                <ValidationStatus markers={markers} />
               </div>
-              {presence && (
-                <FieldStatus>
-                  <FieldPresence maxAvatars={4} presence={presence} />
-                </FieldStatus>
-              )}
+              {description && <div className={styles.description}>{description}</div>}
             </div>
-          )}
-        </label>
+            {presence && (
+              <FieldStatus>
+                <FieldPresence maxAvatars={4} presence={presence} />
+              </FieldStatus>
+            )}
+          </div>
+        )}
+      </label>
 
-        <div className={styles.content}>
-          {useChangeIndicator ? <ChangeIndicator>{children}</ChangeIndicator> : children}
-        </div>
+      <div className={styles.content}>
+        {changeIndicator ? (
+          <ChangeIndicator {...changeIndicator}>{children}</ChangeIndicator>
+        ) : (
+          children
+        )}
       </div>
-    )
-  }
-}
+    </div>
+  )
+})

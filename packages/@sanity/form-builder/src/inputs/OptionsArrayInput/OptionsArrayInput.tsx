@@ -10,6 +10,8 @@ import Item from './Item'
 import styles from './styles/OptionsArrayInput.css'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
+const changeIndicatorOptions = {compareDeep: true}
+
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
     return item.value === otherItem.value
@@ -39,6 +41,7 @@ function isEqual(item, otherItem) {
   }
   return keys.every(keyName => isEqual(item[keyName], otherItem[keyName]))
 }
+
 function inArray(array, candidate) {
   return array ? array.some(item => isEqual(item, candidate)) : false
 }
@@ -71,6 +74,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
       .map(resolveValueWithLegacyOptionsSupport)
     this.props.onChange(PatchEvent.from(nextValue.length > 0 ? set(nextValue) : unset()))
   }
+
   getMemberTypeOfItem(option) {
     const {type} = this.props
     return type.of.find(
@@ -111,7 +115,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         presence={presence}
         level={level}
         onClick={this.handleFocus}
-        useChangeIndicator={false}
+        changeIndicator={changeIndicatorOptions}
       >
         <div>
           <div

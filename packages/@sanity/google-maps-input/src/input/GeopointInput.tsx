@@ -164,7 +164,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
         presence={presence}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        useChangeIndicator={false}
+        changeIndicator={false}
       >
         <div>
           {value && (
