@@ -78,7 +78,7 @@ export const BlockObject: FunctionComponent<Props> = ({
     )
   }, [value, readOnly])
   return (
-    <div className={classnames} onDoubleClick={handleClickToOpen} data-pte-key={value._key}>
+    <div className={classnames} onDoubleClick={handleClickToOpen}>
       <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
         {blockPreview}
       </div>

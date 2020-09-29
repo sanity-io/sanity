@@ -177,25 +177,11 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     }
   }
 
-  const formField = useMemo(
-    () => (
-      <FormField
-        description={type.description}
-        label={type.title}
-        level={level}
-        markers={markers}
-        presence={presence}
-      />
-    ),
-    [markers, presence]
-  )
-
   // Render error message and resolution
   let respondToInvalidContent = null
   if (invalidValue) {
     respondToInvalidContent = (
       <>
-        {formField}
         <RespondToInvalidContent
           onChange={handleEditorChange}
           onIgnore={handleIgnoreValidation}
@@ -219,7 +205,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         type={type}
         value={valueTouchedByMarkers}
       >
-        {formField}
         {!readOnly && (
           <button
             type="button"
@@ -287,7 +272,18 @@ export default withPatchSubscriber(
       }
     }
     render() {
-      return <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
+      const {type, level, markers, presence} = this.props
+      return (
+        <FormField
+          description={type.description}
+          label={type.title}
+          level={level}
+          markers={markers}
+          presence={presence}
+        >
+          <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
+        </FormField>
+      )
     }
   }
 )

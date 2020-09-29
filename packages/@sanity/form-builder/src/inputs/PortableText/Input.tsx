@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -236,30 +235,28 @@ export default function PortableTextInput(props: Props) {
         />
       )
     }
-    return <div data-pte-key={block._key}>{returned}</div>
+    return returned
   }
 
   function renderChild(child, childType, attributes, defaultRender) {
     const isSpan = child._type === ptFeatures.types.span.name
     if (isSpan) {
-      return <span data-pte-key={child._key}>{defaultRender(child)}</span>
+      return defaultRender(child)
     }
     // eslint-disable-next-line react/prop-types
     const inlineMarkers = markers.filter(
       marker => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
     )
     return (
-      <span data-pte-key={child._key}>
-        <InlineObject
-          attributes={attributes}
-          markers={inlineMarkers}
-          onChange={handleFormBuilderEditObjectChange}
-          onFocus={onFocus}
-          readOnly={readOnly}
-          type={childType}
-          value={child}
-        />
-      </span>
+      <InlineObject
+        attributes={attributes}
+        markers={inlineMarkers}
+        onChange={handleFormBuilderEditObjectChange}
+        onFocus={onFocus}
+        readOnly={readOnly}
+        type={childType}
+        value={child}
+      />
     )
   }
 
@@ -278,7 +275,7 @@ export default function PortableTextInput(props: Props) {
         type={annotationType}
         value={annotation}
       >
-        <span data-pte-key={annotation._key}>{defaultRender()}</span>
+        {defaultRender()}
       </Annotation>
     )
   }
@@ -364,14 +361,7 @@ export default function PortableTextInput(props: Props) {
           onActivate={handleActivate}
           overlayClassName={styles.activateOnFocusOverlay}
         >
-          <ChangeIndicatorWithProvidedFullPath
-            compareDeep
-            value={value}
-            hasFocus={hasFocus}
-            path={[]}
-          >
-            {ptEditor}
-          </ChangeIndicatorWithProvidedFullPath>
+          {ptEditor}
         </ActivateOnFocus>
       )}
     </div>

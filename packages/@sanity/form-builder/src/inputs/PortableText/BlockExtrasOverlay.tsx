@@ -73,12 +73,13 @@ function BlockExtrasWithBlockActionsAndHeight(
     renderCustomMarkers,
     value
   } = props
+  const editor = usePortableTextEditor()
   const blockMarkers = findBlockMarkers(block, markers)
-  const element = document.querySelectorAll(`[data-pte-key="${block._key}"]`)[0] as HTMLElement
-  const rect = useMemo(() => element && element.getBoundingClientRect(), [element])
+  const element = PortableTextEditor.findDOMNode(editor, block) as HTMLElement
   if (!element) {
     return null
   }
+  const rect = element.getBoundingClientRect()
   let actions = null
   if (renderBlockActions) {
     const RenderComponent = renderBlockActions
