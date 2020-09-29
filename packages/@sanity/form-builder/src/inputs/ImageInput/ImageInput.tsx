@@ -186,7 +186,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File, assetDocumentProps?: UploadOptions) {
+  uploadWith(uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) {
     const {type, onChange} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
