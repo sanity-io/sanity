@@ -19,14 +19,12 @@
 }
 
 .functions {
-  composes: functions from 'part:@sanity/components/fieldsets/default-style';
-}
+  @nest .list + & {
+    margin-top: var(--small-padding);
 
-.list + .functions {
-  margin-top: var(--small-padding);
-
-  @media (--screen-medium) {
-    margin-top: var(--medium-padding);
+    @media (--screen-medium) {
+      margin-top: var(--medium-padding);
+    }
   }
 }
 

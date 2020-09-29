@@ -8,7 +8,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--extra-small-padding) 0;
 }
 
 .innerWithError {
@@ -80,11 +79,26 @@
 }
 
 .functions {
+  position: absolute;
+  z-index: 1;
   display: flex;
   align-items: center;
   flex-grow: 0;
-  color: var(--text-color-secondary);
-  margin-left: var(--extra-small-padding);
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+  color: var(--text-color);
+
+  @nest & > * {
+    margin: 0;
+  }
+
+  @media (hover: hover) {
+    display: none;
+
+    @nest .root:hover & {
+      display: block;
+    }
+  }
 }
 
 .validationIconError {
