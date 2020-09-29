@@ -73,7 +73,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
     return isRoot ? <NoChanges /> : null
   }
 
-  const showFooter = path.length === 0 && changes.length > 1
+  const showFooter = isRoot && changes.length > 1
 
   return (
     <div
