@@ -1,8 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  composes: paragraph from 'part:@sanity/base/theme/typography/text-blocks-style';
-  border-radius: var(--border-radius-small);
+  text-decoration: none;
+  display: inline;
+  position: relative;
+  border: 0;
+  padding: 0;
+  padding-left: var(--extra-small-padding);
+  border-bottom: 2px dotted color(var(--text-color) a(100%));
+
   box-shadow: inset 0 0 0 1px var(--hairline-color);
   cursor: pointer;
   white-space: nowrap;
@@ -17,6 +23,7 @@
 }
 
 .popoverContent {
+  min-width: 160px;
   padding: calc(var(--medium-padding) - var(--extra-small-padding));
 }
 

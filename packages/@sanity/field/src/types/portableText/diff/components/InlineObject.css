@@ -13,6 +13,7 @@
 }
 
 .popoverContent {
+  min-width: 160px;
   padding: calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
