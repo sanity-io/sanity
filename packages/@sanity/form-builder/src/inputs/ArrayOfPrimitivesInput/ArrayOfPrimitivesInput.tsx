@@ -1,11 +1,11 @@
 import React from 'react'
 import {get} from 'lodash'
+import {startsWith} from '@sanity/util/paths'
+import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/lists/default'
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {ArraySchemaType, Marker, Path} from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
@@ -14,9 +14,11 @@ import styles from './styles/ArrayOfPrimitivesInput.css'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
 
+type Primitive = string | number | boolean
+
 const NO_MARKERS: Marker[] = []
 
-function move(arr, from, to) {
+function move(arr: Primitive[], from: number, to: number): Primitive[] {
   const copy = arr.slice()
   const val = copy[from]
   copy.splice(from, 1)
@@ -24,19 +26,19 @@ function move(arr, from, to) {
   return copy
 }
 
-function insertAt(arr, index, item) {
+function insertAt(arr: Primitive[], index: number, item: Primitive): Primitive[] {
   const copy = arr.slice()
   copy.splice(index + 1, 0, item)
   return copy
 }
-type Primitive = string | number | boolean
+
 type Props = {
   type: ArraySchemaType<Primitive>
   value: Primitive[]
   compareValue?: Primitive[]
   level: number
   onChange: (event: PatchEvent) => void
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   focusPath: Path
   readOnly: boolean | null
@@ -48,7 +50,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: Fieldset | null
   _lastAddedIndex = -1
 
-  set(nextValue: any[]) {
+  set(nextValue: Primitive[]) {
     this._lastAddedIndex = -1
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
@@ -60,18 +62,19 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     this.props.onFocus([Math.max(0, index - 1)])
   }
 
-  handleAppend = itemValue => {
+  handleAppend = (itemValue: Primitive) => {
     const {value = [], onFocus} = this.props
     this.set(value.concat(itemValue))
     onFocus([value.length])
   }
-  handlePrepend = itemValue => {
+
+  handlePrepend = (itemValue: Primitive) => {
     const {value = [], onFocus} = this.props
     this.set([itemValue].concat(value))
     onFocus([value.length])
   }
 
-  insertAt(index, type) {
+  insertAt(index: number, type: SchemaType) {
     const {value = [], onFocus} = this.props
     this.set(insertAt(value, index, getEmptyValue(type)))
     onFocus([index + 1])
@@ -80,27 +83,31 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   handleRemoveItem = (index: number) => {
     this.removeAt(index)
   }
-  handleItemChange = event => {
+
+  handleItemChange = (event: PatchEvent) => {
     this._lastAddedIndex = -1
     this.props.onChange(event)
   }
-  handleItemEnterKey = index => {
+
+  handleItemEnterKey = (index: number) => {
     this.insertAt(index, this.props.type.of[0])
     this._lastAddedIndex = index + 1
   }
-  handleItemEscapeKey = index => {
+
+  handleItemEscapeKey = (index: number) => {
     const {value} = this.props
     if (index === this._lastAddedIndex && value[index] === '') {
       this.removeAt(index)
     }
   }
-  handleSortEnd = event => {
+
+  handleSortEnd = (event: {oldIndex: number; newIndex: number}) => {
     const {value} = this.props
     const {oldIndex, newIndex} = event
     this.set(move(value, oldIndex, newIndex))
   }
 
-  getMemberType(typeName) {
+  getMemberType(typeName: string) {
     const {type} = this.props
     return type.of.find(
       memberType => memberType.name === typeName || memberType.jsonType === typeName
@@ -119,6 +126,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       onBlur,
       presence
     } = this.props
+
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
     if (!itemMemberType) {
@@ -153,7 +161,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     )
   }
 
-  renderList(value) {
+  renderList(value: Primitive[]) {
     const {type} = this.props
     const isSortable = get(type, 'options.sortable') !== false
     return isSortable ? (
@@ -180,7 +188,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     }
   }
 
-  handleFocusItem = index => {
+  handleFocusItem = (index: number) => {
     this.props.onFocus([index])
   }
 
@@ -198,35 +206,35 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     if (!unknownValues || unknownValues.length === 0) {
       return null
     }
+
     const message = (
       <>
         These are not defined in the current schema as valid types for this array. This could mean
         that the type has been removed, or that someone else has added it to their own local schema
         that is not yet deployed.
-        {unknownValues.map(item => {
-          return (
-            <div key={item.type}>
-              <h4>{item.type}</h4>
-              <pre className={styles.inspectValue}>{JSON.stringify(item.value, null, 2)}</pre>
-              {readOnly ? (
-                <div>
-                  This array is <em>read only</em> according to its enclosing schema type and values
-                  cannot be unset. If you want to unset a value, make sure you remove the{' '}
-                  <strong>readOnly</strong> property from the enclosing type.
-                </div>
-              ) : (
-                <DefaultButton
-                  onClick={() => this.handleRemoveItem(value.findIndex(v => v === item.value))}
-                  color="danger"
-                >
-                  Unset {item.value}
-                </DefaultButton>
-              )}
-            </div>
-          )
-        })}
+        {unknownValues.map(item => (
+          <div key={item.type}>
+            <h4>{item.type}</h4>
+            <pre className={styles.inspectValue}>{JSON.stringify(item.value, null, 2)}</pre>
+            {readOnly ? (
+              <div>
+                This array is <em>read only</em> according to its enclosing schema type and values
+                cannot be unset. If you want to unset a value, make sure you remove the{' '}
+                <strong>readOnly</strong> property from the enclosing type.
+              </div>
+            ) : (
+              <DefaultButton
+                onClick={() => this.handleRemoveItem(value.findIndex(v => v === item.value))}
+                color="danger"
+              >
+                Unset {item.value}
+              </DefaultButton>
+            )}
+          </div>
+        ))}
       </>
     )
+
     return (
       <div className={styles.unknownValueTypes}>
         <Warning values={unknownValues} message={message} />
