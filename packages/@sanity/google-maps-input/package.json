@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@sanity/react-hooks": "1.150.8",
+    "classnames": "^2.2.5",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {

@@ -1,12 +1,15 @@
 import React from 'react'
+import classNames from 'classnames'
 import config from 'config:@sanity/google-maps-input'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import FormField from 'part:@sanity/components/formfields/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -34,11 +37,13 @@ interface InputProps {
   markers: unknown[]
   level?: number
   value?: Geopoint
+  compareValue?: Geopoint
   type: GeopointSchemaType
   readOnly?: boolean
   onFocus: (path: unknown[]) => void
   onBlur: () => void
   onChange: (patchEvent: unknown) => void
+  presence: unknown[]
 }
 
 // @todo
@@ -49,6 +54,7 @@ type Focusable = any
 
 interface InputState {
   modalOpen: boolean
+  hasFocus: boolean
 }
 
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
@@ -62,7 +68,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     super(props)
 
     this.state = {
-      modalOpen: false
+      modalOpen: false,
+      hasFocus: false
     }
   }
 
@@ -74,6 +81,16 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     if (this.editButton) {
       this.editButton.focus()
     }
+  }
+
+  handleFocus = event => {
+    this.setState({hasFocus: true})
+    this.props.onFocus(event)
+  }
+
+  handleBlur = () => {
+    this.setState({hasFocus: false})
+    this.props.onBlur()
   }
 
   handleToggleModal = () => {
@@ -113,8 +130,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   render() {
-    const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
-    const {modalOpen} = this.state
+    const {value, compareValue, readOnly, type, markers, level, presence} = this.props
+    const {modalOpen, hasFocus} = this.state
 
     if (!config || !config.apiKey) {
       return (
@@ -139,24 +156,34 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
 
     return (
-      <FormField
-        markers={markers}
+      <Fieldset
         level={level}
-        label={type.title}
+        legend={type.title}
         description={type.description}
-        className={styles.root}
-        onFocus={onFocus}
-        onBlur={onBlur}
+        markers={markers}
+        presence={presence}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        useChangeIndicator={false}
       >
-        <>
+        <div>
           {value && (
-            <div className={styles.map}>
-              <img
-                className={styles.previewImage}
-                src={getStaticImageUrl(value)}
-                alt="Map location"
-              />
-            </div>
+            <ChangeIndicatorCompareValueProvider value={value} compareValue={compareValue}>
+              <ChangeIndicator
+                className={classNames(
+                  styles.map,
+                  readOnly && styles.readOnly,
+                  hasFocus && styles.focused
+                )}
+                compareDeep
+              >
+                <img
+                  className={styles.previewImage}
+                  src={getStaticImageUrl(value)}
+                  alt="Map location"
+                />
+              </ChangeIndicator>
+            </ChangeIndicatorCompareValueProvider>
           )}
 
           <div className={styles.functions}>
@@ -202,8 +229,8 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
               </div>
             </Dialog>
           )}
-        </>
-      </FormField>
+        </div>
+      </Fieldset>
     )
   }
 }
