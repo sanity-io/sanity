@@ -2,7 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition} from 'lodash'
+import classNames from 'classnames'
 import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
@@ -20,7 +23,7 @@ import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
-import styles from './styles/FileInput.css'
+import styles from './FileInput.css'
 
 type FieldT = {
   name: string
@@ -37,6 +40,7 @@ interface File extends Partial<BaseFile> {
 
 export type Props = {
   value?: File
+  compareValue?: File
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
@@ -229,11 +233,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.setState({isAdvancedEditOpen: false})
   }
 
+  handleClearUploadError = () => {
+    this.setState({uploadError: null})
+  }
+
   renderAdvancedEdit(fields: Array<FieldT>) {
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
         <div>{this.renderFields(fields)}</div>
-        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
       </Dialog>
     )
   }
@@ -320,8 +327,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   render() {
-    const {type, value, level, markers, readOnly, presence} = this.props
-    const {isAdvancedEditOpen, uploadError} = this.state
+    const {type, value, compareValue, level, markers, readOnly, presence} = this.props
+    const {isAdvancedEditOpen, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -348,25 +355,41 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
         presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
+        useChangeIndicator={false}
       >
         {uploadError && (
           <Snackbar
             kind="error"
             isPersisted
             actionTitle="OK"
-            onAction={() => this.setState({uploadError: null})}
+            onAction={this.handleClearUploadError}
             title="Upload error"
-            subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
+            subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
           />
         )}
         <div>
           <div className={styles.content}>
-            <div className={`${styles.assetWrapper} ${readOnly ? styles.readOnly : ''}`}>
-              {value && value._upload && (
-                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-              )}
-              {this.renderAsset()}
-            </div>
+            <ChangeIndicatorCompareValueProvider
+              value={value?.asset?._ref}
+              compareValue={compareValue?.asset?._ref}
+            >
+              <ChangeIndicator>
+                <div
+                  className={classNames(
+                    styles.assetWrapper,
+                    readOnly && styles.readOnly,
+                    hasFocus && styles.focused
+                  )}
+                >
+                  {value && value._upload && (
+                    <div className={styles.uploadState}>
+                      {this.renderUploadState(value._upload)}
+                    </div>
+                  )}
+                  {this.renderAsset()}
+                </div>
+              </ChangeIndicator>
+            </ChangeIndicatorCompareValueProvider>
           </div>
           <div className={styles.functions}>
             <ButtonGrid>
