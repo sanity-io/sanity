@@ -355,7 +355,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
         presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
-        useChangeIndicator={false}
+        changeIndicator={false}
       >
         {uploadError && (
           <Snackbar

@@ -357,7 +357,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           onFocus={this.handleFocus}
           ref={this.setElement}
           markers={markers}
-          useChangeIndicator={false}
+          changeIndicator={false}
         >
           <div className={styles.missingKeysWarning}>
             Some items in this list are missing their keys. We need to fix this before the list can
@@ -396,7 +396,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         type={type}
         ref={this.setElement}
         presence={presence.filter(item => item.path[0] === '$')}
-        useChangeIndicator={false}
+        changeIndicator={false}
         {...uploadProps}
       >
         <div>

@@ -246,7 +246,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         ref={this.setElement}
         markers={markers}
         presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
-        useChangeIndicator={false}
+        changeIndicator={false}
       >
         <div className={styles.root}>
           {value && value.length > 0 && <div className={styles.list}>{this.renderList(value)}</div>}

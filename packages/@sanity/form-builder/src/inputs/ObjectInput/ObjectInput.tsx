@@ -154,7 +154,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           isCollapsed={isCollapsed}
           presence={isCollapsed ? childPresence : []}
           onFocus={onFocus}
-          useChangeIndicator={false}
+          changeIndicator={false}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -244,7 +244,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           markers={markers}
           presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
           onFocus={onFocus}
-          useChangeIndicator={false}
+          changeIndicator={false}
         >
           {renderedFields}
           {renderedUnknownFields}

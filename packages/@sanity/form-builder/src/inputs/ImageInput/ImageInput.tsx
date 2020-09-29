@@ -592,7 +592,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         ref={this.setFocusArea}
-        useChangeIndicator={false}
+        changeIndicator={false}
         {...uploadProps}
       >
         <div
