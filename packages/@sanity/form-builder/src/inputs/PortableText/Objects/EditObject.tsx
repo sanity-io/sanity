@@ -189,6 +189,7 @@ export const EditObject = ({
     return (
       <PopoverObjectEditing
         focusPath={focusPath}
+        editorPath={objectEditData.editorPath}
         markers={markers}
         object={object}
         onBlur={onBlur}
