@@ -16,12 +16,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   return (
     <div className={styles.root}>
-      <DocumentSparkline
-        type={props.type}
-        editState={editState}
-        badges={badges}
-        lastUpdated={props.lastUpdated}
-      />
+      <DocumentSparkline editState={editState} badges={badges} lastUpdated={props.lastUpdated} />
       <div className={styles.actions}>
         <div className={styles.actionsWrapper}>
           {showingRevision ? (
