@@ -47,15 +47,14 @@ interface DocumentSparklineProps {
   badges: Badge[]
   lastUpdated: string | undefined | null
   editState: any
-  type: string | undefined
 }
 
-export function DocumentSparkline({type, badges, lastUpdated, editState}: DocumentSparklineProps) {
+export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSparklineProps) {
   const [transitionDirection, setTransitionDirection] = React.useState<'in' | 'out' | ''>('')
   const {open: openHistory, historyController, timeline} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
   const syncState = useSyncState(timeline?.publishedId)
-  const isLiveDocument = type === 'live'
+  const isLiveDocument = editState?.liveEdit
 
   const chunks = timeline.mapChunks(chunk => chunk)
   // Find the first unpublish or publish event and use it as the base event if it exists
