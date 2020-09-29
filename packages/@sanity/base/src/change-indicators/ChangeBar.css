@@ -54,7 +54,7 @@
   transition: transform var(--change-bar-changed-badge-animation-duration),
     opacity var(--change-bar-changed-badge-animation-duration);
 
-  @nest .root.hover > .wrapper > & {
+  @nest .root.hover > .wrapper > &, .root.focus > .wrapper > & {
     transform: translate3d(-0.5px, -10px, 0) scale(1);
   }
 
@@ -90,7 +90,7 @@
   opacity: 0;
   transition: opacity var(--change-bar-changed-badge-animation-duration);
 
-  @nest .root.hover > .wrapper > .badge > & {
+  @nest .root.hover > .wrapper > .badge > &, .root.focus > .wrapper > .badge > & {
     opacity: 1;
   }
 }
