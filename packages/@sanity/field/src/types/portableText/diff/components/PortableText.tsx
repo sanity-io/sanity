@@ -3,7 +3,13 @@ import {startCase, uniq, xor} from 'lodash'
 import {ArrayDiff, DiffCard, ObjectDiff, StringDiff} from '../../../../diff'
 
 import {ObjectSchemaType, SchemaType} from '../../../../types'
-import {PortableTextBlock, PortableTextChild, PortableTextDiff, StringSegment} from '../types'
+import {
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextDiff,
+  SpanTypeSchema,
+  StringSegment
+} from '../types'
 
 import * as TextSymbols from '../symbols'
 
@@ -18,7 +24,7 @@ import {
 } from '../helpers'
 
 import Block from './Block'
-import Annotation from './Annotation'
+import {Annotation} from './Annotation'
 import Decorator from './Decorator'
 import {InlineObject} from './InlineObject'
 
@@ -102,9 +108,6 @@ export default function PortableText(props: Props): JSX.Element {
           if (key) {
             const objectSchemaType = getChildSchemaType(schemaType.fields, originChild)
             const objectDiff = findChildDiff(diff.origin, originChild)
-            if (!objectSchemaType) {
-              throw new Error('Schema type required')
-            }
             returnedChildren.push(
               <InlineObject
                 key={`inline-object-${originChild._key}`}
@@ -152,7 +155,7 @@ function renderTextSegment({
   child: PortableTextChild
   decoratorTypes: {title: string; value: string}[]
   seg: StringSegment
-  spanSchemaType: SchemaType
+  spanSchemaType: SpanTypeSchema
 }): JSX.Element {
   // Newlines
   if (seg.text === '\n') {
@@ -217,7 +220,25 @@ function renderTextSegment({
       if (isDecorator(mark, spanSchemaType)) {
         children = <Decorator mark={mark}>{children}</Decorator>
       } else {
-        children = <Annotation diff={findAnnotationDiff(diff.origin, mark)}>{children}</Annotation>
+        const annotationDiff = findAnnotationDiff(diff.origin, mark)
+        const annotationObject =
+          annotationDiff &&
+          ((annotationDiff.toValue || annotationDiff.fromValue) as PortableTextChild)
+        const objectSchemaType =
+          annotationObject &&
+          spanSchemaType.annotations &&
+          spanSchemaType.annotations.find(type => type.name === annotationObject._type)
+        if (annotationObject) {
+          children = (
+            <Annotation
+              object={annotationObject}
+              diff={annotationDiff}
+              schemaType={objectSchemaType}
+            >
+              {children}
+            </Annotation>
+          )
+        }
       }
     })
   }
