@@ -3,7 +3,13 @@ import React, {FunctionComponent} from 'react'
 
 import Popover from 'part:@sanity/components/dialogs/popover'
 
-import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
+import {
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextEditor,
+  Type,
+  usePortableTextEditor
+} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
@@ -36,8 +42,9 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   readOnly,
   type
 }) => {
+  const editor = usePortableTextEditor()
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
-  const refElement = document.querySelectorAll(`[data-pte-key="${object._key}"]`)[0] as HTMLElement
+  const refElement = PortableTextEditor.findDOMNode(editor, object) as HTMLElement
   return (
     <Popover
       placement="bottom"

@@ -3,7 +3,7 @@ import {isEqual} from 'lodash'
 import classNames from 'classnames'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
-import {Marker, Path} from '@sanity/types'
+import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
@@ -29,6 +29,7 @@ export default function BlockExtras(props: Props) {
   const warnings = blockValidation.filter(mrkr => mrkr.level === 'warning')
   const selection = PortableTextEditor.getSelection(editor)
   const hasFocus = !!selection && isEqual(selection.focus.path[0], {_key: block._key})
+  const empty = markers.length === 0 && !blockActions
   const content = (
     <div className={styles.content} style={{height: `${height}px`}}>
       {markers.length > 0 && (
@@ -43,20 +44,24 @@ export default function BlockExtras(props: Props) {
         </div>
       )}
       {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
+      {/* Make sure it gets proper height (has content). Insert an zero-width-space if empty */}
+      {empty && <>&#8203;</>}
     </div>
   )
-  const returned = isFullscreen ? (
-    <ChangeIndicatorWithProvidedFullPath
-      compareDeep
-      value={block}
-      hasFocus={hasFocus}
-      path={[{_key: block._key}]}
-    >
-      {content}
-    </ChangeIndicatorWithProvidedFullPath>
-  ) : (
-    content
-  )
+  const path = PortableTextEditor.getSelection(editor)?.focus.path
+  const returned =
+    isFullscreen && path && isKeySegment(path[0]) ? (
+      <ChangeIndicatorWithProvidedFullPath
+        compareDeep
+        value={block}
+        hasFocus={path && hasFocus ? path[0]._key === block._key : false}
+        path={[{_key: block._key}]}
+      >
+        {content}
+      </ChangeIndicatorWithProvidedFullPath>
+    ) : (
+      content
+    )
   return (
     <div
       className={classNames([
