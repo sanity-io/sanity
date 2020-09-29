@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.imageInput {
+  /* for debugging */
+}
+
 .content {
   position: relative;
   padding-bottom: calc(2 / 3 * 100%);
@@ -68,7 +72,7 @@
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
 
-  @nest .content + & {
+  @nest .contentContainer + & {
     margin-top: var(--small-padding);
 
     @media (--screen-medium) {

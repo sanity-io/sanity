@@ -595,7 +595,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         useChangeIndicator={false}
         {...uploadProps}
       >
-        <div>
+        <div className={styles.imageInput}>
           {uploadError && (
             <Snackbar
               kind="error"
@@ -606,36 +606,42 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
             />
           )}
-          <div className={styles.content}>
-            <ChangeIndicatorCompareValueProvider
-              value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
-            >
-              <ChangeIndicator
-                className={classNames(
-                  styles.assetWrapper,
-                  readOnly && styles.readOnly,
-                  hasFocus && styles.focused
-                )}
-              >
-                {value && value._upload && (
-                  <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-                )}
-                {/* eslint-disable-next-line no-nested-ternary */}
-                {hasAsset ? (
-                  <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                    {this.renderMaterializedAsset}
-                  </WithMaterializedReference>
-                ) : readOnly ? (
-                  <span>Field is read only</span>
-                ) : (
-                  SUPPORT_DIRECT_UPLOADS && (
-                    <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
-                  )
-                )}
-              </ChangeIndicator>
-            </ChangeIndicatorCompareValueProvider>
-          </div>
+
+          <ChangeIndicatorCompareValueProvider
+            value={value?.asset?._ref}
+            compareValue={compareValue?.asset?._ref}
+          >
+            <ChangeIndicator className={styles.contentContainer}>
+              <div className={styles.content}>
+                <div
+                  className={classNames(
+                    styles.assetWrapper,
+                    readOnly && styles.readOnly,
+                    hasFocus && styles.focused
+                  )}
+                >
+                  {value && value._upload && (
+                    <div className={styles.uploadState}>
+                      {this.renderUploadState(value._upload)}
+                    </div>
+                  )}
+                  {/* eslint-disable-next-line no-nested-ternary */}
+                  {hasAsset ? (
+                    <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                      {this.renderMaterializedAsset}
+                    </WithMaterializedReference>
+                  ) : readOnly ? (
+                    <span>Field is read only</span>
+                  ) : (
+                    SUPPORT_DIRECT_UPLOADS && (
+                      <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
+                    )
+                  )}
+                </div>
+              </div>
+            </ChangeIndicator>
+          </ChangeIndicatorCompareValueProvider>
+
           <div className={styles.functions}>
             <ButtonGrid>
               {!readOnly && SUPPORT_DIRECT_UPLOADS && (
@@ -672,6 +678,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             </ButtonGrid>
           </div>
         </div>
+
         {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {selectedAssetSource && this.renderAssetSource()}
