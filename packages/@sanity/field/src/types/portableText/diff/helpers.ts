@@ -359,6 +359,6 @@ export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): Object
   )
 }
 
-export function isEmptyObject(object: PortableTextChild) {
-  return object && isEqual(Object.keys(object), ['_key', '_type'])
+export function isEmptyObject(object: PortableTextChild): boolean {
+  return (object && isEqual(Object.keys(object), ['_key', '_type'])) || false
 }
