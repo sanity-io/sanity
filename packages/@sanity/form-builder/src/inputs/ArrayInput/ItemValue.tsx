@@ -21,9 +21,10 @@ import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import ConfirmButton from './ConfirmButton'
-import styles from './styles/ItemValue.css'
 import {ItemValue} from './typedefs'
 import InvalidItem from './InvalidItem'
+
+import styles from './ItemValue.css'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>

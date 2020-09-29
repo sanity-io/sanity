@@ -20,7 +20,7 @@ import {ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
 
-import styles from './styles/ArrayInput.css'
+import styles from './ArrayInput.css'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')

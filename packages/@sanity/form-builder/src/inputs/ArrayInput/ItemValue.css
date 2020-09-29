@@ -2,6 +2,7 @@
 
 .root {
   position: relative;
+  outline: 1px solid red;
 }
 
 .inner {
