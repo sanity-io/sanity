@@ -5,7 +5,8 @@ export {
   ChangeIndicatorProvider,
   ChangeIndicatorScope,
   CoreChangeIndicator,
-  ChangeIndicatorWithProvidedFullPath
+  ChangeIndicatorWithProvidedFullPath,
+  ChangeIndicatorContextProvidedProps
 } from './ChangeIndicator'
 
 export {

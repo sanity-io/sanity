@@ -164,7 +164,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
   )
 }
 
-interface ContextProvidedProps {
+export interface ChangeIndicatorContextProvidedProps {
   className?: string
   compareDeep?: boolean
   children?: React.ReactNode
@@ -193,7 +193,7 @@ export const ChangeIndicatorCompareValueProvider = (props: {
   )
 }
 
-export const ContextProvidedChangeIndicator = (props: ContextProvidedProps) => {
+export const ContextProvidedChangeIndicator = (props: ChangeIndicatorContextProvidedProps) => {
   const context = React.useContext(ChangeIndicatorContext)
   const {value, compareValue, path, focusPath, fullPath} = context
   return props.disabled ? (
