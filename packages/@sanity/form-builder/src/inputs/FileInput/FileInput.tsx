@@ -367,20 +367,21 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
           />
         )}
-        <div>
-          <div className={styles.content}>
-            <ChangeIndicatorCompareValueProvider
-              value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
-            >
-              <ChangeIndicator>
-                <div
-                  className={classNames(
-                    styles.assetWrapper,
-                    readOnly && styles.readOnly,
-                    hasFocus && styles.focused
-                  )}
-                >
+
+        <div
+          className={classNames(
+            styles.root,
+            readOnly && styles.readOnly,
+            hasFocus && styles.focused
+          )}
+        >
+          <ChangeIndicatorCompareValueProvider
+            value={value?.asset?._ref}
+            compareValue={compareValue?.asset?._ref}
+          >
+            <ChangeIndicator>
+              <div className={styles.content}>
+                <div className={styles.assetWrapper}>
                   {value && value._upload && (
                     <div className={styles.uploadState}>
                       {this.renderUploadState(value._upload)}
@@ -388,9 +389,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   )}
                   {this.renderAsset()}
                 </div>
-              </ChangeIndicator>
-            </ChangeIndicatorCompareValueProvider>
-          </div>
+              </div>
+            </ChangeIndicator>
+          </ChangeIndicatorCompareValueProvider>
+
           <div className={styles.functions}>
             <ButtonGrid>
               {!readOnly && (
