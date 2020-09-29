@@ -32,8 +32,8 @@ function createProtoValue(type: SchemaType): ItemValue {
     )
   }
 
-  const key = randomKey(12)
-  return type.name === 'object' ? {_key: key} : {_type: type.name, _key: key}
+  const _key = randomKey(12)
+  return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
 export type Props = {
@@ -57,34 +57,40 @@ type ArrayInputState = {
 }
 
 export default class ArrayInput extends React.Component<Props, ArrayInputState> {
-  _element: any
-  uploadSubscriptions: {
-    [name: string]: Subscription
-  } = {}
   static defaultProps = {
     focusPath: []
   }
+
   state = {
     isMoving: false
   }
+
+  _element: any
+  uploadSubscriptions: Record<string, Subscription> = {}
+
   insert = (itemValue: ItemValue, position: 'before' | 'after', atIndex: number) => {
     const {onChange} = this.props
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
   }
+
   handlePrepend = (value: ItemValue) => {
     this.insert(value, 'before', 0)
     this.handleFocusItem(value)
   }
+
   handleAppend = (value: ItemValue) => {
     this.insert(value, 'after', -1)
     this.handleFocusItem(value)
   }
+
   handleRemoveItem = (item: ItemValue) => {
     this.removeItem(item)
   }
+
   handleFocus = () => {
     this.props.onFocus([FOCUS_TERMINATOR])
   }
+
   handleFocusItem = (item: ItemValue) => {
     this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
   }
@@ -116,15 +122,18 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       event.prefixAll({_key: key}).prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
     )
   }
+
   handleSortStart = () => {
     this.setState({isMoving: true})
   }
+
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
     this.setState({isMoving: false})
+
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
     const refItem = value[event.newIndex]
-    // console.log('from %d => %d', event.oldIndex, event.newIndex, event)
+
     if (!item._key || !refItem._key) {
       // eslint-disable-next-line no-console
       console.error(
@@ -132,9 +141,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       )
       return
     }
+
     if (event.oldIndex === event.newIndex || item._key === refItem._key) {
       return
     }
+
     onChange(
       PatchEvent.from(
         unset([{_key: item._key}]),

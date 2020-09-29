@@ -59,6 +59,8 @@ type OptionsArrayInputProps = {
 }
 
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
+  _element: Fieldset | null
+
   handleChange = (isChecked, optionValue) => {
     const {type, value = []} = this.props
     const list = get(type.options, 'list')
@@ -82,6 +84,16 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
       memberType =>
         memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
     )
+  }
+
+  setElement = (el: Fieldset | null) => {
+    this._element = el
+  }
+
+  focus() {
+    if (this._element) {
+      this._element.focus()
+    }
   }
 
   handleFocus = () => {
@@ -110,6 +122,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     const direction = type.options?.direction // vertical and horizontal
     return (
       <Fieldset
+        ref={this.setElement}
         legend={type.title}
         description={type.description}
         markers={markers}
