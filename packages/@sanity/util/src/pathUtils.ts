@@ -59,6 +59,10 @@ export function isEqual(path: Path, otherPath: Path): boolean {
   )
 }
 
+export function numEqualSegments(path: Path, otherPath: Path): number {
+  return path.filter((segment, i) => isSegmentEqual(segment, otherPath[i])).length
+}
+
 export function isSegmentEqual(segmentA: PathSegment, segmentB: PathSegment): boolean {
   if (isKeySegment(segmentA) && isKeySegment(segmentB)) {
     return segmentA._key === segmentB._key
