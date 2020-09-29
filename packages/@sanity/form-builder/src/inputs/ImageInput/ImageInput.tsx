@@ -595,7 +595,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         useChangeIndicator={false}
         {...uploadProps}
       >
-        <div className={styles.imageInput}>
+        <div
+          className={classNames(
+            styles.root,
+            readOnly && styles.readOnly,
+            hasFocus && styles.focused
+          )}
+        >
           {uploadError && (
             <Snackbar
               kind="error"
@@ -611,15 +617,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             value={value?.asset?._ref}
             compareValue={compareValue?.asset?._ref}
           >
-            <ChangeIndicator className={styles.contentContainer}>
+            <ChangeIndicator>
               <div className={styles.content}>
-                <div
-                  className={classNames(
-                    styles.assetWrapper,
-                    readOnly && styles.readOnly,
-                    hasFocus && styles.focused
-                  )}
-                >
+                <div className={styles.assetWrapper}>
                   {value && value._upload && (
                     <div className={styles.uploadState}>
                       {this.renderUploadState(value._upload)}
