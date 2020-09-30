@@ -52,6 +52,7 @@ export default function BlockExtras(props: Props) {
   const returned =
     isFullscreen && path && isKeySegment(path[0]) ? (
       <ChangeIndicatorWithProvidedFullPath
+        className={styles.changeIndicator}
         compareDeep
         value={block}
         hasFocus={path && hasFocus ? path[0]._key === block._key : false}
