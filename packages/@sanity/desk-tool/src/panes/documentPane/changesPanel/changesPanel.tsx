@@ -17,6 +17,7 @@ import {AvatarStack} from 'part:@sanity/components/avatar'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 import {TooltipProvider} from 'part:@sanity/components/tooltip'
 import React, {useCallback, useRef} from 'react'
+import {DropdownButton} from '../../../components/DropdownButton'
 import {useDocumentHistory} from '../documentHistory'
 import {formatTimelineEventLabel} from '../timeline'
 import {LoadingContent} from './content/loading'
@@ -94,13 +95,10 @@ export function ChangesPanel({
         <div className={styles.versionSelectContainer}>
           <div className={styles.changesSinceSelectContainer}>
             <div ref={changesSinceSelectRef}>
-              <Button
-                kind="simple"
+              <DropdownButton
                 onMouseUp={ignoreClickOutside}
                 onClick={onTimelineOpen}
-                padding="small"
                 selected={isTimelineOpen && timelineMode === 'since'}
-                size="small"
               >
                 {/* eslint-disable-next-line no-nested-ternary */}
                 {menuOpen ? (
@@ -109,9 +107,8 @@ export function ChangesPanel({
                   <SinceText since={since} />
                 ) : (
                   <>Since unknown version</>
-                )}{' '}
-                &darr;
-              </Button>
+                )}
+              </DropdownButton>
             </div>
           </div>
 
