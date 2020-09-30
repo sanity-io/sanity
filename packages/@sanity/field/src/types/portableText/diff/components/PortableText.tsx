@@ -216,7 +216,11 @@ function renderTextSegment({
     return <br />
   }
   // Make sure we render trailing spaces correctly
-  let children = <>{seg.text.replace(/ /g, TextSymbols.TRAILING_SPACE_SYMBOL)}</>
+  let children = (
+    <span key={`text-${segIndex}`}>
+      {seg.text.replace(/ /g, TextSymbols.TRAILING_SPACE_SYMBOL)}
+    </span>
+  )
   const childFromFromValue = diff.origin.fromValue?.children.find(
     cld => cld.text && cld.text.match(seg.text)
   )
