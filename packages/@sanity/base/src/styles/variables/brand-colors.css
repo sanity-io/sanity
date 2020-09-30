@@ -1,5 +1,5 @@
 :root {
-  --black: #000;
+  --black: #121923;
   --white: #fff;
   --brand-darkest: var(--black);
   --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
