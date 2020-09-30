@@ -26,7 +26,7 @@
   /* simple={true} */
   /* :enabled */
   --color-button-simple-enabled-bg: transparent;
-  --color-button-simple-enabled-text: color(var(--color-button-bg) lightness(- 20%));
+  --color-button-simple-enabled-text: color(var(--color-button-bg) lightness(- 10%));
   /* :focus */
   --color-button-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
   --color-button-simple-focus-text: color(var(--color-button-bg) lightness(- 20%));
@@ -39,7 +39,7 @@
   --color-button-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
   --color-button-simple-selected-text: var(--selected-item-color);
   /* simple={true} tone="navbar" */
-  --color-button-navbar-simple-color: var(--color-button-bg);
+  --color-button-navbar-simple-text: var(--main-navigation-color--inverted-muted);
   /* :focus */
   --color-button-navbar-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
   --color-button-navbar-simple-focus-text: color(var(--color-button-bg) lightness(+ 20%));
@@ -80,7 +80,7 @@
   );
   /* :focus */
   --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) alpha(10%));
-  --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 20%));
+  --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 10%));
   /* :hover */
   --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) alpha(10%));
   --color-button-primary-simple-hover-text: color(var(--color-button-primary-bg) lightness(- 20%));
@@ -120,7 +120,7 @@
   );
   /* :focus */
   --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) alpha(10%));
-  --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 20%));
+  --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 10%));
   /* :hover */
   --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) alpha(10%));
   --color-button-success-simple-hover-text: color(var(--color-button-success-bg) lightness(- 20%));
@@ -160,7 +160,7 @@
   );
   /* :focus */
   --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) alpha(10%));
-  --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 20%));
+  --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 10%));
   /* :hover */
   --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) alpha(10%));
   --color-button-warning-simple-hover-text: color(var(--color-button-warning-bg) lightness(- 20%));
@@ -195,7 +195,7 @@
   /* simple={true} */
   /* :enabled */
   --color-button-danger-simple-enabled-bg: transparent;
-  --color-button-danger-simple-enabled-text: color(var(--color-button-danger-bg) lightness(- 20%));
+  --color-button-danger-simple-enabled-text: color(var(--color-button-danger-bg) lightness(- 10%));
   /* :focus */
   --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) alpha(10%));
   --color-button-danger-simple-focus-text: color(var(--color-button-danger-bg) lightness(- 20%));
@@ -211,10 +211,10 @@
   /* COMMON */
 
   /* :disabled */
-  --color-button-disabled-bg: var(--gray-lightest);
-  --color-button-disabled-text: var(--gray-lighter);
+  --color-button-disabled-bg: color(var(--component-bg) blend(var(--color-button-bg) 20%));
+  --color-button-disabled-text: var(--color-button-bg);
   --color-button-simple-disabled-bg: transparent;
-  --color-button-simple-disabled-text: var(--gray-lighter);
+  --color-button-simple-disabled-text: var(--color-button-bg);
 }
 
 .root {
@@ -308,7 +308,7 @@
     @nest &.simple[data-tone='navbar'] {
       @nest & > .inner {
         background-color: transparent;
-        color: var(--color-button-navbar-simple-color);
+        color: var(--color-button-navbar-simple-text);
       }
 
       @nest & .spinner {

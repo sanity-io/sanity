@@ -2,16 +2,13 @@
 @import 'part:@sanity/base/theme/animation-style';
 
 :root {
-  --switch-color: var(--brand-primary);
-  --focus-color: var(--brand-primary);
-
   /* Thumb */
   --thumb-size: calc(15 / 16 * 1rem);
-  --thumb-color: var(--switch-color);
   --thumb-off-color: var(--white);
   --thumb-on-color: var(--white);
   --thumb-disabled-color: var(--input-color-disabled);
   --thumb-offset: calc(4 / 16 * 1rem);
+
   /* Track */
   --track-height: calc(23 / 16 * 1rem);
   --track-width: calc(39 / 16 * 1rem);
