@@ -34,6 +34,7 @@ import PortableTextSanityEditor from './Editor'
 
 type Props = {
   focusPath: Path
+  forceUpdate: () => void
   hasFocus: boolean
   hotkeys: HotkeyOptions
   isFullscreen: boolean
@@ -56,6 +57,7 @@ type Props = {
 export default function PortableTextInput(props: Props) {
   const {
     focusPath,
+    forceUpdate,
     hasFocus,
     hotkeys,
     isFullscreen,
@@ -90,8 +92,13 @@ export default function PortableTextInput(props: Props) {
       const isChild = focusPath[1] === 'children'
       const isMarkdef = focusPath[1] === 'markDefs'
       const blockSegment = focusPath[0]
-      // Annotation focus paths
-      if (isMarkdef && isKeySegment(blockSegment)) {
+      // If something sets a block focusPath (keysegment length 1), make the editor select that block.
+      if (focusPath && isKeySegment(focusPath[0]) && focusPath.length === 1) {
+        const point = {path: focusPath, offset: 0}
+        PortableTextEditor.select(editor, {focus: point, anchor: point})
+        forceUpdate() // Update the editor
+      } else if (isMarkdef && isKeySegment(blockSegment)) {
+        // Annotation focus paths
         // Get block from the editor value - as the props value may not be updated yet.
         const block = (PortableTextEditor.getValue(editor) || []).find(
           blk => blk._key === blockSegment._key
@@ -135,11 +142,6 @@ export default function PortableTextInput(props: Props) {
         // Make it go to selection first, then load  the editing interface
         setTimeout(() => setObjectEditData({editorPath: path, formBuilderPath: path, kind}))
       }
-    }
-    // If something sets a block focusPath (keysegment length 1), make the editor select that block.
-    if (focusPath && isKeySegment(focusPath[0]) && focusPath.length === 1) {
-      const point = {path: focusPath, offset: 0}
-      PortableTextEditor.select(editor, {focus: point, anchor: point})
     }
   }, [focusPath])
 
@@ -344,7 +346,7 @@ export default function PortableTextInput(props: Props) {
         value={value}
       />
     ),
-    [hasFocus, isFullscreen, value]
+    [hasFocus, focusPath, isFullscreen, value]
   )
 
   const editObject = useMemo(() => {
