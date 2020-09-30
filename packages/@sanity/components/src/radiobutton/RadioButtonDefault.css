@@ -1,11 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --radio-off-color: var(--gray-light);
-  --radio-color: var(--brand-primary);
   --radio-button-size: calc(17 / 16 * 1em);
   --radio-top-offset: 0;
-  --radio-focus-color: var(--brand-primary);
+  --radio-focus-color: var(--focus-color);
   --radio-disabled-border: var(--input-bg-disabled);
   --radio-disabled-background: var(--input-color-disabled);
 }
@@ -35,7 +33,7 @@
   justify-content: center;
   height: var(--radio-button-size);
   width: var(--radio-button-size);
-  box-shadow: inset 0 0 0 1px var(--radio-off-color);
+  box-shadow: inset 0 0 0 1px var(--input-border-color);
   border-radius: calc(var(--radio-button-size) / 2);
   margin-right: var(--small-padding);
 

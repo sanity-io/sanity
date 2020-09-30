@@ -6,8 +6,8 @@
 
 .root {
   display: flex;
-  border: var(--input-border-size) solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
+  border: 1px solid var(--hairline-color);
+  border-radius: var(--border-radius-small);
   padding: var(--radio-select-padding-narrow) var(--radio-select-padding-narrow) 0;
 
   @media (--screen-medium) {

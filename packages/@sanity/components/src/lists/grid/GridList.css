@@ -9,5 +9,6 @@
 
   @media (--screen-medium) {
     grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    grid-gap: var(--medium-padding);
   }
 }

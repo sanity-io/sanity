@@ -1,13 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --checkbox-off-color: var(--gray-light);
-  --checkbox-color: var(--brand-primary);
-  --checkbox-button-size: calc(17 / 16 * 1rem);
-  --checkbox-top-offset: 0;
-  --checkbox-focus-color: var(--brand-primary);
-  --checkbox-disabled-border: var(--input-bg-disabled);
-  --checkbox-disabled-background: var(--input-color-disabled);
+  --checkbox-size: calc(17 / 16 * 1rem);
+  --checkbox-disabled-bg: var(--input-bg-disabled);
+  --checkbox-disabled-fg: var(--input-color-disabled);
 }
 
 .root {
@@ -29,63 +25,52 @@
 }
 
 .checkbox {
+  background: var(--input-bg);
   flex-shrink: 0;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--checkbox-button-size);
-  width: var(--checkbox-button-size);
-  box-shadow: inset 0 0 0 1px var(--checkbox-off-color);
-  /* border: 1px solid var(--checkbox-off-color); */
-  border-radius: 3px;
+  height: var(--checkbox-size);
+  width: var(--checkbox-size);
+  box-shadow: inset 0 0 0 1px var(--input-border-color);
+  border-radius: var(--border-radius-medium);
+  pointer-events: none;
 
   @nest & .mark {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 1px;
+    left: 1px;
     opacity: 0;
     flex: 1;
-    height: var(--checkbox-button-size);
-    width: var(--checkbox-button-size);
+    height: calc(var(--checkbox-size) - 2px);
+    width: calc(var(--checkbox-size) - 2px);
   }
-}
 
-.input:indeterminate + .checkbox {
-  @nest & .indeterminate {
-    display: block;
-    opacity: 1;
-    transform: scale(0.6);
+  @nest .input:indeterminate + & {
+    @nest & .indeterminate {
+      display: block;
+      opacity: 1;
+      transform: scale(0.6);
+    }
   }
-}
 
-.input:focus + .checkbox {
-  border-color: transparent;
-
-  @nest &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    height: calc(100% + 4px);
-    width: calc(100% + 4px);
-    border: 2px solid var(--checkbox-focus-color);
-    border-radius: 5px;
-    box-sizing: border-box;
-    background: var(--component-bg);
+  @nest .input:focus + & {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--focus-color);
   }
-}
 
-.input:checked + .checkbox {
-  @nest & .checkmark {
-    opacity: 1;
+  @nest .input:checked + & {
+    @nest & .checkmark {
+      opacity: 1;
+    }
   }
-}
 
-.input:disabled + .checkbox {
-  background: var(--checkbox-disabled-border);
+  @nest .input:disabled + & {
+    background: var(--checkbox-disabled-bg);
 
-  @nest & svg {
-    color: var(--checkbox-disabled-background);
+    @nest & svg {
+      color: var(--checkbox-disabled-fg);
+    }
   }
 }

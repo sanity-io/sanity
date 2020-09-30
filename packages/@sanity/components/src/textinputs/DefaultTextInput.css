@@ -9,7 +9,7 @@
   position: relative;
 
   @nest .isClearable & {
-    padding-right: 2em;
+    padding-right: var(--extra-large-padding);
   }
 
   @nest &[type='number']::-webkit-inner-spin-button, &[type='number']::-webkit-outer-spin-button {
@@ -22,7 +22,7 @@
   composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
   position: absolute;
   top: 0;
-  right: 0.5em;
+  right: var(--small-padding);
   display: flex;
   height: 100%;
   align-items: center;

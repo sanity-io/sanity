@@ -59,12 +59,13 @@
   margin: 0 -5px;
 
   @nest &:after {
+    background: var(--component-bg);
     content: '';
     position: absolute;
     top: 0;
     left: 5px;
     bottom: 0;
-    border-left: 1px solid var(--gray-lighter);
+    border-left: 1px solid var(--hairline-color);
   }
 
   &:not(.disabled):not(.collapsed) {
@@ -72,7 +73,7 @@
       cursor: ew-resize;
 
       &:hover {
-        background: color(var(--gray) alpha(10%));
+        background: color(var(--gray) alpha(5%));
       }
     }
   }

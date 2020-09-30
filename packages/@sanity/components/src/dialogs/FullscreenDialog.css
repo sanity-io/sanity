@@ -7,7 +7,7 @@
   left: 0;
   right: 0;
   z-index: var(--zindex-portal);
-  background: color(var(--gray) alpha(20%));
+  background: var(--backdrop-color);
   color: var(--component-text-color);
   padding: var(--large-padding);
   box-sizing: border-box;
