@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {Transaction, MendozaPatch, ChunkType, Chunk} from './types'
 
 function didDeleteDraft(type: ChunkType) {
@@ -14,13 +15,28 @@ function isWithinMergeWindow(a: string, b: string) {
   return Date.parse(b) - Date.parse(a) < CHUNK_WINDOW
 }
 
+// eslint-disable-next-line complexity
 export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   if (left.end !== right.start) throw new Error('chunks are not next to each other')
 
   // TODO: How to detect first squash/create
 
-  if (didDeleteDraft(left.type) && right.type === 'editDraft') {
+  if (left.type === 'delete' && right.type === 'editDraft') {
     return [left, {...right, type: 'create'}]
+  }
+
+  const draftState = combineState(left.draftState, right.draftState)
+  const publishedState = combineState(left.publishedState, right.publishedState)
+
+  // Convert deletes into either discardDraft or unpublish depending on what's been deleted.
+  if (right.type === 'delete') {
+    if (draftState === 'missing' && publishedState === 'present') {
+      return [left, {...right, type: 'discardDraft'}]
+    }
+
+    if (draftState === 'present' && publishedState === 'missing') {
+      return [left, {...right, type: 'unpublish'}]
+    }
   }
 
   if (
@@ -40,7 +56,9 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
       end: right.end,
       startTimestamp: left.startTimestamp,
       endTimestamp: right.endTimestamp,
-      authors
+      authors,
+      draftState,
+      publishedState
     }
   }
 
@@ -56,16 +74,12 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
 
   let type: ChunkType = 'editDraft'
 
-  if (draftDeleted) {
-    if (publishedDeleted) {
-      type = 'delete'
-    } else if (modifedPublished) {
-      type = 'publish'
-    } else {
-      type = 'discardDraft'
-    }
-  } else if (publishedDeleted) {
-    type = 'unpublish'
+  if (draftDeleted && modifedPublished && !publishedDeleted) {
+    type = 'publish'
+  } else if (draftDeleted || publishedDeleted) {
+    // We don't really know anything more at this point since the actual
+    // behavior depends on the earlier state.
+    type = 'delete'
   }
 
   return {
@@ -76,8 +90,17 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
     end: transaction.index + 1,
     startTimestamp: transaction.timestamp,
     endTimestamp: transaction.timestamp,
-    authors: new Set([transaction.author])
+    authors: new Set([transaction.author]),
+    draftState: modifedDraft ? (draftDeleted ? 'missing' : 'present') : 'unknown',
+    publishedState: modifedPublished ? (publishedDeleted ? 'missing' : 'present') : 'unknown'
   }
+}
+
+function combineState(
+  left: 'present' | 'missing' | 'unknown',
+  right: 'present' | 'missing' | 'unknown'
+) {
+  return right === 'unknown' ? left : right
 }
 
 export function isDeletePatch(patch: MendozaPatch) {
