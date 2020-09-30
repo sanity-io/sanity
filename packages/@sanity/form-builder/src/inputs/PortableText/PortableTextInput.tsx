@@ -93,10 +93,11 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   if (Array.isArray(_value) && _value.length === 0) {
     _value = undefined
   }
-  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(_value)
-  useEffect(() => {
+  const forceUpdate = () => {
     setValueTouchedByMarkers(_value ? [..._value] : _value)
-  }, [validationHash, value])
+  }
+  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(_value)
+  useEffect(forceUpdate, [validationHash, value])
 
   const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
     undefined
@@ -217,6 +218,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         )}
         <Input
           focusPath={focusPath}
+          forceUpdate={forceUpdate}
           hasFocus={hasFocus}
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}

@@ -33,7 +33,6 @@
   overflow: visible;
 }
 
-
 .hasFullScreen .content {
   margin-left: 100%;
 }
@@ -76,6 +75,10 @@
     border-color: var(--state-info-color);
     color: var(--text-color);
   }
+}
+
+.hasFocus {
+  
 }
 
 .changeIndicator {

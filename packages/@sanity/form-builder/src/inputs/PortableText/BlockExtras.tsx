@@ -1,5 +1,4 @@
 import React from 'react'
-import {isEqual} from 'lodash'
 import classNames from 'classnames'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
@@ -27,8 +26,6 @@ export default function BlockExtras(props: Props) {
   const blockValidation = getValidationMarkers(markers)
   const errors = blockValidation.filter(mrkr => mrkr.level === 'error')
   const warnings = blockValidation.filter(mrkr => mrkr.level === 'warning')
-  const selection = PortableTextEditor.getSelection(editor)
-  const hasFocus = !!selection && isEqual(selection.focus.path[0], {_key: block._key})
   const empty = markers.length === 0 && !blockActions
   const content = (
     <div className={styles.content} style={{height: `${height}px`}}>
@@ -49,13 +46,14 @@ export default function BlockExtras(props: Props) {
     </div>
   )
   const path = PortableTextEditor.getSelection(editor)?.focus.path
+  const hasFocus = path && isKeySegment(path[0]) ? path[0]._key === block._key : false
   const returned =
-    isFullscreen && path && isKeySegment(path[0]) ? (
+    isFullscreen && path && hasFocus && isKeySegment(path[0]) ? (
       <ChangeIndicatorWithProvidedFullPath
         className={styles.changeIndicator}
         compareDeep
         value={block}
-        hasFocus={path ? path[0]._key === block._key : false}
+        hasFocus={hasFocus}
         path={[{_key: block._key}]}
       >
         {content}
@@ -67,6 +65,7 @@ export default function BlockExtras(props: Props) {
     <div
       className={classNames([
         styles.root,
+        hasFocus && styles.hasFocus,
         isFullscreen && styles.hasFullScreen,
         errors.length > 0 && styles.withError,
         warnings.length > 0 && !errors.length && styles.withWarning
