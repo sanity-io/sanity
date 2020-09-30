@@ -1,8 +1,6 @@
-import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
-import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
-import {FOCUS_TERMINATOR, isExpanded, startsWith} from '@sanity/util/paths'
+import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import classNames from 'classnames'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {isPlainObject, get} from 'lodash'
@@ -19,7 +17,6 @@ import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Details from '../common/Details'
 import Warning from '../Warning'
 import {ArrayInputItem} from './item'
-import {pathSegmentFrom} from './item/helpers'
 import randomKey from './randomKey'
 import resolveListComponents from './resolveListComponents'
 import {ItemValue} from './typedefs'
@@ -198,7 +195,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const {List, Item} = resolveListComponents(isSortable, isGrid)
     const listProps = isSortable
       ? {
-          helperClass: styles.moving,
+          helperClass: 'ArrayInput__moving',
           onSortEnd: this.handleSortEnd,
           onSortStart: this.handleSortStart,
           lockToContainerEdges: true,
@@ -222,7 +219,6 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
-          const hasItemFocus = isExpanded(pathSegmentFrom(item), focusPath)
 
           return (
             <Item
@@ -230,27 +226,21 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
               key={item._key}
               {...itemProps}
             >
-              <ChangeIndicatorScope path={[{_key: item._key}]}>
-                <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
-                  <div className={isGrid ? styles.gridItemWrapper : styles.listItemWrapper}>
-                    <ArrayInputItem
-                      compareValue={compareValue}
-                      filterField={filterField}
-                      focusPath={focusPath}
-                      level={level}
-                      markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                      onBlur={onBlur}
-                      onChange={this.handleItemChange}
-                      onFocus={onFocus}
-                      onRemove={this.handleRemoveItem}
-                      presence={childPresence}
-                      readOnly={readOnly || hasMissingKeys}
-                      type={type}
-                      value={item}
-                    />
-                  </div>
-                </ContextProvidedChangeIndicator>
-              </ChangeIndicatorScope>
+              <ArrayInputItem
+                compareValue={compareValue}
+                filterField={filterField}
+                focusPath={focusPath}
+                level={level}
+                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                onBlur={onBlur}
+                onChange={this.handleItemChange}
+                onFocus={onFocus}
+                onRemove={this.handleRemoveItem}
+                presence={childPresence}
+                readOnly={readOnly || hasMissingKeys}
+                type={type}
+                value={item}
+              />
             </Item>
           )
         })}

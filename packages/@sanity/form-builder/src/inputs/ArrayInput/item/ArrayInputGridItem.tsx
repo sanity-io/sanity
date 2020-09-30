@@ -248,66 +248,65 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
     return (
       <ChangeIndicatorScope path={[{_key: value._key}]}>
-        <div className={styles.inner}>
-          <div
-            tabIndex={0}
-            onClick={value._key && this.handleEditStart}
-            onKeyPress={this.handleKeyPress}
-            className={styles.previewWrapper}
-          >
+        <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+          <div className={styles.inner}>
             <div
-              tabIndex={-1}
-              ref={this.setFocusArea}
-              className={styles.previewWrapperHelper}
-              onFocus={this.handleFocus}
+              tabIndex={0}
+              onClick={value._key && this.handleEditStart}
+              onKeyPress={this.handleKeyPress}
+              className={styles.previewWrapper}
             >
-              <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+              <div
+                tabIndex={-1}
+                ref={this.setFocusArea}
+                className={styles.previewWrapperHelper}
+                onFocus={this.handleFocus}
+              >
                 {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
                 <Preview layout="media" value={value} type={memberType} />
-              </ContextProvidedChangeIndicator>
-            </div>
-
-            {!readOnly && (
-              <div className={styles.presenceContainer}>
-                <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
               </div>
-            )}
-          </div>
-
-          <div className={styles.footer}>
-            <div className={styles.dragHandleContainer}>{isSortable && <DragHandle />}</div>
-
-            <div className={styles.functions}>
-              {!readOnly && (
-                <div>
-                  <ValidationStatus
-                    markers={scopedValidation}
-                    placement="bottom"
-                    showSummary={!value._ref}
-                  />
-                </div>
-              )}
-
-              {value._ref && (
-                <div>
-                  <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
-                </div>
-              )}
 
               {!readOnly && (
-                <div>
-                  <ConfirmButton
-                    color="danger"
-                    kind="simple"
-                    onConfirm={this.handleRemove}
-                    placement="bottom"
-                    title="Remove this item"
-                  />
+                <div className={styles.presenceContainer}>
+                  <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
                 </div>
               )}
             </div>
+
+            <div className={styles.footer}>
+              <div className={styles.dragHandleContainer}>{isSortable && <DragHandle />}</div>
+
+              <div className={styles.functions}>
+                {!readOnly && (
+                  <div>
+                    <ValidationStatus
+                      markers={scopedValidation}
+                      placement="bottom"
+                      showSummary={!value._ref}
+                    />
+                  </div>
+                )}
+
+                {value._ref && (
+                  <div>
+                    <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
+                  </div>
+                )}
+
+                {!readOnly && (
+                  <div>
+                    <ConfirmButton
+                      kind="simple"
+                      onConfirm={this.handleRemove}
+                      placement="bottom"
+                      title="Remove this item"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        </ContextProvidedChangeIndicator>
       </ChangeIndicatorScope>
     )
   }
