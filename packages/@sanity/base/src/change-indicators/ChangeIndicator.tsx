@@ -107,6 +107,7 @@ export function ChangeIndicatorProvider(props: {
 
 interface CoreProps {
   className?: string
+  hidden?: boolean
   fullPath: Path
   compareDeep: boolean
   value: unknown
@@ -117,6 +118,7 @@ interface CoreProps {
 
 export const CoreChangeIndicator = ({
   className,
+  hidden,
   fullPath,
   value,
   compareValue,
@@ -128,7 +130,9 @@ export const CoreChangeIndicator = ({
   const isChanged =
     (canCompareShallow(value, compareValue) && value !== compareValue) ||
     (compareDeep && !deepCompare(value, compareValue))
-
+  if (hidden) {
+    return <>{children}</>
+  }
   return (
     <ChangeBarWrapper
       className={className}
@@ -143,6 +147,7 @@ export const CoreChangeIndicator = ({
 
 export const ChangeIndicatorWithProvidedFullPath = ({
   className,
+  hidden,
   path,
   value,
   hasFocus,
@@ -154,6 +159,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
   const fullPath = parentContext.fullPath.concat(path)
   return (
     <CoreChangeIndicator
+      hidden={hidden}
       className={className}
       value={value}
       compareValue={PathUtils.get(parentContext.compareValue, path)}
