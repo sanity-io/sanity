@@ -55,7 +55,7 @@ export default function BlockExtras(props: Props) {
         className={styles.changeIndicator}
         compareDeep
         value={block}
-        hasFocus={path && hasFocus ? path[0]._key === block._key : false}
+        hasFocus={path ? path[0]._key === block._key : false}
         path={[{_key: block._key}]}
       >
         {content}
