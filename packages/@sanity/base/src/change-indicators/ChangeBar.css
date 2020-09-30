@@ -101,6 +101,7 @@
   width: calc(var(--extra-small-padding) + var(--medium-padding));
   height: 100%;
   cursor: pointer;
+  pointer-events: all;
 }
 
 .tooltipContent {
