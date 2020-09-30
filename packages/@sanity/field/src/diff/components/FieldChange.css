@@ -22,11 +22,11 @@
     top: 0;
     left: 0;
     bottom: 0;
-    border-left: 1px solid var(--gray-lighter);
+    border-left: 1px solid var(--hairline-color);
   }
 
   @nest &:hover::before {
-    border-left: 2px solid var(--gray-light);
+    border-left: 2px solid var(--hairline-color);
   }
 
   @nest [data-revert-all-changes-hover] &::before {
