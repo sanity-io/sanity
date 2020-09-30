@@ -5,9 +5,6 @@
 }
 
 .inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .innerWithError {
@@ -15,9 +12,6 @@
 }
 
 .popupAnchor {
-  /*
-    This is where the popover sticks to
-  */
   position: absolute;
   top: 0%;
   left: 0%;
@@ -48,20 +42,15 @@
   margin-right: var(--extra-small-padding);
 
   @nest & > button {
-    cursor: ns-resize;
+    cursor: move;
   }
-}
-
-.linkToReference {
 }
 
 .previewWrapper {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+
   border-radius: var(--border-radius-base);
-  flex-grow: 1;
-  outline: none;
-  user-select: none;
-  min-width: 0;
+  position: relative;
 
   @nest &:focus {
     box-shadow: var(--input-box-shadow--focus);
@@ -78,26 +67,43 @@
   }
 }
 
-.functions {
+.presenceContainer {
   position: absolute;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  flex-grow: 0;
+  width: 25px;
+  height: 25px;
   top: var(--extra-small-padding);
   right: var(--extra-small-padding);
-  color: var(--text-color);
+}
 
-  @nest & > * {
-    margin: 0;
+.footer {
+  display: flex;
+  align-items: center;
+  margin-top: var(--extra-small-padding);
+}
+
+.dragHandleContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.functions {
+  display: flex;
+  align-items: center;
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
   }
 
-  @media (hover: hover) {
-    display: none;
-
-    @nest .root:hover & {
-      display: block;
+  @nest & > div {
+    @nest &:empty {
+      display: none;
     }
+  }
+
+  @nest & > div:not(:empty) + div {
+    margin-left: var(--extra-small-padding);
   }
 }
 

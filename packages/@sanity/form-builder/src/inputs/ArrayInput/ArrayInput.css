@@ -6,25 +6,30 @@
 }
 
 .list {
-  user-select: none;
-
+  /* overide default list */
   @nest .root & {
-    margin: -0.25em 0;
+    user-select: none;
   }
 }
 
-.listReadOnly {
-  composes: list;
-  opacity: 0.5;
+.grid {
+  /* overide default list */
+  @nest .root & {
+    user-select: none;
+  }
 }
 
 .functions {
   @nest .list + & {
     margin-top: var(--small-padding);
+  }
 
-    @media (--screen-medium) {
-      margin-top: var(--medium-padding);
-    }
+  @nest .grid + & {
+    margin-top: var(--medium-padding);
+  }
+
+  &:empty {
+    display: none;
   }
 }
 
@@ -35,19 +40,39 @@
 }
 
 .listItem {
-  /* semantic class name */
+  padding: 1px 1px calc(var(--small-padding) + 1px);
 }
 
-.movingItem {
-  composes: movingItem from 'part:@sanity/base/theme/layout/helpers';
-}
+.listItemWrapper {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
 
-.listItemMute {
-  /* composes: lineBetween from 'part:@sanity/components/lists/default-item-style'; */
+  background: var(--component-bg);
+  border-radius: var(--border-radius-small);
+  padding: var(--extra-small-padding);
+  transition: box-shadow 100ms;
+
+  @nest .listItem.moving & {
+    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
+      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
+  }
 }
 
 .gridItem {
-  display: block;
+  padding: 1px;
+}
+
+.gridItemWrapper {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+
+  background: var(--component-bg);
+  border-radius: var(--border-radius-small);
+  padding: var(--extra-small-padding);
+  transition: box-shadow 100ms;
+
+  @nest .gridItem.moving & {
+    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
+      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
+  }
 }
 
 .popupAnchorRelative {
@@ -62,22 +87,23 @@
 
 .warning {
   composes: root from 'part:@sanity/components/fieldsets/default-style';
+
   padding: var(--medium-padding);
   border: 2px dashed var(--state-warning-color);
 }
 
 .missingKeysWarning {
   composes: warning;
-  padding: 1em;
+  padding: var(--medium-padding);
 }
 
 .fixMissingKeysButtonWrapper {
-  margin: 1em 0;
+  margin: var(--medium-padding) 0;
 }
 
 .nonObjectsWarning {
   composes: warning;
-  padding: 1em;
+  padding: var(--medium-padding);
 }
 
 .removeNonObjectsButtonWrapper {

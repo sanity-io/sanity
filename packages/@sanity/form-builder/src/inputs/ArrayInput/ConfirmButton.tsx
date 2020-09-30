@@ -1,3 +1,4 @@
+import {Placement} from '@sanity/components'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuButton} from 'part:@sanity/components/menu-button'
@@ -9,8 +10,10 @@ import styles from './ConfirmButton.css'
 type DefaultButtonInstance = any
 type DefaultButtonProps = Record<string, any>
 
-export default function ConfirmButton(props: {onConfirm: () => void} & DefaultButtonProps) {
-  const {onConfirm, ...restProps} = props
+export default function ConfirmButton(
+  props: {placement?: Placement; onConfirm: () => void} & DefaultButtonProps
+) {
+  const {onConfirm, placement = 'left', ...restProps} = props
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<DefaultButtonInstance>(null)
 
@@ -42,7 +45,7 @@ export default function ConfirmButton(props: {onConfirm: () => void} & DefaultBu
         </div>
       }
       open={open}
-      placement="left"
+      placement={placement}
       setOpen={setOpen}
     />
   )

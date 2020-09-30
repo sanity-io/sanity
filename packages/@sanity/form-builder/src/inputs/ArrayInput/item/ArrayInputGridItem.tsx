@@ -1,16 +1,17 @@
-/* eslint-disable complexity */
-
 import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
+import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
+import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -40,6 +41,12 @@ interface ArrayInputGridItemProps {
   focusPath: Path
   presence: FormFieldPresence[]
 }
+
+const DragHandle = createDragHandle(() => (
+  <span className={styles.dragHandle}>
+    <Button aria-hidden="true" icon={DragHandleIcon} kind="simple" padding="small" tabIndex={-1} />
+  </span>
+))
 
 export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemProps> {
   _focusArea: HTMLDivElement | null
@@ -218,6 +225,8 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
   renderItem() {
     const {value, markers, type, readOnly, presence, focusPath} = this.props
+    const options = type.options || {}
+    const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
     const scopedValidation = validation
       .map(marker => {
@@ -257,23 +266,46 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
                 <Preview layout="media" value={value} type={memberType} />
               </ContextProvidedChangeIndicator>
             </div>
+
+            {!readOnly && (
+              <div className={styles.presenceContainer}>
+                <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+              </div>
+            )}
           </div>
 
-          <div className={styles.functions}>
-            {!readOnly && <ConfirmButton title="Remove this item" onConfirm={this.handleRemove} />}
+          <div className={styles.footer}>
+            <div className={styles.dragHandleContainer}>{isSortable && <DragHandle />}</div>
 
-            <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-            <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+            <div className={styles.functions}>
+              {!readOnly && (
+                <div>
+                  <ValidationStatus
+                    markers={scopedValidation}
+                    placement="bottom"
+                    showSummary={!value._ref}
+                  />
+                </div>
+              )}
 
-            {value._ref && (
-              <IntentButton
-                className={styles.linkToReference}
-                icon={LinkIcon}
-                intent="edit"
-                padding="small"
-                params={{id: value._ref}}
-              />
-            )}
+              {value._ref && (
+                <div>
+                  <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
+                </div>
+              )}
+
+              {!readOnly && (
+                <div>
+                  <ConfirmButton
+                    color="danger"
+                    kind="simple"
+                    onConfirm={this.handleRemove}
+                    placement="bottom"
+                    title="Remove this item"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </ChangeIndicatorScope>

@@ -13,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--extra-small-padding) 0;
+  /* padding: var(--extra-small-padding) 0; */
 }
 
 .input {
@@ -28,7 +28,7 @@
 .dragHandle {
   display: block;
   flex-grow: 0;
-  margin-right: var(--extra-small-padding);
+  margin: 0 var(--small-padding) 0 var(--extra-small-padding);
 
   @nest & > button {
     cursor: ns-resize;
@@ -40,16 +40,16 @@
   color: var(--text-color-secondary);
   display: flex;
   align-items: center;
-  padding-left: var(--small-padding);
+  margin: 0 var(--extra-small-padding) 0 var(--small-padding);
 
   @nest &[data-presence='true'] {
-    @nest & .validationStatus {
-      padding-right: var(--medium-padding);
-    }
+    /* @nest & .validationStatus {
+      margin-right: var(--medium-padding);
+    } */
 
-    @nest & .deleteButton {
+    /* @nest & .deleteButton {
       padding-left: var(--small-padding);
-    }
+    } */
   }
 }
 
@@ -59,4 +59,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.presenceContainer {
+  /* @nest & > div:empty {
+    display: none;
+  } */
+}
+
+.removeButtonContainer {
+  margin-left: 0.25em;
 }

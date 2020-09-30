@@ -9,7 +9,8 @@ import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import getEmptyValue from './getEmptyValue'
-import styles from './styles/Item.css'
+
+import styles from './Item.css'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -112,11 +113,15 @@ export default class Item extends React.PureComponent<Props> {
                 <ValidationStatus markers={markers} />
               </div>
             )}
+
             {(!type.title || type.title === '') && (
-              <FieldPresence presence={presence} maxAvatars={1} />
+              <div className={styles.presenceContainer}>
+                <FieldPresence presence={presence} maxAvatars={1} />
+              </div>
             )}
+
             {!readOnly && (
-              <div className={styles.deleteFunction}>
+              <div className={styles.removeButtonContainer}>
                 <Button
                   className={styles.deleteButton}
                   icon={TrashIcon}
