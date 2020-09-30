@@ -9,18 +9,27 @@ import {
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import WarningOutlineIcon from 'part:@sanity/base/warning-outline-icon'
 import {Tooltip} from 'part:@sanity/components/tooltip'
+import {Placement} from '../types'
 import ValidationList from './ValidationList'
 
 import styles from './ValidationStatus.css'
 
 interface ValidationStatusProps {
   hideTooltip?: boolean
-  showSummary?: boolean
   markers: Marker[]
+  placement?: Placement
+  showSummary?: boolean
 }
 
 function ValidationStatus(props: ValidationStatusProps & React.HTMLProps<HTMLDivElement>) {
-  const {className, markers = [], showSummary = false, hideTooltip = false, ...restProps} = props
+  const {
+    className,
+    markers = [],
+    placement = 'auto',
+    showSummary = false,
+    hideTooltip = false,
+    ...restProps
+  } = props
   const validationMarkers = markers.filter(isValidationMarker)
 
   if (validationMarkers.length === 0) {
@@ -78,7 +87,7 @@ function ValidationStatus(props: ValidationStatusProps & React.HTMLProps<HTMLDiv
   )
 
   return (
-    <Tooltip content={tooltipContent} placement="auto" portal>
+    <Tooltip content={tooltipContent} placement={placement} portal>
       {children}
     </Tooltip>
   )
