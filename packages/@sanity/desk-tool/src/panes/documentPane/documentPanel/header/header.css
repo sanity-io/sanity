@@ -11,7 +11,8 @@
 .title {
   flex: 1;
   min-width: 0;
-  padding: 1em;
+  padding: var(--medium-padding);
+  font-weight: 400;
   line-height: 17px;
   cursor: default;
   white-space: nowrap;
@@ -22,6 +23,10 @@
     transform: rotate(90deg);
     transform-origin: calc(49px / 2) calc(49px / 2);
     min-width: 100vh;
+  }
+
+  @nest & strong {
+    font-weight: 600;
   }
 }
 

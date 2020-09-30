@@ -13,7 +13,7 @@
 
 .changeWrapper {
   border-left: 1px solid var(--hairline-color);
-  padding-left: 0.75em;
+  padding-left: calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
 .mainNav {
@@ -26,7 +26,7 @@
   margin: 0;
   font: inherit;
   line-height: 17px;
-  font-weight: 700;
+  font-weight: 600;
   padding: var(--medium-padding) var(--medium-padding) var(--small-padding);
 }
 
