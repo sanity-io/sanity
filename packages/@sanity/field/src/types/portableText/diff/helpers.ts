@@ -6,7 +6,7 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff} from '../../../diff'
+import {ArrayDiff, ObjectDiff, StringDiffSegment} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import * as TextSymbols from './symbols'
 
@@ -16,7 +16,6 @@ import {
   PortableTextBlock,
   PortableTextDiff,
   PortableTextChild,
-  StringSegment,
   SpanTypeSchema
 } from './types'
 
@@ -238,15 +237,14 @@ export function createPortableTextDiff(
   throw new Error('Can not display this diff')
 }
 
-function buildSegments(fromInput: string, toInput: string): StringSegment[] {
-  const segments: StringSegment[] = []
+function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
+  const segments: StringDiffSegment[] = []
 
   const dmpDiffs = dmp.diff_main(fromInput, toInput)
   dmp.diff_cleanupEfficiency(dmpDiffs)
 
   let fromIdx = 0
   let toIdx = 0
-
   for (const [op, text] of dmpDiffs) {
     switch (op) {
       case DIFF_EQUAL:
@@ -262,7 +260,8 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
         segments.push({
           type: 'stringSegment',
           action: 'removed',
-          text: fromInput.substring(fromIdx, fromIdx + text.length)
+          text: fromInput.substring(fromIdx, fromIdx + text.length),
+          annotation: null
         })
         fromIdx += text.length
         break
@@ -270,7 +269,8 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
         segments.push({
           type: 'stringSegment',
           action: 'added',
-          text: toInput.substring(toIdx, toIdx + text.length)
+          text: toInput.substring(toIdx, toIdx + text.length),
+          annotation: null
         })
         toIdx += text.length
         break
@@ -281,7 +281,7 @@ function buildSegments(fromInput: string, toInput: string): StringSegment[] {
   // Clean up so that marks / symbols are treated as an own segment
   return flatten(
     segments.map(seg => {
-      const newSegments: StringSegment[] = []
+      const newSegments: StringDiffSegment[] = []
       if (seg.text.length > 1) {
         const markMatches = [...seg.text.matchAll(symbolRegex)]
         let lastIndex = -1

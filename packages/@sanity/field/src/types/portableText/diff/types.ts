@@ -1,4 +1,4 @@
-import {ObjectDiff} from '../../../diff'
+import {ObjectDiff, StringDiffSegment} from '../../../diff'
 import {SchemaType, ObjectSchemaType} from '../../../types'
 
 export type PortableTextBlock = {
@@ -26,5 +26,3 @@ export type PortableTextDiff = ObjectDiff & {displayValue: PortableTextBlock; or
 export type MarkSymbolMap = Record<string, string[]>
 
 export type InlineSymbolMap = Record<string, string>
-
-export type StringSegment = {type: string; action: string; text: string}

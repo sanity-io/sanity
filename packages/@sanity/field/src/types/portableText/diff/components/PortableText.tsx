@@ -1,15 +1,9 @@
 import React from 'react'
 import {startCase, uniq, xor} from 'lodash'
-import {ArrayDiff, DiffCard, ObjectDiff, StringDiff} from '../../../../diff'
+import {ArrayDiff, DiffCard, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
 
 import {ObjectSchemaType, SchemaType} from '../../../../types'
-import {
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextDiff,
-  SpanTypeSchema,
-  StringSegment
-} from '../types'
+import {PortableTextBlock, PortableTextChild, PortableTextDiff, SpanTypeSchema} from '../types'
 
 import * as TextSymbols from '../symbols'
 
@@ -86,9 +80,11 @@ export default function PortableText(props: Props): JSX.Element {
       }
       // Run through all the segments from the PortableTextDiff
       let childIndex = -1
+      let segIndex = -1
       let currentAnnotation: {mark: string; object: PortableTextChild} | undefined
       let isAnnotation = false
       segments.forEach(seg => {
+        segIndex++
         const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
         const isMarkStart = allSymbolsStart.includes(seg.text)
         const isMarkEnd = allSymbolsEnd.includes(seg.text)
@@ -143,6 +139,7 @@ export default function PortableText(props: Props): JSX.Element {
                 child: block.children[childIndex],
                 decoratorTypes,
                 seg,
+                segIndex,
                 spanSchemaType
               })
             )
@@ -173,15 +170,16 @@ export default function PortableText(props: Props): JSX.Element {
             annotationSegments = []
             // Render text segment
             returnedChildren.push(
-              <>
+              <span key={`text-${child._key}-${segIndex}`}>
                 {renderTextSegment({
                   diff: diff,
                   child: block.children[childIndex],
                   decoratorTypes,
                   seg,
+                  segIndex,
                   spanSchemaType
                 })}
-              </>
+              </span>
             )
           }
         }
@@ -203,12 +201,14 @@ function renderTextSegment({
   child,
   decoratorTypes,
   seg,
+  segIndex,
   spanSchemaType
 }: {
   diff: PortableTextDiff
   child: PortableTextChild
   decoratorTypes: {title: string; value: string}[]
-  seg: StringSegment
+  seg: StringDiffSegment
+  segIndex: number
   spanSchemaType: SpanTypeSchema
 }): JSX.Element {
   // Newlines
@@ -217,7 +217,13 @@ function renderTextSegment({
   }
   // Make sure we render trailing spaces correctly
   let children = <>{seg.text.replace(/ /g, TextSymbols.TRAILING_SPACE_SYMBOL)}</>
-
+  const childFromFromValue = diff.origin.fromValue?.children.find(
+    cld => cld.text && cld.text.match(seg.text)
+  )
+  const potentiallyDeletedChild = child || (childFromFromValue as PortableTextChild)
+  if (!potentiallyDeletedChild) {
+    throw new Error('Could not find child')
+  }
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
   let hasChangedText = false
@@ -228,6 +234,7 @@ function renderTextSegment({
         <DiffCard
           annotation={textDiff.annotation}
           as={seg.action === 'removed' ? 'del' : 'ins'}
+          key={`diffcard-${potentiallyDeletedChild._key}-${segIndex}`}
           tooltip={{description: `${startCase(seg.action)} text`}}
         >
           {children}
@@ -241,6 +248,7 @@ function renderTextSegment({
             undefined
           }
           as={seg.action === 'removed' ? 'del' : 'ins'}
+          key={`diffcard-${potentiallyDeletedChild._key}-${segIndex}`}
           tooltip={{description: `${startCase(seg.action)} text`}}
         >
           {children}
@@ -249,13 +257,13 @@ function renderTextSegment({
     }
   }
 
-  const hasChangedMarkDefs = renderMarkDefs({child, diff, children, seg})
+  const hasChangedMarkDefs = renderMarkDefs({child: potentiallyDeletedChild, diff, children, seg})
   if (hasChangedMarkDefs) {
     children = hasChangedMarkDefs
   }
 
   // Render mark diff info
-  const activeMarks = child ? child.marks || [] : []
+  const activeMarks = potentiallyDeletedChild ? potentiallyDeletedChild.marks || [] : []
   const hasOtherChanges = hasChangedMarkDefs || hasChangedText
   if (!hasOtherChanges && spanDiff) {
     children = renderMarks({
@@ -264,6 +272,7 @@ function renderTextSegment({
       diff,
       children,
       seg,
+      segIndex,
       spanDiff,
       spanSchemaType
     })
@@ -272,7 +281,15 @@ function renderTextSegment({
   if (activeMarks && activeMarks.length > 0) {
     activeMarks.forEach(mark => {
       if (isDecorator(mark, spanSchemaType)) {
-        children = <Decorator mark={mark}>{children}</Decorator>
+        children = (
+          // eslint-disable-next-line react/no-array-index-key
+          <Decorator
+            mark={mark}
+            key={`decorator-${mark}-${potentiallyDeletedChild._key}-${segIndex}`}
+          >
+            {children}
+          </Decorator>
+        )
       }
     })
   }
@@ -285,6 +302,7 @@ function renderMarks({
   diff,
   children,
   seg,
+  segIndex,
   spanDiff,
   spanSchemaType
 }: {
@@ -292,7 +310,8 @@ function renderMarks({
   decoratorTypes: {title: string; value: string}[]
   diff: PortableTextDiff
   children: JSX.Element
-  seg: StringSegment
+  seg: StringDiffSegment
+  segIndex: number
   spanDiff: ObjectDiff
   spanSchemaType: SchemaType
 }): JSX.Element {
@@ -349,6 +368,7 @@ function renderMarks({
     returned = (
       <DiffCard
         annotation={marksAnnotation}
+        key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
         as={'ins'}
         tooltip={{
           description: `${isAnnotation ? `Changed annotation` : 'Changed formatting'}`
@@ -370,7 +390,7 @@ function renderMarkDefs({
   child: PortableTextChild
   diff: PortableTextDiff
   children: JSX.Element
-  seg: StringSegment
+  seg: StringDiffSegment
 }): JSX.Element | null {
   let returned: JSX.Element | null = null
   if (diff.origin.fields.markDefs && diff.origin.fields.markDefs.action !== 'unchanged') {
@@ -401,6 +421,7 @@ function renderMarkDefs({
             <DiffCard
               annotation={annotationDiff.annotation}
               as={'ins'}
+              key={`diffcard-annotation-${span._key}}`}
               tooltip={{
                 description: `${startCase(markDefsDiff.action)} annotation`
               }}
