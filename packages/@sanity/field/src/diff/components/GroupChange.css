@@ -14,7 +14,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    border-left: 1px solid var(--gray-lighter);
+    border-left: 1px solid var(--hairline-color);
   }
 }
 
