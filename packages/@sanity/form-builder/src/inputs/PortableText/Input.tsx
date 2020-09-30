@@ -267,7 +267,6 @@ export default function PortableTextInput(props: Props) {
     return (
       <Annotation
         attributes={attributes}
-        key={annotation._key}
         markers={annotationMarkers}
         onChange={handleFormBuilderEditObjectChange}
         onFocus={onFocus}
