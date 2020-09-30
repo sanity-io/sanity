@@ -154,7 +154,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
           </div>
         )}
 
-        <div className={styles.navBar}>
+        <div className={styles.navbar}>
           <NavbarContainer
             tools={tools}
             createMenuIsOpen={createMenuIsOpen}
