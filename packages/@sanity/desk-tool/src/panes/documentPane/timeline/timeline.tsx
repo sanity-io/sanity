@@ -99,7 +99,6 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
                 key={chunk.id}
                 state={state}
                 onSelect={onSelect}
-                title={chunk.id}
                 type={chunk.type}
                 timestamp={chunk.endTimestamp}
               />
