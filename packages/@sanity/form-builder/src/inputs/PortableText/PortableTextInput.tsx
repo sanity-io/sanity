@@ -280,6 +280,7 @@ export default withPatchSubscriber(
           level={level}
           markers={markers}
           presence={presence}
+          changeIndicator={false}
         >
           <PortableTextInputWithRef {...this.props} ref={this.editorRef} />
         </FormField>

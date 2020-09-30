@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo} from 'react'
@@ -18,6 +17,7 @@ import {
 import {Path, isKeySegment, Marker} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {Portal} from 'part:@sanity/components/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
@@ -360,7 +360,14 @@ export default function PortableTextInput(props: Props) {
           onActivate={handleActivate}
           overlayClassName={styles.activateOnFocusOverlay}
         >
-          {ptEditor}
+          <ChangeIndicatorWithProvidedFullPath
+            compareDeep
+            value={value}
+            hasFocus={hasFocus}
+            path={[]}
+          >
+            {ptEditor}
+          </ChangeIndicatorWithProvidedFullPath>
         </ActivateOnFocus>
       )}
     </div>
