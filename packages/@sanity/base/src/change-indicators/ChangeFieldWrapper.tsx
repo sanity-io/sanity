@@ -1,9 +1,9 @@
 import * as PathUtils from '@sanity/util/paths'
-import React from 'react'
-import {useReporter} from './tracker'
+import React, {SyntheticEvent, useCallback} from 'react'
 import {Path} from '@sanity/types'
-import {ConnectorContext} from './ChangeIndicatorContext'
 import deepCompare from 'react-fast-compare'
+import {useReporter} from './tracker'
+import {ConnectorContext} from './ChangeIndicatorContext'
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel
  */
@@ -36,14 +36,23 @@ export const ChangeFieldWrapper = (props: {
     // note: deepCompare should be ok here since we're not comparing deep values
     deepCompare
   )
+
+  const handleClick = useCallback(
+    (event: SyntheticEvent) => {
+      setFocusWithStopPropagation(event, onSetFocus, props.path)
+    },
+    [onSetFocus, props.path]
+  )
+
   return (
-    <div
-      ref={ref}
-      onClick={() => onSetFocus(props.path)}
-      onMouseLeave={onMouseLeave}
-      onMouseEnter={onMouseEnter}
-    >
+    <div ref={ref} onClick={handleClick} onMouseLeave={onMouseLeave} onMouseEnter={onMouseEnter}>
       {props.children}
     </div>
   )
+}
+
+// Stop the propagation here, or it will trigger the parent diff component's onClick.
+function setFocusWithStopPropagation(event, onSetFocus: (toPath: Path) => void, path: Path): void {
+  event.stopPropagation()
+  onSetFocus(path)
 }
