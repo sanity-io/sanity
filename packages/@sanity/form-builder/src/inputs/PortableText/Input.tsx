@@ -136,6 +136,11 @@ export default function PortableTextInput(props: Props) {
         setTimeout(() => setObjectEditData({editorPath: path, formBuilderPath: path, kind}))
       }
     }
+    // If something sets a block focusPath (keysegment length 1), make the editor select that block.
+    if (focusPath && isKeySegment(focusPath[0]) && focusPath.length === 1) {
+      const point = {path: focusPath, offset: 0}
+      PortableTextEditor.select(editor, {focus: point, anchor: point})
+    }
   }, [focusPath])
 
   // Set as active whenever we have focus inside the editor.
@@ -151,7 +156,12 @@ export default function PortableTextInput(props: Props) {
     // If the focuspath is a annotation (markDef), don't update focusPath,
     // as this will close the editing interface
     const isAnnotationPath = focusPath && focusPath[1] === 'markDefs'
-    if (selection && !objectEditData && !isAnnotationPath) {
+    if (
+      selection &&
+      !objectEditData &&
+      !isAnnotationPath &&
+      (!focusPath || (focusPath && focusPath.length > 1))
+    ) {
       const isCollapsed =
         isEqual(selection.focus.path, selection.anchor.path) &&
         selection.focus.offset === selection.anchor.offset
@@ -162,7 +172,7 @@ export default function PortableTextInput(props: Props) {
         onFocus(selection.focus.path)
       }
     }
-  }, [selection, initialSelection, objectEditData])
+  }, [selection, focusPath, initialSelection, objectEditData])
 
   function handleToggleFullscreen(): void {
     setInitialSelection(PortableTextEditor.getSelection(editor))
