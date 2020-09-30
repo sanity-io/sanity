@@ -1,11 +1,7 @@
 import React, {useCallback, createElement} from 'react'
 import {useTimeAgo} from '@sanity/base/hooks'
 import {Chunk, ChunkType} from '@sanity/field/diff'
-import {
-  // formatTimelineEventDate,
-  formatTimelineEventLabel,
-  getTimelineEventIconComponent
-} from './helpers'
+import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
 
@@ -15,13 +11,12 @@ export function TimelineItem(props: {
   isSelectionBottom: boolean
   isSelectionTop: boolean
   state: TimelineItemState
-  title: string
   onSelect: (chunk: Chunk) => void
   chunk: Chunk
   timestamp: string
   type: ChunkType
 }) {
-  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, title, type} = props
+  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, type} = props
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
@@ -38,6 +33,7 @@ export function TimelineItem(props: {
   return (
     <li
       className={styles.root}
+      data-chunk-id={chunk.id}
       data-state={state}
       data-selection-bottom={isSelectionBottom}
       data-selection-top={isSelectionTop}
@@ -46,7 +42,6 @@ export function TimelineItem(props: {
       <button
         disabled={state === 'disabled' || state === 'selected'}
         onClick={handleClick}
-        title={title}
         type="button"
       >
         <div className={styles.wrapper}>

@@ -1,44 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --timeline-event-enabled-bg: #fff;
-  --timeline-event-enabled-fg: #66758d;
-  --timeline-event-enabled-border: #cad1dc;
-  --timeline-event-enabled-hover-bg: #f1f3f6;
-  --timeline-event-enabled-hover-fg: #66758d;
-  --timeline-event-enabled-icon-created-bg: #2276fc;
-  --timeline-event-enabled-icon-created-fg: #fff;
-  --timeline-event-enabled-icon-deleted-bg: #f03e2f;
-  --timeline-event-enabled-icon-deleted-fg: #fff;
-  --timeline-event-enabled-icon-discarded-draft-bg: #f03e2f;
-  --timeline-event-enabled-icon-discarded-draft-fg: #fff;
-  --timeline-event-enabled-icon-edited-bg: #fdefb6;
-  --timeline-event-enabled-icon-edited-fg: #978023;
-  --timeline-event-enabled-icon-published-bg: #3ab667;
-  --timeline-event-enabled-icon-published-fg: #fff;
-  --timeline-event-enabled-icon-unpublished-bg: #f03e2f;
-  --timeline-event-enabled-icon-unpublished-fg: #fff;
-  --timeline-event-enabled-icon-created-bg: #2276fc;
-  --timeline-event-enabled-icon-created-fg: #fff;
-
-  --timeline-event-within-selection-bg: #e8f1fe;
-  --timeline-event-within-selection-fg: #2276fc;
-  --timeline-event-within-selection-border: #2276fc;
-  --timeline-event-within-selection-icon-bg: #fff;
-  --timeline-event-within-selection-icon-fg: #2276fc;
-
-  --timeline-event-selected-bg: #2276fc;
-  --timeline-event-selected-fg: #fff;
-  --timeline-event-selected-border: #fff;
-  --timeline-event-selected-icon-bg: #fff;
-  --timeline-event-selected-icon-fg: #2276fc;
-
-  --timeline-event-disabled-bg: #fff;
-  --timeline-event-disabled-fg: #cad1dc;
-  --timeline-event-disabled-icon-bg: #e4e8ed;
-  --timeline-event-disabled-icon-fg: #fff;
-}
-
 .root {
   position: relative;
   min-width: 244px;
@@ -155,7 +116,7 @@
   width: 33px;
   height: 33px;
   border-radius: calc(33px / 2);
-  box-shadow: 0 0 0 2px var(--timeline-event-enabled-bg);
+  box-shadow: 0 0 0 1px var(--component-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,13 +164,12 @@
   /* States */
 
   @nest .root[data-state='enabled']:hover & {
-    box-shadow: 0 0 0 2px var(--timeline-event-enabled-hover-bg);
+    box-shadow: 0 0 0 1px var(--component-bg);
   }
 
   @nest .root[data-state='withinSelection'] & {
-    box-shadow: none;
+    box-shadow: inset 0 0 0 1px var(--timeline-event-within-selection-border);
     background-color: var(--timeline-event-within-selection-icon-bg);
-    border: 1px var(--timeline-event-within-selection-border) solid;
     color: var(--timeline-event-within-selection-icon-fg);
   }
 
@@ -220,7 +180,7 @@
   }
 
   @nest .root[data-state='disabled'] & {
-    box-shadow: 0 0 0 2px var(--timeline-event-disabled-bg);
+    box-shadow: 0 0 0 1px var(--timeline-event-disabled-bg);
     background-color: var(--timeline-event-disabled-icon-bg);
     color: var(--timeline-event-disabled-icon-fg);
   }
@@ -229,7 +189,7 @@
 .textContainer {
   flex: 1;
   min-width: 0;
-  margin-left: 0.75em;
+  margin-left: var(--small-padding);
 }
 
 .typeName {
