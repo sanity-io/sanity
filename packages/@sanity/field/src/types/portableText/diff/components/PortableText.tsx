@@ -69,6 +69,7 @@ export default function PortableText(props: Props): JSX.Element {
             <DiffCard
               annotation={textDiff.annotation}
               as={textDiff.action === 'removed' ? 'del' : 'ins'}
+              key={`empty-block-${block._key}`}
               tooltip={{
                 description: `${startCase(textDiff.action)} empty text`
               }}
@@ -143,31 +144,33 @@ export default function PortableText(props: Props): JSX.Element {
                 spanSchemaType
               })
             )
-          } else {
-            // Render collected texts inside an annotation
-            if (annotationSegments.length > 0 && currentAnnotation) {
-              const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
-              const objectSchemaType =
-                currentAnnotation &&
-                spanSchemaType.annotations &&
-                spanSchemaType.annotations.find(
-                  type =>
-                    currentAnnotation &&
-                    currentAnnotation.object &&
-                    type.name === currentAnnotation.object._type
-                )
-              returnedChildren.push(
-                <Annotation
-                  object={currentAnnotation.object}
-                  diff={annotationDiff}
-                  schemaType={objectSchemaType}
-                  key={`annotation-${childIndex}-${currentAnnotation.object._key}`}
-                >
-                  <>{annotationSegments}</>
-                </Annotation>
+          }
+          // Render collected texts inside an annotation
+          if (annotationSegments.length > 0 && currentAnnotation) {
+            const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
+            const objectSchemaType =
+              currentAnnotation &&
+              spanSchemaType.annotations &&
+              spanSchemaType.annotations.find(
+                type =>
+                  currentAnnotation &&
+                  currentAnnotation.object &&
+                  type.name === currentAnnotation.object._type
               )
-            }
-            annotationSegments = []
+            returnedChildren.push(
+              <Annotation
+                object={currentAnnotation.object}
+                diff={annotationDiff}
+                spanPath={[{_key: block._key}, 'children', {_key: block.children[childIndex]._key}]}
+                schemaType={objectSchemaType}
+                key={`annotation-${childIndex}-${segIndex}-${currentAnnotation.object._key}`}
+              >
+                <>{annotationSegments}</>
+              </Annotation>
+            )
+          }
+          annotationSegments = []
+          if (!isAnnotation) {
             // Render text segment
             returnedChildren.push(
               <span key={`text-${child._key}-${segIndex}`}>
@@ -223,8 +226,8 @@ function renderTextSegment({
   )
   const childFromFromValue = diff.origin.fromValue?.children.find(
     cld => cld.text && cld.text.match(seg.text)
-  )
-  const potentiallyDeletedChild = child || (childFromFromValue as PortableTextChild)
+  ) as PortableTextChild
+  const potentiallyDeletedChild = child || childFromFromValue
   if (!potentiallyDeletedChild) {
     throw new Error('Could not find child')
   }
@@ -261,11 +264,16 @@ function renderTextSegment({
     }
   }
 
-  const hasChangedMarkDefs = renderMarkDefs({child: potentiallyDeletedChild, diff, children, seg})
+  const hasChangedMarkDefs = renderMarkDefs({
+    child: potentiallyDeletedChild,
+    diff,
+    children,
+    seg,
+    segIndex
+  })
   if (hasChangedMarkDefs) {
     children = hasChangedMarkDefs
   }
-
   // Render mark diff info
   const activeMarks = potentiallyDeletedChild ? potentiallyDeletedChild.marks || [] : []
   const hasOtherChanges = hasChangedMarkDefs || hasChangedText
@@ -319,7 +327,7 @@ function renderMarks({
   spanDiff: ObjectDiff
   spanSchemaType: SchemaType
 }): JSX.Element {
-  let returned = <>{children}</>
+  let returned = <span key={`text-segment-${segIndex}`}>{children}</span>
   const fromPtDiffText =
     (diff.origin.fromValue && diff.fromValue && diff.fromValue.children[0].text) || undefined // Always one child
 
@@ -367,7 +375,7 @@ function renderMarks({
     }
   })
   marksChanged = xor(activeMarks, uniq(marks))
-  if (marksChanged.length > 0 && marksDiff) {
+  if (marksChanged.length > 0 && marksAnnotation) {
     const isAnnotation = !isDecorator(marksChanged.slice(-1)[0], spanSchemaType)
     returned = (
       <DiffCard
@@ -389,12 +397,14 @@ function renderMarkDefs({
   child,
   diff,
   children,
-  seg
+  seg,
+  segIndex
 }: {
   child: PortableTextChild
   diff: PortableTextDiff
   children: JSX.Element
   seg: StringDiffSegment
+  segIndex: number
 }): JSX.Element | null {
   let returned: JSX.Element | null = null
   if (diff.origin.fields.markDefs && diff.origin.fields.markDefs.action !== 'unchanged') {
@@ -425,7 +435,7 @@ function renderMarkDefs({
             <DiffCard
               annotation={annotationDiff.annotation}
               as={'ins'}
-              key={`diffcard-annotation-${span._key}}`}
+              key={`diffcard-annotation-${span._key}}-${segIndex}`}
               tooltip={{
                 description: `${startCase(markDefsDiff.action)} annotation`
               }}
