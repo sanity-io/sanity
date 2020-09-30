@@ -122,8 +122,8 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           }
 
           const clampConnector = {
-            top: field.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
-            bottom: field.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
+            top: change.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
+            bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
 
           const connectorClassName = change.hasRevertHover
