@@ -7,8 +7,8 @@
 .root {
   display: flex;
   align-items: center;
-  border: var(--input-border-size) solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
+  border: 1px solid var(--hairline-color);
+  border-radius: var(--border-radius-small);
   padding: var(--boolean-input-padding-narrow);
 
   @media (--screen-medium) {
