@@ -101,7 +101,7 @@ export function blockToSymbolizedText(
   }
   return block.children
     .map(child => {
-      let returned = child.text || ''
+      let returned = child.text?.replace(symbolRegex, '') || ''
       if (child._type !== 'span') {
         returned = inlineMap[child._key]
       } else if (child.marks) {
