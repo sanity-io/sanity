@@ -10,9 +10,10 @@ import DefaultButton from 'part:@sanity/components/buttons/default'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Warning from '../Warning'
-import styles from './styles/ArrayOfPrimitivesInput.css'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
+
+import styles from './ArrayOfPrimitivesInput.css'
 
 type Primitive = string | number | boolean
 
@@ -117,7 +118,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   renderItem = (item: Primitive, index: number) => {
     const {
       type,
-      level,
+      level = 1,
       markers,
       compareValue,
       focusPath,
@@ -194,6 +195,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   renderUnknownValueTypes = () => {
     const {value, readOnly} = this.props
+
     // Find values with types not specified in the schema
     const unknownValues = (value || [])
       .filter(v => {
@@ -209,9 +211,12 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
     const message = (
       <>
-        These are not defined in the current schema as valid types for this array. This could mean
-        that the type has been removed, or that someone else has added it to their own local schema
-        that is not yet deployed.
+        <p>
+          These are not defined in the current schema as valid types for this array. This could mean
+          that the type has been removed, or that someone else has added it to their own local
+          schema that is not yet deployed.
+        </p>
+
         {unknownValues.map(item => (
           <div key={item.type}>
             <h4>{item.type}</h4>
@@ -243,12 +248,13 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level, markers, readOnly, onChange, onFocus, presence} = this.props
+    const {type, value, level = 1, markers, readOnly, onChange, onFocus, presence} = this.props
+
     return (
       <Fieldset
         legend={type.title}
         description={type.description}
-        level={level}
+        level={level - 1}
         tabIndex={0}
         onFocus={onFocus}
         ref={this.setElement}

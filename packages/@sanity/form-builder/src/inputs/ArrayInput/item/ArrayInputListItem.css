@@ -8,7 +8,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--extra-small-padding) 0;
 }
 
 .innerWithError {
@@ -16,9 +15,6 @@
 }
 
 .popupAnchor {
-  /*
-    This is where the popover sticks to
-  */
   position: absolute;
   top: 0%;
   left: 0%;
@@ -46,7 +42,7 @@
 .dragHandle {
   display: block;
   flex-grow: 0;
-  margin-right: var(--extra-small-padding);
+  margin: 0 var(--extra-small-padding);
 
   @nest & > button {
     cursor: ns-resize;
@@ -63,6 +59,7 @@
   outline: none;
   user-select: none;
   min-width: 0;
+  min-height: 40px;
 
   @nest &:focus {
     box-shadow: var(--input-box-shadow--focus);
@@ -82,11 +79,40 @@
 .functions {
   display: flex;
   align-items: center;
-  flex-grow: 0;
-  color: var(--text-color-secondary);
-  margin-left: var(--extra-small-padding);
+  margin: 0 var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
 }
 
 .validationIconError {
   composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
+}
+
+.validationStatusContainer {
+  margin-left: var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
+}
+
+.presenceContainer {
+}
+
+.editButtonContainer {
+  margin-left: var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
+}
+
+.removeButtonContainer {
+  margin-left: var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
 }
