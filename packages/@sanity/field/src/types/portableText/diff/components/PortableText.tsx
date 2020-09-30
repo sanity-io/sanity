@@ -164,6 +164,7 @@ export default function PortableText(props: Props): JSX.Element {
                   object={currentAnnotation.object}
                   diff={annotationDiff}
                   schemaType={objectSchemaType}
+                  key={`annotation-${childIndex}-${currentAnnotation.object._key}`}
                 >
                   <>{annotationSegments}</>
                 </Annotation>
