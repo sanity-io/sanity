@@ -1,0 +1,71 @@
+:root {
+  --geist-foreground: #000;
+  --geist-background: #fff;
+  --geist-success: #2276fc;
+  --geist-error: #f03e2f;
+  --geist-warning: #f5a623;
+  --geist-warning-lighter: #ffefcf;
+  --geist-highlight-purple: #f81ce5;
+  --accents-1: #fafafa;
+  --accents-2: #eaeaea;
+  --accents-3: #999;
+  --accents-4: #888;
+  --accents-5: #666;
+  --accents-6: #444;
+  --accents-7: #333;
+  --accents-8: #111;
+
+  /* Base */
+  --black: var(--geist-foreground);
+  --white: var(--geist-background);
+  --gray-base: var(--accents-4);
+
+  /* Gray */
+  --gray-darkest: var(--accents-8);
+  --gray-darker: var(--accents-7);
+  --gray-dark: var(--accents-6);
+  --gray: var(--accents-5);
+  --gray-light: var(--accents-3);
+  --gray-lighter: var(--accents-2);
+  --gray-lightest: var(--accents-1);
+
+  /* Brand */
+  --brand-primary: var(--geist-foreground);
+  --brand-primary--inverted: var(--geist-background);
+  --brand-secondary: var(--geist-highlight-purple);
+  --brand-secondary--inverted: var(--geist-background);
+
+  /* Body */
+  --body-bg: var(--accents-2);
+
+  /* Hairline */
+  --hairline-color: color(var(--geist-foreground) alpha(8%));
+
+  /* Input */
+  --input-border-color: var(--accents-2);
+  --input-border-color-hover: var(--accents-2);
+
+  /* Main navigation */
+  --main-navigation-color: var(--geist-background);
+  --main-navigation-color--inverted: var(--geist-foreground);
+  --main-navigation-color--inverted-muted: var(--accents-6);
+
+  /* State */
+  --state-success-color: var(--geist-success);
+  --state-info-color: var(--geist-highlight-purple);
+  --state-warning-color: var(--geist-warning);
+  --state-danger-color: var(--geist-error);
+
+  /* Focus */
+  --focus-color: var(--geist-highlight-purple);
+
+  /* Selectable item */
+  --selectable-item-base: var(--geist-highlight-purple);
+  --selectable-item-color-hover: var(--accents-1);
+  --selectable-item-color-focus: var(--accents-2);
+  --selectable-item-color-active: var(--accents-2);
+  --selectable-item-color-highlighted: var(--accents-1);
+
+  /* Timeline event */
+  --timeline-event-enabled-icon-edited-bg: var(--geist-warning-lighter);
+}

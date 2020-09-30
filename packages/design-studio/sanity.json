@@ -32,6 +32,10 @@
     {
       "name": "part:@sanity/base/initial-value-templates",
       "path": "./documentInitialValueTemplates"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "./themes/dev.css"
     }
   ]
 }

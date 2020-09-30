@@ -1,0 +1,119 @@
+:root {
+  --sanity-color-black: #121923;
+  --sanity-color-white: #fff;
+  --sanity-color-blue-400: #4e91fc;
+  --sanity-color-red-400: #f36458;
+  --sanity-color-yellow-400: #d9b523;
+  --sanity-color-green-400: #43d675;
+  --sanity-color-gray-100: #e4e8ed;
+  --sanity-color-gray-200: #cad1dc;
+  --sanity-color-gray-400: #95a3b9;
+  --sanity-color-gray-500: #7b8ca8;
+  --sanity-color-gray-600: #66758d;
+  --sanity-color-gray-800: #3c4758;
+  --sanity-color-gray-900: #262f3d;
+  --sanity-color-gray-950: #1c2430;
+
+  /* Brand */
+  --brand-primary: var(--sanity-color-blue-400);
+  --brand-primary--inverted: var(--sanity-color-white);
+  --brand-secondary: var(--sanity-color-red-400);
+  --brand-secondary--inverted: var(--sanity-color-white);
+
+  /* Focus */
+  --focus-color: var(--sanity-color-blue-400);
+
+  /* Gray */
+  --gray-darkest: var(--sanity-color-gray-900);
+  --gray-darker: var(--sanity-color-gray-800);
+  --gray-dark: var(--sanity-color-gray-600);
+  --gray: var(--sanity-color-gray-500);
+  --gray-light: var(--sanity-color-gray-400);
+  --gray-lighter: var(--sanity-color-gray-200);
+  --gray-lightest: var(--sanity-color-gray-100);
+
+  /* Body */
+  --body-bg: var(--sanity-color-black);
+  --body-text: var(--sanity-color-gray-200);
+
+  /* Text */
+  --text-color-secondary: var(--sanity-color-gray-400);
+  --text-muted: var(--sanity-color-gray-500);
+
+  /* Preview */
+  --preview-placeholder-color: var(--sanity-color-gray-500);
+
+  /* Backdrop */
+  --backdrop-color: color(var(--sanity-color-black) alpha(50%));
+
+  /* Component */
+  --component-bg: var(--sanity-color-gray-950);
+  --component-text-color: var(--sanity-color-gray-200);
+  --component-border-color: var(--sanity-color-gray-800);
+
+  /* Shadow */
+  --shadow-base: var(--sanity-color-black);
+  --shadow-color-umbra: color(var(--shadow-base) alpha(60%));
+  --shadow-color-penumbra: color(var(--shadow-base) alpha(40%));
+  --shadow-color-ambient: color(var(--shadow-base) alpha(20%));
+
+  /* Input */
+  --input-border-color: var(--sanity-color-gray-800);
+  --input-border-color-hover: var(--sanity-color-gray-600);
+  --input-bg: var(--sanity-color-black);
+  --input-bg-invalid: var(--component-bg);
+  --input-bg-disabled: var(--sanity-color-gray-900);
+  --input-color: var(--body-text);
+  --input-color-placeholder: var(--gray-dark);
+
+  /* Main navigation */
+  --main-navigation-color: var(--component-bg);
+  --main-navigation-color--inverted: var(--component-text-color);
+  --main-navigation-color--inverted-muted: color(
+    var(--component-bg) blend(var(--component-text-color) 60%)
+  );
+
+  /* Dialog */
+  --dialog-header-color: var(--component-bg);
+  --dialog-header-color--inverted: var(--body-text);
+
+  /* Checkerboard */
+  --checkerboard-color: color(var(--gray) alpha(5%));
+
+  /* Selectable item */
+  --selectable-item-base: var(--sanity-color-blue-400);
+  --selectable-item-color-hover: var(--sanity-color-gray-900);
+
+  /* Selected item */
+  --selected-item-color--inverted: var(--sanity-color-black);
+
+  /* Hairline */
+  --hairline-color: color(var(--gray) alpha(30%));
+
+  /* Default button */
+  --default-button-color: var(--sanity-color-gray-400);
+  --default-button-color--inverted: var(--sanity-color-black);
+  --default-button-primary-color: var(--sanity-color-blue-400);
+  --default-button-primary-color--inverted: var(--sanity-color-black);
+  --default-button-danger-color: var(--sanity-color-red-400);
+  --default-button-danger-color--inverted: var(--sanity-color-black);
+  --default-button-success-color: var(--sanity-color-green-400);
+  --default-button-success-color--inverted: var(--sanity-color-black);
+
+  /* List */
+  --list-border-color: var(--hairline-color);
+  --list-border: 1px solid var(--list-border-color);
+
+  /* Code */
+  --code-color: var(--gray-lighter);
+  --code-bg: var(--gray-darker);
+
+  /* KBD */
+  --kbd-color: var(--white);
+  --kbd-bg: var(--gray-darker);
+
+  /* PRE */
+  --pre-bg: var(--gray-darker);
+  --pre-color: var(--gray-lighter);
+  --pre-border-color: var(--gray-lightest);
+}
