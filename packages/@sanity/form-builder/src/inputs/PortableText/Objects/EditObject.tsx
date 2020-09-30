@@ -152,7 +152,7 @@ export const EditObject = ({
       return
     }
     const patches = PATCHES.get(editor)
-    if (!patches) {
+    if (!patches || patches.length === 0) {
       return
     }
     const length = patches.length
