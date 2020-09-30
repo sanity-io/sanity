@@ -86,6 +86,43 @@
   --block-extras-border-color: var(--hairline-color);
   --block-extras-background-color: color(var(--gray-lightest) alpha(50%));
 
+  /* Timeline event */
+  --timeline-event-enabled-bg: var(--component-bg);
+  --timeline-event-enabled-fg: var(--text-muted);
+  --timeline-event-enabled-border: color(var(--timeline-event-enabled-bg) blend(var(--gray) 30%));
+  --timeline-event-enabled-hover-bg: var(--selectable-item-color-hover);
+  --timeline-event-enabled-hover-fg: var(--text-color-secondary);
+  --timeline-event-enabled-icon-created-bg: var(--brand-primary);
+  --timeline-event-enabled-icon-created-fg: var(--component-bg);
+  --timeline-event-enabled-icon-deleted-bg: var(--state-danger-color);
+  --timeline-event-enabled-icon-deleted-fg: var(--component-bg);
+  --timeline-event-enabled-icon-discarded-draft-bg: var(--state-danger-color);
+  --timeline-event-enabled-icon-discarded-draft-fg: var(--component-bg);
+  --timeline-event-enabled-icon-edited-bg: color(
+    var(--component-bg) blend(var(--state-warning-color) 10%)
+  );
+  --timeline-event-enabled-icon-edited-fg: var(--state-warning-color);
+  --timeline-event-enabled-icon-published-bg: var(--state-success-color);
+  --timeline-event-enabled-icon-published-fg: var(--component-bg);
+  --timeline-event-enabled-icon-unpublished-bg: var(--state-danger-color);
+  --timeline-event-enabled-icon-unpublished-fg: var(--component-bg);
+  --timeline-event-within-selection-bg: color(
+    var(--component-bg) blend(var(--selectable-item-base) 10%)
+  );
+  --timeline-event-within-selection-fg: var(--selectable-item-base);
+  --timeline-event-within-selection-border: var(--selectable-item-base);
+  --timeline-event-within-selection-icon-bg: var(--component-bg);
+  --timeline-event-within-selection-icon-fg: var(--selectable-item-base);
+  --timeline-event-selected-bg: var(--selectable-item-base);
+  --timeline-event-selected-fg: var(--component-bg);
+  --timeline-event-selected-border: var(--component-bg);
+  --timeline-event-selected-icon-bg: var(--component-bg);
+  --timeline-event-selected-icon-fg: var(--selectable-item-base);
+  --timeline-event-disabled-bg: var(--component-bg);
+  --timeline-event-disabled-fg: color(var(--component-bg) blend(var(--gray) 50%));
+  --timeline-event-disabled-icon-bg: color(var(--component-bg) blend(var(--gray) 30%));
+  --timeline-event-disabled-icon-fg: var(--component-bg);
+
   /* Others */
   --pane-header-height: 3.4375rem; /* 55px */
   --avatar-height: 23px;

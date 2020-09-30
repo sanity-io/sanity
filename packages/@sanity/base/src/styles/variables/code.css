@@ -6,12 +6,11 @@
   --code-color: var(--gray-darker);
 
   /* KBD */
-  --kbd-bg: var(--gray-lighter);
+  --kbd-bg: color(var(--gray) alpha(10%));
   --kbd-color: var(--gray-darker);
 
   /* Pre */
-  --pre-bg: var(--gray-lightest);
+  --pre-bg: color(var(--gray) alpha(10%));
   --pre-color: var(--gray-darker);
-  --pre-border-color: var(--gray-lighter);
-  --pre-scrollable-max-height: 20em;
+  --pre-border-color: transparent;
 }

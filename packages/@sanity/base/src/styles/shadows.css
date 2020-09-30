@@ -9,8 +9,8 @@
 }
 
 .shadow-1dp {
-  box-shadow: 0 0 0 1px var(--hairline-color), 0 2px 2px 0 var(--shadow-color-umbra),
-    0 3px 1px -2px var(--shadow-color-penumbra), 0 1px 5px 0 var(--shadow-color-ambient);
+  box-shadow: 0 0 0 1px var(--hairline-color), 0 1px 2px 0 var(--shadow-color-umbra),
+    0 2px 1px -2px var(--shadow-color-penumbra), 0 1px 3px 0 var(--shadow-color-ambient);
 }
 
 /* .shadow-2dp {
