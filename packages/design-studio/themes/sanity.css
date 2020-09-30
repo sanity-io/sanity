@@ -1,0 +1,51 @@
+:root {
+  --sanity-color-black: #121923;
+  --sanity-color-white: #fff;
+  --sanity-color-blue-500: #2276fc;
+  --sanity-color-red-500: #f03e2f;
+  --sanity-color-yellow-100: #fdefb6;
+  --sanity-color-gray-50: #f1f3f6;
+  --sanity-color-gray-100: #e4e8ed;
+  --sanity-color-gray-200: #cad1dc;
+  --sanity-color-gray-400: #95a3b9;
+  --sanity-color-gray-500: #7b8ca8;
+  --sanity-color-gray-600: #66758d;
+  --sanity-color-gray-800: #3c4758;
+  --sanity-color-gray-900: #262f3d;
+
+  /* Base theme colors */
+  --black: var(--sanity-color-black);
+  --white: var(--sanity-color-white);
+  --gray-base: var(--sanity-color-gray-500);
+
+  /* Gray */
+  --gray-darkest: var(--sanity-color-gray-900);
+  --gray-darker: var(--sanity-color-gray-800);
+  --gray-dark: var(--sanity-color-gray-600);
+  --gray: var(--sanity-color-gray-500);
+  --gray-light: var(--sanity-color-gray-400);
+  --gray-lighter: var(--sanity-color-gray-200);
+  --gray-lightest: var(--sanity-color-gray-100);
+
+  /* Brand */
+  --brand-primary: var(--sanity-color-blue-500);
+  --brand-primary--inverted: var(--sanity-color-white);
+  --brand-secondary: var(--sanity-color-red-500);
+  --brand-secondary--inverted: var(--sanity-color-white);
+
+  /* Focus */
+  --focus-color: var(--sanity-color-blue-500);
+
+  /* Navbar */
+  --main-navigation-color: var(--sanity-color-black);
+  --main-navigation-color--inverted: var(--sanity-color-white);
+
+  /* Selectable item */
+  --selectable-item-color-hover: var(--sanity-color-gray-50);
+  --selectable-item-color-focus: var(--sanity-color-gray-100);
+  --selectable-item-color-active: var(--sanity-color-gray-50);
+  --selectable-item-color-highlighted: var(--sanity-color-gray-100);
+
+  /* Timeline event */
+  --timeline-event-enabled-icon-edited-bg: var(--sanity-color-yellow-100);
+}
