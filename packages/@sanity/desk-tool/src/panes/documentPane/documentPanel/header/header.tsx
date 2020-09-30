@@ -1,6 +1,7 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {MenuItem, MenuItemGroup} from '@sanity/components'
 import {Chunk} from '@sanity/field/diff'
+import {Path} from '@sanity/types'
 import classNames from 'classnames'
 import {negate, upperFirst} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -8,9 +9,9 @@ import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useState} from 'react'
+import {DropdownButton} from '../../../../components/DropdownButton'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
-import {Path} from '@sanity/types'
 import {DocumentView} from '../../types'
 import {DocumentPanelContextMenu} from './contextMenu'
 import {DocumentHeaderTabs} from './tabs'
@@ -179,13 +180,10 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 
           {showVersionMenu && (
             <div className={styles.versionSelectContainer} ref={versionSelectRef}>
-              <Button
-                kind="simple"
+              <DropdownButton
                 onMouseUp={ignoreClickOutside}
                 onClick={onTimelineOpen}
-                padding="small"
                 selected={isTimelineOpen && timelineMode === 'rev'}
-                size="small"
               >
                 {/* eslint-disable-next-line no-nested-ternary */}
                 {menuOpen ? (
@@ -194,9 +192,8 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                   <TimelineButtonLabel rev={rev} />
                 ) : (
                   <>Current version</>
-                )}{' '}
-                &darr;
-              </Button>
+                )}
+              </DropdownButton>
             </div>
           )}
         </div>
