@@ -142,6 +142,7 @@ export const CoreChangeIndicator = ({
 }
 
 export const ChangeIndicatorWithProvidedFullPath = ({
+  className,
   path,
   value,
   hasFocus,
@@ -153,6 +154,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
   const fullPath = parentContext.fullPath.concat(path)
   return (
     <CoreChangeIndicator
+      className={className}
       value={value}
       compareValue={PathUtils.get(parentContext.compareValue, path)}
       hasFocus={hasFocus}
