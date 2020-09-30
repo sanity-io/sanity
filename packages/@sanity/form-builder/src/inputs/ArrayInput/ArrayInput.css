@@ -21,7 +21,7 @@
 
 .functions {
   @nest .list + & {
-    margin-top: var(--small-padding);
+    margin-top: calc(var(--medium-padding) - var(--extra-small-padding));
   }
 
   @nest .grid + & {
@@ -40,39 +40,10 @@
 }
 
 .listItem {
-  padding: 1px 1px calc(var(--small-padding) + 1px);
-}
-
-.listItemWrapper {
-  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
-
-  background: var(--component-bg);
-  border-radius: var(--border-radius-small);
-  padding: var(--extra-small-padding);
-  transition: box-shadow 100ms;
-
-  @nest .listItem.moving & {
-    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
-      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
-  }
+  padding-bottom: var(--extra-small-padding);
 }
 
 .gridItem {
-  padding: 1px;
-}
-
-.gridItemWrapper {
-  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
-
-  background: var(--component-bg);
-  border-radius: var(--border-radius-small);
-  padding: var(--extra-small-padding);
-  transition: box-shadow 100ms;
-
-  @nest .gridItem.moving & {
-    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
-      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
-  }
 }
 
 .popupAnchorRelative {

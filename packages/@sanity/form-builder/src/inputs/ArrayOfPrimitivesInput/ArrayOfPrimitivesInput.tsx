@@ -138,6 +138,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     const ListItem = isSortable ? SortableItem : DefaultItem
     const filteredMarkers = markers.filter(marker => startsWith([index], marker.path))
     const childPresence = presence.filter(pItem => startsWith([index], pItem.path))
+
     return (
       <ListItem key={index} index={index} className={styles.item}>
         <Item
@@ -169,7 +170,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       <SortableList
         className={styles.list}
         onSortEnd={this.handleSortEnd}
-        helperClass={styles.movingItem}
+        helperClass="ArrayOfPrimitivesInput__moving"
         useDragHandle
       >
         {value.map(this.renderItem)}

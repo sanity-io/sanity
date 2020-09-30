@@ -104,12 +104,9 @@ export default class Item extends React.PureComponent<Props> {
               presence={presence}
             />
           </div>
-          <div
-            className={styles.functions}
-            data-presence={presence.length > 0 && (!type.title || type.title === '')}
-          >
-            {markers.length >= 1 && (
-              <div className={styles.validationStatus}>
+          <div className={styles.functions}>
+            {markers.length > 0 && (
+              <div className={styles.validationStatusContainer}>
                 <ValidationStatus markers={markers} />
               </div>
             )}
@@ -123,7 +120,6 @@ export default class Item extends React.PureComponent<Props> {
             {!readOnly && (
               <div className={styles.removeButtonContainer}>
                 <Button
-                  className={styles.deleteButton}
                   icon={TrashIcon}
                   kind="simple"
                   onClick={this.handleRemove}

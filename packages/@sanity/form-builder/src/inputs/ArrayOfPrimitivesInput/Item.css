@@ -2,6 +2,7 @@
 
 .root {
   position: relative;
+  padding: 1px;
 
   &.media {
     height: 15em;
@@ -10,24 +11,28 @@
 }
 
 .inner {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  /* padding: var(--extra-small-padding) 0; */
+  background: var(--component-bg);
+  border-radius: var(--border-radius-small);
+  padding: calc(var(--extra-small-padding) - 1px);
+  transition: box-shadow 100ms;
+
+  @nest :global(.ArrayInput__moving) & {
+    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
+      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
+  }
 }
 
 .input {
-  flex-grow: 1;
-}
-
-.deleteButton {
-  flex-grow: 0;
-  z-index: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .dragHandle {
   display: block;
-  flex-grow: 0;
   margin: 0 var(--small-padding) 0 var(--extra-small-padding);
 
   @nest & > button {
@@ -36,29 +41,13 @@
 }
 
 .functions {
-  flex-grow: 0;
   color: var(--text-color-secondary);
   display: flex;
   align-items: center;
   margin: 0 var(--extra-small-padding) 0 var(--small-padding);
-
-  @nest &[data-presence='true'] {
-    /* @nest & .validationStatus {
-      margin-right: var(--medium-padding);
-    } */
-
-    /* @nest & .deleteButton {
-      padding-left: var(--small-padding);
-    } */
-  }
 }
 
-.validationStatus {
-  composes: validationStatus from 'part:@sanity/base/theme/forms/validation-style';
-  padding-right: var(--small-padding);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.validationStatusContainer {
 }
 
 .presenceContainer {

@@ -1,3 +1,5 @@
+import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
+import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import LinkIcon from 'part:@sanity/base/link-icon'
@@ -243,64 +245,67 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     }
 
     return (
-      <div className={styles.inner}>
-        {isSortable && <DragHandle />}
+      <ChangeIndicatorScope path={[{_key: value._key}]}>
+        <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+          <div className={styles.inner}>
+            {isSortable && <DragHandle />}
 
-        <div
-          tabIndex={0}
-          onClick={value._key && this.handleEditStart}
-          onKeyPress={this.handleKeyPress}
-          className={styles.previewWrapper}
-        >
-          <div
-            tabIndex={-1}
-            ref={this.setFocusArea}
-            className={styles.previewWrapperHelper}
-            onFocus={this.handleFocus}
-          >
-            {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-            <Preview layout="default" value={value} type={memberType} />
+            <div
+              tabIndex={0}
+              onClick={value._key && this.handleEditStart}
+              onKeyPress={this.handleKeyPress}
+              className={styles.previewWrapper}
+            >
+              <div
+                tabIndex={-1}
+                ref={this.setFocusArea}
+                className={styles.previewWrapperHelper}
+                onFocus={this.handleFocus}
+              >
+                {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
+                <Preview layout="default" value={value} type={memberType} />
+              </div>
+            </div>
+
+            <div className={styles.functions}>
+              {!readOnly && (
+                <div className={styles.presenceContainer}>
+                  <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+                </div>
+              )}
+
+              {!readOnly && (
+                <div className={styles.validationStatusContainer}>
+                  <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
+                </div>
+              )}
+
+              <div className={styles.editButtonContainer}>
+                {value._ref && (
+                  <IntentButton
+                    className={styles.linkToReference}
+                    icon={LinkIcon}
+                    intent="edit"
+                    kind="simple"
+                    padding="small"
+                    params={{id: value._ref}}
+                  />
+                )}
+              </div>
+
+              {!readOnly && (
+                <div className={styles.removeButtonContainer}>
+                  <ConfirmButton
+                    kind="simple"
+                    title="Remove this item"
+                    onConfirm={this.handleRemove}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className={styles.functions}>
-          {!readOnly && (
-            <div className={styles.presenceContainer}>
-              <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
-            </div>
-          )}
-
-          {!readOnly && (
-            <div className={styles.validationStatusContainer}>
-              <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-            </div>
-          )}
-
-          <div className={styles.editButtonContainer}>
-            {value._ref && (
-              <IntentButton
-                className={styles.linkToReference}
-                icon={LinkIcon}
-                intent="edit"
-                kind="simple"
-                padding="small"
-                params={{id: value._ref}}
-              />
-            )}
-          </div>
-
-          {!readOnly && (
-            <div className={styles.removeButtonContainer}>
-              <ConfirmButton
-                color="danger"
-                kind="simple"
-                title="Remove this item"
-                onConfirm={this.handleRemove}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+        </ContextProvidedChangeIndicator>
+      </ChangeIndicatorScope>
     )
   }
 
