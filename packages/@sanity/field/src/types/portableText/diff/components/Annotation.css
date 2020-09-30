@@ -9,7 +9,6 @@
   border-bottom: 2px dotted color(var(--text-color) a(100%));
 
   box-shadow: inset 0 0 0 1px var(--hairline-color);
-  cursor: pointer;
   white-space: nowrap;
   align-items: center;
   background-color: color(var(--text-color) a(10%));
@@ -18,12 +17,34 @@
     background-color: color(var(--text-color) a(20%));
     border-color: color(var(--text-color) a(100%));
   }
+}
+
+.isChanged {
   cursor: pointer;
 }
 
-.popoverContent {
+.empty {
+  font-size: var(--font-size-small);
+}
+
+.popoverContainer {
   min-width: 160px;
   padding: calc(var(--medium-padding) - var(--extra-small-padding));
+  @nest & .popoverContent {
+  }
+  @nest & .goToLink {
+    position: relative;
+    top: -5px;
+    white-space: nowrap;
+    float: right;
+    font-size: var(--font-size-small);
+  }
+  @nest & .goToLink svg {
+    font-size: var(--font-size-large + 4px);
+    position: relative;
+    top: 4px;
+    left: 4px;
+  }
 }
 
 .previewContainer {
