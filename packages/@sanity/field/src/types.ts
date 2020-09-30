@@ -52,6 +52,8 @@ export type Chunk = {
   startTimestamp: string
   endTimestamp: string
   authors: Set<string>
+  draftState: 'present' | 'missing' | 'unknown'
+  publishedState: 'present' | 'missing' | 'unknown'
 }
 
 /**
