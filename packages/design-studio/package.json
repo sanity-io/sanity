@@ -27,7 +27,7 @@
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-dom": "^16.9.0",
-    "react-jason": "^1.1.0"
+    "react-jason": "^1.1.2"
   },
   "devDependencies": {
     "typescript": "^4.0.2",
