@@ -14,7 +14,7 @@ import {
   usePortableTextEditorSelection,
   HotkeyOptions
 } from '@sanity/portable-text-editor'
-import {Path, isKeySegment, Marker} from '@sanity/types'
+import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -34,7 +34,7 @@ import PortableTextSanityEditor from './Editor'
 
 type Props = {
   focusPath: Path
-  forceUpdate: () => void
+  forceUpdate: (fromValue?: PortableTextBlock[] | undefined) => void
   hasFocus: boolean
   hotkeys: HotkeyOptions
   isFullscreen: boolean
@@ -85,21 +85,25 @@ export default function PortableTextInput(props: Props) {
   const [objectEditData, setObjectEditData]: [ObjectEditData, any] = useState(null)
   const [initialSelection, setInitialSelection] = useState(undefined)
 
-  // This will open the editing interfaces automatically according to the focusPath.
-  // eslint-disable-next-line complexity
+  // Respond to focusPath changes
   useEffect(() => {
     if (focusPath && objectEditData === null) {
-      const isChild = focusPath[1] === 'children'
-      const isMarkdef = focusPath[1] === 'markDefs'
-      const blockSegment = focusPath[0]
-      // If something sets a block focusPath (keysegment length 1), make the editor select that block.
-      if (focusPath && isKeySegment(focusPath[0]) && focusPath.length === 1) {
-        const point = {path: focusPath, offset: 0}
-        PortableTextEditor.select(editor, {focus: point, anchor: point})
-        forceUpdate() // Update the editor
-      } else if (isMarkdef && isKeySegment(blockSegment)) {
-        // Annotation focus paths
-        // Get block from the editor value - as the props value may not be updated yet.
+      const sameSelection = selection && isEqual(selection.focus.path, focusPath)
+      if (sameSelection) {
+        return
+      }
+      const blockSegment = isKeySegment(focusPath[0]) && focusPath[0]
+      const isBlockOnly = blockSegment && focusPath.length === 1
+      const isChild = blockSegment && focusPath[1] === 'children' && isKeyedObject(focusPath[2])
+      const isChildOnly = isChild && focusPath.length === 3
+      const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
+      if ((isBlockOnly || isChildOnly) && !hasFocus) {
+        const [hasItem] = PortableTextEditor.findByPath(editor, focusPath)
+        if (hasItem) {
+          const point = {path: focusPath, offset: 0}
+          PortableTextEditor.select(editor, {focus: point, anchor: point})
+        }
+      } else if (isAnnotation) {
         const block = (PortableTextEditor.getValue(editor) || []).find(
           blk => blk._key === blockSegment._key
         )
@@ -129,7 +133,6 @@ export default function PortableTextInput(props: Props) {
       if (focusPath && ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))) {
         let kind = 'blockObject'
         let path = focusPath.slice(0, 1)
-        // eslint-disable-next-line max-depth
         if (isChild) {
           kind = 'inlineObject'
           path = path.concat(focusPath.slice(1, 3))
@@ -140,7 +143,7 @@ export default function PortableTextInput(props: Props) {
           anchor: {path, offset: 0}
         })
         // Make it go to selection first, then load  the editing interface
-        setTimeout(() => setObjectEditData({editorPath: path, formBuilderPath: path, kind}))
+        setObjectEditData({editorPath: path, formBuilderPath: path, kind})
       }
     }
   }, [focusPath])
@@ -174,12 +177,14 @@ export default function PortableTextInput(props: Props) {
         onFocus(selection.focus.path)
       }
     }
-  }, [selection, focusPath, initialSelection, objectEditData])
+  }, [selection])
 
   function handleToggleFullscreen(): void {
     setInitialSelection(PortableTextEditor.getSelection(editor))
+    const val = PortableTextEditor.getValue(editor)
     onToggleFullscreen()
-    PortableTextEditor.focus(editor)
+    forceUpdate(val)
+    setTimeout(() => PortableTextEditor.focus(editor))
   }
 
   function focus(): void {
@@ -323,12 +328,15 @@ export default function PortableTextInput(props: Props) {
     )
   }
 
+  const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
+
   const ptEditor = useMemo(
     () => (
       <PortableTextSanityEditor
         hotkeys={hotkeys}
         initialSelection={initialSelection}
         isFullscreen={isFullscreen}
+        key={`editor-${activationId}`}
         markers={markers}
         onBlur={onBlur}
         onFocus={onFocus}
@@ -346,18 +354,16 @@ export default function PortableTextInput(props: Props) {
         value={value}
       />
     ),
-    [hasFocus, focusPath, isFullscreen, value]
+    [hasFocus, focusPath, isFullscreen, readOnly, value]
   )
 
   const editObject = useMemo(() => {
     return renderEditObject()
   }, [isFullscreen, focusPath, markers, objectEditData, presence, value])
-
-  const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
   const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
-        <Portal>
+        <Portal key={`portal-${activationId}`}>
           <StackedEscapeable onEscape={handleToggleFullscreen}>
             <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
               {ptEditor}

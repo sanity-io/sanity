@@ -1,3 +1,4 @@
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
@@ -89,14 +90,11 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     )
     .sort()
     .join('')
-  let _value = value
-  if (Array.isArray(_value) && _value.length === 0) {
-    _value = undefined
+  const forceUpdate = (fromValue?: PortableTextBlock[] | undefined) => {
+    const val = fromValue || props.value
+    setValueTouchedByMarkers(val ? [...val] : val)
   }
-  const forceUpdate = () => {
-    setValueTouchedByMarkers(_value ? [..._value] : _value)
-  }
-  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(_value)
+  const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(props.value)
   useEffect(forceUpdate, [validationHash, value])
 
   const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
@@ -195,11 +193,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   const [isFullscreen, setIsFullscreen] = useState(false)
   const handleToggleFullscreen = () => setIsFullscreen(!isFullscreen)
+  const editorId = useMemo(() => uniqueId('PortableTextInputRoot'), [])
   const editorInput = useMemo(
     () => (
       <PortableTextEditor
         ref={ref}
         incomingPatche$={patche$.asObservable()}
+        key={`portable-text-editor-${editorId}`}
         onChange={handleEditorChange}
         maxBlocks={undefined} // TODO: from schema?
         readOnly={readOnly}
@@ -222,6 +222,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           hasFocus={hasFocus}
           hotkeys={hotkeys}
           isFullscreen={isFullscreen}
+          key={`portable-text-input-${editorId}`}
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
