@@ -28,6 +28,7 @@
   outline: none;
   background-color: var(--dropdown-button-bg);
   color: var(--dropdown-button-text);
+  white-space: nowrap;
 
   @media (hover: hover) {
     @nest &:hover {
