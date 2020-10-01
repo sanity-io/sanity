@@ -51,7 +51,9 @@ export const Annotation: FunctionComponent<Props> = ({
         hasFocus={focused}
         path={path}
         hidden
-      />
+      >
+        {'\u200B'}
+      </ChangeIndicatorWithProvidedFullPath>
     </span>
   )
 }
