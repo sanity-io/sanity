@@ -43,13 +43,33 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   }
 
   const changesPanelRect = getRelativeRect(reportedChangesPanel.element, rootRef)
-  const changeBarsWithFocusOrHover = allReportedValues
-    .filter(isChangeBar)
-    .filter(
-      ([id, reportedChangeBar]) =>
-        reportedChangeBar.isChanged &&
-        (id === hovered || reportedChangeBar.hasHover || reportedChangeBar.hasFocus)
-    )
+
+  const changeBarsWithHover: Reported<TrackedChange>[] = []
+  const changeBarsWithFocus: Reported<TrackedChange>[] = []
+  for (const value of allReportedValues) {
+    if (!isChangeBar(value) || !value[1].isChanged) {
+      continue
+    }
+
+    const [id, reportedChangeBar] = value
+    if (id === hovered) {
+      changeBarsWithHover.push(value)
+      continue
+    }
+
+    if (reportedChangeBar.hasHover) {
+      changeBarsWithHover.push(value)
+      continue
+    }
+
+    if (reportedChangeBar.hasFocus) {
+      changeBarsWithFocus.push(value)
+      continue
+    }
+  }
+
+  const changeBarsWithFocusOrHover =
+    changeBarsWithHover.length > 0 ? changeBarsWithHover : changeBarsWithFocus
 
   const enabledConnectors = changeBarsWithFocusOrHover
     .map(([id]) => ({
