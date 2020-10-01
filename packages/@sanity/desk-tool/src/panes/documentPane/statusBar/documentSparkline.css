@@ -12,13 +12,30 @@
 
 :root {
   --size: 25px;
-  --timeline-event-enabled-icon-edited-bg: #fdefb6;
-  --timeline-event-enabled-icon-edited-fg: #978023;
-  --timeline-event-enabled-icon-published-bg: #3ab667;
-  --timeline-event-enabled-icon-published-fg: #fff;
-  --disabled-container-bg: var(--gray-lightest);
-  --disabled-container-fg: var(--component-bg);
-  --disabled-fg: var(--gray-lightest);
+  /* Review changes button default */
+  --button-bg: var(--timeline-event-enabled-bg);
+  --button-fg: var(--timeline-event-enabled-fg);
+  --button-border: var(--timeline-event-enabled-border);
+  /* Review changes button hover */
+  --button-hover-bg: var(--button-fg);
+  --button-hover-fg: var(--button-bg);
+  --button-hover-border: var(--button-hover-bg);
+  /* Review changes button disabled */
+  --button-disabled-bg: var(--button-bg);
+  --button-disabled-fg: var(--timeline-event-disabled-fg);
+  --button-disabled-border: var(--timeline-event-disabled-icon-bg);
+  /* Session badge default */
+  --badge-bg: var(--button-fg);
+  --badge-fg: var(--button-bg);
+  --badge-border: var(--button-bg);
+  /* Session badge hover */
+  --badge-hover-bg: var(--button-hover-fg);
+  --badge-hover-fg: var(--button-hover-bg);
+  --badge-hover-border: var(--button-hover-bg);
+  /* Session badge disabled */
+  --badge-disabled-bg: var(--timeline-event-disabled-icon-bg);
+  --badge-disabled-fg: var(--timeline-event-disabled-icon-fg);
+  --badge-disabled-border: var(--badge-disabled-fg);
 }
 
 .root {
@@ -45,7 +62,8 @@
 }
 
 .reviewChangesButton {
-  color: var(--text-muted);
+  color: var(--button-fg);
+  background: var(--button-bg);
   text-align: left;
   transform: translate3d(0, 0, 0);
   display: block;
@@ -55,23 +73,23 @@
   cursor: not-allowed;
 
   @nest .root[data-container-min~='xsmall'] & {
-    border: 1px solid var(--gray-lighter);
+    border: 1px solid var(--button-border);
     border-radius: var(--border-radius-medium);
     pointer-events: unset;
     cursor: unset;
 
     @nest &:hover:not(:disabled) {
-      background: var(--gray-dark);
-      border-color: var(--gray-dark);
+      background: var(--button-hover-bg);
+      border-color: var(--button-hover-border);
 
       @nest & .statusDetails {
-        color: var(--white);
+        color: var(--button-hover-fg);
       }
 
       @nest & .badge {
-        background: var(--white);
-        color: var(--gray-dark);
-        border-color: var(--gray-dark);
+        color: var(--badge-hover-fg);
+        border-color: var(--badge-hover-border);
+        background: var(--badge-hover-bg);
 
         @nest &:last-of-type .hoverIcon {
           display: flex;
@@ -125,9 +143,9 @@
   line-height: 1;
   cursor: default;
   flex: 1;
-  background-color: var(--gray);
-  border: 1px solid var(--white);
-  color: var(--white);
+  background-color: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--badge-fg);
   border-radius: calc(var(--size) * 2);
   height: var(--size);
   width: var(--size);
@@ -179,7 +197,7 @@
   font-size: var(--font-size-xsmall);
   white-space: nowrap;
   margin-left: var(--small-padding);
-  color: var(--text-muted);
+  color: var(--button-fg);
   display: none;
 
   @nest .root[data-container-min~='xsmall'] .reviewChangesButton & {
@@ -200,19 +218,16 @@
 
 .root[data-disabled='true'] {
   @nest & .reviewChangesButton {
-    border-color: var(--disabled-container-bg);
+    border-color: var(--button-disabled-border);
   }
 
   @nest & .badge {
-    background: var(--disabled-container-bg);
-    color: var(--disabled-container-fg);
+    background: var(--badge-disabled-bg);
+    color: var(--badge-disabled-fg);
+    border-color: var(--badge-disabled-border);
   }
 
   @nest & .statusDetails {
-    color: var(--disabled-fg);
-  }
-
-  @nest & [class*='DefaultBadge'] {
-    color: var(--disabled-container-fg);
+    color: var(--button-disabled-fg);
   }
 }
