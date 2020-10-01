@@ -32,7 +32,7 @@
     "@sanity/diff": "1.150.7",
     "@sanity/react-hooks": "1.150.8",
     "@sanity/types": "1.150.7",
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.16.1",
     "sanity-diff-patch": "^1.0.9"
   },
   "devDependencies": {

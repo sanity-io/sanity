@@ -1,4 +1,4 @@
-import isValidDate from 'date-fns/is_valid'
+import isValidDate from 'date-fns/isValid'
 import parseDate from 'date-fns/parse'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
@@ -38,7 +38,7 @@ export default {
         !FALSEY_STRINGS.includes(value.toLowerCase())
     },
     richDate: {
-      test: val => isValidDate(parseDate(val)),
+      test: val => isValidDate(val),
       convert: value => {
         return {
           _type: 'richDate',

@@ -31,7 +31,7 @@
     "chroma-js": "^2.0.4",
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.16.1",
     "dom-scroll-into-view": "^1.2.1",
     "element-resize-detector": "^1.1.14",
     "exif-component": "^1.0.1",
