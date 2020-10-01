@@ -8,7 +8,17 @@
 }
 
 .header {
-  border-bottom: 1px solid var(--hairline-color);
+  position: relative;
+
+  @nest &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+  }
 }
 
 .changeWrapper {
