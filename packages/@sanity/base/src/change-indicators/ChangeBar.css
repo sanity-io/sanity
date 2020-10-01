@@ -40,6 +40,15 @@
   @nest .root.focus > .wrapper > & {
     background-color: var(--change-bar-changed-focus-color);
   }
+
+  @media (--max-screen-medium) {
+    /* hide on mobile */
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    display: unset;
+  }
 }
 
 .badge {
