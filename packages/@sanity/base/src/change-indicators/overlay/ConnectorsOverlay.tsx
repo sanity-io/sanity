@@ -1,6 +1,5 @@
 import React from 'react'
 import {sortBy} from 'lodash'
-import classNames from 'classnames/bind'
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
 import {useReportedValues, Reported, TrackedChange} from '../'
@@ -68,8 +67,8 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
     }
   }
 
-  const changeBarsWithFocusOrHover =
-    changeBarsWithHover.length > 0 ? changeBarsWithHover : changeBarsWithFocus
+  const isHoverConnector = changeBarsWithHover.length > 0
+  const changeBarsWithFocusOrHover = isHoverConnector ? changeBarsWithHover : changeBarsWithFocus
 
   const enabledConnectors = changeBarsWithFocusOrHover
     .map(([id]) => ({
@@ -142,12 +141,12 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
 
-          const cx = classNames.bind(styles)
-          const connectorClassNames = cx({
-            dangerConnector: change.hasRevertHover,
-            connector: !change.hasRevertHover,
-            hoverConnector: !change.hasRevertHover && !hasFocus && change.hasHover
-          })
+          let connectorClassName = styles.connector
+          if (change.hasRevertHover) {
+            connectorClassName = styles.dangerConnector
+          } else if (!hasFocus && isHoverConnector) {
+            connectorClassName = styles.hoverConnector
+          }
 
           const onConnectorClick = () => {
             scrollIntoView(field)
@@ -159,7 +158,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           return (
             <React.Fragment key={`field-${field.id}`}>
               {change && (
-                <g onClick={onConnectorClick} className={connectorClassNames}>
+                <g onClick={onConnectorClick} className={connectorClassName}>
                   <Connector
                     from={connectorFrom}
                     to={connectorTo}
