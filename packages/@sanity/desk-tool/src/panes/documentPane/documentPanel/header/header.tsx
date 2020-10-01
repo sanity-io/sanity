@@ -93,7 +93,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   }, [])
 
   const showTabs = views.length > 1
-  const showVersionMenu = features.reviewChanges
+  const showVersionMenu = features.reviewChanges || views.length === 1
   const menuOpen = isTimelineOpen && timelineMode === 'rev'
 
   return (
