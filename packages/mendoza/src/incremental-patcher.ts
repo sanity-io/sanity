@@ -218,8 +218,17 @@ class Model<T>
 
   arrayAppendSlice(target: ArrayContent<T>, source: Value<T>, left: number, right: number): void {
     let arr = this.asArray(source)
+    let samePosition = arr.elements.length === left
+
     target.elements.push(...arr.elements.slice(left, right))
-    target.metas.push(...arr.metas.slice(left, right))
+
+    if (samePosition) {
+      target.metas.push(...arr.metas.slice(left, right))
+    } else {
+      for (let i = left; i < right; i++) {
+        target.metas.push(this.meta)
+      }
+    }
   }
 
   stringAppendValue(target: StringContent<T>, value: Value<T>): void {
