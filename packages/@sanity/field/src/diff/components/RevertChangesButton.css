@@ -24,6 +24,10 @@
   @nest &:focus-visible {
     box-shadow: inset 0 0 0 2px var(--component-bg), inset 0 0 0 4px var(--focus-color);
   }
+
+  @nest &.selected {
+    color: var(--state-danger-color);
+  }
 }
 
 .iconContainer {
@@ -47,11 +51,14 @@
   }
 
   @media (hover: hover) {
-    opacity: 0;
-    transition: opacity 100ms;
+    display: none;
 
     @nest .root:hover & {
-      opacity: 1;
+      display: block;
+    }
+
+    @nest .root.selected & {
+      display: block;
     }
   }
 }

@@ -1,5 +1,7 @@
+import {DialogAction} from '@sanity/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import classNames from 'classnames'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -24,13 +26,26 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
     FieldWrapper = React.Fragment
   } = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
+  const [confirmRevertOpen, setConfirmRevertOpen] = React.useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
 
-  const handleRevertChanges = useCallback(() => undoChange(change, rootDiff, docOperations), [
-    change,
-    rootDiff,
-    docOperations
-  ])
+  const [revertContainerElement, setRevertContainerElement] = useState<HTMLDivElement | null>(null)
+
+  const handleRevertChanges = useCallback(() => {
+    undoChange(change, rootDiff, docOperations)
+  }, [change, rootDiff, docOperations])
+
+  const handleRevertChangesConfirm = useCallback(() => {
+    setConfirmRevertOpen(true)
+  }, [])
+
+  const closeRevertChangesConfirmDialog = React.useCallback(() => {
+    setConfirmRevertOpen(false)
+  }, [])
+
+  const handleConfirmDialogAction = useCallback((action: DialogAction) => {
+    if (action.action) action.action()
+  }, [])
 
   const rootClass = classNames(
     change.error ? styles.error : styles.root,
@@ -65,13 +80,38 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
           )}
 
           {isComparingCurrent && (
-            <div className={styles.revertChangesButtonContainer}>
-              <RevertChangesButton
-                onClick={handleRevertChanges}
-                onMouseEnter={handleRevertButtonMouseEnter}
-                onMouseLeave={handleRevertButtonMouseLeave}
-              />
-            </div>
+            <>
+              <div className={styles.revertChangesButtonContainer} ref={setRevertContainerElement}>
+                <RevertChangesButton
+                  onClick={handleRevertChangesConfirm}
+                  onMouseEnter={handleRevertButtonMouseEnter}
+                  onMouseLeave={handleRevertButtonMouseLeave}
+                  selected={confirmRevertOpen}
+                />
+              </div>
+
+              {confirmRevertOpen && (
+                <PopoverDialog
+                  actions={[
+                    {
+                      color: 'danger',
+                      action: handleRevertChanges,
+                      title: 'Revert change'
+                    },
+                    {
+                      kind: 'simple',
+                      action: closeRevertChangesConfirmDialog,
+                      title: 'Cancel'
+                    }
+                  ]}
+                  onAction={handleConfirmDialogAction}
+                  referenceElement={revertContainerElement}
+                  size="small"
+                >
+                  Are you sure you want to revert the changes?
+                </PopoverDialog>
+              )}
+            </>
           )}
         </DiffInspectWrapper>
       </FieldWrapper>

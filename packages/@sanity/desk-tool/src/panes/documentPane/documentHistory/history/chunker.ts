@@ -21,21 +21,21 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
 
   // TODO: How to detect first squash/create
 
-  if (left.type === 'delete' && right.type === 'editDraft') {
-    return [left, {...right, type: 'create'}]
-  }
-
   const draftState = combineState(left.draftState, right.draftState)
   const publishedState = combineState(left.publishedState, right.publishedState)
+
+  if (left.type === 'delete' && right.type === 'editDraft') {
+    return [left, {...right, type: 'create', draftState, publishedState}]
+  }
 
   // Convert deletes into either discardDraft or unpublish depending on what's been deleted.
   if (right.type === 'delete') {
     if (draftState === 'missing' && publishedState === 'present') {
-      return [left, {...right, type: 'discardDraft'}]
+      return [left, {...right, type: 'discardDraft', draftState, publishedState}]
     }
 
     if (draftState === 'present' && publishedState === 'missing') {
-      return [left, {...right, type: 'unpublish'}]
+      return [left, {...right, type: 'unpublish', draftState, publishedState}]
     }
   }
 
@@ -62,7 +62,7 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
     }
   }
 
-  return [left, right]
+  return [left, {...right, draftState, publishedState}]
 }
 
 export function chunkFromTransaction(transaction: Transaction): Chunk {
