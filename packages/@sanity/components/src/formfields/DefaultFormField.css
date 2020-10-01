@@ -17,7 +17,6 @@
 
 .label {
   display: block;
-  padding-right: var(--small-padding);
 }
 
 .content {
@@ -62,9 +61,7 @@
 }
 
 .validationStatus {
-  display: flex;
-  align-items: stretch;
-  cursor: default;
+  margin: -5px 0 -5px var(--extra-small-padding);
 }
 
 .validationList {
