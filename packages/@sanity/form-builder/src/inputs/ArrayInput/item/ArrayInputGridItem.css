@@ -91,6 +91,7 @@
   display: flex;
   align-items: center;
   margin-top: var(--extra-small-padding);
+  padding: var(--extra-small-padding);
 }
 
 .dragHandleContainer {
