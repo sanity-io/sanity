@@ -57,13 +57,12 @@ type Props = {
 }
 
 const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
-  props: Props,
+  props: Omit<Props, 'level'>,
   ref: React.RefObject<PortableTextEditor>
 ) {
   const {
     focusPath,
     hotkeys,
-    level,
     markers,
     onBlur,
     onChange,
