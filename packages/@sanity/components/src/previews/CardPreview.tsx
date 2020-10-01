@@ -163,11 +163,11 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
               <div
                 ref={this.setDateElement}
                 className={styles.date}
-                title={formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+                title={formatDate(date, 'ddd, MMM do, yyyy hh:mm a')}
               >
                 {emWidth <= 10 && formatDate(date, 'DD.MM.YY')}
-                {emWidth > 10 && emWidth <= 15 && formatDate(date, 'DD.MM.YY hh:mm A')}
-                {emWidth > 15 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+                {emWidth > 10 && emWidth <= 15 && formatDate(date, 'dd.MM.yy hh:mm a')}
+                {emWidth > 15 && formatDate(date, 'ddd, MMM do, yyyy hh:mm a')}
               </div>
             )}
             <div className={styles.heading}>

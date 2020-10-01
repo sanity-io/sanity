@@ -38,7 +38,7 @@
     "@sanity/uuid": "1.150.1",
     "boundless-arrow-key-navigation": "^1.1.0",
     "classnames": "^2.2.5",
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.16.1",
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.14",
     "hashlru": "^2.1.0",

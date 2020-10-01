@@ -12,15 +12,16 @@ export const DatetimePreview: PreviewComponent<string> = function DatetimePrevie
 
 function formatDate(value: string, schemaType: StringSchemaType): string {
   const {options, name} = schemaType
+  const date = new Date(value)
 
-  let dateFormat = 'YYYY-MM-DD'
+  let dateFormat = 'yyyy-MM-dd'
   if (options && options.dateFormat) {
     dateFormat = options.dateFormat
   }
 
   if (name === 'date') {
     // If the type is date only
-    return format(value, dateFormat)
+    return format(date, dateFormat)
   }
 
   // If the type is datetime
@@ -30,5 +31,5 @@ function formatDate(value: string, schemaType: StringSchemaType): string {
     dateFormat += ' HH:mm'
   }
 
-  return format(value, dateFormat)
+  return format(date, dateFormat)
 }

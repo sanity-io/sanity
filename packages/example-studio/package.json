@@ -33,7 +33,7 @@
     "@sanity/storybook": "1.150.1",
     "@sanity/vision": "1.150.6",
     "bio-pv": "^1.8.1",
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.16.1",
     "fetch": "^1.1.0",
     "get-video-id": "^2.1.4",
     "humanize-list": "^1.0.1",
