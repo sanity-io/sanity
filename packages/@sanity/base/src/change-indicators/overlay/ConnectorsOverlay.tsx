@@ -146,6 +146,19 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
 
+          const drawArrowRightTop = changeBottom <= changeClampConnector.top
+          const drawArrowLeftTop = fieldBottom <= fieldClampConnector.top
+          const drawArrowLeftBottom = fieldTop >= fieldClampConnector.bottom
+          const drawArrowRightBottom = changeTop > changeClampConnector.bottom
+
+          if (drawArrowLeftTop && drawArrowRightTop) {
+            // Prevent drawing ^----^ arrow
+            return null
+          } else if (drawArrowLeftBottom && drawArrowRightBottom) {
+            // Prevent drawing v----v arrow
+            return null
+          }
+
           let connectorClassName = styles.connector
           if (change.hasRevertHover) {
             connectorClassName = styles.dangerConnector
@@ -175,7 +188,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   />
 
                   {/* arrow left top */}
-                  {fieldBottom <= fieldClampConnector.top && (
+                  {drawArrowLeftTop && (
                     <Arrow
                       top={fieldClampConnector.top}
                       left={connectorFrom.left}
@@ -186,7 +199,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow left bottom */}
-                  {fieldTop >= fieldClampConnector.bottom && (
+                  {drawArrowLeftBottom && (
                     <Arrow
                       top={fieldClampConnector.bottom}
                       left={connectorFrom.left}
@@ -197,7 +210,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow right top */}
-                  {changeBottom <= changeClampConnector.top && (
+                  {drawArrowRightTop && (
                     <Arrow
                       top={changeClampConnector.top}
                       left={connectorTo.left}
@@ -208,7 +221,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow right bottom */}
-                  {changeTop > changeClampConnector.bottom && (
+                  {drawArrowRightBottom && (
                     <Arrow
                       top={changeClampConnector.bottom}
                       left={connectorTo.left}

@@ -130,9 +130,11 @@ export const CoreChangeIndicator = ({
   const isChanged =
     (canCompareShallow(value, compareValue) && value !== compareValue) ||
     (compareDeep && !deepCompare(value, compareValue))
+
   if (hidden) {
     return <>{children}</>
   }
+
   return (
     <ChangeBarWrapper
       className={className}
