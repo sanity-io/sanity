@@ -121,7 +121,12 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             top: connectorToTop
           }
 
-          const clampConnector = {
+          const fieldClampConnector = {
+            top: field.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
+            bottom: field.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
+          }
+
+          const changeClampConnector = {
             top: change.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
             bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
@@ -146,15 +151,15 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                     to={connectorTo}
                     onMouseEnter={() => setHovered(field.id)}
                     onMouseLeave={() => setHovered(null)}
-                    clampLeft={clampConnector}
-                    clampRight={clampConnector}
+                    clampLeft={fieldClampConnector}
+                    clampRight={changeClampConnector}
                     verticalCenter={verticalLineLeft! + 3}
                   />
 
                   {/* arrow left top */}
-                  {fieldBottom <= clampConnector.top && (
+                  {fieldBottom <= fieldClampConnector.top && (
                     <Arrow
-                      top={clampConnector.top}
+                      top={fieldClampConnector.top}
                       left={connectorFrom.left}
                       length={5}
                       wingLength={8}
@@ -163,9 +168,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow left bottom */}
-                  {fieldTop >= clampConnector.bottom && (
+                  {fieldTop >= fieldClampConnector.bottom && (
                     <Arrow
-                      top={clampConnector.bottom}
+                      top={fieldClampConnector.bottom}
                       left={connectorFrom.left}
                       length={5}
                       wingLength={8}
@@ -174,9 +179,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow right top */}
-                  {changeBottom <= clampConnector.top && (
+                  {changeBottom <= changeClampConnector.top && (
                     <Arrow
-                      top={clampConnector.top}
+                      top={changeClampConnector.top}
                       left={connectorTo.left}
                       length={5}
                       wingLength={8}
@@ -185,9 +190,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   )}
 
                   {/* arrow right bottom */}
-                  {changeTop > clampConnector.bottom && (
+                  {changeTop > changeClampConnector.bottom && (
                     <Arrow
-                      top={clampConnector.bottom}
+                      top={changeClampConnector.bottom}
                       left={connectorTo.left}
                       length={5}
                       wingLength={8}
@@ -233,9 +238,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                   />
                   <line
                     x1={field.rect.left}
-                    y1={clampConnector.top}
+                    y1={fieldClampConnector.top}
                     x2={field.rect.left + field.rect.width}
-                    y2={clampConnector.top}
+                    y2={fieldClampConnector.top}
                     stroke="yellow"
                     strokeWidth={2}
                   />
@@ -250,9 +255,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
 
                   <line
                     x1={field.rect.left}
-                    y1={clampConnector.bottom}
+                    y1={fieldClampConnector.bottom}
                     x2={field.rect.left + field.rect.width}
-                    y2={clampConnector.bottom}
+                    y2={fieldClampConnector.bottom}
                     stroke="yellow"
                     strokeWidth={2}
                   />
