@@ -1,6 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   position: relative;
-  border-radius: 2px;
+  border-radius: var(--border-radius-small);
 
   @nest &[data-hover] {
     @nest &::after {
@@ -18,10 +20,10 @@
 
       @nest &::after {
         bottom: -3px;
-        border-top: 1px solid #fff;
+        border-top: 1px solid var(--component-bg);
         border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
+        border-bottom-left-radius: var(--border-radius-small);
+        border-bottom-right-radius: var(--border-radius-small);
       }
     }
 
@@ -31,10 +33,10 @@
 
       @nest &::after {
         bottom: -3px;
-        border-top: 1px solid #fff;
+        border-top: 1px solid var(--component-bg);
         border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
+        border-bottom-left-radius: var(--border-radius-small);
+        border-bottom-right-radius: var(--border-radius-small);
       }
     }
   }
