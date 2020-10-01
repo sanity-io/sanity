@@ -14,7 +14,14 @@
   box-sizing: border-box;
   user-select: none;
   color: inherit;
-  box-shadow: inset 0 0 0 1.5px var(--gray);
+  box-shadow: inset 0 0 0 1.5px var(--gray-light);
+  color: var(--component-text-color);
+
+  @nest &[data-tone='navbar'] {
+    box-shadow: inset 0 0 0 1.5px
+      color(var(--main-navigation-color) blend(var(--main-navigation-color--inverted) 40%));
+    color: var(--main-navigation-color--inverted);
+  }
 
   @nest & > span {
     margin-top: -1px;
