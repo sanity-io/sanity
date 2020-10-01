@@ -60,7 +60,13 @@ export function isEqual(path: Path, otherPath: Path): boolean {
 }
 
 export function numEqualSegments(path: Path, otherPath: Path): number {
-  return path.filter((segment, i) => isSegmentEqual(segment, otherPath[i])).length
+  const length = Math.min(path.length, otherPath.length)
+  for (let i = 0; i < length; i++) {
+    if (!isSegmentEqual(path[i], otherPath[i])) {
+      return i
+    }
+  }
+  return length
 }
 
 export function isSegmentEqual(segmentA: PathSegment, segmentB: PathSegment): boolean {
