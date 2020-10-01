@@ -75,3 +75,15 @@
 .strikethrough {
   text-decoration: line-through;
 }
+
+.noImage {
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-small);
+  background: var(--gray-lightest);
+  color: var(--gray-dark);
+}
