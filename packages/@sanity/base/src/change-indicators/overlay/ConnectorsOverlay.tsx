@@ -1,17 +1,17 @@
 import React from 'react'
+import {sortBy} from 'lodash'
 import classNames from 'classnames/bind'
-
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
-import {sortBy} from 'lodash'
-import {TrackedChange, useReportedValues} from '../'
+import {useReportedValues, Reported, TrackedChange} from '../'
+import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import getRelativeRect from '../helpers/getRelativeRect'
 import isChangeBar from '../helpers/isChangeBar'
 import scrollIntoView from '../helpers/scrollIntoView'
-import styles from './ConnectorsOverlay.css'
-import {Arrow} from './Arrow'
-import {Connector, drawLine, vLine} from './Connector'
 import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from '../constants'
+import {Connector, drawLine, vLine} from './Connector'
+import {Arrow} from './Arrow'
+import styles from './ConnectorsOverlay.css'
 
 export interface Rect {
   height: number
@@ -52,19 +52,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
     )
 
   const enabledConnectors = changeBarsWithFocusOrHover
-    .map(([id, value]) => ({
-      field: {
-        id,
-        ...(id.startsWith('field-')
-          ? value
-          : (byId.get(`field-${id.substring(7)}`) as TrackedChange))
-      },
-      change: {
-        id,
-        ...(id.startsWith('change-')
-          ? value
-          : (byId.get(`change-${id.substring(6)}`) as TrackedChange))
-      }
+    .map(([id]) => ({
+      field: {id, ...findMostSpecificTarget('field', id, byId)},
+      change: {id, ...findMostSpecificTarget('change', id, byId)}
     }))
     .filter(({field, change}) => field && change && field.element && change.element)
     .map(({field, change}) => ({
