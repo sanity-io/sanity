@@ -98,8 +98,8 @@ export default function PortableTextInput(props: Props) {
       const isChildOnly = isChild && focusPath.length === 3
       const isAnnotation = blockSegment && focusPath[1] === 'markDefs'
       if ((isBlockOnly || isChildOnly) && !hasFocus) {
-        const [hasItem] = PortableTextEditor.findByPath(editor, focusPath)
-        if (hasItem) {
+        const [node] = PortableTextEditor.findByPath(editor, focusPath)
+        if (node) {
           const point = {path: focusPath, offset: 0}
           PortableTextEditor.select(editor, {focus: point, anchor: point})
           forceUpdate() // To re-render change-indicators properly
@@ -129,7 +129,6 @@ export default function PortableTextInput(props: Props) {
         }
         return
       }
-
       // Block focus paths
       if (focusPath && ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))) {
         let kind = 'blockObject'
