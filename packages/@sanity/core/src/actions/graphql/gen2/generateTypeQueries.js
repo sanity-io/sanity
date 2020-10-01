@@ -8,6 +8,27 @@ function generateTypeQueries(types, filters, sortings) {
 
   const isSortable = type => sortings.some(sorting => sorting.name === `${type.name}Sorting`)
 
+  // A document of any type
+  queries.push({
+    fieldName: 'Document',
+    type: 'Document',
+    constraints: [
+      {
+        field: '_id',
+        comparator: 'eq',
+        value: {kind: 'argumentValue', argName: 'id'}
+      }
+    ],
+    args: [
+      {
+        name: 'id',
+        description: 'Document ID',
+        type: 'ID',
+        isNullable: false
+      }
+    ]
+  })
+
   // Single ID-based result lookup queries
   queryable.forEach(type => {
     queries.push({
