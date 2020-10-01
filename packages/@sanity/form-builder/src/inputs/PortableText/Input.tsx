@@ -370,7 +370,7 @@ export default function PortableTextInput(props: Props) {
       ) : (
         <ActivateOnFocus
           inputId={activationId}
-          html={<h3 className={styles.activeOnFocusHeading}>Click to edit</h3>}
+          html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
           isActive={isActive}
           onActivate={handleActivate}
           overlayClassName={styles.activateOnFocusOverlay}
