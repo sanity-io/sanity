@@ -11,7 +11,7 @@
 }
 
 .connector {
-  stroke: #2276fc;
+  stroke: var(--brand-primary);
   stroke-width: 2;
   pointer-events: all;
   cursor: pointer;
