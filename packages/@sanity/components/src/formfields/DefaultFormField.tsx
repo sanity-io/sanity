@@ -61,7 +61,7 @@ export default React.memo(function DefaultFormField({
                     {label}
                   </DefaultLabel>
                 )}
-                <ValidationStatus markers={markers} />
+                <ValidationStatus className={styles.validationStatus} markers={markers} />
               </div>
               {description && <div className={styles.description}>{description}</div>}
             </div>
