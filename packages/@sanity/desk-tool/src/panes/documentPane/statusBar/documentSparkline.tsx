@@ -53,6 +53,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
   const [transitionDirection, setTransitionDirection] = React.useState<'in' | 'out' | ''>('')
   const {open: openHistory, historyController, timeline} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
+  const showingChangePanel = historyController.changesPanelActive()
   const syncState = useSyncState(timeline?.publishedId)
   const isLiveDocument = editState?.liveEdit
 
@@ -142,7 +143,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
           padding="small"
           onClick={openHistory}
           type="button"
-          disabled={showingRevision}
+          disabled={showingRevision || showingChangePanel}
           className={styles.reviewChangesButton}
           data-syncing={syncState.isSyncing}
           title="Review changes"
