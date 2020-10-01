@@ -162,12 +162,7 @@ export default function PortableTextInput(props: Props) {
     // If the focuspath is a annotation (markDef), don't update focusPath,
     // as this will close the editing interface
     const isAnnotationPath = focusPath && focusPath[1] === 'markDefs'
-    if (
-      selection &&
-      !objectEditData &&
-      !isAnnotationPath &&
-      (!focusPath || (focusPath && focusPath.length > 1))
-    ) {
+    if (selection && !objectEditData && !isAnnotationPath) {
       const isCollapsed =
         isEqual(selection.focus.path, selection.anchor.path) &&
         selection.focus.offset === selection.anchor.offset
@@ -361,6 +356,7 @@ export default function PortableTextInput(props: Props) {
   const editObject = useMemo(() => {
     return renderEditObject()
   }, [isFullscreen, focusPath, markers, objectEditData, presence, value])
+
   const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
