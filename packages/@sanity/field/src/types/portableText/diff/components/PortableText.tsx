@@ -146,7 +146,7 @@ export default function PortableText(props: Props): JSX.Element {
             )
           }
           // Render collected texts inside an annotation
-          if (annotationSegments.length > 0 && currentAnnotation) {
+          if (block.children[childIndex] && annotationSegments.length > 0 && currentAnnotation) {
             const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
             const objectSchemaType =
               currentAnnotation &&
