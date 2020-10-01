@@ -20,7 +20,13 @@ const imageBuilder = imageUrlBuilder(sanityClient)
 // To trigger deleted state, set `id` to valid, non-existant image asset ID,
 // eg: 'image-1217bc35db5030739b7be571c79d3c401551911d-300x200-png'
 
-export default function ImagePreview(props: ImagePreviewProps): React.ReactElement {
+export const NoImagePreview = () => (
+  <div className={styles.noImage}>
+    <div>(no image)</div>
+  </div>
+)
+
+export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
   const {id, action, diff, hotspot, crop, is} = props
   const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
