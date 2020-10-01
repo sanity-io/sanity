@@ -7,7 +7,12 @@ import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import getRelativeRect from '../helpers/getRelativeRect'
 import isChangeBar from '../helpers/isChangeBar'
 import scrollIntoView from '../helpers/scrollIntoView'
-import {CONNECTOR_BOUNDS_MARGIN, DEBUG_LAYER_BOUNDS, VERTICAL_CONNECTOR_PADDING} from '../constants'
+import {
+  CONNECTOR_BOUNDS_MARGIN,
+  CONNECTOR_STROKE_WIDTH,
+  DEBUG_LAYER_BOUNDS,
+  VERTICAL_CONNECTOR_PADDING
+} from '../constants'
 import {Connector, drawLine, vLine} from './Connector'
 import {Arrow} from './Arrow'
 import styles from './ConnectorsOverlay.css'
@@ -100,7 +105,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
         }}
       >
         {visibleConnectors.map(({field, change, hasFocus}) => {
-          const changeMarkerLeft = change.rect.left
+          const changeMarkerLeft = change.rect.left + CONNECTOR_STROKE_WIDTH / 2
 
           const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
           const fieldBottom = field.rect.top + field.rect.height - VERTICAL_CONNECTOR_PADDING
@@ -122,7 +127,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           }
 
           const connectorFrom = {
-            left: field.rect.left + field.rect.width,
+            left: field.rect.left + field.rect.width + CONNECTOR_STROKE_WIDTH / 2,
             top: connectorFromTop
           }
 
@@ -235,7 +240,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                         )
                       )
                     )}
-                    strokeWidth={2}
+                    strokeWidth={CONNECTOR_STROKE_WIDTH}
                   />
                 </g>
               )}
@@ -247,7 +252,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                     x2={field.rect.left + field.rect.width}
                     y2={field.rect.bounds.top}
                     stroke="black"
-                    strokeWidth={2}
+                    strokeWidth={CONNECTOR_STROKE_WIDTH}
                   />
                   <line
                     x1={field.rect.left}
@@ -255,7 +260,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                     x2={field.rect.left + field.rect.width}
                     y2={fieldClampConnector.top}
                     stroke="yellow"
-                    strokeWidth={2}
+                    strokeWidth={CONNECTOR_STROKE_WIDTH}
                   />
                   <line
                     x1={field.rect.left}
@@ -263,7 +268,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                     x2={field.rect.left + field.rect.width}
                     y2={field.rect.bounds.bottom}
                     stroke="black"
-                    strokeWidth={2}
+                    strokeWidth={CONNECTOR_STROKE_WIDTH}
                   />
 
                   <line
@@ -272,7 +277,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                     x2={field.rect.left + field.rect.width}
                     y2={fieldClampConnector.bottom}
                     stroke="yellow"
-                    strokeWidth={2}
+                    strokeWidth={CONNECTOR_STROKE_WIDTH}
                   />
                 </>
               )}

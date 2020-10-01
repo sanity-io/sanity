@@ -1,4 +1,5 @@
 import React from 'react'
+import {CONNECTOR_CORNER_RADIUS, CONNECTOR_STROKE_WIDTH} from '../constants'
 import {linePath, quadraticBezierPath} from './svgHelpers'
 
 export interface Point {
@@ -7,9 +8,6 @@ export interface Point {
 }
 
 type Line = {from: Point; to: Point}
-
-const STROKE_WIDTH = 2
-const CORNER_RADIUS = 10
 
 const hLine = (top: number, from: number, to: number): Line => ({
   from: {top, left: from},
@@ -45,12 +43,12 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
       : from.left + (to.left - from.left) / 2
 
   const clampedFromTop = Math.min(
-    clampLeft.bottom - CORNER_RADIUS,
-    Math.max(from.top, clampLeft.top + CORNER_RADIUS)
+    clampLeft.bottom - CONNECTOR_CORNER_RADIUS,
+    Math.max(from.top, clampLeft.top + CONNECTOR_CORNER_RADIUS)
   )
   const clampedToTop = Math.min(
-    clampRight.bottom - CORNER_RADIUS,
-    Math.max(to.top, clampRight.top + CORNER_RADIUS)
+    clampRight.bottom - CONNECTOR_CORNER_RADIUS,
+    Math.max(to.top, clampRight.top + CONNECTOR_CORNER_RADIUS)
   )
 
   // vertical distance between the two horizontal lines
@@ -60,22 +58,26 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
   const rightArrowDir = clampedToTop > to.top ? -1 : 1
 
   // there are four arcs, so distribute their height evenly
-  const arcHeight = Math.min(CORNER_RADIUS, vDist / 2)
+  const arcHeight = Math.min(CONNECTOR_CORNER_RADIUS, vDist / 2)
 
-  const shiftLeft = Math.min(Math.abs(from.top - clampedFromTop), CORNER_RADIUS / 2)
-  const shiftRight = Math.min(Math.abs(to.top - clampedToTop), CORNER_RADIUS / 2)
-  const hLine1 = hLine(clampedFromTop, from.left + shiftLeft, verticalCenter - CORNER_RADIUS)
+  const shiftLeft = Math.min(Math.abs(from.top - clampedFromTop), CONNECTOR_CORNER_RADIUS / 2)
+  const shiftRight = Math.min(Math.abs(to.top - clampedToTop), CONNECTOR_CORNER_RADIUS / 2)
+  const hLine1 = hLine(
+    clampedFromTop,
+    from.left + shiftLeft,
+    verticalCenter - CONNECTOR_CORNER_RADIUS
+  )
 
   const hLine2 = hLine(
     clampedToTop,
-    verticalCenter + CORNER_RADIUS,
-    to.left - Math.min(Math.abs(to.top - clampedToTop), CORNER_RADIUS / 2)
+    verticalCenter + CONNECTOR_CORNER_RADIUS,
+    to.left - Math.min(Math.abs(to.top - clampedToTop), CONNECTOR_CORNER_RADIUS / 2)
   )
 
   const vMidLine = vLine(
     verticalCenter,
-    Math.max(clampedFromTop + arcHeight, clampedFromTop - CORNER_RADIUS),
-    Math.min(clampedToTop - arcHeight, clampedToTop + CORNER_RADIUS)
+    Math.max(clampedFromTop + arcHeight, clampedFromTop - CONNECTOR_CORNER_RADIUS),
+    Math.min(clampedToTop - arcHeight, clampedToTop + CONNECTOR_CORNER_RADIUS)
   )
 
   const path =
@@ -126,7 +128,7 @@ export function Connector(props: Props & Omit<React.ComponentProps<'path'>, 'fro
         stroke="none"
         onMouseEnter={props.onMouseEnter}
         onMouseLeave={props.onMouseLeave}
-        strokeWidth={STROKE_WIDTH + 10}
+        strokeWidth={CONNECTOR_STROKE_WIDTH + 10}
       />
     </>
   )
