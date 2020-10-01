@@ -8,8 +8,8 @@ import {useSyncState} from '@sanity/react-hooks'
 import Button from 'part:@sanity/components/buttons/default'
 import {ChunkType} from '@sanity/field/lib/diff'
 import {ContainerQuery} from 'part:@sanity/components/container-query'
+import {useTimeAgo} from '@sanity/base/hooks'
 import {useDocumentHistory} from '../documentHistory'
-import TimeAgo from '../../../components/TimeAgo'
 import {HistoryIcon, LiveIcon, PublishIcon} from '../../../badges/icons'
 import {getTimelineEventIconComponent, formatTimelineEventLabel} from '../timeline/helpers'
 import styles from './documentSparkline.css'
@@ -61,6 +61,8 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
   const lastUnpublishOrPublishSession = chunks.find(
     chunk => chunk.type === 'unpublish' || chunk.type === 'publish'
   )
+  const lastPublishedTimeAgo = useTimeAgo(lastUnpublishOrPublishSession?.endTimestamp || '')
+  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '')
 
   // Make sure we only show editDraft sessions (and count the unpublish as a draft session)
   const filteredSessions = lastUnpublishOrPublishSession
@@ -119,9 +121,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
           />
           <div className={styles.statusDetails}>
             <div className={styles.label}>Published</div>
-            {lastUnpublishOrPublishSession?.endTimestamp && (
-              <TimeAgo time={lastUnpublishOrPublishSession.endTimestamp} />
-            )}
+            {lastPublishedTimeAgo && <div>{lastPublishedTimeAgo}</div>}
           </div>
         </div>
       )}
@@ -131,7 +131,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
           <SessionBadge type="live" title="Live document" icon={LiveIcon} />
           <div className={styles.statusDetails}>
             <div className={styles.label}>Published</div>
-            {lastUpdated && <TimeAgo time={lastUpdated} />}
+            {lastUpdated && <div>{lastUpdatedTimeAgo}</div>}
           </div>
         </div>
       )}
@@ -174,7 +174,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
             </div>
             <div className={styles.statusDetails}>
               <div className={styles.label}>Changes</div>
-              {lastUpdated && <TimeAgo time={lastUpdated} />}
+              {lastUpdated && <div>{lastUpdatedTimeAgo}</div>}
             </div>
           </div>
         </Button>
