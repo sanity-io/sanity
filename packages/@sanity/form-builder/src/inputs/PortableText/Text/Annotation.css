@@ -28,3 +28,8 @@
     border-color: color(var(--state-danger-color) a(100%));
   }
 }
+
+.changeIndicator {
+  pointer-events: none !important;
+  display: inline-block;
+}
