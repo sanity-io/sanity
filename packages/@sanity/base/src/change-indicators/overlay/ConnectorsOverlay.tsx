@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames/bind'
 
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
@@ -89,7 +90,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           height: changesPanelRect.height
         }}
       >
-        {visibleConnectors.map(({field, change}) => {
+        {visibleConnectors.map(({field, change, hasFocus}) => {
           const changeMarkerLeft = change.rect.left
 
           const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
@@ -131,9 +132,12 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
           }
 
-          const connectorClassName = change.hasRevertHover
-            ? styles.dangerConnector
-            : styles.connector
+          const cx = classNames.bind(styles)
+          const connectorClassNames = cx({
+            dangerConnector: change.hasRevertHover,
+            connector: !change.hasRevertHover,
+            hoverConnector: !change.hasRevertHover && !hasFocus && change.hasHover
+          })
 
           const onConnectorClick = () => {
             scrollIntoView(field)
@@ -145,7 +149,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           return (
             <React.Fragment key={`field-${field.id}`}>
               {change && (
-                <g onClick={onConnectorClick} className={connectorClassName}>
+                <g onClick={onConnectorClick} className={connectorClassNames}>
                   <Connector
                     from={connectorFrom}
                     to={connectorTo}

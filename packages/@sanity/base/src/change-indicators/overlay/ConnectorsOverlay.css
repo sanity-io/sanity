@@ -22,6 +22,11 @@
   stroke: var(--state-danger-color);
 }
 
+.hoverConnector {
+  composes: connector;
+  stroke: var(--state-warning-color);
+}
+
 .hasFocus {
   opacity: 1;
 }
