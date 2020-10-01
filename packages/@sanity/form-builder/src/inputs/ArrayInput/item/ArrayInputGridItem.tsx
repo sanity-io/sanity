@@ -273,11 +273,11 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
               )}
             </div>
 
-            <div className={styles.footer}>
-              <div className={styles.dragHandleContainer}>{isSortable && <DragHandle />}</div>
+            {!readOnly && (
+              <div className={styles.footer}>
+                <div className={styles.dragHandleContainer}>{isSortable && <DragHandle />}</div>
 
-              <div className={styles.functions}>
-                {!readOnly && (
+                <div className={styles.functions}>
                   <div>
                     <ValidationStatus
                       markers={scopedValidation}
@@ -285,15 +285,13 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
                       showSummary={!value._ref}
                     />
                   </div>
-                )}
 
-                {value._ref && (
-                  <div>
-                    <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
-                  </div>
-                )}
+                  {value._ref && (
+                    <div>
+                      <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
+                    </div>
+                  )}
 
-                {!readOnly && (
                   <div>
                     <ConfirmButton
                       kind="simple"
@@ -302,9 +300,9 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
                       title="Remove this item"
                     />
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </ContextProvidedChangeIndicator>
       </ChangeIndicatorScope>
