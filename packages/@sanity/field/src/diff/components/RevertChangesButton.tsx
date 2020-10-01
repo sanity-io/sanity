@@ -7,10 +7,14 @@ import styles from './RevertChangesButton.css'
 export function RevertChangesButton(
   props: Omit<React.HTMLProps<HTMLButtonElement>, 'type'>
 ): React.ReactElement {
-  const {className, ...restProps} = props
+  const {className, selected, ...restProps} = props
 
   return (
-    <button {...restProps} className={classNames(styles.root, className)} type="button">
+    <button
+      {...restProps}
+      className={classNames(styles.root, selected && styles.selected, className)}
+      type="button"
+    >
       <span className={styles.iconContainer}>
         <UndoIcon />
       </span>
