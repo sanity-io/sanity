@@ -1,19 +1,16 @@
 import React from 'react'
-import {ConnectorsOverlay} from './ConnectorsOverlay'
-import {Tracker, ConnectorContext} from '../'
 import {Path} from '@sanity/types'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {Tracker, ConnectorContext} from '../'
 import {ENABLED} from '../constants'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
 
-type Props = {
+interface Props {
   isReviewChangesOpen: boolean
   onOpenReviewChanges: () => void
   onSetFocus: (path: Path) => void
   className?: string
   children: React.ReactNode
-}
-export function DisabledChangeConnectorRoot({children, className}: Props) {
-  return <ScrollContainer className={className}>{children}</ScrollContainer>
 }
 
 function EnabledChangeConnectorRoot({
@@ -34,6 +31,10 @@ function EnabledChangeConnectorRoot({
       </Tracker>
     </ConnectorContext.Provider>
   )
+}
+
+function DisabledChangeConnectorRoot({children, className}: Props) {
+  return <ScrollContainer className={className}>{children}</ScrollContainer>
 }
 
 export const ChangeConnectorRoot = ENABLED
