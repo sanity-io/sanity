@@ -102,6 +102,7 @@ export default function PortableTextInput(props: Props) {
         if (hasItem) {
           const point = {path: focusPath, offset: 0}
           PortableTextEditor.select(editor, {focus: point, anchor: point})
+          forceUpdate() // To re-render change-indicators properly
         }
       } else if (isAnnotation) {
         const block = (PortableTextEditor.getValue(editor) || []).find(
