@@ -25,10 +25,6 @@
     border-left: 1px solid var(--hairline-color);
   }
 
-  @nest &:hover::before {
-    border-left: 2px solid var(--hairline-color);
-  }
-
   @nest [data-revert-all-changes-hover] &::before {
     border-left: 2px solid var(--state-danger-color);
   }
