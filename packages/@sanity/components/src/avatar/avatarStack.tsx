@@ -34,13 +34,13 @@ export function AvatarStack(props: AvatarStackProps & React.HTMLProps<HTMLDivEle
       <div {...restProps} className={classNames(styles.root, className)} data-size={size}>
         {len === 0 && (
           <div>
-            <AvatarCounter count={len} />
+            <AvatarCounter count={len} tone={tone} />
           </div>
         )}
 
         {len !== 0 && extraCount > 1 && (
           <div>
-            <AvatarCounter count={extraCount} size={size} />
+            <AvatarCounter count={extraCount} size={size} tone={tone} />
           </div>
         )}
 
