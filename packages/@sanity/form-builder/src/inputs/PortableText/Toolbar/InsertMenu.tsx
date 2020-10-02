@@ -47,6 +47,7 @@ export default function InsertMenu(props: InsertMenuProps) {
         menu={menu}
         open={open}
         placement="bottom"
+        portal
         setOpen={setOpen}
       />
     </div>
@@ -66,7 +67,7 @@ function InsertMenuItem({
       item.handle()
       if (onClick) onClick(event)
     },
-    [item]
+    [item, onClick]
   )
 
   const title = item.type.title || item.type.type.name
