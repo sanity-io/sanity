@@ -144,6 +144,8 @@ export default function PortableText(props: Props): JSX.Element {
               cld => cld.text && cld.text.match(escapeRegExp(seg.text))
             ) as PortableTextChild
           const child = block.children[childToIndex] || getChildFromFromValue()
+          const childDiff = child && findSpanDiffFromChild(diff.origin, child)
+
           if (!child) {
             throw new Error('Could not find child')
           }
@@ -185,11 +187,17 @@ export default function PortableText(props: Props): JSX.Element {
           }
           annotationSegments = []
           if (!isAnnotation) {
+            const textDiff = childDiff?.fields?.text
+              ? (childDiff?.fields?.text as StringDiff)
+              : undefined
             // Render text segment
             returnedChildren.push(
               <Text
+                diff={textDiff}
+                child={child}
                 key={`text-${child._key}-${segIndex}`}
                 path={[{_key: block._key}, 'children', {_key: child._key}]}
+                segment={seg}
               >
                 {renderTextSegment({
                   diff: diff,
@@ -242,38 +250,6 @@ function renderTextSegment({
     </span>
   )
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
-  const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
-  let hasChangedText = false
-  if (seg.action !== 'unchanged') {
-    if (textDiff && textDiff.action !== 'unchanged') {
-      hasChangedText = true
-      children = (
-        <DiffCard
-          annotation={textDiff.annotation}
-          as={seg.action === 'removed' ? 'del' : 'ins'}
-          key={`diffcard-${child._key}-${segIndex}`}
-          tooltip={{description: `${startCase(seg.action)} text`}}
-        >
-          {children}
-        </DiffCard>
-      )
-    } else {
-      children = (
-        <DiffCard
-          annotation={
-            (diff.origin && diff.origin.action !== 'unchanged' && diff.origin.annotation) ||
-            undefined
-          }
-          as={seg.action === 'removed' ? 'del' : 'ins'}
-          key={`diffcard-${child._key}-${segIndex}`}
-          tooltip={{description: `${startCase(seg.action)} text`}}
-        >
-          {children}
-        </DiffCard>
-      )
-    }
-  }
-
   const hasChangedMarkDefs = renderMarkDefs({
     child,
     diff,
@@ -286,8 +262,7 @@ function renderTextSegment({
   }
   // Render mark diff info
   const activeMarks = child.marks || []
-  const hasOtherChanges = hasChangedMarkDefs || hasChangedText
-  if (!hasOtherChanges && spanDiff) {
+  if (!hasChangedMarkDefs && spanDiff) {
     children = renderMarks({
       activeMarks,
       decoratorTypes,
