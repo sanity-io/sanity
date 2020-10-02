@@ -1,93 +1,95 @@
-import React from 'react'
-import styles from 'part:@sanity/components/edititem/fold-style'
+import {Modifier} from '@popperjs/core'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {Manager, Reference, Popper} from 'react-popper'
-import {get} from 'lodash'
-import Stacked from '../utilities/Stacked'
-import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
+import DefaultButton from 'part:@sanity/components/buttons/default'
+import styles from 'part:@sanity/components/edititem/fold-style'
+import {Portal} from 'part:@sanity/components/portal'
+import React, {useEffect, useState} from 'react'
+import {usePopper} from 'react-popper'
 import Escapable from '../utilities/Escapable'
-import {Portal} from '../utilities/Portal'
+import Stacked from '../utilities/Stacked'
 
 interface EditItemFoldOutProps {
   title?: string
   children: React.ReactNode
   onClose?: () => void
+  referenceElement?: HTMLElement | null
+  style?: React.CSSProperties
 }
 
-// @todo: refactor to functional component
-export default class EditItemFoldOut extends React.PureComponent<EditItemFoldOutProps> {
-  render() {
-    const {title = '', onClose, children} = this.props
-    const isOpen = true
-    return (
-      <Manager>
-        <Reference>{({ref}) => <div ref={ref} />}</Reference>
-        {isOpen && (
-          <Stacked>
-            {isActive => (
-              <Portal>
-                <Popper
-                  placement="bottom"
-                  modifiers={
-                    {
-                      preventOverflow: {
-                        boundariesElement: 'viewport'
-                      },
-                      customStyle: {
-                        enabled: true,
-                        fn: data => {
-                          const width = get(data, 'instance.reference.clientWidth') || 500
-                          data.styles = {
-                            ...data.styles,
-                            width: width
-                          }
-                          return data
-                        }
-                      }
-                    } as any
-                  }
-                >
-                  {({ref, style, placement}) => (
-                    <div ref={ref} data-placement={placement} style={style} className={styles.root}>
-                      <CaptureOutsideClicks
-                        onClickOutside={isActive && isOpen ? onClose : undefined}
-                      >
-                        <div className={styles.listContainer}>
-                          <Escapable
-                            onEscape={event => (isActive || event.shiftKey) && onClose && onClose()}
-                          />
-                          <div className={styles.root}>
-                            <div className={styles.wrapper}>
-                              {title && (
-                                <div className={styles.head}>
-                                  {title}
-                                  <button className={styles.close} type="button" onClick={onClose}>
-                                    <CloseIcon />
-                                  </button>
-                                </div>
-                              )}
-                              {!title && (
-                                <button
-                                  className={styles.closeDark}
-                                  type="button"
-                                  onClick={onClose}
-                                >
-                                  <CloseIcon />
-                                </button>
-                              )}
-                              <div className={styles.content}>{children}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </CaptureOutsideClicks>
-                    </div>
-                  )}
-                </Popper>
-              </Portal>
-            )}
-          </Stacked>
-        )}
-      </Manager>
-    )
+const sameWidthModifier: Modifier<'sameWidth', any> = {
+  name: 'sameWidth',
+  enabled: true,
+  phase: 'beforeWrite',
+  requires: ['computeStyles'],
+  fn({state}) {
+    state.styles.popper.width = `${state.rects.reference.width}px`
   }
+}
+
+export default EditItemFoldOut
+
+function EditItemFoldOut(props: EditItemFoldOutProps) {
+  const {title = '', onClose, children, referenceElement: referenceElementProp, style = {}} = props
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+  const popperReferenceElement = referenceElementProp || referenceElement
+
+  const popper = usePopper(popperReferenceElement, popperElement, {
+    placement: 'bottom',
+    modifiers: [
+      {
+        name: 'preventOverflow',
+        options: {
+          rootBoundary: 'viewport'
+        }
+      },
+      {
+        name: 'offset',
+        options: {
+          offset: [0, -4]
+        }
+      },
+      sameWidthModifier
+    ]
+  })
+
+  const {forceUpdate} = popper
+
+  // Force update when `children` or `referenceElement` changes
+  useEffect(() => {
+    if (forceUpdate) forceUpdate()
+  }, [forceUpdate, children, popperReferenceElement])
+
+  const popperNode = (
+    <Stacked>
+      {isActive => (
+        <div
+          className={styles.root}
+          ref={setPopperElement}
+          style={{...popper.styles.popper, ...(style || {})}}
+          {...popper.attributes.popper}
+        >
+          <Escapable onEscape={event => (isActive || event.shiftKey) && onClose && onClose()} />
+
+          <div className={styles.card}>
+            <div className={styles.header}>
+              <div className={styles.header__title}>{title}</div>
+              <div className={styles.header__actions}>
+                <DefaultButton icon={CloseIcon} kind="simple" onClick={onClose} padding="small" />
+              </div>
+            </div>
+
+            <div className={styles.content}>{children}</div>
+          </div>
+        </div>
+      )}
+    </Stacked>
+  )
+
+  return (
+    <>
+      <div ref={setReferenceElement} />
+      <Portal>{popperNode}</Portal>
+    </>
+  )
 }

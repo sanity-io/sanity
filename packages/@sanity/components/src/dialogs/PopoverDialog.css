@@ -72,6 +72,8 @@
 }
 
 .card {
+  max-height: 50vh;
+
   @nest .root[data-color='danger'] & {
     background-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);

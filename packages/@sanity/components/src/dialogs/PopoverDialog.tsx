@@ -7,7 +7,6 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState} from 'react'
-import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
 import {Placement} from '../types'
@@ -24,6 +23,7 @@ interface PopoverDialogProps {
   onEscape?: (event: KeyboardEvent) => void
   padding?: 'none' | 'small' | 'medium' | 'large'
   placement?: Placement
+  portal?: boolean
   referenceElement?: HTMLElement | null
   size?: 'small' | 'medium' | 'large' | 'auto'
   title?: string
@@ -42,6 +42,7 @@ function PopoverDialog(props: PopoverDialogProps) {
     onEscape,
     padding = 'medium',
     placement = 'auto',
+    portal,
     referenceElement: referenceElementProp,
     size = 'medium',
     title,
@@ -74,90 +75,86 @@ function PopoverDialog(props: PopoverDialogProps) {
     <>
       {!referenceElementProp && <div ref={setTargetElement} />}
 
-      <Portal>
-        <Stacked>
-          {isActive => (
-            <>
-              {useOverlay && <div className={styles.overlay} />}
+      <Stacked>
+        {isActive => (
+          <>
+            {useOverlay && <div className={styles.overlay} />}
 
-              {referenceElement && (
-                <ClickOutside onClickOutside={isActive ? onClickOutside : undefined}>
-                  {ref => (
-                    <Popover
-                      arrowClassName={classNames(
-                        styles.arrow,
-                        hasAnimation && styles.popperAnimation
-                      )}
-                      cardClassName={classNames(
-                        styles.card,
-                        hasAnimation && styles.popperAnimation
-                      )}
-                      className={styles.root}
-                      data-color={color}
-                      data-padding={padding}
-                      data-size={size}
-                      content={
-                        <>
-                          <Escapable onEscape={isActive ? handleEscape : undefined} />
+            {referenceElement && (
+              <ClickOutside onClickOutside={isActive ? onClickOutside : undefined}>
+                {ref => (
+                  <Popover
+                    arrowClassName={classNames(
+                      styles.arrow,
+                      hasAnimation && styles.popperAnimation
+                    )}
+                    cardClassName={classNames(styles.card, hasAnimation && styles.popperAnimation)}
+                    className={styles.root}
+                    data-color={color}
+                    data-padding={padding}
+                    data-size={size}
+                    content={
+                      <>
+                        <Escapable onEscape={isActive ? handleEscape : undefined} />
 
-                          {title && (
-                            <div className={styles.header}>
-                              <div className={styles.title}>
-                                <h3>{title}</h3>
+                        {title && (
+                          <div className={styles.header}>
+                            <div className={styles.title}>
+                              <h3>{title}</h3>
+                            </div>
+
+                            {onClose && (
+                              <div className={styles.closeButtonContainer}>
+                                <Button
+                                  className={styles.closeButton}
+                                  icon={CloseIcon}
+                                  kind="simple"
+                                  onClick={onClose}
+                                  padding="small"
+                                  title="Close"
+                                />
                               </div>
-
-                              {onClose && (
-                                <div className={styles.closeButtonContainer}>
-                                  <Button
-                                    className={styles.closeButton}
-                                    icon={CloseIcon}
-                                    kind="simple"
-                                    onClick={onClose}
-                                    padding="small"
-                                    title="Close"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {!title && onClose && (
-                            <div className={styles.floatingCloseButtonContainer}>
-                              <Button
-                                icon={CloseIcon}
-                                kind="simple"
-                                onClick={onClose}
-                                padding="small"
-                                title="Close"
-                              />
-                            </div>
-                          )}
-
-                          <div className={styles.content}>
-                            <div className={styles.contentWrapper}>{children}</div>
+                            )}
                           </div>
+                        )}
 
-                          {actions.length > 0 && (
-                            <div className={styles.footer}>
-                              <ButtonGrid align="end" secondary={primaryActionButtons}>
-                                {secondaryActionButtons}
-                              </ButtonGrid>
-                            </div>
-                          )}
-                        </>
-                      }
-                      placement={placement}
-                      open
-                      ref={ref}
-                      targetElement={referenceElement}
-                    />
-                  )}
-                </ClickOutside>
-              )}
-            </>
-          )}
-        </Stacked>
-      </Portal>
+                        {!title && onClose && (
+                          <div className={styles.floatingCloseButtonContainer}>
+                            <Button
+                              icon={CloseIcon}
+                              kind="simple"
+                              onClick={onClose}
+                              padding="small"
+                              title="Close"
+                            />
+                          </div>
+                        )}
+
+                        <div className={styles.content}>
+                          <div className={styles.contentWrapper}>{children}</div>
+                        </div>
+
+                        {actions.length > 0 && (
+                          <div className={styles.footer}>
+                            <ButtonGrid align="end" secondary={primaryActionButtons}>
+                              {secondaryActionButtons}
+                            </ButtonGrid>
+                          </div>
+                        )}
+                      </>
+                    }
+                    open
+                    placement={placement}
+                    portal={portal}
+                    ref={ref}
+                    targetElement={referenceElement}
+                  />
+                )}
+              </ClickOutside>
+            )}
+          </>
+        )}
+      </Stacked>
     </>
   )
 }

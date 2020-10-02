@@ -66,8 +66,9 @@ export const Popover = forwardRef(
         {
           name: 'preventOverflow',
           options: {
-            altAxis: true,
-            boundary: boundaryElement || undefined,
+            // altAxis: true,
+            rootBoundary: boundaryElement ? undefined : 'viewport',
+            boundary: boundaryElement || 'clippingParents',
             padding: 8
           }
         },
