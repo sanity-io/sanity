@@ -32,7 +32,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const [hoverRef, isHoveringRevert] = useHover<HTMLDivElement>()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
-  const [revertContainerElement, setRevertContainerElement] = useState<HTMLDivElement | null>(null)
+  const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
 
   const handleRevertChanges = useCallback(() => undoChange(group, rootDiff, docOperations), [
     group,
@@ -52,10 +52,10 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
     if (action.action) action.action()
   }, [])
 
-  const setRevertContainerRef = useCallback(
+  const setRevertButtonRef = useCallback(
     (el: HTMLDivElement | null) => {
       hoverRef.current = el
-      setRevertContainerElement(el)
+      setRevertButtonElement(el)
     },
     [hoverRef]
   )
@@ -70,9 +70,10 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
 
       {isComparingCurrent && (
         <>
-          <div ref={setRevertContainerRef} className={styles.revertChangesButtonContainer}>
+          <div className={styles.revertChangesButtonContainer}>
             <RevertChangesButton
               onClick={handleRevertChangesConfirm}
+              ref={setRevertButtonRef}
               selected={confirmRevertOpen}
             />
           </div>
@@ -92,7 +93,8 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
                 }
               ]}
               onAction={handleConfirmDialogAction}
-              referenceElement={revertContainerElement}
+              // portal
+              referenceElement={revertButtonElement}
               size="small"
             >
               Are you sure you want to revert the changes?

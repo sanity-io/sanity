@@ -28,8 +28,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = React.useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
-
-  const [revertContainerElement, setRevertContainerElement] = useState<HTMLDivElement | null>(null)
+  const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
 
   const handleRevertChanges = useCallback(() => {
     undoChange(change, rootDiff, docOperations)
@@ -81,11 +80,12 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
 
           {isComparingCurrent && (
             <>
-              <div className={styles.revertChangesButtonContainer} ref={setRevertContainerElement}>
+              <div className={styles.revertChangesButtonContainer}>
                 <RevertChangesButton
                   onClick={handleRevertChangesConfirm}
                   onMouseEnter={handleRevertButtonMouseEnter}
                   onMouseLeave={handleRevertButtonMouseLeave}
+                  ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                 />
               </div>
@@ -105,7 +105,8 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
                     }
                   ]}
                   onAction={handleConfirmDialogAction}
-                  referenceElement={revertContainerElement}
+                  // portal
+                  referenceElement={revertButtonElement}
                   size="small"
                 >
                   Are you sure you want to revert the changes?

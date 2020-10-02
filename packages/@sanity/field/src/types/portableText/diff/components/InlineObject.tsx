@@ -1,3 +1,4 @@
+import {useClickOutside} from '@sanity/components'
 import classNames from 'classnames'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import SanityPreview from 'part:@sanity/base/preview'
@@ -60,6 +61,7 @@ function InlineObjectWithDiff({
   const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const handleClick = useCallback(() => {
     setOpen(true)
@@ -76,18 +78,16 @@ function InlineObjectWithDiff({
     setOpen(false)
   }, [])
 
+  useClickOutside(handleClickOutside, [popoverElement])
+
   return (
-    <ClickOutside onClickOutside={handleClickOutside}>
-      {ref => (
-        <span {...restProps} className={className} onClick={handleClick} ref={ref} style={style}>
-          <Popover content={popoverContent} open={open}>
-            <span className={styles.previewContainer}>
-              <SanityPreview type={schemaType} value={object} layout="inline" />
-              <ChevronDownIcon />
-            </span>
-          </Popover>
+    <span {...restProps} className={className} onClick={handleClick} style={style}>
+      <Popover content={popoverContent} open={open} placement="auto" portal ref={setPopoverElement}>
+        <span className={styles.previewContainer}>
+          <SanityPreview type={schemaType} value={object} layout="inline" />
+          <ChevronDownIcon />
         </span>
-      )}
-    </ClickOutside>
+      </Popover>
+    </span>
   )
 }

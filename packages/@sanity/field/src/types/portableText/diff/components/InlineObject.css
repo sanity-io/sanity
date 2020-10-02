@@ -14,6 +14,7 @@
 
 .popoverContent {
   min-width: 160px;
+  max-height: calc(100vh - 49px - 65px - 16px);
   padding: calc(var(--medium-padding) - var(--extra-small-padding));
 }
 
