@@ -2,10 +2,10 @@ import {toString} from '@sanity/util/paths'
 import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
-import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import {useClickOutside} from '@sanity/components'
 import {
   ChangeList,
   DiffContext,
@@ -74,6 +74,7 @@ function AnnnotationWithDiff({
 }: AnnnotationWithDiffProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
   const {onSetFocus} = React.useContext(ConnectorContext)
   const {path: fullPath} = React.useContext(DiffContext)
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
   const className = classNames(
@@ -110,6 +111,15 @@ function AnnnotationWithDiff({
     },
     [annotationPath]
   )
+
+  const handleClickOutside = useCallback(() => {
+    if (!isEditing) {
+      setOpen(false)
+    }
+  }, [isEditing])
+
+  useClickOutside(handleClickOutside, [popoverElement])
+
   const annotation = (diff.action !== 'unchanged' && diff.annotation) || null
   const annotations = annotation ? [annotation] : []
 
@@ -123,33 +133,18 @@ function AnnnotationWithDiff({
       </div>
     </DiffContext.Provider>
   )
-  const handleClickOutside = useCallback(() => {
-    if (!isEditing) {
-      setOpen(false)
-    }
-  }, [isEditing])
   return (
-    <ClickOutside onClickOutside={handleClickOutside}>
-      {ref => (
-        <span
-          {...restProps}
-          className={className}
-          onClick={handleOpenPopup}
-          ref={ref}
-          style={style}
-        >
-          <Popover content={popoverContent} open={open}>
-            <span className={styles.previewContainer}>
-              <DiffTooltip annotations={annotations} description={`${diff.action} annotation`}>
-                <span>
-                  <span>{children}</span>
-                  <ChevronDownIcon />
-                </span>
-              </DiffTooltip>
+    <span {...restProps} className={className} onClick={handleOpenPopup} style={style}>
+      <Popover content={popoverContent} open={open} ref={setPopoverElement}>
+        <span className={styles.previewContainer}>
+          <DiffTooltip annotations={annotations} description={`${diff.action} annotation`}>
+            <span>
+              <span>{children}</span>
+              <ChevronDownIcon />
             </span>
-          </Popover>
+          </DiffTooltip>
         </span>
-      )}
-    </ClickOutside>
+      </Popover>
+    </span>
   )
 }
