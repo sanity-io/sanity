@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/no-empty-function, class-methods-use-this, no-undef*/
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable import/export */
+/* eslint-disable no-undef */
 
 declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
@@ -66,6 +69,10 @@ declare module 'part:@sanity/components/toggles/*' {
 
 declare module 'part:@sanity/components/tooltip' {
   export * from '@sanity/components/src/tooltip'
+}
+
+declare module 'part:@sanity/components/dialogs/popover' {
+  export {default} from '@sanity/components/src/dialogs/PopoverDialog'
 }
 
 declare module 'config:@sanity/form-builder'

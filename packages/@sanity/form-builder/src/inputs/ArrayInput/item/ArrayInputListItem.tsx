@@ -8,7 +8,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Popover from 'part:@sanity/components/dialogs/popover'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
@@ -50,6 +50,8 @@ interface ArrayInputListItemProps {
 
 export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemProps> {
   _focusArea: HTMLDivElement | null
+
+  innerElement: HTMLDivElement | null
 
   static defaultProps = {
     level: 0,
@@ -203,17 +205,16 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
     if (options.editModal === 'popover') {
       return (
-        <div className={styles.popupAnchor}>
-          <Popover
-            title={title}
-            onClose={this.handleEditStop}
-            onEscape={this.handleEditStop}
-            onClickOutside={this.handleEditStop}
-            placement="auto"
-          >
-            <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
-          </Popover>
-        </div>
+        <PopoverDialog
+          title={title}
+          onClose={this.handleEditStop}
+          onEscape={this.handleEditStop}
+          onClickOutside={this.handleEditStop}
+          placement="auto"
+          referenceElement={this.innerElement}
+        >
+          <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
+        </PopoverDialog>
       )
     }
 
@@ -222,6 +223,10 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
         <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
       </DefaultDialog>
     )
+  }
+
+  setInnerElement = (el: HTMLDivElement | null) => {
+    this.innerElement = el
   }
 
   renderItem() {
@@ -247,7 +252,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     return (
       <ChangeIndicatorScope path={[{_key: value._key}]}>
         <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
-          <div className={styles.inner}>
+          <div className={styles.inner} ref={this.setInnerElement}>
             {isSortable && <DragHandle />}
 
             <div
