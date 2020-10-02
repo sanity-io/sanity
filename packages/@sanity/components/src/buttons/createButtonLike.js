@@ -38,6 +38,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       bleed: false,
       padding: 'default',
       selected: false,
+      tabIndex: 0,
       ...defaultProps
     }
 
@@ -82,6 +83,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         padding,
         bleed,
         selected,
+        tabIndex,
         ...rest
       } = this.props
 
@@ -103,7 +105,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
           className={style}
           disabled={disabled || loading}
           ref={this.setRootElement}
-          tabIndex={0}
+          tabIndex={tabIndex}
           onBlur={this.handleBlur}
         >
           {/*
