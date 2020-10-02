@@ -2,7 +2,6 @@
 import React, {FunctionComponent, SyntheticEvent} from 'react'
 import classNames from 'classnames'
 import {PortableTextChild, Type, RenderAttributes} from '@sanity/portable-text-editor'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
@@ -36,24 +35,16 @@ export const Annotation: FunctionComponent<Props> = ({
     errors.length > 0 ? styles.error : styles.valid
   ])
 
+  const markDefPath = [...path.slice(0, 1), 'markDefs', {_key: value._key}]
+
   const handleOpen = (event: SyntheticEvent<HTMLSpanElement>): void => {
     event.preventDefault()
     event.stopPropagation()
-    onFocus([...path.slice(0, 1), 'markDefs', {_key: value._key}, FOCUS_TERMINATOR])
+    onFocus(markDefPath.concat(FOCUS_TERMINATOR))
   }
   return (
     <span className={classnames} onClick={handleOpen}>
       {children}
-      <ChangeIndicatorWithProvidedFullPath
-        className={styles.changeIndicator}
-        compareDeep
-        value={value}
-        hasFocus={focused}
-        path={path}
-        hidden
-      >
-        {'\u200B'}
-      </ChangeIndicatorWithProvidedFullPath>
     </span>
   )
 }
