@@ -77,6 +77,7 @@ function AnnnotationWithDiff({
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
+  const isRemoved = diff.action === 'removed'
   const className = classNames(
     styles.root,
     styles.isChanged,
@@ -106,8 +107,11 @@ function AnnnotationWithDiff({
     event => {
       event.stopPropagation()
       setOpen(true)
-      onSetFocus(annotationPath) // Go to span first
-      setTimeout(() => onSetFocus(myPath), 10) // Open edit object interface
+      if (!isRemoved) {
+        event.preventDefault()
+        onSetFocus(annotationPath) // Go to span first
+        setTimeout(() => onSetFocus(myPath), 10) // Open edit object interface
+      }
     },
     [annotationPath]
   )

@@ -76,6 +76,7 @@ function InlineObjectWithDiff({
   const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
+  const isRemoved = diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
     fullPath.findIndex(seg => isKeySegment(seg) && seg._key === object._key)
@@ -101,7 +102,11 @@ function InlineObjectWithDiff({
     event => {
       event.stopPropagation()
       setOpen(true)
-      onSetFocus(focusPath)
+      if (!isRemoved) {
+        onSetFocus(focusPath)
+        return
+      }
+      event.preventDefault()
     },
     [focusPath]
   )

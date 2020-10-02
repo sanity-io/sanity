@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
-import React, {useCallback} from 'react'
+import React, {SyntheticEvent, useCallback} from 'react'
 import {ConnectorContext} from '@sanity/base/lib/change-indicators'
 import {startCase} from 'lodash'
 import {DiffCard, DiffContext, StringDiff, StringDiffSegment} from '../../../../diff'
@@ -28,6 +28,7 @@ export function Text({
   const {path: fullPath} = React.useContext(DiffContext)
   const spanSegment = path.slice(-2, 1)[0]
   const className = classNames(styles.root)
+  const isRemoved = diff && diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
     fullPath.findIndex(
@@ -47,9 +48,16 @@ export function Text({
       </DiffCard>
     ) : null
 
-  const handleClick = useCallback(() => {
-    onSetFocus(focusPath)
-  }, [focusPath])
+  const handleClick = useCallback(
+    (event: SyntheticEvent) => {
+      if (!isRemoved) {
+        onSetFocus(focusPath)
+        return
+      }
+      event.preventDefault()
+    },
+    [focusPath]
+  )
   return (
     <span {...restProps} className={className} onClick={handleClick}>
       <span className={styles.previewContainer}>{diffCard ? diffCard : children}</span>
