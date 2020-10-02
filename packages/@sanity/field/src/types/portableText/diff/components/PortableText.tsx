@@ -138,6 +138,9 @@ export default function PortableText(props: Props): JSX.Element {
             )
           }
         } else if (seg.text) {
+          const nextSegment = segments[segIndex + 1]
+          const nextSegmentIsAnnotationEnd =
+            nextSegment && !annotationSymbolsEnd.includes(nextSegment.text)
           // TODO: find a better way of getting a removed child
           const getChildFromFromValue = () =>
             diff.origin.fromValue?.children.find(
@@ -149,20 +152,41 @@ export default function PortableText(props: Props): JSX.Element {
           if (!child) {
             throw new Error('Could not find child')
           }
-          if (isAnnotation) {
-            annotationSegments.push(
-              renderTextSegment({
+          const textDiff = childDiff?.fields?.text
+            ? (childDiff?.fields?.text as StringDiff)
+            : undefined
+
+          const text = (
+            <Text
+              diff={textDiff}
+              child={child}
+              key={`text-${child._key}-${segIndex}`}
+              path={[{_key: block._key}, 'children', {_key: child._key}]}
+              segment={seg}
+            >
+              {renderTextSegment({
                 diff: diff,
                 child,
                 decoratorTypes,
                 seg,
                 segIndex,
                 spanSchemaType
-              })
-            )
+              })}
+            </Text>
+          )
+
+          // Render annotations text changes within the annotation child
+          if (isAnnotation) {
+            annotationSegments.push(text)
           }
-          // Render collected texts inside an annotation
-          if (child && annotationSegments.length > 0 && currentAnnotation) {
+
+          // Render annotation
+          if (
+            !nextSegmentIsAnnotationEnd &&
+            child &&
+            annotationSegments.length > 0 &&
+            currentAnnotation
+          ) {
             const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
             const objectSchemaType =
               currentAnnotation &&
@@ -184,31 +208,9 @@ export default function PortableText(props: Props): JSX.Element {
                 <>{annotationSegments}</>
               </Annotation>
             )
-          }
-          annotationSegments = []
-          if (!isAnnotation) {
-            const textDiff = childDiff?.fields?.text
-              ? (childDiff?.fields?.text as StringDiff)
-              : undefined
-            // Render text segment
-            returnedChildren.push(
-              <Text
-                diff={textDiff}
-                child={child}
-                key={`text-${child._key}-${segIndex}`}
-                path={[{_key: block._key}, 'children', {_key: child._key}]}
-                segment={seg}
-              >
-                {renderTextSegment({
-                  diff: diff,
-                  child,
-                  decoratorTypes,
-                  seg,
-                  segIndex,
-                  spanSchemaType
-                })}
-              </Text>
-            )
+            annotationSegments = []
+          } else if (!isAnnotation) {
+            returnedChildren.push(text)
           }
         }
       })
