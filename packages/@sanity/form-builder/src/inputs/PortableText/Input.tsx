@@ -381,7 +381,7 @@ export default function PortableTextInput(props: Props) {
           <ChangeIndicatorWithProvidedFullPath
             compareDeep
             value={value}
-            hasFocus={hasFocus}
+            hasFocus={hasFocus && objectEditData === null}
             path={[]}
           >
             {ptEditor}
