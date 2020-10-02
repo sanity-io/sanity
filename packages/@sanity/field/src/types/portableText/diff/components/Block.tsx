@@ -1,5 +1,6 @@
-import React from 'react'
-import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import React, {useCallback} from 'react'
+import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {PortableTextBlock, PortableTextDiff} from '../types'
 import styles from './Block.css'
@@ -18,6 +19,8 @@ export default function Block({
 }): JSX.Element {
   const color = useDiffAnnotationColor(diff, [])
   const classNames = [styles.root, diff.action, `style_${diff.displayValue.style || 'undefined'}`]
+  const {path: fullPath} = React.useContext(DiffContext)
+  const {onSetFocus} = React.useContext(ConnectorContext)
   let returned: React.ReactNode = children
   let fromStyle
 
@@ -43,6 +46,14 @@ export default function Block({
     )
   }
 
+  const handleClick = useCallback(
+    event => {
+      event.stopPropagation()
+      onSetFocus(fullPath)
+    },
+    [fullPath]
+  )
+
   if (block.style === 'blockquote') {
     returned = <Blockquote>{returned}</Blockquote>
   } else if (block.style && isHeader(block)) {
@@ -50,5 +61,9 @@ export default function Block({
   } else {
     returned = <Paragraph>{returned}</Paragraph>
   }
-  return <div className={classNames.join(' ')}>{returned}</div>
+  return (
+    <div onClick={handleClick} className={classNames.join(' ')}>
+      {returned}
+    </div>
+  )
 }

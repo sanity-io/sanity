@@ -30,14 +30,9 @@ export function Text({
   )
   const focusPath = prefix.concat(path)
 
-  const handleClick = useCallback(
-    event => {
-      event.preventDefault()
-      event.stopPropagation()
-      onSetFocus(focusPath)
-    },
-    [focusPath]
-  )
+  const handleClick = useCallback(() => {
+    onSetFocus(focusPath)
+  }, [focusPath])
   return (
     <span {...restProps} className={className} onClick={handleClick}>
       <span className={styles.previewContainer}>{children}</span>
