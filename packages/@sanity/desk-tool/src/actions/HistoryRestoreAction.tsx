@@ -42,12 +42,17 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
     }
   }, [error, handleConfirm, isConfirmDialogOpen, onComplete])
 
+  const isRevisionInitialVersion = revision === '@initial'
+
   return {
     label: 'Restore',
     color: 'primary',
     onHandle: handle,
-    title: 'Restore to this version',
+    title: isRevisionInitialVersion
+      ? "You can't restore to the initial version"
+      : 'Restore to this version',
     icon: HistoryIcon,
-    dialog
+    dialog,
+    disabled: isRevisionInitialVersion
   }
 }
