@@ -137,13 +137,17 @@ export default function PortableTextInput(props: Props) {
           kind = 'inlineObject'
           path = path.concat(focusPath.slice(1, 3))
         }
-        setIsActive(true)
-        PortableTextEditor.select(editor, {
-          focus: {path, offset: 0},
-          anchor: {path, offset: 0}
-        })
-        // Make it go to selection first, then load  the editing interface
-        setObjectEditData({editorPath: path, formBuilderPath: path, kind})
+        const [node] = PortableTextEditor.findByPath(editor, path)
+        // Only if it actually exists
+        if (node) {
+          setIsActive(true)
+          PortableTextEditor.select(editor, {
+            focus: {path, offset: 0},
+            anchor: {path, offset: 0}
+          })
+          // Make it go to selection first, then load  the editing interface
+          setObjectEditData({editorPath: path, formBuilderPath: path, kind})
+        }
       }
     }
   }, [focusPath])
