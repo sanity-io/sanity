@@ -26,7 +26,7 @@
     "@sanity/generate-help-url": "1.150.1",
     "@sanity/imagetool": "1.150.1",
     "@sanity/mutator": "1.150.1",
-    "@sanity/portable-text-editor": "0.1.13",
+    "@sanity/portable-text-editor": "0.1.14",
     "@sanity/types": "1.150.7",
     "@sanity/util": "1.150.1",
     "@sanity/uuid": "1.150.1",
