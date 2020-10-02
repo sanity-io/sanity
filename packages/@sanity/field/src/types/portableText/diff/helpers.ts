@@ -90,7 +90,7 @@ export function isDecorator(name: string, schemaType: SpanTypeSchema): boolean {
 }
 
 export function blockToSymbolizedText(
-  block: PortableTextBlock | undefined | null,
+  block: PortableTextBlock | undefined,
   decoratorMap: MarkSymbolMap,
   annotationMap: MarkSymbolMap,
   inlineMap: InlineSymbolMap
@@ -142,13 +142,13 @@ export function createPortableTextDiff(
         decoratorMap[dec.value] = TextSymbols.DECORATOR_SYMBOLS[index]
       })
     }
-    const markDefs = displayValue.markDefs || []
-    markDefs.forEach((markDef, index) => {
+    const allMarkDefs = getAllMarkDefs(_diff.origin)
+    allMarkDefs.forEach((markDef, index) => {
       annotationMap[markDef._key] = TextSymbols.ANNOTATION_SYMBOLS[index]
     })
-    const inlines = getInlineObjects(displayValue as PortableTextBlock)
-    inlines.forEach((nonSpan, index) => {
-      inlineMap[nonSpan._key] = TextSymbols.INLINE_SYMBOLS[index]
+    const inlines = getInlineObjects(_diff.origin)
+    inlines.forEach((inline, index) => {
+      inlineMap[inline._key] = TextSymbols.INLINE_SYMBOLS[index]
     })
     const fromText = blockToSymbolizedText(
       _diff.fromValue as PortableTextBlock,
@@ -307,16 +307,19 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
   )
 }
 
-export function getInlineObjects(block: PortableTextBlock): PortableTextChild[] {
-  if (!block.children) {
-    return []
-  }
-  const nonSpans = orderBy(
-    block.children.filter(chld => chld._type !== 'span'),
-    ['_key'],
-    ['asc']
-  )
-  return nonSpans
+export function getInlineObjects(diff: ObjectDiff): PortableTextChild[] {
+  const allChildren = [
+    ...(diff.toValue ? diff.toValue.children.filter(cld => cld._type !== 'span') : [])
+  ]
+  const previousChildren = diff.fromValue
+    ? diff.fromValue.children.filter(cld => cld._type !== 'span')
+    : []
+  previousChildren.forEach(oCld => {
+    if (!allChildren.some(cld => oCld._key === cld._key)) {
+      allChildren.push(oCld)
+    }
+  })
+  return orderBy(allChildren, ['_key'], ['asc']) as PortableTextChild[]
 }
 
 export function findSpanDiffFromChild(
@@ -361,4 +364,19 @@ export function findAnnotationDiff(diff: ObjectDiff, markDefKey: string): Object
 
 export function isEmptyObject(object: PortableTextChild): boolean {
   return (object && isEqual(Object.keys(object), ['_key', '_type'])) || false
+}
+
+export function escapeRegExp(text: string): string {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
+export function getAllMarkDefs(diff: ObjectDiff): PortableTextChild[] {
+  const allDefs = [...(diff.toValue ? diff.toValue.markDefs : [])]
+  const oldDefs = diff.fromValue ? diff.fromValue.markDefs : []
+  oldDefs.forEach(oDef => {
+    if (!allDefs.some(def => oDef._key === def._key)) {
+      allDefs.push(oDef)
+    }
+  })
+  return orderBy(allDefs, ['_key'], ['asc']) as PortableTextChild[]
 }

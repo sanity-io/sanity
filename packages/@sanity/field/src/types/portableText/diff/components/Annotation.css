@@ -23,27 +23,22 @@
   cursor: pointer;
 }
 
+.removed {
+  text-decoration: line-through;
+}
+
 .empty {
-  font-size: var(--font-size-small);
+  color: var(--text-muted);
+  font-size: var(--font-size-xsmall--uppercase);
+  line-height: var(--line-height-xsmall--uppercase);
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .popoverContainer {
   min-width: 160px;
   padding: calc(var(--medium-padding) - var(--extra-small-padding));
   @nest & .popoverContent {
-  }
-  @nest & .goToLink {
-    position: relative;
-    top: -5px;
-    white-space: nowrap;
-    float: right;
-    font-size: var(--font-size-small);
-  }
-  @nest & .goToLink svg {
-    font-size: var(--font-size-large + 4px);
-    position: relative;
-    top: 4px;
-    left: 4px;
   }
 }
 

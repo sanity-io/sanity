@@ -8,6 +8,8 @@ import {PortableTextBlock, PortableTextChild, PortableTextDiff, SpanTypeSchema} 
 import * as TextSymbols from '../symbols'
 
 import {
+  escapeRegExp,
+  getAllMarkDefs,
   findChildDiff,
   findAnnotationDiff,
   findSpanDiffFromChild,
@@ -21,6 +23,7 @@ import Block from './Block'
 import {Annotation} from './Annotation'
 import Decorator from './Decorator'
 import {InlineObject} from './InlineObject'
+import {Text} from './Text'
 
 const decoratorSymbolsStart = TextSymbols.DECORATOR_SYMBOLS.map(set => set[0])
 const decoratorSymbolsEnd = TextSymbols.DECORATOR_SYMBOLS.map(set => set[1])
@@ -42,12 +45,10 @@ export default function PortableText(props: Props): JSX.Element {
   const {diff, schemaType} = props
   const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextBlock
 
-  const inlineObjects = diff.origin.toValue
-    ? getInlineObjects(diff.origin.toValue as PortableTextBlock)
-    : []
+  const inlineObjects = diff.origin.toValue ? getInlineObjects(diff.origin) : []
 
-  const renderChild = (child: PortableTextChild) => {
-    const spanSchemaType = getChildSchemaType(schemaType.fields, child) as SpanTypeSchema
+  const renderChild = (ptDiffChild: PortableTextChild) => {
+    const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanTypeSchema
     let decoratorTypes: {title: string; value: string}[] = []
     if (spanSchemaType) {
       decoratorTypes = getDecorators(spanSchemaType)
@@ -60,9 +61,11 @@ export default function PortableText(props: Props): JSX.Element {
         []
       const returnedChildren: React.ReactNode[] = []
       let annotationSegments: React.ReactNode[] = []
-
       // Special case for new empty PT-block (single span child with empty text)
-      if (isEmptyTextChange(block, diff)) {
+      if (
+        isEmptyTextChange(block, diff) &&
+        (diff.origin.action === 'added' || diff.origin.action === 'removed')
+      ) {
         const textDiff = findChildDiff(diff.origin, block.children[0]) || diff.origin
         if (textDiff && textDiff.action !== 'unchanged') {
           return (
@@ -80,10 +83,13 @@ export default function PortableText(props: Props): JSX.Element {
         }
       }
       // Run through all the segments from the PortableTextDiff
-      let childIndex = -1
+      let childToIndex = -1
       let segIndex = -1
-      let currentAnnotation: {mark: string; object: PortableTextChild} | undefined
+      let currentAnnotation:
+        | {mark: string; object: PortableTextChild; symbols: string[]}
+        | undefined
       let isAnnotation = false
+      const allMarkDefs = getAllMarkDefs(diff.origin)
       segments.forEach(seg => {
         segIndex++
         const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
@@ -93,22 +99,23 @@ export default function PortableText(props: Props): JSX.Element {
         const isRemoved = seg.action === 'removed'
         if (isChildStart) {
           if (!isRemoved) {
-            childIndex++
+            childToIndex++
           }
           // No output
         } else if (isMarkStart || isMarkEnd) {
           if (isMarkStart && annotationSymbolsStart.includes(seg.text)) {
             isAnnotation = true
-            const object =
-              block.markDefs && block.markDefs[annotationSymbolsStart.indexOf(seg.text)]
+            const object = allMarkDefs[annotationSymbolsStart.indexOf(seg.text)]
             if (object) {
               currentAnnotation = {
                 mark: object._key,
+                symbols: [seg.text, annotationSymbolsEnd[annotationSymbolsStart.indexOf(seg.text)]],
                 object
               }
             }
           }
-          if (isMarkEnd && annotationSymbolsEnd.includes(seg.text)) {
+          if (isMarkEnd && currentAnnotation && currentAnnotation.symbols[1] === seg.text) {
+            currentAnnotation = undefined
             isAnnotation = false
           }
           // No output
@@ -116,9 +123,7 @@ export default function PortableText(props: Props): JSX.Element {
           // Render inline object
           const indexOfSymbol = TextSymbols.INLINE_SYMBOLS.findIndex(sym => sym === seg.text)
           const key = inlineObjects[indexOfSymbol]?._key
-          const originChild = (diff.origin.toValue || diff.origin.fromValue).children.find(
-            cld => cld._key === key
-          ) as PortableTextChild
+          const originChild = inlineObjects[indexOfSymbol]
           if (key) {
             const objectSchemaType = getChildSchemaType(schemaType.fields, originChild)
             const objectDiff = findChildDiff(diff.origin, originChild)
@@ -126,18 +131,27 @@ export default function PortableText(props: Props): JSX.Element {
               <InlineObject
                 key={`inline-object-${originChild._key}`}
                 object={originChild}
+                path={[{_key: block._key}, 'children', {_key: originChild._key}]}
                 diff={objectDiff}
                 schemaType={objectSchemaType}
               />
             )
           }
         } else if (seg.text) {
-          // Render text
+          // TODO: find a better way of getting a removed child
+          const getChildFromFromValue = () =>
+            diff.origin.fromValue?.children.find(
+              cld => cld.text && cld.text.match(escapeRegExp(seg.text))
+            ) as PortableTextChild
+          const child = block.children[childToIndex] || getChildFromFromValue()
+          if (!child) {
+            throw new Error('Could not find child')
+          }
           if (isAnnotation) {
             annotationSegments.push(
               renderTextSegment({
                 diff: diff,
-                child: block.children[childIndex],
+                child,
                 decoratorTypes,
                 seg,
                 segIndex,
@@ -146,7 +160,7 @@ export default function PortableText(props: Props): JSX.Element {
             )
           }
           // Render collected texts inside an annotation
-          if (block.children[childIndex] && annotationSegments.length > 0 && currentAnnotation) {
+          if (child && annotationSegments.length > 0 && currentAnnotation) {
             const annotationDiff = findAnnotationDiff(diff.origin, currentAnnotation.mark)
             const objectSchemaType =
               currentAnnotation &&
@@ -161,9 +175,9 @@ export default function PortableText(props: Props): JSX.Element {
               <Annotation
                 object={currentAnnotation.object}
                 diff={annotationDiff}
-                spanPath={[{_key: block._key}, 'children', {_key: block.children[childIndex]._key}]}
+                path={[{_key: block._key}, 'children', {_key: child._key}]}
                 schemaType={objectSchemaType}
-                key={`annotation-${childIndex}-${segIndex}-${currentAnnotation.object._key}`}
+                key={`annotation-${childToIndex}-${segIndex}-${currentAnnotation.object._key}`}
               >
                 <>{annotationSegments}</>
               </Annotation>
@@ -173,16 +187,19 @@ export default function PortableText(props: Props): JSX.Element {
           if (!isAnnotation) {
             // Render text segment
             returnedChildren.push(
-              <span key={`text-${child._key}-${segIndex}`}>
+              <Text
+                key={`text-${child._key}-${segIndex}`}
+                path={[{_key: block._key}, 'children', {_key: child._key}]}
+              >
                 {renderTextSegment({
                   diff: diff,
-                  child: block.children[childIndex],
+                  child,
                   decoratorTypes,
                   seg,
                   segIndex,
                   spanSchemaType
                 })}
-              </span>
+              </Text>
             )
           }
         }
@@ -224,13 +241,6 @@ function renderTextSegment({
       {seg.text.replace(/ /g, TextSymbols.TRAILING_SPACE_SYMBOL)}
     </span>
   )
-  const childFromFromValue = diff.origin.fromValue?.children.find(
-    cld => cld.text && cld.text.match(seg.text)
-  ) as PortableTextChild
-  const potentiallyDeletedChild = child || childFromFromValue
-  if (!potentiallyDeletedChild) {
-    throw new Error('Could not find child')
-  }
   const spanDiff = child && findSpanDiffFromChild(diff.origin, child)
   const textDiff = spanDiff?.fields?.text ? (spanDiff?.fields?.text as StringDiff) : undefined
   let hasChangedText = false
@@ -241,7 +251,7 @@ function renderTextSegment({
         <DiffCard
           annotation={textDiff.annotation}
           as={seg.action === 'removed' ? 'del' : 'ins'}
-          key={`diffcard-${potentiallyDeletedChild._key}-${segIndex}`}
+          key={`diffcard-${child._key}-${segIndex}`}
           tooltip={{description: `${startCase(seg.action)} text`}}
         >
           {children}
@@ -255,7 +265,7 @@ function renderTextSegment({
             undefined
           }
           as={seg.action === 'removed' ? 'del' : 'ins'}
-          key={`diffcard-${potentiallyDeletedChild._key}-${segIndex}`}
+          key={`diffcard-${child._key}-${segIndex}`}
           tooltip={{description: `${startCase(seg.action)} text`}}
         >
           {children}
@@ -265,7 +275,7 @@ function renderTextSegment({
   }
 
   const hasChangedMarkDefs = renderMarkDefs({
-    child: potentiallyDeletedChild,
+    child,
     diff,
     children,
     seg,
@@ -275,7 +285,7 @@ function renderTextSegment({
     children = hasChangedMarkDefs
   }
   // Render mark diff info
-  const activeMarks = potentiallyDeletedChild ? potentiallyDeletedChild.marks || [] : []
+  const activeMarks = child.marks || []
   const hasOtherChanges = hasChangedMarkDefs || hasChangedText
   if (!hasOtherChanges && spanDiff) {
     children = renderMarks({
@@ -295,10 +305,7 @@ function renderTextSegment({
       if (isDecorator(mark, spanSchemaType)) {
         children = (
           // eslint-disable-next-line react/no-array-index-key
-          <Decorator
-            mark={mark}
-            key={`decorator-${mark}-${potentiallyDeletedChild._key}-${segIndex}`}
-          >
+          <Decorator mark={mark} key={`decorator-${mark}-${child._key}-${segIndex}`}>
             {children}
           </Decorator>
         )
@@ -375,15 +382,16 @@ function renderMarks({
     }
   })
   marksChanged = xor(activeMarks, uniq(marks))
-  if (marksChanged.length > 0 && marksAnnotation) {
-    const isAnnotation = !isDecorator(marksChanged.slice(-1)[0], spanSchemaType)
+  const isAnnotation = !isDecorator(marksChanged.slice(-1)[0], spanSchemaType)
+  // Only for decorators
+  if (marksChanged.length > 0 && !isAnnotation) {
     returned = (
       <DiffCard
         annotation={marksAnnotation}
         key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
         as={'ins'}
         tooltip={{
-          description: `${isAnnotation ? `Changed annotation` : 'Changed formatting'}`
+          description: 'Changed formatting'
         }}
       >
         {returned}

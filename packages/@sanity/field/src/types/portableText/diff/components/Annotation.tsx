@@ -1,17 +1,18 @@
+import {toString} from '@sanity/util/paths'
 import classNames from 'classnames'
-import {Path} from '@sanity/types'
+import {isKeySegment, Path} from '@sanity/types'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
-import LinkIcon from 'part:@sanity/base/link-icon'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
-import React, {useCallback, useState} from 'react'
-import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import React, {useCallback, useEffect, useState} from 'react'
+import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
 import {
   ChangeList,
+  DiffContext,
+  DiffTooltip,
   ObjectDiff,
   ObjectSchemaType,
-  useDiffAnnotationColor,
-  DiffContext
+  useDiffAnnotationColor
 } from '../../../../diff'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
@@ -22,7 +23,7 @@ interface AnnotationProps {
   object: PortableTextChild
   children: JSX.Element
   schemaType?: ObjectSchemaType
-  spanPath: Path
+  path: Path
 }
 
 export function Annotation({
@@ -30,7 +31,7 @@ export function Annotation({
   diff,
   object,
   schemaType,
-  spanPath,
+  path,
   ...restProps
 }: AnnotationProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
   if (!schemaType) {
@@ -47,7 +48,7 @@ export function Annotation({
         diff={diff}
         object={object}
         schemaType={schemaType}
-        spanPath={spanPath}
+        path={path}
       >
         {children}
       </AnnnotationWithDiff>
@@ -60,7 +61,7 @@ interface AnnnotationWithDiffProps {
   diff: ObjectDiff
   object: PortableTextChild
   schemaType: ObjectSchemaType
-  spanPath: Path
+  path: Path
 }
 
 function AnnnotationWithDiff({
@@ -68,11 +69,11 @@ function AnnnotationWithDiff({
   children,
   object,
   schemaType,
-  spanPath,
+  path,
   ...restProps
 }: AnnnotationWithDiffProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
   const {onSetFocus} = React.useContext(ConnectorContext)
-  const {path} = React.useContext(DiffContext)
+  const {path: fullPath} = React.useContext(DiffContext)
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
   const className = classNames(
@@ -82,50 +83,69 @@ function AnnnotationWithDiff({
   )
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
-  const focusPath = path.slice(0, -1).concat(spanPath)
-  const annotationPath = path.concat(['markDefs', {_key: object._key}, '$'])
-  const handleOpen = useCallback(
-    event => {
-      event.stopPropagation()
-      setOpen(true)
-      onSetFocus(focusPath)
-    },
-    [focusPath]
+  const markDefPath = [path[0]].concat(['markDefs', {_key: object._key}])
+  const prefix = fullPath.slice(
+    0,
+    fullPath.findIndex(seg => isKeySegment(seg) && seg._key === object._key)
   )
-  const handleGoto = useCallback(
+  const annotationPath = prefix.concat(path)
+  const myPath = prefix.concat(markDefPath)
+  const myValue = `field-${toString(myPath)}`
+  const values = useReportedValues()
+  const isEditing = values.filter(([p]) => p.startsWith(myValue)).length > 0
+
+  useEffect(() => {
+    if (!open && isEditing) {
+      setOpen(true)
+      onSetFocus(myPath)
+    }
+  }, [isEditing, open])
+
+  const handleOpenPopup = useCallback(
     event => {
       event.stopPropagation()
       setOpen(true)
-      onSetFocus(annotationPath)
+      onSetFocus(annotationPath) // Go to span first
+      setTimeout(() => onSetFocus(myPath), 10) // Open edit object interface
     },
     [annotationPath]
   )
+  const annotation = (diff.action !== 'unchanged' && diff.annotation) || null
+  const annotations = annotation ? [annotation] : []
 
   const popoverContent = (
-    <div className={styles.popoverContainer}>
-      <div className={styles.goToLink}>
-        <span onClick={handleGoto}>
-          <LinkIcon /> Open
-        </span>
+    <DiffContext.Provider value={{path: myPath}}>
+      <div className={styles.popoverContainer}>
+        <div className={styles.popoverContent}>
+          {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
+          {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
+        </div>
       </div>
-      <div className={styles.popoverContent}>
-        {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
-        {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
-      </div>
-    </div>
+    </DiffContext.Provider>
   )
-
   const handleClickOutside = useCallback(() => {
-    setOpen(false)
-  }, [])
+    if (!isEditing) {
+      setOpen(false)
+    }
+  }, [isEditing])
   return (
     <ClickOutside onClickOutside={handleClickOutside}>
       {ref => (
-        <span {...restProps} className={className} onClick={handleOpen} ref={ref} style={style}>
+        <span
+          {...restProps}
+          className={className}
+          onClick={handleOpenPopup}
+          ref={ref}
+          style={style}
+        >
           <Popover content={popoverContent} open={open}>
             <span className={styles.previewContainer}>
-              <span>{children}</span>
-              <ChevronDownIcon />
+              <DiffTooltip annotations={annotations} description={`${diff.action} annotation`}>
+                <span>
+                  <span>{children}</span>
+                  <ChevronDownIcon />
+                </span>
+              </DiffTooltip>
             </span>
           </Popover>
         </span>
