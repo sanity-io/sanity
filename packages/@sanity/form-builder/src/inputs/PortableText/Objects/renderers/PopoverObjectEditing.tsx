@@ -22,7 +22,7 @@ interface Props {
   object: PortableTextBlock | PortableTextChild
   onBlur: () => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
-  onClose: (event: React.SyntheticEvent) => void
+  onClose: () => void
   onFocus: (path: Path) => void
   path: Path
   presence: FormFieldPresence[]
