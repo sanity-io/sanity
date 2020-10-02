@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import {Portal} from 'part:@sanity/components/portal'
 import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import maxSize from 'popper-max-size-modifier'
@@ -22,6 +23,7 @@ interface PopoverProps {
   disabled?: boolean
   open?: boolean
   placement?: Placement
+  portal?: boolean
   targetElement?: HTMLElement | null
   tone?: 'navbar'
 }
@@ -41,6 +43,7 @@ export const Popover = forwardRef(
       disabled,
       open,
       placement = 'bottom',
+      portal: portalProp,
       style,
       targetElement,
       ...restProps
@@ -102,28 +105,31 @@ export const Popover = forwardRef(
       return children || <></>
     }
 
+    const popperNode = open && (
+      <div
+        {...restProps}
+        className={classNames(styles.root, className)}
+        ref={setReference}
+        style={{...popper.styles.popper, ...(style || {})}}
+        {...popper.attributes.popper}
+      >
+        <div className={classNames(styles.card, cardClassName)}>{content}</div>
+        <PopoverArrow
+          className={arrowClassName}
+          ref={setArrowElement}
+          style={popper.styles.arrow}
+        />
+      </div>
+    )
+
     return (
       <>
         {children && !targetElement
           ? cloneElement(children, {ref: setReferenceElement})
           : children || <></>}
 
-        {open && (
-          <div
-            {...restProps}
-            className={classNames(styles.root, className)}
-            ref={setReference}
-            style={{...popper.styles.popper, ...(style || {})}}
-            {...popper.attributes.popper}
-          >
-            <div className={classNames(styles.card, cardClassName)}>{content}</div>
-            <PopoverArrow
-              className={arrowClassName}
-              ref={setArrowElement}
-              style={popper.styles.arrow}
-            />
-          </div>
-        )}
+        {portalProp && <Portal>{popperNode}</Portal>}
+        {!portalProp && popperNode}
       </>
     )
   }
