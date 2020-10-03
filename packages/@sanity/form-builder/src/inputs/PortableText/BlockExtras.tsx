@@ -48,7 +48,7 @@ export default function BlockExtras(props: Props) {
   const path = PortableTextEditor.getSelection(editor)?.focus.path
   const hasFocus = path && isKeySegment(path[0]) ? path[0]._key === block._key : false
   const returned =
-    isFullscreen && path && hasFocus && isKeySegment(path[0]) ? (
+    isFullscreen && path && isKeySegment(path[0]) ? (
       <ChangeIndicatorWithProvidedFullPath
         className={styles.changeIndicator}
         compareDeep
