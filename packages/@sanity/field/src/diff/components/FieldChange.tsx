@@ -92,6 +92,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
 
               {confirmRevertOpen && (
                 <PopoverDialog
+                  portal
                   actions={[
                     {
                       color: 'danger',
