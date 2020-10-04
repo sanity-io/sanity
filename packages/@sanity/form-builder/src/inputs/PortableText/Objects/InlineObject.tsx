@@ -17,7 +17,7 @@ type Props = {
   attributes: RenderAttributes
   readOnly: boolean
   markers: Marker[]
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   onChange: (patchEvent: PatchEvent, path: Path) => void
 }
 

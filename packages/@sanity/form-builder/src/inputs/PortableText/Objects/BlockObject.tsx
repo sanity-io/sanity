@@ -19,7 +19,7 @@ type Props = {
   editor: PortableTextEditor
   markers: Marker[]
   onChange: (patchEvent: PatchEvent, path: Path) => void
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   readOnly: boolean
   type: Type
   value: PortableTextBlock

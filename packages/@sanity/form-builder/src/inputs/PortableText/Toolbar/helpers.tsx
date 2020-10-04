@@ -155,7 +155,7 @@ function getAnnotationIcon(item: PortableTextFeature, active: boolean): React.Co
 
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const activeAnnotations = PortableTextEditor.activeAnnotations(editor)
@@ -189,7 +189,7 @@ function getPTEAnnotationActions(
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
   selection: EditorSelection,
-  onFocus: (arg0: Path) => void,
+  onFocus: (path: Path) => void,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarActionGroup[] {
   return [
@@ -244,7 +244,7 @@ function getInsertMenuIcon(
 export function getInsertMenuItems(
   editor: PortableTextEditor,
   selection: EditorSelection,
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
 ): BlockItem[] {
   const focusBlock = PortableTextEditor.focusBlock(editor)
   const features = PortableTextEditor.getPortableTextFeatures(editor)

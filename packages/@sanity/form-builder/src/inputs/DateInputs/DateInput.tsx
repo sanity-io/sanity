@@ -27,7 +27,7 @@ type Props = {
     placeholder?: string
   }
   readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   level: number
   onFocus: () => void
   presence: any

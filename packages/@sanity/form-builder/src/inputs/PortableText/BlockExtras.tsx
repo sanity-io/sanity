@@ -17,7 +17,7 @@ type Props = {
   height: number
   isFullscreen: boolean
   markers: Marker[]
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
 }
 export default function BlockExtras(props: Props) {

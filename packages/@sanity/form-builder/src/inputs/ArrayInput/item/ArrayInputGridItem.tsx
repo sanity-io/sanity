@@ -33,8 +33,8 @@ interface ArrayInputGridItemProps {
   markers: Array<Marker>
   layout?: 'media' | 'default'
   onRemove: (arg0: ItemValue) => void
-  onChange: (arg0: PatchEvent, arg1: ItemValue) => void
-  onFocus: (arg0: Path) => void
+  onChange: (event: PatchEvent, arg1: ItemValue) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   filterField: () => any
   readOnly: boolean | null

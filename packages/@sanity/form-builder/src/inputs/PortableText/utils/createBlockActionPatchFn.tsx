@@ -9,7 +9,7 @@ type InsertFunction = (args0: PortableTextBlock | PortableTextBlock[]) => void
 export default function createBlockActionPatchFn(
   type: string,
   block: PortableTextBlock,
-  onPatch: (arg0: PatchEvent) => void,
+  onPatch: (event: PatchEvent) => void,
   portableTextFeatures: PortableTextFeatures
 ): UnsetFunction | SetFunction | InsertFunction {
   let toInsert

@@ -7,7 +7,7 @@ import styles from './Markers.css'
 
 type Props = {
   markers: Marker[]
-  onFocus: (arg0: Path) => void
+  onFocus: (path: Path) => void
   renderCustomMarkers?: RenderCustomMarkers
 }
 export default class Markers extends React.PureComponent<Props> {

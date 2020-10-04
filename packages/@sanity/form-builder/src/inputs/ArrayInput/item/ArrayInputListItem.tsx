@@ -36,11 +36,11 @@ interface ArrayInputListItemProps {
   value: ItemValue
   compareValue?: any[]
   level: number
-  markers: Array<Marker>
+  markers: Marker[]
   layout?: 'media' | 'default'
-  onRemove: (arg0: ItemValue) => void
-  onChange: (arg0: PatchEvent, arg1: ItemValue) => void
-  onFocus: (arg0: Path) => void
+  onRemove: (value: ItemValue) => void
+  onChange: (event: PatchEvent, value: ItemValue) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   filterField: () => any
   readOnly: boolean | null

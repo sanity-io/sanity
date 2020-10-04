@@ -10,12 +10,12 @@ interface ArrayInputItemProps {
   compareValue?: any[]
   layout?: 'media' | 'default'
   level: number
-  markers: Array<Marker>
+  markers: Marker[]
   type: ArraySchemaType
   value: ItemValue
-  onRemove: (arg0: ItemValue) => void
-  onChange: (arg0: PatchEvent, arg1: ItemValue) => void
-  onFocus: (arg0: Path) => void
+  onRemove: (value: ItemValue) => void
+  onChange: (event: PatchEvent, value: ItemValue) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   filterField: () => any
   readOnly: boolean | null

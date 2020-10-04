@@ -8,7 +8,7 @@ import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus
 type Props = {
   fieldNames: string[]
   value: Record<string, any>
-  onChange: (arg0: PatchEvent) => void
+  onChange: (event: PatchEvent) => void
   readOnly?: boolean
 }
 
