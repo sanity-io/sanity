@@ -347,7 +347,11 @@ function renderDecorators({
   })
   marksChanged = xor(activeMarks, uniq(marks))
   // Only for decorators, annotations are taken care of elsewhere
-  if (marksChanged.length > 0 && marksChanged.some(m => isDecorator(m, spanSchemaType))) {
+  if (
+    marksAnnotation &&
+    marksChanged.length > 0 &&
+    marksChanged.some(m => isDecorator(m, spanSchemaType))
+  ) {
     returned = (
       <DiffCard
         annotation={marksAnnotation}
