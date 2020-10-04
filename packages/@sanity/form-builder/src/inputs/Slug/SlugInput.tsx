@@ -119,10 +119,6 @@ export default withValuePath(
         this.updateCurrent(event.target.value)
       }
 
-      handleFocusCurrent = event => {
-        this.props.onFocus([])
-      }
-
       handleGenerateSlug = () => {
         const {type} = this.props
         const source = type.options?.source
@@ -189,7 +185,6 @@ export default withValuePath(
                     customValidity={errors.length > 0 ? errors[0].item.message : ''}
                     disabled={loading}
                     onChange={this.handleChange}
-                    onFocus={this.handleFocusCurrent}
                     value={typeof inputText === 'string' ? inputText : value.current}
                     readOnly={readOnly}
                   />
