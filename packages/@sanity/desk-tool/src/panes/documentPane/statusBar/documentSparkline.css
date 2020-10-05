@@ -113,6 +113,7 @@
   }
 
   @nest &[data-transition='out'] {
+    pointer-events: none;
     transform: translate3d(calc(var(--size) * -3), 0, 0);
     opacity: 0;
   }
