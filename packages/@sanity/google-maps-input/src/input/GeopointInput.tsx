@@ -100,7 +100,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
       prevState => ({modalOpen: !prevState.modalOpen}),
       () => {
         if (this.state.modalOpen) {
-          onFocus([])
+          onFocus(['$'])
         } else {
           onBlur()
         }
