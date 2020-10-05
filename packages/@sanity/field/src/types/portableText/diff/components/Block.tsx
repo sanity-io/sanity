@@ -15,43 +15,27 @@ export default function Block({
 }: {
   diff: PortableTextDiff
   block: PortableTextBlock
-  children: React.ReactNode[]
+  children: JSX.Element
 }): JSX.Element {
   const color = useDiffAnnotationColor(diff, [])
-  const classNames = [styles.root, diff.action, `style_${diff.displayValue.style || 'undefined'}`]
+  const classNames = [
+    styles.root,
+    styles[diff.action],
+    `style_${diff.displayValue.style || 'undefined'}`
+  ]
   const {path: fullPath} = React.useContext(DiffContext)
   const {onSetFocus} = React.useContext(ConnectorContext)
-  let returned: React.ReactNode = children
-  let fromStyle
-
-  // If style was changed, indicate that
-  if (
-    diff.origin.action === 'changed' &&
-    diff.origin.fields.style &&
-    diff.origin.fields.style.action === 'changed'
-  ) {
-    fromStyle = diff.origin.fromValue.style
-    classNames.push(`changed_from_style_${fromStyle || 'undefined'}`)
-    const style = color ? {background: color.background, color: color.text} : {}
-
-    returned = (
-      <div className={styles.styleIsChanged}>
-        <div className={styles.changedBlockStyleNotice}>
-          <DiffTooltip diff={diff.origin.fields.style}>
-            <div>Changed block style from '{fromStyle}'</div>
-          </DiffTooltip>
-        </div>
-        <div style={style}>{returned}</div>
-      </div>
-    )
-  }
+  const isRemoved = diff.action === 'removed'
+  let returned = children
 
   const handleClick = useCallback(
     event => {
       event.stopPropagation()
-      onSetFocus(fullPath)
+      if (!isRemoved) {
+        onSetFocus(fullPath)
+      }
     },
-    [fullPath]
+    [fullPath, isRemoved]
   )
 
   if (block.style === 'blockquote') {
@@ -61,6 +45,34 @@ export default function Block({
   } else {
     returned = <Paragraph>{returned}</Paragraph>
   }
+
+  let fromStyle
+  // If style was changed, indicate that
+  if (
+    diff.origin.action === 'changed' &&
+    diff.origin.fields.style &&
+    diff.origin.fields.style.action === 'changed' &&
+    diff.origin.fields.style.annotation
+  ) {
+    fromStyle = diff.origin.fromValue.style
+    classNames.push(`changed_from_style_${fromStyle || 'undefined'}`)
+    const style = color ? {background: color.background, color: color.text} : {}
+
+    returned = (
+      <div className={styles.styleIsChanged}>
+        <div className={styles.changedBlockStyleNotice}>
+          <DiffTooltip
+            annotations={[diff.origin.fields.style.annotation]}
+            diff={diff.origin.fields.style}
+          >
+            <div>Changed block style from '{fromStyle}'</div>
+          </DiffTooltip>
+        </div>
+        <div style={style}>{returned}</div>
+      </div>
+    )
+  }
+
   return (
     <div onClick={handleClick} className={classNames.join(' ')}>
       {returned}

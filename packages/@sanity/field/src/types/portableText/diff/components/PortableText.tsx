@@ -141,14 +141,12 @@ export default function PortableText(props: Props): JSX.Element {
             ) as PortableTextChild
           const child = block.children[childToIndex] || getChildFromFromValue()
           const childDiff = child && findSpanDiffFromChild(diff.origin, child)
-
           if (!child) {
             throw new Error('Could not find child')
           }
           const textDiff = childDiff?.fields?.text
             ? (childDiff?.fields?.text as StringDiff)
             : undefined
-
           const text = (
             <Text
               diff={textDiff}
@@ -160,7 +158,7 @@ export default function PortableText(props: Props): JSX.Element {
               segment={seg}
             >
               {renderTextSegment({
-                diff: diff,
+                diff,
                 child,
                 decoratorTypes,
                 seg,
@@ -218,7 +216,7 @@ export default function PortableText(props: Props): JSX.Element {
 
   return (
     <Block block={diff.displayValue} diff={diff}>
-      {(diff.displayValue.children || []).map(child => renderChild(child))}
+      {<>{(diff.displayValue.children || []).map(child => renderChild(child))}</>}
     </Block>
   )
 }
@@ -300,7 +298,7 @@ function renderDecorators({
 }): JSX.Element {
   let returned = <span key={`text-segment-${segIndex}`}>{children}</span>
   const fromPtDiffText =
-    (diff.origin.fromValue && diff.fromValue && diff.fromValue.children[0].text) || undefined // Always one child
+    (diff.origin.fromValue && diff.fromValue && diff.fromValue.children[0].text) || '' // Always one child
 
   // There are cases where we have changed marks, but it's an indirect change in the diff data.
   // For example when '<>normal-text</><>bold-text</>' and 'bold' is unbolded. Then 'bold' is added to first span,
