@@ -8,7 +8,7 @@
 
 .rootReadOnly {
   composes: root;
-  
+
   @nest & .content {
     color: var(--input-color-disabled);
     background: var(--input-bg-disabled);
@@ -23,7 +23,7 @@
 .tags {
   display: flex;
   margin: 0;
-  padding: 0; 
+  padding: 0;
   flex-wrap: wrap;
   gap: var(--small-padding);
 }
@@ -78,7 +78,7 @@
   }
 
   @nest &:focus, &:focus-within {
-    box-shadow: var(--input-box-shadow--focus);
+    box-shadow: var(--input-box-shadow-thin--focus);
     background-color: var(--input-bg-focus);
     border-color: var(--input-border-color-focus);
 
