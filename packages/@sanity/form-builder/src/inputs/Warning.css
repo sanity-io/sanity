@@ -4,6 +4,7 @@
   /* empty */
   padding-top: var(--small-padding);
   padding-bottom: var(--medium-padding);
+  padding-right: var(--small-padding);
 }
 
 .heading {
