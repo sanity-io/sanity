@@ -34,15 +34,15 @@ export default class Details extends React.Component<DetailsProps, DetailsState>
     const {isOpen} = this.state
 
     return (
-      <div className={styles.root} data-open={isOpen}>
-        <div className={styles.header} tabIndex={0} onClick={this.handleToggle}>
-          <span className={styles.iconContainer}>
+      <button type="button" className={styles.root} data-open={isOpen} onClick={this.handleToggle}>
+        <div className={styles.header} tabIndex={0}>
+          <span className={styles.iconContainer} aria-hidden="true" role="img">
             <ChevronDownIcon />
           </span>
           <span className={styles.summary}>{title}</span>
         </div>
         <div className={styles.content}>{children}</div>
-      </div>
+      </button>
     )
   }
 }

@@ -1,11 +1,18 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  padding: 0;
+  background: none;
+  display: block;
+  width: 100%;
+  text-align: left;
   border: 1px solid var(--state-warning-color);
   border-radius: var(--input-border-radius);
 }
 
 .header {
+  display: flex;
+  align-items: center;
   cursor: default;
   userselect: none;
   user-select: none;
@@ -19,11 +26,10 @@
 }
 
 .iconContainer {
-  display: inline-block;
-  vertical-align: top;
+  display: flex;
   transform: rotate(-90deg);
   transition: transform 100ms;
-  margin: 1px var(--small-padding) 1px 0;
+  margin: 0 var(--small-padding) 2px 0;
 
   @nest & > svg {
     display: block;
