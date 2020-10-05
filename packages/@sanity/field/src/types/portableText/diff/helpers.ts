@@ -330,7 +330,7 @@ export function findSpanDiffFromChild(
   // Find span in original diff which has a string segment similar to the one from the input
   const candidate =
     diff.fields.children &&
-    diff.fields.children.action === 'changed' &&
+    diff.fields.children.action !== 'unchanged' &&
     diff.fields.children.type === 'array' &&
     diff.fields.children.items.find(
       item =>
