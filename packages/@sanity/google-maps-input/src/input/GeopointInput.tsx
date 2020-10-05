@@ -1,5 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
+import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
@@ -34,13 +35,13 @@ const getStaticImageUrl = value => {
 }
 
 interface InputProps {
-  markers: unknown[]
+  markers: Marker[]
   level?: number
   value?: Geopoint
   compareValue?: Geopoint
   type: GeopointSchemaType
   readOnly?: boolean
-  onFocus: (path: unknown[]) => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   onChange: (patchEvent: unknown) => void
   presence: unknown[]
