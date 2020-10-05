@@ -37,7 +37,8 @@ const allSymbols = startMarkSymbols
   .concat(endMarkSymbols)
   .concat(TextSymbols.INLINE_SYMBOLS)
   .concat(TextSymbols.CHILD_SYMBOL)
-const symbolRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
+const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
+const segmentRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
 export function isPTSchemaType(schemaType: SchemaType): schemaType is ObjectSchemaType<Block> {
   return schemaType.jsonType === 'object' && schemaType.name === 'block'
@@ -100,7 +101,7 @@ export function blockToSymbolizedText(
   }
   return block.children
     .map(child => {
-      let returned = child.text?.replace(symbolRegex, '') || ''
+      let returned = child.text?.replace(symbolRegex, '') || '' // Make sure symbols aren't in the text already
       if (child._type !== 'span') {
         returned = inlineMap[child._key]
       } else if (child.marks) {
@@ -283,7 +284,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
     segments.map(seg => {
       const newSegments: StringDiffSegment[] = []
       if (seg.text.length > 1) {
-        const markMatches = [...seg.text.matchAll(symbolRegex)]
+        const markMatches = [...seg.text.matchAll(segmentRegex)]
         let lastIndex = -1
         markMatches.forEach(match => {
           const index = match.index || 0
