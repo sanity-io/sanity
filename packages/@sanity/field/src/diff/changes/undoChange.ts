@@ -233,6 +233,7 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
       const nextItem = getValueAtPath(value, subPath.concat(nextSegment))
       const prevSeg = isKeyedObject(prevItem) ? {_key: prevItem._key} : indexAtPrev - 1
       const after = pathToString(subPath.concat(indexAtPrev < 1 ? 0 : prevSeg))
+      stubs.push({setIfMissing: {[pathStr]: []}})
       stubs.push({insert: {after, items: [getStubValue(nextItem)]}})
 
       i++
