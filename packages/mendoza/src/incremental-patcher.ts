@@ -423,7 +423,7 @@ export function rebaseValue<T>(left: Value<T>, right: Value<T>): Value<T> {
 
       let result = rightModel.copyString(null)
       let prefix = commonPrefix(leftRaw, rightRaw)
-      let suffix = commonSuffix(leftRaw, rightRaw)
+      let suffix = commonSuffix(leftRaw, rightRaw, prefix)
 
       let rightLen = utf8stringSize(rightRaw)
       let leftLen = utf8stringSize(leftRaw)

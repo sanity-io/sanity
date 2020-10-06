@@ -50,8 +50,8 @@ export function commonPrefix(str: string, str2: string) {
   return b
 }
 
-export function commonSuffix(str: string, str2: string) {
-  let len = Math.min(str.length, str2.length)
+export function commonSuffix(str: string, str2: string, prefix: number = 0) {
+  let len = Math.min(str.length, str2.length) - prefix
   let b = 0
   for (let i = 0; i < len; ) {
     let aPoint = str.codePointAt(str.length - 1 - i)!
