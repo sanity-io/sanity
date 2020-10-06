@@ -194,38 +194,36 @@ export default class DropDownButton extends React.PureComponent<
         </Button>
 
         {/* Dropdown menu */}
-        <Poppable
-          modifiers={modifiers as any}
-          placement={placement}
-          referenceElement={_buttonElement}
-          onEscape={this.handleClose}
-          onClickOutside={this.handleClickOutside}
-          referenceClassName={styles.outer}
-          popperClassName={styles.popper}
-          positionFixed
-        >
-          {menuOpened && (
-            <>
-              <List className={styles.list}>
-                <ArrowKeyNavigation>
-                  {items.map((item, i) => (
-                    <Item
-                      key={String(i)}
-                      className={styles.listItem}
-                      onClick={event => this.handleItemClick(event, item)}
-                      onKeyPress={event => this.handleItemKeyPress(event, item)}
-                      tabIndex={0}
-                      ref={i === 0 ? this._firstItemElement : undefined}
-                    >
-                      {renderItem ? renderItem(item) : <div>{item.title}</div>}
-                    </Item>
-                  ))}
-                </ArrowKeyNavigation>
-              </List>
-              <div tabIndex={0} onFocus={this.handleMenuBlur} />
-            </>
-          )}
-        </Poppable>
+        {menuOpened && (
+          <Poppable
+            modifiers={modifiers as any}
+            placement={placement}
+            referenceElement={_buttonElement}
+            onEscape={this.handleClose}
+            onClickOutside={this.handleClickOutside}
+            referenceClassName={styles.outer}
+            popperClassName={styles.popper}
+            positionFixed
+          >
+            <List className={styles.list}>
+              <ArrowKeyNavigation>
+                {items.map((item, i) => (
+                  <Item
+                    key={String(i)}
+                    className={styles.listItem}
+                    onClick={event => this.handleItemClick(event, item)}
+                    onKeyPress={event => this.handleItemKeyPress(event, item)}
+                    tabIndex={0}
+                    ref={i === 0 ? this._firstItemElement : undefined}
+                  >
+                    {renderItem ? renderItem(item) : <div>{item.title}</div>}
+                  </Item>
+                ))}
+              </ArrowKeyNavigation>
+            </List>
+            <div tabIndex={0} onFocus={this.handleMenuBlur} />
+          </Poppable>
+        )}
       </>
     )
   }
