@@ -27,6 +27,12 @@
   composes: root;
 }
 
+.loading {
+  padding: var(--medium-padding);
+  text-align: center;
+  color: var(--gray);
+}
+
 .empty {
   display: block;
   height: 100%;

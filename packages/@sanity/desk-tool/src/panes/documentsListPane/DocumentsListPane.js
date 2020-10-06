@@ -363,7 +363,7 @@ export default class DocumentsListPane extends React.PureComponent {
 
     if (loading) {
       return (
-        <div className={styles[`layout__${layout}`]}>
+        <div className={`${styles[`layout__${layout}`]} ${styles.loading}`}>
           {loading && <Spinner center message="Loading items…" />}
         </div>
       )
