@@ -1,3 +1,5 @@
+/* eslint-disable max-statements */
+/* eslint-disable yoda */
 /* eslint-disable default-case */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-else-return */
@@ -6,7 +8,7 @@
 import {ObjectModel} from './object-model'
 import {RawPatch} from './patch'
 import {Patcher} from './internal-patcher'
-import {utf8charSize, utf8stringSize} from './utf8'
+import {utf8charSize, utf8stringSize, commonPrefix, commonSuffix} from './utf8'
 
 // The incremental patcher allows you to apply multiple patches and tracks the history of every element.
 // It also allows you to extract a simple diff between the documents.
@@ -410,10 +412,34 @@ export function rebaseValue<T>(left: Value<T>, right: Value<T>): Value<T> {
     }
     case 'null':
     case 'boolean':
-    case 'number':
-    case 'string': {
+    case 'number': {
       if (unwrap(left) === unwrap(right)) return left
       break
+    }
+    case 'string': {
+      let leftRaw = unwrap(left) as string
+      let rightRaw = unwrap(right) as string
+      if (leftRaw === rightRaw) return left
+
+      let result = rightModel.copyString(null)
+      let prefix = commonPrefix(leftRaw, rightRaw)
+      let suffix = commonSuffix(leftRaw, rightRaw)
+
+      let rightLen = utf8stringSize(rightRaw)
+      let leftLen = utf8stringSize(leftRaw)
+
+      if (0 < prefix) {
+        rightModel.stringAppendSlice(result, left, 0, prefix)
+      }
+      if (prefix < rightLen - suffix) {
+        rightModel.stringAppendSlice(result, right, prefix, rightLen - suffix)
+      }
+      if (leftLen - suffix < leftLen) {
+        rightModel.stringAppendSlice(result, left, leftLen - suffix, leftLen)
+      }
+      let value = rightModel.finalize(result)
+      if (unwrap(value) !== rightRaw) throw new Error('incorrect string rebase')
+      return value
     }
   }
 
