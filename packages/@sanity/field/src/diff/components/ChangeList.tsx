@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
-  const {documentId} = React.useContext(DocumentChangeContext)
+  const {documentId, isComparingCurrent} = React.useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const {path} = React.useContext(DiffContext)
   const isRoot = path.length === 0
@@ -88,19 +88,21 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
 
       {showFooter && (
         <div className={styles.footer}>
-          <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
-            <Button
-              color="danger"
-              icon={UndoIcon}
-              kind="secondary"
-              onClick={handleRevertAllChangesClick}
-              onMouseEnter={handleRevertAllChangesMouseEnter}
-              onMouseLeave={handleRevertAllChangesMouseLeave}
-              // selected={confirmRevertAllOpen}
-            >
-              Revert all changes
-            </Button>
-          </div>
+          {isComparingCurrent && (
+            <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
+              <Button
+                color="danger"
+                icon={UndoIcon}
+                kind="secondary"
+                onClick={handleRevertAllChangesClick}
+                onMouseEnter={handleRevertAllChangesMouseEnter}
+                onMouseLeave={handleRevertAllChangesMouseLeave}
+                // selected={confirmRevertAllOpen}
+              >
+                Revert all changes
+              </Button>
+            </div>
+          )}
 
           {confirmRevertAllOpen && (
             <PopoverDialog
