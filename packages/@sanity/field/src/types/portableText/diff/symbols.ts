@@ -109,3 +109,5 @@ export const INLINE_SYMBOLS = [
 ]
 
 export const TRAILING_SPACE_SYMBOL = '\u205F'
+
+export const SEGMENT_START_SYMBOL = '\u2060'

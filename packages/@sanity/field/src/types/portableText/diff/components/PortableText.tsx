@@ -150,11 +150,9 @@ export default function PortableText(props: Props): JSX.Element {
           const text = (
             <Text
               diff={textDiff}
-              child={child}
               key={`text-${child._key}-${segIndex}`}
               path={[{_key: block._key}, 'children', {_key: child._key}]}
               childDiff={childDiff}
-              schemaType={spanSchemaType as ObjectSchemaType}
               segment={seg}
             >
               {renderTextSegment({

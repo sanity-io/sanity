@@ -37,6 +37,7 @@ const allSymbols = startMarkSymbols
   .concat(endMarkSymbols)
   .concat(TextSymbols.INLINE_SYMBOLS)
   .concat(TextSymbols.CHILD_SYMBOL)
+  .concat(TextSymbols.SEGMENT_START_SYMBOL)
 const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
 const segmentRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
@@ -91,6 +92,7 @@ export function isDecorator(name: string, schemaType: SpanTypeSchema): boolean {
 }
 
 export function blockToSymbolizedText(
+  diff: ObjectDiff,
   block: PortableTextBlock | undefined,
   decoratorMap: MarkSymbolMap,
   annotationMap: MarkSymbolMap,
@@ -102,17 +104,33 @@ export function blockToSymbolizedText(
   return block.children
     .map(child => {
       let returned = child.text?.replace(symbolRegex, '') || '' // Make sure symbols aren't in the text already
-      if (child._type !== 'span') {
+      if (child._type === 'span') {
+        // Attatch stringdiff segments
+        const spanDiff = findSpanDiffFromChild(diff, child)
+        const textDiff = spanDiff?.fields.text
+        if (
+          textDiff &&
+          textDiff.toValue === child.text &&
+          textDiff.type === 'string' &&
+          textDiff.action !== 'unchanged'
+        ) {
+          returned = textDiff.segments
+            .filter(seg => seg.action !== 'removed')
+            .map(seg => seg.text.replace(symbolRegex, ''))
+            .join(TextSymbols.SEGMENT_START_SYMBOL)
+        }
+        if (child.marks) {
+          child.marks.forEach(mark => {
+            const _isDecorator = !!decoratorMap[mark]
+            if (_isDecorator) {
+              returned = `${decoratorMap[mark][0]}${returned}${decoratorMap[mark][1]}`
+            } else if (annotationMap[mark]) {
+              returned = `${annotationMap[mark][0]}${returned}${annotationMap[mark][1]}`
+            }
+          })
+        }
+      } else {
         returned = inlineMap[child._key]
-      } else if (child.marks) {
-        child.marks.forEach(mark => {
-          const _isDecorator = !!decoratorMap[mark]
-          if (_isDecorator) {
-            returned = `${decoratorMap[mark][0]}${returned}${decoratorMap[mark][1]}`
-          } else if (annotationMap[mark]) {
-            returned = `${annotationMap[mark][0]}${returned}${annotationMap[mark][1]}`
-          }
-        })
       }
       return `${TextSymbols.CHILD_SYMBOL}${returned}`
     })
@@ -152,12 +170,14 @@ export function createPortableTextDiff(
       inlineMap[inline._key] = TextSymbols.INLINE_SYMBOLS[index]
     })
     const fromText = blockToSymbolizedText(
+      _diff.origin,
       _diff.fromValue as PortableTextBlock,
       decoratorMap,
       annotationMap,
       inlineMap
     )
     const toText = blockToSymbolizedText(
+      _diff.origin,
       _diff.toValue as PortableTextBlock,
       decoratorMap,
       annotationMap,
@@ -240,7 +260,6 @@ export function createPortableTextDiff(
 
 function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
   const segments: StringDiffSegment[] = []
-
   const dmpDiffs = dmp.diff_main(fromInput, toInput)
   dmp.diff_cleanupEfficiency(dmpDiffs)
 
