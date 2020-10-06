@@ -15,20 +15,24 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const Preview = options?.layout === 'checkbox' ? Checkbox : Switch
   const userColor = useDiffAnnotationColor(diff, []) || {background: '', text: '', border: ''}
 
+  const showToValue = toValue !== undefined && toValue !== null
+
   return (
-    <DiffTooltip diff={diff}>
-      <div className={styles.root}>
-        <Preview checked={fromValue} color={userColor} />
-        {toValue !== undefined && toValue !== null && (
-          <>
-            <FromToArrow style={{padding: '0 2px'}} />
-            <div className={styles.label}>
+    <div className={styles.root}>
+      <DiffTooltip diff={diff}>
+        <div className={styles.preview}>
+          <Preview checked={fromValue} color={userColor} />
+          {showToValue && (
+            <>
+              <FromToArrow style={{padding: '0 2px'}} />
               <Preview checked={toValue} color={userColor} />
-              {title && <div className={styles.title}>{title}</div>}
-            </div>
-          </>
-        )}
-      </div>
-    </DiffTooltip>
+            </>
+          )}
+        </div>
+      </DiffTooltip>
+      {showToValue && (
+        <div className={styles.label}>{title && <div className={styles.title}>{title}</div>}</div>
+      )}
+    </div>
   )
 }

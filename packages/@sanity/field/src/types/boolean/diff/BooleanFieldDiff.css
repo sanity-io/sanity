@@ -5,9 +5,9 @@
   align-items: center;
 }
 
+.preview,
 .label {
-  display: flex;
-  align-items: center;
+  composes: root;
 }
 
 .title {
