@@ -10,7 +10,7 @@
 .canvas {
   display: block;
   position: relative;
-  max-width: calc(100% + 1em);
+  max-width: calc(100% - 0.5em); /* to prevent overlap with change bar */
   max-height: calc(100% + 1em);
   user-select: none;
 }
