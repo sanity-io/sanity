@@ -6,7 +6,7 @@
 .content {
   position: relative;
 
-  &::after {
+  @nest &::after {
     content: '';
     display: block;
     position: absolute;
@@ -80,6 +80,7 @@
   @nest .root.readOnly & {
     background-image: none;
     background: var(--input-bg-disabled);
+    color: var(--gray-dark);
   }
 }
 

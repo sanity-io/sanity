@@ -7,7 +7,7 @@
   position: relative;
   padding-bottom: calc(2 / 3 * 100%);
 
-  &::after {
+  @nest &::after {
     content: '';
     display: block;
     position: absolute;
@@ -42,8 +42,12 @@
   overflow: hidden;
 
   @nest .root.readOnly & {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-image: none;
     background: var(--input-bg-disabled);
+    color: var(--gray-dark);
   }
 }
 
