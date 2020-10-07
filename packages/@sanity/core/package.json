@@ -30,7 +30,7 @@
     "@sanity/generate-help-url": "1.150.1",
     "@sanity/import": "1.150.7",
     "@sanity/mutator": "1.150.1",
-    "@sanity/observable": "^1.150.1",
+    "@sanity/observable": "1.150.1",
     "@sanity/plugin-loader": "1.150.1",
     "@sanity/resolver": "1.150.1",
     "@sanity/schema": "1.150.3",

@@ -1,10 +1,7 @@
+import {PubSub} from 'nano-pubsub'
+
 export type NavigateOptions = {
   replace?: boolean
-}
-
-type Channel<T> = {
-  subscribe: (arg0: T) => () => void
-  publish(arg0: T): void
 }
 
 export type IntentParameters = Record<string, any> | [Record<string, any>, Record<string, any>]
@@ -18,7 +15,7 @@ export type InternalRouter = {
   navigate: (nextState: RouterState, options?: NavigateOptions) => void
   navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
   getState: () => RouterState
-  channel: Channel<RouterState>
+  channel: PubSub<RouterState>
 }
 
 export type Router = {

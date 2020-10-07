@@ -9,8 +9,15 @@ export default function createActions(actions: Record<string, Function>) {
   }, {})
 }
 
+interface Call {
+  name: string
+  progress: any
+  returnValue: any
+  args: any[]
+}
+
 function createAction(name: string, fn: Function) {
-  const calls = pubsub()
+  const calls = pubsub<Call>()
 
   // eslint-disable-next-line func-name-matching
   const functor = function action(...args) {

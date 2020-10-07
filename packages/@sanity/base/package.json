@@ -49,7 +49,7 @@
     "dataloader": "^2.0.0",
     "history": "^4.6.3",
     "lodash": "^4.17.15",
-    "nano-pubsub": "^1.0.2",
+    "nano-pubsub": "^2.0.0",
     "nanoid": "^3.1.9",
     "observable-callback": "^1.0.1",
     "oneline": "^1.0.3",

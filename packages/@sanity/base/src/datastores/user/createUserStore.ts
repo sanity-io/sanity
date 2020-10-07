@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import {Observable, of, from} from 'rxjs'
 import raf from 'raf'
 import DataLoader from 'dataloader'
@@ -9,8 +8,8 @@ import {User, CurrentUser, CurrentUserEvent} from './types'
 
 const userCache: Record<string, User | null> = {}
 
-const userChannel = pubsub()
-const errorChannel = pubsub()
+const userChannel = pubsub<CurrentUser | null>()
+const errorChannel = pubsub<Error | null>()
 
 let _initialFetched = false
 let _currentUser: CurrentUser | null = null

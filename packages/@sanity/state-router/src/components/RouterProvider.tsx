@@ -36,7 +36,7 @@ export default class RouterProvider extends React.Component<Props> {
       navigate: this.navigateState,
       navigateIntent: this.navigateIntent,
       getState: this.getState,
-      channel: pubsub()
+      channel: pubsub<RouterState>()
     }
   }
 

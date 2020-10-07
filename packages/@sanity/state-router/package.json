@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.15",
-    "nano-pubsub": "^1.0.2"
+    "nano-pubsub": "^2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",

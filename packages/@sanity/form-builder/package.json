@@ -44,7 +44,7 @@
     "is-hotkey": "^0.1.4",
     "lodash": "^4.17.15",
     "moment": "^2.19.1",
-    "nano-pubsub": "^1.0.2",
+    "nano-pubsub": "^2.0.0",
     "object-inspect": "^1.6.0",
     "popper.js": "1.16.1",
     "react-click-outside": "^3.0.0",

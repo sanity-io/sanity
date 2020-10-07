@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
 import {Schema, SchemaType} from '@sanity/types'
+import {Patch} from './typedefs/patch'
 import {fallbackInputs} from './fallbackInputs'
 
 const RESOLVE_NULL = (arg: any) => null
@@ -62,7 +63,7 @@ interface Props {
 
 export default class FormBuilderContext extends React.Component<Props> {
   static createPatchChannel = () => {
-    const channel = pubsub()
+    const channel = pubsub<{snapshot: any; patches: Patch[]}>()
     return {onPatch: channel.subscribe, receivePatches: channel.publish}
   }
 
