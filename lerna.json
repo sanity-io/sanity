@@ -10,7 +10,6 @@
     "packages/clean-studio",
     "packages/create-sanity",
     "packages/ecommerce-studio",
-    "packages/eslint-config-sanity",
     "packages/example-studio",
     "packages/groq",
     "packages/mendoza",
