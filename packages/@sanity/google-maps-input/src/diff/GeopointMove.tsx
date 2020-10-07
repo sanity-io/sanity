@@ -27,7 +27,7 @@ export function GeopointMove({diff, api, map, label}: Props) {
           map={map}
           position={from}
           zIndex={0}
-          opacity={0.75}
+          opacity={0.55}
           markerRef={fromRef}
           color={userColor}
         />

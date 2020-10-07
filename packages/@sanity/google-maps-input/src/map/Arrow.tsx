@@ -31,7 +31,7 @@ export class Arrow extends React.PureComponent<Props> {
       zIndex,
       path: [from, to],
       icons: [{icon: lineSymbol, offset: '50%'}],
-      strokeOpacity: 0.8,
+      strokeOpacity: 0.55,
       strokeColor: color ? color.text : 'black'
     })
 

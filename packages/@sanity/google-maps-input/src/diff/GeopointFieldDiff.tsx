@@ -1,5 +1,11 @@
 import * as React from 'react'
-import {DiffComponent, ObjectDiff, DiffProps as GenericDiffProps} from '@sanity/field/diff'
+import {
+  DiffComponent,
+  ObjectDiff,
+  DiffProps as GenericDiffProps,
+  DiffTooltip,
+  getAnnotationAtPath
+} from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {Geopoint} from '../types'
@@ -20,20 +26,29 @@ export const GeopointFieldDiff: DiffComponent<ObjectDiff<Geopoint>> = ({diff, sc
 
 function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps}) {
   const {fromValue, toValue} = diff
+  const annotation =
+    getAnnotationAtPath(diff, ['lat']) ||
+    getAnnotationAtPath(diff, ['lng']) ||
+    getAnnotationAtPath(diff, [])
+
   const center = getCenter(diff, api)
   const bounds = fromValue && toValue ? getBounds(fromValue, toValue, api) : undefined
 
   return (
-    <GoogleMap
-      api={api}
-      location={center}
-      mapTypeControl={false}
-      controlSize={20}
-      bounds={bounds}
-      scrollWheel={false}
-    >
-      {map => <GeopointMove api={api} map={map} diff={diff} />}
-    </GoogleMap>
+    <DiffTooltip annotations={annotation ? [annotation] : []} description={getAction(diff)}>
+      <div>
+        <GoogleMap
+          api={api}
+          location={center}
+          mapTypeControl={false}
+          controlSize={20}
+          bounds={bounds}
+          scrollWheel={false}
+        >
+          {map => <GeopointMove api={api} map={map} diff={diff} />}
+        </GoogleMap>
+      </div>
+    </DiffTooltip>
   )
 }
 
@@ -65,4 +80,17 @@ function getCenter(
   }
 
   throw new Error('Neither a from or a to value present')
+}
+
+function getAction(diff: ObjectDiff<Geopoint>) {
+  const {fromValue, toValue} = diff
+  if (fromValue && toValue) {
+    return 'Moved'
+  } else if (fromValue) {
+    return 'Removed'
+  } else if (toValue) {
+    return 'Added'
+  }
+
+  return 'Unchanged'
 }
