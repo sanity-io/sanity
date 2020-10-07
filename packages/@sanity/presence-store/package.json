@@ -1,6 +1,6 @@
 {
   "name": "@sanity/presence-store",
-  "version": "1.150.1",
+  "version": "2.0.1",
   "description": "Client side presence channel handler",
   "main": "lib/PresenceStore.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "tape": "^4.8.0"
   },
   "dependencies": {
-    "@sanity/uuid": "1.150.1",
+    "@sanity/uuid": "2.0.1",
     "deep-equal": "^1.0.1",
     "rxjs": "^6.5.3"
   },

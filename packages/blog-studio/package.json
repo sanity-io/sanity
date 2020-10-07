@@ -1,7 +1,7 @@
 {
   "name": "blog-studio",
   "private": true,
-  "version": "1.150.8",
+  "version": "2.0.1",
   "description": "Content studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,15 +18,15 @@
     "blog-studio"
   ],
   "dependencies": {
-    "@sanity/base": "1.150.8",
-    "@sanity/cli": "1.150.7",
-    "@sanity/components": "1.150.8",
-    "@sanity/core": "1.150.7",
-    "@sanity/default-layout": "1.150.8",
-    "@sanity/default-login": "1.150.1",
-    "@sanity/desk-tool": "1.150.8",
-    "@sanity/google-maps-input": "1.150.1",
-    "@sanity/vision": "1.150.6",
+    "@sanity/base": "2.0.1",
+    "@sanity/cli": "2.0.1",
+    "@sanity/components": "2.0.1",
+    "@sanity/core": "2.0.1",
+    "@sanity/default-layout": "2.0.1",
+    "@sanity/default-login": "2.0.1",
+    "@sanity/desk-tool": "2.0.1",
+    "@sanity/google-maps-input": "2.0.1",
+    "@sanity/vision": "2.0.1",
     "react": "16.9.0",
     "react-dom": "^16.9.0"
   },

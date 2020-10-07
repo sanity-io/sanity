@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "1.150.8",
+  "version": "2.0.1",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,9 +22,9 @@
     "@juggle/resize-observer": "^3.2.0",
     "@popperjs/core": "^2.4.4",
     "@reach/auto-id": "^0.10.5",
-    "@sanity/base": "1.150.8",
-    "@sanity/types": "1.150.7",
-    "@sanity/util": "1.150.1",
+    "@sanity/base": "2.0.1",
+    "@sanity/types": "2.0.1",
+    "@sanity/util": "2.0.1",
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "chance": "^1.0.4",
@@ -49,8 +49,8 @@
     "string-hash": "^1.1.3"
   },
   "devDependencies": {
-    "@types/element-resize-detector": "1.1.2",
     "@types/chance": "^1.1.0",
+    "@types/element-resize-detector": "1.1.2",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/dashboard",
-  "version": "1.150.8",
+  "version": "2.0.1",
   "description": "Tool for rendering dashboard widgets",
   "main": "src/DashboardTool.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -26,8 +26,8 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "1.150.8",
-    "@sanity/check": "1.150.1",
+    "@sanity/base": "2.0.1",
+    "@sanity/check": "2.0.1",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },

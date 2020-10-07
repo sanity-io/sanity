@@ -1,7 +1,7 @@
 {
   "name": "@sanity/observable",
   "description": "[deprecated] This package exists for legacy reasons only",
-  "version": "1.150.1",
+  "version": "2.0.1",
   "main": "minimal.js",
   "types": "./minimal.d.ts",
   "scripts": {

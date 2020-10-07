@@ -1,6 +1,6 @@
 {
   "name": "@sanity/react-hooks",
-  "version": "1.150.8",
+  "version": "2.0.1",
   "description": "Officially supported Sanity Studio API building blocks",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -30,8 +30,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/base": "1.150.8",
-    "@sanity/types": "1.150.7",
+    "@sanity/base": "2.0.1",
+    "@sanity/types": "2.0.1",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0"

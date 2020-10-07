@@ -1,6 +1,6 @@
 {
   "name": "@sanity/field",
-  "version": "1.150.7",
+  "version": "2.0.1",
   "description": "Diff utilities and preview components",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "@sanity/asset-utils": "^1.1.0",
-    "@sanity/base": "1.150.8",
-    "@sanity/components": "1.150.8",
-    "@sanity/diff": "1.150.7",
-    "@sanity/react-hooks": "1.150.8",
-    "@sanity/types": "1.150.7",
-    "@sanity/util": "1.150.1",
+    "@sanity/base": "2.0.1",
+    "@sanity/components": "2.0.1",
+    "@sanity/diff": "2.0.1",
+    "@sanity/react-hooks": "2.0.1",
+    "@sanity/types": "2.0.1",
+    "@sanity/util": "2.0.1",
     "date-fns": "^2.16.1",
     "sanity-diff-patch": "^1.0.9"
   },

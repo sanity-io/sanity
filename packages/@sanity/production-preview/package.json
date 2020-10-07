@@ -1,6 +1,6 @@
 {
   "name": "@sanity/production-preview",
-  "version": "1.150.1",
+  "version": "2.0.1",
   "description": "Production preview",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
