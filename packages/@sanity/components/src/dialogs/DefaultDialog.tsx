@@ -81,7 +81,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
       data-dialog-color={color}
       data-dialog-padding={padding}
       data-dialog-size={size}
-      style={{opacity: modal.depth < modal.size ? 0 : 1}}
+      // style={{opacity: modal.depth < modal.size ? 0 : 1}}
     >
       <div className={styles.overlay} />
 
