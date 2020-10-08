@@ -25,6 +25,10 @@ declare module 'part:@sanity/components/menu-button' {
   export * from '@sanity/components/src/menuButton'
 }
 
+declare module 'part:@sanity/components/modal' {
+  export * from '@sanity/components/src/modal'
+}
+
 declare module 'part:@sanity/components/popover' {
   export * from '@sanity/components/src/popover'
 }

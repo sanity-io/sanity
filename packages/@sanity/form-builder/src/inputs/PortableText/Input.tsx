@@ -18,7 +18,7 @@ import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import {Portal} from 'part:@sanity/components/portal'
+import {Modal} from 'part:@sanity/components/modal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
@@ -363,13 +363,13 @@ export default function PortableTextInput(props: Props) {
   const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
-        <Portal key={`portal-${activationId}`}>
+        <Modal key={`portal-${activationId}`}>
           <StackedEscapeable onEscape={handleToggleFullscreen}>
             <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
               {ptEditor}
             </div>
           </StackedEscapeable>
-        </Portal>
+        </Modal>
       ) : (
         <ActivateOnFocus
           inputId={activationId}
