@@ -54,10 +54,7 @@ const arrayWithPt = {
       type: 'object',
       name: 'objectWithPT',
       title: 'Object with PT',
-      fields: [
-        {type: 'string', name: 'title', title: 'Title'},
-        {type: 'array', name: 'pt', title: 'Portable Text', of: [{type: 'block'}]}
-      ]
+      fields: [{type: 'string', name: 'title', title: 'Title'}, pt]
     }
   ]
 }
