@@ -15,6 +15,13 @@ export const getDefaultDocumentNode = ({schemaType}) => {
     ])
   }
 
+  if (schemaType === 'allInputs') {
+    return S.document().views([
+      S.view.form(),
+      S.view.component(JSONPreviewDocumentView).title('JSON')
+    ])
+  }
+
   return undefined
 }
 
