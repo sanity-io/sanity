@@ -399,6 +399,10 @@ declare module 'part:@sanity/components/menus/default' {
   export {default} from '@sanity/components/src/menus/DefaultMenu'
 }
 
+declare module 'part:@sanity/components/modal' {
+  export * from '@sanity/components/src/modal'
+}
+
 declare module 'part:@sanity/components/panes/default' {
   export {default} from '@sanity/components/src/panes/DefaultPane'
 }
