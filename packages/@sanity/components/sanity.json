@@ -1164,6 +1164,10 @@
     {
       "implements": "part:@sanity/components/scroll",
       "path": "scroll"
+    },
+    {
+      "implements": "part:@sanity/components/modal",
+      "path": "modal"
     }
   ]
 }
