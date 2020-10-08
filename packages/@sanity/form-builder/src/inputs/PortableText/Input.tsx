@@ -19,7 +19,7 @@ import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {Modal} from 'part:@sanity/components/modal'
-import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
+import Escapeable from 'part:@sanity/components/utilities/escapable'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
@@ -364,36 +364,37 @@ export default function PortableTextInput(props: Props) {
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
         <Modal key={`portal-${activationId}`}>
-          <StackedEscapeable onEscape={handleToggleFullscreen}>
+          <Escapeable onEscape={handleToggleFullscreen}>
             <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
               {ptEditor}
             </div>
-          </StackedEscapeable>
+          </Escapeable>
+
+          {editObject}
         </Modal>
       ) : (
-        <ActivateOnFocus
-          inputId={activationId}
-          html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
-          isActive={isActive}
-          onActivate={handleActivate}
-          overlayClassName={styles.activateOnFocusOverlay}
-        >
-          <ChangeIndicatorWithProvidedFullPath
-            compareDeep
-            value={value}
-            hasFocus={hasFocus && objectEditData === null}
-            path={[]}
+        <>
+          <ActivateOnFocus
+            inputId={activationId}
+            html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+            isActive={isActive}
+            onActivate={handleActivate}
+            overlayClassName={styles.activateOnFocusOverlay}
           >
-            {ptEditor}
-          </ChangeIndicatorWithProvidedFullPath>
-        </ActivateOnFocus>
+            <ChangeIndicatorWithProvidedFullPath
+              compareDeep
+              value={value}
+              hasFocus={hasFocus && objectEditData === null}
+              path={[]}
+            >
+              {ptEditor}
+            </ChangeIndicatorWithProvidedFullPath>
+          </ActivateOnFocus>
+          {editObject}
+        </>
       )}
     </div>
   )
-  return (
-    <>
-      {fullscreenToggledEditor}
-      {editObject}
-    </>
-  )
+
+  return <>{fullscreenToggledEditor}</>
 }
