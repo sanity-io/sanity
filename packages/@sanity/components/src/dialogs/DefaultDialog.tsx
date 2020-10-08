@@ -1,14 +1,15 @@
+/* eslint-disable react/no-unused-prop-types */
+
 import classNames from 'classnames'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {ContainerQuery} from 'part:@sanity/components/container-query'
 import styles from 'part:@sanity/components/dialogs/default-style'
-import {Portal} from 'part:@sanity/components/portal'
+import {Modal, useModal} from 'part:@sanity/components/modal'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
-import React, {useCallback} from 'react'
+import React, {createElement, useCallback} from 'react'
 import Escapable from '../utilities/Escapable'
-import Stacked from '../utilities/Stacked'
 import {DefaultDialogActions} from './DefaultDialogActions'
 import {DialogAction, DialogColor} from './types'
 
@@ -28,7 +29,7 @@ interface DefaultDialogProps {
   title?: string
 }
 
-function DefaultDialog(props: DefaultDialogProps) {
+function DefaultDialogChildren(props: DefaultDialogProps) {
   const {
     actions,
     actionsAlign,
@@ -50,6 +51,8 @@ function DefaultDialog(props: DefaultDialogProps) {
     actions && actions.length > 0 && styles.hasFunctions,
     classNameProp
   )
+
+  const modal = useModal() || {depth: 0, size: 0}
 
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
@@ -73,81 +76,82 @@ function DefaultDialog(props: DefaultDialogProps) {
     color && ['danger', 'success', 'warning'].includes(color) ? 'white' : undefined
 
   return (
-    <Portal>
-      <Stacked>
-        {isActive => (
-          <ContainerQuery
-            className={className}
-            data-dialog-color={color}
-            data-dialog-padding={padding}
-            data-dialog-size={size}
-          >
-            <div className={styles.overlay} />
+    <ContainerQuery
+      className={className}
+      data-dialog-color={color}
+      data-dialog-padding={padding}
+      data-dialog-size={size}
+      style={{opacity: modal.depth < modal.size ? 0 : 1}}
+    >
+      <div className={styles.overlay} />
 
-            <ClickOutside onClickOutside={isActive ? handleClickOutside : undefined}>
-              {ref => (
-                <div className={styles.card} ref={ref}>
-                  <Escapable
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onEscape={event => (isActive || event.shiftKey) && handleEscape(event)}
+      <ClickOutside onClickOutside={modal.depth === modal.size ? handleClickOutside : undefined}>
+        {ref => (
+          <div className={styles.card} ref={ref}>
+            <Escapable
+              // eslint-disable-next-line react/jsx-no-bind
+              onEscape={event =>
+                (modal.depth === modal.size || event.shiftKey) && handleEscape(event)
+              }
+            />
+            <div className={styles.inner}>
+              {renderFloatingCloseButton && (
+                <div className={styles.floatingCloseButtonContainer}>
+                  <Button
+                    icon={CloseIcon}
+                    kind="simple"
+                    onClick={onClose}
+                    padding="small"
+                    title="Close"
                   />
-                  <div className={styles.inner}>
-                    {renderFloatingCloseButton && (
-                      <div className={styles.floatingCloseButtonContainer}>
-                        <Button
-                          icon={CloseIcon}
-                          kind="simple"
-                          onClick={onClose}
-                          padding="small"
-                          title="Close"
-                        />
-                      </div>
-                    )}
-
-                    {title && (
-                      <div className={styles.header}>
-                        <div className={styles.title}>
-                          <h1>{title}</h1>
-                        </div>
-
-                        {renderCloseButton && (
-                          <div className={styles.closeButtonContainer}>
-                            <Button
-                              className={styles.closeButton}
-                              color={closeButtonColor}
-                              icon={CloseIcon}
-                              kind="simple"
-                              onClick={onClose}
-                              padding="small"
-                              title="Close"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    <ScrollContainer className={contentClassName}>
-                      <div className={styles.contentWrapper}>{children}</div>
-                    </ScrollContainer>
-
-                    {actions && actions.length > 0 && (
-                      <div className={styles.footer}>
-                        <DefaultDialogActions
-                          actions={actions}
-                          actionsAlign={actionsAlign}
-                          onAction={onAction}
-                        />
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
-            </ClickOutside>
-          </ContainerQuery>
+
+              {title && (
+                <div className={styles.header}>
+                  <div className={styles.title}>
+                    <h1>{title}</h1>
+                  </div>
+
+                  {renderCloseButton && (
+                    <div className={styles.closeButtonContainer}>
+                      <Button
+                        className={styles.closeButton}
+                        color={closeButtonColor}
+                        icon={CloseIcon}
+                        kind="simple"
+                        onClick={onClose}
+                        padding="small"
+                        title="Close"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <ScrollContainer className={contentClassName}>
+                <div className={styles.contentWrapper}>{children}</div>
+              </ScrollContainer>
+
+              {actions && actions.length > 0 && (
+                <div className={styles.footer}>
+                  <DefaultDialogActions
+                    actions={actions}
+                    actionsAlign={actionsAlign}
+                    onAction={onAction}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         )}
-      </Stacked>
-    </Portal>
+      </ClickOutside>
+    </ContainerQuery>
   )
+}
+
+function DefaultDialog(props: DefaultDialogProps) {
+  return <Modal>{createElement(DefaultDialogChildren, props)}</Modal>
 }
 
 export default DefaultDialog

@@ -27,7 +27,7 @@
 .root {
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
   position: absolute;
-  z-index: var(--zindex-portal);
+  /* z-index: var(--zindex-portal); */
   top: 0;
   left: 0;
   bottom: 0;
