@@ -37,7 +37,9 @@ function generateTypeFilters(types) {
 
   const unionTypes = types.filter((type) => type.kind === 'Union').map((type) => type.name)
   const documentTypes = types.filter(
-    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    (type) =>
+      type.name === 'Document' ||
+      (type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'))
   )
 
   const builtinTypeFilters = createBuiltinTypeFilters(builtinTypeValues)
@@ -89,7 +91,7 @@ function getDocumentFilters() {
   return [
     {
       fieldName: '_',
-      type: 'DocumentFilter',
+      type: 'GlobalDocumentFilter',
       description: 'Apply filters on document level',
     },
   ]
