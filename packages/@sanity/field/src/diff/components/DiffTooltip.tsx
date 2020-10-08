@@ -36,7 +36,7 @@ export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotations
 }
 
 function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
-  const {annotations, children, description = 'Changed', placement = 'top'} = props
+  const {annotations, children, description = 'Changed', placement = 'auto'} = props
 
   if (!annotations) {
     return children
@@ -52,7 +52,12 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   )
 
   return (
-    <Tooltip content={content} placement={placement} portal>
+    <Tooltip
+      content={content}
+      placement={placement}
+      portal
+      allowedAutoPlacements={['top', 'bottom']}
+    >
       {children}
     </Tooltip>
   )

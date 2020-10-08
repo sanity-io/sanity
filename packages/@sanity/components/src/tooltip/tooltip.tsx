@@ -16,6 +16,8 @@ export interface TooltipProps {
   placement?: TooltipPlacement
   portal?: boolean
   tone?: 'navbar'
+  allowedAutoPlacements?: TooltipPlacement[]
+  fallbackPlacements?: TooltipPlacement[]
 }
 
 export function Tooltip(
@@ -56,6 +58,13 @@ export function Tooltip(
       {
         name: 'offset',
         options: {offset: [0, 3]}
+      },
+      {
+        name: 'flip',
+        options: {
+          allowedAutoPlacements: props.allowedAutoPlacements,
+          fallbackPlacements: props.fallbackPlacements
+        }
       }
     ]
   })
