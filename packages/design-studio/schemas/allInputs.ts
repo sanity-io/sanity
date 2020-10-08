@@ -6,6 +6,50 @@ const title = {
 
 // example fields
 
+const arrayOfNestedArrays = {
+  type: 'array',
+  name: 'arrayOfNestedArrays',
+  title: 'Array (0)',
+  of: [
+    {
+      type: 'object',
+      name: 'level1',
+      title: 'Level 1',
+      fields: [
+        {type: 'string', name: 'title', title: 'Title'},
+        {
+          type: 'array',
+          name: 'nestedArray',
+          title: 'Nested array',
+          of: [
+            {
+              type: 'object',
+              name: 'level1',
+              title: 'Level 1',
+              fields: [
+                {type: 'string', name: 'title', title: 'Title'},
+                {
+                  type: 'array',
+                  name: 'nestedArray',
+                  title: 'Nested array',
+                  of: [
+                    {
+                      type: 'object',
+                      name: 'level1',
+                      title: 'Level 1',
+                      fields: [{type: 'string', name: 'title', title: 'Title'}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
 const arrayListOfOptionsExample = {
   type: 'array',
   name: 'arrayListOfOptionsExample',
@@ -481,6 +525,7 @@ export default {
     title,
 
     // array
+    arrayOfNestedArrays,
     arrayListOfOptionsExample,
     arrayListOfObjectOptionsExample,
     arrayListOfReferenceOptionsExample,
