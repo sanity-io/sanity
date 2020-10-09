@@ -5,7 +5,7 @@ import styles from 'part:@sanity/components/selects/searchable-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import {Portal} from 'part:@sanity/components/portal'
+import {Modal} from 'part:@sanity/components/modal'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
@@ -235,7 +235,7 @@ const StatelessSearchableSelect = React.forwardRef(
           </div>
         </div>
         {isOpen && (
-          <Portal>
+          <Modal>
             <Stacked>
               {isActive => (
                 <div
@@ -276,7 +276,7 @@ const StatelessSearchableSelect = React.forwardRef(
                 </div>
               )}
             </Stacked>
-          </Portal>
+          </Modal>
         )}
       </>
     )
