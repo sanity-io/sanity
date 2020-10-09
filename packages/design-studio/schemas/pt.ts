@@ -2,7 +2,10 @@ const objectExample = {
   type: 'object',
   name: 'objectExample',
   title: 'Object (1)',
-  fields: [{type: 'string', name: 'title', title: 'Title'}]
+  fields: [
+    {type: 'string', name: 'title', title: 'Title'},
+    {type: 'reference', name: 'author', to: {type: 'author'}}
+  ]
 }
 
 const imageExample = {
@@ -33,6 +36,17 @@ const pt = {
                 name: 'href',
                 title: 'URL',
                 validation: Rule => Rule.required()
+              },
+              {
+                type: 'string',
+                name: 'target',
+                title: 'Target',
+                options: {
+                  list: [
+                    {value: '_blank', title: 'Blank'},
+                    {value: '_parent', title: 'Parent'}
+                  ]
+                }
               }
             ]
           },
