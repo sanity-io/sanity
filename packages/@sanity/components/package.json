@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,7 +22,7 @@
     "@juggle/resize-observer": "^3.2.0",
     "@popperjs/core": "^2.4.4",
     "@reach/auto-id": "^0.10.5",
-    "@sanity/base": "2.0.1",
+    "@sanity/base": "2.0.2",
     "@sanity/types": "2.0.1",
     "@sanity/util": "2.0.1",
     "boundless-arrow-key-navigation": "^1.1.0",
