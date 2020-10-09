@@ -48,10 +48,10 @@ export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvid
   const documentIdRaw = props.options.id
   const documentId = getPublishedId(documentIdRaw)
   const documentTypeName = props.options.type
-  const {patch}: any = useDocumentOperation(documentIdRaw, documentTypeName)
-  const editState: any = useEditState(documentIdRaw, documentTypeName)
-  const {markers} = useValidationStatus(documentIdRaw, documentTypeName)
-  const connectionState = useConnectionState(documentIdRaw, documentTypeName)
+  const {patch}: any = useDocumentOperation(documentId, documentTypeName)
+  const editState: any = useEditState(documentId, documentTypeName)
+  const {markers} = useValidationStatus(documentId, documentTypeName)
+  const connectionState = useConnectionState(documentId, documentTypeName)
   const schemaType = schema.get(documentTypeName)
 
   const onChange = React.useCallback(
