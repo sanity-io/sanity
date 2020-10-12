@@ -11,6 +11,7 @@ import deleteDatasetCommand from './dataset/deleteDatasetCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
 import copyDatasetCommand from './dataset/copyDatasetCommand'
+import aliasDatasetCommand from './dataset/alias/aliasCommands'
 import documentsGroup from './documents/documentsGroup'
 import getDocumentsCommand from './documents/getDocumentsCommand'
 import queryDocumentsCommand from './documents/queryDocumentsCommand'
@@ -52,6 +53,7 @@ export default [
   importDatasetCommand,
   deleteDatasetCommand,
   copyDatasetCommand,
+  aliasDatasetCommand,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,

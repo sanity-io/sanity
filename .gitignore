@@ -45,7 +45,9 @@ jspm_packages
 # VS Code settings
 .vscode
 
+# Intelli J
+.idea
+
 # Lockfiles
 yarn.lock
 package-lock.json
-/.idea/

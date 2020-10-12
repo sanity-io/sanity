@@ -1,18 +1,16 @@
 {
   "name": "@sanity/cli",
-  "version": "2.0.9",
+  "version": "1.150.7",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run package-yarn && npm run pack",
-    "build:lib": "babel src --copy-files --out-dir lib",
-    "clean": "rimraf lib",
+    "build": "npm run package-yarn && npm run pack",
     "pack": "node scripts/pack.js",
     "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
-    "prebuild": "npm run clean",
+    "clean": "rimraf lib",
     "prepublishOnly": "npm run build"
   },
   "engines": {
@@ -38,9 +36,9 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "2.0.9",
-    "@sanity/resolver": "2.0.9",
-    "@sanity/util": "2.0.9",
+    "@sanity/client": "1.150.7",
+    "@sanity/resolver": "1.150.1",
+    "@sanity/util": "1.150.1",
     "boxen": "^4.1.0",
     "chalk": "^2.3.0",
     "configstore": "^5.0.1",

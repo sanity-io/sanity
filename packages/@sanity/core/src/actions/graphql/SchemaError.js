@@ -5,7 +5,9 @@ const generateHelpUrl = require('@sanity/generate-help-url')
 // eslint-disable-next-line no-console
 const consoleOutputter = {error: (...args) => console.error(...args)}
 
-module.exports = class SchemaError extends Error {
+module.exports = class SchemaError extends (
+  Error
+) {
   constructor(problemGroups) {
     super('Schema errors encountered')
     this.problemGroups = problemGroups

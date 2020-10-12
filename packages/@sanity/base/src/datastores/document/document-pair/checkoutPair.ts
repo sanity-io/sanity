@@ -1,9 +1,9 @@
-import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {filter, map, share} from 'rxjs/operators'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {merge, Observable} from 'rxjs'
 import client from 'part:@sanity/base/client'
+import {getPairListener, ListenerEvent} from '../getPairListener'
+import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
+import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
@@ -50,9 +50,9 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(filter((ev) => ev.type === 'reconnect')) as Observable<
-    ReconnectEvent
-  >
+  const reconnect$ = listenerEvents$.pipe(
+    filter((ev) => ev.type === 'reconnect')
+  ) as Observable<ReconnectEvent>
 
   const draft = createBufferedDocument(
     draftId,

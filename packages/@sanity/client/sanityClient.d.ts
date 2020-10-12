@@ -1473,6 +1473,13 @@ export interface SanityClient {
     ): Promise<{datasetName: string; aclMode: DatasetAclMode}>
 
     /**
+     * Unlik a dataset from a dataset alias with the given name
+     *
+     * @param name Name of the dataset alias to unlink
+     */
+    unlink(name: string): Promise<{aliasName: string; datasetName: string}>
+
+    /**
      * Delete a dataset with the given name
      *
      * @param name Name of the dataset to delete
