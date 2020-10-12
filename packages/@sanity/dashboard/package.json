@@ -26,7 +26,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "2.0.1",
+    "@sanity/base": "2.0.2",
     "@sanity/check": "2.0.1",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
