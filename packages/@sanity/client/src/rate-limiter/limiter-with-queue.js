@@ -48,25 +48,6 @@ assign(RateLimiterWithQueue.prototype, {
     )
   },
 
-  handleRequestSync(request) {
-    const req = this._addToDelayQueueSync(request)
-    this._shiftSync()
-    return req
-  },
-
-  _addToDelayQueueSync(request) {
-    if (this.queue.length >= this.maxQueueSize) {
-      throw new QueueLimitError(
-        `You have reached your client side rate limit threshold to learn more, visit ${helpUrl(
-          'js-client-rate-limit'
-        )}`
-      )
-    }
-
-    this._pushSync({resolve: () => request})
-    return request
-  },
-
   _addToDelayQueue(request) {
     return new Promise(
       function(resolve, reject) {
@@ -90,42 +71,6 @@ assign(RateLimiterWithQueue.prototype, {
   _push(requestHandler) {
     this.queue.push(requestHandler)
     this._shiftInit()
-  },
-
-  _pushSync(requestHandler) {
-    this.queue.push(requestHandler)
-    this._shiftInitSync()
-  },
-
-  _shiftSync() {
-    if (!this.queue.length) return
-    if (this.requestCount === this.maxRps) {
-      if (this.onRateLimited) this.onRateLimited(this.requestCount >= this.maxRps)
-      if (this.timeoutId && typeof this.timeoutId.ref === 'function') {
-        this.timeoutId.ref()
-      }
-
-      return
-    }
-
-    const queued = this.queue.shift()
-    queued.resolve()
-
-    if (this.requestCount === 0) {
-      this.timeoutId = setTimeout(
-        function() {
-          this.requestCount = 0
-          this._shiftSync()
-        }.bind(this),
-        this.interval
-      )
-
-      if (typeof this.timeoutId.unref === 'function') {
-        if (this.queue.length === 0) this.timeoutId.unref()
-      }
-    }
-
-    this.requestCount += 1
   },
 
   _shift() {
@@ -163,15 +108,6 @@ assign(RateLimiterWithQueue.prototype, {
     setTimeout(
       function() {
         return this._shift()
-      }.bind(this),
-      0
-    )
-  },
-
-  _shiftInitSync() {
-    setTimeout(
-      function() {
-        return this._shiftSync()
       }.bind(this),
       0
     )

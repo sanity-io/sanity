@@ -40,15 +40,16 @@ function RateLimiter(options) {
 assign(RateLimiter.prototype, {
   handleRequestAsync(request) {
     return new Promise(
-      function(resolve) {
+      function(resolve, reject) {
         const info = this.limitWithInfo()
         if (info.blocked) {
           this.onRateLimited(this.limitWithInfo().blocked)
-          throw new RateLimitError(`
+          const e = new RateLimitError(`
               You have reached your client side rate limit threshold to learn more, visit ${helpUrl(
                 'js-client-rate-limit'
               )}
             `)
+          reject(e)
         }
         resolve(request)
       }.bind(this)
@@ -59,7 +60,11 @@ assign(RateLimiter.prototype, {
     const info = this.limitWithInfo()
     if (info.blocked) {
       this.onRateLimited(this.limitWithInfo().blocked)
-      return null
+      throw new RateLimitError(`
+              You have reached your client side rate limit threshold to learn more, visit ${helpUrl(
+                'js-client-rate-limit'
+              )}
+            `)
     }
     return request && request
   },
@@ -78,22 +83,22 @@ assign(RateLimiter.prototype, {
   },
 
   _calculateInfo(timestamps) {
-    const numTimestamps = timestamps.length
-    const currentTimestamp = timestamps[numTimestamps - 1]
+    const timestampsLen = timestamps.length
+    const currentTimestamp = timestamps[timestampsLen - 1]
 
-    const blocked = numTimestamps > this.maxRps
+    const blocked = timestampsLen > this.maxRps
 
     const microsecondsUntilAllowed = Math.max(
       0,
-      numTimestamps >= this.maxRps
-        ? timestamps[Math.max(0, numTimestamps - this.maxRps)] - currentTimestamp + this.interval
+      timestampsLen >= this.maxRps
+        ? timestamps[Math.max(0, timestampsLen - this.maxRps)] - currentTimestamp + this.interval
         : 0
     )
 
     return {
       blocked,
-      requestRemaining: Math.max(0, this.maxRps - numTimestamps),
-      millisecondsUntilAllowed: timeConverter.microsecondsToMilliseconds(microsecondsUntilAllowed)
+      coolTime: timeConverter.microsecondsToMilliseconds(microsecondsUntilAllowed),
+      requestRemaining: Math.max(0, this.maxRps - timestampsLen)
     }
   },
 

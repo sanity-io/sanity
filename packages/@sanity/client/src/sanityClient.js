@@ -33,7 +33,6 @@ function SanityClient(config = defaultConfig) {
 
   // initialize limiter
   this.limiter = new RateLimiter(this.clientConfig.rateLimit)
-  this.limiterWithQueue = new RateLimiterWithQueue(this.clientConfig.rateLimit)
 
   if (this.clientConfig.isPromiseAPI) {
     const observableConfig = assign({}, this.clientConfig, {isPromiseAPI: false})
@@ -84,9 +83,7 @@ assign(SanityClient.prototype, {
       })
     )
 
-    return this.limiterWithQueue.handleRequestSync(
-      httpRequest(reqOptions, this.clientConfig.requester)
-    )
+    return this.limiter.handleRequest(httpRequest(reqOptions, this.clientConfig.requester))
   },
 
   request(options) {
