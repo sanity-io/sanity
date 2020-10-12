@@ -6,6 +6,8 @@
 
 .menu {
   padding: var(--extra-small-padding) 0;
+  max-height: calc(50vh - 6em);
+  overflow: auto;
 }
 
 .menuItem {
