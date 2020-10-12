@@ -7,8 +7,11 @@
 
 .fieldWrapper {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   grid-gap: 2rem var(--medium-padding);
+
+  @nest &[data-columns='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .fieldset {
@@ -41,15 +44,15 @@
 }
 
 @media (--screen-medium) {
-  .columns4 .fieldWrapper {
+  .columns4 .fieldWrapper[data-columns='true'] {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .columns3 .fieldWrapper {
+  .columns3 .fieldWrapper[data-columns='true'] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .columns2 .fieldWrapper {
+  .columns2 .fieldWrapper[data-columns='true'] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
