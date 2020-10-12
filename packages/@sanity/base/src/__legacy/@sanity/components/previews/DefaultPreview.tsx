@@ -114,7 +114,6 @@ class DefaultPreview extends React.PureComponent<DefaultPreviewProps> {
   }
 }
 
-export default Styleable(
-  DefaultPreview as any,
-  defaultStyles
-) as React.ComponentType<DefaultPreviewProps>
+export default Styleable(DefaultPreview as any, defaultStyles) as React.ComponentType<
+  DefaultPreviewProps
+>
