@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c58ceb50-73c1-4ce6-83f9-26ea47e8427c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter/errors.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter/limiter-with-queue.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter/limiter.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter/rx-backoff.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/@sanity/client/src/util/micro-time-converter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@sanity/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@sanity/client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@sanity/client/src/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@sanity/client/src/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@sanity/client/src/sanityClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@sanity/client/src/sanityClient.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1iJPxoWJERT04gFf3zzJpnQdwc3" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/packages/@sanity/client/src/rate-limiter" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c58ceb50-73c1-4ce6-83f9-26ea47e8427c" name="Default Changelist" comment="" />
+      <created>1601622972080</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1601622972080</updated>
+      <workItem from="1601622973437" duration="16236000" />
+      <workItem from="1601887388780" duration="2972000" />
+      <workItem from="1602228871033" duration="11895000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="594" y="166" width="604" height="737" key="find.popup" timestamp="1601646127736">
+      <screen x="0" y="23" width="1792" height="1024" />
+    </state>
+    <state x="594" y="166" width="604" height="735" key="find.popup/0.23.1792.1022@0.23.1792.1022" timestamp="1601642975166" />
+    <state x="594" y="166" width="604" height="737" key="find.popup/0.23.1792.1024@0.23.1792.1024" timestamp="1601646127736" />
+  </component>
+</project>

@@ -9,6 +9,9 @@ const ProjectsClient = require('./projects/projectsClient')
 const AssetsClient = require('./assets/assetsClient')
 const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
+const RateLimiter = require('./rate-limiter/limiter')
+const RateLimiterWithQueue = require('./rate-limiter/limiter-with-queue')
+const rxBackoff = require('./rate-limiter/rx-backoff')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
@@ -27,6 +30,10 @@ function SanityClient(config = defaultConfig) {
   this.projects = new ProjectsClient(this)
   this.users = new UsersClient(this)
   this.auth = new AuthClient(this)
+
+  // initialize limiter
+  this.limiter = new RateLimiter(this.clientConfig.rateLimit)
+  this.limiterWithQueue = new RateLimiterWithQueue(this.clientConfig.rateLimit)
 
   if (this.clientConfig.isPromiseAPI) {
     const observableConfig = assign({}, this.clientConfig, {isPromiseAPI: false})
@@ -77,11 +84,20 @@ assign(SanityClient.prototype, {
       })
     )
 
-    return httpRequest(reqOptions, this.clientConfig.requester)
+    return this.limiterWithQueue.handleRequestSync(
+      httpRequest(reqOptions, this.clientConfig.requester)
+    )
   },
 
   request(options) {
     const observable = this._requestObservable(options).pipe(
+      // for demo purpose only
+      rxBackoff({
+        maxRetryAttempts: 6,
+        scalingDuration: 1000,
+        initialDuration: 100,
+        includedStatusCodes: [429]
+      }),
       filter(event => event.type === 'response'),
       map(event => event.body)
     )
