@@ -103,6 +103,7 @@ export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvid
   return (
     <DocumentHistoryProvider documentId={documentId} value={value}>
       <DocumentPane
+        title={props.title}
         connectionState={connectionState}
         documentId={documentId}
         documentIdRaw={documentIdRaw}
