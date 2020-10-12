@@ -98,12 +98,13 @@ export function Tooltip(
   )
 
   return (
-    <>
+    <div
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {React.cloneElement(children, {
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave,
         ref: setReferenceElement
       })}
 
@@ -113,6 +114,6 @@ export function Tooltip(
           {!portalProp && popperNode}
         </>
       )}
-    </>
+    </div>
   )
 }
