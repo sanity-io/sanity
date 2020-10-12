@@ -105,6 +105,12 @@
 }
 
 .hitArea {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  display: block;
+  padding: 0;
+  background: 0;
   position: absolute;
   left: calc(0 - var(--extra-small-padding));
   width: calc(var(--extra-small-padding) + var(--medium-padding));
