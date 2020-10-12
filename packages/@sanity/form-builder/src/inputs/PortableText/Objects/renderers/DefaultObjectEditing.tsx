@@ -43,7 +43,7 @@ export function DefaultObjectEditing(props: Props) {
       {(): JSX.Element => (
         <DefaultDialog
           isOpen
-          onClickOutside={onClose}
+          // onClickOutside={onClose} /* disabled to fix dialogs closing in nested PTEs */
           onClose={onClose}
           showCloseButton
           title={type.title}
