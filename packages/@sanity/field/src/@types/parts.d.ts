@@ -115,6 +115,10 @@ declare module 'part:@sanity/components/dialogs/popover' {
   export {default} from '@sanity/components/src/dialogs/PopoverDialog'
 }
 
+declare module 'part:@sanity/components/layer' {
+  export * from '@sanity/components/src/layer'
+}
+
 declare module 'part:@sanity/components/loading/spinner-style'
 declare module 'part:@sanity/components/loading/spinner' {
   export {default} from '@sanity/components/src/loading/Spinner'
