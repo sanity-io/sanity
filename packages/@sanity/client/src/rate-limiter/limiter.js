@@ -12,10 +12,8 @@ function RateLimiter(options) {
   this.store = []
   this.onRateLimited = null
   this.ttls = null
-  this.backoffStatusCodes = 429
   this.requestCount = 0
-  this.maxQueueSize = 6
-  this.timeoutId = null
+  this.maxQueueSize = Infinity
 
   if (typeof options.maxRps !== 'number' || options.maxRps < 0) {
     throw new Error('Missing or invalid maxRps')
