@@ -203,7 +203,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
 }
 
 function TimelineButtonLabel({rev}: {rev: Chunk}) {
-  const timeAgo = useTimeAgo(rev.endTimestamp)
+  const timeAgo = useTimeAgo(rev.endTimestamp, {agoSuffix: true})
 
   return (
     <>

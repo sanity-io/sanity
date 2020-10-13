@@ -62,8 +62,12 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
   const lastUnpublishOrPublishSession = chunks.find(
     chunk => chunk.type === 'unpublish' || chunk.type === 'publish'
   )
-  const lastPublishedTimeAgo = useTimeAgo(lastUnpublishOrPublishSession?.endTimestamp || '')
-  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '')
+
+  const lastPublishedTimeAgo = useTimeAgo(lastUnpublishOrPublishSession?.endTimestamp || '', {
+    minimal: true,
+    agoSuffix: true
+  })
+  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
 
   // Make sure we only show editDraft sessions (and count the unpublish as a draft session)
   const filteredSessions = lastUnpublishOrPublishSession
