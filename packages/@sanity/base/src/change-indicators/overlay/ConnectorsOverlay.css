@@ -5,28 +5,9 @@
   pointer-events: none;
   position: absolute;
   left: 0;
+  top: 0;
   right: 0;
   bottom: 0;
   width: 100%;
-}
-
-.connector {
-  stroke: var(--brand-primary);
-  stroke-width: 2;
-  pointer-events: all;
-  cursor: pointer;
-}
-
-.dangerConnector {
-  composes: connector;
-  stroke: var(--state-danger-color);
-}
-
-.hoverConnector {
-  composes: connector;
-  stroke: var(--state-warning-color);
-}
-
-.hasFocus {
-  opacity: 1;
+  height: 100%;
 }
