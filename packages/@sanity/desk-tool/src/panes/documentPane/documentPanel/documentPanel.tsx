@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {createElement, useCallback, useMemo, useRef} from 'react'
+import {Path} from '@sanity/types'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView} from '../types'
@@ -10,7 +11,6 @@ import {DocumentHeaderTitle} from './header/title'
 import {DocumentPanelHeader} from './header/header'
 import {getMenuItems} from './menuItems'
 import {FormView} from './views'
-import {Path} from '@sanity/types'
 
 import styles from './documentPanel.css'
 import {
@@ -187,7 +187,9 @@ export function DocumentPanel(props: DocumentPanelProps) {
               })}
           </ScrollContainer>
 
-          <div className={styles.portal} ref={portalRef} />
+          <div className={styles.portalContainer}>
+            <div className={styles.portal} ref={portalRef} />
+          </div>
         </div>
       </PortalProvider>
     </div>
