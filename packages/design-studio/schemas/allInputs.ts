@@ -1,3 +1,5 @@
+import author from './author'
+
 const title = {
   type: 'string',
   name: 'title',
@@ -113,36 +115,43 @@ const arrayListOfReferenceOptionsExample = {
   }
 }
 
+const _complexObjectType = {
+  type: 'object',
+  name: 'complexObject',
+  title: 'Complex object',
+  fields: [
+    {type: 'string', name: 'title', title: 'Title'},
+    {
+      type: 'reference',
+      name: 'author',
+      title: 'Author',
+      to: [{type: 'author'}]
+    },
+    {type: 'string', name: 'field2', title: 'Field 2'},
+    {type: 'string', name: 'field3', title: 'Field 3'},
+    {type: 'string', name: 'field4', title: 'Field 4'},
+    {type: 'string', name: 'field5', title: 'Field 5'},
+    {type: 'string', name: 'field6', title: 'Field 6'},
+    {type: 'string', name: 'field7', title: 'Field 7'},
+    {type: 'string', name: 'field8', title: 'Field 8'},
+    {type: 'string', name: 'field9', title: 'Field 9'},
+    {type: 'string', name: 'field10', title: 'Field 10'},
+    {type: 'string', name: 'field11', title: 'Field 11'},
+    {type: 'string', name: 'field12', title: 'Field 12'},
+    {type: 'string', name: 'field13', title: 'Field 13'},
+    {type: 'string', name: 'field14', title: 'Field 14'},
+    {type: 'string', name: 'field15', title: 'Field 15'},
+    {type: 'string', name: 'field16', title: 'Field 16'},
+    {type: 'string', name: 'field17', title: 'Field 17'}
+  ]
+}
+
 const arrayOfObjectsExample = {
   type: 'array',
   name: 'arrayOfObjectsExample',
   title: 'Array (2)',
   description: 'List of objects',
-  of: [
-    {
-      type: 'object',
-      title: 'Item',
-      fields: [
-        {type: 'string', name: 'title', title: 'Title'},
-        {type: 'string', name: 'field2', title: 'Field 2'},
-        {type: 'string', name: 'field3', title: 'Field 3'},
-        {type: 'string', name: 'field4', title: 'Field 4'},
-        {type: 'string', name: 'field5', title: 'Field 5'},
-        {type: 'string', name: 'field6', title: 'Field 6'},
-        {type: 'string', name: 'field7', title: 'Field 7'},
-        {type: 'string', name: 'field8', title: 'Field 8'},
-        {type: 'string', name: 'field9', title: 'Field 9'},
-        {type: 'string', name: 'field10', title: 'Field 10'},
-        {type: 'string', name: 'field11', title: 'Field 11'},
-        {type: 'string', name: 'field12', title: 'Field 12'},
-        {type: 'string', name: 'field13', title: 'Field 13'},
-        {type: 'string', name: 'field14', title: 'Field 14'},
-        {type: 'string', name: 'field15', title: 'Field 15'},
-        {type: 'string', name: 'field16', title: 'Field 16'},
-        {type: 'string', name: 'field17', title: 'Field 17'}
-      ]
-    }
-  ],
+  of: [_complexObjectType],
   options: {
     editModal: undefined // 'fullscreen' | 'fold' | 'popover' | undefined
     // sortable: false
@@ -419,7 +428,7 @@ const portableTextExample = {
   type: 'array',
   name: 'portableTextExample',
   title: 'Portable text',
-  of: [{type: 'block', of: [objectExample]}, imageExample]
+  of: [{type: 'block', of: [objectExample]}, imageExample, _complexObjectType]
 }
 
 const referenceExample = {

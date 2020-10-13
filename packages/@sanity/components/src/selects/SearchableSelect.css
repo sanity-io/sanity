@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.layer {
+  pointer-events: none;
+}
+
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
 }
@@ -54,7 +58,7 @@
 }
 
 .popper {
-  z-index: var(--zindex-portal);
+  pointer-events: all;
   padding: 0 1px;
   box-sizing: border-box;
 }
@@ -63,7 +67,8 @@
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   display: block;
   min-height: 3.5rem;
-  max-height: 20rem;
+  max-height: 200px;
+  /* max-height: 20rem; */
   overflow: auto;
   box-sizing: border-box;
   background-color: var(--component-bg);

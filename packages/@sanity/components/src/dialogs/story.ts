@@ -4,6 +4,7 @@ import {DefaultStory} from './stories/default'
 import {DialogContentStory} from './stories/dialogContent'
 import {FullscreenStory} from './stories/fullscreen'
 import {PopoverStory} from './stories/popover'
+import {NestedStory} from './stories/nested'
 import {ConfirmStory} from './stories/confirm'
 
 storiesOf('@sanity/components/dialogs', module)
@@ -13,3 +14,4 @@ storiesOf('@sanity/components/dialogs', module)
   .add('Fullscreen', FullscreenStory)
   .add('PopOver', PopoverStory)
   .add('Confirm', ConfirmStory)
+  .add('Nested', NestedStory)

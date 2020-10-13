@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 
+import {Modifier} from '@popperjs/core'
 import classNames from 'classnames'
 import React from 'react'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
@@ -29,28 +30,36 @@ interface StyleSelectProps {
   transparent?: boolean
 }
 
-const modifiers = {
-  preventOverflow: {
-    padding: 0,
-    boundariesElement: 'viewport'
-  },
-  offset: {
-    offset: '0, 0'
-  },
-  flip: {
-    enabled: false
-  },
-  customStyle: {
-    enabled: true,
-    fn: data => {
-      data.styles = {
-        ...data.styles,
-        maxHeight: window ? window.innerHeight - data.popper.top - 10 : 300
-      }
-      return data
+const modifiers = [
+  {
+    name: 'preventOverflow',
+    options: {
+      rootBoundary: 'viewport',
+      padding: 0
     }
-  }
-}
+  },
+  {
+    name: 'offset',
+    options: {
+      offset: [0, 0]
+    }
+  },
+  {
+    name: 'flip',
+    options: {
+      enabled: false
+    }
+  },
+  {
+    name: 'sameWidth',
+    enabled: true,
+    phase: 'beforeWrite',
+    requires: ['computeStyles'],
+    fn({state}) {
+      state.styles.popper.maxHeight = `${window.innerHeight - 6 * 16}px`
+    }
+  } as Modifier<'sameWidth', any>
+]
 
 const StyleSelectList = React.forwardRef(
   (props: {children: React.ReactNode}, ref: React.Ref<HTMLUListElement>) => (
@@ -210,13 +219,13 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
           </div>
         </button>
 
-        <Poppable
-          onEscape={this.handleCloseList}
-          modifiers={modifiers as any}
-          onClickOutside={this.handleCloseList}
-          popperClassName={styles.popper}
-        >
-          {showList && (
+        {showList && (
+          <Poppable
+            onEscape={this.handleCloseList}
+            modifiers={modifiers}
+            onClickOutside={this.handleCloseList}
+            popperClassName={styles.popper}
+          >
             <>
               <ArrowKeyNavigation component={StyleSelectList}>
                 {items.map((item, index) => {
@@ -248,8 +257,8 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
               </ArrowKeyNavigation>
               <div tabIndex={0} onFocus={this.handleMenuBlur} />
             </>
-          )}
-        </Poppable>
+          </Poppable>
+        )}
       </div>
     )
   }

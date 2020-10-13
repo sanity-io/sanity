@@ -6,7 +6,6 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: var(--zindex-portal);
   background: var(--backdrop-color);
   color: var(--component-text-color);
   padding: var(--large-padding);
@@ -16,8 +15,8 @@
   justify-content: center;
 }
 
-.inner {
-  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+.card {
+  composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   box-sizing: border-box;
   max-height: 100%;

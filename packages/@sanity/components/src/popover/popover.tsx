@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import {Layer} from 'part:@sanity/components/layer'
 import {Portal} from 'part:@sanity/components/portal'
 import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
@@ -21,6 +22,7 @@ interface PopoverProps {
   className?: string
   content?: React.ReactNode
   disabled?: boolean
+  layer?: boolean
   open?: boolean
   placement?: Placement
   portal?: boolean
@@ -41,9 +43,10 @@ export const Popover = forwardRef(
       className,
       content,
       disabled,
+      layer,
       open,
       placement = 'bottom',
-      portal: portalProp,
+      portal,
       style,
       targetElement,
       ...restProps
@@ -106,31 +109,41 @@ export const Popover = forwardRef(
       return children || <></>
     }
 
-    const popperNode = open && (
-      <div
-        {...restProps}
-        className={classNames(styles.root, className)}
-        ref={setReference}
-        style={{...popper.styles.popper, ...(style || {})}}
-        {...popper.attributes.popper}
-      >
-        <div className={classNames(styles.card, cardClassName)}>{content}</div>
-        <PopoverArrow
-          className={arrowClassName}
-          ref={setArrowElement}
-          style={popper.styles.arrow}
-        />
-      </div>
-    )
+    let popperNode: React.ReactNode = null
+
+    if (open) {
+      popperNode = (
+        <div
+          {...restProps}
+          className={classNames(styles.root, className)}
+          ref={setReference}
+          style={{...popper.styles.popper, ...(style || {})}}
+          {...popper.attributes.popper}
+        >
+          <div className={classNames(styles.card, cardClassName)}>{content}</div>
+          <PopoverArrow
+            className={arrowClassName}
+            ref={setArrowElement}
+            style={popper.styles.arrow}
+          />
+        </div>
+      )
+
+      if (layer) {
+        popperNode = <Layer className={styles.layer}>{popperNode}</Layer>
+      }
+
+      if (portal) {
+        popperNode = <Portal>{popperNode}</Portal>
+      }
+    }
 
     return (
       <>
         {children && !targetElement
           ? cloneElement(children, {ref: setReferenceElement})
           : children || <></>}
-
-        {portalProp && <Portal>{popperNode}</Portal>}
-        {!portalProp && popperNode}
+        {popperNode}
       </>
     )
   }

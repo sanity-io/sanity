@@ -16,7 +16,7 @@ import {
   Path,
   SanityDocument
 } from '@sanity/types'
-import React from 'react'
+import React, {createElement} from 'react'
 import PropTypes from 'prop-types'
 
 // Parts
@@ -485,13 +485,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     if (!item) {
       return null
     }
-    const Icon = item.icon || ImageIcon
+
     return (
       <div className={styles.selectDropDownAssetSourceItem}>
-        <div className={styles.selectDropDownAssetSourceIcon}>
-          <Icon />
+        <div className={styles.selectDropDownAssetSourceItem__inner}>
+          <div className={styles.selectDropDownAssetSourceItem__iconContainer}>
+            {createElement(item.icon || ImageIcon)}
+          </div>
+          <div className={styles.selectDropDownAssetSourceItem__label}>{item.title}</div>
         </div>
-        <div>{item.title}</div>
       </div>
     )
   }
@@ -507,7 +509,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           inverted
           showArrow
         >
-          Select from
+          Select
         </DropDownButton>
       )
     }

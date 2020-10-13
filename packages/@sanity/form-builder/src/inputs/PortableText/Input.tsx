@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
-import React, {useEffect, useState, useMemo} from 'react'
+import React, {useEffect, useState, useMemo, useCallback} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   getPortableTextFeatures,
@@ -18,8 +18,7 @@ import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import {Modal} from 'part:@sanity/components/modal'
-import Escapeable from 'part:@sanity/components/utilities/escapable'
+import {Layer} from 'part:@sanity/components/layer'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
@@ -178,13 +177,13 @@ export default function PortableTextInput(props: Props) {
     }
   }, [selection])
 
-  function handleToggleFullscreen(): void {
+  const handleToggleFullscreen = useCallback(() => {
     setInitialSelection(PortableTextEditor.getSelection(editor))
     const val = PortableTextEditor.getValue(editor)
     onToggleFullscreen()
     forceUpdate(val)
     setTimeout(() => PortableTextEditor.focus(editor))
-  }
+  }, [editor, onToggleFullscreen])
 
   function focus(): void {
     PortableTextEditor.focus(editor)
@@ -363,15 +362,13 @@ export default function PortableTextInput(props: Props) {
   const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
       {isFullscreen ? (
-        <Modal key={`portal-${activationId}`}>
-          <Escapeable onEscape={handleToggleFullscreen}>
-            <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-              {ptEditor}
-            </div>
-          </Escapeable>
+        <Layer key={`portal-${activationId}`}>
+          <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
+            {ptEditor}
+          </div>
 
           {editObject}
-        </Modal>
+        </Layer>
       ) : (
         <>
           <ActivateOnFocus

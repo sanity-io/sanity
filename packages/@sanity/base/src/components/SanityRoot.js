@@ -1,6 +1,7 @@
 import React, {useRef, useState} from 'react'
 import config from 'config:sanity'
 import RootComponent from 'part:@sanity/base/root'
+import {LayerProvider} from 'part:@sanity/components/layer'
 import {PortalProvider} from 'part:@sanity/components/portal'
 import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 import {userColorManager, UserColorManagerProvider} from '../user-color'
@@ -22,15 +23,17 @@ function SanityRoot() {
   return (
     <UserColorManagerProvider manager={userColorManager}>
       <PortalProvider element={portalElement}>
-        <SnackbarProvider>
-          <div className={styles.root} ref={rootRef}>
-            <DevServerStatus />
-            <ErrorHandler />
-            <RootComponent />
-            <VersionChecker />
-          </div>
-          <div data-portal="" ref={setPortalElement} />
-        </SnackbarProvider>
+        <LayerProvider>
+          <SnackbarProvider>
+            <div className={styles.root} ref={rootRef}>
+              <DevServerStatus />
+              <ErrorHandler />
+              <RootComponent />
+              <VersionChecker />
+            </div>
+            <div data-portal="" ref={setPortalElement} />
+          </SnackbarProvider>
+        </LayerProvider>
       </PortalProvider>
     </UserColorManagerProvider>
   )

@@ -1,20 +1,28 @@
 import {Modifier} from '@popperjs/core'
-import React, {useCallback, useState} from 'react'
+import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import styles from 'part:@sanity/components/selects/searchable-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+import {Layer, useLayer} from 'part:@sanity/components/layer'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import {Modal} from 'part:@sanity/components/modal'
+import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
-import Escapable from '../utilities/Escapable'
-import Stacked from '../utilities/Stacked'
+import {useClickOutside} from '../hooks'
 import SelectMenu from './SelectMenu'
 
 // @todo
 type Item = unknown
 type Value = any
+
+interface StatelessSearchableSelectResultsProps {
+  highlightIndex: number
+  isLoading?: boolean
+  items?: Item[]
+  onClose: (event: Event) => void
+  onSelect: (item: Item) => void
+  renderItem: (item: Item) => React.ReactNode
+  value?: Value
+}
 
 interface StatelessSearchableSelectProps {
   onChange?: (item: Item) => void
@@ -49,7 +57,96 @@ const sameWidthModifier: Modifier<'sameWidth', any> = {
   }
 }
 
-const StatelessSearchableSelect = React.forwardRef(
+const StatelessSearchableSelectResults = forwardRef(
+  (props: StatelessSearchableSelectResultsProps & React.HTMLProps<HTMLDivElement>, ref) => {
+    const {
+      highlightIndex,
+      isLoading,
+      items = [],
+      onClose,
+      onSelect,
+      renderItem: renderItemProp,
+      value,
+      ...restProps
+    } = props
+    const layer = useLayer()
+    const isTopLayer = layer.depth === layer.size
+    const itemsLen = items.length
+
+    const renderItem = useCallback(
+      (item: Item) => {
+        return <div className={styles.item}>{renderItemProp(item)}</div>
+      },
+      [renderItemProp]
+    )
+
+    const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+
+    const setRef = useCallback(
+      (el: HTMLDivElement | null) => {
+        setRootElement(el)
+        if (typeof ref === 'function') ref(el)
+        else if (ref) ref.current = el
+      },
+      [ref]
+    )
+
+    useClickOutside(
+      useCallback(
+        (event: Event) => {
+          if (!isTopLayer) return
+          onClose(event)
+        },
+        [isTopLayer, onClose]
+      ),
+      [rootElement]
+    )
+
+    useEffect(() => {
+      if (!isTopLayer) return undefined
+
+      const handleGlobalKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation()
+          onClose(event as Event)
+        }
+      }
+
+      window.addEventListener('keydown', handleGlobalKeyDown)
+
+      return () => {
+        window.removeEventListener('keydown', handleGlobalKeyDown)
+      }
+    }, [isTopLayer, onClose])
+
+    return (
+      <div {...restProps} ref={setRef} className={styles.popper}>
+        <div className={itemsLen === 0 ? styles.listContainerNoResult : styles.listContainer}>
+          <div
+            className={
+              itemsLen === 0 && !isLoading ? styles.noResultText : styles.noResultTextHidden
+            }
+          >
+            No results
+          </div>
+          {itemsLen > 0 && (
+            <SelectMenu
+              items={items}
+              value={value}
+              onSelect={onSelect}
+              renderItem={renderItem}
+              highlightIndex={highlightIndex}
+            />
+          )}
+        </div>
+      </div>
+    )
+  }
+)
+
+StatelessSearchableSelectResults.displayName = 'StatelessSearchableSelectResults'
+
+const StatelessSearchableSelect = forwardRef(
   // eslint-disable-next-line complexity
   (props: StatelessSearchableSelectProps & React.HTMLProps<HTMLInputElement>, ref) => {
     const {
@@ -133,6 +230,12 @@ const StatelessSearchableSelect = React.forwardRef(
     const handleKeyDown = useCallback(
       // eslint-disable-next-line complexity
       (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Escape' && isOpen) {
+          event.stopPropagation()
+          if (onClose) onClose()
+          return
+        }
+
         if (event.key === 'ArrowDown' && !isOpen) {
           if (onOpen) onOpen()
         }
@@ -165,7 +268,7 @@ const StatelessSearchableSelect = React.forwardRef(
           }
         }
       },
-      [highlightIndex, isOpen, itemsLen, onHighlightIndexChange, onOpen]
+      [highlightIndex, isOpen, itemsLen, onClose, onHighlightIndexChange, onOpen]
     )
 
     const handleKeyUp = useCallback(
@@ -175,13 +278,6 @@ const StatelessSearchableSelect = React.forwardRef(
         }
       },
       [highlightIndex, items, onChange]
-    )
-
-    const renderItem = useCallback(
-      (item: Item) => {
-        return <div className={styles.item}>{renderItemProp(item)}</div>
-      },
-      [renderItemProp]
     )
 
     return (
@@ -234,49 +330,20 @@ const StatelessSearchableSelect = React.forwardRef(
             )}
           </div>
         </div>
+
         {isOpen && (
-          <Modal>
-            <Stacked>
-              {isActive => (
-                <div
-                  ref={setPopperElement}
-                  className={styles.popper}
-                  style={popper.styles.popper}
-                  {...popper.attributes.popper}
-                >
-                  <CaptureOutsideClicks
-                    onClickOutside={isActive && isOpen ? handleClose : undefined}
-                  >
-                    <div
-                      className={
-                        itemsLen === 0 ? styles.listContainerNoResult : styles.listContainer
-                      }
-                    >
-                      <Escapable onEscape={handleClose} />
-                      <div
-                        className={
-                          itemsLen === 0 && !isLoading
-                            ? styles.noResultText
-                            : styles.noResultTextHidden
-                        }
-                      >
-                        No results
-                      </div>
-                      {itemsLen > 0 && (
-                        <SelectMenu
-                          items={items}
-                          value={value}
-                          onSelect={handleSelect}
-                          renderItem={renderItem}
-                          highlightIndex={highlightIndex}
-                        />
-                      )}
-                    </div>
-                  </CaptureOutsideClicks>
-                </div>
-              )}
-            </Stacked>
-          </Modal>
+          <Layer className={styles.layer}>
+            <StatelessSearchableSelectResults
+              highlightIndex={highlightIndex}
+              items={items}
+              onClose={handleClose}
+              onSelect={handleSelect}
+              ref={setPopperElement}
+              renderItem={renderItemProp}
+              style={popper.styles.popper}
+              {...popper.attributes.popper}
+            />
+          </Layer>
         )}
       </>
     )

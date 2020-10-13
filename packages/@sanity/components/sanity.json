@@ -1166,8 +1166,12 @@
       "path": "scroll"
     },
     {
-      "implements": "part:@sanity/components/modal",
-      "path": "modal"
+      "implements": "part:@sanity/components/layer",
+      "path": "layer"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "layer/story"
     }
   ]
 }
