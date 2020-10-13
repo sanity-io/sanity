@@ -130,7 +130,7 @@ export const Popover = forwardRef(
       )
 
       if (layer) {
-        popperNode = <Layer>{popperNode}</Layer>
+        popperNode = <Layer className={styles.layer}>{popperNode}</Layer>
       }
 
       if (portal) {

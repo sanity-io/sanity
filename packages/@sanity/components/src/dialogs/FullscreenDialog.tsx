@@ -1,13 +1,15 @@
+/* eslint-disable react/no-unused-prop-types */
+
 import classNames from 'classnames'
 import {partition} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
-import {Portal} from 'part:@sanity/components/portal'
+import {Layer, useLayer} from 'part:@sanity/components/layer'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
-import React from 'react'
-import StackedEscapable from '../utilities/StackedEscapable'
+import React, {createElement, useCallback, useEffect, useState} from 'react'
+import {useClickOutside} from '../hooks'
 import {DialogAction} from './types'
 
 interface FullScreenDialogProps {
@@ -15,8 +17,9 @@ interface FullScreenDialogProps {
   className?: string
   title?: React.ReactNode
   children?: React.ReactNode
+  onClickOutside?: () => void
   onClose?: () => void
-  onEscape?: () => void
+  onEscape?: (event: KeyboardEvent) => void
   isOpen?: boolean
   onAction?: (action: DialogAction) => void
   actions?: DialogAction[]
@@ -26,84 +29,132 @@ interface FullScreenDialogProps {
   padding?: 'none' | 'small' | 'medium' | 'large'
 }
 
-const noop = () => undefined
+function FullscreenDialog(props: FullScreenDialogProps) {
+  return <Layer>{createElement(FullscreenDialogChildren, props)}</Layer>
+}
 
-// @todo: refactor to functional component
-export default class FullScreenDialog extends React.PureComponent<FullScreenDialogProps> {
-  createButtonFromAction = (action: DialogAction, i: number) => {
-    const {onAction} = this.props
+export default FullscreenDialog
 
-    return (
-      <Button
-        key={i}
-        onClick={() => onAction && onAction(action)}
-        data-action-index={i}
-        color={action.color}
-        disabled={action.disabled}
-        inverted={action.inverted}
-        kind={action.kind}
-        autoFocus={action.autoFocus}
-        className={action.secondary ? styles.actionSecondary : ''}
-      >
-        {action.title}
-      </Button>
-    )
-  }
+function FullscreenDialogChildren(props: FullScreenDialogProps) {
+  const {
+    title,
+    cardClassName,
+    className,
+    onAction,
+    onClickOutside,
+    onClose,
+    onEscape,
+    isOpen = true,
+    actions
+  } = props
 
-  renderActions = (actions: DialogAction[]) => {
-    if (!actions || actions.length === 0) {
-      return null
+  const layer = useLayer()
+  const isTopLayer = layer.depth === layer.size
+
+  const [secondary, primary] = partition(actions, action => action.secondary)
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.shiftKey || isTopLayer) && event.key === 'Escape') {
+        if (onEscape) onEscape(event)
+        // NOTE: This code used to be `onEscape || onClose`
+        else if (onClose) onClose()
+      }
     }
 
-    const [secondary, primary] = partition(actions, action => action.secondary)
+    window.addEventListener('keydown', handleKeyDown)
 
-    return (
-      <ButtonGrid align="end" secondary={secondary.map(this.createButtonFromAction)}>
-        {primary.map(this.createButtonFromAction)}
-      </ButtonGrid>
-    )
-  }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isTopLayer, onClose, onEscape])
 
-  // eslint-disable-next-line complexity
-  render() {
-    const {title, cardClassName, className, onClose, onEscape, isOpen = true, actions} = this.props
+  const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null)
 
-    return (
-      <StackedEscapable onEscape={onEscape || onClose || noop}>
-        <Portal>
-          <section
-            className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}
-          >
-            <div className={classNames(styles.inner, cardClassName)}>
-              {(title || onClose) && (
-                <header className={styles.header}>
-                  {title && <h1 className={styles.title}>{title}</h1>}
+  useClickOutside(
+    useCallback(() => {
+      if (!isTopLayer) return
+      if (onClickOutside) onClickOutside()
+    }, [isTopLayer, onClickOutside]),
+    [cardElement]
+  )
 
-                  {onClose && (
-                    <div className={styles.actions}>
-                      <Button
-                        className={styles.closeButton}
-                        icon={CloseIcon}
-                        kind="simple"
-                        onClick={onClose}
-                        padding="small"
-                      />
-                    </div>
-                  )}
-                </header>
-              )}
+  return (
+    <div className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}>
+      <div className={classNames(styles.card, cardClassName)} ref={setCardElement}>
+        {(title || onClose) && (
+          <header className={styles.header}>
+            {title && <h1 className={styles.title}>{title}</h1>}
 
-              {this.props.children && (
-                <ScrollContainer className={styles.content}>{this.props.children}</ScrollContainer>
-              )}
+            {onClose && (
+              <div className={styles.actions}>
+                <Button
+                  className={styles.closeButton}
+                  icon={CloseIcon}
+                  kind="simple"
+                  onClick={onClose}
+                  padding="small"
+                />
+              </div>
+            )}
+          </header>
+        )}
 
-              {actions && actions.length > 0 && (
-                <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
-              )}
-            </div>
-          </section>
-        </Portal>
-      </StackedEscapable>
-    )
-  }
+        {props.children && (
+          <ScrollContainer className={styles.content}>{props.children}</ScrollContainer>
+        )}
+
+        {actions && actions.length > 0 && (
+          <div className={styles.actionsWrapper}>
+            <ButtonGrid
+              align="end"
+              secondary={secondary.map((action, actionIndex) => (
+                <FullscreenDialogActionButton
+                  action={action}
+                  index={actionIndex}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={actionIndex}
+                  onAction={onAction}
+                />
+              ))}
+            >
+              {primary.map((action, actionIndex) => (
+                <FullscreenDialogActionButton
+                  action={action}
+                  index={actionIndex}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={actionIndex}
+                  onAction={onAction}
+                />
+              ))}
+            </ButtonGrid>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function FullscreenDialogActionButton(props: {
+  action: DialogAction
+  index: number
+  onAction?: (action: DialogAction) => void
+}) {
+  const {action, index, onAction} = props
+  const handleClick = useCallback(() => onAction && onAction(action), [action, onAction])
+
+  return (
+    <Button
+      autoFocus={action.autoFocus}
+      className={action.secondary ? styles.actionSecondary : undefined}
+      color={action.color}
+      data-action-index={index}
+      disabled={action.disabled}
+      inverted={action.inverted}
+      kind={action.kind}
+      onClick={handleClick}
+    >
+      {action.title}
+    </Button>
+  )
 }

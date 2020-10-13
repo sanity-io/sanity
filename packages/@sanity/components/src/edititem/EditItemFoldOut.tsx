@@ -2,11 +2,10 @@ import {Modifier} from '@popperjs/core'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import styles from 'part:@sanity/components/edititem/fold-style'
+import {Layer, useLayer} from 'part:@sanity/components/layer'
 import {Portal} from 'part:@sanity/components/portal'
-import React, {useEffect, useState} from 'react'
+import React, {forwardRef, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
-import Escapable from '../utilities/Escapable'
-import Stacked from '../utilities/Stacked'
 
 interface EditItemFoldOutProps {
   title?: string
@@ -27,6 +26,51 @@ const sameWidthModifier: Modifier<'sameWidth', any> = {
 }
 
 export default EditItemFoldOut
+
+const EditItemFoldOutChildren = forwardRef(
+  (
+    props: {onClose?: () => void; title?: string} & Omit<React.HTMLProps<HTMLDivElement>, 'title'>,
+    ref
+  ) => {
+    const {children, onClose, title, ...restProps} = props
+    const layer = useLayer()
+    const isTopLayer = layer.depth === layer.size
+
+    useEffect(() => {
+      if (!isTopLayer) return undefined
+
+      const handleGlobalKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation()
+          if (onClose) onClose()
+        }
+      }
+
+      window.addEventListener('keydown', handleGlobalKeyDown)
+
+      return () => {
+        window.removeEventListener('keydown', handleGlobalKeyDown)
+      }
+    }, [isTopLayer, onClose])
+
+    return (
+      <div {...restProps} className={styles.root} ref={ref as any}>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <div className={styles.header__title}>{title}</div>
+            <div className={styles.header__actions}>
+              <DefaultButton icon={CloseIcon} kind="simple" onClick={onClose} padding="small" />
+            </div>
+          </div>
+
+          <div className={styles.content}>{children}</div>
+        </div>
+      </div>
+    )
+  }
+)
+
+EditItemFoldOutChildren.displayName = 'EditItemFoldOutChildren'
 
 function EditItemFoldOut(props: EditItemFoldOutProps) {
   const {title = '', onClose, children, referenceElement: referenceElementProp, style = {}} = props
@@ -61,35 +105,25 @@ function EditItemFoldOut(props: EditItemFoldOutProps) {
   }, [forceUpdate, children, popperReferenceElement])
 
   const popperNode = (
-    <Stacked>
-      {isActive => (
-        <div
-          className={styles.root}
+    <Portal>
+      <Layer>
+        <EditItemFoldOutChildren
+          onClose={onClose}
           ref={setPopperElement}
           style={{...popper.styles.popper, ...(style || {})}}
+          title={title}
           {...popper.attributes.popper}
         >
-          <Escapable onEscape={event => (isActive || event.shiftKey) && onClose && onClose()} />
-
-          <div className={styles.card}>
-            <div className={styles.header}>
-              <div className={styles.header__title}>{title}</div>
-              <div className={styles.header__actions}>
-                <DefaultButton icon={CloseIcon} kind="simple" onClick={onClose} padding="small" />
-              </div>
-            </div>
-
-            <div className={styles.content}>{children}</div>
-          </div>
-        </div>
-      )}
-    </Stacked>
+          {children}
+        </EditItemFoldOutChildren>
+      </Layer>
+    </Portal>
   )
 
   return (
     <>
       <div ref={setReferenceElement} />
-      <Portal>{popperNode}</Portal>
+      {popperNode}
     </>
   )
 }

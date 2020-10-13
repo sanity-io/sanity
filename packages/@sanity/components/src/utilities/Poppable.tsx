@@ -1,10 +1,11 @@
-import PopperJS, {Modifier} from '@popperjs/core'
-import React, {Fragment} from 'react'
-import {Manager, Reference, Popper} from 'react-popper'
-import CaptureOutsideClicks from './CaptureOutsideClicks'
-import Escapable from './Escapable'
-import {Portal} from './Portal'
-import Stacked from './Stacked'
+import classNames from 'classnames'
+import {Modifier} from '@popperjs/core'
+import React, {forwardRef, useCallback, useEffect, useState} from 'react'
+import {usePopper} from 'react-popper'
+import {Layer, useLayer} from 'part:@sanity/components/layer'
+import {Portal} from 'part:@sanity/components/portal'
+import {useClickOutside} from '../hooks'
+import {Placement} from '../types'
 
 import styles from './Poppable.css'
 
@@ -16,7 +17,7 @@ interface PoppableProps {
   children?: React.ReactNode
   referenceClassName?: string
   referenceElement?: HTMLElement
-  placement?: PopperJS.Placement
+  placement?: Placement
   positionFixed?: boolean
   popperClassName?: string
   modifiers?: PopperModifiers
@@ -26,93 +27,119 @@ const DEFAULT_MODIFIERS: PopperModifiers = [
   {
     name: 'preventOverflow',
     options: {
-      boundaryElement: 'viewport'
+      rootBoundary: 'viewport'
     }
   }
 ]
 
-// @todo: refactor to functional component
-export default class Poppable extends React.Component<PoppableProps> {
-  popperNode: HTMLElement | null = null
+export default Poppable
 
-  setPopperNode = (node: HTMLElement | null) => {
-    this.popperNode = node
-  }
+const PoppableChildren = forwardRef(
+  (
+    props: {
+      onEscape?: () => void
+      onClickOutside?: (ev: MouseEvent) => void
+      popperClassName?: string
+    } & React.HTMLProps<HTMLDivElement>,
+    ref
+  ) => {
+    const {children, onEscape, onClickOutside, popperClassName, ...restProps} = props
+    const layer = useLayer()
+    const isTopLayer = layer.depth === layer.size
+    const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
-  handleClickOutside = (ev: MouseEvent) => {
-    if (!this.popperNode || !ev.target) {
-      return
-    }
+    const setRef = useCallback(
+      (el: HTMLDivElement | null) => {
+        setRootElement(el)
+        if (typeof ref === 'function') ref(el)
+        else if (ref) ref.current = el
+      },
+      [ref]
+    )
 
-    if (!this.popperNode.contains(ev.target as Node)) {
-      const {onClickOutside} = this.props
+    useClickOutside(
+      (event: Event) => {
+        if (!isTopLayer) return
+        if (onClickOutside) onClickOutside(event as MouseEvent)
+      },
+      [rootElement]
+    )
 
-      if (onClickOutside) onClickOutside(ev)
-    }
-  }
+    useEffect(() => {
+      if (!isTopLayer) return undefined
 
-  render() {
-    const {
-      onEscape,
-      onClickOutside,
-      children,
-      referenceClassName,
-      modifiers = DEFAULT_MODIFIERS,
-      placement = 'bottom-start',
-      popperClassName,
-      referenceElement
-    } = this.props
+      const handleGlobalKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation()
+          if (onEscape) onEscape()
+        }
+      }
 
-    // Undefined referenceElement causes Popper to think it is defined
-    const popperPropHack: {referenceElement?: HTMLElement} = {}
-    if (referenceElement) {
-      popperPropHack.referenceElement = referenceElement
-    }
+      window.addEventListener('keydown', handleGlobalKeyDown)
+
+      return () => {
+        window.removeEventListener('keydown', handleGlobalKeyDown)
+      }
+    }, [isTopLayer, onEscape])
 
     return (
-      <Manager>
-        {!referenceElement && (
-          <Reference>{({ref}) => <div ref={ref} className={referenceClassName} />}</Reference>
-        )}
-        {children && (
-          <Portal>
-            <Stacked>
-              {isActive => (
-                <div className={styles.portal}>
-                  <Popper
-                    innerRef={this.setPopperNode}
-                    modifiers={modifiers}
-                    placement={placement}
-                    {...popperPropHack}
-                  >
-                    {({ref, placement: placementState, style}) => (
-                      <div
-                        ref={ref}
-                        style={style}
-                        data-placement={placementState}
-                        className={popperClassName}
-                      >
-                        <Fragment>
-                          <Escapable onEscape={isActive ? onEscape : undefined} />
-                          {onClickOutside ? (
-                            <CaptureOutsideClicks
-                              onClickOutside={isActive ? this.handleClickOutside : undefined}
-                            >
-                              {children}
-                            </CaptureOutsideClicks>
-                          ) : (
-                            children
-                          )}
-                        </Fragment>
-                      </div>
-                    )}
-                  </Popper>
-                </div>
-              )}
-            </Stacked>
-          </Portal>
-        )}
-      </Manager>
+      <div {...restProps} className={classNames(styles.root, popperClassName)} ref={setRef}>
+        {children}
+      </div>
     )
   }
+)
+
+PoppableChildren.displayName = 'PoppableChildren'
+
+function Poppable(props: PoppableProps) {
+  const {
+    onEscape,
+    onClickOutside,
+    children,
+    referenceClassName,
+    modifiers = DEFAULT_MODIFIERS,
+    placement = 'bottom-start',
+    popperClassName,
+    referenceElement: referenceElementProp
+  } = props
+
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+  const popperReferenceElement = referenceElementProp || referenceElement
+
+  const popper = usePopper(popperReferenceElement, popperElement, {
+    placement,
+    modifiers
+  })
+
+  const {forceUpdate} = popper
+
+  // Force update when `content` or `referenceElement` changes
+  useEffect(() => {
+    if (forceUpdate) forceUpdate()
+  }, [forceUpdate, children, popperReferenceElement])
+
+  return (
+    <>
+      {!referenceElementProp && <div ref={setReferenceElement} className={referenceClassName} />}
+
+      {children && (
+        <Portal>
+          <Layer className={styles.layer}>
+            <PoppableChildren
+              onEscape={onEscape}
+              onClickOutside={onClickOutside}
+              popperClassName={popperClassName}
+              ref={setPopperElement}
+              style={{...popper.styles.popper}}
+              {...popper.attributes.popper}
+            >
+              {children}
+            </PoppableChildren>
+          </Layer>
+        </Portal>
+      )}
+    </>
+  )
 }

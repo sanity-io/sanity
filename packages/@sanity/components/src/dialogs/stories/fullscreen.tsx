@@ -3,9 +3,9 @@ import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import {PortalProvider} from 'part:@sanity/components/portal'
+import {LayerProvider, useLayer} from 'part:@sanity/components/layer'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import React, {useEffect, useRef} from 'react'
+import React from 'react'
 
 const chance = new Chance()
 
@@ -55,40 +55,44 @@ export function FullscreenStory() {
   const contentTest = select('content', dialogTestContent, 'minimal')
   return (
     <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
-      <DialogExample
-        title={text('title', undefined, 'props')}
-        onClose={boolean('Has onClose', false, 'test') && action('onClose')}
-        centered={boolean('centered', false, 'props')}
-        color={select(
-          'Color',
-          ['default', 'danger', 'success', 'info', 'warning'],
-          undefined,
-          'props'
-        )}
-        actions={dialogActions}
-        onAction={action('onAction')}
-      >
-        {contentTest && renderFullscreenContent(contentTest)}
-      </DialogExample>
+      <LayerProvider>
+        <DialogExample
+          title={text('title', undefined, 'props')}
+          onClose={boolean('Has onClose', false, 'test') && action('onClose')}
+          centered={boolean('centered', false, 'props')}
+          color={select(
+            'Color',
+            ['default', 'danger', 'success', 'info', 'warning'],
+            undefined,
+            'props'
+          )}
+          actions={dialogActions}
+          onAction={action('onAction')}
+        >
+          {contentTest && renderFullscreenContent(contentTest)}
+        </DialogExample>
+      </LayerProvider>
     </Sanity>
   )
 }
 
 function DialogExample(props) {
   const {children, ...restProps} = props
-  const portalRef = useRef(document.createElement('div'))
-
-  useEffect(() => {
-    portalRef.current.setAttribute('data-portal', '')
-    document.body.appendChild(portalRef.current)
-    return () => {
-      document.body.removeChild(portalRef.current)
-    }
-  }, [])
 
   return (
-    <PortalProvider element={portalRef.current}>
-      <FullscreenDialog {...restProps}>{children}</FullscreenDialog>
-    </PortalProvider>
+    <FullscreenDialog {...restProps}>
+      <DialogExampleChildren>{children}</DialogExampleChildren>
+    </FullscreenDialog>
+  )
+}
+
+function DialogExampleChildren({children}: {children: React.ReactNode}) {
+  const layer = useLayer()
+
+  return (
+    <>
+      <pre>depth={layer.depth}</pre>
+      <div>{children}</div>
+    </>
   )
 }
