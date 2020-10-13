@@ -133,7 +133,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
   }
 
   renderFieldset(fieldset, fieldsetIndex) {
-    const {level, focusPath, presence, onFocus} = this.props
+    const {level, focusPath, presence, onFocus, markers} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
     const isExpanded =
@@ -155,6 +155,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           presence={isCollapsed ? childPresence : []}
           onFocus={onFocus}
           changeIndicator={false}
+          markers={markers}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
