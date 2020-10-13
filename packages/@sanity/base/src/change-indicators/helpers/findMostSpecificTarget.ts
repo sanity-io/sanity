@@ -1,4 +1,5 @@
 import * as PathUtils from '@sanity/util/paths'
+import {isKeyedObject} from '@sanity/types'
 import {TrackedChange, TrackedArea} from '../'
 
 export function findMostSpecificTarget(
@@ -19,14 +20,20 @@ export function findMostSpecificTarget(
     }
 
     const numEqual = PathUtils.numEqualSegments(path, target.path)
-    const mostSpecificPath = mostSpecific ? mostSpecific.path : []
-    if (numEqual === 0 || numEqual <= mostSpecificPath.length) {
-      continue
-    }
+    const lastPathSegment = target.path[target.path.length - 1]
+    const pathOnlyDiffersByKey =
+      numEqual === target.path.length - 1 && isKeyedObject(lastPathSegment)
 
-    if (numEqual !== target.path.length) {
-      // Only match full paths, eg if target is foo.bar.baz,
-      // don't match foo.lol even if `foo` is the most specific
+    if (numEqual === 0) {
+      continue
+    } else if (numEqual !== target.path.length && !pathOnlyDiffersByKey) {
+      /*
+       * We only allow matching to shorter paths if the last element in the path is a keyed object.
+       * `foo.bar.portableTextField[_key=abc123]` should resolve to `foo.bar.portableTextField`.
+       *
+       * Otherwise we'll only get a connector line when you add new elements to a portable text
+       * field and not when you alter an existing part.
+       */
       continue
     }
 
