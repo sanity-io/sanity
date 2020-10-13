@@ -4,6 +4,7 @@ import {isKeySegment, Path} from '@sanity/types'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import SanityPreview from 'part:@sanity/base/preview'
 import {useClickOutside} from '@sanity/components'
+import {useLayer} from 'part:@sanity/components/layer'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
@@ -68,7 +69,6 @@ function InlineObjectWithDiff({
   schemaType,
   ...restProps
 }: InlineObjectWithDiffProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const {path: fullPath} = React.useContext(DiffContext)
   const {onSetFocus} = React.useContext(ConnectorContext)
   const color = useDiffAnnotationColor(diff, [])
@@ -111,18 +111,18 @@ function InlineObjectWithDiff({
     [focusPath]
   )
 
-  const handleClickOutside = useCallback(() => {
+  const handleClose = useCallback(() => {
     setOpen(false)
   }, [])
 
-  useClickOutside(handleClickOutside, [popoverElement])
-
   const popoverContent = (
     <DiffContext.Provider value={{path: myPath}}>
-      <div className={styles.popoverContent}>
-        {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
-        {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
-      </div>
+      <PopoverContent
+        diff={diff}
+        emptyObject={emptyObject}
+        onClose={handleClose}
+        schemaType={schemaType}
+      />
     </DiffContext.Provider>
   )
 
@@ -131,7 +131,7 @@ function InlineObjectWithDiff({
 
   return (
     <span {...restProps} className={className} onClick={handleOpenPopup} style={style}>
-      <Popover content={popoverContent} open={open} ref={setPopoverElement}>
+      <Popover content={popoverContent} layer open={open} portal>
         <span className={styles.previewContainer}>
           <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
             <span>
@@ -142,5 +142,36 @@ function InlineObjectWithDiff({
         </span>
       </Popover>
     </span>
+  )
+}
+
+function PopoverContent({
+  diff,
+  emptyObject,
+  onClose,
+  schemaType
+}: {
+  diff: ObjectDiff
+  emptyObject: boolean
+  onClose: () => void
+  schemaType: ObjectSchemaType
+}) {
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const layer = useLayer()
+  const isTopLayer = layer.depth === layer.size
+
+  useClickOutside(
+    useCallback(() => {
+      if (!isTopLayer) return
+      onClose()
+    }, [isTopLayer, onClose]),
+    [popoverElement]
+  )
+
+  return (
+    <div className={styles.popoverContent} ref={setPopoverElement}>
+      {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
+      {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
+    </div>
   )
 }
