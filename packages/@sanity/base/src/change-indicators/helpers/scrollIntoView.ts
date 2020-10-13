@@ -28,7 +28,7 @@ const scrollIntoView = field => {
     top:
       parentElementWithScroll.scrollTop +
       field.rect.top -
-      field.rect.bounds.top +
+      field.bounds.top +
       SCROLL_INTO_VIEW_TOP_PADDING,
     left: 0,
     behavior: 'smooth'
