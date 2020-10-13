@@ -70,7 +70,11 @@ const arrayWithPt = {
       title: 'Object with PT',
       fields: [{type: 'string', name: 'title', title: 'Title'}, pt]
     }
-  ]
+  ],
+  options: {
+    // editModal: undefined // 'fullscreen' | 'fold' | 'popover' | undefined
+    // sortable: false
+  }
 }
 
 export default {
