@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   user-select: none;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
 }
 
 .menuItemDanger {

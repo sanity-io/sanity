@@ -83,16 +83,31 @@
 }
 
 .selectDropDownAssetSourceItem {
-  color: inherit;
-  text-decoration: none;
-  display: flex;
 }
 
-.selectDropDownAssetSourceIcon {
+.selectDropDownAssetSourceItem__inner {
   display: flex;
-  align-items: left;
-  justify-content: center;
-  align-self: center;
-  font-size: var(--font-size-large);
-  margin-right: var(--small-padding);
+  align-items: center;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
+}
+
+.selectDropDownAssetSourceItem__iconContainer {
+  height: 17px;
+
+  @nest & > svg {
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.selectDropDownAssetSourceItem__label {
+  margin: -2px 0 -1px;
+
+  @nest .selectDropDownAssetSourceItem__iconContainer + & {
+    margin-left: var(--small-padding);
+  }
 }

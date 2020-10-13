@@ -14,6 +14,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {useLayer} from 'part:@sanity/components/layer'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
@@ -67,6 +68,9 @@ function PortableTextSanityEditor(props: Props) {
     renderCustomMarkers,
     value
   } = props
+
+  const layer = useLayer()
+  const isTopLayer = layer.depth === layer.size
 
   const handleOpenObjectHotkey = (
     event: React.BaseSyntheticEvent,
@@ -150,6 +154,24 @@ function PortableTextSanityEditor(props: Props) {
   useEffect(() => {
     setForceUpdate(forceUpdate + 1)
   }, [])
+
+  useEffect(() => {
+    if (!isTopLayer || !isFullscreen) return undefined
+
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        onToggleFullscreen()
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown)
+    }
+  }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
   const editor = useMemo(
     () => (
