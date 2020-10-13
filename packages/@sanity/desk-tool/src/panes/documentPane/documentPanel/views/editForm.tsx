@@ -35,13 +35,27 @@ export const EditForm = memo((props: Props) => {
   const presence = useDocumentPresence(props.id)
   const subscriptionRef = useRef<Subscription | null>(null)
   const patchChannel = useMemo(() => FormBuilder.createPatchChannel(), [])
+  const {
+    filterField,
+    focusPath,
+    markers,
+    value,
+    onBlur,
+    onFocus,
+    onChange,
+    compareValue,
+    readOnly,
+    schema,
+    type
+  } = props
 
+  const startSegment = focusPath[0]
   useEffect(() => {
-    const el = document.querySelector(`[data-focus-path="${focusPath[0]}"]`)
+    const el = document.querySelector(`[data-focus-path="${startSegment}"]`)
     if (el) {
-      scrollIntoView(el, {scrollMode: 'if-needed'})
+      scrollIntoView(el, {scrollMode: 'if-needed', block: 'start'})
     }
-  }, [props.focusPath[0]])
+  }, [startSegment])
 
   useEffect(() => {
     subscriptionRef.current = documentStore.pair
@@ -60,20 +74,6 @@ export const EditForm = memo((props: Props) => {
       }
     }
   }, [])
-
-  const {
-    filterField,
-    focusPath,
-    markers,
-    value,
-    onBlur,
-    onFocus,
-    onChange,
-    compareValue,
-    readOnly,
-    schema,
-    type
-  } = props
 
   return (
     <form onSubmit={preventDefault}>
