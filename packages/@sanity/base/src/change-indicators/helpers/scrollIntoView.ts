@@ -1,8 +1,9 @@
-import isScrollContainer from './isScrollContainer'
+import {isScrollable} from './scrollUtils'
+import {Rect} from '../overlay/types'
 
 const SCROLL_INTO_VIEW_TOP_PADDING = -15
 
-const scrollIntoView = field => {
+const scrollIntoView = (field: {element: HTMLElement; rect: Rect; bounds: Rect}) => {
   const element = field.element
 
   /*
@@ -11,7 +12,7 @@ const scrollIntoView = field => {
    */
   let parentElementWithScroll = element
 
-  while (!isScrollContainer(parentElementWithScroll)) {
+  while (!isScrollable(parentElementWithScroll)) {
     parentElementWithScroll = parentElementWithScroll.parentElement
 
     /*
