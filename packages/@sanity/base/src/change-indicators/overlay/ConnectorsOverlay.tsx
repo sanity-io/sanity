@@ -4,18 +4,14 @@ import {Path} from '@sanity/types'
 import {ScrollMonitor} from 'part:@sanity/components/scroll'
 import {useReportedValues, Reported, TrackedChange} from '../'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
-import getRelativeRect from '../helpers/getRelativeRect'
+import {getElementGeometry} from '../helpers/getElementGeometry'
 import isChangeBar from '../helpers/isChangeBar'
 import scrollIntoView from '../helpers/scrollIntoView'
-import {
-  CONNECTOR_BOUNDS_MARGIN,
-  CONNECTOR_STROKE_WIDTH,
-  DEBUG_LAYER_BOUNDS,
-  VERTICAL_CONNECTOR_PADDING
-} from '../constants'
-import {Connector, drawLine, vLine} from './Connector'
-import {Arrow} from './Arrow'
+import {DEBUG_LAYER_BOUNDS} from '../constants'
+import {Connector} from './Connector'
+
 import styles from './ConnectorsOverlay.css'
+import {DebugLayers} from './DebugLayers'
 
 export interface Rect {
   height: number
@@ -23,8 +19,6 @@ export interface Rect {
   top: number
   left: number
 }
-
-const DEBUG = false
 
 interface Props {
   rootRef: HTMLDivElement
@@ -45,8 +39,6 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   if (!reportedChangesPanel) {
     return null
   }
-
-  const changesPanelRect = getRelativeRect(reportedChangesPanel.element, rootRef)
 
   const changeBarsWithHover: Reported<TrackedChange>[] = []
   const changeBarsWithFocus: Reported<TrackedChange>[] = []
@@ -84,88 +76,17 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
     .map(({field, change}) => ({
       hasHover: field.hasHover || change.hasHover,
       hasFocus: field.hasFocus,
-      field: {...field, rect: getRelativeRect(field.element, rootRef)},
-      change: {...change, rect: getRelativeRect(change.element, rootRef)}
+      hasRevertHover: change.hasRevertHover,
+      field: {...field, ...getElementGeometry(field.element, rootRef)},
+      change: {...change, ...getElementGeometry(change.element, rootRef)}
     }))
-
-  // note: this assumes the changes panel header and the document panel always have the same height
-  const topEdge = changesPanelRect?.top
-  const verticalLineLeft = changesPanelRect?.left
 
   const visibleConnectors = sortBy(enabledConnectors, c => -c.field.path.length).slice(0, 1)
 
   return (
     <ScrollMonitor onScroll={forceUpdate}>
-      <svg
-        className={styles.svg}
-        style={{
-          ...(DEBUG ? {backgroundColor: 'rgba(0, 100, 100, 0.2)'} : {}),
-          top: changesPanelRect.top,
-          height: changesPanelRect.height
-        }}
-      >
-        {visibleConnectors.map(({field, change, hasFocus}) => {
-          const changeMarkerLeft = change.rect.left + CONNECTOR_STROKE_WIDTH / 2
-
-          const fieldTop = field.rect.top + VERTICAL_CONNECTOR_PADDING
-          const fieldBottom = field.rect.top + field.rect.height - VERTICAL_CONNECTOR_PADDING
-          const changeTop = change.rect.top + VERTICAL_CONNECTOR_PADDING
-          const changeBottom = change.rect.top + change.rect.height - VERTICAL_CONNECTOR_PADDING
-
-          let connectorFromTop
-          let connectorToTop
-
-          if (fieldBottom < changeTop) {
-            connectorFromTop = fieldBottom
-            connectorToTop = changeTop
-          } else if (fieldTop > changeBottom) {
-            connectorFromTop = fieldTop
-            connectorToTop = changeBottom
-          } else {
-            connectorFromTop = Math.max(fieldTop, changeTop)
-            connectorToTop = Math.max(fieldTop, changeTop)
-          }
-
-          const connectorFrom = {
-            left: field.rect.left + field.rect.width + CONNECTOR_STROKE_WIDTH / 2,
-            top: connectorFromTop
-          }
-
-          const connectorTo = {
-            left: changeMarkerLeft,
-            top: connectorToTop
-          }
-
-          const fieldClampConnector = {
-            top: field.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
-            bottom: field.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
-          }
-
-          const changeClampConnector = {
-            top: change.rect.bounds.top + CONNECTOR_BOUNDS_MARGIN,
-            bottom: change.rect.bounds.bottom - CONNECTOR_BOUNDS_MARGIN
-          }
-
-          const drawArrowRightTop = changeBottom <= changeClampConnector.top
-          const drawArrowLeftTop = fieldBottom <= fieldClampConnector.top
-          const drawArrowLeftBottom = fieldTop >= fieldClampConnector.bottom
-          const drawArrowRightBottom = changeTop > changeClampConnector.bottom
-
-          if (drawArrowLeftTop && drawArrowRightTop) {
-            // Prevent drawing ^----^ arrow
-            return null
-          } else if (drawArrowLeftBottom && drawArrowRightBottom) {
-            // Prevent drawing v----v arrow
-            return null
-          }
-
-          let connectorClassName = styles.connector
-          if (change.hasRevertHover) {
-            connectorClassName = styles.dangerConnector
-          } else if (!hasFocus && isHoverConnector) {
-            connectorClassName = styles.hoverConnector
-          }
-
+      <svg className={styles.svg}>
+        {visibleConnectors.map(({field, change, hasFocus, hasHover, hasRevertHover}) => {
           const onConnectorClick = () => {
             scrollIntoView(field)
             scrollIntoView(change)
@@ -176,122 +97,21 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
           return (
             <React.Fragment key={`field-${field.id}`}>
               {change && (
-                <g onClick={onConnectorClick} className={connectorClassName}>
-                  <Connector
-                    from={connectorFrom}
-                    to={connectorTo}
+                <>
+                  <g
+                    onClick={onConnectorClick}
                     onMouseEnter={() => setHovered(field.id)}
                     onMouseLeave={() => setHovered(null)}
-                    clampLeft={fieldClampConnector}
-                    clampRight={changeClampConnector}
-                    verticalCenter={verticalLineLeft! + 3}
-                  />
-
-                  {/* arrow left top */}
-                  {drawArrowLeftTop && (
-                    <Arrow
-                      top={fieldClampConnector.top}
-                      left={connectorFrom.left}
-                      length={5}
-                      wingLength={8}
-                      direction="n"
+                  >
+                    <Connector
+                      from={{rect: field.rect, bounds: field.bounds}}
+                      to={{rect: change.rect, bounds: change.bounds}}
+                      focused={hasFocus}
+                      hovered={hasHover || isHoverConnector}
+                      revertHovered={hasRevertHover}
                     />
-                  )}
-
-                  {/* arrow left bottom */}
-                  {drawArrowLeftBottom && (
-                    <Arrow
-                      top={fieldClampConnector.bottom}
-                      left={connectorFrom.left}
-                      length={5}
-                      wingLength={8}
-                      direction="s"
-                    />
-                  )}
-
-                  {/* arrow right top */}
-                  {drawArrowRightTop && (
-                    <Arrow
-                      top={changeClampConnector.top}
-                      left={connectorTo.left}
-                      length={5}
-                      wingLength={8}
-                      direction="n"
-                    />
-                  )}
-
-                  {/* arrow right bottom */}
-                  {drawArrowRightBottom && (
-                    <Arrow
-                      top={changeClampConnector.bottom}
-                      left={connectorTo.left}
-                      length={5}
-                      wingLength={8}
-                      direction="s"
-                    />
-                  )}
-
-                  {/* this is the bar marking the line in the changes panel */}
-                  <path
-                    onClick={onConnectorClick}
-                    d={drawLine(
-                      vLine(
-                        connectorTo.left,
-                        Math.max(
-                          change.rect.bounds.top,
-                          Math.min(
-                            change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
-                            change.rect.top - topEdge!
-                          )
-                        ),
-                        Math.max(
-                          change.rect.bounds.top,
-                          Math.min(
-                            change.rect.top - topEdge! + change.rect.bounds.bottom - 19,
-                            change.rect.top - topEdge! + change.rect.height
-                          )
-                        )
-                      )
-                    )}
-                    strokeWidth={CONNECTOR_STROKE_WIDTH}
-                  />
-                </g>
-              )}
-              {DEBUG_LAYER_BOUNDS && (
-                <>
-                  <line
-                    x1={field.rect.left}
-                    y1={field.rect.bounds.top}
-                    x2={field.rect.left + field.rect.width}
-                    y2={field.rect.bounds.top}
-                    stroke="black"
-                    strokeWidth={CONNECTOR_STROKE_WIDTH}
-                  />
-                  <line
-                    x1={field.rect.left}
-                    y1={fieldClampConnector.top}
-                    x2={field.rect.left + field.rect.width}
-                    y2={fieldClampConnector.top}
-                    stroke="yellow"
-                    strokeWidth={CONNECTOR_STROKE_WIDTH}
-                  />
-                  <line
-                    x1={field.rect.left}
-                    y1={field.rect.bounds.bottom}
-                    x2={field.rect.left + field.rect.width}
-                    y2={field.rect.bounds.bottom}
-                    stroke="black"
-                    strokeWidth={CONNECTOR_STROKE_WIDTH}
-                  />
-
-                  <line
-                    x1={field.rect.left}
-                    y1={fieldClampConnector.bottom}
-                    x2={field.rect.left + field.rect.width}
-                    y2={fieldClampConnector.bottom}
-                    stroke="yellow"
-                    strokeWidth={CONNECTOR_STROKE_WIDTH}
-                  />
+                  </g>
+                  {DEBUG_LAYER_BOUNDS && <DebugLayers field={field} change={change} />}
                 </>
               )}
             </React.Fragment>
