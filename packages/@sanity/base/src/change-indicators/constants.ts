@@ -1,13 +1,16 @@
-export const VERTICAL_CONNECTOR_PADDING = 8
-
-export const DEBUG_LAYER_BOUNDS = false
-
-// How far the arrows will be placed away from the bounds
-export const CONNECTOR_BOUNDS_MARGIN = 3
-
-export const CONNECTOR_STROKE_WIDTH = 2
-
-export const CONNECTOR_CORNER_RADIUS = 8
-
 // Toggle tracking of change indicator DOM positions and connectors overlay rendering
 export const ENABLED = true
+
+export const CORNER_RADIUS = 4
+
+export const INTERACTIVE_STROKE_WIDTH = 16
+
+export const CONNECTOR_MARGIN = 8
+export const ARROW_MARGIN_X = 8
+export const ARROW_MARGIN_Y = 2
+export const ARROW_SIZE = 4
+export const ARROW_THRESHOLD = 12
+export const STROKE_WIDTH = 2
+
+export const DEBUG = false
+export const DEBUG_LAYER_BOUNDS = DEBUG || false
