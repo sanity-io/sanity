@@ -5,7 +5,6 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useCallback, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {ChangeConnectorRoot} from '@sanity/base/lib/change-indicators/overlay/ChangeConnectorRoot'
-import {ReportChangesPanel} from '@sanity/base/lib/change-indicators/overlay/ReportChangesPanel'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
@@ -221,7 +220,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         </div>
 
         {features.reviewChanges && !isCollapsed && isChangesOpen && (
-          <ReportChangesPanel className={styles.changesContainer}>
+          <div className={styles.changesContainer}>
             <ChangesPanel
               changesSinceSelectRef={changesSinceSelectRef}
               documentId={documentId}
@@ -232,7 +231,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               since={historyController.sinceTime}
               timelineMode={timelineMode}
             />
-          </ReportChangesPanel>
+          </div>
         )}
       </ChangeConnectorRoot>
 
