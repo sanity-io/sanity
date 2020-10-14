@@ -91,7 +91,11 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             <React.Fragment key={`field-${field.id}`}>
               {change && (
                 <>
-                  <g onClick={onConnectorClick}>
+                  <g
+                    onClick={onConnectorClick}
+                    onMouseEnter={() => setHovered(field.id)}
+                    onMouseLeave={() => setHovered(null)}
+                  >
                     <Connector
                       from={{rect: field.rect, bounds: field.bounds}}
                       to={{rect: change.rect, bounds: change.bounds}}
