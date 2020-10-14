@@ -3,7 +3,7 @@
  */
 
 import {bifur} from '../client/bifur'
-import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
+import {map, mergeMapTo, shareReplay, startWith, take, takeUntil} from 'rxjs/operators'
 import {concat, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
 import {catchWithCount} from './utils/catchWithCount'
 import {observableCallback} from 'observable-callback'
@@ -61,7 +61,7 @@ export const connectionStatus$: Observable<ConnectionStatus> = merge(
   bifur.heartbeats,
   onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline'))))
 ).pipe(
-  map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
+  map((ts: Date): ConnectedStatus => ({type: 'connected', lastHeartbeat: ts})),
   catchWithCount((error, successiveErrorsCount, caught) => {
     const timeUntilRetry = Math.min(1000 * 240, expBackoff(successiveErrorsCount))
     const retryAt = new Date(new Date().getTime() + timeUntilRetry)
@@ -80,5 +80,6 @@ export const connectionStatus$: Observable<ConnectionStatus> = merge(
 
     return concat(of(initialErrorStatus), triggerRetry$.pipe(take(1)), caught)
   }),
-  startWith(CONNECTING)
+  startWith(CONNECTING),
+  shareReplay({refCount: true, bufferSize: 1})
 )
