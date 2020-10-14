@@ -100,7 +100,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
                       from={{rect: field.rect, bounds: field.bounds}}
                       to={{rect: change.rect, bounds: change.bounds}}
                       focused={hasFocus}
-                      hovered={hasHover}
+                      hovered={hasHover || isHoverConnector}
                       revertHovered={hasRevertHover}
                     />
                   </g>
