@@ -34,12 +34,6 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   const [, forceUpdate] = React.useReducer(n => n + 1, 0)
   const byId = new Map(allReportedValues)
 
-  const reportedChangesPanel = byId.get('changesPanel')
-
-  if (!reportedChangesPanel) {
-    return null
-  }
-
   const changeBarsWithHover: Reported<TrackedChange>[] = []
   const changeBarsWithFocus: Reported<TrackedChange>[] = []
   for (const value of allReportedValues) {
