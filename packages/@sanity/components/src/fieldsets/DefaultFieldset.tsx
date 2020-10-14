@@ -199,7 +199,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
             {isCollapsible && !isCollapsed && (
               <div className={styles.content}>
-                <div className={styles.fieldWrapper}>
+                <div className={styles.fieldWrapper} data-columns={columns && columns > 1}>
                   {(hasBeenToggled || !isCollapsed) && children}
                 </div>
               </div>
@@ -209,10 +209,14 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
               <div className={styles.content}>
                 {changeIndicator ? (
                   <ChangeIndicator {...changeIndicator}>
-                    <div className={styles.fieldWrapper}>{children}</div>
+                    <div className={styles.fieldWrapper} data-columns={columns && columns > 1}>
+                      {children}
+                    </div>
                   </ChangeIndicator>
                 ) : (
-                  <div className={styles.fieldWrapper}>{children}</div>
+                  <div className={styles.fieldWrapper} data-columns={columns && columns > 1}>
+                    {children}
+                  </div>
                 )}
               </div>
             )}
