@@ -22,25 +22,26 @@ const ONE_HOUR = ONE_MINUTE * 60
 
 interface TimeAgoOpts {
   minimal?: boolean
+  agoSuffix?: boolean
 }
 
-export function useTimeAgo(time: Date | string, {minimal}: TimeAgoOpts = {}): string {
-  const [resolved, setResolved] = useState(() => formatRelativeTime(time, {minimal}))
+export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpts = {}): string {
+  const [resolved, setResolved] = useState(() => formatRelativeTime(time, {minimal, agoSuffix}))
 
   useEffect(() => {
-    setResolved(formatRelativeTime(time, {minimal}))
-  }, [time, minimal])
+    setResolved(formatRelativeTime(time, {minimal, agoSuffix}))
+  }, [time, minimal, agoSuffix])
 
   useEffect(() => {
     const id: number | undefined = Number.isFinite(resolved.refreshInterval)
       ? window.setInterval(
-          () => setResolved(formatRelativeTime(time, {minimal})),
+          () => setResolved(formatRelativeTime(time, {minimal, agoSuffix})),
           resolved.refreshInterval
         )
       : undefined
 
     return () => clearInterval(id)
-  }, [time, minimal, resolved.refreshInterval])
+  }, [time, minimal, resolved.refreshInterval, agoSuffix])
 
   return resolved.timestamp
 }
@@ -77,23 +78,30 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   const diffWeeks = differenceInWeeks(now, parsedDate)
   if (diffWeeks) {
     if (opts.minimal) {
-      return {timestamp: `${diffWeeks}w`, refreshInterval: ONE_HOUR}
-    }
-
-    return {timestamp: `${diffWeeks} weeks ago`, refreshInterval: ONE_HOUR}
-  }
-
-  const diffDays = differenceInDays(now, parsedDate)
-  if (diffDays) {
-    if (opts.minimal) {
       return {
-        timestamp: diffDays === 1 ? 'yesterday' : `${diffDays}d`,
+        timestamp: opts.agoSuffix ? `${diffWeeks}w ago` : `${diffWeeks}w`,
         refreshInterval: ONE_HOUR
       }
     }
 
     return {
-      timestamp: diffDays === 1 ? 'yesterday' : `${diffDays} days ago`,
+      timestamp: opts.agoSuffix ? `${diffWeeks} weeks ago` : `${diffWeeks} weeks`,
+      refreshInterval: ONE_HOUR
+    }
+  }
+
+  const diffDays = differenceInDays(now, parsedDate)
+  if (diffDays) {
+    if (opts.minimal) {
+      const daysSince = opts.agoSuffix ? `${diffDays}d ago` : `${diffDays}d`
+      return {
+        timestamp: diffDays === 1 ? 'yesterday' : daysSince,
+        refreshInterval: ONE_HOUR
+      }
+    }
+    const daysSince = opts.agoSuffix ? `${diffDays} days ago` : `${diffDays} days`
+    return {
+      timestamp: diffDays === 1 ? 'yesterday' : daysSince,
       refreshInterval: ONE_HOUR
     }
   }
@@ -101,28 +109,44 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   const diffHours = differenceInHours(now, parsedDate)
   if (diffHours) {
     if (opts.minimal) {
-      return {timestamp: `${diffHours}h`, refreshInterval: ONE_MINUTE}
+      return {
+        timestamp: opts.agoSuffix ? `${diffHours}h ago` : `${diffHours}h`,
+        refreshInterval: ONE_MINUTE
+      }
     }
-
-    return {timestamp: `${diffHours} hours ago`, refreshInterval: ONE_MINUTE}
+    return {
+      timestamp: opts.agoSuffix ? `${diffHours} hours ago` : `${diffHours} hours`,
+      refreshInterval: ONE_MINUTE
+    }
   }
 
   const diffMins = differenceInMinutes(now, parsedDate)
   if (diffMins) {
     if (opts.minimal) {
-      return {timestamp: `${diffMins}m`, refreshInterval: TWENTY_SECONDS}
+      return {
+        timestamp: opts.agoSuffix ? `${diffMins}m ago` : `${diffMins}m`,
+        refreshInterval: TWENTY_SECONDS
+      }
     }
-
-    return {timestamp: `${diffMins} minutes ago`, refreshInterval: TWENTY_SECONDS}
+    return {
+      timestamp: opts.agoSuffix ? `${diffMins} minutes ago` : `${diffMins} minutes`,
+      refreshInterval: TWENTY_SECONDS
+    }
   }
 
   const diffSeconds = differenceInSeconds(now, parsedDate)
   if (diffSeconds > 10) {
     if (opts.minimal) {
-      return {timestamp: `${diffSeconds}s`, refreshInterval: FIVE_SECONDS}
+      return {
+        timestamp: opts.agoSuffix ? `${diffSeconds}s ago` : `${diffSeconds}s`,
+        refreshInterval: FIVE_SECONDS
+      }
     }
 
-    return {timestamp: `${diffSeconds} seconds ago`, refreshInterval: FIVE_SECONDS}
+    return {
+      timestamp: opts.agoSuffix ? `${diffSeconds} seconds ago` : `${diffSeconds} seconds`,
+      refreshInterval: FIVE_SECONDS
+    }
   }
 
   return {timestamp: 'just now', refreshInterval: FIVE_SECONDS}

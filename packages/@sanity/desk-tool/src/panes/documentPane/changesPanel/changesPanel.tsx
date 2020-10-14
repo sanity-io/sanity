@@ -174,7 +174,7 @@ function Content({
 }
 
 function SinceText({since}: {since: Chunk}): React.ReactElement {
-  const timeAgo = useTimeAgo(since.endTimestamp)
+  const timeAgo = useTimeAgo(since.endTimestamp, {agoSuffix: true})
 
   return (
     <>
