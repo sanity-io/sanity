@@ -1,4 +1,4 @@
-import isScrollContainer from './isScrollContainer'
+import {hasOverflowScroll} from './scrollUtils'
 
 const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
   let el: HTMLElement | null = source
@@ -20,7 +20,7 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
       bounds.left += el.offsetLeft
     }
 
-    if (isScrollContainer(el)) {
+    if (hasOverflowScroll(el)) {
       bounds.top = el.offsetTop
       bounds.height = el.offsetHeight
       bounds.left = el.offsetLeft

@@ -1,4 +1,4 @@
-import isScrollContainer from './isScrollContainer'
+import {isScrollable} from './scrollUtils'
 
 const SCROLL_INTO_VIEW_TOP_PADDING = -15
 
@@ -11,7 +11,7 @@ const scrollIntoView = field => {
    */
   let parentElementWithScroll = element
 
-  while (!isScrollContainer(parentElementWithScroll)) {
+  while (!isScrollable(parentElementWithScroll)) {
     parentElementWithScroll = parentElementWithScroll.parentElement
 
     /*
