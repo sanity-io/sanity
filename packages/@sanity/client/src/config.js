@@ -14,8 +14,12 @@ const defaultConfig = {
     ttl: 2,
     interval: 1000,
     onRateLimited: null,
-    timeout: 600,
-    timeout: 600,
+    retry: {
+      maxRetryAttempts: 3,
+      scalingDuration: 1000,
+      initialDuration: 100,
+      includedStatusCodes: [429]
+    }
   }
 }
 

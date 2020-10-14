@@ -87,13 +87,7 @@ assign(SanityClient.prototype, {
 
   request(options) {
     const observable = this._requestObservable(options).pipe(
-      // for demo purpose only
-      rxBackoff({
-        maxRetryAttempts: 6,
-        scalingDuration: 1000,
-        initialDuration: 100,
-        includedStatusCodes: [429]
-      }),
+      rxBackoff(this.clientConfig.rateLimit.retry),
       filter(event => event.type === 'response'),
       map(event => event.body)
     )
