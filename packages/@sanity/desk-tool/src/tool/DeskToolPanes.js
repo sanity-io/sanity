@@ -7,6 +7,7 @@ import {merge, of} from 'rxjs'
 import {mapTo, delay, distinctUntilChanged} from 'rxjs/operators'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
+import {resizeObserver} from '@sanity/base/lib/util/resizeObserver'
 import {DeskToolPane, LoadingPane} from '../panes'
 import windowWidth$ from '../utils/windowWidth'
 import isNarrowScreen from '../utils/isNarrowScreen'
@@ -16,7 +17,6 @@ import {
   getPaneRouterContextFactory,
   exclusiveParams
 } from '../contexts/PaneRouterContext'
-import {ResizeObserver} from './resize-observer'
 
 import styles from './DeskToolPanes.css'
 
@@ -60,11 +60,9 @@ export default class DeskToolPanes extends React.Component {
   }
 
   _rootElement = React.createRef()
-  resizeObserver = undefined
 
   state = {
     collapsedPanes: [],
-    windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth,
     hasNarrowScreen: isNarrowScreen(),
     width: undefined
   }
@@ -92,17 +90,17 @@ export default class DeskToolPanes extends React.Component {
   componentDidMount() {
     const {autoCollapse, panes} = this.props
     if (autoCollapse) {
-      this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
+      this.windowResizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(() => {
         this.setState({
-          windowWidth,
           hasNarrowScreen: isNarrowScreen()
         })
       })
 
-      this.resizeObserver = new ResizeObserver(this.handleResize)
-
       if (this._rootElement && this._rootElement.current) {
-        this.resizeObserver.observe(this._rootElement.current)
+        this.unobserveRootElementResize = resizeObserver.observe(
+          this._rootElement.current,
+          this.handleResize
+        )
       }
 
       if (this.state.width) {
@@ -112,12 +110,15 @@ export default class DeskToolPanes extends React.Component {
   }
 
   handleResize = event => {
-    const width = event[0].contentRect.width
+    const width = event.contentRect.width
     this.setState({width})
     this.handleAutoCollapse(width, undefined, this.userCollapsedPanes)
   }
 
   componentWillUnmount() {
+    if (this.unobserveRootElementResize) {
+      this.unobserveRootElementResize()
+    }
     if (this.resizeObserver && this._rootElement && this._rootElement.current) {
       this.resizeObserver.unobserve(this._rootElement.current)
     }
