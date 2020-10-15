@@ -11,6 +11,7 @@ export function createStore<Value>() {
 
   function add(id: string, value: Value) {
     if (reportedValues.has(id)) {
+      // eslint-disable-next-line no-console
       console.error(
         new Error(
           `Invalid call to useReporter(${id}): A component reporting on "${id}" is already mounted in the subtree. Make sure that all reporters within the same <Tracker> subtree have unique ids.`

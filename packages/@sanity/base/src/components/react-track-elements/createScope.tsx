@@ -2,24 +2,54 @@ import * as React from 'react'
 import {TrackerContext} from './types'
 import {createUseReporter, IsEqualFunction} from './createUseReporter'
 import {createStore} from './createStore'
+import {Reported} from './index'
 
-const useReporterGuard = (id: string) => {
-  throw new Error(
-    `No context provided for reporter. Make sure that the component calling "useReporter(${id}, ...)", is wrapped in a <Tracker> element`
-  )
+// Todo: consider memozing individual functions or move the context assertion/guard to a separate step.
+let didWarn = false
+const useReporterGuard = (id: string): void => {
+  if (!didWarn) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      new Error(
+        `No context provided for reporter. Make sure that the component calling "useReporter(${id}, ...)", is wrapped in a <Tracker> element`
+      )
+    )
+  }
+  didWarn = true
 }
 
-const useReportedValueGuard = () => {
-  throw new Error(
-    'No context provided for reporter. Make sure that the component calling "useReportedValues()", is wrapped inside a <Tracker> element'
-  )
+function useReportedValueGuard(): Reported<unknown>[] {
+  if (!didWarn) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      new Error(
+        'No context provided for reporter. Make sure that the component calling "useReportedValues()", is wrapped inside a <Tracker> element'
+      )
+    )
+  }
+  didWarn = true
+  return []
+}
+
+const useSubscribeGuard = () => {
+  if (!didWarn) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      new Error(
+        'No context provided for reporter. Make sure that the component calling "useReportedValues()", is wrapped inside a <Tracker> element'
+      )
+    )
+  }
+  didWarn = true
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  return () => {}
 }
 
 const DEFAULT_CONTEXT: TrackerContext<unknown> = {
   add: useReporterGuard,
   update: useReporterGuard,
   remove: useReporterGuard,
-  subscribe: useReportedValueGuard,
+  subscribe: useSubscribeGuard,
   read: useReportedValueGuard
 }
 
