@@ -27,9 +27,6 @@
   );
 }
 
-.root {
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -67,6 +64,11 @@
 
   @nest &[data-size='large'] {
     max-width: 50rem;
+  }
+
+  /* Hide the popover dialog when the reference element is out of bounds */
+  @nest &[data-popper-reference-hidden='true'] {
+    display: none;
   }
 }
 
