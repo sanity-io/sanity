@@ -12,6 +12,7 @@ import {Connector} from './Connector'
 
 import styles from './ConnectorsOverlay.css'
 import {DebugLayers} from './DebugLayers'
+import {resizeObserver} from '../../util/resizeObserver'
 
 export interface Rect {
   height: number
@@ -25,6 +26,12 @@ interface Props {
   onSetFocus: (nextFocusPath: Path) => void
 }
 
+function useResizeObserver(
+  element: HTMLDivElement,
+  onResize: (event: ResizeObserverEntry) => void
+) {
+  React.useEffect(() => resizeObserver.observe(element, onResize), [element, onResize])
+}
 export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Props) {
   const {rootRef, onSetFocus} = props
 
@@ -32,6 +39,9 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
 
   const allReportedValues = useReportedValues()
   const [, forceUpdate] = React.useReducer(n => n + 1, 0)
+
+  useResizeObserver(rootRef, forceUpdate)
+
   const byId = new Map(allReportedValues)
 
   const changeBarsWithHover: Reported<TrackedChange>[] = []
