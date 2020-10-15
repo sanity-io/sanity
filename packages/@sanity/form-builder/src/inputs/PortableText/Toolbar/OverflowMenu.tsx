@@ -141,6 +141,7 @@ export function OverflowMenu(props: Props) {
           }
           open={open}
           placement="bottom"
+          portal
           setOpen={setOpen}
         />
       </div>
