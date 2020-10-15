@@ -65,6 +65,7 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
+    "@types/resize-observer-browser": "^0.1.4",
     "jest": "^26.4.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
