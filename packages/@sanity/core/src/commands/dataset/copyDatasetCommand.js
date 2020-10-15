@@ -71,7 +71,7 @@ export default {
       throw new Error(nameError)
     }
 
-    const [existingDatasets] = await client.datasets
+    const existingDatasets = await client.datasets
       .list()
       .then(datasets => datasets.map(ds => ds.name))
 
