@@ -76,7 +76,10 @@ export const ChangeBar = React.forwardRef(
               <EditIconSmall className={styles.badge__icon} />
             </div>
 
-            <div
+            <button
+              tabIndex={isReviewChangesOpen ? -1 : 0}
+              type="button"
+              aria-label="Review changes"
               onClick={isReviewChangesOpen ? null : onOpenReviewChanges}
               className={styles.hitArea}
               onMouseEnter={handleMouseEnter}
