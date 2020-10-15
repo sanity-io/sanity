@@ -43,6 +43,7 @@ type Props = {
   renderBlockActions?: RenderBlockActions
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
+  setScrollContainerElement: (el: HTMLElement | null) => void
   value: PortableTextBlock[] | undefined
 }
 
@@ -66,6 +67,7 @@ function PortableTextSanityEditor(props: Props) {
     renderBlockActions,
     renderChild,
     renderCustomMarkers,
+    setScrollContainerElement,
     value
   } = props
 
@@ -193,7 +195,8 @@ function PortableTextSanityEditor(props: Props) {
             />
           </div>
         </div>
-        <ScrollContainer className={scClassNames}>
+
+        <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
           <div className={editorWrapperClassNames}>
             <div className={styles.blockExtras}>{blockExtras()}</div>
             <div className={editorClassNames}>
