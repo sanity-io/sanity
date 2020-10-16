@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, useEffect, useState} from 'react'
 
-import Popover from 'part:@sanity/components/dialogs/popover'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 
 import {
   PortableTextBlock,
@@ -14,6 +14,7 @@ import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
+import {useBoundaryElement} from '../../boundaryElement'
 
 interface Props {
   editorPath: Path
@@ -44,6 +45,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   readOnly,
   type
 }) => {
+  const boundaryElement = useBoundaryElement()
   const editor = usePortableTextEditor()
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   const getEditorElement = () => {
@@ -57,8 +59,11 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   }, [object])
 
   return (
-    <Popover
+    <PopoverDialog
+      boundaryElement={boundaryElement}
+      fallbackPlacements={['top', 'bottom']}
       placement="bottom"
+      portal
       referenceElement={refElement}
       onClickOutside={onClose}
       onEscape={onClose}
@@ -81,6 +86,6 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           value={object}
         />
       </PresenceOverlay>
-    </Popover>
+    </PopoverDialog>
   )
 }

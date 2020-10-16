@@ -20,6 +20,7 @@ import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {Layer} from 'part:@sanity/components/layer'
 import PatchEvent from '../../PatchEvent'
+import {BoundaryElementProvider} from './boundaryElement'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
@@ -328,6 +329,8 @@ export default function PortableTextInput(props: Props) {
 
   const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
 
+  const [scrollContainerElement, setScrollContainerElement] = useState<HTMLElement | null>(null)
+
   const ptEditor = useMemo(
     () => (
       <PortableTextSanityEditor
@@ -349,6 +352,7 @@ export default function PortableTextInput(props: Props) {
         renderBlockActions={renderBlockActions}
         renderChild={renderChild}
         renderCustomMarkers={renderCustomMarkers}
+        setScrollContainerElement={setScrollContainerElement}
         value={value}
       />
     ),
@@ -361,35 +365,37 @@ export default function PortableTextInput(props: Props) {
 
   const fullscreenToggledEditor = (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
-      {isFullscreen ? (
-        <Layer key={`portal-${activationId}`}>
-          <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-            {ptEditor}
-          </div>
-
-          {editObject}
-        </Layer>
-      ) : (
-        <>
-          <ActivateOnFocus
-            inputId={activationId}
-            html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
-            isActive={isActive}
-            onActivate={handleActivate}
-            overlayClassName={styles.activateOnFocusOverlay}
-          >
-            <ChangeIndicatorWithProvidedFullPath
-              compareDeep
-              value={value}
-              hasFocus={hasFocus && objectEditData === null}
-              path={[]}
-            >
+      <BoundaryElementProvider element={scrollContainerElement}>
+        {isFullscreen ? (
+          <Layer key={`portal-${activationId}`}>
+            <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
               {ptEditor}
-            </ChangeIndicatorWithProvidedFullPath>
-          </ActivateOnFocus>
-          {editObject}
-        </>
-      )}
+            </div>
+
+            {editObject}
+          </Layer>
+        ) : (
+          <>
+            <ActivateOnFocus
+              inputId={activationId}
+              html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+              isActive={isActive}
+              onActivate={handleActivate}
+              overlayClassName={styles.activateOnFocusOverlay}
+            >
+              <ChangeIndicatorWithProvidedFullPath
+                compareDeep
+                value={value}
+                hasFocus={hasFocus && objectEditData === null}
+                path={[]}
+              >
+                {ptEditor}
+              </ChangeIndicatorWithProvidedFullPath>
+            </ActivateOnFocus>
+            {editObject}
+          </>
+        )}
+      </BoundaryElementProvider>
     </div>
   )
 

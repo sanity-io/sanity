@@ -15,6 +15,7 @@ function setRef<T = unknown>(ref: (v: T) => void | React.MutableRefObject<T> | n
 }
 
 interface PopoverProps {
+  allowedAutoPlacements?: Placement[]
   arrowClassName?: string
   boundaryElement?: HTMLElement | null
   cardClassName?: string
@@ -22,6 +23,7 @@ interface PopoverProps {
   className?: string
   content?: React.ReactNode
   disabled?: boolean
+  fallbackPlacements?: Placement[]
   layer?: boolean
   open?: boolean
   placement?: Placement
@@ -36,6 +38,7 @@ export const Popover = forwardRef(
     ref
   ): React.ReactElement => {
     const {
+      allowedAutoPlacements,
       arrowClassName,
       boundaryElement,
       cardClassName,
@@ -43,6 +46,7 @@ export const Popover = forwardRef(
       className,
       content,
       disabled,
+      fallbackPlacements,
       layer,
       open,
       placement = 'bottom',
@@ -79,6 +83,15 @@ export const Popover = forwardRef(
           name: 'offset',
           options: {
             offset: [0, 4]
+          }
+        },
+        {
+          name: 'flip',
+          options: {
+            rootBoundary: boundaryElement ? undefined : 'viewport',
+            boundary: boundaryElement || 'clippingParents',
+            allowedAutoPlacements,
+            fallbackPlacements
           }
         },
         {

@@ -24,7 +24,9 @@ interface PopoverDialogChildrenProps {
 }
 
 interface PopoverDialogProps extends PopoverDialogChildrenProps {
+  boundaryElement?: HTMLElement | null
   color?: 'default' | 'danger'
+  fallbackPlacements?: Placement[]
   hasAnimation?: boolean
   padding?: 'none' | 'small' | 'medium' | 'large'
   placement?: Placement
@@ -38,8 +40,10 @@ interface PopoverDialogProps extends PopoverDialogChildrenProps {
 
 function PopoverDialog(props: PopoverDialogProps) {
   const {
+    boundaryElement,
     children,
     color,
+    fallbackPlacements,
     hasAnimation,
     padding = 'medium',
     placement = 'auto',
@@ -61,12 +65,14 @@ function PopoverDialog(props: PopoverDialogProps) {
       {referenceElement && (
         <Popover
           arrowClassName={classNames(styles.arrow, hasAnimation && styles.popperAnimation)}
+          boundaryElement={boundaryElement}
           cardClassName={classNames(styles.card, hasAnimation && styles.popperAnimation)}
           className={styles.root}
+          content={<PopoverDialogChildren {...restProps}>{children}</PopoverDialogChildren>}
           data-color={color}
           data-padding={padding}
           data-size={size}
-          content={<PopoverDialogChildren {...restProps}>{children}</PopoverDialogChildren>}
+          fallbackPlacements={fallbackPlacements}
           layer
           open
           placement={placement}
