@@ -1,0 +1,33 @@
+name: Verify format
+
+on: push
+
+jobs:
+  verify_format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          # added -vX just to reset the cache, feel free to up it if you need
+          # to reset the cache again
+          cache-name: cache-node-modules-v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install npm dependencies
+        # --ignore-scripts disables postinstall because it's not needed
+        # in this CI step and takes a long time
+        run: npm install --ignore-scripts
+
+      - name: Verify format
+        run: npm run verify-format
