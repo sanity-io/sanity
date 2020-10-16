@@ -77,7 +77,7 @@ export const ChangeBar = React.forwardRef(
             </div>
 
             <button
-              tabIndex={isReviewChangesOpen ? -1 : 0}
+              tabIndex={isReviewChangesOpen || !props.isChanged ? -1 : 0}
               type="button"
               aria-label="Review changes"
               onClick={isReviewChangesOpen ? null : onOpenReviewChanges}
