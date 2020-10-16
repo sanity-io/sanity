@@ -21,7 +21,8 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import ConfirmButton from '../ConfirmButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
-import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
+import {hasFocusInPath, hasFocusWithinPath, isEmpty, pathSegmentFrom} from './helpers'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 import styles from './ArrayInputListItem.css'
 
@@ -69,9 +70,19 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
   componentDidUpdate(prevProps: ArrayInputListItemProps) {
     const hadFocus = hasFocusInPath(prevProps.focusPath, prevProps.value)
     const hasFocus = hasFocusInPath(this.props.focusPath, this.props.value)
+    const hasFocusWithin = hasFocusWithinPath(this.props.focusPath, this.props.value)
 
     if (!hadFocus && hasFocus) {
       this.focus()
+    }
+    if (!hadFocus && hasFocusWithin) {
+      // This is the case where the item has been opened for editing in a dialog
+      // Usually this happens when clicking the item when it's already in view,
+      // but sometimes it is triggered by an external change of the focus path
+      // when this component is not currently in view (e.g. clicking on a validation error).
+      // We always want to show the list item the background when edit dialogs are open,
+      // and this makes sure we're scrolling into view if we need.
+      scrollIntoView(this._focusArea, {scrollMode: 'if-needed', inline: 'center'})
     }
   }
 

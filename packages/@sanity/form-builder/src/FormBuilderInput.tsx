@@ -237,33 +237,31 @@ export class FormBuilderInput extends React.Component<Props> {
     const childCompareValue = PathUtils.get(compareValue, path)
 
     return (
-      <div data-focus-path={PathUtils.toString(path)}>
-        <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-          <ChangeIndicatorProvider
-            path={path}
-            focusPath={focusPath}
+      <FormFieldPresenceContext.Provider value={childPresenceInfo}>
+        <ChangeIndicatorProvider
+          path={path}
+          focusPath={focusPath}
+          value={value}
+          compareValue={childCompareValue}
+        >
+          <InputComponent
+            {...rest}
+            {...leafProps}
+            isRoot={isRoot}
             value={value}
             compareValue={childCompareValue}
-          >
-            <InputComponent
-              {...rest}
-              {...leafProps}
-              isRoot={isRoot}
-              value={value}
-              compareValue={childCompareValue}
-              readOnly={readOnly || type.readOnly}
-              markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
-              type={type}
-              presence={childPresenceInfo}
-              onChange={this.handleChange}
-              onFocus={this.handleFocus}
-              onBlur={this.handleBlur}
-              level={level}
-              ref={this.setInput}
-            />
-          </ChangeIndicatorProvider>
-        </FormFieldPresenceContext.Provider>
-      </div>
+            readOnly={readOnly || type.readOnly}
+            markers={childMarkers.length === 0 ? EMPTY_MARKERS : childMarkers}
+            type={type}
+            presence={childPresenceInfo}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            level={level}
+            ref={this.setInput}
+          />
+        </ChangeIndicatorProvider>
+      </FormFieldPresenceContext.Provider>
     )
   }
 }

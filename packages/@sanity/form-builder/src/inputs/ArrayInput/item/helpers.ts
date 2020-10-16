@@ -8,6 +8,9 @@ export function pathSegmentFrom(value) {
 export function hasFocusInPath(path, value) {
   return path.length === 1 && PathUtils.isSegmentEqual(path[0], pathSegmentFrom(value))
 }
+export function hasFocusWithinPath(path, value) {
+  return path.length > 1 && PathUtils.isSegmentEqual(path[0], pathSegmentFrom(value))
+}
 
 export function isEmpty(value) {
   return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
