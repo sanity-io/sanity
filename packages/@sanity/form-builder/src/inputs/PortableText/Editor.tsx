@@ -10,7 +10,8 @@ import {
   EditorSelection,
   OnPasteFn,
   OnCopyFn,
-  PortableTextEditor
+  PortableTextEditor,
+  usePortableTextEditor
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -71,6 +72,8 @@ function PortableTextSanityEditor(props: Props) {
     value
   } = props
 
+  const editor = usePortableTextEditor()
+  const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [])
   const layer = useLayer()
   const isTopLayer = layer.depth === layer.size
 
@@ -111,12 +114,28 @@ function PortableTextSanityEditor(props: Props) {
       ...(props.hotkeys || {}).custom
     }
   }
+  const defaultHotkeys = {}
+  ptFeatures.decorators.forEach(dec => {
+    switch (dec.value) {
+      case 'strong':
+        defaultHotkeys['mod+b'] = dec.value
+        break
+      case 'em':
+        defaultHotkeys['mod+i'] = dec.value
+        break
+      case 'underline':
+        defaultHotkeys['mod+u'] = dec.value
+        break
+      case 'code':
+        defaultHotkeys["mod+'"] = dec.value
+        break
+      default:
+      // Nothing
+    }
+  })
   const marksFromProps: HotkeyOptions = {
     marks: {
-      'mod+b': 'strong',
-      'mod+i': 'em',
-      'mod+u': 'underline',
-      "mod+'": 'code',
+      ...defaultHotkeys,
       ...(props.hotkeys || {}).marks
     }
   }
@@ -175,7 +194,7 @@ function PortableTextSanityEditor(props: Props) {
     }
   }, [isFullscreen, isTopLayer, onToggleFullscreen])
 
-  const editor = useMemo(
+  const _editor = useMemo(
     () => (
       <div className={styles.editorBox}>
         <div className={styles.header}>
@@ -219,7 +238,7 @@ function PortableTextSanityEditor(props: Props) {
     ),
     [initialSelection, isFullscreen, value, readOnly, forceUpdate]
   )
-  return editor
+  return _editor
 }
 
 export default PortableTextSanityEditor
