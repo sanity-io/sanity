@@ -295,11 +295,8 @@ export default function PortableTextInput(props: Props) {
     )
   }
 
-  function renderEditObject() {
-    if (objectEditData === null) {
-      return null
-    }
-    const handleClose = () => {
+  function handleEditObjectClose() {
+    if (objectEditData) {
       const {editorPath} = objectEditData
       setObjectEditData(null)
       const sel = {
@@ -309,8 +306,11 @@ export default function PortableTextInput(props: Props) {
       onFocus(editorPath)
       PortableTextEditor.select(editor, sel)
       setInitialSelection(sel)
-      focus()
     }
+    focus()
+  }
+
+  function renderEditObject() {
     return (
       <EditObject
         focusPath={focusPath}
@@ -318,7 +318,7 @@ export default function PortableTextInput(props: Props) {
         markers={markers} // TODO: filter relevant
         onBlur={handleEditObjectFormBuilderBlur}
         onChange={handleFormBuilderEditObjectChange}
-        onClose={handleClose}
+        onClose={handleEditObjectClose}
         onFocus={handleEditObjectFormBuilderFocus}
         readOnly={readOnly}
         presence={presence}
