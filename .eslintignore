@@ -8,3 +8,4 @@
 /packages/@sanity/*/coverage
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
+*.json
