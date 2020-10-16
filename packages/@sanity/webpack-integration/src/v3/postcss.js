@@ -3,7 +3,10 @@ const postcssCssnext = require('postcss-cssnext')
 const resolveStyleImport = require('./resolveStyleImport')
 
 function getStyleResolver(options) {
-  return resolveStyleImport({from: options.basePath})
+  return resolveStyleImport({
+    from: options.basePath,
+    isSanityMonorepo: options.isSanityMonorepo
+  })
 }
 
 function getPostcssImportPlugin(options) {

@@ -207,23 +207,20 @@ function getDefinitionDeclaration(plugin, part, options = {}) {
 
 function getImplementationDeclaration(plugin, part, options) {
   const paths = plugin.manifest.paths || {}
-  const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
-  const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
-  const useCompiled = (options.useCompiledPaths || isLib) && !options.useSourcePaths
 
-  let basePath = isDotPath
-    ? plugin.path
-    : path.join(plugin.path, (useCompiled ? paths.compiled : paths.source) || '')
+  let pluginPath = plugin.path
 
-  if (!useCompiled) {
-    try {
-      const f = fs.realpathSync(basePath)
-      basePath = f
-    } catch (_) {
-      // console.log('err', _.message)
-    }
-    // console.log('>>>', basePath)
+  if (options.isSanityMonorepo) {
+    pluginPath = tryResolvePath(pluginPath)
   }
+
+  const isLib = pluginPath.split(path.sep).indexOf('node_modules') !== -1
+  const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
+  const useCompiled = options.useCompiledPaths || isLib
+
+  const basePath = isDotPath
+    ? pluginPath
+    : path.join(pluginPath, (useCompiled ? paths.compiled : paths.source) || '')
 
   const filePath = path.isAbsolute(part.path)
     ? part.path
@@ -232,5 +229,13 @@ function getImplementationDeclaration(plugin, part, options) {
   return {
     plugin: plugin.name,
     path: filePath,
+  }
+}
+
+function tryResolvePath(dstPath) {
+  try {
+    return fs.realpathSync(dstPath)
+  } catch (err) {
+    return dstPath
   }
 }
