@@ -1,3 +1,4 @@
+import fs from 'fs'
 import path from 'path'
 import generateHelpUrl from '@sanity/generate-help-url'
 import flattenTree from './flattenTree'
@@ -206,13 +207,23 @@ function getDefinitionDeclaration(plugin, part, options = {}) {
 
 function getImplementationDeclaration(plugin, part, options) {
   const paths = plugin.manifest.paths || {}
-  const isLib =
-    options.useCompiledPaths || plugin.path.split(path.sep).indexOf('node_modules') !== -1
+  const isLib = plugin.path.split(path.sep).indexOf('node_modules') !== -1
   const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
+  const useCompiled = (options.useCompiledPaths || isLib) && !options.useSourcePaths
 
-  const basePath = isDotPath
+  let basePath = isDotPath
     ? plugin.path
-    : path.join(plugin.path, (isLib ? paths.compiled : paths.source) || '')
+    : path.join(plugin.path, (useCompiled ? paths.compiled : paths.source) || '')
+
+  if (!useCompiled) {
+    try {
+      const f = fs.realpathSync(basePath)
+      basePath = f
+    } catch (_) {
+      // console.log('err', _.message)
+    }
+    // console.log('>>>', basePath)
+  }
 
   const filePath = path.isAbsolute(part.path)
     ? part.path

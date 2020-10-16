@@ -83,7 +83,7 @@ export default (config = {}) => {
       rules: [
         {
           test: /(\.jsx?|\.tsx?)/,
-          exclude: /(packages\/@sanity|node_modules|bower_components)/,
+          exclude: /(node_modules|bower_components)/,
           use: {
             loader: resolve('babel-loader'),
             options: babelConfig || {

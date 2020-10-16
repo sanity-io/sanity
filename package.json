@@ -26,7 +26,7 @@
     "ecommerce-studio": "gulp ecommerce-studio",
     "test-studio": "gulp test-studio",
     "clean-studio": "gulp clean-studio",
-    "design-studio": "gulp design-studio",
+    "design-studio": "cd packages/design-studio && npm start",
     "example-studio": "gulp example-studio",
     "movies-studio": "gulp movies-studio",
     "blog-studio": "gulp blog-studio",
