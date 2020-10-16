@@ -21,11 +21,11 @@
 
     {
       "implements": "part:date/timestamp",
-      "path": "./getTimestamp.js"
+      "path": "./getTimestamp"
     },
     {
       "implements": "part:date/iso-date",
-      "path": "./getIsoDate.js"
+      "path": "./getIsoDate"
     }
   ]
 }

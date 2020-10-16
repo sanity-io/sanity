@@ -42,13 +42,13 @@
     },
     {
       "implements": "part:@sanity/base/version-checker",
-      "path": "components/VersionChecker.js"
+      "path": "components/VersionChecker"
     },
     {
       "name": "part:@sanity/base/asset-url-builder-default",
       "implements": "part:@sanity/base/asset-url-builder",
       "description": "Function that generates or modifies asset URLs for display in various contexts",
-      "path": "assets/asset-url-builder.js"
+      "path": "assets/asset-url-builder"
     },
     {
       "name": "part:@sanity/base/search",
@@ -152,11 +152,11 @@
     },
     {
       "implements": "part:@sanity/base/util/document-action-utils",
-      "path": "actions/utils/legacy_documentActionUtils.js"
+      "path": "actions/utils/legacy_documentActionUtils"
     },
     {
       "implements": "part:@sanity/base/actions/utils",
-      "path": "actions/utils/index.js"
+      "path": "actions/utils/index"
     },
     {
       "name": "part:@sanity/base/document-actions/resolver",
@@ -272,35 +272,35 @@
     },
     {
       "implements": "part:@sanity/base/sanity-root",
-      "path": "components/SanityRoot.js"
+      "path": "components/SanityRoot"
     },
     {
       "implements": "part:@sanity/base/app-loading-screen",
-      "path": "components/AppLoadingScreen.js"
+      "path": "components/AppLoadingScreen"
     },
     {
       "implements": "part:@sanity/base/root",
-      "path": "components/DefaultRootComponent.js"
+      "path": "components/DefaultRootComponent"
     },
     {
       "implements": "part:@sanity/base/schema-creator",
-      "path": "schema/createSchema.js"
+      "path": "schema/createSchema"
     },
     {
       "implements": "part:@sanity/base/search",
-      "path": "search/index.js"
+      "path": "search/index"
     },
     {
       "implements": "part:@sanity/base/search/weighted",
-      "path": "search/weighted/index.js"
+      "path": "search/weighted/index"
     },
     {
       "implements": "part:@sanity/base/util/draft-utils",
-      "path": "util/draftUtils.js"
+      "path": "util/draftUtils"
     },
     {
       "implements": "part:@sanity/base/util/search-utils",
-      "path": "util/searchUtils.js"
+      "path": "util/searchUtils"
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",
@@ -396,7 +396,7 @@
     },
     {
       "name": "part:@sanity/base/settings",
-      "path": "datastores/settings/settingsStore.js"
+      "path": "datastores/settings/settingsStore"
     },
     {
       "name": "part:@sanity/base/router",
@@ -413,15 +413,15 @@
     },
     {
       "implements": "part:@sanity/base/language-resolver",
-      "path": "locale/languageResolver.js"
+      "path": "locale/languageResolver"
     },
     {
       "implements": "part:@sanity/base/locale-message-fetcher",
-      "path": "locale/messageFetcher.js"
+      "path": "locale/messageFetcher"
     },
     {
       "implements": "part:@sanity/base/locale/intl",
-      "path": "locale/intl.js"
+      "path": "locale/intl"
     },
     {
       "implements": "part:@sanity/base/sanity-intl-provider",
@@ -437,7 +437,7 @@
     },
     {
       "implements": "part:@sanity/base/locale/formatters",
-      "path": "components/IntlWrapper.js"
+      "path": "components/IntlWrapper"
     },
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
@@ -697,7 +697,7 @@
     },
     {
       "implements": "part:@sanity/base/robot-icon",
-      "path": "components/icons/Robot.js"
+      "path": "components/icons/Robot"
     },
     {
       "name": "part:@sanity/base/trash-icon",
@@ -741,7 +741,7 @@
     },
     {
       "implements": "part:@sanity/base/preview",
-      "path": "preview/index.js"
+      "path": "preview/index"
     },
     {
       "implements": "part:@sanity/base/th-list-icon",
@@ -1045,15 +1045,15 @@
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
-      "path": "components/logos/SanityLogo.js"
+      "path": "components/logos/SanityLogo"
     },
     {
       "implements": "part:@sanity/base/sanity-logo-alpha",
-      "path": "components/logos/SanityLogoAlpha.js"
+      "path": "components/logos/SanityLogoAlpha"
     },
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
-      "path": "components/logos/SanityStudioLogo.js"
+      "path": "components/logos/SanityStudioLogo"
     },
     {
       "name": "part:@sanity/base/component",
@@ -1061,11 +1061,11 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "styles/variables/story.js"
+      "path": "styles/variables/story"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "components/story.js"
+      "path": "components/story"
     }
   ]
 }

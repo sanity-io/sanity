@@ -10,23 +10,23 @@
     },
     {
       "implements": "part:@sanity/form-builder/input/color",
-      "path": "ColorInput.js"
+      "path": "ColorInput"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schemas/hslaColor.js"
+      "path": "schemas/hslaColor"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schemas/hsvaColor.js"
+      "path": "schemas/hsvaColor"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schemas/rgbaColor.js"
+      "path": "schemas/rgbaColor"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schemas/color.js"
+      "path": "schemas/color"
     }
   ]
 }

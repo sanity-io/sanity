@@ -46,11 +46,11 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schemas/schema.js"
+      "path": "./schemas/schema"
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "src/components/PertEstimateSchema.js"
+      "path": "src/components/PertEstimateSchema"
     },
     {
       "implements": "part:@sanity/base/tool",
@@ -74,27 +74,27 @@
     },
     {
       "implements": "part:@sanity/form-builder/input/array/functions",
-      "path": "src/components/SearchableArrayFunctions.js"
+      "path": "src/components/SearchableArrayFunctions"
     },
     {
       "implements": "part:@sanity/dashboard/config",
-      "path": "src/dashboardConfig.js"
+      "path": "src/dashboardConfig"
     },
     {
       "name": "part:@sanity/desk-tool/structure",
-      "path": "src/deskStructure.js"
+      "path": "src/deskStructure"
     },
     {
       "implements": "part:@sanity/default-layout/studio-hints-config",
-      "path": "src/studioHintsConfig.js"
+      "path": "src/studioHintsConfig"
     },
     {
       "name": "part:@sanity/base/initial-value-templates",
-      "path": "src/templates.js"
+      "path": "src/templates"
     },
     {
       "name": "part:@sanity/base/new-document-structure",
-      "path": "src/newDocumentStructure.js"
+      "path": "src/newDocumentStructure"
     },
     {
       "name": "part:@sanity/dashboard/widget/test-dummy",
@@ -103,11 +103,11 @@
     },
     {
       "implements": "part:@sanity/desk-tool/after-editor-component",
-      "path": "src/components/AfterEditorComponent.js"
+      "path": "src/components/AfterEditorComponent"
     },
     {
       "implements": "part:@sanity/base/tool",
-      "path": "src/tools/css-variables/tool.js"
+      "path": "src/tools/css-variables/tool"
     }
   ],
   "env": {
@@ -120,7 +120,7 @@
       "parts": [
         {
           "implements": "part:@sanity/base/tool",
-          "path": "src/tools/long.js"
+          "path": "src/tools/long"
         }
       ]
     }

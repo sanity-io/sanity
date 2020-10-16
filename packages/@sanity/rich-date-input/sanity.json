@@ -15,7 +15,7 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "story.js"
+      "path": "story"
     }
   ]
 }

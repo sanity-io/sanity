@@ -6,11 +6,11 @@
   "parts": [
     {
       "implements": "part:@sanity/base/tool",
-      "path": "DashboardTool.js"
+      "path": "DashboardTool"
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "components/story.js"
+      "path": "components/story"
     },
     {
       "name": "part:@sanity/dashboard/config",
@@ -18,7 +18,7 @@
     },
     {
       "implements": "part:@sanity/dashboard/config",
-      "path": "dashboardConfig.js"
+      "path": "dashboardConfig"
     },
     {
       "name": "part:@sanity/dashboard/widget",

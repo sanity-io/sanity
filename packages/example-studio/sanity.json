@@ -22,19 +22,19 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schemas/schema.js"
+      "path": "./schemas/schema"
     },
     {
       "name": "part:@sanity/language-filter/config",
-      "path": "./parts/languageFilterConfig.js"
+      "path": "./parts/languageFilterConfig"
     },
     {
       "implements": "part:@sanity/base/brand-logo",
-      "path": "components/BrandLogo.js"
+      "path": "components/BrandLogo"
     },
     {
       "implements": "part:@sanity/form-builder/input-resolver",
-      "path": "./parts/inputResolver.js"
+      "path": "./parts/inputResolver"
     },
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
