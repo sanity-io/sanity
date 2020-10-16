@@ -18,16 +18,16 @@ const nodeCache = new PAC({
   maxAge: 1000,
 })
 
-function resolvePartsForPath(basePath) {
-  return resolveParts({basePath})
+function resolvePartsForPath(basePath, isSanityMonorepo) {
+  return resolveParts({basePath, isSanityMonorepo})
 }
 
 function resolveNodeImport(moduleId, basedir) {
   return resolveModule(moduleId, {basedir})
 }
 
-function resolveSanityImport(id, basePath) {
-  return partsCache.get(basePath).then((cached) => {
+function resolveSanityImport(id, basePath, isSanityMonorepo) {
+  return partsCache.get(basePath, isSanityMonorepo).then(cached => {
     const parts = cached.value
     const loadAll = id.indexOf('all:') === 0
     const partName = loadAll ? id.substr(4) : id
@@ -73,10 +73,11 @@ function realPath(path) {
 }
 
 function getStyleResolver(opts) {
+  const isSanityMonorepo = opts.isSanityMonorepo || false
   return function resolveStyleProxy(moduleId, basedir) {
     const id = moduleId.replace(/^\.\/(part|all:)/, '$1')
     const resolveStyleImport = isSanityPart(id)
-      ? sanityCache.get(id, opts.from)
+      ? sanityCache.get(id, opts.from, isSanityMonorepo)
       : nodeCache.get(id, basedir)
 
     return resolveStyleImport.then((res) => res.value)

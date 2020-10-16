@@ -1,6 +1,7 @@
 {
   "name": "sanity",
   "private": true,
+  "isSanityMonorepo": true,
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run package-yarn",
     "dev": "npm start",

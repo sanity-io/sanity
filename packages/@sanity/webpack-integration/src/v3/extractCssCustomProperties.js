@@ -13,9 +13,9 @@ const readFile = util.promisify(fs.readFile)
 
 const VAR_RE = /var\([\s+]?(--[A-Za-z0-9-]+)[\s+]?\)/
 
-async function extractCssCustomProperties(basePath, entryPath) {
+async function extractCssCustomProperties(basePath, entryPath, isSanityMonorepo) {
   const processor = postcss([
-    getPostcssImportPlugin({basePath}),
+    getPostcssImportPlugin({basePath, isSanityMonorepo}),
     postcssCustomProperties({preserve: true}),
     postcssCalc(),
     postcssColorFunction({preserveCustomProps: true}),

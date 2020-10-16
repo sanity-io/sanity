@@ -23,8 +23,9 @@ const assetify = (assetPath, hashes) => ({
   hash: hashes[assetPath],
 })
 
-const getDocumentComponent = (basePath) =>
-  resolveParts({basePath}).then((res) => {
+const getDocumentComponent = basePath => {
+  // Explicitly pass false here to not use uncompiled JSX etc
+  return resolveParts({basePath, isSanityMonorepo: false}).then(res => {
     const part = res.implementations[docPart]
     if (!part) {
       throw new Error(
@@ -34,6 +35,7 @@ const getDocumentComponent = (basePath) =>
 
     return getDefaultModule(requireUncached(part[0].path))
   })
+}
 
 export function getBaseServer() {
   return express()
@@ -86,7 +88,7 @@ export function applyStaticRoutes(app, config = {}) {
 }
 
 export function callInitializers(config) {
-  resolveParts({config}).then((res) => {
+  resolveParts(config).then(res => {
     const parts = res.implementations[initPart]
     if (!parts) {
       return

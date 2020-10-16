@@ -5,8 +5,10 @@ import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 import getStaticBasePath from './util/getStaticBasePath'
+import isSanityMonorepo from './configs/isSanityMonorepo'
 
 export default function getDevServer(config = {}) {
+  config.isSanityMonorepo = isSanityMonorepo(config.basePath)
   const staticPath = getStaticBasePath(config)
   const app = getBaseServer(config)
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
