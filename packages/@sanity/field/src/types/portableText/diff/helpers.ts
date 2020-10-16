@@ -391,12 +391,15 @@ export function escapeRegExp(text: string): string {
 }
 
 export function getAllMarkDefs(diff: ObjectDiff): PortableTextChild[] {
-  const allDefs = [...(diff.toValue ? diff.toValue.markDefs : [])]
-  const oldDefs = diff.fromValue ? diff.fromValue.markDefs : []
+  const allDefs: PortableTextChild[] = [
+    ...(diff.toValue && diff.toValue.markDefs ? diff.toValue.markDefs : [])
+  ]
+  const oldDefs: PortableTextChild[] =
+    diff.fromValue && diff.fromValue.markDefs ? diff.fromValue.markDefs : []
   oldDefs.forEach(oDef => {
     if (!allDefs.some(def => oDef._key === def._key)) {
       allDefs.push(oDef)
     }
   })
-  return orderBy(allDefs, ['_key'], ['asc']) as PortableTextChild[]
+  return orderBy(allDefs, ['_key'], ['asc'])
 }
