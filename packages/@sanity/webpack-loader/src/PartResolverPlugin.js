@@ -43,10 +43,12 @@ PartResolverPlugin.prototype.apply = function (compiler) {
   function cacheParts(params) {
     const instance = params.compiler || params
     instance.sanity = compiler.sanity || {basePath: basePath}
-    return partResolver.resolveParts({env, basePath, additionalPlugins}).then((parts) => {
-      instance.sanity.parts = parts
-      return {instance, parts}
-    })
+    return partResolver
+      .resolveParts({env, basePath, additionalPlugins, useSourcePaths: true})
+      .then(parts => {
+        instance.sanity.parts = parts
+        return {instance, parts}
+      })
   }
 
   function resolveCssCustomProperties({instance, parts}) {
