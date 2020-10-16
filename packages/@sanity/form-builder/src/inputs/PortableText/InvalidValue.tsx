@@ -26,19 +26,25 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps>
     const {resolution} = this.props
     const message = (
       <>
-        <div>{resolution.description}</div>
+        <p>{resolution.description}</p>
         <p>
           <pre className={styles.inspectValue}>{JSON.stringify(resolution.item, null, 2)}</pre>
         </p>
         {resolution.action && (
-          <div className={styles.buttonWrapper}>
-            <DefaultButton color="danger" onClick={this.handleAction}>
-              {resolution.action}
-            </DefaultButton>
-            <DefaultButton kind="secondary" onClick={this.handleIgnore}>
-              Ignore
-            </DefaultButton>
-          </div>
+          <>
+            <div className={styles.buttonWrapper}>
+              <DefaultButton color="primary" onClick={this.handleAction}>
+                {resolution.action}
+              </DefaultButton>
+              <DefaultButton kind="secondary" onClick={this.handleIgnore}>
+                Ignore
+              </DefaultButton>
+            </div>
+            <p>
+              It’s generally safe to perform the action above, but if you are in doubt, get in touch
+              with those responsible for configuring your studio.
+            </p>
+          </>
         )}
       </>
     )
