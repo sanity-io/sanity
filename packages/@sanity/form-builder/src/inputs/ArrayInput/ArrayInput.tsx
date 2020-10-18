@@ -223,13 +223,14 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           return (
             <Item
               className={isGrid ? styles.gridItem : styles.listItem}
-              key={item._key}
+              key={item._key || index}
               {...itemProps}
             >
               <ArrayInputItem
                 compareValue={compareValue}
                 filterField={filterField}
                 focusPath={focusPath}
+                index={index}
                 level={level}
                 markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onBlur={onBlur}
