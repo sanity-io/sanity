@@ -51,14 +51,19 @@ const modifiers = [
     }
   },
   {
-    name: 'sameWidth',
+    name: 'maxHeight',
     enabled: true,
     phase: 'beforeWrite',
     requires: ['computeStyles'],
-    fn({state}) {
-      state.styles.popper.maxHeight = `${window.innerHeight - 6 * 16}px`
+    fn(params) {
+      const {state} = params
+      const refElement = state.scrollParents.reference[0]
+      if (refElement && (refElement as Node).nodeType === Node.ELEMENT_NODE) {
+        const offsetHeight = (refElement as HTMLElement).offsetHeight
+        state.styles.popper.maxHeight = `${offsetHeight - 3 * 16}px`
+      }
     }
-  } as Modifier<'sameWidth', any>
+  } as Modifier<'maxHeight', any>
 ]
 
 const StyleSelectList = React.forwardRef(
