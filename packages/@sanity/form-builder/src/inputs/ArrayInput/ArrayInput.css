@@ -5,6 +5,10 @@
   position: relative;
 }
 
+.inner {
+  overflow: hidden;
+}
+
 .list {
   /* overide default list */
   @nest .root & {

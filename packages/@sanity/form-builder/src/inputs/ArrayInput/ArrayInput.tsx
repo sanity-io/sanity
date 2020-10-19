@@ -439,7 +439,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         changeIndicator={false}
         {...uploadProps}
       >
-        <div>
+        <div className={styles.inner}>
           {value && value.length > 0 && this.renderList()}
           {this.renderUnknownValueTypes()}
 
