@@ -11,19 +11,19 @@
     },
     {
       "implements": "part:@sanity/base/login-wrapper",
-      "path": "LoginWrapper.js"
+      "path": "LoginWrapper"
     },
     {
       "implements": "part:@sanity/base/login-dialog",
-      "path": "LoginDialog.js"
+      "path": "LoginDialog"
     },
     {
       "implements": "part:@sanity/base/login-dialog-content",
-      "path": "LoginDialogContent.js"
+      "path": "LoginDialogContent"
     },
     {
       "implements": "part:@sanity/base/authentication-fetcher",
-      "path": "authenticationFetcher.js"
+      "path": "authenticationFetcher"
     },
     {
       "implements": "part:@sanity/base/locale-messages",

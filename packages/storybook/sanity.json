@@ -19,15 +19,15 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schema.js"
+      "path": "./schema"
     },
     {
       "implements": "part:@sanity/base/root",
-      "path": "./storybook.js"
+      "path": "./storybook"
     },
     {
       "implements": "part:@sanity/base/document",
-      "path": "./storybook.js"
+      "path": "./storybook"
     }
   ]
 }

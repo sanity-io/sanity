@@ -10,7 +10,7 @@
     },
     {
       "implements": "part:@sanity/form-builder/input/code",
-      "path": "CodeInput.js"
+      "path": "CodeInput"
     },
     {
       "name": "part:@sanity/form-builder/input/code/schema",
@@ -18,11 +18,11 @@
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schema.js"
+      "path": "schema"
     },
     {
       "implements": "part:@sanity/form-builder/input/code/schema",
-      "path": "deprecatedSchema.js"
+      "path": "deprecatedSchema"
     }
   ]
 }

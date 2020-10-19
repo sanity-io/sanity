@@ -14,7 +14,7 @@
     {
       "name": "part:base/bar",
       "description": "Returns 'bar' when called",
-      "path": "./getBar.js"
+      "path": "./getBar"
     },
     {
       "name": "part:base/indexpart",

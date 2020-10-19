@@ -10,7 +10,7 @@
     },
     {
       "implements": "part:@sanity/default-layout/sidecar",
-      "path": "StudioHints.js"
+      "path": "StudioHints"
     }
   ]
 }

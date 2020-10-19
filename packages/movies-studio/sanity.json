@@ -20,15 +20,15 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schemas/schema.js"
+      "path": "./schemas/schema"
     },
     {
       "implements": "part:@sanity/base/brand-logo",
-      "path": "components/BrandLogo.js"
+      "path": "components/BrandLogo"
     },
     {
       "implements": "part:@sanity/production-preview/resolve-production-url",
-      "path": "./resolveProductionUrl.js"
+      "path": "./resolveProductionUrl"
     }
   ],
   "env": {

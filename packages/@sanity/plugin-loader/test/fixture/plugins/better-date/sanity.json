@@ -2,7 +2,7 @@
   "parts": [
     {
       "implements": "part:date/timestamp",
-      "path": "./getBetterTimestamp.js"
+      "path": "./getBetterTimestamp"
     }
   ]
 }
