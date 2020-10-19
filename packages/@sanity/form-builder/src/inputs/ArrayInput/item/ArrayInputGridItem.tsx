@@ -28,6 +28,7 @@ import styles from './ArrayInputGridItem.css'
 interface ArrayInputGridItemProps {
   type: ArraySchemaType
   value: ItemValue
+  index: number
   compareValue?: any[]
   level: number
   markers: Array<Marker>
@@ -150,6 +151,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
       focusPath,
       onFocus,
       onBlur,
+      index,
       readOnly,
       filterField,
       presence,
@@ -171,7 +173,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
         focusPath={focusPath}
         readOnly={readOnly || memberType.readOnly}
         markers={childMarkers}
-        path={[{_key: item._key}]}
+        path={[item._key ? {_key: item._key} : index]}
         filterField={filterField}
         presence={childPresence}
       />
@@ -217,14 +219,14 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
     }
 
     return (
-      <DefaultDialog onClose={this.handleEditStop} key={item._key} title={title}>
+      <DefaultDialog onClose={this.handleEditStop} key={item._key || index} title={title}>
         <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
       </DefaultDialog>
     )
   }
 
   renderItem() {
-    const {value, markers, type, readOnly, presence, focusPath} = this.props
+    const {value, markers, type, index, readOnly, presence, focusPath} = this.props
     const options = type.options || {}
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
@@ -247,7 +249,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
     }
 
     return (
-      <ChangeIndicatorScope path={[{_key: value._key}]}>
+      <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
         <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
           <div className={styles.inner}>
             <div

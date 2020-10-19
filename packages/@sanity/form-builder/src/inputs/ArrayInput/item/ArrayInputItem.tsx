@@ -10,6 +10,7 @@ interface ArrayInputItemProps {
   compareValue?: any[]
   layout?: 'media' | 'default'
   level: number
+  index: number
   markers: Marker[]
   type: ArraySchemaType
   value: ItemValue

@@ -34,6 +34,7 @@ const DragHandle = createDragHandle(() => (
 interface ArrayInputListItemProps {
   type: ArraySchemaType
   value: ItemValue
+  index: number
   compareValue?: any[]
   level: number
   markers: Marker[]
@@ -153,6 +154,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
       focusPath,
       onFocus,
       onBlur,
+      index,
       readOnly,
       filterField,
       presence,
@@ -174,7 +176,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
         focusPath={focusPath}
         readOnly={readOnly || memberType.readOnly}
         markers={childMarkers}
-        path={[{_key: item._key}]}
+        path={[item._key ? {_key: item._key} : index]}
         filterField={filterField}
         presence={childPresence}
       />
@@ -230,7 +232,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
   }
 
   renderItem() {
-    const {value, markers, type, readOnly, presence, focusPath} = this.props
+    const {value, markers, type, index, readOnly, presence, focusPath} = this.props
     const options = type.options || {}
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
@@ -250,7 +252,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     }
 
     return (
-      <ChangeIndicatorScope path={[{_key: value._key}]}>
+      <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
         <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
           <div className={styles.inner} ref={this.setInnerElement}>
             {isSortable && <DragHandle />}
