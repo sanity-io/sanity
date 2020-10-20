@@ -47,7 +47,7 @@ export default class ArrayFunctions extends React.Component<ArrayFunctionsProps>
         (memberDef.to || []).length === 1 &&
         memberDef.to[0].icon
 
-      const icon = memberDef.icon || memberDef.type.icon || referenceIcon || PlusIcon
+      const icon = memberDef.icon || memberDef.type.icon || referenceIcon
       return {
         title: memberDef.title || memberDef.type.name,
         type: memberDef,
