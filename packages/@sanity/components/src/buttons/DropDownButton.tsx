@@ -11,6 +11,7 @@ import {ButtonProps} from './types'
 interface DropdownItem {
   title: string
   icon?: React.ComponentType<Record<string, unknown>>
+  color?: string
 }
 
 interface DropdownButtonProps {
@@ -68,7 +69,7 @@ const DropdownMenuItem = forwardRef(
         {renderItem ? (
           renderItem(item)
         ) : (
-          <div className={styles.menuItem__inner}>
+          <div className={styles.menuItem__inner} data-color={item.color}>
             {item.icon && (
               <div className={styles.menuItem__iconContainer}>{createElement(item.icon)}</div>
             )}

@@ -59,6 +59,10 @@
   display: flex;
   align-items: center;
   padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
+
+  @nest &[data-color='danger'] {
+    color: var(--state-danger-color);
+  }
 }
 
 .menuItem__iconContainer {
