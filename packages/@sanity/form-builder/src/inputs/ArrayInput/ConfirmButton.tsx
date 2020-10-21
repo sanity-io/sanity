@@ -16,12 +16,23 @@ export default function ConfirmButton(
   const {onConfirm, placement = 'left', ...restProps} = props
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<DefaultButtonInstance>(null)
+  let timer
 
   useEffect(() => {
     if (open && buttonRef.current) buttonRef.current.focus()
   }, [open])
 
-  const handleBlur = useCallback(() => setOpen(false), [])
+  const handleBlur = e => {
+    timer = setTimeout(() => {
+      setOpen(false)
+    }, 0)
+  }
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [open])
 
   return (
     <MenuButton
