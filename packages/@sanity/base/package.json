@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "@sanity/bifur-client": "^0.0.7",
     "@sanity/client": "2.0.1",
     "@sanity/color": "^1.0.0",
-    "@sanity/components": "2.0.5",
+    "@sanity/components": "2.0.6",
     "@sanity/generate-help-url": "2.0.1",
     "@sanity/image-url": "^0.140.19",
     "@sanity/initial-value-templates": "2.0.1",
