@@ -114,20 +114,20 @@ function PortableTextSanityEditor(props: Props) {
       ...(props.hotkeys || {}).custom
     }
   }
-  const defaultHotkeys = {}
+  const defaultHotkeys = {marks: {}}
   ptFeatures.decorators.forEach(dec => {
     switch (dec.value) {
       case 'strong':
-        defaultHotkeys['mod+b'] = dec.value
+        defaultHotkeys.marks['mod+b'] = dec.value
         break
       case 'em':
-        defaultHotkeys['mod+i'] = dec.value
+        defaultHotkeys.marks['mod+i'] = dec.value
         break
       case 'underline':
-        defaultHotkeys['mod+u'] = dec.value
+        defaultHotkeys.marks['mod+u'] = dec.value
         break
       case 'code':
-        defaultHotkeys["mod+'"] = dec.value
+        defaultHotkeys.marks["mod+'"] = dec.value
         break
       default:
       // Nothing
@@ -135,7 +135,7 @@ function PortableTextSanityEditor(props: Props) {
   })
   const marksFromProps: HotkeyOptions = {
     marks: {
-      ...defaultHotkeys,
+      ...defaultHotkeys.marks,
       ...(props.hotkeys || {}).marks
     }
   }
