@@ -25,7 +25,7 @@ export default function ConfirmButton(
   const handleBlur = e => {
     timer = setTimeout(() => {
       setOpen(false)
-    }, 0)
+    }, 200)
   }
 
   useEffect(() => {
