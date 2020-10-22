@@ -142,60 +142,67 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     const showSummary = isCollapsible && isCollapsed
     // Hide the tooltip if field is collapsible, but field is not collapsed
     const hideTooltip = isCollapsible && !isCollapsed
+
+    const showHeader = legend || fieldset.legend || description || fieldset.description
+    const labelPlaceholder = isCollapsible ? 'Untitled' : ''
     return (
       <div
         {...rest}
         onFocus={this.handleFocus}
-        tabIndex={tabIndex}
+        tabIndex={isCollapsible ? tabIndex : undefined}
         ref={this.setFocusElement}
         className={rootClassName}
       >
         <fieldset className={styles.fieldset}>
           <div className={styles.inner}>
-            <div className={styles.header}>
-              <div className={styles.headerMain}>
-                <legend
-                  className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
-                  // Uses the tabIndex 0 and -1 here to avoid focus state on click
-                  tabIndex={isCollapsible ? 0 : undefined}
-                  onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
-                >
-                  <div
-                    className={styles.labelContainer}
-                    onClick={isCollapsible ? this.handleToggle : undefined}
-                    tabIndex={-1}
+            {(showHeader || isCollapsible) && (
+              <div className={styles.header}>
+                <div className={styles.headerMain}>
+                  <legend
+                    className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
+                    // Uses the tabIndex 0 and -1 here to avoid focus state on click
+                    tabIndex={isCollapsible ? 0 : undefined}
+                    onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
                   >
-                    {isCollapsible && (
-                      <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
-                        <ArrowDropDown />
-                      </div>
-                    )}
-                    <DefaultLabel className={styles.label} level={1}>
-                      {legend || fieldset.legend}
-                    </DefaultLabel>
-                  </div>
-                  <ValidationStatus
-                    className={styles.validationStatus}
-                    markers={
-                      showSummary
-                        ? validation.filter(marker => marker.path.length <= level)
-                        : validation.filter(marker => marker.path.length < 1)
-                    }
-                    showSummary={showSummary}
-                    hideTooltip={hideTooltip}
-                  />
-                </legend>
+                    <div
+                      className={styles.labelContainer}
+                      onClick={isCollapsible ? this.handleToggle : undefined}
+                      tabIndex={-1}
+                    >
+                      {isCollapsible && (
+                        <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
+                          <ArrowDropDown />
+                        </div>
+                      )}
+                      <DefaultLabel className={styles.label} level={1}>
+                        {legend || fieldset.legend || labelPlaceholder}
+                      </DefaultLabel>
+                    </div>
+                    <ValidationStatus
+                      className={styles.validationStatus}
+                      markers={
+                        showSummary
+                          ? validation.filter(marker => marker.path.length <= level)
+                          : validation.filter(marker => marker.path.length < 1)
+                      }
+                      showSummary={showSummary}
+                      hideTooltip={hideTooltip}
+                    />
+                  </legend>
 
-                {(description || fieldset.description) && (
-                  <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
-                    {description || fieldset.description}
-                  </p>
+                  {(description || fieldset.description) && (
+                    <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
+                      {description || fieldset.description}
+                    </p>
+                  )}
+                </div>
+                {isCollapsible && (
+                  <FieldStatus>
+                    <FieldPresence maxAvatars={4} presence={presence} />
+                  </FieldStatus>
                 )}
               </div>
-              <FieldStatus>
-                <FieldPresence maxAvatars={4} presence={presence} />
-              </FieldStatus>
-            </div>
+            )}
 
             {isCollapsible && !isCollapsed && (
               <div className={styles.content}>
