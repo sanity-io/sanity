@@ -1,7 +1,7 @@
 {
   "name": "clean-studio",
   "private": true,
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Content studio running with schema from the clean template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "@sanity/core": "2.0.5",
     "@sanity/default-layout": "2.0.7",
     "@sanity/default-login": "2.0.5",
-    "@sanity/desk-tool": "2.0.7",
+    "@sanity/desk-tool": "2.0.8",
     "@sanity/google-maps-input": "2.0.7",
     "@sanity/vision": "2.0.5",
     "react": "16.9.0",
