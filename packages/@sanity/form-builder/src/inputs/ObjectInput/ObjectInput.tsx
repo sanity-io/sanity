@@ -152,7 +152,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
           isCollapsed={isCollapsed}
-          presence={isCollapsed ? childPresence : []}
+          presence={childPresence}
           onFocus={onFocus}
           changeIndicator={false}
           markers={markers}
@@ -243,7 +243,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           isCollapsible={collapsibleOpts.collapsible}
           isCollapsed={isCollapsed}
           markers={markers}
-          presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
+          presence={presence}
           onFocus={onFocus}
           changeIndicator={false}
         >
