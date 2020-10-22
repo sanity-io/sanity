@@ -67,7 +67,22 @@ export default {
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       fields: [
         {name: 'field1', type: 'string', description: 'This is a string field'},
-        {name: 'field2', type: 'string', description: 'This is a collapsed field'}
+        {name: 'field2', type: 'string', description: 'This is a collapsed field'},
+        {
+          name: 'field3',
+          type: 'object',
+          options: {collapsible: true, collapsed: true},
+          fields: [
+            {name: 'nested1', title: 'nested1', type: 'string'},
+            {
+              name: 'nested2',
+              title: 'nested2',
+              type: 'object',
+              fields: [{name: 'ge', title: 'hello', type: 'string'}],
+              options: {collapsible: true, collapsed: true}
+            }
+          ]
+        }
       ]
     },
     {

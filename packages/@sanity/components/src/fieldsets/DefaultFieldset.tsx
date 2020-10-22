@@ -142,11 +142,12 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     const showSummary = isCollapsible && isCollapsed
     // Hide the tooltip if field is collapsible, but field is not collapsed
     const hideTooltip = isCollapsible && !isCollapsed
+    const childPresence = isCollapsible && isCollapsed ? presence : []
     return (
       <div
         {...rest}
         onFocus={this.handleFocus}
-        tabIndex={tabIndex}
+        tabIndex={isCollapsible && isCollapsed ? tabIndex : -1}
         ref={this.setFocusElement}
         className={rootClassName}
       >
@@ -192,9 +193,11 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                   </p>
                 )}
               </div>
-              <FieldStatus>
-                <FieldPresence maxAvatars={4} presence={presence} />
-              </FieldStatus>
+              {isCollapsible && (
+                <FieldStatus>
+                  <FieldPresence maxAvatars={4} presence={childPresence} />
+                </FieldStatus>
+              )}
             </div>
 
             {isCollapsible && !isCollapsed && (
