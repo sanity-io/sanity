@@ -27,7 +27,7 @@ export function Text({
     diffWithFallback && diffWithFallback.action !== 'unchanged' && segment.action !== 'unchanged'
   if (hasChanged) {
     return (
-      <TextWithDiff {...restProps} childDiff={childDiff} diff={diff} segment={segment} path={path}>
+      <TextWithDiff {...restProps} childDiff={childDiff} diff={diff} path={path} segment={segment}>
         {children}
       </TextWithDiff>
     )
@@ -36,9 +36,9 @@ export function Text({
 }
 
 export function TextWithDiff({
-  diff,
   childDiff,
   children,
+  diff,
   path,
   segment,
   ...restProps
@@ -66,9 +66,10 @@ export function TextWithDiff({
     },
     [focusPath]
   )
-  const realSeg = diff && diff.segments.find(rSeg => rSeg.text === segment.text)
-
-  const diffWithFallback = realSeg || diff || childDiff
+  const diffWithFallback =
+    (segment && segment.action !== 'unchanged' && segment.annotation && segment) ||
+    diff ||
+    childDiff
   const annotation =
     (diffWithFallback && diffWithFallback.action !== 'unchanged' && diffWithFallback.annotation) ||
     null

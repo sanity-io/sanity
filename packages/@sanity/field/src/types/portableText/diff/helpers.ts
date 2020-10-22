@@ -6,7 +6,7 @@ import {
   DIFF_EQUAL,
   DIFF_INSERT
 } from 'diff-match-patch'
-import {ArrayDiff, ObjectDiff, StringDiffSegment} from '../../../diff'
+import {ArrayDiff, ObjectDiff, StringDiffSegment, StringDiff} from '../../../diff'
 import {ObjectSchemaType, ArraySchemaType} from '../../../types'
 import * as TextSymbols from './symbols'
 
@@ -33,11 +33,11 @@ const startMarkSymbols = TextSymbols.DECORATOR_SYMBOLS.map(set => set[0]).concat
 const endMarkSymbols = TextSymbols.DECORATOR_SYMBOLS.map(set => set[1]).concat(
   TextSymbols.ANNOTATION_SYMBOLS.map(set => set[1])
 )
-const allSymbols = startMarkSymbols
+export const allSymbols = startMarkSymbols
   .concat(endMarkSymbols)
   .concat(TextSymbols.INLINE_SYMBOLS)
   .concat(TextSymbols.CHILD_SYMBOL)
-  .concat(TextSymbols.SEGMENT_START_SYMBOL)
+  .concat(TextSymbols.SEGMENT_SYMBOL)
 const symbolRegex = new RegExp(`${allSymbols.join('|')}`, 'g')
 const segmentRegex = new RegExp(`${allSymbols.join('|')}|\n`, 'g')
 
@@ -103,21 +103,22 @@ export function blockToSymbolizedText(
   }
   return block.children
     .map(child => {
-      let returned = child.text?.replace(symbolRegex, '') || '' // Make sure symbols aren't in the text already
+      let returned = ''
       if (child._type === 'span') {
-        // Attatch stringdiff segments
+        returned = child.text?.replace(symbolRegex, '') || '' // Make sure symbols aren't in the text already
+        // // Attatch stringdiff segments
         const spanDiff = findSpanDiffFromChild(diff, child)
         const textDiff = spanDiff?.fields.text
-        if (
-          textDiff &&
-          textDiff.toValue === child.text &&
-          textDiff.type === 'string' &&
-          textDiff.action !== 'unchanged'
-        ) {
+        if (textDiff && textDiff.type === 'string') {
           returned = textDiff.segments
-            .filter(seg => seg.action !== 'removed')
-            .map(seg => seg.text.replace(symbolRegex, ''))
-            .join(TextSymbols.SEGMENT_START_SYMBOL)
+            .map(seg => {
+              const added = seg.action === 'added' ? '' : seg.text
+              const removed = seg.action === 'removed' ? '' : seg.text
+              return TextSymbols.SEGMENT_SYMBOL.concat(
+                textDiff.toValue === child.text ? removed : added
+              )
+            })
+            .join('')
         }
         if (child.marks) {
           child.marks.forEach(mark => {
@@ -231,12 +232,7 @@ export function createPortableTextDiff(
                     isChanged: true,
                     fromValue: fromText,
                     toValue: toText,
-                    segments: buildSegments(fromText, toText).map(seg => ({
-                      ...seg,
-                      ...(_diff.action !== 'unchanged' && _diff.annotation
-                        ? {annotation: _diff.annotation} // Fallback if we can't find a spesific original diff
-                        : {})
-                    }))
+                    segments: buildSegments(fromText, toText, _diff.origin)
                   }
                 },
                 fromValue: fromPseudoValue.children[0],
@@ -258,11 +254,10 @@ export function createPortableTextDiff(
   throw new Error('Can not display this diff')
 }
 
-function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
-  const segments: StringDiffSegment[] = []
+function buildSegments(fromInput: string, toInput: string, diff: ObjectDiff): StringDiffSegment[] {
   const dmpDiffs = dmp.diff_main(fromInput, toInput)
   dmp.diff_cleanupEfficiency(dmpDiffs)
-
+  const segments: StringDiffSegment[] = []
   let fromIdx = 0
   let toIdx = 0
   for (const [op, text] of dmpDiffs) {
@@ -298,33 +293,57 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
       // Do nothing
     }
   }
-  // Clean up so that marks / symbols are treated as an own segment
-  return flatten(
-    segments.map(seg => {
-      const newSegments: StringDiffSegment[] = []
-      if (seg.text.length > 1) {
-        const markMatches = [...seg.text.matchAll(segmentRegex)]
-        let lastIndex = -1
-        markMatches.forEach(match => {
-          const index = match.index || 0
-          if (index > lastIndex) {
-            newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, index)})
-            newSegments.push({...seg, text: match[0]})
+  // Put symbols in their own item
+  const tokenized = flatten(
+    segments
+      .filter(seg => seg.text !== '')
+      .map(seg => {
+        const newSegments: StringDiffSegment[] = []
+        if (seg.text.length > 1) {
+          const markMatches = [...seg.text.matchAll(segmentRegex)]
+          let lastIndex = -1
+          markMatches.forEach(match => {
+            const index = match.index || 0
+            if (index > lastIndex) {
+              newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, index)})
+              newSegments.push({...seg, text: match[0]})
+            }
+            if (match === markMatches[markMatches.length - 1]) {
+              newSegments.push({...seg, text: seg.text.substring(index + 1)})
+            }
+            lastIndex = index
+          })
+          if (markMatches.length === 0) {
+            newSegments.push(seg)
           }
-          if (match === markMatches[markMatches.length - 1]) {
-            newSegments.push({...seg, text: seg.text.substring(index + 1)})
-          }
-          lastIndex = index
-        })
-        if (markMatches.length === 0) {
+        } else {
           newSegments.push(seg)
         }
-      } else {
-        newSegments.push(seg)
-      }
-      return newSegments
-    })
-  )
+        return newSegments
+      })
+  ).filter(seg => seg.text !== '')
+  let segIndex = -1
+  let childIndex = -1
+  // Attatch the original diff annotations
+  tokenized.forEach(seg => {
+    if (TextSymbols.SEGMENT_SYMBOL === seg.text) {
+      segIndex++
+      return
+    }
+    if (TextSymbols.CHILD_SYMBOL === seg.text) {
+      childIndex++
+      segIndex = -1
+      return
+    }
+    if (allSymbols.includes(seg.text)) {
+      return
+    }
+    const originalSegment = findOriginalTextSegment(diff, seg, childIndex, segIndex)
+    if (seg.action !== 'unchanged' && originalSegment && originalSegment.action !== 'unchanged') {
+      seg.annotation = originalSegment.annotation
+    }
+  })
+  return tokenized
 }
 
 export function getInlineObjects(diff: ObjectDiff): PortableTextChild[] {
@@ -402,4 +421,35 @@ export function getAllMarkDefs(diff: ObjectDiff): PortableTextChild[] {
     }
   })
   return orderBy(allDefs, ['_key'], ['asc'])
+}
+
+function findOriginalTextSegment(
+  diff: ObjectDiff,
+  pseudoSeg: StringDiffSegment,
+  childIndex: number,
+  segmentIndex: number
+): StringDiffSegment | undefined {
+  const childDiff =
+    diff.fields.children.action !== 'unchanged' &&
+    diff.fields.children.type === 'array' &&
+    diff.fields.children.items[childIndex]?.diff
+  let textDiff: StringDiff | undefined
+  if (childDiff) {
+    textDiff =
+      (childDiff.type === 'object' &&
+        childDiff.action !== 'unchanged' &&
+        childDiff.fields.text &&
+        childDiff.fields.text.type === 'string' &&
+        childDiff.fields.text[pseudoSeg.action === 'removed' ? 'fromValue' : 'toValue']?.includes(
+          pseudoSeg.text
+        ) &&
+        childDiff.fields.text) ||
+      undefined
+  }
+  let segment
+  if (textDiff) {
+    segment = textDiff.segments[segmentIndex]
+    return segment
+  }
+  return segment
 }
