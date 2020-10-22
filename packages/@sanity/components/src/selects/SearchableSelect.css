@@ -40,8 +40,20 @@
   color: inherit;
   font-size: var(--font-size-large);
 
-  @nest &:hover, &:focus {
+  @nest &:hover {
     color: var(--link-color);
+
+    @nest & svg {
+      color: inherit;
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @nest &:focus {
+    box-shadow: var(--input-box-shadow--focus);
+    border-color: var(--input-border-color-focus);
+    border-radius: var(--input-border-radius);
 
     @nest & svg {
       color: inherit;
