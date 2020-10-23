@@ -4,7 +4,7 @@ const assign = require('object-assign')
 const helpUrl = require('@sanity/generate-help-url')
 const microtime = require('microtime-nodejs')
 const timeConverter = require('../util/micro-time-converter')
-const {RateLimitError, QueueLimitError} = require('./errors')
+const {RateLimitError} = require('./errors')
 
 const getCurrentMicroseconds = microtime.now
 

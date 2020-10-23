@@ -4,7 +4,6 @@ const {QueueLimitError} = require('./errors')
 
 function RateLimiterWithQueue(options) {
   this.store = []
-  this.onRateLimited = options.onRateLimited
   this.queue = []
   this.onRateLimited = null
   this.ttls = null
