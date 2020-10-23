@@ -4,14 +4,14 @@ import {Router, InternalRouter} from './types'
 
 const NO_CONTEXT_STATE = {
   state: {},
-  navigate: state => {
+  navigate: (state) => {
     throw new Error(
       `Cannot navigate to the state ${JSON.stringify(state)}. No router found in context`
     )
   },
-  navigateIntent: intentName => {
+  navigateIntent: (intentName) => {
     throw new Error(`Cannot navigate to the intent ${intentName}. No router found in context`)
-  }
+  },
 }
 
 type ChildProps<OuterProps> = OuterProps & {router: Router}
@@ -24,7 +24,7 @@ export default function withRouterHOC<OuterProps>(
     unsubscribe: (() => void) | null = null
 
     state = {
-      routerState: {}
+      routerState: {},
     }
 
     context: {
@@ -32,7 +32,7 @@ export default function withRouterHOC<OuterProps>(
     } | null = null
 
     static contextTypes = {
-      __internalRouter: internalRouterContextTypeCheck
+      __internalRouter: internalRouterContextTypeCheck,
     }
 
     constructor(props, context) {
@@ -70,7 +70,7 @@ export default function withRouterHOC<OuterProps>(
         ? {
             state: this.state.routerState,
             navigate: internalRouter.navigate,
-            navigateIntent: internalRouter.navigateIntent
+            navigateIntent: internalRouter.navigateIntent,
           }
         : NO_CONTEXT_STATE
 

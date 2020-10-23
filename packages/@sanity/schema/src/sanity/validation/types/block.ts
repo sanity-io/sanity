@@ -3,8 +3,8 @@ import humanizeList from 'humanize-list'
 import {error, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
-const getTypeOf = thing => (Array.isArray(thing) ? 'array' : typeof thing)
-const quote = str => `"${str}"`
+const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
+const quote = (str) => `"${str}"`
 const allowedKeys = ['type', 'styles', 'marks', 'lists', 'of', 'title', 'name']
 const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['title', 'value', 'blockEditor']
@@ -17,7 +17,7 @@ export default function validateBlockType(typeDef, visitorContext) {
   let members = typeDef.of
 
   const disallowedKeys = Object.keys(typeDef).filter(
-    key => !allowedKeys.includes(key) && !key.startsWith('_')
+    (key) => !allowedKeys.includes(key) && !key.startsWith('_')
   )
 
   if (disallowedKeys.length > 0) {
@@ -45,7 +45,7 @@ export default function validateBlockType(typeDef, visitorContext) {
     marks,
     styles,
     of: members,
-    _problems: problems
+    _problems: problems,
   }
 }
 
@@ -59,7 +59,7 @@ function validateMarks(marks, visitorContext, problems) {
   }
 
   const disallowedMarkKeys = Object.keys(marks).filter(
-    key => !allowedMarkKeys.includes(key) && !key.startsWith('_')
+    (key) => !allowedMarkKeys.includes(key) && !key.startsWith('_')
   )
 
   if (disallowedMarkKeys.length > 0) {
@@ -105,7 +105,7 @@ function validateStyles(styles, visitorContext, problems) {
 
     const name = style.value || `#${index}`
     const disallowedKeys = Object.keys(style).filter(
-      key => !allowedStyleKeys.includes(key) && !key.startsWith('_')
+      (key) => !allowedStyleKeys.includes(key) && !key.startsWith('_')
     )
 
     if (disallowedKeys.length > 0) {
@@ -142,7 +142,7 @@ function validateDecorators(decorators, visitorContext, problems) {
 
     const name = decorator.value || `#${index}`
     const disallowedKeys = Object.keys(decorator).filter(
-      key => !allowedDecoratorKeys.includes(key) && !key.startsWith('_')
+      (key) => !allowedDecoratorKeys.includes(key) && !key.startsWith('_')
     )
 
     if (disallowedKeys.length > 0) {
@@ -173,11 +173,11 @@ function validateDecorators(decorators, visitorContext, problems) {
 }
 
 function validateAnnotations(annotations, visitorContext, problems) {
-  return annotations.map(annotation => {
+  return annotations.map((annotation) => {
     if (!isPlainObject(annotation)) {
       return {
         ...annotation,
-        _problems: [error(`Annotation must be an object, got ${getTypeOf(annotation)}`)]
+        _problems: [error(`Annotation must be an object, got ${getTypeOf(annotation)}`)],
       }
     }
 
@@ -201,7 +201,7 @@ function validateMembers(members, visitorContext, problems) {
     return undefined
   }
 
-  return members.map(member => {
+  return members.map((member) => {
     const {_problems} = visitorContext.visit(member, visitorContext)
     return {...member, _problems}
   })

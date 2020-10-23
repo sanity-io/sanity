@@ -15,15 +15,15 @@ interface CustomSelectProps {
 
 export default class CustomSelect extends React.Component<CustomSelectProps> {
   static defaultProps = {
-    onChange: () => undefined
+    onChange: () => undefined,
   }
 
   state = {
     isOpen: false,
-    activeIndex: -1
+    activeIndex: -1,
   }
 
-  handleItemClick = event => {
+  handleItemClick = (event) => {
     this.selectIndex(Number(event.currentTarget.getAttribute('data-item-index')))
     this.setState({isOpen: false})
   }
@@ -37,7 +37,7 @@ export default class CustomSelect extends React.Component<CustomSelectProps> {
     this.setState({isOpen: true})
   }
 
-  handleKeyDown = event => {
+  handleKeyDown = (event) => {
     const {isOpen, activeIndex} = this.state
     if (event.key === 'Enter') {
       if (isOpen && activeIndex > -1) {

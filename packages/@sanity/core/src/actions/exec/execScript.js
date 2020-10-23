@@ -8,7 +8,7 @@ const fse = require('fs-extra')
 const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
 dotenv.config({path: path.join(process.cwd(), `.env.${env}`)})
 
-module.exports = async args => {
+module.exports = async (args) => {
   // In case of specifying --with-user-token <file.js>, use the "token" as the script
   const script = args.argsWithoutOptions[0] || args.extOptions['with-user-token']
   const withToken = Boolean(args.extOptions['with-user-token'])

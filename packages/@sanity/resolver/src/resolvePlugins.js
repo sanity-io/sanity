@@ -8,7 +8,7 @@ import promiseProps from 'promise-props-recursive'
 const dirMatcher = /^\.\.?[/\\]?/
 
 export function resolvePlugins(pluginNames, options) {
-  const plugins = pluginNames.map(pluginName => {
+  const plugins = pluginNames.map((pluginName) => {
     return resolvePlugin(Object.assign({name: pluginName}, options))
   })
 
@@ -17,7 +17,7 @@ export function resolvePlugins(pluginNames, options) {
 
 export function resolvePlugin(options) {
   const {name, basePath, parentPluginPath, sync, env} = options
-  const resolver = sync ? dir => dir : dir => Promise.resolve(dir)
+  const resolver = sync ? (dir) => dir : (dir) => Promise.resolve(dir)
   const parentDir = parentPluginPath || basePath
   const isDirPlugin = dirMatcher.test(name)
 
@@ -32,7 +32,7 @@ export function resolvePlugin(options) {
       sync,
       basePath,
       manifestDir,
-      plugin: pluginName
+      plugin: pluginName,
     })
 
     return {
@@ -43,8 +43,8 @@ export function resolvePlugin(options) {
         env,
         sync,
         basePath,
-        parentPluginPath: manifestDir
-      })
+        parentPluginPath: manifestDir,
+      }),
     }
   }
 
@@ -54,18 +54,18 @@ export function resolvePlugin(options) {
       : resolvePluginPath({name, basePath, parentPluginPath}, sync)
   )
 
-  return dirResolver.then(manifestDir => {
+  return dirResolver.then((manifestDir) => {
     const plugin = {name: pluginName, path: manifestDir}
     return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName, env}).then(
-      manifest =>
+      (manifest) =>
         promiseProps(
           Object.assign(plugin, {
             manifest,
             plugins: resolvePlugins(manifest.plugins || [], {
               env,
               basePath,
-              parentPluginPath: plugin.path
-            })
+              parentPluginPath: plugin.path,
+            }),
           })
         )
     )
@@ -78,7 +78,7 @@ function resolvePluginPath(plugin, sync) {
   let locations = [
     path.join(plugin.basePath, 'plugins', pluginDir),
     path.join(plugin.basePath, 'plugins', plugin.name),
-    path.join(plugin.basePath, 'node_modules', pluginDir)
+    path.join(plugin.basePath, 'node_modules', pluginDir),
   ]
 
   if (plugin.parentPluginPath) {
@@ -103,8 +103,8 @@ function resolvePluginPath(plugin, sync) {
   }
 
   return Promise.all(locations.map(pathExists))
-    .then(matches => matches.findIndex(Boolean))
-    .then(index => {
+    .then((matches) => matches.findIndex(Boolean))
+    .then((index) => {
       if (index === -1) {
         throw getPluginNotFoundError(plugin.name, locations)
       }
@@ -118,7 +118,7 @@ function getPluginNotFoundError(pluginName, locations) {
     [
       `Plugin "${pluginName}" not found.\n`,
       'Locations tried:\n  * ',
-      locations.join('\n  * ')
+      locations.join('\n  * '),
     ].join('')
   )
 

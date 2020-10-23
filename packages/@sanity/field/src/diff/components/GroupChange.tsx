@@ -25,7 +25,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   )
 
   const isPortableText = changes.every(
-    change => isFieldChange(change) && isPTSchemaType(change.schemaType)
+    (change) => isFieldChange(change) && isPTSchemaType(change.schemaType)
   )
 
   const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
@@ -37,7 +37,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const handleRevertChanges = useCallback(() => undoChange(group, rootDiff, docOperations), [
     group,
     rootDiff,
-    docOperations
+    docOperations,
   ])
 
   const handleRevertChangesConfirm = useCallback(() => {
@@ -63,7 +63,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const content = (
     <div className={isHoveringRevert ? styles.contentOutlined : styles.content}>
       <div className={styles.changeList}>
-        {changes.map(change => (
+        {changes.map((change) => (
           <ChangeResolver key={change.key} change={change} />
         ))}
       </div>
@@ -84,13 +84,13 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
                 {
                   color: 'danger',
                   action: handleRevertChanges,
-                  title: 'Revert change'
+                  title: 'Revert change',
                 },
                 {
                   kind: 'simple',
                   action: closeRevertChangesConfirmDialog,
-                  title: 'Cancel'
-                }
+                  title: 'Cancel',
+                },
               ]}
               onAction={handleConfirmDialogAction}
               // portal

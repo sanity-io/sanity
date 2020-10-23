@@ -16,7 +16,7 @@ export default (typeDef, visitorContext) => {
 
   const problems = flatten([
     isValidTo
-      ? getDupes(normalizedTo, t => `${t.name};${t.type}`).map(dupes =>
+      ? getDupes(normalizedTo, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
             `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in reference. This makes it impossible to tell their values apart and you should consider naming them`,
             HELP_IDS.REFERENCE_TO_INVALID
@@ -25,7 +25,7 @@ export default (typeDef, visitorContext) => {
       : error(
           'The reference type is missing or having an invalid value for the required "to" property. It should be an array of accepted types.',
           HELP_IDS.REFERENCE_TO_INVALID
-        )
+        ),
   ])
 
   if (isValidTo && normalizedTo.length === 0) {
@@ -42,7 +42,7 @@ export default (typeDef, visitorContext) => {
   return {
     ...typeDef,
     to: (isValidTo ? normalizedTo : []).map(visitorContext.visit),
-    _problems: problems
+    _problems: problems,
   }
 }
 
@@ -52,8 +52,8 @@ function getOptionErrors(typeDef: any): ValidationResult[] {
 
   problems.push(
     ...['filter', 'filterParams']
-      .filter(key => key in typeDef)
-      .map(key =>
+      .filter((key) => key in typeDef)
+      .map((key) =>
         error(
           `\`${key}\` is not allowed on a reference type definition - did you mean \`options.${key}\`?`,
           HELP_IDS.REFERENCE_INVALID_OPTIONS_LOCATION
@@ -100,8 +100,8 @@ function getOptionErrors(typeDef: any): ValidationResult[] {
   if (options.filterParams) {
     return problems.concat(
       Object.keys(options.filterParams)
-        .filter(key => key.startsWith('__') || key.startsWith('$'))
-        .map(key => error(`Filter parameter cannot be prefixed with "$" or "__". Got ${key}".`))
+        .filter((key) => key.startsWith('__') || key.startsWith('$'))
+        .map((key) => error(`Filter parameter cannot be prefixed with "$" or "__". Got ${key}".`))
     )
   }
 

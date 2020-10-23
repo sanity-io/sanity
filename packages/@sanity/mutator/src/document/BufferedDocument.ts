@@ -58,11 +58,11 @@ export default class BufferedDocument {
   constructor(doc) {
     this.buffer = new SquashingBuffer(doc)
     this.document = new Document(doc)
-    this.document.onMutation = msg => this.handleDocMutation(msg)
-    this.document.onRemoteMutation = mut => this.onRemoteMutation && this.onRemoteMutation(mut)
+    this.document.onMutation = (msg) => this.handleDocMutation(msg)
+    this.document.onRemoteMutation = (mut) => this.onRemoteMutation && this.onRemoteMutation(mut)
     this.document.onRebase = (msg, remoteMutations, localMutations) =>
       this.handleDocRebase(msg, remoteMutations, localMutations)
-    this.document.onConsistencyChanged = msg => this.handleDocConsistencyChanged(msg)
+    this.document.onConsistencyChanged = (msg) => this.handleDocConsistencyChanged(msg)
     this.LOCAL = doc
     this.mutations = []
     this.commits = []
@@ -95,7 +95,7 @@ export default class BufferedDocument {
       this.onMutation({
         mutation,
         document: this.LOCAL,
-        remote: false
+        remote: false,
       })
       if (this.LOCAL === null && this.onDelete) {
         this.onDelete(this.LOCAL)
@@ -179,8 +179,8 @@ export default class BufferedDocument {
           setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
         }
       },
-      cancel: error => {
-        this.commits.forEach(commit => commit.reject(error))
+      cancel: (error) => {
+        this.commits.forEach((commit) => commit.reject(error))
         // Throw away waiting commits
         this.commits = []
         // Reset back to last known state from gradient and
@@ -192,14 +192,14 @@ export default class BufferedDocument {
 
         // Stop the committer loop
         this.committerRunning = false
-      }
+      },
     }
     debug('Posting commit')
     this.commitHandler({
       mutation: squashed,
       success: responder.success,
       failure: responder.failure,
-      cancel: responder.cancel
+      cancel: responder.cancel,
     })
   }
 

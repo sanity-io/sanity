@@ -10,7 +10,7 @@ const symbols = {
   comparator: ['>', '>=', '<', '<=', '==', '!='],
   keyword: ['$', '@'],
   boolean: ['true', 'false'],
-  paren: ['[', ']']
+  paren: ['[', ']'],
 }
 
 class Tokenizer {
@@ -27,8 +27,8 @@ class Tokenizer {
       this.tokenizeSymbol,
       this.tokenizeIdentifier,
       this.tokenizeNumber,
-      this.tokenizeQuoted
-    ].map(fn => fn.bind(this))
+      this.tokenizeQuoted,
+    ].map((fn) => fn.bind(this))
   }
 
   tokenize(): string[] {
@@ -36,7 +36,7 @@ class Tokenizer {
     while (!this.EOF()) {
       let token
       this.chompWhitespace()
-      const found = this.tokenizers.find(tokenizer => {
+      const found = this.tokenizers.find((tokenizer) => {
         token = tokenizer()
         return !!token
       })
@@ -102,7 +102,7 @@ class Tokenizer {
   }
 
   chompWhitespace() {
-    this.takeWhile(char => {
+    this.takeWhile((char) => {
       return char == ' ' ? '' : null
     })
   }
@@ -112,7 +112,7 @@ class Tokenizer {
     if (quote == "'" || quote == '"') {
       this.consume(quote)
       let escape = false
-      const inner = this.takeWhile(char => {
+      const inner = this.takeWhile((char) => {
         if (escape) {
           escape = false
           return char
@@ -130,7 +130,7 @@ class Tokenizer {
       return {
         type: 'quoted',
         value: inner,
-        quote: quote == '"' ? 'double' : 'single'
+        quote: quote == '"' ? 'double' : 'single',
       }
     }
     return null
@@ -138,7 +138,7 @@ class Tokenizer {
 
   tokenizeIdentifier(): Object {
     let first = true
-    const identifier = this.takeWhile(char => {
+    const identifier = this.takeWhile((char) => {
       if (first) {
         first = false
         return char.match(attributeFirstCharMatcher) ? char : null
@@ -148,7 +148,7 @@ class Tokenizer {
     if (identifier !== null) {
       return {
         type: 'identifier',
-        name: identifier
+        name: identifier,
       }
     }
     return null
@@ -163,7 +163,7 @@ class Tokenizer {
       negative = true
       this.consume('-')
     }
-    const number = this.takeWhile(char => {
+    const number = this.takeWhile((char) => {
       if (char == '.' && !dotSeen && digitSeen) {
         dotSeen = true
         return char
@@ -175,7 +175,7 @@ class Tokenizer {
       return {
         type: 'number',
         value: negative ? -number : +number,
-        raw: negative ? `-${number}` : number
+        raw: negative ? `-${number}` : number,
       }
     }
     // No number, rewind
@@ -185,13 +185,13 @@ class Tokenizer {
 
   tokenizeSymbol(): Object {
     let result: Object = null
-    Object.keys(symbols).find(symbolClass => {
+    Object.keys(symbols).find((symbolClass) => {
       const patterns = symbols[symbolClass]
-      const found = patterns.find(pattern => this.tryConsume(pattern))
+      const found = patterns.find((pattern) => this.tryConsume(pattern))
       if (found) {
         result = {
           type: symbolClass,
-          symbol: found
+          symbol: found,
         }
         return true
       }

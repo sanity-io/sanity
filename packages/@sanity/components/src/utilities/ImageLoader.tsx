@@ -16,7 +16,7 @@ interface State {
 export default class ImageLoader extends React.PureComponent<ImageLoaderProps, State> {
   state = {
     loadedImage: null,
-    error: null
+    error: null,
   }
 
   subscription?: Subscription
@@ -39,8 +39,8 @@ export default class ImageLoader extends React.PureComponent<ImageLoaderProps, S
   loadImage(src: string) {
     this.unsubscribe()
     this.subscription = loadImage(src).subscribe({
-      next: url => this.setState({loadedImage: url, error: null}),
-      error: error => this.setState({loadedImage: null, error: error})
+      next: (url) => this.setState({loadedImage: url, error: null}),
+      error: (error) => this.setState({loadedImage: null, error: error}),
     })
   }
 

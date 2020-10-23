@@ -8,13 +8,13 @@ const checkCors = () =>
     client
       .request({uri: '/users/me', withCredentials: false})
       .then(() => true)
-      .catch(() => false)
+      .catch(() => false),
   ])
-    .then(res => ({
+    .then((res) => ({
       isCorsError: res[0] && !res[1],
-      pingResponded: res[0]
+      pingResponded: res[0],
     }))
-    .catch(error => ({error}))
+    .catch((error) => ({error}))
 
 const linkRel = 'noopener noreferrer'
 
@@ -25,10 +25,10 @@ class CorsCheck extends PureComponent {
   }
 
   UNSAFE_componentWillMount() {
-    checkCors().then(res =>
+    checkCors().then((res) =>
       this.setState({
         result: res,
-        isLoading: false
+        isLoading: false,
       })
     )
   }
@@ -91,8 +91,15 @@ class CorsCheck extends PureComponent {
           <a rel={linkRel} target="_blank" href={corsUrl}>
             the project management
           </a>{' '}
-          interface. Add the origin under the <a href="https://www.sanity.io/docs/front-ends/cors" target="_blank" rel="noopener noreferrer"><em>CORS Origins</em></a> section. Do remember to{' '}
-          <code>allow credentials</code>!
+          interface. Add the origin under the{' '}
+          <a
+            href="https://www.sanity.io/docs/front-ends/cors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <em>CORS Origins</em>
+          </a>{' '}
+          section. Do remember to <code>allow credentials</code>!
         </p>
       )
     }

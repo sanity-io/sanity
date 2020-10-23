@@ -10,11 +10,11 @@ function extractTextFromBlocks(blocks) {
     return ''
   }
   return blocks
-    .filter(val => val._type === 'block')
-    .map(block => {
+    .filter((val) => val._type === 'block')
+    .map((block) => {
       return block.children
-        .filter(child => child._type === 'span')
-        .map(span => span.text)
+        .filter((child) => child._type === 'span')
+        .map((span) => span.text)
         .join('')
     })
     .join('')
@@ -46,7 +46,7 @@ function handlePaste(input) {
             const childNodes =
               code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes
             let text = ''
-            childNodes.forEach(node => {
+            childNodes.forEach((node) => {
               text += node.textContent
             })
             /**
@@ -55,11 +55,11 @@ function handlePaste(input) {
              */
             return block({
               _type: 'code',
-              code: text
+              code: text,
             })
-          }
-        }
-      ]
+          },
+        },
+      ],
     })
     // return an insert patch
     return {insert: blocks, path}
@@ -70,12 +70,12 @@ function handlePaste(input) {
 export default class FunkyEditor extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
-      title: PropTypes.string
+      title: PropTypes.string,
     }).isRequired,
     level: PropTypes.number,
     value: PropTypes.array,
     markers: PropTypes.array,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
   }
 
   render() {
@@ -88,7 +88,7 @@ export default class FunkyEditor extends React.Component {
           renderBlockActions={BlockActions}
           renderCustomMarkers={CustomMarkers}
           markers={markers.concat([
-            {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
+            {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
           ])}
         />
         <p>

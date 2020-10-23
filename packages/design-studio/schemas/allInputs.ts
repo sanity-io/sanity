@@ -3,7 +3,7 @@ import author from './author'
 const title = {
   type: 'string',
   name: 'title',
-  title: 'Title'
+  title: 'Title',
 }
 
 // example fields
@@ -39,17 +39,17 @@ const arrayOfNestedArrays = {
                       type: 'object',
                       name: 'level1',
                       title: 'Level 1',
-                      fields: [{type: 'string', name: 'title', title: 'Title'}]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+                      fields: [{type: 'string', name: 'title', title: 'Title'}],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }
 
 const arrayListOfOptionsExample = {
@@ -59,8 +59,8 @@ const arrayListOfOptionsExample = {
   description: 'List of options',
   of: [
     {
-      type: 'string'
-    }
+      type: 'string',
+    },
   ],
   options: {
     list: [
@@ -68,9 +68,9 @@ const arrayListOfOptionsExample = {
       {value: 'bar', title: 'Bar'},
       {value: 'baz', title: 'Baz'},
       {value: 'qux', title: 'Qux'},
-      {value: 'nux', title: 'Nux'}
-    ]
-  }
+      {value: 'nux', title: 'Nux'},
+    ],
+  },
 }
 
 const arrayListOfObjectOptionsExample = {
@@ -83,17 +83,17 @@ const arrayListOfObjectOptionsExample = {
       type: 'object',
       fields: [
         {name: 'bodyPart', type: 'string'},
-        {name: 'isInternal', type: 'boolean'}
-      ]
-    }
+        {name: 'isInternal', type: 'boolean'},
+      ],
+    },
   ],
   options: {
     list: [
       {value: {bodyPart: 'Head', isInternal: false}, title: 'Head'},
       {value: {bodyPart: 'Foot', isInternal: false}, title: 'Foot'},
-      {value: {bodyPart: 'Heart', isInternal: true}, title: 'Heart'}
-    ]
-  }
+      {value: {bodyPart: 'Heart', isInternal: true}, title: 'Heart'},
+    ],
+  },
 }
 
 const arrayListOfReferenceOptionsExample = {
@@ -104,15 +104,15 @@ const arrayListOfReferenceOptionsExample = {
   of: [
     {
       type: 'reference',
-      to: [{type: 'author'}]
-    }
+      to: [{type: 'author'}],
+    },
   ],
   options: {
     list: [
       {value: {_type: 'reference', _ref: 'marius'}, title: 'Marius'},
-      {value: {_type: 'reference', _ref: 'espen'}, title: 'Espen'}
-    ]
-  }
+      {value: {_type: 'reference', _ref: 'espen'}, title: 'Espen'},
+    ],
+  },
 }
 
 const _complexObjectType = {
@@ -125,7 +125,7 @@ const _complexObjectType = {
       type: 'reference',
       name: 'author',
       title: 'Author',
-      to: [{type: 'author'}]
+      to: [{type: 'author'}],
     },
     {type: 'string', name: 'field2', title: 'Field 2'},
     {type: 'string', name: 'field3', title: 'Field 3'},
@@ -142,8 +142,8 @@ const _complexObjectType = {
     {type: 'string', name: 'field14', title: 'Field 14'},
     {type: 'string', name: 'field15', title: 'Field 15'},
     {type: 'string', name: 'field16', title: 'Field 16'},
-    {type: 'string', name: 'field17', title: 'Field 17'}
-  ]
+    {type: 'string', name: 'field17', title: 'Field 17'},
+  ],
 }
 
 const arrayOfObjectsExample = {
@@ -153,9 +153,9 @@ const arrayOfObjectsExample = {
   description: 'List of objects',
   of: [_complexObjectType],
   options: {
-    editModal: undefined // 'fullscreen' | 'fold' | 'popover' | undefined
+    editModal: undefined, // 'fullscreen' | 'fold' | 'popover' | undefined
     // sortable: false
-  }
+  },
 }
 
 const arrayOfReferencesExample = {
@@ -166,9 +166,9 @@ const arrayOfReferencesExample = {
   of: [
     {
       type: 'reference',
-      to: [{type: 'author'}]
-    }
-  ]
+      to: [{type: 'author'}],
+    },
+  ],
 }
 
 const arrayOfStringsExample = {
@@ -176,7 +176,7 @@ const arrayOfStringsExample = {
   name: 'arrayOfStringsExample',
   title: 'Array (4a)',
   description: 'List of strings',
-  of: [{type: 'string'}]
+  of: [{type: 'string'}],
 }
 
 const arrayOfNumbersExample = {
@@ -184,7 +184,7 @@ const arrayOfNumbersExample = {
   name: 'arrayOfNumbersExample',
   title: 'Array (4b)',
   description: 'List of numbers',
-  of: [{type: 'number'}]
+  of: [{type: 'number'}],
 }
 
 const arrayOfSlugsExample = {
@@ -192,7 +192,7 @@ const arrayOfSlugsExample = {
   name: 'arrayOfSlugsExample',
   title: 'Array (4b)',
   description: 'List of slugs',
-  of: [{type: 'slug'}]
+  of: [{type: 'slug'}],
 }
 
 const arrayGridOfFlatImagesExample = {
@@ -210,15 +210,12 @@ const arrayGridOfFlatImagesExample = {
           title: 'Caption',
           type: 'string',
           options: {isHighlighted: true},
-          validation: Rule =>
-            Rule.required()
-              .min(10)
-              .max(80)
-        }
-      ]
-    }
+          validation: (Rule) => Rule.required().min(10).max(80),
+        },
+      ],
+    },
   ],
-  options: {layout: 'grid'}
+  options: {layout: 'grid'},
 }
 
 const arrayGridOfImagesExample = {
@@ -241,24 +238,21 @@ const arrayGridOfImagesExample = {
               title: 'Caption',
               type: 'string',
               options: {isHighlighted: true},
-              validation: Rule =>
-                Rule.required()
-                  .min(10)
-                  .max(80)
-            }
-          ]
-        }
+              validation: (Rule) => Rule.required().min(10).max(80),
+            },
+          ],
+        },
       ],
       preview: {
         select: {
-          media: 'image'
-        }
-      }
-    }
+          media: 'image',
+        },
+      },
+    },
   ],
   options: {
-    layout: 'grid'
-  }
+    layout: 'grid',
+  },
 }
 
 const arrayOfImagesExample = {
@@ -273,14 +267,14 @@ const arrayOfImagesExample = {
       fields: [{type: 'image', name: 'image', title: 'Image'}],
       preview: {
         select: {
-          media: 'image'
-        }
-      }
-    }
+          media: 'image',
+        },
+      },
+    },
   ],
   options: {
     // layout: 'list'
-  }
+  },
 }
 
 const arrayOfGeopointsExample = {
@@ -288,13 +282,13 @@ const arrayOfGeopointsExample = {
   name: 'arrayOfGeopointsExample',
   title: 'Array (8)',
   description: 'List of geopoints',
-  of: [{type: 'geopoint'}]
+  of: [{type: 'geopoint'}],
 }
 
 const booleanExample = {
   type: 'boolean',
   name: 'booleanExample',
-  title: 'Boolean example'
+  title: 'Boolean example',
 }
 
 const booleanCheckboxExample = {
@@ -302,8 +296,8 @@ const booleanCheckboxExample = {
   name: 'booleanCheckboxExample',
   title: 'Boolean checkbox example',
   options: {
-    layout: 'checkbox'
-  }
+    layout: 'checkbox',
+  },
 }
 
 const dateExample = {
@@ -313,7 +307,7 @@ const dateExample = {
   fieldset: 'dates',
   options: {
     // calendarTodayLabel: 'Today'
-  }
+  },
 }
 
 const datetimeExample = {
@@ -322,21 +316,21 @@ const datetimeExample = {
   title: 'Datetime example',
   fieldset: 'dates',
   options: {
-    calendarTodayLabel: 'Now'
-  }
+    calendarTodayLabel: 'Now',
+  },
 }
 
 const fileExample = {
   type: 'file',
   name: 'fileExample',
   title: 'File example',
-  fields: [{name: 'vanityFilename', title: 'Vanity filename', type: 'string'}]
+  fields: [{name: 'vanityFilename', title: 'Vanity filename', type: 'string'}],
 }
 
 const geopointExample = {
   type: 'geopoint',
   name: 'geopointExample',
-  title: 'Geopoint example'
+  title: 'Geopoint example',
 }
 
 const imageExample = {
@@ -344,7 +338,7 @@ const imageExample = {
   name: 'imageExample',
   title: 'Image example',
   options: {
-    hotspot: true
+    hotspot: true,
   },
   fields: [
     {
@@ -352,18 +346,15 @@ const imageExample = {
       title: 'Caption',
       type: 'string',
       options: {isHighlighted: true},
-      validation: Rule =>
-        Rule.required()
-          .min(10)
-          .max(80)
-    }
-  ]
+      validation: (Rule) => Rule.required().min(10).max(80),
+    },
+  ],
 }
 
 const numberExample = {
   type: 'number',
   name: 'numberExample',
-  title: 'Number example'
+  title: 'Number example',
 }
 
 const numberDropdownExample = {
@@ -372,8 +363,8 @@ const numberDropdownExample = {
   title: 'Number dropdown example',
   options: {
     // layout: 'dropdown',
-    list: [1, 2, 3]
-  }
+    list: [1, 2, 3],
+  },
 }
 
 const numberRadioExample = {
@@ -382,15 +373,15 @@ const numberRadioExample = {
   title: 'Number radio example',
   options: {
     layout: 'radio',
-    list: [1, 2, 3]
-  }
+    list: [1, 2, 3],
+  },
 }
 
 const objectExample = {
   type: 'object',
   name: 'objectExample',
   title: 'Object (1)',
-  fields: [{type: 'string', name: 'title', title: 'Title'}]
+  fields: [{type: 'string', name: 'title', title: 'Title'}],
 }
 
 const objectCollapsibleExample = {
@@ -400,8 +391,8 @@ const objectCollapsibleExample = {
   description: 'Collapsible object',
   fields: [{type: 'string', name: 'title', title: 'Title'}],
   options: {
-    collapsible: true
-  }
+    collapsible: true,
+  },
 }
 
 const objectWithNestedValuesExample = {
@@ -418,24 +409,24 @@ const objectWithNestedValuesExample = {
       title: 'Metadata',
       fields: [
         {type: 'string', name: 'title', title: 'Title'},
-        {type: 'string', name: 'description', title: 'Description'}
-      ]
-    }
-  ]
+        {type: 'string', name: 'description', title: 'Description'},
+      ],
+    },
+  ],
 }
 
 const portableTextExample = {
   type: 'array',
   name: 'portableTextExample',
   title: 'Portable text',
-  of: [{type: 'block', of: [objectExample]}, imageExample, _complexObjectType]
+  of: [{type: 'block', of: [objectExample]}, imageExample, _complexObjectType],
 }
 
 const referenceExample = {
   type: 'reference',
   name: 'referenceExample',
   title: 'Reference example',
-  to: [{type: 'allInputs'}]
+  to: [{type: 'allInputs'}],
 }
 
 const slugExample = {
@@ -444,16 +435,16 @@ const slugExample = {
   title: 'Slug example',
   options: {
     source: 'title',
-    maxLength: 10
+    maxLength: 10,
     // slugify: () => ...
     // isUnique: () => ...
-  }
+  },
 }
 
 const stringExample = {
   type: 'string',
   name: 'stringExample',
-  title: 'String example'
+  title: 'String example',
 }
 
 const stringDropdownExample = {
@@ -462,8 +453,8 @@ const stringDropdownExample = {
   title: 'String dropdown example',
   options: {
     // layout: 'dropdown',
-    list: ['foo', 'bar', 'baz']
-  }
+    list: ['foo', 'bar', 'baz'],
+  },
 }
 
 const stringRadioExample = {
@@ -473,8 +464,8 @@ const stringRadioExample = {
   options: {
     layout: 'radio',
     list: ['foo', 'bar', 'baz'],
-    direction: 'horizontal' // | 'vertical'
-  }
+    direction: 'horizontal', // | 'vertical'
+  },
 }
 
 const textExample = {
@@ -482,14 +473,14 @@ const textExample = {
   name: 'textExample',
   title: 'Text example',
   options: {
-    rows: 3
-  }
+    rows: 3,
+  },
 }
 
 const urlExample = {
   type: 'url',
   name: 'urlExample',
-  title: 'URL example'
+  title: 'URL example',
 }
 
 const veryDeepStructure = {
@@ -507,21 +498,21 @@ const veryDeepStructure = {
           fields: [
             {
               name: 'deepest',
-              type: 'author'
-            }
-          ]
+              type: 'author',
+            },
+          ],
         },
         {
           name: 'evenDeeperSibling',
-          type: 'image'
-        }
-      ]
+          type: 'image',
+        },
+      ],
     },
     {
       name: 'deeperSibling',
-      type: 'string'
-    }
-  ]
+      type: 'string',
+    },
+  ],
 }
 
 export default {
@@ -598,6 +589,6 @@ export default {
     urlExample,
 
     // very deep structure
-    veryDeepStructure
-  ]
+    veryDeepStructure,
+  ],
 }

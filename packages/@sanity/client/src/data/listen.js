@@ -9,7 +9,7 @@ const once = require('../util/once')
 
 const tokenWarning = [
   'Using token with listeners is not supported in browsers. ',
-  `For more info, see ${generateHelpUrl('js-client-listener-tokens-browser')}.`
+  `For more info, see ${generateHelpUrl('js-client-listener-tokens-browser')}.`,
 ]
 // eslint-disable-next-line no-console
 const printTokenWarning = once(() => console.warn(tokenWarning.join(' ')))
@@ -21,7 +21,7 @@ const EventSource = isWindowEventSource
 
 const possibleOptions = ['includePreviousRevision', 'includeResult', 'visibility', 'effectFormat']
 const defaultOptions = {
-  includeResult: true
+  includeResult: true,
 }
 
 module.exports = function listen(query, params, opts = {}) {
@@ -45,11 +45,11 @@ module.exports = function listen(query, params, opts = {}) {
 
   if (token) {
     esOptions.headers = {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     }
   }
 
-  return new Observable(observer => {
+  return new Observable((observer) => {
     let es = getEventSource()
     let reconnectTimer
     let stopped = false
@@ -97,7 +97,7 @@ module.exports = function listen(query, params, opts = {}) {
       es.removeEventListener('error', onError, false)
       es.removeEventListener('channelError', onChannelError, false)
       es.removeEventListener('disconnect', onDisconnect, false)
-      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
+      listenFor.forEach((type) => es.removeEventListener(type, onMessage, false))
       es.close()
     }
 
@@ -112,7 +112,7 @@ module.exports = function listen(query, params, opts = {}) {
       evs.addEventListener('error', onError, false)
       evs.addEventListener('channelError', onChannelError, false)
       evs.addEventListener('disconnect', onDisconnect, false)
-      listenFor.forEach(type => evs.addEventListener(type, onMessage, false))
+      listenFor.forEach((type) => evs.addEventListener(type, onMessage, false))
       return evs
     }
 

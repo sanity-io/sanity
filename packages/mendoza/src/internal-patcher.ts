@@ -25,7 +25,7 @@ const OPS = [
   'ArrayAppendValue',
   'ArrayAppendSlice',
   'StringAppendString',
-  'StringAppendSlice'
+  'StringAppendSlice',
 ]
 
 type InputEntry<V> = {

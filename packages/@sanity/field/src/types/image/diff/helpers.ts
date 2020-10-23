@@ -2,7 +2,7 @@
 export function hexToRgba(hex: string, opacity: number): string {
   const rgba = (/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || ([] as string[]))
     .slice(1)
-    .map(num => parseInt(num, 16))
+    .map((num) => parseInt(num, 16))
     .concat(opacity)
   return `rgba(${rgba.join(', ')})`
 }

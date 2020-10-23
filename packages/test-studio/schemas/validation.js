@@ -11,17 +11,17 @@ export const validationArraySuperType = {
   type: 'array',
   of: [
     {
-      type: 'image'
-    }
-  ]
+      type: 'image',
+    },
+  ],
 }
 
 export default {
   name: 'validationTest',
   type: 'document',
   title: 'Validation test',
-  validation: Rule =>
-    Rule.custom(doc => {
+  validation: (Rule) =>
+    Rule.custom((doc) => {
       if (!doc || !doc.title) {
         return true
       }
@@ -38,154 +38,148 @@ export default {
       title: 'Checked?',
       // readOnly: true,
       description: 'Must be false, should be displayed as a checkbox',
-      validation: Rule => [Rule.valid(false).warning('hello world')],
+      validation: (Rule) => [Rule.valid(false).warning('hello world')],
       options: {
-        layout: 'checkbox'
-      }
+        layout: 'checkbox',
+      },
     },
     {
       name: 'switch',
       type: 'boolean',
       title: 'Check me?',
-      validation: Rule => Rule.required().valid(true),
-      description: 'Must be true'
+      validation: (Rule) => Rule.required().valid(true),
+      description: 'Must be true',
     },
     {
       name: 'title',
       type: 'string',
       title: 'Title',
       description: 'Required field with minimum/maximum length validation',
-      validation: Rule =>
-        Rule.required()
-          .min(5)
-          .max(100)
+      validation: (Rule) => Rule.required().min(5).max(100),
     },
     {
       name: 'slug',
       type: 'slug',
       title: 'Field of slug type',
       description: 'Required, updates from title',
-      validation: Rule => Rule.required(),
+      validation: (Rule) => Rule.required(),
       options: {
-        source: document => document.title
-      }
+        source: (document) => document.title,
+      },
     },
     {
       name: 'myUrlField',
       type: 'url',
       title: 'Plain url',
-      description: 'URL validation (inferred)'
+      description: 'URL validation (inferred)',
     },
     {
       name: 'myFancyUrlField',
       type: 'url',
       title: 'Fancy URL',
       description: 'URL that only allows mailto: and tel: schemes',
-      validation: Rule => Rule.uri({scheme: ['mailto', 'tel']})
+      validation: (Rule) => Rule.uri({scheme: ['mailto', 'tel']}),
     },
     {
       name: 'relativeUrl',
       type: 'url',
       title: 'Relative URL',
       description: 'URL that allows relative URLs',
-      validation: Rule => Rule.uri({allowRelative: true})
+      validation: (Rule) => Rule.uri({allowRelative: true}),
     },
     {
       name: 'date',
       type: 'datetime',
       title: 'Some date',
       description: 'ISO-formatted date, inferred, must be in 2017',
-      validation: Rule => Rule.min('2017-01-01 00:00:00').max('2017-12-31 00:00:00')
+      validation: (Rule) => Rule.min('2017-01-01 00:00:00').max('2017-12-31 00:00:00'),
     },
     {
       name: 'email',
       type: 'email',
       title: 'Recipient email',
-      description: 'Email, inferred'
+      description: 'Email, inferred',
     },
     {
       name: 'intro',
       type: 'text',
       title: 'Introduction',
       description: 'Required, and warn if less than 50 characters',
-      validation: Rule => [
+      validation: (Rule) => [
         Rule.required(),
-        Rule.min(50).warning('Should probably be at least 50 characters')
-      ]
+        Rule.min(50).warning('Should probably be at least 50 characters'),
+      ],
     },
     {
       name: 'lowestTemperature',
       type: 'number',
       title: 'Lowest temperature recorded',
       description: 'Only negative numbers',
-      validation: Rule => Rule.negative()
+      validation: (Rule) => Rule.negative(),
     },
     {
       name: 'highestTemperature',
       type: 'number',
       title: 'Highest temperature recorded',
       description: 'Only positive numbers larger than lowest temperature',
-      validation: Rule => Rule.positive().min(Rule.valueOfField('lowestTemperature'))
+      validation: (Rule) => Rule.positive().min(Rule.valueOfField('lowestTemperature')),
     },
     {
       name: 'onlyPositive',
       type: 'number',
       title: 'Only positive',
-      validation: Rule => Rule.positive()
+      validation: (Rule) => Rule.positive(),
     },
     {
       name: 'someInteger',
       type: 'number',
       title: 'Some integer',
       description: 'Only integers',
-      validation: Rule => Rule.integer()
+      validation: (Rule) => Rule.integer(),
     },
     {
       name: 'quotes',
       title: 'Quotes',
       description: 'Unique quotes - minimum of one',
-      validation: Rule => Rule.required().min(2),
+      validation: (Rule) => Rule.required().min(2),
       type: 'array',
       of: [
         {
           type: 'string',
-          validation: Rule => Rule.min(2).max(100)
-        }
-      ]
+          validation: (Rule) => Rule.min(2).max(100),
+        },
+      ],
     },
     {
       name: 'imageArray',
       title: 'Images',
       type: 'imageArray',
-      validation: Rule => [Rule.min(1), Rule.required()]
+      validation: (Rule) => [Rule.min(1), Rule.required()],
     },
     {
       name: 'authors',
       title: 'Authors',
       description: 'Unique inline authors',
-      validation: Rule => Rule.unique(),
+      validation: (Rule) => Rule.unique(),
       type: 'array',
       of: [
         {
-          type: 'author'
-        }
-      ]
+          type: 'author',
+        },
+      ],
     },
     {
       name: 'books',
       title: 'Books',
       description: 'Unique book references, minimum 1, max 5',
-      validation: Rule =>
-        Rule.unique()
-          .min(1)
-          .max(5),
+      validation: (Rule) => Rule.unique().min(1).max(5),
       type: 'array',
       of: [
         {
           type: 'reference',
-          to: [{type: 'book'}]
-        }
-      ]
+          to: [{type: 'book'}],
+        },
+      ],
     },
     {
       name: 'bookWithCover',
@@ -193,29 +187,29 @@ export default {
       description: 'Reference to a book with custom rule that ensures referenced book has a cover',
       type: 'reference',
       to: [{type: 'book'}],
-      validation: Rule =>
+      validation: (Rule) =>
         Rule.custom(
-          value =>
-            new Promise(resolve => {
+          (value) =>
+            new Promise((resolve) => {
               if (!value || !value._ref) {
                 return resolve(true)
               }
 
-              return client.fetch('*[_id == $id][0].coverImage', {id: value._ref}).then(cover => {
+              return client.fetch('*[_id == $id][0].coverImage', {id: value._ref}).then((cover) => {
                 resolve(cover ? true : 'Referenced book must have a cover image')
               })
             })
-        )
+        ),
     },
     {
       name: 'titleCase',
       title: 'Title Case',
       description: 'Regex-based title case, custom error message',
       type: 'string',
-      validation: Rule =>
+      validation: (Rule) =>
         Rule.min(1)
           .regex(/^(?:[A-Z][^\s]*\s?)+$/)
-          .error('Must be in Title Case')
+          .error('Must be in Title Case'),
     },
     {
       name: 'translations',
@@ -227,37 +221,37 @@ export default {
           name: 'no',
           type: 'string',
           title: 'Norwegian (Bokmål)',
-          validation: Rule => Rule.required().error('All fields are required')
+          validation: (Rule) => Rule.required().error('All fields are required'),
         },
         {
           name: 'nn',
           type: 'string',
           title: 'Norwegian (Nynorsk)',
-          validation: Rule => Rule.required().error('All fields are required')
+          validation: (Rule) => Rule.required().error('All fields are required'),
         },
         {
           name: 'se',
           type: 'string',
           title: 'Swedish',
-          validation: Rule => Rule.required().error('All fields are required')
-        }
-      ]
+          validation: (Rule) => Rule.required().error('All fields are required'),
+        },
+      ],
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {hotspot: true}
+      options: {hotspot: true},
     },
     {
       name: 'dropdown',
       title: 'Dropdown thing',
       description: 'Inferred to have one of the defined values, and explicitly set as required',
       type: 'string',
-      validation: Rule => Rule.required(),
+      validation: (Rule) => Rule.required(),
       options: {
-        list: ['one', 'two', 'three']
-      }
+        list: ['one', 'two', 'three'],
+      },
     },
     {
       name: 'radio',
@@ -266,16 +260,16 @@ export default {
       description: 'Same as above, but as radio',
       options: {
         layout: 'radio',
-        list: ['one', 'two', 'three']
-      }
+        list: ['one', 'two', 'three'],
+      },
     },
     {
       name: 'readonlyField',
       type: 'string',
       title: 'A read only string',
       description: 'It may have a value, but it cannot be edited',
-      validation: Rule => Rule.required().min(5),
-      readOnly: true
+      validation: (Rule) => Rule.required().min(5),
+      readOnly: true,
     },
 
     {
@@ -286,29 +280,29 @@ export default {
         {
           name: 'name',
           title: 'Name',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'twitter',
           title: 'Twitter',
           type: 'string',
           description: 'Required within a fieldset',
-          validation: Rule => Rule.required(),
-          fieldset: 'social'
+          validation: (Rule) => Rule.required(),
+          fieldset: 'social',
         },
         {
           name: 'instagram',
           title: 'Instagram',
           type: 'string',
-          fieldset: 'social'
+          fieldset: 'social',
         },
         {
           name: 'facebook',
           title: 'Facebook',
           type: 'string',
-          fieldset: 'social'
-        }
-      ]
+          fieldset: 'social',
+        },
+      ],
     },
 
     {
@@ -316,34 +310,34 @@ export default {
       title: 'Array of predefined options',
       description: 'We required at least one of these to be checked',
       type: 'array',
-      validation: Rule => Rule.required().min(1),
+      validation: (Rule) => Rule.required().min(1),
       of: [
         {
           type: 'reference',
-          to: [{type: 'author'}]
-        }
+          to: [{type: 'author'}],
+        },
       ],
       options: {
         direction: 'vertical',
         list: [
           {_type: 'reference', _key: 'grrm', _ref: 'grrm'},
-          {_type: 'reference', _key: 'jrr-tolkien', _ref: 'jrr-tolkien'}
-        ]
-      }
+          {_type: 'reference', _key: 'jrr-tolkien', _ref: 'jrr-tolkien'},
+        ],
+      },
     },
     {
       name: 'inheritedArray',
       title: 'Inherited array type with custom validation',
       type: 'gallery',
-      validation: Rule => [Rule.min(2), Rule.max(6).warning('too many images')]
+      validation: (Rule) => [Rule.min(2), Rule.max(6).warning('too many images')],
     },
     {
       name: 'location',
       type: 'geopoint',
       title: 'A geopoint',
       description: 'Required, must be in Norway somewhere',
-      validation: Rule =>
-        Rule.required().custom(geoPoint => {
+      validation: (Rule) =>
+        Rule.required().custom((geoPoint) => {
           if (!geoPoint) {
             return true
           }
@@ -352,7 +346,7 @@ export default {
           const norwayFeature = featureCollection(norway)
           const ptsWithin = pointsWithinPolygon(location, norwayFeature)
           return ptsWithin.features.length > 0 ? true : 'Location must be in Norway'
-        })
+        }),
     },
 
     {
@@ -368,23 +362,23 @@ export default {
             {title: 'Normal', value: 'normal'},
             {title: 'H1', value: 'h1'},
             {title: 'H2', value: 'h2'},
-            {title: 'Quote', value: 'blockquote'}
+            {title: 'Quote', value: 'blockquote'},
           ],
           lists: [
             {title: 'Bullet', value: 'bullet'},
-            {title: 'Numbered', value: 'number'}
+            {title: 'Numbered', value: 'number'},
           ],
           marks: {
             decorators: [
               {title: 'Strong', value: 'strong'},
-              {title: 'Emphasis', value: 'em'}
+              {title: 'Emphasis', value: 'em'},
             ],
             annotations: [
-              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-            ]
-          }
-        }
-      ]
+              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}},
+            ],
+          },
+        },
+      ],
     },
     {
       name: 'bymonth',
@@ -393,7 +387,7 @@ export default {
         'Set the months to apply the recurrence to. Example: By Month of Jan and Aug = This event occurs weekly in the month of January and August.',
       type: 'array',
       of: [{type: 'number'}],
-      validation: Rule => Rule.min(2),
+      validation: (Rule) => Rule.min(2),
       options: {
         list: [
           {title: 'Jan', value: 0},
@@ -407,15 +401,15 @@ export default {
           {title: 'Sept', value: 8},
           {title: 'Oct', value: 9},
           {title: 'Nov', value: 10},
-          {title: 'Dec', value: 11}
-        ]
-      }
+          {title: 'Dec', value: 11},
+        ],
+      },
     },
     {
       name: 'arrayOfSlugs',
       title: 'Array of slugs',
       type: 'array',
-      validation: Rule => Rule.unique(),
+      validation: (Rule) => Rule.unique(),
       of: [
         {
           type: 'object',
@@ -425,17 +419,17 @@ export default {
               type: 'slug',
               name: 'sku',
               title: 'SKU',
-              validation: Rule => Rule.required()
+              validation: (Rule) => Rule.required(),
             },
             {
               type: 'string',
               name: 'title',
               title: 'title',
-              validation: Rule => Rule.required().min(3)
-            }
-          ]
-        }
-      ]
+              validation: (Rule) => Rule.required().min(3),
+            },
+          ],
+        },
+      ],
     },
 
     {
@@ -447,7 +441,7 @@ export default {
         {
           name: 'title',
           title: 'Title',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'deeper',
@@ -458,10 +452,10 @@ export default {
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: Rule => [
+              validation: (Rule) => [
                 Rule.required().uppercase(),
-                Rule.max(3).warning('Min 3 characters')
-              ]
+                Rule.max(3).warning('Min 3 characters'),
+              ],
             },
             {
               name: 'deeper',
@@ -471,7 +465,7 @@ export default {
                 {
                   name: 'title',
                   title: 'Title',
-                  type: 'string'
+                  type: 'string',
                 },
                 {
                   name: 'deeper',
@@ -482,10 +476,10 @@ export default {
                       name: 'title',
                       title: 'Title',
                       type: 'string',
-                      validation: Rule => [
+                      validation: (Rule) => [
                         Rule.required().uppercase(),
-                        Rule.max(3).warning('Min 3 characters')
-                      ]
+                        Rule.max(3).warning('Min 3 characters'),
+                      ],
                     },
                     {
                       name: 'deeper',
@@ -497,20 +491,20 @@ export default {
                           title: 'Title',
                           type: 'string',
                           description: 'Required, uppercase',
-                          validation: Rule => [
+                          validation: (Rule) => [
                             Rule.required().uppercase(),
-                            Rule.max(3).warning('Min 3 characters')
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+                            Rule.max(3).warning('Min 3 characters'),
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

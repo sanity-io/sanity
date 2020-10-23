@@ -10,7 +10,7 @@ export default {
     {
       name: 'identifier',
       type: 'string',
-      title: 'Identifier'
+      title: 'Identifier',
     },
     {name: 'someArray', type: 'array', of: [{type: 'customObject'}]},
     {
@@ -19,15 +19,15 @@ export default {
       title: 'Some metadata',
       fields: [
         {name: 'name', type: 'string'},
-        {name: 'title', type: 'string'}
-      ]
+        {name: 'title', type: 'string'},
+      ],
     },
     {
       name: 'image',
       type: 'image',
       title: 'Image',
-      description: 'Some image'
-    }
+      description: 'Some image',
+    },
   ],
-  inputComponent: CustomObjectInput
+  inputComponent: CustomObjectInput,
 }

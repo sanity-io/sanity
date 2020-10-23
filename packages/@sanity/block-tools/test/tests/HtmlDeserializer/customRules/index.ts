@@ -1,6 +1,6 @@
 import defaultSchema from '../../../fixtures/defaultSchema'
 
-const blockContentType = defaultSchema.get('blogPost').fields.find(field => field.name === 'body')
+const blockContentType = defaultSchema.get('blogPost').fields.find((field) => field.name === 'body')
   .type
 
 const rules = [
@@ -13,9 +13,9 @@ const rules = [
       return {
         _type: '__decorator',
         name: 'strong',
-        children: next(el.childNodes)
+        children: next(el.childNodes),
       }
-    }
+    },
   },
   {
     // Special case for code blocks (wrapped in pre and code tag)
@@ -27,15 +27,15 @@ const rules = [
       const childNodes =
         code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes
       let text = ''
-      childNodes.forEach(node => {
+      childNodes.forEach((node) => {
         text += node.textContent
       })
       return {
         _type: 'span',
         marks: ['code'],
-        text: text
+        text: text,
       }
-    }
+    },
   },
   {
     deserialize(el, next) {
@@ -45,24 +45,24 @@ const rules = [
       const result: any[] = [
         {
           _type: 'image',
-          src: el.getAttribute('src')
-        }
+          src: el.getAttribute('src'),
+        },
       ]
       if (el.parentNode.tagName.toLowerCase() === 'a') {
         result.push({
           _type: 'span',
-          text: 'Image link'
+          text: 'Image link',
         })
       }
       return result
-    }
-  }
+    },
+  },
 ]
 
 export default (html, blockTools, commonOptions) => {
   const options = {
     ...commonOptions,
-    rules
+    rules,
   }
   return blockTools.htmlToBlocks(html, blockContentType, options)
 }

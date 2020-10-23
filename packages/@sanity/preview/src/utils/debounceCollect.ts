@@ -8,14 +8,14 @@ export default function debounceCollect(fn, wait) {
   let timer
   let queue = {}
   let idx = 0
-  return function(...args) {
-    return new Observable(obs => {
+  return function (...args) {
+    return new Observable((obs) => {
       clearTimeout(timer)
       timer = setTimeout(flush, wait)
       const queueItem = {
         args: args,
         observer: obs,
-        completed: false
+        completed: false,
       }
       const id = idx++
       queue[id] = queueItem
@@ -37,13 +37,13 @@ export default function debounceCollect(fn, wait) {
       //   }
       //   return id
       // })
-      .filter(id => !currentlyFlushingQueue[id].completed)
+      .filter((id) => !currentlyFlushingQueue[id].completed)
 
     if (queueItemIds.length === 0) {
       // nothing to do
       return
     }
-    const collectedArgs = queueItemIds.map(id => currentlyFlushingQueue[id].args)
+    const collectedArgs = queueItemIds.map((id) => currentlyFlushingQueue[id].args)
     fn(collectedArgs).subscribe({
       next(results) {
         results.forEach((result, i) => {
@@ -54,7 +54,7 @@ export default function debounceCollect(fn, wait) {
         })
       },
       complete() {
-        queueItemIds.forEach(id => {
+        queueItemIds.forEach((id) => {
           const entry = currentlyFlushingQueue[id]
           if (!entry.completed) {
             entry.observer.complete()
@@ -62,13 +62,13 @@ export default function debounceCollect(fn, wait) {
         })
       },
       error(err) {
-        queueItemIds.forEach(id => {
+        queueItemIds.forEach((id) => {
           const entry = currentlyFlushingQueue[id]
           if (!entry.completed) {
             entry.observer.error(err)
           }
         })
-      }
+      },
     })
   }
 }

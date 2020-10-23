@@ -15,7 +15,7 @@ export function diffNumber<A>(
       action: 'unchanged',
       fromValue,
       toValue,
-      isChanged: false
+      isChanged: false,
     }
 
   return {
@@ -24,7 +24,7 @@ export function diffNumber<A>(
     isChanged: true,
     fromValue: fromValue,
     toValue: toValue,
-    annotation: toInput.annotation
+    annotation: toInput.annotation,
   }
 }
 
@@ -43,7 +43,7 @@ export function diffBoolean<A>(
       action: 'unchanged',
       fromValue,
       toValue,
-      isChanged: false
+      isChanged: false,
     }
 
   return {
@@ -52,6 +52,6 @@ export function diffBoolean<A>(
     isChanged: true,
     fromValue: fromValue,
     toValue: toValue,
-    annotation: toInput.annotation
+    annotation: toInput.annotation,
   }
 }

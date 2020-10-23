@@ -23,7 +23,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
     schemaType,
     rootDiff,
     isComparingCurrent,
-    FieldWrapper = React.Fragment
+    FieldWrapper = React.Fragment,
   } = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = React.useState(false)
@@ -97,13 +97,13 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
                     {
                       color: 'danger',
                       action: handleRevertChanges,
-                      title: 'Revert change'
+                      title: 'Revert change',
                     },
                     {
                       kind: 'simple',
                       action: closeRevertChangesConfirmDialog,
-                      title: 'Cancel'
-                    }
+                      title: 'Cancel',
+                    },
                   ]}
                   onAction={handleConfirmDialogAction}
                   // portal

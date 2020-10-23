@@ -4,7 +4,7 @@ import {
   ObjectDiff,
   Diff,
   DiffProps as GenericDiffProps,
-  DiffComponent
+  DiffComponent,
 } from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
@@ -18,7 +18,7 @@ export const GeopointArrayDiff: DiffComponent<ArrayDiff<Geopoint>> = ({diff, sch
   return (
     <div className={styles.root}>
       <GoogleMapsLoadProxy>
-        {api => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
+        {(api) => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
       </GoogleMapsLoadProxy>
     </div>
   )
@@ -40,7 +40,7 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
       controlSize={20}
       bounds={bounds}
     >
-      {map => (
+      {(map) => (
         <>
           {diff.items.map(({toIndex, diff: pointDiff}) => {
             if (!isChangeDiff(pointDiff)) {
@@ -78,6 +78,6 @@ function getBounds(
 ): google.maps.LatLngBounds {
   const bounds = new api.LatLngBounds()
   const points = [...(fromValue || []), ...(toValue || [])]
-  points.forEach(point => bounds.extend(point))
+  points.forEach((point) => bounds.extend(point))
   return bounds
 }

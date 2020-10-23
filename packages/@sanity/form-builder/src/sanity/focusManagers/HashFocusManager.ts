@@ -35,7 +35,7 @@ function getPathFromHash() {
 
 export default class HashFocusManager extends React.Component<Props, State> {
   state = {
-    focusPath: getPathFromHash()
+    focusPath: getPathFromHash(),
   }
 
   componentDidMount() {
@@ -62,7 +62,7 @@ export default class HashFocusManager extends React.Component<Props, State> {
     return this.props.children({
       onBlur: this.handleBlur,
       onFocus: this.handleFocus,
-      focusPath: this.state.focusPath
+      focusPath: this.state.focusPath,
     })
   }
 }

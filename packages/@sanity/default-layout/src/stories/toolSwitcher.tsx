@@ -20,18 +20,18 @@ export function ToolMenuStory() {
             {
               name: 'desk',
               title: 'Desk',
-              icon: ViewColumnIcon
+              icon: ViewColumnIcon,
             },
             {
               name: 'plugin1',
               title: 'Plugin 1',
-              icon: PluginIcon
+              icon: PluginIcon,
             },
             {
               name: 'plugin2',
               title: 'Plugin 2',
-              icon: PluginIcon
-            }
+              icon: PluginIcon,
+            },
           ]}
         />
       </div>

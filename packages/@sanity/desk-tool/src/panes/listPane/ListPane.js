@@ -20,26 +20,26 @@ export default class ListPane extends React.PureComponent {
       PropTypes.shape({
         id: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired,
-        schemaType: PropTypes.shape({name: PropTypes.string})
+        schemaType: PropTypes.shape({name: PropTypes.string}),
       })
     ),
     menuItems: PropTypes.arrayOf(
       PropTypes.shape({
-        title: PropTypes.string.isRequired
+        title: PropTypes.string.isRequired,
       })
     ),
     menuItemGroups: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired
+        id: PropTypes.string.isRequired,
       })
     ),
     displayOptions: PropTypes.shape({
-      showIcons: PropTypes.bool
+      showIcons: PropTypes.bool,
     }),
     isSelected: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
-    onCollapse: PropTypes.func
+    onCollapse: PropTypes.func,
   }
 
   static defaultProps = {
@@ -51,14 +51,14 @@ export default class ListPane extends React.PureComponent {
     styles: undefined,
     onExpand: undefined,
     onCollapse: undefined,
-    defaultLayout: undefined
+    defaultLayout: undefined,
   }
 
   itemIsSelected(item) {
     return this.props.childItemId === item.id
   }
 
-  shouldShowIconForItem = item => {
+  shouldShowIconForItem = (item) => {
     const paneShowIcons = this.props.displayOptions.showIcons
     const itemShowIcon = item.displayOptions && item.displayOptions.showIcon
 
@@ -84,7 +84,7 @@ export default class ListPane extends React.PureComponent {
       isSelected,
       isCollapsed,
       onCollapse,
-      onExpand
+      onExpand,
     } = this.props
 
     return (
@@ -101,7 +101,7 @@ export default class ListPane extends React.PureComponent {
         menuItemGroups={menuItemGroups}
       >
         <ListView layout={defaultLayout}>
-          {items.map(item =>
+          {items.map((item) =>
             item.type === 'divider' ? (
               <hr key={item.id} className={listStyles.divider} />
             ) : (

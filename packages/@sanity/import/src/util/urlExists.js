@@ -6,7 +6,7 @@ const MAX_RETRIES = 5
 function getStatusCodeForUrl(url) {
   const options = {...parseUrl(url), method: 'HEAD'}
   return new Promise((resolve, reject) => {
-    const req = https.request(options, res => {
+    const req = https.request(options, (res) => {
       res.resume()
       resolve(res.statusCode)
     })
@@ -27,7 +27,7 @@ async function urlExists(url) {
 
       // Wait one second before retrying the request
       // eslint-disable-next-line no-await-in-loop
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
     }
   }
 

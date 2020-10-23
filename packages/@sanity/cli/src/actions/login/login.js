@@ -53,7 +53,7 @@ export default async function login(args, context) {
   // Store the token
   getUserConfig().set({
     authToken: authToken,
-    authType: 'normal'
+    authType: 'normal',
   })
 
   output.print(chalk.green('Login successful'))
@@ -68,9 +68,9 @@ function getAuthChannel(baseUrl, provider, iv) {
 function getAuthInfo(es) {
   const wantedProps = ['secret', 'url']
   const values = {}
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let numProps = 0
-    es.addEventListener('message', msg => {
+    es.addEventListener('message', (msg) => {
       const data = parseJson(msg.data, {})
       if (!wantedProps.includes(data.type)) {
         return
@@ -86,17 +86,17 @@ function getAuthInfo(es) {
 
 function getAuthToken(es) {
   return new Promise((resolve, reject) => {
-    es.addEventListener('success', msg => {
+    es.addEventListener('success', (msg) => {
       es.close()
       const data = parseJson(msg.data, {})
       resolve(data.token)
     })
 
-    es.addEventListener('failure', msg => {
+    es.addEventListener('failure', (msg) => {
       es.close()
       const data = parseJson(msg.data, {})
       const error = new Error(data.message)
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         error[key] = data[key]
       })
       reject(error)
@@ -119,7 +119,7 @@ function promptProviders(prompt, providers) {
     .single({
       type: 'list',
       message: 'Login type',
-      choices: providers.map(provider => provider.title)
+      choices: providers.map((provider) => provider.title),
     })
-    .then(provider => providers.find(prov => prov.title === provider))
+    .then((provider) => providers.find((prov) => prov.title === provider))
 }

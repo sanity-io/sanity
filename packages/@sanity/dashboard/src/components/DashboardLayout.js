@@ -13,11 +13,11 @@ function DashboardLayout(props) {
 
 DashboardLayout.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  children: PropTypes.any
+  children: PropTypes.any,
 }
 
 DashboardLayout.defaultProps = {
-  children: 'Dummy'
+  children: 'Dummy',
 }
 
 export default DashboardLayout

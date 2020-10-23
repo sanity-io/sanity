@@ -31,7 +31,7 @@ export const ChangeFieldWrapper = (props: {
       isChanged: true,
       hasFocus: false,
       hasHover: isHover,
-      hasRevertHover: props.hasHover
+      hasRevertHover: props.hasHover,
     }),
     // note: deepCompare should be ok here since we're not comparing deep values
     deepCompare

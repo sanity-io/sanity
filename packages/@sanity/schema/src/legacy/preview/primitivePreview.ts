@@ -1,3 +1,3 @@
 export default {
-  prepare: val => ({title: String(val)})
+  prepare: (val) => ({title: String(val)}),
 }

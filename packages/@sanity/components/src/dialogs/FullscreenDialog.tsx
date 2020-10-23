@@ -45,13 +45,13 @@ function FullscreenDialogChildren(props: FullScreenDialogProps) {
     onClose,
     onEscape,
     isOpen = true,
-    actions
+    actions,
   } = props
 
   const layer = useLayer()
   const isTopLayer = layer.depth === layer.size
 
-  const [secondary, primary] = partition(actions, action => action.secondary)
+  const [secondary, primary] = partition(actions, (action) => action.secondary)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -5,7 +5,7 @@ import {
   HotkeyOptions,
   PortableTextEditor,
   PortableTextFeature,
-  Type
+  Type,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {get} from 'lodash'
@@ -53,9 +53,9 @@ function getPTEFormatActions(
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const focusBlock = PortableTextEditor.focusBlock(editor)
 
-  return features.decorators.map(decorator => {
+  return features.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks).find(
-      key => hotkeyOpts.marks[key] === decorator.value
+      (key) => hotkeyOpts.marks[key] === decorator.value
     )
 
     let hotkeys: string[]
@@ -70,7 +70,7 @@ function getPTEFormatActions(
       key: decorator.value,
       handle: (): void => PortableTextEditor.toggleMark(editor, decorator.value),
       hotkeys,
-      title: decorator.title
+      title: decorator.title,
     }
   })
 }
@@ -116,7 +116,7 @@ function getPTEListActions(
       disabled: !selection || (focusBlock ? features.types.block.name !== focusBlock._type : false),
       icon: getListIcon(listItem, active),
       handle: (): void => PortableTextEditor.toggleList(editor, listItem.value),
-      title: listItem.title
+      title: listItem.title,
     }
   })
 }
@@ -162,8 +162,8 @@ function getPTEAnnotationActions(
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
 
-  return features.annotations.map(item => {
-    const active = !!activeAnnotations.find(an => an._type === item.type.name)
+  return features.annotations.map((item) => {
+    const active = !!activeAnnotations.find((an) => an._type === item.type.name)
 
     return {
       active,
@@ -181,7 +181,7 @@ function getPTEAnnotationActions(
           onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
         }
       },
-      title: item.title
+      title: item.title,
     }
   })
 }
@@ -195,7 +195,7 @@ export function getPTEToolbarActionGroups(
   return [
     {name: 'format', actions: getPTEFormatActions(editor, selection, hotkeyOpts)},
     {name: 'list', actions: getPTEListActions(editor, selection)},
-    {name: 'annotation', actions: getPTEAnnotationActions(editor, onFocus)}
+    {name: 'annotation', actions: getPTEAnnotationActions(editor, onFocus)},
   ]
 }
 
@@ -209,11 +209,11 @@ export function getBlockStyleSelectProps(
       key: `style-${style.value}`,
       style: style.value,
       styleComponent: style && style.blockEditor && style.blockEditor.render,
-      title: style.title
+      title: style.title,
     }
   })
 
-  let value = items.filter(item => item.active)
+  let value = items.filter((item) => item.active)
 
   if (value.length === 0 && items.length > 1) {
     items.push({
@@ -221,14 +221,14 @@ export function getBlockStyleSelectProps(
       style: null,
       styleComponent: null,
       title: ' No style',
-      active: true
+      active: true,
     })
     value = items.slice(-1)
   }
 
   return {
     items,
-    value
+    value,
   }
 }
 
@@ -259,7 +259,7 @@ export function getInsertMenuItems(
       icon: getInsertMenuIcon(type, BlockObjectIcon),
       inline: false,
       key: `block-${index}`,
-      type
+      type,
     })
   )
 
@@ -273,12 +273,12 @@ export function getInsertMenuItems(
       icon: getInsertMenuIcon(type, InlineObjectIcon),
       inline: true,
       key: `inline-${index}`,
-      type
+      type,
     })
   )
 
   // Do not include items that are supposed to be hidden
-  const filteredBlockItems = blockItems.concat(inlineItems).filter(item => !item.type?.hidden)
+  const filteredBlockItems = blockItems.concat(inlineItems).filter((item) => !item.type?.hidden)
 
   return filteredBlockItems
 }

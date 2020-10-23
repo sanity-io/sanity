@@ -16,7 +16,7 @@ interface Props {
 
 class SearchResults extends React.PureComponent<Props> {
   static defaultProps = {
-    error: null
+    error: null,
   }
 
   element: HTMLElement | null = null

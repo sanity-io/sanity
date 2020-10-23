@@ -14,7 +14,7 @@ import {
   Marker,
   ObjectField,
   Path,
-  SanityDocument
+  SanityDocument,
 } from '@sanity/types'
 import React, {createElement} from 'react'
 import PropTypes from 'prop-types'
@@ -45,7 +45,7 @@ import {
   ResolvedUploader,
   Uploader,
   UploaderResolver,
-  UploadOptions
+  UploadOptions,
 } from '../../sanity/uploads/typedefs'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
@@ -107,7 +107,7 @@ const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : a
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   static contextTypes = {
-    getValuePath: PropTypes.func
+    getValuePath: PropTypes.func,
   }
 
   _focusArea: any
@@ -117,7 +117,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     uploadError: null,
     isAdvancedEditOpen: false,
     selectedAssetSource: null,
-    hasFocus: false
+    hasFocus: false,
   }
   assetSources = globalAssetSources
 
@@ -176,7 +176,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       uploader: Uploader
       file: File
     } | null
-    Array.from(fileList).some(file => {
+    Array.from(fileList).some((file) => {
       const uploader = resolveUploader(type, file)
       if (uploader) {
         match = {file, uploader}
@@ -199,18 +199,18 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       title,
       description,
       creditLine,
-      source
+      source,
     }
     this.cancelUpload()
     this.setState({isUploading: true})
     onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
     this.uploadSubscription = uploader.upload(file, type, options).subscribe({
-      next: uploadEvent => {
+      next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(PatchEvent.from(uploadEvent.patches))
         }
       },
-      error: err => {
+      error: (err) => {
         // eslint-disable-next-line no-console
         console.error(err)
         this.setState({uploadError: err})
@@ -219,7 +219,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       complete: () => {
         onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
         this.setState({isUploading: false})
-      }
+      },
     })
   }
 
@@ -241,13 +241,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     // the array logic will check for an "empty" value and remove it for us
     const allKeys = Object.keys(value)
     const remainingKeys = allKeys.filter(
-      key => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key)
+      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key)
     )
 
     const isEmpty = remainingKeys.length === 0
     const removeKeys = ['asset']
-      .concat(allKeys.filter(key => ['crop', 'hotspot', '_upload'].includes(key)))
-      .map(key => unset([key]))
+      .concat(allKeys.filter((key) => ['crop', 'hotspot', '_upload'].includes(key)))
+      .map((key) => unset([key]))
 
     this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
@@ -257,7 +257,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     onChange(
       event.prefixAll(field.name).prepend(
         setIfMissing({
-          _type: type.name
+          _type: type.name,
         })
       )
     )
@@ -295,17 +295,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         onChange(
           PatchEvent.from([
             setIfMissing({
-              _type: type.name
+              _type: type.name,
             }),
             unset(['hotspot']),
             unset(['crop']),
             set(
               {
                 _type: 'reference',
-                _ref: firstAsset.value
+                _ref: firstAsset.value,
               },
               ['asset']
-            )
+            ),
           ])
         )
         break
@@ -315,13 +315,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         break
       }
       case 'base64':
-        base64ToFile(firstAsset.value, originalFilename).then(file => {
+        base64ToFile(firstAsset.value, originalFilename).then((file) => {
           const uploader = resolveUploader(type, file)
           this.uploadWith(uploader, file, {label, title, description, creditLine, source})
         })
         break
       case 'url':
-        urlToFile(firstAsset.value, originalFilename).then(file => {
+        urlToFile(firstAsset.value, originalFilename).then((file) => {
           const uploader = resolveUploader(type, file)
           this.uploadWith(uploader, file, {label, title, description, creditLine, source})
         })
@@ -335,15 +335,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   handleFocus = (path: Path) => {
     this.setState({
-      hasFocus: true
+      hasFocus: true,
     })
     this.props.onFocus(path)
   }
 
-  handleBlur = event => {
+  handleBlur = (event) => {
     this.props.onBlur()
     this.setState({
-      hasFocus: false
+      hasFocus: false,
     })
   }
 
@@ -359,7 +359,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.uploadWith(uploader, file)
   }
 
-  handleSelectImageFromAssetSource = source => {
+  handleSelectImageFromAssetSource = (source) => {
     this.setState({selectedAssetSource: source})
   }
 
@@ -395,7 +395,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <div className={styles.fieldWrapper}>
             {withImageTool && (
               <WithMaterializedReference materialize={materialize} reference={value.asset}>
-                {imageAsset => (
+                {(imageAsset) => (
                   <ImageToolInput
                     type={type}
                     level={level}
@@ -431,7 +431,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderFields(fields: ObjectField[]) {
-    return fields.map(field => this.renderField(field))
+    return fields.map((field) => this.renderField(field))
   }
 
   renderField(field: ObjectField) {
@@ -442,7 +442,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <FormBuilderInput
           value={fieldValue}
           type={field.type}
-          onChange={ev => this.handleFieldChange(ev, field)}
+          onChange={(ev) => this.handleFieldChange(ev, field)}
           path={[field.name]}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -481,7 +481,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderDropDownMenuItem = item => {
+  renderDropDownMenuItem = (item) => {
     if (!item) {
       return null
     }
@@ -536,7 +536,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     if (value && value.asset) {
       return (
         <WithMaterializedReference materialize={materialize} reference={value.asset}>
-          {imageAsset => {
+          {(imageAsset) => {
             return (
               <Component
                 document={document}
@@ -566,7 +566,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const {type, value, compareValue, level, materialize, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
-      type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
+      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
     const accept = get(type, 'options.accept', 'image/*')
@@ -579,15 +579,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       : {}
 
     const isInside = presence
-      .map(item => {
-        const otherFieldsPath = otherFields.map(field => field.name)
-        return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
+      .map((item) => {
+        const otherFieldsPath = otherFields.map((field) => field.name)
+        return item.path.some((path) => otherFieldsPath.includes(path)) ? item.identity : null
       })
       .filter(String)
     return (
       <FieldSetComponent
         markers={markers}
-        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
+        presence={presence.filter(
+          (item) => item.path[0] === '$' || isInside.includes(item.identity)
+        )}
         legend={type.title}
         description={type.description}
         level={level}

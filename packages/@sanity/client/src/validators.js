@@ -1,7 +1,7 @@
 const VALID_ASSET_TYPES = ['image', 'file']
 const VALID_INSERT_LOCATIONS = ['before', 'after', 'replace']
 
-exports.dataset = name => {
+exports.dataset = (name) => {
   if (!/^[-\w]{1,128}$/.test(name)) {
     throw new Error(
       'Datasets can only contain lowercase characters, numbers, underscores and dashes'
@@ -9,13 +9,13 @@ exports.dataset = name => {
   }
 }
 
-exports.projectId = id => {
+exports.projectId = (id) => {
   if (!/^[-a-z0-9]+$/i.test(id)) {
     throw new Error('`projectId` can only contain only a-z, 0-9 and dashes')
   }
 }
 
-exports.validateAssetType = type => {
+exports.validateAssetType = (type) => {
   if (VALID_ASSET_TYPES.indexOf(type) === -1) {
     throw new Error(`Invalid asset type: ${type}. Must be one of ${VALID_ASSET_TYPES.join(', ')}`)
   }
@@ -44,7 +44,7 @@ exports.validateDocumentId = (op, id) => {
 exports.validateInsert = (at, selector, items) => {
   const signature = 'insert(at, selector, items)'
   if (VALID_INSERT_LOCATIONS.indexOf(at) === -1) {
-    const valid = VALID_INSERT_LOCATIONS.map(loc => `"${loc}"`).join(', ')
+    const valid = VALID_INSERT_LOCATIONS.map((loc) => `"${loc}"`).join(', ')
     throw new Error(`${signature} takes an "at"-argument which is one of: ${valid}`)
   }
 
@@ -57,7 +57,7 @@ exports.validateInsert = (at, selector, items) => {
   }
 }
 
-exports.hasDataset = config => {
+exports.hasDataset = (config) => {
   if (!config.gradientMode && !config.dataset) {
     throw new Error('`dataset` must be provided to perform queries')
   }

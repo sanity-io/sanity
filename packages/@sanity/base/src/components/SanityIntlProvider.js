@@ -15,7 +15,7 @@ class SanityIntlProvider extends React.Component {
     this.state = {
       messages: null,
       language: null,
-      error: null
+      error: null,
     }
   }
 
@@ -27,10 +27,10 @@ class SanityIntlProvider extends React.Component {
   componentDidMount() {
     const {supportedLanguages} = this.props
     resolveLanguage(supportedLanguages)
-      .then(language => {
+      .then((language) => {
         messageFetcher
           .fetchLocalizedMessages(language)
-          .then(localizedMessages => {
+          .then((localizedMessages) => {
             const languagePrefix = language.split('-')[0]
             const localeData = require(`react-intl/locale-data/${languagePrefix}`)
             addLocaleData(localeData)
@@ -40,7 +40,7 @@ class SanityIntlProvider extends React.Component {
             this.mountTimer = setTimeout(() => {
               this.setState({
                 messages: localizedMessages,
-                language: language
+                language: language,
               })
             }, 0)
           })
@@ -80,7 +80,7 @@ class SanityIntlProvider extends React.Component {
 
 SanityIntlProvider.propTypes = {
   children: PropTypes.node,
-  supportedLanguages: PropTypes.arrayOf(PropTypes.string)
+  supportedLanguages: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default SanityIntlProvider

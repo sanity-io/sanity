@@ -12,11 +12,11 @@ function createListener<E extends Event>(eventName: 'keydown') {
   return listen
 
   function notify(event: E) {
-    listeners.forEach(l => l(event))
+    listeners.forEach((l) => l(event))
   }
 
   function unlisten(listener: Listener<E>) {
-    listeners = listeners.filter(l => l !== listener)
+    listeners = listeners.filter((l) => l !== listener)
 
     if (listeners.length === 0) {
       document.removeEventListener(eventName, notify as Listener)

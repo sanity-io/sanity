@@ -54,8 +54,8 @@ function sanityPartLoader(input) {
   }
 
   const parts = this._compiler.sanity.parts
-  const dependencies = parts.plugins.map(plugin => path.join(plugin.path, 'sanity.json'))
-  const implementations = (parts.implementations[partName] || []).map(impl => impl.path)
+  const dependencies = parts.plugins.map((plugin) => path.join(plugin.path, 'sanity.json'))
+  const implementations = (parts.implementations[partName] || []).map((impl) => impl.path)
 
   this.addDependency(path.join(basePath, 'sanity.json'))
   dependencies.forEach(this.addDependency)

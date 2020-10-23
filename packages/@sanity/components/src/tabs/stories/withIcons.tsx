@@ -21,13 +21,13 @@ export function WithIconsStory() {
   const tabs = [
     {icon: EditIcon, id: 'tab-edit', label: 'Content'},
     {icon: CalendarIcon, id: 'tab-seo', label: 'SEO'},
-    {icon: EyeIcon, id: 'tab-preview', label: 'Preview'}
+    {icon: EyeIcon, id: 'tab-preview', label: 'Preview'},
   ]
 
   return (
     <div style={{background: 'white'}}>
       <TabList>
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <Tab
             aria-controls="tab-panel"
             icon={tab.icon}

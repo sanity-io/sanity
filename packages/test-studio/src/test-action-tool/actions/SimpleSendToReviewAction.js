@@ -8,7 +8,7 @@ function addReviewer(id, reviewerName) {
   return mutate(id, [
     setIfMissing('reviewers', []),
     unset([`reviewers[_key=="${reviewerName}"]`]),
-    append(`reviewers`, [{_key: reviewerName, name: reviewerName}])
+    append(`reviewers`, [{_key: reviewerName, name: reviewerName}]),
   ])
 }
 
@@ -33,13 +33,13 @@ export default function SendToReviewAction(docInfo) {
     dialog: isDialogOpen && (
       <>
         Select who should review
-        {REVIEWERS.map(reviewer => {
+        {REVIEWERS.map((reviewer) => {
           return (
             <label key={reviewer} style={{display: 'block'}}>
               <input
                 type="checkbox"
-                checked={reviewers.some(r => r._key === reviewer)}
-                onClick={event => {
+                checked={reviewers.some((r) => r._key === reviewer)}
+                onClick={(event) => {
                   const op = event.currentTarget.checked ? addReviewer : removeReviewer
                   op(docInfo.id, reviewer)
                 }}
@@ -50,6 +50,6 @@ export default function SendToReviewAction(docInfo) {
         })}
         <button onClick={() => setDialogOpen(false)}>OK</button>
       </>
-    )
+    ),
   }
 }

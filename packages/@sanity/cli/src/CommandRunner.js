@@ -12,7 +12,7 @@ import defaultCommands from './commands'
 import debug from './debug'
 import {
   generateCommandsDocumentation,
-  generateCommandDocumentation
+  generateCommandDocumentation,
 } from './util/generateCommandsDocumentation'
 
 /* eslint-disable no-process-env */
@@ -20,11 +20,11 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
 
-const cmdHasName = cmdName => {
-  return cmd => cmd.name === cmdName
+const cmdHasName = (cmdName) => {
+  return (cmd) => cmd.name === cmdName
 }
 
-const cmdByGroup = cmd => cmd.group || 'default'
+const cmdByGroup = (cmd) => cmd.group || 'default'
 
 export default class CommandRunner {
   constructor(handlers = {}, commands = defaultCommands) {
@@ -66,7 +66,7 @@ export default class CommandRunner {
 
     const baseManifest = await loadJson(manifestPath)
     const manifest = reduceConfig(baseManifest || {}, environment, {
-      studioRootPath: options.workDir
+      studioRootPath: options.workDir,
     })
     const apiClient = clientWrapper(manifest, manifestPath)
 
@@ -77,7 +77,7 @@ export default class CommandRunner {
       yarn,
       chalk,
       ...options,
-      commandRunner: this
+      commandRunner: this,
     }
 
     if (command.isGroupRoot) {
@@ -125,7 +125,7 @@ export default class CommandRunner {
         commandName: command.name,
         parentName: 'default',
         isGroup: command.isGroupRoot || false,
-        isCommand: true
+        isCommand: true,
       }
     }
 
@@ -148,7 +148,7 @@ export default class CommandRunner {
       commandName: subCommandName,
       parentName: parentGroupName,
       isGroup: false,
-      isCommand: true
+      isCommand: true,
     }
   }
 
@@ -157,7 +157,7 @@ export default class CommandRunner {
       command: this.commandGroups.default.find(cmdHasName('help')),
       commandName: 'help',
       isGroup: false,
-      isCommand: true
+      isCommand: true,
     }
   }
 }
@@ -166,7 +166,7 @@ export function getCliRunner(...args) {
   return new CommandRunner(
     {
       outputter: cliOutputter,
-      prompter: cliPrompter
+      prompter: cliPrompter,
     },
     ...args
   )

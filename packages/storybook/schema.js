@@ -12,17 +12,17 @@ export default createSchema({
           name: 'title',
           title: 'Title',
           type: 'string',
-          required: true
+          required: true,
         },
         {
           name: 'priority',
           title: 'Priority',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'checked',
           title: 'Checked',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'select',
@@ -32,18 +32,18 @@ export default createSchema({
             list: [
               {
                 title: 'One (1)',
-                value: 'one'
+                value: 'one',
               },
               {
                 title: 'Two (2)',
-                value: 'two'
+                value: 'two',
               },
               {
                 title: 'Three (3)',
-                value: 'three'
-              }
-            ]
-          }
+                value: 'three',
+              },
+            ],
+          },
         },
         {
           name: 'radioSelect',
@@ -54,35 +54,35 @@ export default createSchema({
             list: [
               {
                 title: 'One (1)',
-                value: 'one'
+                value: 'one',
               },
               {
                 title: 'Two (2)',
-                value: 'two'
+                value: 'two',
               },
               {
                 title: 'Three (3)',
-                value: 'three'
-              }
-            ]
-          }
+                value: 'three',
+              },
+            ],
+          },
         },
         {
           name: 'lead',
           title: 'Lead',
           type: 'text',
           format: 'html',
-          required: true
+          required: true,
         },
         {
           name: 'email',
           title: 'Email',
-          type: 'email'
+          type: 'email',
         },
         {
           name: 'location',
           title: 'Location',
-          type: 'geopoint'
+          type: 'geopoint',
         },
         {
           name: 'content',
@@ -91,9 +91,9 @@ export default createSchema({
           of: [
             {
               title: 'String',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'authors',
@@ -101,21 +101,21 @@ export default createSchema({
           type: 'array',
           of: [
             {
-              type: 'author'
-            }
+              type: 'author',
+            },
           ],
-          required: true
+          required: true,
         },
         {
           name: 'authorRef',
           title: 'Author reference',
           type: 'reference',
           to: {
-            type: 'author'
+            type: 'author',
           },
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'author',
@@ -124,7 +124,7 @@ export default createSchema({
         {
           name: 'name',
           title: 'Title',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'awards',
@@ -132,11 +132,11 @@ export default createSchema({
           type: 'array',
           of: [
             {
-              type: 'string'
-            }
-          ]
-        }
-      ]
-    }
-  ])
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
+  ]),
 })

@@ -60,7 +60,7 @@ const IntentResolver = React.memo(function IntentResolver({params, payload}) {
     )
   }
 
-  const isLoading = !structure || structure.some(item => item === LOADING_PANE)
+  const isLoading = !structure || structure.some((item) => item === LOADING_PANE)
   if (isLoading) {
     return <Spinner center message="Resolving structure…" delay={600} />
   }
@@ -71,7 +71,7 @@ const IntentResolver = React.memo(function IntentResolver({params, payload}) {
     params: otherParams,
     payload,
     paneSegments,
-    documentId
+    documentId,
   })
 
   return <Redirect panes={panes} />
@@ -110,7 +110,7 @@ function Redirect({panes}) {
 function useDocumentType(documentId, specifiedType) {
   const [{documentType, isLoaded}, setDocumentType] = useState({isLoaded: false})
   useEffect(() => {
-    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe(documentType =>
+    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((documentType) =>
       setDocumentType({documentType, isLoaded: true})
     )
     return () => sub.unsubscribe()
@@ -126,7 +126,7 @@ function resolveTypeForDocument(id, specifiedType) {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return client.observable.fetch(query, {documentId, draftId}).pipe(map(types => types[0]))
+  return client.observable.fetch(query, {documentId, draftId}).pipe(map((types) => types[0]))
 }
 
 export default IntentResolver

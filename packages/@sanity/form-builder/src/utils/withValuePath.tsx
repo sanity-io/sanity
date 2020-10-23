@@ -6,12 +6,12 @@ export default function withValuePath(ComposedComponent: any) {
     static displayName = `withValuePath(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
       getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any
+      formBuilder: PropTypes.any,
     }
     focus() {
       this._input.focus()
     }
-    setInput = input => {
+    setInput = (input) => {
       this._input = input
     }
     render() {

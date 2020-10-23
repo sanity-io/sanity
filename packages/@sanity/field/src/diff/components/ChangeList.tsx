@@ -81,7 +81,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
       data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
     >
       <div className={styles.changeList}>
-        {changes.map(change => (
+        {changes.map((change) => (
           <ChangeResolver change={change} key={change.key} />
         ))}
       </div>
@@ -110,13 +110,13 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
                 {
                   color: 'danger',
                   action: revertAllChanges,
-                  title: 'Revert all'
+                  title: 'Revert all',
                 },
                 {
                   kind: 'simple',
                   action: closeRevertAllChangesConfirmDialog,
-                  title: 'Cancel'
-                }
+                  title: 'Cancel',
+                },
               ]}
               onAction={handleConfirmDialogAction}
               referenceElement={revertAllContainerElement}

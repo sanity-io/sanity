@@ -6,14 +6,14 @@ export default {
         {name: 'dummy', options: {children: 'A'}},
         {name: 'dummy', options: {children: 'B'}},
         {name: 'dummy', options: {children: 'C'}},
-        {name: 'dummy', options: {children: 'D'}}
-      ]
+        {name: 'dummy', options: {children: 'D'}},
+      ],
     },
     {
       name: 'sanity-tutorials',
       layout: {
-        width: 'full'
-      }
+        width: 'full',
+      },
     },
     {name: 'document-list'},
     {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
@@ -24,7 +24,7 @@ export default {
       name: 'project-info',
       layout: {
         width: 'medium',
-        height: 'auto'
+        height: 'auto',
       },
       options: {
         // eslint-disable-next-line camelcase
@@ -34,11 +34,11 @@ export default {
           {title: 'Strange endpoint', value: 'https://example.com/v1/strange', category: 'apis'},
           {title: 'With strawberry jam?', value: 'Yes', category: 'Waffles'},
           {title: 'Gummy bears?', value: 'nope', category: 'Cheweies'},
-          {title: 'With rømme?', value: 'maybe', category: 'Waffles'}
-        ]
-      }
+          {title: 'With rømme?', value: 'maybe', category: 'Waffles'},
+        ],
+      },
     },
     {name: 'cats'},
-    {name: 'document-list', options: {limit: 100}}
-  ]
+    {name: 'document-list', options: {limit: 100}},
+  ],
 }

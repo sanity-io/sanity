@@ -5,25 +5,25 @@ export default {
   preview: {
     select: {
       title: 'title',
-      imageUrl: 'image.asset.url'
-    }
+      imageUrl: 'image.asset.url',
+    },
   },
   fields: [
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'image',
       title: 'Image',
-      type: 'image'
+      type: 'image',
     },
     {
       name: 'array',
       type: 'array',
       title: 'Array',
-      of: [{type: 'reference', to: {type: 'previewImageUrlTest'}}]
-    }
-  ]
+      of: [{type: 'reference', to: {type: 'previewImageUrlTest'}}],
+    },
+  ],
 }

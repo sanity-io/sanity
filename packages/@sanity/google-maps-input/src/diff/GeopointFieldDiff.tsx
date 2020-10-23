@@ -4,7 +4,7 @@ import {
   ObjectDiff,
   DiffProps as GenericDiffProps,
   DiffTooltip,
-  getAnnotationAtPath
+  getAnnotationAtPath,
 } from '@sanity/field/diff'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
@@ -18,7 +18,7 @@ export const GeopointFieldDiff: DiffComponent<ObjectDiff<Geopoint>> = ({diff, sc
   return (
     <div className={styles.root}>
       <GoogleMapsLoadProxy>
-        {api => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
+        {(api) => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
       </GoogleMapsLoadProxy>
     </div>
   )
@@ -45,7 +45,7 @@ function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps})
           bounds={bounds}
           scrollWheel={false}
         >
-          {map => <GeopointMove api={api} map={map} diff={diff} />}
+          {(map) => <GeopointMove api={api} map={map} diff={diff} />}
         </GoogleMap>
       </div>
     </DiffTooltip>
@@ -66,9 +66,7 @@ function getCenter(
 ): google.maps.LatLngLiteral {
   const {fromValue, toValue} = diff
   if (fromValue && toValue) {
-    return getBounds(fromValue, toValue, api)
-      .getCenter()
-      .toJSON()
+    return getBounds(fromValue, toValue, api).getCenter().toJSON()
   }
 
   if (fromValue) {

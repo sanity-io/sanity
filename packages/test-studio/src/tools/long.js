@@ -117,5 +117,5 @@ function LongTool() {
 export default {
   name: 'long',
   title: 'Long',
-  component: LongTool
+  component: LongTool,
 }

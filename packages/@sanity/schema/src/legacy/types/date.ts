@@ -8,7 +8,7 @@ const DATE_CORE = {
   name: 'date',
   title: 'Datetime',
   type: null,
-  jsonType: 'string'
+  jsonType: 'string',
 }
 
 export const DateType = {
@@ -18,7 +18,7 @@ export const DateType = {
   extend(subTypeDef) {
     const parsed = Object.assign(pick(DATE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: DATE_CORE,
-      preview: primitivePreview
+      preview: primitivePreview,
     })
     return subtype(parsed)
 
@@ -27,13 +27,13 @@ export const DateType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

@@ -16,10 +16,7 @@ test('throws if no id is set', () => {
 
 test('builds lists with ID and title through setters', () => {
   expect(
-    S.list({id: 'books', title: 'Books'})
-      .id('authors')
-      .title('Authors')
-      .serialize()
+    S.list({id: 'books', title: 'Books'}).id('authors').title('Authors').serialize()
   ).toMatchSnapshot()
 })
 
@@ -56,9 +53,9 @@ test('enforces unique IDs (more than one dupe, caps max items)', () => {
       .id('books')
       .items(
         flatten(
-          [0, 1, 2, 3, 4, 5, 6, 7].map(i => [
+          [0, 1, 2, 3, 4, 5, 6, 7].map((i) => [
             S.listItem().title(`Zing ${i}`),
-            S.listItem().title(`Zing ${i}`)
+            S.listItem().title(`Zing ${i}`),
           ])
         )
       )
@@ -67,74 +64,63 @@ test('enforces unique IDs (more than one dupe, caps max items)', () => {
 })
 
 test('builds lists with layout', () => {
-  expect(
-    S.list()
-      .id('books')
-      .defaultLayout('card')
-      .serialize()
-  ).toMatchSnapshot()
+  expect(S.list().id('books').defaultLayout('card').serialize()).toMatchSnapshot()
 })
 
-test('default child resolver can resolve directly to node', done => {
+test('default child resolver can resolve directly to node', (done) => {
   const item = {
     id: 'asoiaf-wow',
     title: 'The Winds of Winter',
     child: {id: 'editor', type: 'document', options: {id: 'wow', type: 'book'}},
-    type: 'listItem'
+    type: 'listItem',
   }
 
-  const list = S.list()
-    .id('books')
-    .items([item])
-    .serialize()
+  const list = S.list().id('books').items([item]).serialize()
 
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, [item.id, context]).subscribe(child => {
+  serializeStructure(list.child, context, [item.id, context]).subscribe((child) => {
     expect(child).toEqual(item.child)
     done()
   })
 })
 
-test('default child resolver can resolve through promise', done => {
+test('default child resolver can resolve through promise', (done) => {
   const child = {id: 'editor', type: 'document', options: {id: 'wow', type: 'book'}}
   const item = {
     id: 'asoiaf-wow',
     title: 'The Winds of Winter',
     child: () => Promise.resolve(child),
-    type: 'listItem'
+    type: 'listItem',
   }
 
-  const list = S.list()
-    .id('books')
-    .items([item])
-    .serialize()
+  const list = S.list().id('books').items([item]).serialize()
 
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, [item.id, context]).subscribe(itemChild => {
+  serializeStructure(list.child, context, [item.id, context]).subscribe((itemChild) => {
     expect(itemChild).toEqual(child)
     done()
   })
 })
 
-test('can provide custom child resolver', done => {
+test('can provide custom child resolver', (done) => {
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today', type: 'listItem'}])
     .child(() => ({
       id: 'editor',
       type: 'editor',
-      options: {id: new Date().toISOString().slice(0, 10), type: 'gallery'}
+      options: {id: new Date().toISOString().slice(0, 10), type: 'gallery'},
     }))
     .serialize()
 
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, ['today', context]).subscribe(child => {
+  serializeStructure(list.child, context, ['today', context]).subscribe((child) => {
     expect(child).toHaveProperty('options.id', new Date().toISOString().slice(0, 10))
     done()
   })
 })
 
-test('can resolve undefined child', done => {
+test('can resolve undefined child', (done) => {
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today', type: 'listItem'}])
@@ -142,7 +128,7 @@ test('can resolve undefined child', done => {
     .serialize()
 
   const context = {parent: list, index: 0}
-  serializeStructure(list.child, context, ['today', context]).subscribe(child => {
+  serializeStructure(list.child, context, ['today', context]).subscribe((child) => {
     expect(child).toBeUndefined()
     done()
   })
@@ -161,11 +147,7 @@ test('can set menu items with builder', () => {
   expect(
     S.list()
       .id('yeah')
-      .menuItems([
-        S.menuItem()
-          .title('Purge')
-          .action(noop)
-      ])
+      .menuItems([S.menuItem().title('Purge').action(noop)])
       .serialize()
   ).toMatchSnapshot()
 })
@@ -184,39 +166,25 @@ test('can set menu items groups with builder', () => {
   expect(
     S.list()
       .id('yeah')
-      .menuItems([
-        S.menuItem()
-          .title('Print')
-          .action(noop)
-          .group('old-school')
-      ])
-      .menuItemGroups([
-        S.menuItemGroup()
-          .id('old-school')
-          .title('Old-school')
-      ])
+      .menuItems([S.menuItem().title('Print').action(noop).group('old-school')])
+      .menuItemGroups([S.menuItemGroup().id('old-school').title('Old-school')])
       .serialize()
   ).toMatchSnapshot()
 })
 
 test('can set intent handler check', () => {
   const handler = () => false
-  expect(
-    S.list()
-      .id('yeah')
-      .canHandleIntent(handler)
-      .serialize()
-  ).toMatchObject({canHandleIntent: handler})
+  expect(S.list().id('yeah').canHandleIntent(handler).serialize()).toMatchObject({
+    canHandleIntent: handler,
+  })
 })
 
 test('can disable icons from being displayed', () => {
-  const list = S.list()
-    .title('Blåmuggost')
-    .showIcons(false)
+  const list = S.list().title('Blåmuggost').showIcons(false)
 
   expect(list.serialize()).toMatchObject({
     id: 'blamuggost',
-    displayOptions: {showIcons: false}
+    displayOptions: {showIcons: false},
   })
 
   expect(list.getShowIcons()).toBe(false)

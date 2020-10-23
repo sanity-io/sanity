@@ -21,7 +21,7 @@ export function DefaultStory() {
       'bottom-end': 'Bottom end',
       'left-start': 'Left start',
       left: 'Left',
-      'left-end': 'Left end'
+      'left-end': 'Left end',
     },
     'bottom',
     'Props'
@@ -37,7 +37,7 @@ export function DefaultStory() {
             style={{
               display: 'inline-block',
               padding: '0.25em',
-              background: 'rgba(127, 127, 127, 0.5)'
+              background: 'rgba(127, 127, 127, 0.5)',
             }}
           >
             Reference

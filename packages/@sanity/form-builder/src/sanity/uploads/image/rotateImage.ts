@@ -10,7 +10,7 @@ import {Orientation} from './orient'
 
 function loadImage(url: string): Observable<HTMLImageElement> {
   /* global window */
-  return new Observable(observer => {
+  return new Observable((observer) => {
     const image = new window.Image()
     //console.time("read image");
     image.onerror = () => {
@@ -33,6 +33,6 @@ function loadImage(url: string): Observable<HTMLImageElement> {
 export default function rotateImage(file: File, orientation: Orientation) {
   /* global window */
   return loadImage(window.URL.createObjectURL(file)).pipe(
-    mergeMap(image => orient(image, orientation))
+    mergeMap((image) => orient(image, orientation))
   )
 }

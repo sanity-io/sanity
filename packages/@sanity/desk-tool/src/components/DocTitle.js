@@ -23,6 +23,6 @@ export default function DocTitle(props) {
 
 DocTitle.propTypes = {
   document: PropTypes.shape({
-    _type: PropTypes.string
-  })
+    _type: PropTypes.string,
+  }),
 }

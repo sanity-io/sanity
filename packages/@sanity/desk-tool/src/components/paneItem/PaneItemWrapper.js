@@ -5,7 +5,7 @@ import {PaneRouterContext} from '../../contexts/PaneRouterContext'
 import styles from './PaneItem.css'
 import listStyles from '../../components/listView/ListView.css'
 
-const PaneItemWrapper = props => {
+const PaneItemWrapper = (props) => {
   const {ChildLink} = useContext(PaneRouterContext)
   const {id, useGrid, layout, isSelected} = props
   const link = (
@@ -26,7 +26,7 @@ PaneItemWrapper.propTypes = {
   layout: PropTypes.string,
   useGrid: PropTypes.bool,
   isSelected: PropTypes.bool,
-  children: PropTypes.node
+  children: PropTypes.node,
 }
 
 export default PaneItemWrapper

@@ -9,7 +9,7 @@ interface HotkeysProps {
 // @todo: refactor to functional component
 export default class Hotkeys extends React.PureComponent<HotkeysProps> {
   static defaultProps = {
-    size: undefined
+    size: undefined,
   }
 
   render() {

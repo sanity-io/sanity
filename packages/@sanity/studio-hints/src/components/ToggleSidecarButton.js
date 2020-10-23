@@ -3,18 +3,18 @@
 import React from 'react'
 import {
   isSidecarOpenSetting,
-  toggleSidecarOpenState
+  toggleSidecarOpenState,
 } from 'part:@sanity/default-layout/sidecar-datastore'
 import Button from 'part:@sanity/components/buttons/default'
 import HelpCircleIcon from 'part:@sanity/base/help-circle-icon'
 
 export default class ToggleSidecarButton extends React.PureComponent {
   state = {
-    isOpen: true
+    isOpen: true,
   }
 
   componentDidMount() {
-    this.subscription = isSidecarOpenSetting.listen().subscribe(isOpen => {
+    this.subscription = isSidecarOpenSetting.listen().subscribe((isOpen) => {
       this.setState({isOpen: isOpen !== false})
     })
   }

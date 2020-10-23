@@ -4,7 +4,7 @@ import {List as GridList} from 'part:@sanity/components/lists/grid'
 import {
   List as SortableGridList,
   Item as SortableGridItem,
-  DragHandle
+  DragHandle,
 } from 'part:@sanity/components/lists/sortable-grid'
 import MediaPreview from 'part:@sanity/components/previews/media'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -31,7 +31,7 @@ class SortableGridTester extends React.PureComponent<
     super(props)
 
     this.state = {
-      items: this.props.items.slice()
+      items: this.props.items.slice(),
     }
   }
 
@@ -39,7 +39,7 @@ class SortableGridTester extends React.PureComponent<
     const {items} = this.state
 
     this.setState({
-      items: arrayMove(items, oldIndex, newIndex)
+      items: arrayMove(items, oldIndex, newIndex),
     })
 
     if (this.props.onSort) this.props.onSort()
@@ -71,7 +71,7 @@ export function MediaPreviewSortableStory() {
       key: `${i}`,
       title: chance.name(),
       imageUrl: randomImage,
-      aspect: width / height
+      aspect: width / height,
     }
   })
 

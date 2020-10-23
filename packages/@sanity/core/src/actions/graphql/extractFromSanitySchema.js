@@ -14,8 +14,8 @@ const scalars = ['string', 'number', 'boolean']
 function getBaseType(baseSchema, typeName) {
   return Schema.compile({
     types: baseSchema._original.types.concat([
-      {name: `__placeholder__`, type: typeName, options: {hotspot: true}}
-    ])
+      {name: `__placeholder__`, type: typeName, options: {hotspot: true}},
+    ]),
   }).get('__placeholder__')
 }
 
@@ -66,8 +66,8 @@ function extractFromSanitySchema(sanitySchema) {
   const unionRecursionGuards = []
   const hasErrors =
     sanitySchema._validation &&
-    sanitySchema._validation.some(group =>
-      group.problems.some(problem => problem.severity === 'error')
+    sanitySchema._validation.some((group) =>
+      group.problems.some((problem) => problem.severity === 'error')
     )
 
   if (hasErrors) {
@@ -78,9 +78,9 @@ function extractFromSanitySchema(sanitySchema) {
   const typeNames = sanitySchema.getTypeNames()
   const unionTypes = []
   const types = typeNames
-    .map(name => sanitySchema.get(name))
+    .map((name) => sanitySchema.get(name))
     .filter(isBaseType)
-    .map(type => convertType(type))
+    .map((type) => convertType(type))
     .concat(unionTypes)
 
   return {types, interfaces: [getDocumentInterfaceDefinition()]}
@@ -142,7 +142,7 @@ function extractFromSanitySchema(sanitySchema) {
           ? getObjectDefinition(type, parent)
           : {
               type: mapFieldType(type, name),
-              description: getDescription(type)
+              description: getDescription(type),
             }
     }
   }
@@ -175,7 +175,10 @@ function extractFromSanitySchema(sanitySchema) {
 
     const name = `${parent || ''}${getTypeName(def.name)}`
     const fields = collectFields(def)
-    const firstUnprefixed = Math.max(0, fields.findIndex(field => field.name[0] !== '_'))
+    const firstUnprefixed = Math.max(
+      0,
+      fields.findIndex((field) => field.name[0] !== '_')
+    )
     fields.splice(
       firstUnprefixed,
       0,
@@ -187,18 +190,18 @@ function extractFromSanitySchema(sanitySchema) {
       name,
       type: 'Object',
       description: getDescription(def),
-      fields: fields.map(field =>
+      fields: fields.map((field) =>
         isArrayOfBlocks(field)
           ? buildRawField(field, name)
           : convertType(field, name, {fieldName: field.name})
-      )
+      ),
     }
   }
 
   function buildRawField(field, parentName) {
     return Object.assign(convertType(field, parentName, {fieldName: `${field.name}Raw`}), {
       type: 'JSON',
-      isRawAlias: true
+      isRawAlias: true,
     })
   }
 
@@ -208,8 +211,8 @@ function extractFromSanitySchema(sanitySchema) {
       type: {
         jsonType: 'string',
         name: 'string',
-        type: {name: 'string', type: null, jsonType: 'string'}
-      }
+        type: {name: 'string', type: null, jsonType: 'string'},
+      },
     }
   }
 
@@ -304,37 +307,37 @@ function extractFromSanitySchema(sanitySchema) {
         }
       })
 
-      const converted = candidates.map(def => convertType(def))
+      const converted = candidates.map((def) => convertType(def))
 
       // We might end up with union types being returned - these needs to be flattened
       // so that an ImageOr(PersonOrPet) becomes ImageOrPersonOrPet
       const flattened = converted.reduce((acc, candidate) => {
-        const union = unionTypes.find(item => item.name === candidate.type)
+        const union = unionTypes.find((item) => item.name === candidate.type)
         return union
-          ? acc.concat(union.types.map(type => ({type, isReference: candidate.isReference})))
+          ? acc.concat(union.types.map((type) => ({type, isReference: candidate.isReference})))
           : acc.concat(candidate)
       }, [])
 
-      const allCandidatesAreDocuments = flattened.every(def => {
-        const typeDef = sanityTypes.find(type => type.name === (def.type.name || def.type))
+      const allCandidatesAreDocuments = flattened.every((def) => {
+        const typeDef = sanityTypes.find((type) => type.name === (def.type.name || def.type))
         return typeDef && typeDef.type === 'document'
       })
 
       const interfaces = allCandidatesAreDocuments ? ['Document'] : undefined
-      const refs = flattened.filter(type => type.isReference).map(ref => ref.type)
-      const inlineObjs = flattened.filter(type => !type.isReference).map(ref => ref.name)
+      const refs = flattened.filter((type) => type.isReference).map((ref) => ref.type)
+      const inlineObjs = flattened.filter((type) => !type.isReference).map((ref) => ref.name)
       // Here we remove duplicates, as they might appear twice due to in-line usage of types as well as references
       const possibleTypes = [
-        ...new Set(flattened.map(type => (type.isReference ? type.type : type.name)))
+        ...new Set(flattened.map((type) => (type.isReference ? type.type : type.name))),
       ].sort()
       const name = possibleTypes.join('Or')
 
-      if (!unionTypes.some(item => item.name === name)) {
+      if (!unionTypes.some((item) => item.name === name)) {
         unionTypes.push({
           kind: 'Union',
           name,
           types: possibleTypes,
-          interfaces
+          interfaces,
         })
       }
 
@@ -357,7 +360,7 @@ function extractFromSanitySchema(sanitySchema) {
 
     return Object.assign(objectDef, {
       fields,
-      interfaces: ['Document']
+      interfaces: ['Document'],
     })
   }
 
@@ -366,7 +369,7 @@ function extractFromSanitySchema(sanitySchema) {
       kind: 'Interface',
       name: 'Document',
       description: 'A Sanity document',
-      fields: getDocumentInterfaceFields()
+      fields: getDocumentInterfaceFields(),
     }
   }
 
@@ -376,32 +379,32 @@ function extractFromSanitySchema(sanitySchema) {
         fieldName: '_id',
         type: 'ID',
         isNullable: true,
-        description: 'Document ID'
+        description: 'Document ID',
       },
       {
         fieldName: '_type',
         type: 'String',
         isNullable: true,
-        description: 'Document type'
+        description: 'Document type',
       },
       {
         fieldName: '_createdAt',
         type: 'Datetime',
         isNullable: true,
-        description: 'Date the document was created'
+        description: 'Date the document was created',
       },
       {
         fieldName: '_updatedAt',
         type: 'Datetime',
         isNullable: true,
-        description: 'Date the document was last modified'
+        description: 'Date the document was last modified',
       },
       {
         fieldName: '_rev',
         type: 'String',
         isNullable: true,
-        description: 'Current document revision'
-      }
+        description: 'Current document revision',
+      },
     ]
   }
 
@@ -416,7 +419,7 @@ function extractFromSanitySchema(sanitySchema) {
   function hasValidationFlag(field, flag) {
     return (
       field.validation &&
-      field.validation.some(rule => rule._rules && rule._rules.some(item => item.flag === flag))
+      field.validation.some((rule) => rule._rules && rule._rules.some((item) => item.flag === flag))
     )
   }
 

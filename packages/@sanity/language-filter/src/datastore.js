@@ -5,9 +5,9 @@ import {intersection} from 'lodash'
 
 const onSelect$ = new Subject()
 
-export const setLangs = langs => onSelect$.next(langs)
+export const setLangs = (langs) => onSelect$.next(langs)
 
-const persistOn = (key, defaultValue) => input$ => {
+const persistOn = (key, defaultValue) => (input$) => {
   let persisted
   try {
     persisted = JSON.parse(window.localStorage.getItem(key))
@@ -15,16 +15,16 @@ const persistOn = (key, defaultValue) => input$ => {
 
   return input$.pipe(
     startWith(persisted || defaultValue),
-    tap(value => {
+    tap((value) => {
       window.localStorage.setItem(key, JSON.stringify(value))
     })
   )
 }
 
-const SUPPORTED_LANG_IDS = config.supportedLanguages.map(lang => lang.id)
+const SUPPORTED_LANG_IDS = config.supportedLanguages.map((lang) => lang.id)
 
 export const selectedLanguages$ = onSelect$.pipe(
-  map(selectedLangs => intersection(selectedLangs, SUPPORTED_LANG_IDS)),
+  map((selectedLangs) => intersection(selectedLangs, SUPPORTED_LANG_IDS)),
   publishReplay(1),
   refCount(),
   persistOn('@sanity/plugin/language-filter/selected-languages', SUPPORTED_LANG_IDS)
@@ -36,7 +36,7 @@ const defaultFilterField = (enclosingType, field, selectedLanguages) =>
 const filterField = config.filterField || defaultFilterField
 
 export const filterFn$ = selectedLanguages$.pipe(
-  map(langs => {
+  map((langs) => {
     return (enclosingType, field) => filterField(enclosingType, field, langs)
   })
 )

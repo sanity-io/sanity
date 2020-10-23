@@ -4,7 +4,7 @@ const INPUT = [
   ['doc1', ['fieldA', 'fieldB', 'fieldC.fieldCA']],
   ['doc2', ['fieldA', 'fieldB', 'fieldC.fieldCA']],
   ['doc7', ['fieldX', 'fieldY']],
-  ['doc3', ['fieldA', 'fieldB', 'fieldC.fieldCA']]
+  ['doc3', ['fieldA', 'fieldB', 'fieldC.fieldCA']],
 ]
 
 const RESULTS = {
@@ -13,33 +13,33 @@ const RESULTS = {
     _type: 'foo',
     fieldA: 'valueOfFieldA',
     fieldB: 'valueOfFieldB',
-    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'}
+    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'},
   },
   doc2: {
     _id: 'doc2',
     _type: 'foo',
     fieldA: 'valueOfFieldA',
     fieldB: 'valueOfFieldB',
-    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'}
+    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'},
   },
   doc3: {
     _id: 'doc3',
     _type: 'foo',
     fieldA: 'valueOfFieldA',
     fieldB: 'valueOfFieldB',
-    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'}
+    fieldC: {fieldCA: 'valueOfFieldC.fieldCA'},
   },
   doc7: {
     _id: 'doc7',
     _type: 'other',
     fieldX: 'valueOfFieldX',
-    fieldY: 'valueOfFieldY'
-  }
+    fieldY: 'valueOfFieldY',
+  },
 }
 
 const MOCKED_QUERY_RESULT = [
   [RESULTS.doc2, RESULTS.doc1, RESULTS.doc3], // note: out of order
-  [RESULTS.doc7]
+  [RESULTS.doc7],
 ]
 
 test('combineSelections()', () => {
@@ -47,9 +47,9 @@ test('combineSelections()', () => {
     {
       fields: ['fieldA', 'fieldB', 'fieldC.fieldCA'],
       ids: ['doc1', 'doc2', 'doc3'],
-      map: [0, 1, 3]
+      map: [0, 1, 3],
     },
-    {fields: ['fieldX', 'fieldY'], ids: ['doc7'], map: [2]}
+    {fields: ['fieldX', 'fieldY'], ids: ['doc7'], map: [2]},
   ])
 })
 
@@ -64,6 +64,6 @@ test('reassemble()', () => {
     RESULTS.doc1,
     RESULTS.doc2,
     RESULTS.doc7,
-    RESULTS.doc3
+    RESULTS.doc3,
   ])
 })

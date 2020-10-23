@@ -30,10 +30,10 @@ const DPI =
 export default class Asset extends React.PureComponent<AssetProps, State> {
   state: State = {
     isDeleting: false,
-    dialogType: null
+    dialogType: null,
   }
 
-  handleDeleteAsset = asset => {
+  handleDeleteAsset = (asset) => {
     const {onDeleteFinished} = this.props
 
     this.setState({isDeleting: true})
@@ -44,7 +44,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
         this.setState({isDeleting: false})
         onDeleteFinished(asset._id)
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({isDeleting: false, dialogType: 'error'})
         // eslint-disable-next-line no-console
         console.error('Could not delete asset', err)

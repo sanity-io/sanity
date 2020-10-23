@@ -5,20 +5,20 @@ export default {
   preview: {
     select: {
       title: 'title',
-      subtitle: 'slug.current'
+      subtitle: 'slug.current',
     },
     prepare: ({title, subtitle}) => {
       return {
         title: title,
-        subtitle: subtitle && `/${subtitle}/`
+        subtitle: subtitle && `/${subtitle}/`,
       }
-    }
+    },
   },
   fields: [
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'slug',
@@ -27,27 +27,27 @@ export default {
       description: 'This is a slug field that should update according to current title',
       options: {
         source: 'title',
-        maxLength: 96
-      }
+        maxLength: 96,
+      },
     },
     {
       name: 'noSource',
       title: 'Slug with not source',
       type: 'slug',
       options: {
-        maxLength: 100
-      }
+        maxLength: 100,
+      },
     },
     {
       name: 'requiredSlug',
       type: 'slug',
       title: 'Required slug',
       description: 'Slug field that is required',
-      validation: Rule => Rule.required(),
+      validation: (Rule) => Rule.required(),
       options: {
         source: 'title',
-        maxLength: 96
-      }
+        maxLength: 96,
+      },
     },
     {
       name: 'slugWithFunction',
@@ -55,9 +55,9 @@ export default {
       title: 'Slug with function to get source',
       description: 'This is a slug field that should update according to current title',
       options: {
-        source: document => document.title,
-        maxLength: 96
-      }
+        source: (document) => document.title,
+        maxLength: 96,
+      },
     },
     {
       name: 'slugWithCustomUniqueCheck',
@@ -68,8 +68,8 @@ export default {
         source: 'title',
         maxLength: 100,
         isUnique: (value, options) =>
-          !/^hei/i.test(value) && options.defaultIsUnique(value, options)
-      }
+          !/^hei/i.test(value) && options.defaultIsUnique(value, options),
+      },
     },
     {
       name: 'arrayOfSlugs',
@@ -77,17 +77,17 @@ export default {
       of: [
         {
           options: {
-            source: 'title'
+            source: 'title',
           },
-          type: 'slug'
-        }
-      ]
+          type: 'slug',
+        },
+      ],
     },
     {
       name: 'experiments',
       title: 'Experiments',
       type: 'array',
-      of: [{type: 'experiment'}]
+      of: [{type: 'experiment'}],
     },
     {
       name: 'deprecatedSlugifyFnField',
@@ -96,14 +96,9 @@ export default {
       description: 'Should warn the developer about deprecated field',
       options: {
         source: 'title',
-        slugifyFn: value =>
-          value
-            .toLocaleLowerCase()
-            .split('')
-            .reverse()
-            .join('')
-            .replace(/\s+/g, '-')
-      }
+        slugifyFn: (value) =>
+          value.toLocaleLowerCase().split('').reverse().join('').replace(/\s+/g, '-'),
+      },
     },
     {
       name: 'nested',
@@ -119,18 +114,18 @@ export default {
             maxLength: 96,
             slugify: (value, type) => {
               return encodeURI(`${type.name}_${value}`).toLocaleLowerCase()
-            }
-          }
-        }
-      ]
+            },
+          },
+        },
+      ],
     },
     {
       name: 'async',
       type: 'slug',
       title: 'Async slug resolving',
       options: {
-        source: doc => new Promise(resolve => setTimeout(resolve, 1000, doc.title))
-      }
-    }
-  ]
+        source: (doc) => new Promise((resolve) => setTimeout(resolve, 1000, doc.title)),
+      },
+    },
+  ],
 }

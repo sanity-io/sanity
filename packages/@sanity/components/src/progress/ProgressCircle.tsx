@@ -43,7 +43,7 @@ export default class ProgressCircle extends React.PureComponent<ProgressCirclePr
             strokeWidth={`${strokeWidth}px`}
             style={{
               strokeDasharray: dashArray,
-              strokeDashoffset: dashOffset
+              strokeDashoffset: dashOffset,
             }}
           />
           <circle
@@ -53,7 +53,7 @@ export default class ProgressCircle extends React.PureComponent<ProgressCirclePr
             r={radius - 1}
             style={{
               strokeDasharray: Math.PI,
-              strokeDashoffset: Math.PI
+              strokeDashoffset: Math.PI,
             }}
           />
           {showPercent && (

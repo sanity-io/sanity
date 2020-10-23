@@ -23,7 +23,7 @@ export class Arrow extends React.PureComponent<Props> {
   componentDidMount() {
     const {from, to, api, map, zIndex, onClick, color, arrowRef} = this.props
     const lineSymbol = {
-      path: api.SymbolPath.FORWARD_OPEN_ARROW
+      path: api.SymbolPath.FORWARD_OPEN_ARROW,
     }
 
     this.line = new api.Polyline({
@@ -32,7 +32,7 @@ export class Arrow extends React.PureComponent<Props> {
       path: [from, to],
       icons: [{icon: lineSymbol, offset: '50%'}],
       strokeOpacity: 0.55,
-      strokeColor: color ? color.text : 'black'
+      strokeColor: color ? color.text : 'black',
     })
 
     if (onClick) {

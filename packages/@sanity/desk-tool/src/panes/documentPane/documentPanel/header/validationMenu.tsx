@@ -15,9 +15,9 @@ interface ValidationMenuProps {
 
 export function ValidationMenu(props: ValidationMenuProps) {
   const {boundaryElement, isOpen, markers, schemaType, setFocusPath, setOpen} = props
-  const validationMarkers = markers.filter(marker => marker.type === 'validation')
-  const validationErrorMarkers = validationMarkers.filter(marker => marker.level === 'error')
-  const validationWarningwarnings = validationMarkers.filter(marker => marker.level === 'warning')
+  const validationMarkers = markers.filter((marker) => marker.type === 'validation')
+  const validationErrorMarkers = validationMarkers.filter((marker) => marker.level === 'error')
+  const validationWarningwarnings = validationMarkers.filter((marker) => marker.level === 'warning')
 
   const handleClose = useCallback(() => setOpen(false), [setOpen])
 
@@ -44,7 +44,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
         icon: ErrorOutlineIcon,
         padding: 'small',
         selected: isOpen,
-        title: 'Show validation issues'
+        title: 'Show validation issues',
       }}
       menu={popoverContent}
       open={isOpen}

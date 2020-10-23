@@ -4,7 +4,7 @@ import PlainProbe from './PlainProbe'
 
 export default function extract(path: string, value: Object): Array<any> {
   const result = []
-  const appendResult = values => {
+  const appendResult = (values) => {
     result.push(...values)
   }
   const matcher = Matcher.fromPath(path).setPayload(appendResult)
@@ -15,13 +15,13 @@ export default function extract(path: string, value: Object): Array<any> {
 
 function descend(matcher, accessor) {
   const {leads, delivery} = matcher.match(accessor)
-  leads.forEach(lead => {
-    accessorsFromTarget(lead.target, accessor).forEach(childAccessor => {
+  leads.forEach((lead) => {
+    accessorsFromTarget(lead.target, accessor).forEach((childAccessor) => {
       descend(lead.matcher, childAccessor)
     })
   })
   if (delivery) {
-    delivery.targets.forEach(target => {
+    delivery.targets.forEach((target) => {
       delivery.payload(accessorsFromTarget(target, accessor))
     })
   }
@@ -30,7 +30,7 @@ function descend(matcher, accessor) {
 function accessorsFromTarget(target: Expression, accessor: PlainProbe) {
   const result = []
   if (target.isIndexReference()) {
-    target.toIndicies(accessor).forEach(i => {
+    target.toIndicies(accessor).forEach((i) => {
       result.push(accessor.getIndex(i))
     })
   } else if (target.isAttributeReference()) {

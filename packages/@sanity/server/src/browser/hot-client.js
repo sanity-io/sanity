@@ -31,12 +31,12 @@ const REQUIRES_RELOAD = [
   EVENT_UPDATE_NOT_FOUND,
   EVENT_UNACCEPTED,
   EVENT_APPLY_ERROR,
-  EVENT_UPDATE_CHECK_FAILED
+  EVENT_UPDATE_CHECK_FAILED,
 ]
 
 const REPORTER_STYLES = {
   errors: 'color: #ff0000;',
-  warnings: 'color: #999933;'
+  warnings: 'color: #999933;',
 }
 
 ;(function hotMiddlewareClient() {
@@ -55,7 +55,7 @@ const REPORTER_STYLES = {
   const reporter = window[REPORTER_KEY]
   const eventBus = window[EVENTBUS_KEY]
 
-  const getEventPublisher = type => (evt = {}) => {
+  const getEventPublisher = (type) => (evt = {}) => {
     eventBus.publish({...evt, type, requiresReload: REQUIRES_RELOAD.includes(type)})
   }
 
@@ -67,7 +67,7 @@ const REPORTER_STYLES = {
     handleUpdateCheckFailed: getEventPublisher(EVENT_UPDATE_CHECK_FAILED),
     handleUpdated: getEventPublisher(EVENT_UPDATED),
     handleUpdateNotFound: getEventPublisher(EVENT_UPDATE_NOT_FOUND),
-    handleUpToDate: getEventPublisher(EVENT_UP_TO_DATE)
+    handleUpToDate: getEventPublisher(EVENT_UP_TO_DATE),
   }
 
   connect()
@@ -167,11 +167,11 @@ const REPORTER_STYLES = {
 function createReporter() {
   const overlay = clientOverlay({
     ansiColors: {},
-    overlayStyles: {}
+    overlayStyles: {},
   })
 
   function formatProblems(type, obj) {
-    return obj[type].map(msg => strip(msg)).join('\n')
+    return obj[type].map((msg) => strip(msg)).join('\n')
   }
 
   let previousProblems = null
@@ -221,15 +221,15 @@ function createReporter() {
       if (overlay) {
         overlay.clear()
       }
-    }
+    },
   }
 }
 
 function createEventBus({isConnected}) {
   const listeners = []
   return {
-    publish: msg => listeners.forEach(listener => listener(msg)),
-    subscribe: fn => {
+    publish: (msg) => listeners.forEach((listener) => listener(msg)),
+    subscribe: (fn) => {
       listeners.push(fn)
       if (isConnected()) {
         fn({type: EVENT_CONNECTED})
@@ -250,7 +250,7 @@ function createEventBus({isConnected}) {
       EVENT_UPDATE_CHECK_FAILED,
       EVENT_UPDATED,
       EVENT_UPDATE_NOT_FOUND,
-      EVENT_UP_TO_DATE
-    }
+      EVENT_UP_TO_DATE,
+    },
   }
 }

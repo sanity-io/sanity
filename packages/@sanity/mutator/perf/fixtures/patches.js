@@ -7,29 +7,29 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
-    {set: {'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aa'}}
+    {set: {'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aa'}},
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -39,29 +39,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
-    {set: {'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaa'}}
+    {
+      set: {
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -71,33 +75,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaa'
-      }
-    }
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -107,33 +111,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaa'
-      }
-    }
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -143,33 +147,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaaa'
-      }
-    }
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -179,33 +183,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaaaa'
-      }
-    }
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -215,33 +219,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second': 'aaaaaaag'
-      }
-    }
+        'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
+          'aaaaaaag',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -251,34 +256,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaaga'
-      }
-    }
+          'aaaaaaaga',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -288,34 +293,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaa'
-      }
-    }
+          'aaaaaaagaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -325,34 +330,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaa'
-      }
-    }
+          'aaaaaaagaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -362,34 +367,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaa'
-      }
-    }
+          'aaaaaaagaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -399,34 +404,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaa'
-      }
-    }
+          'aaaaaaagaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -436,34 +441,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -473,34 +478,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -510,34 +515,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -547,34 +552,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -584,34 +589,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -621,34 +626,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -658,34 +663,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -695,34 +700,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -732,34 +737,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -769,34 +774,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -806,34 +811,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -843,34 +848,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -880,34 +885,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -917,34 +922,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -954,34 +959,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -991,34 +996,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1028,34 +1033,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1065,34 +1070,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1102,34 +1107,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1139,34 +1144,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1176,34 +1181,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1213,34 +1218,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1250,34 +1255,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1287,34 +1292,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1324,34 +1329,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1361,34 +1366,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1398,34 +1403,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1435,34 +1440,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1472,34 +1477,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1509,34 +1514,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1546,34 +1551,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1583,34 +1588,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1620,34 +1625,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1657,34 +1662,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1694,34 +1699,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1731,34 +1736,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1768,34 +1773,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1805,34 +1810,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1842,34 +1847,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1879,34 +1884,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1916,34 +1921,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1953,34 +1958,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -1990,34 +1995,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2027,34 +2032,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2064,34 +2069,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2101,34 +2106,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2138,34 +2143,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2175,34 +2180,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2212,34 +2217,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2249,34 +2254,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2286,34 +2291,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2323,34 +2328,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2360,34 +2365,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2397,34 +2402,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2434,34 +2439,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2471,34 +2476,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2508,34 +2513,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2545,34 +2550,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2582,34 +2587,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2619,34 +2624,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2656,34 +2661,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2693,34 +2698,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2730,34 +2735,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2767,34 +2772,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2804,34 +2809,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2841,34 +2846,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2878,34 +2883,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2915,34 +2920,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2952,34 +2957,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -2989,34 +2994,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3026,34 +3031,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3063,34 +3068,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3100,34 +3105,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3137,34 +3142,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3174,34 +3179,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3211,34 +3216,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3248,34 +3253,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3285,34 +3290,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3322,34 +3327,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3359,34 +3364,34 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
   ],
   [
     {setIfMissing: {recursiveObject: {_type: 'recursiveObject'}}},
@@ -3396,33 +3401,33 @@ module.exports = [
     {setIfMissing: {'recursiveObject.myself.myself.myself.myself': {_type: 'recursiveObject'}}},
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
-        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'}
-      }
+        'recursiveObject.myself.myself.myself.myself.myself.myself': {_type: 'recursiveObject'},
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       setIfMissing: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself': {
-          _type: 'recursiveObject'
-        }
-      }
+          _type: 'recursiveObject',
+        },
+      },
     },
     {
       set: {
         'recursiveObject.myself.myself.myself.myself.myself.myself.myself.myself.second':
-          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-      }
-    }
-  ]
+          'aaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      },
+    },
+  ],
 ]

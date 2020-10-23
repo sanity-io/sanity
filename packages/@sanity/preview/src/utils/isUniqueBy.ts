@@ -1,4 +1,4 @@
-const id = value => value
+const id = (value) => value
 
 type ItemSelector<T> = (element: T) => any
 

@@ -38,5 +38,5 @@ export function isEqual(item: unknown, otherItem: unknown): boolean {
     return false
   }
 
-  return keys.every(keyName => isEqual(item[keyName], otherObj[keyName]))
+  return keys.every((keyName) => isEqual(item[keyName], otherObj[keyName]))
 }

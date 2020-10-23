@@ -27,26 +27,26 @@ export function getArrayDiffItemType(
 ): {fromType?: SchemaType; toType?: SchemaType} {
   if (diff.action === 'added') {
     return {
-      toType: resolveArrayMemberType(schemaType, diff.toValue)
+      toType: resolveArrayMemberType(schemaType, diff.toValue),
     }
   }
 
   if (diff.action === 'changed') {
     return {
       fromType: resolveArrayMemberType(schemaType, diff.fromValue),
-      toType: resolveArrayMemberType(schemaType, diff.toValue)
+      toType: resolveArrayMemberType(schemaType, diff.toValue),
     }
   }
 
   if (diff.action === 'removed') {
     return {
-      fromType: resolveArrayMemberType(schemaType, diff.fromValue)
+      fromType: resolveArrayMemberType(schemaType, diff.fromValue),
     }
   }
 
   // unchanged
   return {
-    toType: resolveArrayMemberType(schemaType, diff.toValue)
+    toType: resolveArrayMemberType(schemaType, diff.toValue),
   }
 }
 
@@ -55,7 +55,7 @@ function resolveArrayMemberType(
   value: unknown
 ): SchemaType | undefined {
   const typeName = resolveTypeName(value)
-  const declared = schemaType.of.find(candidate => candidate.name === typeName)
+  const declared = schemaType.of.find((candidate) => candidate.name === typeName)
   if (declared) {
     return declared
   }

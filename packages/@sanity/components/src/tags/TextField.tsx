@@ -29,7 +29,7 @@ export default class TagsTextField extends React.Component<
   _input: HTMLInputElement | null = null
 
   state: State = {
-    inputValue: ''
+    inputValue: '',
   }
 
   addTag(tagValue: string) {

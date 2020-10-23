@@ -20,7 +20,7 @@ export default class LoginWrapper extends React.PureComponent {
     description: PropTypes.node,
     sanityLogo: PropTypes.node,
     SanityLogo: PropTypes.func,
-    LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
+    LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   }
 
   static defaultProps = {
@@ -28,7 +28,7 @@ export default class LoginWrapper extends React.PureComponent {
     description: null,
     sanityLogo: null,
     SanityLogo: SanityStudioLogo,
-    LoadingScreen: Spinner
+    LoadingScreen: Spinner,
   }
 
   state = {isLoading: true, user: null, error: null}
@@ -41,7 +41,7 @@ export default class LoginWrapper extends React.PureComponent {
     let sync = true
 
     this.userSubscription = userStore.currentUser.subscribe({
-      next: evt => {
+      next: (evt) => {
         // Because observables _can_ be syncronous, it's not safe to call `setState` as it is a noop
         // We must therefore explicitly check whether or not we were call syncronously
         const newState = {user: evt.user, error: evt.error, isLoading: false}
@@ -52,7 +52,7 @@ export default class LoginWrapper extends React.PureComponent {
           this.setState(newState)
         }
       },
-      error: error => this.setState({error, isLoading: false})
+      error: (error) => this.setState({error, isLoading: false}),
     })
 
     sync = false

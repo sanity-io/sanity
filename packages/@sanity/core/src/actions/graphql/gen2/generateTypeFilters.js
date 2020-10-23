@@ -10,7 +10,7 @@ const createStringFilters = require('./filters/stringFilters')
 const typeAliases = {
   Url: 'String',
   Text: 'String',
-  Email: 'String'
+  Email: 'String',
 }
 
 const filterCreators = {
@@ -21,23 +21,23 @@ const filterCreators = {
   Boolean: createBooleanFilters,
   Datetime: createDatetimeFilters,
   Date: createDateFilters,
-  Document: createDocumentFilters
+  Document: createDocumentFilters,
 }
 
 function generateTypeFilters(types) {
   const builtInTypeKeys = Object.keys(filterCreators)
   const builtinTypeValues = Object.values(filterCreators)
   const objectTypes = types.filter(
-    type =>
+    (type) =>
       type.type === 'Object' &&
       !['Block', 'Span'].includes(type.name) && // TODO: What do we do with blocks?
       !type.interfaces &&
       !builtInTypeKeys.includes(type.type)
   )
 
-  const unionTypes = types.filter(type => type.kind === 'Union').map(type => type.name)
+  const unionTypes = types.filter((type) => type.kind === 'Union').map((type) => type.name)
   const documentTypes = types.filter(
-    type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
   const builtinTypeFilters = createBuiltinTypeFilters(builtinTypeValues)
@@ -48,26 +48,26 @@ function generateTypeFilters(types) {
 }
 
 function createBuiltinTypeFilters(builtinTypeValues) {
-  return builtinTypeValues.map(filterCreator => filterCreator())
+  return builtinTypeValues.map((filterCreator) => filterCreator())
 }
 
 function createObjectTypeFilters(objectTypes, options) {
-  return objectTypes.map(objectType => {
+  return objectTypes.map((objectType) => {
     return {
       name: `${objectType.name}Filter`,
       kind: 'InputObject',
-      fields: createFieldFilters(objectType, options)
+      fields: createFieldFilters(objectType, options),
     }
   })
 }
 
 function createDocumentTypeFilters(documentTypes, options) {
-  return documentTypes.map(documentType => {
+  return documentTypes.map((documentType) => {
     const fields = getDocumentFilters().concat(createFieldFilters(documentType, options))
     return {
       name: `${documentType.name}Filter`,
       kind: 'InputObject',
-      fields
+      fields,
     }
   })
 }
@@ -76,12 +76,12 @@ function createFieldFilters(objectType, options) {
   const {unionTypes} = options
   return objectType.fields
     .filter(
-      field => field.type !== 'JSON' && field.kind !== 'List' && !unionTypes.includes(field.type)
+      (field) => field.type !== 'JSON' && field.kind !== 'List' && !unionTypes.includes(field.type)
     )
-    .map(field => ({
+    .map((field) => ({
       fieldName: field.fieldName,
       type: `${typeAliases[field.type] || field.type}Filter`,
-      isReference: field.isReference
+      isReference: field.isReference,
     }))
 }
 
@@ -90,8 +90,8 @@ function getDocumentFilters() {
     {
       fieldName: '_',
       type: 'DocumentFilter',
-      description: 'Apply filters on document level'
-    }
+      description: 'Apply filters on document level',
+    },
   ]
 }
 

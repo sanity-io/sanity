@@ -11,7 +11,7 @@ const manifestPropOrder = [
   'scripts',
   'keywords',
   'dependencies',
-  'devDependencies'
+  'devDependencies',
 ]
 
 function getCommonManifest(data) {
@@ -21,7 +21,7 @@ function getCommonManifest(data) {
     description: data.description,
     author: data.author,
     license: data.license,
-    devDependencies: {}
+    devDependencies: {},
   }
 
   if (pkg.license === 'UNLICENSED') {
@@ -31,7 +31,7 @@ function getCommonManifest(data) {
   if (data.gitRemote) {
     pkg.repository = {
       type: 'git',
-      url: data.gitRemote
+      url: data.gitRemote,
     }
   }
 
@@ -47,8 +47,8 @@ export function createPackageManifest(data) {
       keywords: ['sanity'],
       scripts: {
         start: 'sanity start',
-        test: 'sanity check'
-      }
+        test: 'sanity check',
+      },
     },
     deps
   )
@@ -61,7 +61,7 @@ export function createPluginManifest(data, opts = {}) {
     main: 'src/plugin.js',
     scripts: {test: 'echo "Error: no test specified" && exit 1'},
     keywords: ['sanity', 'sanity-plugin'],
-    dependencies: {}
+    dependencies: {},
   })
 
   return serializeManifest(pkg)
@@ -73,15 +73,15 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
     return {
       paths: {
         source: './src',
-        compiled: './lib'
+        compiled: './lib',
       },
 
       parts: [
         {
           name: `part:${prefix}/my-component`,
-          path: 'MyComponent.js'
-        }
-      ]
+          path: 'MyComponent.js',
+        },
+      ],
     }
   }
 
@@ -91,9 +91,9 @@ function getSanityPluginManifest(data, {isSanityStyle}) {
         implements: `part:${prefix}/my-component`,
         description:
           'Description for this role. Change `implements` to `name` if it should be non-overridable.',
-        path: 'lib/MyComponent.js'
-      }
-    ]
+        path: 'lib/MyComponent.js',
+      },
+    ],
   }
 }
 
@@ -106,13 +106,13 @@ export function createSanityManifest(data, opts) {
       root: true,
 
       project: {
-        name: data.displayName
+        name: data.displayName,
       },
 
       api: {
         projectId: data.projectId,
         dataset: data.dataset,
-        token: data.provisionalToken || undefined
+        token: data.provisionalToken || undefined,
       },
 
       plugins: [
@@ -120,21 +120,21 @@ export function createSanityManifest(data, opts) {
         '@sanity/components',
         '@sanity/default-layout',
         '@sanity/default-login',
-        '@sanity/desk-tool'
+        '@sanity/desk-tool',
       ],
 
       env: {
         development: {
-          plugins: ['@sanity/vision']
-        }
+          plugins: ['@sanity/vision'],
+        },
       },
 
       parts: [
         {
           name: 'part:@sanity/base/schema',
-          path: './schemas/schema'
-        }
-      ]
+          path: './schemas/schema',
+        },
+      ],
     }
   }
 

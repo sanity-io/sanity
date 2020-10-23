@@ -56,7 +56,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
   static defaultProps = {
     level: 0,
-    markers: []
+    markers: [],
   }
 
   componentDidMount() {
@@ -117,7 +117,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
     return itemTypeName === 'object' && type.of.length === 1
       ? type.of[0]
-      : type.of.find(memberType => memberType.name === itemTypeName)
+      : type.of.find((memberType) => memberType.name === itemTypeName)
   }
 
   getTitle(): string {
@@ -158,12 +158,12 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
       readOnly,
       filterField,
       presence,
-      compareValue
+      compareValue,
     } = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
-    const childMarkers = markers.filter(marker => marker.path.length > 1)
-    const childPresence = presence.filter(_presence => _presence.path.length > 1)
+    const childMarkers = markers.filter((marker) => marker.path.length > 1)
+    const childPresence = presence.filter((_presence) => _presence.path.length > 1)
     const content = (
       <FormBuilderInput
         type={memberType}
@@ -236,7 +236,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     const options = type.options || {}
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
-    const scopedValidation = validation.map(marker => {
+    const scopedValidation = validation.map((marker) => {
       if (marker.path.length <= 1) {
         return marker
       }

@@ -15,7 +15,7 @@ export default class UnsetPatch {
         result = result.unsetIndices(targetsToIndicies(targets, accessor))
         break
       case 'object':
-        targets.forEach(target => {
+        targets.forEach((target) => {
           result = result.unsetAttribute(target.name())
         })
         break

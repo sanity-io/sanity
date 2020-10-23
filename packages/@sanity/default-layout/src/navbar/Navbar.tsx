@@ -55,7 +55,7 @@ export default function Navbar(props: Props) {
     tools,
     searchIsOpen,
     showLabel,
-    showToolMenu
+    showToolMenu,
   } = props
 
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}

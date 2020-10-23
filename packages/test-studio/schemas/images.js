@@ -8,9 +8,9 @@ export const myImage = {
     {
       name: 'caption',
       title: 'Caption',
-      type: 'string'
-    }
-  ]
+      type: 'string',
+    },
+  ],
 }
 
 export default {
@@ -24,7 +24,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'mainImage',
@@ -33,7 +33,7 @@ export default {
       description:
         'Image hotspot should be possible to change. Caption should be visible in image field, full description should be editable in modal',
       options: {
-        hotspot: true
+        hotspot: true,
       },
       fields: [
         {
@@ -41,8 +41,8 @@ export default {
           type: 'string',
           title: 'Caption',
           options: {
-            isHighlighted: true
-          }
+            isHighlighted: true,
+          },
         },
         {
           name: 'foo',
@@ -50,20 +50,20 @@ export default {
           title:
             'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
           options: {
-            isHighlighted: true
-          }
+            isHighlighted: true,
+          },
         },
         {
           name: 'description',
           type: 'string',
-          title: 'Full description'
-        }
-      ]
+          title: 'Full description',
+        },
+      ],
     },
     {
       name: 'someFile',
       title: 'A simple file',
-      type: 'file'
+      type: 'file',
     },
     {
       name: 'fileWithFields',
@@ -74,21 +74,21 @@ export default {
           title: 'Description',
           name: 'description',
           type: 'string',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Not so important',
           name: 'notsoimportant',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'myImage',
       title: 'Field of custom image type',
       type: 'myImage',
       description: 'Should be like myImage',
-      required: true
+      required: true,
     },
     {
       name: 'pngImage',
@@ -97,8 +97,8 @@ export default {
       description: 'Should not accept other image types than png',
       options: {
         hotspot: true,
-        accept: 'image/png'
-      }
+        accept: 'image/png',
+      },
     },
     {
       name: 'jpegImageWithLqip',
@@ -107,8 +107,8 @@ export default {
       description: 'Should only accept JPEGs and will extract only LQIP and location metadata',
       options: {
         accept: 'image/jpeg',
-        metadata: ['location', 'lqip']
-      }
+        metadata: ['location', 'lqip'],
+      },
     },
     {
       name: 'imageWithImage',
@@ -116,7 +116,7 @@ export default {
       type: 'image',
       description: 'This is a weird example of an image that has an image as one of its fields',
       options: {
-        hotspot: true
+        hotspot: true,
       },
       fields: [
         {
@@ -124,8 +124,8 @@ export default {
           type: 'string',
           title: 'Caption',
           options: {
-            isHighlighted: true
-          }
+            isHighlighted: true,
+          },
         },
         {
           name: 'foo',
@@ -133,28 +133,28 @@ export default {
           title:
             'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
           options: {
-            isHighlighted: true
-          }
+            isHighlighted: true,
+          },
         },
         {
           name: 'image',
           type: 'image',
           title: 'Image in image',
           options: {
-            isHighlighted: true
-          }
+            isHighlighted: true,
+          },
         },
         {
           name: 'description',
           type: 'string',
-          title: 'Full description'
+          title: 'Full description',
         },
         {
           name: 'extraImage',
           type: 'image',
-          title: 'Image in image behind edit'
-        }
-      ]
-    }
-  ]
+          title: 'Image in image behind edit',
+        },
+      ],
+    },
+  ],
 }

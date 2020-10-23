@@ -9,7 +9,7 @@ describe('child rules', () => {
         .error('Must start with an uppercase character'),
       Rule.string()
         .regex(/[a-z]+/)
-        .error('Must follow with lowercase characters')
+        .error('Must follow with lowercase characters'),
     ])
 
     await expect(rule.validate('Sanity')).resolves.toMatchSnapshot('all() rules - match')
@@ -23,12 +23,10 @@ describe('child rules', () => {
       Rule.string()
         .regex(/^[A-Z]/)
         .error('Must start with an uppercase character'),
-      Rule.string()
-        .min(5)
-        .error('5 chars or more'),
+      Rule.string().min(5).error('5 chars or more'),
       Rule.string()
         .regex(/[a-z]+/)
-        .error('Must follow with lowercase characters')
+        .error('Must follow with lowercase characters'),
     ])
 
     await expect(rule.validate('Sanity')).resolves.toMatchSnapshot('all() rules - match')
@@ -65,7 +63,7 @@ describe('child rules', () => {
         .error('Must be rgb(num, num, num) format'),
       Rule.string()
         .regex(/^#([a-f0-9]{3}|[a-f0-9]{6})$/)
-        .error('Must be hex color with #-prefix')
+        .error('Must be hex color with #-prefix'),
     ])
 
     await expect(rule.validate('rgb(16, 22, 133)')).resolves.toMatchSnapshot(
@@ -78,12 +76,8 @@ describe('child rules', () => {
 
   test('either() rules - all matches', async () => {
     const rule = Rule.string().either([
-      Rule.string()
-        .regex(/^R/)
-        .error('Must start with a capital R'),
-      Rule.string()
-        .regex(/ed$/)
-        .error('Must end with "ed"')
+      Rule.string().regex(/^R/).error('Must start with a capital R'),
+      Rule.string().regex(/ed$/).error('Must end with "ed"'),
     ])
 
     await expect(rule.validate('Red')).resolves.toMatchSnapshot('either() rules - all match')

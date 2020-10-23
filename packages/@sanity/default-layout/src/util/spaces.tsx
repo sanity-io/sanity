@@ -5,7 +5,7 @@ const FEATURE_KEY = '__experimental_spaces'
 
 function prepareSpace(space) {
   return Object.assign({}, space, {
-    title: space.title || capitalize(space.name)
+    title: space.title || capitalize(space.name),
   })
 }
 

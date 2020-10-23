@@ -16,13 +16,13 @@ const mergeRequired = (prev, next) => {
 
 class Rule {
   static FIELD_REF = Symbol('FIELD_REF')
-  static array = def => new Rule(def).type('Array')
-  static object = def => new Rule(def).type('Object')
-  static string = def => new Rule(def).type('String')
-  static number = def => new Rule(def).type('Number')
-  static boolean = def => new Rule(def).type('Boolean')
-  static dateTime = def => new Rule(def).type('Date')
-  static valueOfField = path => ({type: Rule.FIELD_REF, path})
+  static array = (def) => new Rule(def).type('Array')
+  static object = (def) => new Rule(def).type('Object')
+  static string = (def) => new Rule(def).type('String')
+  static number = (def) => new Rule(def).type('Number')
+  static boolean = (def) => new Rule(def).type('Boolean')
+  static dateTime = (def) => new Rule(def).type('Date')
+  static valueOfField = (path) => ({type: Rule.FIELD_REF, path})
 
   constructor(typeDef) {
     this.FIELD_REF = Rule.FIELD_REF
@@ -53,7 +53,7 @@ class Rule {
 
   reset() {
     this._type = this._type || null
-    this._rules = (this._rules || []).filter(rule => rule.flag === 'type')
+    this._rules = (this._rules || []).filter((rule) => rule.flag === 'type')
     this._message = null
     this._required = undefined
     this._level = 'error'
@@ -80,7 +80,7 @@ class Rule {
   cloneWithRules(rules) {
     const rule = this.clone()
     const newRules = new Set()
-    rules.forEach(curr => {
+    rules.forEach((curr) => {
       if (curr.flag === 'type') {
         rule._type = curr.constraint
       }
@@ -89,7 +89,7 @@ class Rule {
     })
 
     rule._rules = rule._rules
-      .filter(curr => {
+      .filter((curr) => {
         const disallowDuplicate = isExclusive.includes(curr.flag)
         const isDuplicate = newRules.has(curr.flag)
         return !(disallowDuplicate && isDuplicate)
@@ -225,7 +225,7 @@ class Rule {
     )
 
     const allowedSchemes = Array.isArray(options.scheme) ? options.scheme : [options.scheme]
-    options.scheme = allowedSchemes.map(scheme => {
+    options.scheme = allowedSchemes.map((scheme) => {
       const schemeIsString = typeof scheme === 'string'
       if (!(scheme instanceof RegExp) && schemeIsString === false) {
         throw new Error('scheme must be a RegExp or a String')

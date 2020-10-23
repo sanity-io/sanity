@@ -18,7 +18,7 @@ export default function InitialValueTemplateError({errors}) {
 InitialValueTemplateError.propTypes = {
   errors: PropTypes.arrayOf(
     PropTypes.shape({
-      message: PropTypes.string.isRequired
+      message: PropTypes.string.isRequired,
     })
-  ).isRequired
+  ).isRequired,
 }

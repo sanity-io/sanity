@@ -15,7 +15,7 @@ export default enhanceWithAvailHeight(
       className: PropTypes.string,
       getItemKey: PropTypes.func,
       layout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
-      onScroll: PropTypes.func
+      onScroll: PropTypes.func,
     }
 
     static defaultProps = {
@@ -23,12 +23,12 @@ export default enhanceWithAvailHeight(
       isLoadingMore: false,
       layout: 'default',
       items: [],
-      height: 250
+      height: 250,
     }
 
     state = {
       triggerUpdate: 0,
-      itemSize: undefined
+      itemSize: undefined,
     }
 
     // @todo replace this with a something proper. This is hacky.
@@ -45,15 +45,15 @@ export default enhanceWithAvailHeight(
 
       if (prevProps.layout !== this.props.layout) {
         this.setState({
-          itemSize: undefined
+          itemSize: undefined,
         })
       }
     }
 
-    setMeasureElement = element => {
+    setMeasureElement = (element) => {
       if (element && element.offsetHeight) {
         this.setState({
-          itemSize: element.offsetHeight
+          itemSize: element.offsetHeight,
         })
       }
     }
@@ -80,7 +80,7 @@ export default enhanceWithAvailHeight(
       )
     }
 
-    handleScroll = scrollTop => {
+    handleScroll = (scrollTop) => {
       if (!this.props.onScroll) {
         return
       }

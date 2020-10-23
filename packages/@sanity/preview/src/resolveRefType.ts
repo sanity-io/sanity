@@ -14,6 +14,6 @@ function resolveRefTypeName(reference: Reference) {
 
 export default function resolveRefType(value: Reference, type: Type) {
   return resolveRefTypeName(value).pipe(
-    map(refTypeName => type.to.find(toType => toType.name === refTypeName))
+    map((refTypeName) => type.to.find((toType) => toType.name === refTypeName))
   )
 }

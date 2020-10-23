@@ -8,7 +8,7 @@ const klawSync = require('klaw-sync')
 const shebangLoader = require.resolve('./shebang-loader')
 const basedir = path.join(__dirname, '..')
 const modulesDir = path.join(basedir, 'node_modules')
-const isAllowedNativeModule = mod => {
+const isAllowedNativeModule = (mod) => {
   const modName = mod.path.slice(modulesDir.length + 1).split(path.sep)[0]
   return !['fsevents'].includes(modName)
 }
@@ -16,14 +16,14 @@ const isAllowedNativeModule = mod => {
 console.log('Building CLI to a single file')
 
 // Make sure there are no native modules
-const isBinding = file => path.basename(file.path) === 'binding.gyp'
+const isBinding = (file) => path.basename(file.path) === 'binding.gyp'
 const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(
   isAllowedNativeModule
 )
 
 if (bindings.length > 0) {
   console.error('Eek! Found native module at:')
-  bindings.forEach(file => console.error(file.path))
+  bindings.forEach((file) => console.error(file.path))
   process.exit(1)
 }
 
@@ -37,48 +37,48 @@ const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf
 // files on the user's system. See constants.js
 const nodeOptions = {
   __filename: false,
-  __dirname: false
+  __dirname: false,
 }
 
 const compiler = webpack({
   mode: 'production',
   entry: {
-    sanity: path.join(basedir, 'bin/entry.js')
+    sanity: path.join(basedir, 'bin/entry.js'),
   },
   output: {
     pathinfo: true,
     filename: 'sanity-cli.js',
     path: path.join(basedir, 'bin'),
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs2',
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: [{loader: 'babel-loader', options: babelRc}]
+        use: [{loader: 'babel-loader', options: babelRc}],
       },
       {
         test: /node_modules[/\\](rc)[/\\]/,
-        use: [{loader: shebangLoader}]
-      }
-    ]
+        use: [{loader: shebangLoader}],
+      },
+    ],
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.BannerPlugin({
       banner: '#!/usr/bin/env node',
-      raw: true
+      raw: true,
     }),
     new webpack.DefinePlugin({
       __SANITY_IS_BUNDLED__: JSON.stringify(true),
 
       // Workaround for rc module console.logging if module.parent does not exist
-      'module.parent': JSON.stringify({})
-    })
+      'module.parent': JSON.stringify({}),
+    }),
   ],
   target: 'node',
-  node: nodeOptions
+  node: nodeOptions,
 })
 
 compiler.run((err, stats) => {
@@ -86,7 +86,7 @@ compiler.run((err, stats) => {
     throw err
   }
 
-  const filtered = stats.compilation.warnings.filter(warn => {
+  const filtered = stats.compilation.warnings.filter((warn) => {
     return (
       !warn.origin ||
       (warn.origin.userRequest.indexOf('spawn-sync.js') === -1 &&
@@ -96,7 +96,7 @@ compiler.run((err, stats) => {
 
   if (filtered.length > 0) {
     console.warn('=== [  Warnings  ]========')
-    filtered.forEach(warn => {
+    filtered.forEach((warn) => {
       console.warn(warn.origin ? `\n${warn.origin.userRequest}:` : '\n')
       console.warn(`${warn}\n`)
     })

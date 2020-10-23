@@ -10,7 +10,7 @@ import {
   BuildableGenericList,
   GenericList,
   GenericListInput,
-  shallowIntentChecker
+  shallowIntentChecker,
 } from './GenericList'
 
 const getArgType = (thing: ListItem) => {
@@ -35,7 +35,7 @@ const defaultCanHandleIntent: IntentChecker = (intentName: string, params, conte
   return (
     items
       .filter(isDocumentListItem)
-      .some(item => item.schemaType.name === params.type && item._id === params.id) ||
+      .some((item) => item.schemaType.name === params.type && item._id === params.id) ||
     shallowIntentChecker(intentName, params, context)
   )
 }
@@ -43,7 +43,7 @@ const defaultCanHandleIntent: IntentChecker = (intentName: string, params, conte
 const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
   const parentItem = options.parent as List
   const items = parentItem.items.filter(isListItem)
-  const target = (items.find(item => item.id === itemId) || {child: undefined}).child
+  const target = (items.find((item) => item.id === itemId) || {child: undefined}).child
 
   if (!target || typeof target !== 'function') {
     return target
@@ -140,7 +140,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     const dupes = serializedItems.filter((val, i) => find(serializedItems, {id: val.id}, i + 1))
 
     if (dupes.length > 0) {
-      const dupeIds = dupes.map(item => item.id).slice(0, 5)
+      const dupeIds = dupes.map((item) => item.id).slice(0, 5)
       const dupeDesc = dupes.length > 5 ? `${dupeIds.join(', ')}...` : dupeIds.join(', ')
       throw new SerializeError(
         `List items with same ID found (${dupeDesc})`,
@@ -154,7 +154,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       type: 'list',
       canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
       child: this.spec.child || resolveChildForItem,
-      items: serializedItems
+      items: serializedItems,
     }
   }
 

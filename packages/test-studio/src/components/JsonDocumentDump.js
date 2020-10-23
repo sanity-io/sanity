@@ -5,13 +5,13 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 
 export default class JsonDocumentDump extends React.PureComponent {
   static propTypes = {
-    itemId: PropTypes.string.isRequired
+    itemId: PropTypes.string.isRequired,
   }
 
   state = {isLoading: true}
 
   actionHandlers = {
-    reload: () => this.setup()
+    reload: () => this.setup(),
   }
 
   setup() {
@@ -25,11 +25,11 @@ export default class JsonDocumentDump extends React.PureComponent {
 
     this.document$ = client.observable
       .fetch(`${query} | order(_updatedAt desc) [0]`, params)
-      .subscribe(document => this.setState({document, isLoading: false}))
+      .subscribe((document) => this.setState({document, isLoading: false}))
 
     this.documentListener$ = client.observable
       .listen(query, params)
-      .subscribe(mut => this.setState({document: mut.result, isLoading: false}))
+      .subscribe((mut) => this.setState({document: mut.result, isLoading: false}))
   }
 
   dispose() {

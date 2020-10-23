@@ -16,7 +16,7 @@ type State = {
 
 export default class SimpleFocusManager extends React.Component<Props, State> {
   state = {
-    focusPath: []
+    focusPath: [],
   }
 
   handleFocus = (path: Path) => {
@@ -31,7 +31,7 @@ export default class SimpleFocusManager extends React.Component<Props, State> {
     return this.props.children({
       onBlur: this.handleBlur,
       onFocus: this.handleFocus,
-      focusPath: this.state.focusPath
+      focusPath: this.state.focusPath,
     })
   }
 }

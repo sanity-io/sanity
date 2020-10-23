@@ -54,7 +54,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
     const paneId = this.spec.id || templateId
     return this.clone({
       id: paneId,
-      templateId
+      templateId,
     })
   }
 
@@ -94,7 +94,7 @@ export class InitialValueTemplateItemBuilder implements Serializable {
       ...this.spec,
       id,
       templateId,
-      type: 'initialValueTemplateItem'
+      type: 'initialValueTemplateItem',
     }
   }
 
@@ -110,9 +110,9 @@ export function defaultInitialValueTemplateItems(
 ): InitialValueTemplateItemBuilder[] {
   const templates = getTemplates()
     // Don't list templates that require parameters
-    .filter(tpl => !tpl.parameters || tpl.parameters.length === 0)
+    .filter((tpl) => !tpl.parameters || tpl.parameters.length === 0)
     // Don't list templates that we can't create
-    .filter(tpl => isActionEnabled(schema.get(tpl.schemaType), 'create'))
+    .filter((tpl) => isActionEnabled(schema.get(tpl.schemaType), 'create'))
 
   // Sort templates by their schema type, in order or definition
   const typeNames = schema.getTypeNames()
@@ -121,7 +121,7 @@ export function defaultInitialValueTemplateItems(
   )
 
   // Create actual template items out of the templates
-  return ordered.map(tpl => StructureBuilder.initialValueTemplateItem(tpl.id))
+  return ordered.map((tpl) => StructureBuilder.initialValueTemplateItem(tpl.id))
 }
 
 export function maybeSerializeInitialValueTemplateItem(
@@ -135,7 +135,7 @@ export function maybeSerializeInitialValueTemplateItem(
 export function menuItemsFromInitialValueTemplateItems(
   templateItems: InitialValueTemplateItem[]
 ): MenuItem[] {
-  return templateItems.map(item => {
+  return templateItems.map((item) => {
     const tpl = getTemplateById(item.templateId)
     const title = item.title || (tpl && tpl.title) || 'Create new'
     const params = pickBy({type: tpl && tpl.schemaType, template: item.templateId}, Boolean)
@@ -147,7 +147,7 @@ export function menuItemsFromInitialValueTemplateItems(
       .icon((tpl && tpl.icon) || (schema && schema.icon) || getPlusIcon())
       .intent({
         type: 'create',
-        params: intentParams
+        params: intentParams,
       })
       .serialize()
   })

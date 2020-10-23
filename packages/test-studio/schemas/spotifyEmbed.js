@@ -10,13 +10,13 @@ function parseSpotifyShareUrl(str) {
     if (parts[0] === 'embed' || parts[0] === 'embed-podcast') {
       return {
         type: parts[1],
-        id: parts[2]
+        id: parts[2],
       }
     }
 
     return {
       type: parts[0],
-      id: parts[1]
+      id: parts[1],
     }
   }
 
@@ -25,7 +25,7 @@ function parseSpotifyShareUrl(str) {
 
     return {
       type: parts[1],
-      id: parts[2]
+      id: parts[2],
     }
   }
 
@@ -78,11 +78,11 @@ export default {
     {
       type: 'string',
       name: 'url',
-      title: 'URL'
-    }
+      title: 'URL',
+    },
   ],
   preview: {
     select: {url: 'url'},
-    component: SpotifyEmbedPreview
-  }
+    component: SpotifyEmbedPreview,
+  },
 }

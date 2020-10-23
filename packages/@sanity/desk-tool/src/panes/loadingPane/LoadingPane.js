@@ -13,7 +13,7 @@ export default class LoadingPane extends React.PureComponent {
     onCollapse: PropTypes.func,
     path: PropTypes.arrayOf(PropTypes.string),
     index: PropTypes.number,
-    message: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+    message: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   }
 
   static defaultProps = {
@@ -22,7 +22,7 @@ export default class LoadingPane extends React.PureComponent {
     title: '\u00a0',
     index: undefined,
     onExpand: undefined,
-    onCollapse: undefined
+    onCollapse: undefined,
   }
 
   constructor(props) {
@@ -35,7 +35,7 @@ export default class LoadingPane extends React.PureComponent {
 
     if (isObservable) {
       let isSync = true
-      this.subscription = currentMessage.subscribe(message => {
+      this.subscription = currentMessage.subscribe((message) => {
         if (isSync) {
           state.currentMessage = message
         } else {

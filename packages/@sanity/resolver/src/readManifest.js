@@ -31,7 +31,7 @@ function parseManifest(rawData, options) {
   const parsedManifest = JSON.parse(rawData)
   const manifest = validateManifest(parsedManifest)
   const reduced = reduceConfig(manifest, options.env, {
-    studioRootPath: options.basePath || process.cwd()
+    studioRootPath: options.basePath || process.cwd(),
   })
   return reduced
 }
@@ -48,8 +48,8 @@ function readManifest(opts = {}) {
 
   return fse
     .readFile(manifestPath, {encoding: 'utf8'})
-    .then(raw => parseManifest(raw, options))
-    .catch(err => handleManifestReadError(err, options))
+    .then((raw) => parseManifest(raw, options))
+    .catch((err) => handleManifestReadError(err, options))
 }
 
 export default readManifest

@@ -5,7 +5,9 @@ function Dropdown(props) {
   const {id, value, className, values, onChange} = props
   return (
     <select id={id} className={className} value={value} onChange={onChange}>
-      {values.map(val => <option key={val}>{val}</option>)}
+      {values.map((val) => (
+        <option key={val}>{val}</option>
+      ))}
     </select>
   )
 }
@@ -15,11 +17,11 @@ Dropdown.propTypes = {
   onChange: PropTypes.func,
   className: PropTypes.string,
   values: PropTypes.arrayOf(PropTypes.string),
-  value: PropTypes.string
+  value: PropTypes.string,
 }
 
 Dropdown.defaultProps = {
-  values: []
+  values: [],
 }
 
 export default Dropdown

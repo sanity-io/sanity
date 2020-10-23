@@ -23,11 +23,11 @@ class DelayedSpinner extends React.PureComponent {
 }
 
 DelayedSpinner.propTypes = {
-  delay: PropTypes.number
+  delay: PropTypes.number,
 }
 
 DelayedSpinner.defaultProps = {
-  delay: 500
+  delay: 500,
 }
 
 export default DelayedSpinner

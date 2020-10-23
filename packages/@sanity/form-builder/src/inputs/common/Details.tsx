@@ -15,18 +15,18 @@ type DetailsState = {
 export default class Details extends React.Component<DetailsProps, DetailsState> {
   static defaultProps = {
     title: 'Details',
-    isOpen: false
+    isOpen: false,
   }
 
   constructor(props) {
     super(props)
     this.state = {
-      isOpen: props.isOpen
+      isOpen: props.isOpen,
     }
   }
 
   handleToggle = () => {
-    this.setState(prevState => ({isOpen: !prevState.isOpen}))
+    this.setState((prevState) => ({isOpen: !prevState.isOpen}))
   }
 
   render() {

@@ -6,8 +6,8 @@ export const FOO = () => {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setDisabled(val => !val)
-      setCounter(p => p + 1)
+      setDisabled((val) => !val)
+      setCounter((p) => p + 1)
     }, 2000)
 
     return () => clearInterval(id)
@@ -15,18 +15,18 @@ export const FOO = () => {
 
   return {
     label: `Hel!lo ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
-    disabled: isDisabled
+    disabled: isDisabled,
   }
 }
 
 export const BAR = () => ({
   label: 'Hello2',
-  disabled: true
+  disabled: true,
 })
 
 export const BAZ = () => ({
   label: 'Hello [enabled]',
-  disabled: false
+  disabled: false,
 })
 
 export const QUX = () => {
@@ -35,8 +35,8 @@ export const QUX = () => {
 
   useEffect(() => {
     const id = setInterval(() => {
-      setDisabled(val => !val)
-      setCounter(prev => prev + 1)
+      setDisabled((val) => !val)
+      setCounter((prev) => prev + 1)
     }, 2000)
 
     return () => {
@@ -46,6 +46,6 @@ export const QUX = () => {
 
   return {
     label: `Hello ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
-    disabled: isDisabled
+    disabled: isDisabled,
   }
 }

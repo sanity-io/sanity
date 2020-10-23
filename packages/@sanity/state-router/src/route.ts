@@ -61,7 +61,7 @@ route.scope = function scope(scopeName: string, ...rest: any[]): Router {
 
   return createNode({
     ...options,
-    scope: scopeName
+    scope: scopeName,
   })
 }
 
@@ -78,21 +78,21 @@ route.intents = function intents(base) {
         transform: {
           params: {
             toState: decodeParams,
-            toPath: encodeParams
-          }
-        }
+            toPath: encodeParams,
+          },
+        },
       },
       [
         route(':payload', {
           transform: {
             payload: {
               toState: decodeJsonParams,
-              toPath: encodeJsonParams
-            }
-          }
-        })
+              toPath: encodeJsonParams,
+            },
+          },
+        }),
       ]
-    )
+    ),
   ])
 }
 
@@ -142,6 +142,6 @@ function createNode(options: NodeOptions): Router {
         }
       }
       return null
-    }
+    },
   }
 }

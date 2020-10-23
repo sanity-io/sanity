@@ -4,7 +4,7 @@ import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import DefaultArrayFunctions from 'part:@sanity/form-builder/input/array/functions-default'
 import styles from './SearchableArrayFunctions.css'
 
-const SearchItem = item => <div className={styles.item}>{item.title}</div>
+const SearchItem = (item) => <div className={styles.item}>{item.title}</div>
 
 // eslint-disable-next-line react/no-multi-comp
 export default class SearchableArrayFunctions extends React.Component {
@@ -14,20 +14,20 @@ export default class SearchableArrayFunctions extends React.Component {
         PropTypes.shape({
           title: PropTypes.string,
           type: PropTypes.shape({
-            name: PropTypes.string.isRequired
-          }).isRequired
+            name: PropTypes.string.isRequired,
+          }).isRequired,
         })
-      )
+      ),
     }).isRequired,
     value: PropTypes.array,
     readOnly: PropTypes.bool,
     onAppendItem: PropTypes.func.isRequired,
-    onCreateValue: PropTypes.func.isRequired
+    onCreateValue: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
     value: [],
-    readOnly: false
+    readOnly: false,
   }
 
   constructor(props) {
@@ -36,7 +36,7 @@ export default class SearchableArrayFunctions extends React.Component {
     this.state = {results: this.getMatchingResults('', props.type)}
   }
 
-  handleInsertItem = type => {
+  handleInsertItem = (type) => {
     const {onCreateValue, onAppendItem} = this.props
     const item = onCreateValue(type)
     onAppendItem(item)
@@ -44,18 +44,18 @@ export default class SearchableArrayFunctions extends React.Component {
 
   getMatchingResults = (query, type) => {
     return type.of
-      .filter(memberDef => (memberDef.title || memberDef.type.name).toLowerCase().includes(query))
-      .map(memberDef => ({
+      .filter((memberDef) => (memberDef.title || memberDef.type.name).toLowerCase().includes(query))
+      .map((memberDef) => ({
         title: memberDef.title || memberDef.type.name,
-        type: memberDef.type
+        type: memberDef.type,
       }))
   }
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({results: this.getMatchingResults(query, this.props.type)})
   }
 
-  handleChange = value => {
+  handleChange = (value) => {
     this.handleInsertItem(value.type)
   }
 

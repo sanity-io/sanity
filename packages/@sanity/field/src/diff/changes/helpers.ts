@@ -13,7 +13,7 @@ const flattenChangeNode = (changeNode: ChangeNode): FieldChangeNode[] => {
 
   const newSubChanges: FieldChangeNode[] = []
 
-  changeNode.changes.forEach(cChange => {
+  changeNode.changes.forEach((cChange) => {
     newSubChanges.push(...flattenChangeNode(cChange))
   })
 

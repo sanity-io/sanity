@@ -72,6 +72,6 @@ StructureError.propTypes = {
     message: PropTypes.string.isRequired,
     stack: PropTypes.string.isRequired,
     path: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
-    helpId: PropTypes.string
-  }).isRequired
+    helpId: PropTypes.string,
+  }).isRequired,
 }

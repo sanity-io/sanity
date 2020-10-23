@@ -12,7 +12,7 @@ const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
 function commitMutations(mutations) {
   return client.dataRequest('mutate', mutations, {
     visibility: 'async',
-    returnDocuments: false
+    returnDocuments: false,
   })
 }
 
@@ -50,7 +50,7 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(filter(ev => ev.type === 'reconnect')) as Observable<
+  const reconnect$ = listenerEvents$.pipe(filter((ev) => ev.type === 'reconnect')) as Observable<
     ReconnectEvent
   >
 
@@ -71,13 +71,13 @@ export function checkoutPair(idPair: IdPair): Pair {
       ...draft,
       events: merge(reconnect$, draft.events).pipe(map(setVersion('draft'))),
       consistency$: draft.consistency$,
-      remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft')))
+      remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
     published: {
       ...published,
       events: merge(reconnect$, published.events).pipe(map(setVersion('published'))),
       consistency$: published.consistency$,
-      remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published')))
-    }
+      remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
+    },
   }
 }

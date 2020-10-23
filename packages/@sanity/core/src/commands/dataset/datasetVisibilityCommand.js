@@ -36,7 +36,7 @@ export default {
       throw new Error(dsError)
     }
 
-    const current = (await client.datasets.list()).find(curr => curr.name === dataset)
+    const current = (await client.datasets.list()).find((curr) => curr.name === dataset)
 
     if (!current) {
       throw new Error('Dataset not found')
@@ -60,5 +60,5 @@ export default {
 
     await client.datasets.edit(dataset, {aclMode})
     output.print('Dataset visibility changed')
-  }
+  },
 }

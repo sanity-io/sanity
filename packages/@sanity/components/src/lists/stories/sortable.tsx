@@ -10,7 +10,7 @@ const chance = new Chance()
 const defaultItems = range(100).map((_, i) => {
   return {
     key: `${i}`,
-    title: chance.name()
+    title: chance.name(),
   }
 })
 
@@ -38,7 +38,7 @@ class SortableTester extends React.PureComponent<SortableTesterProps, SortableTe
     super(props)
 
     this.state = {
-      items: this.props.items.slice()
+      items: this.props.items.slice(),
     }
   }
 
@@ -64,7 +64,7 @@ class SortableTester extends React.PureComponent<SortableTesterProps, SortableTe
               padding: '1em',
               display: 'flex',
               alignItems: 'center',
-              boxShadow: '0 0 4px rgba(0, 0, 0, 0.2)'
+              boxShadow: '0 0 4px rgba(0, 0, 0, 0.2)',
             }}
           >
             <DragHandle style={{fontSize: 25, marginRight: 16}} />

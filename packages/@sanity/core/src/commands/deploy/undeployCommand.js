@@ -10,5 +10,5 @@ export default {
   signature: '',
   description: 'Removes the deployed studio from <hostname>.sanity.studio',
   action: lazyRequire(require.resolve('../../actions/deploy/undeployAction')),
-  helpText
+  helpText,
 }

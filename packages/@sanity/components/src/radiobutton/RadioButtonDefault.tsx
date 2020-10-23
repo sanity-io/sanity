@@ -20,7 +20,7 @@ export default function RadioButton({
   label,
   name,
   onChange,
-  onFocus
+  onFocus,
 }: Props) {
   const elementId = useId()
 

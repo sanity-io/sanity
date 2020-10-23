@@ -14,14 +14,14 @@ Debug.enable(process.env.DEBUG)
 const DEFAULT_IMAGE_INDEX = 4
 
 const routes = createRoute('/*', [
-  createRoute('/:demoName/*', params => {
+  createRoute('/:demoName/*', (params) => {
     return params.demoName ? createScope(params.demoName, createRoute('/:imageIndex')) : []
-  })
+  }),
 ])
 
 class Root extends React.Component {
   static contextTypes = {
-    router: PropTypes.object
+    router: PropTypes.object,
   }
   renderDemo(demoName) {
     const routerState = this.context.router.state

@@ -23,8 +23,8 @@ export default class UrlInput extends React.Component<Props<string>> {
   }
   render() {
     const {value, markers, type, readOnly, level, onFocus, presence} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter((marker) => marker.type === 'validation')
+    const errors = validation.filter((marker) => marker.level === 'error')
     // Use text input for relative URIs
     const uriRule = getValidationRule(type, 'uri')
     const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'

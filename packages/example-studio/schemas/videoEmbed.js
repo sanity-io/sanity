@@ -11,21 +11,21 @@ export default {
     {
       name: 'service',
       type: 'string',
-      title: 'Video service'
+      title: 'Video service',
     },
     {
       name: 'id',
       type: 'string',
       title: 'Video id',
-      description: 'Video id from service'
-    }
+      description: 'Video id from service',
+    },
   ],
   inputComponent: VideoEmbedInput,
   preview: {
     select: {
       id: 'id',
-      service: 'service'
+      service: 'service',
     },
-    component: VideoEmbedPreview
-  }
+    component: VideoEmbedPreview,
+  },
 }

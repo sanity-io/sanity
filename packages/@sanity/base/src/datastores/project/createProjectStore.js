@@ -30,9 +30,7 @@ function handleApiError(errObj, observer) {
   if (errObj.code === 'NOT_FOUND_ERROR') {
     return observer.error(
       new NotFoundError(
-        `An project with label '${
-          config.api.dataset
-        }' not found. Check your project's sanity.json file.`
+        `An project with label '${config.api.dataset}' not found. Check your project's sanity.json file.`
       )
     )
   }
@@ -40,19 +38,19 @@ function handleApiError(errObj, observer) {
 }
 
 function currentProject() {
-  return new Observable(observer => {
+  return new Observable((observer) => {
     emitProject('snapshot')
 
     function emitProject(eventName) {
       projectFetcher
         .getProject(config.api.dataset)
-        .then(project => {
+        .then((project) => {
           observer.next({
             event: eventName,
-            project: project
+            project: project,
           })
         })
-        .catch(error => {
+        .catch((error) => {
           handleApiError(error, observer)
         })
     }
@@ -66,7 +64,7 @@ export default function createProjectsStore(options = {}) {
     errors: {
       AccessDeniedError: AccessDeniedError,
       NotFoundError: NotFoundError,
-      UnknownApiError: UnknownApiError
-    }
+      UnknownApiError: UnknownApiError,
+    },
   }
 }

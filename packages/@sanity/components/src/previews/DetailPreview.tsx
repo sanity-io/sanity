@@ -19,7 +19,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 120,
   height: 120,
   fit: 'crop',
-  aspect: 1
+  aspect: 1,
 }
 
 export default class DetailPreview extends React.PureComponent<DetailPreviewProps> {
@@ -35,7 +35,7 @@ export default class DetailPreview extends React.PureComponent<DetailPreviewProp
       media,
       status,
       children,
-      isPlaceholder
+      isPlaceholder,
     } = this.props
 
     if (isPlaceholder) {

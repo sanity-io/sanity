@@ -6,132 +6,132 @@ const cases = {
   'a.b[7]': [
     {
       type: 'identifier',
-      name: 'a'
+      name: 'a',
     },
     {
       type: 'operator',
-      symbol: '.'
+      symbol: '.',
     },
     {
       type: 'identifier',
-      name: 'b'
+      name: 'b',
     },
     {
       type: 'paren',
-      symbol: '['
+      symbol: '[',
     },
     {
       type: 'number',
       value: 7,
-      raw: '7'
+      raw: '7',
     },
     {
       type: 'paren',
-      symbol: ']'
-    }
+      symbol: ']',
+    },
   ],
   '-1': [
     {
       type: 'number',
       value: -1,
-      raw: '-1'
-    }
+      raw: '-1',
+    },
   ],
   'some.array[@ == "snafu"]': [
     {
       type: 'identifier',
-      name: 'some'
+      name: 'some',
     },
     {
       type: 'operator',
-      symbol: '.'
+      symbol: '.',
     },
     {
       type: 'identifier',
-      name: 'array'
+      name: 'array',
     },
     {
       type: 'paren',
-      symbol: '['
+      symbol: '[',
     },
     {
       type: 'keyword',
-      symbol: '@'
+      symbol: '@',
     },
     {
       type: 'comparator',
-      symbol: '=='
+      symbol: '==',
     },
     {
       type: 'quoted',
       value: 'snafu',
-      quote: 'double'
+      quote: 'double',
     },
     {
       type: 'paren',
-      symbol: ']'
-    }
+      symbol: ']',
+    },
   ],
   '..[key == "e7rw"]': [
     {
       type: 'operator',
-      symbol: '..'
+      symbol: '..',
     },
     {
       type: 'paren',
-      symbol: '['
+      symbol: '[',
     },
     {
       type: 'identifier',
-      name: 'key'
+      name: 'key',
     },
     {
       type: 'comparator',
-      symbol: '=='
+      symbol: '==',
     },
     {
       type: 'quoted',
       value: 'e7rw',
-      quote: 'double'
+      quote: 'double',
     },
     {
       type: 'paren',
-      symbol: ']'
-    }
+      symbol: ']',
+    },
   ],
   '"\\"quoted\\""': [
     {
       type: 'quoted',
       value: '"quoted"',
-      quote: 'double'
-    }
+      quote: 'double',
+    },
   ],
   '[true, false]': [
     {
       symbol: '[',
-      type: 'paren'
+      type: 'paren',
     },
     {
       symbol: 'true',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       symbol: ',',
-      type: 'operator'
+      type: 'operator',
     },
     {
       symbol: 'false',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       symbol: ']',
-      type: 'paren'
-    }
-  ]
+      type: 'paren',
+    },
+  ],
 }
 
-test('Tokenization of jsonpath', t => {
-  Object.keys(cases).forEach(path => {
+test('Tokenization of jsonpath', (t) => {
+  Object.keys(cases).forEach((path) => {
     const expect = cases[path]
     if (!expect) {
       console.log(`Result of tokenizing '${path}'`, tokenize(path))

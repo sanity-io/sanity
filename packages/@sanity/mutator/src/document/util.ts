@@ -1,7 +1,7 @@
 // Given any valid Sanity patch, extracts the ID of the document
 // being modified - if any
 export function extractIdFromPatch(patch): string {
-  const extractInner = attrs => {
+  const extractInner = (attrs) => {
     if (typeof attrs != 'object') {
       return null
     }

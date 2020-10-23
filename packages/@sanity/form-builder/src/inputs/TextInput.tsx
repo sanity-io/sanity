@@ -23,8 +23,8 @@ export default class TextInput extends React.Component<Props<string, TextSchemaT
   }
   render() {
     const {value, markers, type, readOnly, level, onFocus, onBlur, presence} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter((marker) => marker.type === 'validation')
+    const errors = validation.filter((marker) => marker.level === 'error')
     return (
       <FormField
         markers={markers}

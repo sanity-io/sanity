@@ -9,7 +9,7 @@ import styles from './tool.css'
 function CSSVariablesTool() {
   const data = React.useMemo(() => getData(metadata, cssCustomProperties), [
     metadata,
-    cssCustomProperties
+    cssCustomProperties,
   ])
 
   return (
@@ -31,7 +31,7 @@ function CSSVariablesTool() {
       )}
 
       <div>
-        {data.groups.map(group => (
+        {data.groups.map((group) => (
           <ThemePropertyGroup group={group} key={group.name} />
         ))}
       </div>
@@ -42,5 +42,5 @@ function CSSVariablesTool() {
 export default {
   title: 'CSS variables',
   name: 'css-variables',
-  component: CSSVariablesTool
+  component: CSSVariablesTool,
 }

@@ -4,7 +4,7 @@ function generateOf(num: number) {
       type: 'object',
       name: `array${idx}`,
       title: `Object #${idx + 1}`,
-      fields: [{type: 'string', name: 'title', title: 'Title'}]
+      fields: [{type: 'string', name: 'title', title: 'Title'}],
     }
   })
 }
@@ -13,5 +13,5 @@ export default {
   type: 'array',
   name: 'arrayExample1',
   title: 'Array example #1',
-  of: generateOf(100)
+  of: generateOf(100),
 }

@@ -20,7 +20,7 @@ const renderTitle = (options: {layout: string}) => {
 const options = {
   functions: 'Functions',
   strings: 'Strings',
-  elements: 'Element'
+  elements: 'Element',
 }
 
 export function InlineStory() {

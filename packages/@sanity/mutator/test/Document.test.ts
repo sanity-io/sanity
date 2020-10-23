@@ -2,19 +2,19 @@ import {test} from 'tap'
 
 import DocumentTester from './util/DocumentTester'
 
-test('simple remote mutation', tap => {
+test('simple remote mutation', (tap) => {
   new DocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    title: 'Hello'
+    title: 'Hello',
   })
     .isConsistent()
     .stage('when remote patch arrive')
     .remotePatch('1', '2', {
       id: 'a',
       set: {
-        title: 'Good bye'
-      }
+        title: 'Good bye',
+      },
     })
     .noUnresolvedLocalMutations()
     .didNotRebase()
@@ -25,19 +25,19 @@ test('simple remote mutation', tap => {
     .end()
 })
 
-test('simple local mutation arrives', tap => {
+test('simple local mutation arrives', (tap) => {
   new DocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    title: 'Hello'
+    title: 'Hello',
   })
     .isConsistent()
     .stage('when local patch is pending')
     .localPatch('1', '2', {
       id: 'a',
       set: {
-        title: 'Good bye'
-      }
+        title: 'Good bye',
+      },
     })
     .hasUnresolvedLocalMutations()
     .didNotRebase()
@@ -62,18 +62,18 @@ test('simple local mutation arrives', tap => {
     .end()
 })
 
-test('local mutation submitted, but remote mutation wins the race and causes a rebase', tap => {
+test('local mutation submitted, but remote mutation wins the race and causes a rebase', (tap) => {
   new DocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    count: 1
+    count: 1,
   })
     .isConsistent()
     .localPatch('2', '3', {
       id: 'a',
       inc: {
-        count: 1
-      }
+        count: 1,
+      },
     })
     .stage('when local patch is pending')
     .assertHEAD('count', 1)
@@ -82,8 +82,8 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
     .remotePatch('1', '2', {
       id: 'a',
       set: {
-        count: 10
-      }
+        count: 10,
+      },
     })
     .didRebase()
     .assertHEAD('count', 10)
@@ -101,19 +101,19 @@ test('local mutation submitted, but remote mutation wins the race and causes a r
     .end()
 })
 
-test('simple local mutation failing', tap => {
+test('simple local mutation failing', (tap) => {
   new DocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    title: 'Hello'
+    title: 'Hello',
   })
     .isConsistent()
     .stage('when local patch is pending')
     .localPatch('1', '2', {
       id: 'a',
       set: {
-        title: 'Good bye'
-      }
+        title: 'Good bye',
+      },
     })
     .hasUnresolvedLocalMutations()
     .didNotRebase()
@@ -131,11 +131,11 @@ test('simple local mutation failing', tap => {
     .end()
 })
 
-test('simple local mutation arriving out of order', tap => {
+test('simple local mutation arriving out of order', (tap) => {
   new DocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    numbers: []
+    numbers: [],
   })
     .isConsistent()
     .stage('when first local patch is pending')
@@ -143,8 +143,8 @@ test('simple local mutation arriving out of order', tap => {
       id: 'a',
       insert: {
         after: 'numbers[-1]',
-        items: [1]
-      }
+        items: [1],
+      },
     })
     .assertHEAD('numbers', [])
     .assertEDGE('numbers', [1])
@@ -154,8 +154,8 @@ test('simple local mutation arriving out of order', tap => {
       id: 'a',
       insert: {
         after: 'numbers[-1]',
-        items: [2]
-      }
+        items: [2],
+      },
     })
     .assertHEAD('numbers', [])
     .assertEDGE('numbers', [1, 2])

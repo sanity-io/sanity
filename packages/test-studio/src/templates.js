@@ -8,7 +8,7 @@ export default [
     title: 'Developer',
     description: `Selects the role "Developer" for you, so you don't have to`,
     schemaType: 'author',
-    value: params => ({role: 'developer'})
+    value: (params) => ({role: 'developer'}),
   }),
 
   T.template({
@@ -17,8 +17,8 @@ export default [
     description: 'Book by a specific author',
     schemaType: 'book',
     parameters: [{name: 'authorId', type: 'string'}],
-    value: params => ({
-      author: {_type: 'reference', _ref: params.authorId}
-    })
-  })
+    value: (params) => ({
+      author: {_type: 'reference', _ref: params.authorId},
+    }),
+  }),
 ]

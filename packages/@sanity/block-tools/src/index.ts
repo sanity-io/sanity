@@ -42,7 +42,7 @@ const blockContentFunctions = {
 
   randomKey(length) {
     return _randomKey(length)
-  }
+  },
 }
 
 export default blockContentFunctions

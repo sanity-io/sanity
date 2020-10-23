@@ -3,7 +3,7 @@ import Dashboard from './containers/Dashboard'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2
+  strokeWidth: 1.2,
 }
 
 const DashboardIcon = () => (
@@ -26,5 +26,5 @@ export default {
   title: 'Dashboard',
   name: 'dashboard',
   icon: DashboardIcon,
-  component: Dashboard
+  component: Dashboard,
 }

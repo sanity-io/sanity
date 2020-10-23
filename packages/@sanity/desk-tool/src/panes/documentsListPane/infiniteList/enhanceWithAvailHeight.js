@@ -31,7 +31,7 @@ export default function enhanceWithAvailHeight(Component) {
       this._element = null
     }
 
-    setContainer = el => {
+    setContainer = (el) => {
       if (el) {
         this.setup(el)
       }

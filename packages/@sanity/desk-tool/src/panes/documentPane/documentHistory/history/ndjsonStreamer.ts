@@ -6,7 +6,7 @@ type StreamResult = TransactionLogEvent | {error: {description?: string; type: s
 
 export async function getJsonStream(url: string): Promise<ReadableStream<StreamResult>> {
   const options: RequestInit = {credentials: 'include'}
-  const response =  await fetch(url, options)
+  const response = await fetch(url, options)
   return getStream(response)
 }
 
@@ -69,14 +69,14 @@ function getStream(response: Response): ReadableStream<StreamResult> {
           return reader
             .read()
             .then(processResult)
-            .catch(err => controller.error(err))
+            .catch((err) => controller.error(err))
         })
-        .catch(err => controller.error(err))
+        .catch((err) => controller.error(err))
     },
 
     cancel(): void {
       cancelled = true
       reader.cancel()
-    }
+    },
   })
 }

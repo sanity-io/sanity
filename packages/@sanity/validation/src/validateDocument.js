@@ -40,12 +40,12 @@ function validateObject(obj, type, path, options) {
   // Validate actual object itself
   let objChecks = []
   if (type.validation) {
-    objChecks = type.validation.map(async rule => {
+    objChecks = type.validation.map(async (rule) => {
       const ruleResults = await rule.validate(obj, {
         parent: options.parent,
         document: options.document,
         path,
-        type
+        type,
       })
 
       return applyPath(ruleResults, path)
@@ -54,7 +54,7 @@ function validateObject(obj, type, path, options) {
 
   // Validate fields within object
   const fields = type.fields || []
-  const fieldChecks = fields.map(field => {
+  const fieldChecks = fields.map((field) => {
     const validation = field.type && field.type.validation
     if (!validation) {
       return []
@@ -66,7 +66,7 @@ function validateObject(obj, type, path, options) {
       parent: obj,
       document: options.document,
       path: fieldPath,
-      type: field.type
+      type: field.type,
     })
   })
 
@@ -80,19 +80,19 @@ function validateArray(items, type, path, options) {
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationError('Unable to resolve type for array')
-      }
+        item: new ValidationError('Unable to resolve type for array'),
+      },
     ]
   }
   // Validate actual array itself
   let arrayChecks = []
   if (type.validation) {
-    arrayChecks = type.validation.map(async rule => {
+    arrayChecks = type.validation.map(async (rule) => {
       const ruleResults = await rule.validate(items, {
         parent: options.parent,
         document: options.document,
         path,
-        type
+        type,
       })
 
       return applyPath(ruleResults, path)
@@ -106,7 +106,7 @@ function validateArray(items, type, path, options) {
     return validateItem(item, itemType, itemPath, {
       parent: items,
       document: options.document,
-      path: itemPath
+      path: itemPath,
     })
   })
 
@@ -120,8 +120,8 @@ function validatePrimitive(item, type, path, options) {
         type: 'validation',
         level: 'error',
         path,
-        item: new ValidationError('Unable to resolve type for item')
-      }
+        item: new ValidationError('Unable to resolve type for item'),
+      },
     ]
   }
 
@@ -129,15 +129,15 @@ function validatePrimitive(item, type, path, options) {
     return []
   }
 
-  const results = type.validation.map(rule =>
+  const results = type.validation.map((rule) =>
     rule
       .validate(item, {
         parent: options.parent,
         document: options.document,
         path,
-        type: {name: options.type?.name, options: options.type?.options}
+        type: {name: options.type?.name, options: options.type?.options},
       })
-      .then(currRuleResults => applyPath(currRuleResults, path))
+      .then((currRuleResults) => applyPath(currRuleResults, path))
   )
 
   return Promise.all(results).then(flatten)
@@ -148,13 +148,13 @@ function resolveTypeForArrayItem(item, candidates) {
     typeof item === 'undefined' || item === null || (!item._type && Type.string(item).toLowerCase())
 
   if (primitive && primitive !== 'object') {
-    return candidates.find(candidate => candidate.jsonType === primitive)
+    return candidates.find((candidate) => candidate.jsonType === primitive)
   }
 
   return (
-    candidates.find(candidate => candidate.type.name === item._type) ||
-    candidates.find(candidate => candidate.name === item._type) ||
-    candidates.find(candidate => candidate.name === 'object' && primitive === 'object')
+    candidates.find((candidate) => candidate.type.name === item._type) ||
+    candidates.find((candidate) => candidate.name === item._type) ||
+    candidates.find((candidate) => candidate.name === 'object' && primitive === 'object')
   )
 }
 
@@ -163,7 +163,7 @@ function appendPath(base, next) {
 }
 
 function applyPath(results, pathPrefix) {
-  return results.map(result => {
+  return results.map((result) => {
     const path = typeof result.path === 'undefined' ? pathPrefix : pathPrefix.concat(result.path)
     return {type: 'validation', ...result, path}
   })

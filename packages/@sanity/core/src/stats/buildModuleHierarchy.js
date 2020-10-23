@@ -3,15 +3,15 @@ function buildHierarchy(modules) {
 
   const root = {
     children: [],
-    name: 'root'
+    name: 'root',
   }
 
-  modules.forEach(module => {
+  modules.forEach((module) => {
     const mod = {
       displayName: normalizeName(module.name),
       sanityRole: getSanityRole(module.name),
       fullName: module.name,
-      size: module.size
+      size: module.size,
     }
 
     const depth = mod.fullName.split('/').length - 1
@@ -46,11 +46,11 @@ function getFile(module, fileName, parentTree) {
     folder = 'node_modules'
   }
 
-  let childFolder = parentTree.children.find(item => item.name === folder)
+  let childFolder = parentTree.children.find((item) => item.name === folder)
   if (!childFolder) {
     childFolder = {
       name: folder,
-      children: []
+      children: [],
     }
     parentTree.children.push(childFolder)
   }

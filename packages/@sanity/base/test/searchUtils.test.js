@@ -9,7 +9,7 @@ test('fieldNeedsEscape', () => {
   expect(fieldNeedsEscape('foobar123')).toBe(false)
 
   // Keywords
-  ;[('match', 'in', 'asc', 'desc', 'true', 'false', 'null')].forEach(kw => {
+  ;[('match', 'in', 'asc', 'desc', 'true', 'false', 'null')].forEach((kw) => {
     expect(fieldNeedsEscape(kw)).toBe(true)
   })
 })
@@ -22,7 +22,7 @@ test('escapeField', () => {
   expect(escapeField('foobar')).toBe('["foobar"]')
 
   // Keywords
-  ;[('match', 'in', 'asc', 'desc', 'true', 'false', 'null')].forEach(kw => {
+  ;[('match', 'in', 'asc', 'desc', 'true', 'false', 'null')].forEach((kw) => {
     expect(escapeField(kw)).toBe(`["${kw}"]`)
   })
 })

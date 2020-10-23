@@ -24,9 +24,9 @@ function KeyboardShortcutResponder({
   const active = states[activeIndex]
 
   const handleKeyDown = useCallback(
-    event => {
+    (event) => {
       const matchingStates = states.filter(
-        state => state.shortcut && isHotkey(state.shortcut, event)
+        (state) => state.shortcut && isHotkey(state.shortcut, event)
       )
 
       const matchingState = matchingStates[0]
@@ -77,7 +77,7 @@ export const DocumentActionShortcuts = React.memo(
     const [activeIndex, setActiveIndex] = useState(-1)
     const actions = editState ? resolveDocumentActions(editState) : null
 
-    const onActionStart = useCallback(idx => {
+    const onActionStart = useCallback((idx) => {
       setActiveIndex(idx)
     }, [])
 

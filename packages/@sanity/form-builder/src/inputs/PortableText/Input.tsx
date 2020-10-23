@@ -12,7 +12,7 @@ import {
   Type,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-  HotkeyOptions
+  HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
@@ -72,7 +72,7 @@ export default function PortableTextInput(props: Props) {
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    value
+    value,
   } = props
 
   const editor = usePortableTextEditor()
@@ -106,24 +106,24 @@ export default function PortableTextInput(props: Props) {
         }
       } else if (isAnnotation) {
         const block = (PortableTextEditor.getValue(editor) || []).find(
-          blk => blk._key === blockSegment._key
+          (blk) => blk._key === blockSegment._key
         )
         const markDefSegment = focusPath[2]
         if (block && isKeySegment(markDefSegment)) {
           const span = block.children.find(
-            child => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
+            (child) => Array.isArray(child.marks) && child.marks.includes(markDefSegment._key)
           )
           if (span) {
             const spanPath = [blockSegment, 'children', {_key: span._key}]
             setIsActive(true)
             PortableTextEditor.select(editor, {
               focus: {path: spanPath, offset: 0},
-              anchor: {path: spanPath, offset: 0}
+              anchor: {path: spanPath, offset: 0},
             })
             setObjectEditData({
               editorPath: spanPath,
               formBuilderPath: focusPath.slice(0, 3),
-              kind: 'annotation'
+              kind: 'annotation',
             })
           }
         }
@@ -143,7 +143,7 @@ export default function PortableTextInput(props: Props) {
           setIsActive(true)
           PortableTextEditor.select(editor, {
             focus: {path, offset: 0},
-            anchor: {path, offset: 0}
+            anchor: {path, offset: 0},
           })
           // Make it go to selection first, then load  the editing interface
           setObjectEditData({editorPath: path, formBuilderPath: path, kind})
@@ -204,10 +204,10 @@ export default function PortableTextInput(props: Props) {
     path
       .slice(0)
       .reverse()
-      .forEach(segment => {
+      .forEach((segment) => {
         _patchEvent = _patchEvent.prefixAll(segment)
       })
-    _patchEvent.patches.map(patch => props.patche$.next(patch))
+    _patchEvent.patches.map((patch) => props.patche$.next(patch))
     onChange(_patchEvent)
   }
 
@@ -236,7 +236,7 @@ export default function PortableTextInput(props: Props) {
     } else {
       // Object blocks
       const blockMarkers = markers.filter(
-        marker => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
+        (marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key
       )
       returned = (
         <BlockObject
@@ -261,7 +261,7 @@ export default function PortableTextInput(props: Props) {
     }
     // eslint-disable-next-line react/prop-types
     const inlineMarkers = markers.filter(
-      marker => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
+      (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === child._key
     )
     return (
       <InlineObject
@@ -278,7 +278,7 @@ export default function PortableTextInput(props: Props) {
 
   function renderAnnotation(annotation, annotationType, attributes, defaultRender) {
     const annotationMarkers = markers.filter(
-      marker => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
+      (marker) => isKeySegment(marker.path[2]) && marker.path[2]._key === annotation._key
     )
     return (
       <Annotation
@@ -301,7 +301,7 @@ export default function PortableTextInput(props: Props) {
       setObjectEditData(null)
       const sel = {
         focus: {path: editorPath, offset: 0},
-        anchor: {path: editorPath, offset: 0}
+        anchor: {path: editorPath, offset: 0},
       }
       onFocus(editorPath)
       PortableTextEditor.select(editor, sel)

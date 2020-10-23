@@ -17,16 +17,13 @@ describe('insertion inside of range', () => {
       _id: 'alpha',
       name: 'That new product',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 10)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -42,16 +39,13 @@ describe('insertion inside of range', () => {
       _id: 'abacus',
       name: 'That new product',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 10)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -67,16 +61,13 @@ describe('insertion inside of range', () => {
       _id: 'alpha',
       name: 'That new product',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 1)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -92,16 +83,13 @@ describe('insertion inside of range', () => {
       _id: 'abacus',
       name: 'That new product',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 1)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -117,16 +105,13 @@ describe('insertion inside of range', () => {
       _id: 'alpha',
       name: 'That new product',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [[]],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})

@@ -17,7 +17,7 @@ interface RadioSelectProps {
 const RadioSelect = React.forwardRef((props: RadioSelectProps, ref: React.Ref<HTMLDivElement>) => {
   const {name, direction, onChange, onFocus, value, readOnly, items = [], inputId} = props
 
-  const handleRadioChange = item => {
+  const handleRadioChange = (item) => {
     if (onChange) onChange(item)
   }
 

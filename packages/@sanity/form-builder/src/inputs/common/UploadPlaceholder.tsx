@@ -11,7 +11,7 @@ type UploadPlaceholderProps = {
 
 export default React.memo(function UploadPlaceholder({
   hasFocus,
-  fileType = 'file'
+  fileType = 'file',
 }: UploadPlaceholderProps) {
   return (
     <div className={hasFocus ? styles.hasFocus : styles.noFocus}>

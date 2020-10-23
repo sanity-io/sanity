@@ -9,5 +9,5 @@ export default {
   signature: '',
   description: 'Shows the installed versions of Sanity CLI and core components',
   helpText: help,
-  action: printVersionResult
+  action: printVersionResult,
 }

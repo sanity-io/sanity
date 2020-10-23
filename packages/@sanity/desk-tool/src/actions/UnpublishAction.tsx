@@ -4,7 +4,7 @@ import React, {useCallback, useMemo} from 'react'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
 
 const DISABLED_REASON_TITLE = {
-  NOT_PUBLISHED: 'This document is not published'
+  NOT_PUBLISHED: 'This document is not published',
 }
 
 export function UnpublishAction({id, type, draft, published, onComplete, liveEdit}) {
@@ -30,7 +30,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
         type: 'error',
         onClose: () => setError(null),
         title: 'An error occured',
-        content: error.message
+        content: error.message,
       }
     }
 
@@ -40,7 +40,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
         onClose: () => {
           setDidUnpublish(false)
         },
-        title: 'Succesfully unpublished the document'
+        title: 'Succesfully unpublished the document',
       }
     }
 
@@ -56,7 +56,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
             onCancel={handleCancel}
             onConfirm={handleConfirm}
           />
-        )
+        ),
       }
     }
 
@@ -69,7 +69,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     handleConfirm,
     isConfirmDialogOpen,
     onComplete,
-    published
+    published,
   ])
 
   if (liveEdit) {
@@ -82,6 +82,6 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     label: 'Unpublish',
     title: unpublish.disabled ? DISABLED_REASON_TITLE[unpublish.disabled] : '',
     onHandle: () => setConfirmDialogOpen(true),
-    dialog
+    dialog,
   }
 }

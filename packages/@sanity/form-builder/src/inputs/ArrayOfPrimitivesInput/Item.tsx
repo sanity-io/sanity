@@ -42,7 +42,7 @@ export default class Item extends React.PureComponent<Props> {
     const {index, onRemove} = this.props
     onRemove(index)
   }
-  handleKeyPress = event => {
+  handleKeyPress = (event) => {
     const {index, onEnterKey} = this.props
     if (event.key === 'Enter') {
       onEnterKey(index)
@@ -80,7 +80,7 @@ export default class Item extends React.PureComponent<Props> {
       type,
       readOnly,
       isSortable,
-      presence
+      presence,
     } = this.props
     return (
       <div className={styles.root}>

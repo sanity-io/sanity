@@ -7,21 +7,21 @@ export default class FunkyBlockActions extends React.Component {
   static propTypes = {
     block: PropTypes.shape({
       _key: PropTypes.string,
-      _type: PropTypes.string
+      _type: PropTypes.string,
     }).isRequired,
-    insert: PropTypes.func.isRequired
+    insert: PropTypes.func.isRequired,
   }
 
-  handleClick = evnt => {
+  handleClick = (evnt) => {
     const {insert} = this.props
     insert({
       _type: 'block',
       children: [
         {
           _type: 'span',
-          text: 'Pong!'
-        }
-      ]
+          text: 'Pong!',
+        },
+      ],
     })
   }
 

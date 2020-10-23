@@ -12,8 +12,8 @@ const integer = (unused, value, message) => {
 }
 
 const precision = (limit, value, message) => {
-  if (typeof value === "undefined") return true
-  
+  if (typeof value === 'undefined') return true
+
   const places = value.toString().match(precisionRx)
   const decimals = Math.max(
     (places[1] ? places[1].length : 0) - (places[2] ? parseInt(places[2], 10) : 0),
@@ -65,5 +65,5 @@ module.exports = Object.assign({}, genericValidator, {
   lessThan,
   greaterThan,
   integer,
-  precision
+  precision,
 })

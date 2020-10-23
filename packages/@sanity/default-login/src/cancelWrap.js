@@ -2,12 +2,12 @@ export default function cancelWrap(promise) {
   let hasCanceled = false
 
   const wrappedPromise = new Promise((resolve, reject) => {
-    promise.then(val => {
+    promise.then((val) => {
       if (!hasCanceled) {
         resolve(val)
       }
     })
-    promise.catch(error => {
+    promise.catch((error) => {
       if (!hasCanceled) {
         reject(error)
       }
@@ -18,6 +18,6 @@ export default function cancelWrap(promise) {
     promise: wrappedPromise,
     cancel() {
       hasCanceled = true
-    }
+    },
   }
 }

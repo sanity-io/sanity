@@ -24,7 +24,7 @@ const DEFAULT_MEDIA_DIMENSION: MediaDimensions = {
   width: 80,
   height: 80,
   aspect: 1,
-  fit: 'crop'
+  fit: 'crop',
 }
 
 class CreateDocumentPreview extends React.PureComponent<CreateDocumentPreviewProps> {
@@ -38,7 +38,7 @@ class CreateDocumentPreview extends React.PureComponent<CreateDocumentPreviewPro
       mediaDimensions = DEFAULT_MEDIA_DIMENSION,
       description,
       params,
-      templateParams
+      templateParams,
     } = this.props
 
     if (isPlaceholder || !params) {

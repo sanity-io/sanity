@@ -5,5 +5,5 @@ export default {
   router: route('/:type/:id'),
   title: 'Test actions',
   name: 'test-action-tool',
-  component: TestActionsTool
+  component: TestActionsTool,
 }

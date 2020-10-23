@@ -4,16 +4,16 @@ export default {
   type: 'document',
   name: 'reservedKeywordsTest',
   fields: [
-    ...RESERVED_KEYWORDS.map(kw => ({name: kw, type: 'string'})),
+    ...RESERVED_KEYWORDS.map((kw) => ({name: kw, type: 'string'})),
     {name: 'reference', type: 'reference', to: [{type: 'reservedKeywordsTest'}]},
     {name: 'totallyValid', type: 'string'},
     {
       name: 'nested',
       type: 'object',
       fields: [
-        ...RESERVED_KEYWORDS.map(kw => ({name: kw, type: 'string'})),
-        {name: 'totallyValid', type: 'string'}
-      ]
-    }
-  ]
+        ...RESERVED_KEYWORDS.map((kw) => ({name: kw, type: 'string'})),
+        {name: 'totallyValid', type: 'string'},
+      ],
+    },
+  ],
 }

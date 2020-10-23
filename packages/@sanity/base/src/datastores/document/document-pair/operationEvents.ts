@@ -12,7 +12,7 @@ import {
   switchMap,
   take,
   tap,
-  throttleTime
+  throttleTime,
 } from 'rxjs/operators'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
@@ -46,7 +46,7 @@ const operationImpls: {[name: string]: OperationImpl<any>} = {
   discardChanges,
   unpublish,
   duplicate,
-  restore
+  restore,
 }
 
 const execute = (
@@ -88,16 +88,16 @@ export interface OperationSuccess {
 }
 
 const results$ = operationCalls$.pipe(
-  groupBy(op => op.idPair.publishedId),
-  mergeMap(groups$ => {
+  groupBy((op) => op.idPair.publishedId),
+  mergeMap((groups$) => {
     return groups$.pipe(
       // although it might look like a but, dropping pending async operations here is actually a feature
       // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
       // should be cancelled
-      switchMap(args => {
+      switchMap((args) => {
         return operationArgs(args.idPair, args.typeName).pipe(
           take(1),
-          switchMap(operationArgs => {
+          switchMap((operationArgs) => {
             const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
             if (requiresConsistency) {
               operationArgs.published.commit()
@@ -110,7 +110,7 @@ const results$ = operationCalls$.pipe(
             )
           }),
           map(() => ({type: 'success', args})),
-          catchError(err => of({type: 'error', args, error: err}))
+          catchError((err) => of({type: 'error', args, error: err}))
         )
       })
     )
@@ -121,9 +121,9 @@ const results$ = operationCalls$.pipe(
 // this enables autocommit after patch operations
 const AUTOCOMMIT_INTERVAL = 1000
 const autoCommit$ = results$.pipe(
-  filter(result => result.type === 'success' && result.args.operationName === 'patch'),
+  filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
   throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
-  tap(result => {
+  tap((result) => {
     emitOperation('commit', result.args.idPair, result.args.typeName, [])
   })
 )
@@ -133,7 +133,7 @@ autoCommit$.subscribe()
 export const operationEvents = memoize(
   (idPair: IdPair, typeName: string) =>
     results$.pipe(
-      filter(result => result.args.idPair.publishedId === idPair.publishedId),
+      filter((result) => result.args.idPair.publishedId === idPair.publishedId),
       map((result: any): OperationSuccess | OperationError => {
         const {operationName, idPair} = result.args
         return result.type === 'success'
@@ -141,5 +141,5 @@ export const operationEvents = memoize(
           : {type: 'error', op: operationName, id: idPair.publishedId, error: result.error}
       })
     ),
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

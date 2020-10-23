@@ -17,16 +17,13 @@ describe('updates inside of range', () => {
       _id: 'cdefghijklmnopqrstuvwxyz',
       name: 'New title',
       _updatedAt: '2017-06-02T12:00:00Z',
-      __updated: true
+      __updated: true,
     }
 
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 10)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -42,16 +39,13 @@ describe('updates inside of range', () => {
       _id: '2-wvutsrqponmlkjihgfedcba',
       name: 'That new product',
       _updatedAt: '2017-06-02T11:59:44Z',
-      __updated: true
+      __updated: true,
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})

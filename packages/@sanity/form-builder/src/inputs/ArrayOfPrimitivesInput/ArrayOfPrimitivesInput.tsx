@@ -111,7 +111,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   getMemberType(typeName: string) {
     const {type} = this.props
     return type.of.find(
-      memberType => memberType.name === typeName || memberType.jsonType === typeName
+      (memberType) => memberType.name === typeName || memberType.jsonType === typeName
     )
   }
 
@@ -125,7 +125,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       onFocus,
       readOnly,
       onBlur,
-      presence
+      presence,
     } = this.props
 
     const typeName = resolveTypeName(item)
@@ -136,8 +136,8 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
     const isSortable = get(type, 'options.sortable') !== false
     const ListItem = isSortable ? SortableItem : DefaultItem
-    const filteredMarkers = markers.filter(marker => startsWith([index], marker.path))
-    const childPresence = presence.filter(pItem => startsWith([index], pItem.path))
+    const filteredMarkers = markers.filter((marker) => startsWith([index], marker.path))
+    const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
 
     return (
       <ListItem key={index} index={index} className={styles.item}>
@@ -199,12 +199,12 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
     // Find values with types not specified in the schema
     const unknownValues = (value || [])
-      .filter(v => {
+      .filter((v) => {
         const typeName = resolveTypeName(v)
         const itemMemberType = this.getMemberType(typeName)
         return !itemMemberType
       })
-      .map(v => ({value: v, type: resolveTypeName(v)}))
+      .map((v) => ({value: v, type: resolveTypeName(v)}))
 
     if (!unknownValues || unknownValues.length === 0) {
       return null
@@ -218,7 +218,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           schema that is not yet deployed.
         </p>
 
-        {unknownValues.map(item => (
+        {unknownValues.map((item) => (
           <div key={item.type}>
             <h4>{item.type}</h4>
             <pre className={styles.inspectValue}>{JSON.stringify(item.value, null, 2)}</pre>
@@ -230,7 +230,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
               </div>
             ) : (
               <DefaultButton
-                onClick={() => this.handleRemoveItem(value.findIndex(v => v === item.value))}
+                onClick={() => this.handleRemoveItem(value.findIndex((v) => v === item.value))}
                 color="danger"
               >
                 Unset {item.value}
@@ -260,7 +260,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         onFocus={onFocus}
         ref={this.setElement}
         markers={markers}
-        presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
+        presence={presence.filter((item) => item.path[0] === '$' || item.path.length === 0)}
         changeIndicator={false}
       >
         <div className={styles.root}>

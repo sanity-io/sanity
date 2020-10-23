@@ -23,14 +23,14 @@ fs.readFile(bundlePath, (bundleErr, bundle) => {
         'UMD bundle size:',
         '────────────────',
         `Minified: ${size(bundle.length)}`,
-        `Minified + gzip: ${size(gzipedSize)}`
+        `Minified + gzip: ${size(gzipedSize)}`,
       ].join('\n')
 
       console.log(
         boxen(output, {
           padding: 1,
           borderColor: 'yellow',
-          align: 'right'
+          align: 'right',
         })
       )
     })

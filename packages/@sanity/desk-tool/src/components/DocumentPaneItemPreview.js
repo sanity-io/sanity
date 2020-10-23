@@ -9,7 +9,7 @@ import {observeForPreview, SanityDefaultPreview} from 'part:@sanity/base/preview
 import NotPublishedStatus from './NotPublishedStatus'
 import DraftStatus from './DraftStatus'
 
-const isLiveEditEnabled = schemaType => schemaType.liveEdit === true
+const isLiveEditEnabled = (schemaType) => schemaType.liveEdit === true
 
 const getStatusIndicator = (draft, published) => {
   if (draft) {
@@ -18,14 +18,14 @@ const getStatusIndicator = (draft, published) => {
   return published ? null : NotPublishedStatus
 }
 
-const getMissingDocumentFallback = item => ({
+const getMissingDocumentFallback = (item) => ({
   title: <span style={{fontStyle: 'italic'}}>{item.title || 'Missing document'}</span>,
   subtitle: (
     <span style={{fontStyle: 'italic'}}>
       {item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}
     </span>
   ),
-  media: WarningIcon
+  media: WarningIcon,
 })
 
 const getValueWithFallback = ({value, draft, published}) => {
@@ -53,15 +53,15 @@ export default class DocumentPaneItemPreview extends React.Component {
         isLiveEditEnabled(schemaType)
           ? of({snapshot: null})
           : observeForPreview({_id: getDraftId(value._id)}, schemaType),
-        observeForPreview({_id: getPublishedId(value._id)}, schemaType)
+        observeForPreview({_id: getPublishedId(value._id)}, schemaType),
       ]).pipe(
         map(([draft, published]) => ({
           draft: draft.snapshot ? {title, ...draft.snapshot} : null,
           published: published.snapshot ? {title, ...published.snapshot} : null,
-          isLoading: false
+          isLoading: false,
         }))
       )
-    ).subscribe(state => {
+    ).subscribe((state) => {
       if (sync) {
         this.state = state
       } else {
@@ -98,5 +98,5 @@ DocumentPaneItemPreview.propTypes = {
   layout: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   value: PropTypes.object,
-  schemaType: PropTypes.object
+  schemaType: PropTypes.object,
 }

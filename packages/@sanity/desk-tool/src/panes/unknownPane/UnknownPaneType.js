@@ -10,13 +10,13 @@ export default class UnknownPaneType extends React.PureComponent {
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
-    index: PropTypes.number
+    index: PropTypes.number,
   }
 
   static defaultProps = {
     type: undefined,
     onExpand: undefined,
-    onCollapse: undefined
+    onCollapse: undefined,
   }
 
   render() {

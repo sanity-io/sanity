@@ -24,7 +24,7 @@ function shouldShowIcon(schemaType: SchemaType): boolean {
 export function getDocumentTypeListItems(schema?: Schema): ListItemBuilder[] {
   const resolver = getDataAspectsForSchema(schema || getDefaultSchema())
   const types = resolver.getDocumentTypes()
-  return types.map(typeName => getDocumentTypeListItem(typeName, schema))
+  return types.map((typeName) => getDocumentTypeListItem(typeName, schema))
 }
 
 export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema): ListItemBuilder {
@@ -42,7 +42,7 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
     .schemaType(type)
     .child((id, {parent}) => {
       const parentItem = isList(parent)
-        ? (parent.items.find(item => item.id === id) as ListItem)
+        ? (parent.items.find((item) => item.id === id) as ListItem)
         : null
 
       let list = getDocumentTypeList(typeName, schema)
@@ -85,7 +85,7 @@ export function getDocumentTypeList(
       spec.menuItemGroups || [
         {id: 'sorting', title: 'Sort'},
         {id: 'layout', title: 'Layout'},
-        {id: 'actions', title: 'Actions'}
+        {id: 'actions', title: 'Actions'},
       ]
     )
     .child(
@@ -113,7 +113,7 @@ export function getDocumentTypeList(
           .title('Detailed view')
           .icon(DetailsIcon)
           .action('setLayout')
-          .params({layout: 'detail'})
+          .params({layout: 'detail'}),
 
         // Create new (from menu) will be added in serialization step of GenericList
       ]

@@ -2,13 +2,13 @@
 module.exports = {
   env: {
     node: true,
-    browser: true
+    browser: true,
   },
   plugins: ['react'],
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   rules: {
     'react/boolean-prop-naming': 'off', // todo: enable this with list of native html boolean attributes allowed (and is/has/can/will/*-prefixes)
@@ -53,8 +53,8 @@ module.exports = {
       {
         closingSlash: 'never',
         beforeSelfClosing: 'always',
-        afterOpening: 'never'
-      }
+        afterOpening: 'never',
+      },
     ],
     'react/jsx-wrap-multilines': 'error',
     'react/no-access-state-in-setstate': 'error',
@@ -93,8 +93,8 @@ module.exports = {
     'react/sort-prop-types': 'off',
     'react/self-closing-comp': 'error',
     'react/style-prop-object': 'error',
-    'react/void-dom-elements-no-children': 'error'
+    'react/void-dom-elements-no-children': 'error',
 
     // "react/wrap-multilines": "error" //@@@ deprecated in favor of react/jsx-wrap-multilines
-  }
+  },
 }

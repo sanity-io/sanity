@@ -9,14 +9,14 @@ import {
   DEBUG,
   MAX_AVATARS_DOCK,
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
-  SLIDE_RIGHT_THRESHOLD_TOP
+  SLIDE_RIGHT_THRESHOLD_TOP,
 } from '../constants'
 import {
   FieldPresenceData,
   FormFieldPresence,
   Rect,
   ReportedRegionWithRect,
-  RegionWithIntersectionDetails
+  RegionWithIntersectionDetails,
 } from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
 
@@ -26,10 +26,10 @@ import {ReportedPresenceData, useReportedValues} from './tracker'
 const ITEM_TRANSITION: React.CSSProperties = {
   transitionProperty: 'transform',
   transitionDuration: '200ms',
-  transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)'
+  transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
 }
 
-const bottom = rect => rect.top + rect.height
+const bottom = (rect) => rect.top + rect.height
 
 type RegionWithSpacerHeight = RegionWithIntersectionDetails & {
   spacerHeight: number
@@ -48,10 +48,10 @@ function withSpacerHeight(
 }
 
 const orderByTop = (regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) =>
-  orderBy(regionsWithIntersectionDetails, withIntersection => withIntersection.region.rect.top)
+  orderBy(regionsWithIntersectionDetails, (withIntersection) => withIntersection.region.rect.top)
 
 const plus = (a, b) => a + b
-const sum = array => array.reduce(plus, 0)
+const sum = (array) => array.reduce(plus, 0)
 
 type Margins = [number, number, number, number]
 type RegionWithSpacerHeightAndIndent = RegionWithSpacerHeight & {indent: number}
@@ -72,7 +72,7 @@ function group(
     top: [],
     inside: [],
     bottom: [],
-    ...groupBy(regionsWithSpacerHeight, _withSpacerHeight => _withSpacerHeight.position)
+    ...groupBy(regionsWithSpacerHeight, (_withSpacerHeight) => _withSpacerHeight.position),
   }
 
   return {
@@ -81,13 +81,13 @@ function group(
         ...(withIntersection as RegionWithSpacerHeight),
         indent: grp
           .slice(i + 1)
-          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0)
+          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
       })
     ),
     inside: orderByTop(grouped.inside).map(
       (withIntersection): RegionWithSpacerHeightAndIndent => ({
         ...(withIntersection as RegionWithSpacerHeight),
-        indent: 0
+        indent: 0,
       })
     ),
     bottom: orderByTop(grouped.bottom).map(
@@ -95,9 +95,9 @@ function group(
         ...(withIntersection as RegionWithSpacerHeight),
         indent: grp
           .slice(0, i)
-          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0)
+          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
       })
-    )
+    ),
   }
 }
 
@@ -123,7 +123,7 @@ function getRelativeRect(element, parent): Rect {
   return {
     ...getOffsetsTo(element, parent),
     width: element.offsetWidth,
-    height: element.offsetHeight
+    height: element.offsetHeight,
   }
 }
 
@@ -134,7 +134,7 @@ function regionsWithComputedRects(
   return regions.map(([id, region]) => ({
     ...region,
     id,
-    rect: getRelativeRect(region.element, parent)
+    rect: getRelativeRect(region.element, parent),
   }))
 }
 
@@ -147,11 +147,11 @@ export function StickyOverlay(props: Props) {
   const renderCallback = React.useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
       const grouped = group(
-        regionsWithIntersectionDetails.filter(item => item.region.presence.length > 0)
+        regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0)
       )
-      const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
+      const topSpacing = sum(grouped.top.map((n) => n.region.rect.height + n.spacerHeight))
       const bottomSpacing = sum(
-        [...grouped.inside, ...grouped.bottom].map(n => n.region.rect.height + n.spacerHeight)
+        [...grouped.inside, ...grouped.bottom].map((n) => n.region.rect.height + n.spacerHeight)
       )
 
       // todo: this needs cleaning up, should process all the needed layout data in one go
@@ -164,7 +164,7 @@ export function StickyOverlay(props: Props) {
           return {
             nearTop: _counts.nearTop + (nearTop ? withIntersection.region.presence.length : 0),
             nearBottom:
-              _counts.nearBottom + (nearBottom ? withIntersection.region.presence.length : 0)
+              _counts.nearBottom + (nearBottom ? withIntersection.region.presence.length : 0),
           }
         },
         {nearTop: 0, nearBottom: 0}
@@ -177,7 +177,7 @@ export function StickyOverlay(props: Props) {
             <Spacer key="spacerTop" height={topSpacing} />,
             ...renderInside(grouped.inside, containerWidth),
             <Spacer key="spacerBottom" height={bottomSpacing} />,
-            renderDock('bottom', margins, grouped.bottom, counts.nearBottom)
+            renderDock('bottom', margins, grouped.bottom, counts.nearBottom),
           ]}
         </>
       )
@@ -200,8 +200,8 @@ function renderDock(
 ) {
   const dir = position === 'top' ? 1 : -1
   const allPresenceItems = flatten(
-    sortBy(regionsWithIntersectionDetails, r => r.region.rect.top * dir).map(
-      withIntersection => withIntersection.region.presence || []
+    sortBy(regionsWithIntersectionDetails, (r) => r.region.rect.top * dir).map(
+      (withIntersection) => withIntersection.region.presence || []
     ) || []
   )
   const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
@@ -224,7 +224,7 @@ function renderDock(
         ...ITEM_TRANSITION,
         transform: `translate3d(${leftOffset}px, 0px, 0px)`,
         top: AVATAR_ARROW_HEIGHT + 1 + margin,
-        bottom: AVATAR_ARROW_HEIGHT + 1 + margin
+        bottom: AVATAR_ARROW_HEIGHT + 1 + margin,
       }}
     >
       <FieldPresenceInner
@@ -240,7 +240,7 @@ function renderInside(
   regionsWithIntersectionDetails: RegionWithSpacerHeight[],
   containerWidth: number
 ) {
-  return regionsWithIntersectionDetails.map(withIntersection => {
+  return regionsWithIntersectionDetails.map((withIntersection) => {
     const originalLeft = withIntersection.region.rect.left
     const {distanceTop, distanceBottom} = withIntersection
 
@@ -261,7 +261,7 @@ function renderInside(
             left: originalLeft,
             transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
             height: withIntersection.region.rect.height,
-            top: withIntersection.region.rect.top
+            top: withIntersection.region.rect.top,
           }}
         >
           <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
@@ -297,7 +297,7 @@ const DebugValue = DEBUG
               color: 'white',
               backgroundColor: 'rgba(0, 0, 0, 0.8)',
               position: 'absolute',
-              zIndex: 1000
+              zIndex: 1000,
             }}
           >
             {props.value()}

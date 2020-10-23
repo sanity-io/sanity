@@ -3,7 +3,7 @@ import {Rect} from './types'
 
 export function DebugLayers({
   field,
-  change
+  change,
 }: {
   field: {rect: Rect; bounds: Rect}
   change: {rect: Rect; bounds: Rect}

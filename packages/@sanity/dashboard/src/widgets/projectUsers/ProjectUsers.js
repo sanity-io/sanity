@@ -14,8 +14,8 @@ function getInviteUrl(projectId) {
 
 function sortUsersByRobotStatus(userA, userB, project) {
   const {members} = project
-  const membershipA = members.find(member => member.id === userA.id)
-  const membershipB = members.find(member => member.id === userB.id)
+  const membershipA = members.find((member) => member.id === userA.id)
+  const membershipB = members.find((member) => member.id === userB.id)
   if (membershipA.isRobot) {
     return 1
   }
@@ -32,7 +32,7 @@ class ProjectUsers extends React.PureComponent {
   state = {
     project: null,
     users: null,
-    error: null
+    error: null,
   }
 
   componentDidMount() {
@@ -53,15 +53,15 @@ class ProjectUsers extends React.PureComponent {
     const {projectId} = sanityClient.config()
     this.subscription = sanityClient.observable
       .request({
-        uri: `/projects/${projectId}`
+        uri: `/projects/${projectId}`,
       })
       .pipe(
-        switchMap(project =>
+        switchMap((project) =>
           sanityClient.observable
             .request({
-              uri: `/users/${project.members.map(mem => mem.id).join(',')}`
+              uri: `/users/${project.members.map((mem) => mem.id).join(',')}`,
             })
-            .pipe(map(users => ({project, users})))
+            .pipe(map((users) => ({project, users})))
         )
       )
       .subscribe({
@@ -70,9 +70,9 @@ class ProjectUsers extends React.PureComponent {
             project,
             users: (Array.isArray(users) ? users : [users]).sort((userA, userB) =>
               sortUsersByRobotStatus(userA, userB, project)
-            )
+            ),
           }),
-        error: error => this.setState({error})
+        error: (error) => this.setState({error}),
       })
   }
 
@@ -110,8 +110,8 @@ class ProjectUsers extends React.PureComponent {
 
         {!isLoading && (
           <List className={styles.list}>
-            {users.map(user => {
-              const membership = project.members.find(member => member.id === user.id)
+            {users.map((user) => {
+              const membership = project.members.find((member) => member.id === user.id)
               const media = membership.isRobot ? (
                 <RobotIcon className={styles.profileImage} />
               ) : (

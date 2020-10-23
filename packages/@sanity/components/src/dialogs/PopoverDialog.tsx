@@ -91,7 +91,7 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
 
   const layer = useLayer()
 
-  const [primary, secondary] = partition(actions, action => action.primary)
+  const [primary, secondary] = partition(actions, (action) => action.primary)
 
   const secondaryActionButtons = secondary.map((action, actionIndex) => (
     // eslint-disable-next-line react/no-array-index-key
@@ -179,7 +179,7 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
 
 function PopoverDialogActionButton({
   action,
-  onAction
+  onAction,
 }: {
   action: DialogAction
   onAction?: (a: DialogAction) => void

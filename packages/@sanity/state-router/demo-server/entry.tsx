@@ -14,7 +14,7 @@ const router: Router = route('/omg/lol', [
       return route('/:profileSection')
     }
   }),
-  route.intents('/intents2')
+  route.intents('/intents2'),
 ])
 
 const history = createHistory()
@@ -54,7 +54,7 @@ intentHandlers.push({
   canHandle: (intent, params) => intent === 'open' && params.type === 'product',
   resolveRedirectState(intent, params) {
     return {product: {id: params.id}}
-  }
+  },
 })
 
 function checkPath() {
@@ -62,12 +62,12 @@ function checkPath() {
   const state: any = router.decode(pathname)
   if (state && state.intent) {
     // get intent redirect url
-    const handler = intentHandlers.find(candidate =>
+    const handler = intentHandlers.find((candidate) =>
       candidate.canHandle(state.intent, state.params)
     )
     if (handler) {
       handleNavigate(router.encode(handler.resolveRedirectState(state.intent, state.params)), {
-        replace: true
+        replace: true,
       })
       return
     }

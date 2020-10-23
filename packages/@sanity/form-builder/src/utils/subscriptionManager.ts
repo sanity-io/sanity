@@ -30,13 +30,13 @@ export default function create(...keys) {
   }
 
   function unsubscribeAll() {
-    keys.forEach(key => unsubscribe(key))
+    keys.forEach((key) => unsubscribe(key))
   }
 
   return {
     add: add,
     replace: replace,
     unsubscribe: unsubscribe,
-    unsubscribeAll: unsubscribeAll
+    unsubscribeAll: unsubscribeAll,
   }
 }

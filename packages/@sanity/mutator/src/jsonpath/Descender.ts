@@ -5,7 +5,7 @@ import {flatten} from 'lodash'
 import Expression from './Expression'
 
 export type Probe = {
-  containerType(): string,
+  containerType(): string
   length(): number
   getIndex(index: number): any
   get: () => any
@@ -31,11 +31,11 @@ export default class Descender {
       // Keep rewriting constraints until there are none left
       while (anyConstraints) {
         result = flatten(
-          result.map(descender => {
+          result.map((descender) => {
             return descender.iterateConstraints(probe)
           })
         )
-        anyConstraints = result.some(descender => {
+        anyConstraints = result.some((descender) => {
           return descender.head && descender.head.isConstraint()
         })
       }
@@ -105,7 +105,7 @@ export default class Descender {
     if (!this.tail) {
       return [new Descender(null, null)]
     }
-    return this.tail.descend().map(ht => {
+    return this.tail.descend().map((ht) => {
       return new Descender(ht.head, ht.tail)
     })
   }

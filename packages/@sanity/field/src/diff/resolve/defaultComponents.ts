@@ -14,5 +14,5 @@ export const defaultComponents: {[key: string]: DiffComponent<any> | DiffCompone
   image: ImageFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
-  string: StringFieldDiff
+  string: StringFieldDiff,
 }

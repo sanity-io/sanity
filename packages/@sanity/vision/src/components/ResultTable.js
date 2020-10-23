@@ -49,7 +49,7 @@ class ResultTable extends React.PureComponent {
           </tr>
         </thead>
         <tbody>
-          {docs.map(doc => (
+          {docs.map((doc) => (
             <tr key={doc._id} onClick={this.getExpandRowHandler(doc._id)}>
               <td>{doc._id}</td>
               <td>{doc._type}</td>
@@ -70,9 +70,9 @@ ResultTable.propTypes = {
       _id: PropTypes.string.isRequired,
       _type: PropTypes.string.isRequired,
       _updatedAt: PropTypes.string.isRequired,
-      _createdAt: PropTypes.string.isRequired
+      _createdAt: PropTypes.string.isRequired,
     })
-  )
+  ),
 }
 
 export default ResultTable

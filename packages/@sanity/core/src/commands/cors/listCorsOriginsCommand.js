@@ -14,6 +14,6 @@ export default {
     const {apiClient} = context
     const client = apiClient({requireUser: true, requireProject: true})
     const origins = await client.request({url: '/cors'})
-    output.print(origins.map(origin => origin.origin).join('\n'))
-  }
+    output.print(origins.map((origin) => origin.origin).join('\n'))
+  },
 }

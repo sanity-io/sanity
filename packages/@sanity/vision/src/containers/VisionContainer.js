@@ -8,7 +8,7 @@ import LoadingContainer from './LoadingContainer'
 class VisionContainer extends LoadingContainer {
   getSubscriptions() {
     return {
-      datasets: { uri: '/datasets' }
+      datasets: {uri: '/datasets'},
     }
   }
 
@@ -16,7 +16,7 @@ class VisionContainer extends LoadingContainer {
     const datasets = this.state.datasets || []
     if (this.state.error) {
       const defaultDataset = this.context.client.config().dataset
-      datasets[0] = { name: defaultDataset }
+      datasets[0] = {name: defaultDataset}
     } else if (!this.hasAllData()) {
       return <DelayedSpinner />
     }

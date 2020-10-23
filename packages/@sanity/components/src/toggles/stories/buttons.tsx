@@ -11,23 +11,23 @@ const centerStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   top: '50%',
   left: '50%',
-  transform: 'translate(-50%, -50%)'
+  transform: 'translate(-50%, -50%)',
 }
 
 export function ButtonsStory() {
   const items = [
     {
       title: 'The good',
-      key: 'good'
+      key: 'good',
     },
     {
       title: 'The Bad',
-      key: 'bad'
+      key: 'bad',
     },
     {
       title: 'The ugly',
-      key: 'ugly'
-    }
+      key: 'ugly',
+    },
   ]
 
   return (

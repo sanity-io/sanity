@@ -29,7 +29,7 @@ export default class RichDateInput extends React.PureComponent {
     if (getOptions(this.props).inputUtc) {
       return {
         _type: name,
-        utc: newMoment.utc().format() // e.g. "2017-02-12T09:15:00Z"
+        utc: newMoment.utc().format(), // e.g. "2017-02-12T09:15:00Z"
       }
     }
     return {
@@ -37,17 +37,17 @@ export default class RichDateInput extends React.PureComponent {
       local: newMoment.format(), // e.g. 2017-02-21T10:15:00+01:00
       utc: newMoment.utc().format(), // e.g. 2017-02-12T09:15:00Z
       timezone: moment.tz.guess(), // e.g. Europe/Oslo
-      offset: moment().utcOffset() // e.g. 60 (utc offset in minutes)
+      offset: moment().utcOffset(), // e.g. 60 (utc offset in minutes)
     }
   }
 
-  handleChange = nextValue => {
+  handleChange = (nextValue) => {
     const {onChange} = this.props
     const assembledValue = this.assembleOutgoingValue(nextValue)
     onChange(PatchEvent.from(assembledValue ? set(assembledValue) : unset()))
   }
 
-  handleTimeChange = nextValue => {
+  handleTimeChange = (nextValue) => {
     const {onChange} = this.props
     const assembledValue = this.assembleOutgoingValue(nextValue.value)
     onChange(PatchEvent.from(assembledValue ? set(assembledValue) : unset()))
@@ -67,12 +67,12 @@ export default class RichDateInput extends React.PureComponent {
     const options = getOptions(this.props)
     const format = [
       options.inputDate ? options.dateFormat : null,
-      options.inputTime ? options.timeFormat : null
+      options.inputTime ? options.timeFormat : null,
     ]
       .filter(Boolean)
       .join(' ')
     const timeIntervals = getTimeIntervals(value, options)
-    const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
+    const activeTimeInterval = timeIntervals.find((time) => time.isActive === true)
 
     const placeholder =
       typeof type.placeholder === 'function' ? type.placeholder() : type.placeholder
@@ -100,14 +100,13 @@ export default class RichDateInput extends React.PureComponent {
             />
           )}
 
-          {!options.inputDate &&
-            options.inputTime && (
-              <DefaultSelect
-                items={timeIntervals}
-                value={activeTimeInterval}
-                onChange={this.handleTimeChange}
-              />
-            )}
+          {!options.inputDate && options.inputTime && (
+            <DefaultSelect
+              items={timeIntervals}
+              value={activeTimeInterval}
+              onChange={this.handleTimeChange}
+            />
+          )}
         </div>
       </FormField>
     )
@@ -119,21 +118,21 @@ RichDateInput.propTypes = {
     utc: PropTypes.string,
     local: PropTypes.string,
     timezone: PropTypes.string,
-    offset: PropTypes.number
+    offset: PropTypes.number,
   }),
   type: PropTypes.shape({
     title: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    options: PropTypes.object
+    options: PropTypes.object,
   }),
   onChange: PropTypes.func,
-  level: PropTypes.number
+  level: PropTypes.number,
 }
 
 RichDateInput.contextTypes = {
   resolveInputComponent: PropTypes.func,
   schema: PropTypes.object,
   intl: PropTypes.shape({
-    locale: PropTypes.string
-  })
+    locale: PropTypes.string,
+  }),
 }

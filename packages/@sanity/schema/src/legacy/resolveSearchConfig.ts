@@ -2,7 +2,7 @@ import {uniqBy} from 'lodash'
 
 const stringFieldsSymbol = Symbol('__cachedStringFields')
 
-const isReference = type => type.type && type.type.name === 'reference'
+const isReference = (type) => type.type && type.type.name === 'reference'
 
 function reduceType(type, reducer, accumulator, path = [], maxDepth) {
   if (maxDepth < 0) {
@@ -31,21 +31,24 @@ function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
   }, accumulator)
 }
 
-const BASE_WEIGHTS = [{weight: 1, path: ['_id']}, {weight: 1, path: ['_type']}]
+const BASE_WEIGHTS = [
+  {weight: 1, path: ['_id']},
+  {weight: 1, path: ['_type']},
+]
 
 const PREVIEW_FIELD_WEIGHT_MAP = {
   title: 10,
   subtitle: 5,
-  description: 1.5
+  description: 1.5,
 }
 
 function deriveFromPreview(type) {
   const select = type.preview.select
   return Object.keys(select)
-    .filter(fieldName => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
-    .map(fieldName => ({
+    .filter((fieldName) => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
+    .map((fieldName) => ({
       weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
-      path: select[fieldName].split('.')
+      path: select[fieldName].split('.'),
     }))
 }
 
@@ -55,9 +58,9 @@ function getCachedStringFieldPaths(type, maxDepth) {
       [
         ...BASE_WEIGHTS,
         ...deriveFromPreview(type),
-        ...getStringFieldPaths(type, maxDepth).map(path => ({weight: 1, path}))
+        ...getStringFieldPaths(type, maxDepth).map((path) => ({weight: 1, path})),
       ],
-      spec => spec.path.join('.')
+      (spec) => spec.path.join('.')
     )
   }
   return type[stringFieldsSymbol]

@@ -10,11 +10,11 @@ export const topLevelArrayType = {
       title: 'Content',
       fields: [
         {name: 'textContent', type: 'text'},
-        {name: 'imageContent', type: 'image'}
+        {name: 'imageContent', type: 'image'},
       ],
-      preview: {select: {title: 'textContent'}}
-    }
-  ]
+      preview: {select: {title: 'textContent'}},
+    },
+  ],
 }
 export const topLevelPrimitiveArrayType = {
   name: 'topLevelPrimitiveArrayType',
@@ -22,13 +22,13 @@ export const topLevelPrimitiveArrayType = {
   of: [
     {
       type: 'string',
-      title: 'A string'
+      title: 'A string',
     },
     {
       type: 'number',
-      title: 'A number'
-    }
-  ]
+      title: 'A number',
+    },
+  ],
 }
 
 export default {
@@ -40,7 +40,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'arrayOfMultipleTypes',
@@ -49,10 +49,10 @@ export default {
       of: [
         {
           type: 'image',
-          icon: icon
+          icon: icon,
         },
         {
-          type: 'book'
+          type: 'book',
         },
         {
           type: 'object',
@@ -61,15 +61,15 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'name',
-              type: 'string'
-            }
-          ]
-        }
-      ]
+              type: 'string',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'arrayOfPredefinedOptions',
@@ -78,7 +78,7 @@ export default {
         'It should be possible to check/uncheck the different options.',
         'There should be a warning about invalid type (number)',
         'When inspecting a document with checked values, the array should contain values with: ',
-        '{_type: "color", ...}'
+        '{_type: "color", ...}',
       ].join('\n'),
       type: 'array',
       of: [
@@ -88,17 +88,17 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'name',
-              type: 'string'
-            }
+              type: 'string',
+            },
           ],
           preview: {
             select: {
               title: 'title',
-              name: 'name'
+              name: 'name',
             },
             prepare({title, name}) {
               return {
@@ -111,14 +111,14 @@ export default {
                       height: '100%',
                       width: '100%',
                       top: '0',
-                      left: '0'
+                      left: '0',
                     }}
                   />
-                )
+                ),
               }
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       options: {
         direction: 'vertical',
@@ -127,9 +127,9 @@ export default {
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           1, // invalid, not defined in list
           {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
-          {_type: 'color', title: 'Black', name: 'black', _key: 'black'}
-        ]
-      }
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+        ],
+      },
     },
     {
       name: 'tags',
@@ -138,7 +138,7 @@ export default {
         'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
       type: 'array',
       options: {layout: 'tags'},
-      of: [{type: 'string'}]
+      of: [{type: 'string'}],
     },
     {
       name: 'arrayWithAnonymousObject',
@@ -151,10 +151,10 @@ export default {
           title: 'Something',
           fields: [
             {name: 'first', type: 'string', title: 'First string'},
-            {name: 'second', type: 'string', title: 'Second string'}
-          ]
-        }
-      ]
+            {name: 'second', type: 'string', title: 'Second string'},
+          ],
+        },
+      ],
     },
     {
       name: 'arrayOfPrimitives',
@@ -164,17 +164,17 @@ export default {
       of: [
         {
           type: 'string',
-          title: 'String'
+          title: 'String',
         },
         {
           type: 'number',
-          title: 'Number'
+          title: 'Number',
         },
         {
           type: 'boolean',
-          title: 'Boolean'
-        }
-      ]
+          title: 'Boolean',
+        },
+      ],
     },
     {
       name: 'arrayOfEmails',
@@ -184,9 +184,9 @@ export default {
       of: [
         {
           type: 'email',
-          title: ''
-        }
-      ]
+          title: '',
+        },
+      ],
     },
     {
       name: 'arrayOfStringsWithLegacyList',
@@ -206,19 +206,19 @@ export default {
           {value: 'objects', title: 'Objects'},
           {value: 'performance', title: 'Performance'},
           {value: 'public space', title: 'Public Space'},
-          {value: 'publications', title: 'Publications'}
-        ]
-      }
+          {value: 'publications', title: 'Publications'},
+        ],
+      },
     },
     {
       name: 'fieldOfTopLevelArrayType',
       title: 'Field of top level array type',
-      type: 'topLevelArrayType'
+      type: 'topLevelArrayType',
     },
     {
       name: 'fieldOfTopLevelPrimitiveArrayType',
       title: 'Field of top level primitive array type',
-      type: 'topLevelPrimitiveArrayType'
+      type: 'topLevelPrimitiveArrayType',
     },
     {
       name: 'imageArrayInGrid',
@@ -226,15 +226,15 @@ export default {
       description: 'An array of images. options: {layout: "grid"}',
       type: 'array',
       options: {
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {
           name: 'myImage',
           title: 'My Image',
-          type: 'myImage'
-        }
-      ]
+          type: 'myImage',
+        },
+      ],
     },
     {
       name: 'imageArray',
@@ -247,8 +247,8 @@ export default {
           preview: {
             select: {
               imageUrl: 'asset.url',
-              title: 'caption'
-            }
+              title: 'caption',
+            },
           },
           fields: [
             {
@@ -256,12 +256,12 @@ export default {
               type: 'string',
               title: 'Caption',
               options: {
-                isHighlighted: true
-              }
-            }
-          ]
-        }
-      ]
+                isHighlighted: true,
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'polymorphicGridArray',
@@ -269,22 +269,22 @@ export default {
       description: 'An array of multiple types. options: {layout: "grid"}',
       type: 'array',
       options: {
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {
           title: 'A book',
-          type: 'book'
+          type: 'book',
         },
         {
           title: 'An author',
-          type: 'author'
+          type: 'author',
         },
         {
           title: 'An image',
-          type: 'image'
-        }
-      ]
+          type: 'image',
+        },
+      ],
     },
     {
       name: 'imageArrayNotSortable',
@@ -293,7 +293,7 @@ export default {
       type: 'array',
       options: {
         sortable: false,
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {
@@ -302,8 +302,8 @@ export default {
           preview: {
             select: {
               imageUrl: 'asset.url',
-              title: 'caption'
-            }
+              title: 'caption',
+            },
           },
           fields: [
             {
@@ -311,12 +311,12 @@ export default {
               type: 'string',
               title: 'Caption',
               options: {
-                isHighlighted: true
-              }
-            }
-          ]
-        }
-      ]
+                isHighlighted: true,
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'arrayOfNamedReferences',
@@ -327,23 +327,25 @@ export default {
         {
           type: 'reference',
           name: 'authorReference',
-          to: [{type: 'author', title: 'Reference to author'}]
+          to: [{type: 'author', title: 'Reference to author'}],
         },
         {
           type: 'reference',
           name: 'bookReference',
-          to: [{type: 'book', title: 'Reference to book'}]
-        }
-      ]
+          to: [{type: 'book', title: 'Reference to book'}],
+        },
+      ],
     },
     {
       name: 'arrayOfSoManyDifferentTypes',
       type: 'array',
       title: 'Array of SO MANY different types',
       describe: 'Uses custom "Add" functionality',
-      of: ['author', 'book', 'code', 'color', 'geopoint', 'image', 'slug', 'species'].map(type => ({
-        type
-      }))
-    }
-  ]
+      of: ['author', 'book', 'code', 'color', 'geopoint', 'image', 'slug', 'species'].map(
+        (type) => ({
+          type,
+        })
+      ),
+    },
+  ],
 }

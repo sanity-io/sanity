@@ -17,16 +17,13 @@ describe('insertion outside of range', () => {
       _id: '0-first',
       name: 'That new product',
       _updatedAt: '2017-09-02T23:00:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(8)
-      .to(10)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(8).to(10).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(2, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -46,10 +43,7 @@ describe('insertion outside of range', () => {
   })
 
   test('ignores documents outside of the range (rear)', async () => {
-    const query = new Query()
-      .from(0)
-      .to(5)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
       events: [
@@ -57,9 +51,9 @@ describe('insertion outside of range', () => {
           _id: 'new',
           name: 'That new product',
           _updatedAt: '2017-01-02T13:48:00Z',
-          __injected: true
-        })
-      ]
+          __injected: true,
+        }),
+      ],
     })
 
     docWindow = new DocumentWindow({client, query})

@@ -12,7 +12,7 @@ export function toggleSidecarOpenState() {
   isSidecarOpenSetting
     .listen()
     .pipe(take(1))
-    .subscribe(isOpen => {
+    .subscribe((isOpen) => {
       const newState = !isOpen
       isSidecarOpenSetting.set(newState)
     })

@@ -9,9 +9,7 @@ class LoadingContainer extends React.PureComponent {
 
     if (!this.getSubscriptions) {
       throw new Error(
-        `${
-          this.constructor.name
-        } extended LoadingContainer but did not define a getSubscriptions() method`
+        `${this.constructor.name} extended LoadingContainer but did not define a getSubscriptions() method`
       )
     }
 
@@ -30,7 +28,7 @@ class LoadingContainer extends React.PureComponent {
   }
 
   hasAllData() {
-    return this.stateKeys && this.stateKeys.every(key => this.state[key] !== undefined)
+    return this.stateKeys && this.stateKeys.every((key) => this.state[key] !== undefined)
   }
 
   componentWillUnmount() {
@@ -41,7 +39,7 @@ class LoadingContainer extends React.PureComponent {
 }
 
 LoadingContainer.contextTypes = {
-  client: PropTypes.shape({fetch: PropTypes.func}).isRequired
+  client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
 }
 
 export default LoadingContainer

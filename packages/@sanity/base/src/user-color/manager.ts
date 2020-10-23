@@ -15,7 +15,7 @@ const defaultCurrentUserHue: ColorHueKey = 'purple'
 // Remove green and red because they can be confused with "add" and "remove"
 // Remove gray because it looks like "color not found"
 const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
-  hue => hue !== 'green' && hue !== 'red' && hue !== 'gray'
+  (hue) => hue !== 'green' && hue !== 'red' && hue !== 'gray'
 )
 
 const defaultColors = defaultHues.reduce((colors, hue) => {
@@ -23,7 +23,7 @@ const defaultColors = defaultHues.reduce((colors, hue) => {
     background: SanityColor[hue][100].hex,
     border: SanityColor[hue][300].hex,
     text: SanityColor[hue][700].hex,
-    tints: SanityColor[hue]
+    tints: SanityColor[hue],
   }
   return colors
 }, {} as Record<ColorHueKey, UserColor>)
@@ -32,7 +32,7 @@ const defaultAnonymousColor: UserColor = {
   background: SanityColor.gray[100].hex,
   border: SanityColor.gray[300].hex,
   text: SanityColor.gray[700].hex,
-  tints: SanityColor.gray
+  tints: SanityColor.gray,
 }
 
 export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
@@ -59,8 +59,8 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
 
   if (options?.userStore) {
     options.userStore.currentUser
-      .pipe(filter(evt => evt.type === 'snapshot'))
-      .subscribe(evt => setCurrentUser(evt.user ? evt.user.id : null))
+      .pipe(filter((evt) => evt.type === 'snapshot'))
+      .subscribe((evt) => setCurrentUser(evt.user ? evt.user.id : null))
   }
 
   return {get, listen}
@@ -126,7 +126,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   }
 
   function getUnusedColor(): UserColorHue | undefined {
-    return colorHues.find(colorHue => assignedCounts[colorHue] === 0)
+    return colorHues.find((colorHue) => assignedCounts[colorHue] === 0)
   }
 
   function hasUnusedColor(): boolean {
@@ -137,7 +137,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
     let leastUses = +Infinity
     let leastUsed: UserColorHue[] = []
 
-    colorHues.forEach(colorHue => {
+    colorHues.forEach((colorHue) => {
       const uses = assignedCounts[colorHue]
       if (uses === leastUses) {
         leastUsed.push(colorHue)
@@ -153,7 +153,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   }
 
   function getObservableColor(userId: string, hue: UserColorHue): Observable<UserColor> {
-    return new Observable<UserColor>(subscriber => {
+    return new Observable<UserColor>((subscriber) => {
       const userColor = userColors[hue]
       subscriber.next(userColor)
       return () => {

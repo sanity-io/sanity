@@ -56,7 +56,7 @@ export function loadGoogleMapsApi(): Observable<GoogleLoadState> {
   ) =>
     subject.next({
       loadState: 'loadError',
-      error: coeerceError(event, error)
+      error: coeerceError(event, error),
     } as LoadErrorState)
 
   script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places&callback=${callbackName}&language=${selectedLocale}`

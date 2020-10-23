@@ -27,14 +27,14 @@ export const InlineObject: FunctionComponent<Props> = ({
   markers,
   attributes: {focused, selected, path},
   onFocus,
-  readOnly
+  readOnly,
 }) => {
   const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
     focused && styles.focused,
     selected && styles.selected,
-    errors.length > 0 && styles.hasErrors
+    errors.length > 0 && styles.hasErrors,
   ])
 
   const handleOpen = (event: SyntheticEvent<HTMLSpanElement>): void => {

@@ -6,6 +6,6 @@ export default {
     {name: 'r', type: 'number', title: 'Red'},
     {name: 'g', type: 'number', title: 'Green'},
     {name: 'b', type: 'number', title: 'Blue'},
-    {name: 'a', type: 'number', title: 'Alpha'}
-  ]
+    {name: 'a', type: 'number', title: 'Alpha'},
+  ],
 }

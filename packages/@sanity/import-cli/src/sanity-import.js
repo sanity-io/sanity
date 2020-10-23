@@ -9,9 +9,9 @@ const prettyMs = require('pretty-ms')
 const sanityClient = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 
-const red = str => `\u001b[31m${str}\u001b[39m`
-const yellow = str => `\u001b[33m${str}\u001b[39m`
-const printError = str => console.error(red(`ERROR: ${str}`))
+const red = (str) => `\u001b[31m${str}\u001b[39m`
+const yellow = (str) => `\u001b[33m${str}\u001b[39m`
+const printError = (str) => console.error(red(`ERROR: ${str}`))
 
 const cli = meow(
   `
@@ -48,14 +48,14 @@ const cli = meow(
       'missing',
       'allow-failing-assets',
       'allow-assets-in-different-dataset',
-      'replace-assets'
+      'replace-assets',
     ],
     alias: {
       p: 'project',
       d: 'dataset',
       t: 'token',
-      c: 'asset-concurrency'
-    }
+      c: 'asset-concurrency',
+    },
   }
 )
 
@@ -105,11 +105,11 @@ const client = sanityClient({
   projectId,
   dataset,
   token,
-  useCdn: false
+  useCdn: false,
 })
 
 getStream()
-  .then(stream =>
+  .then((stream) =>
     sanityImport(stream, {
       client,
       operation,
@@ -117,7 +117,7 @@ getStream()
       allowFailingAssets,
       allowAssetsInDifferentDataset,
       assetConcurrency,
-      replaceAssets
+      replaceAssets,
     })
   )
   .then(({numDocs, warnings}) => {
@@ -128,7 +128,7 @@ getStream()
     console.log('Done! Imported %d documents to dataset "%s"\n', numDocs, dataset)
     printWarnings(warnings)
   })
-  .catch(err => {
+  .catch((err) => {
     if (currentProgress) {
       currentProgress.fail()
     }
@@ -137,7 +137,7 @@ getStream()
   })
 
 function printWarnings(warnings) {
-  const assetFails = warnings.filter(warn => warn.type === 'asset')
+  const assetFails = warnings.filter((warn) => warn.type === 'asset')
 
   if (!assetFails.length) {
     return
@@ -148,7 +148,7 @@ function printWarnings(warnings) {
     assetFails.length > 1 ? 'assets' : 'asset'
   )
 
-  warnings.forEach(warning => {
+  warnings.forEach((warning) => {
     console.warn(`  ${warning.url}`)
   })
 }
@@ -213,7 +213,7 @@ function onProgress(opts) {
 
   if (currentProgress && currentProgress.succeed) {
     const timeSpent = prettyMs(Date.now() - prevStepStart, {
-      secDecimalDigits: 2
+      secDecimalDigits: 2,
     })
     currentProgress.text = `[100%] ${prevStep} (${timeSpent})`
     currentProgress.succeed()
@@ -224,7 +224,7 @@ function onProgress(opts) {
   if (!lengthComputable) {
     spinInterval = setInterval(() => {
       const timeSpent = prettyMs(Date.now() - prevStepStart, {
-        secDecimalDigits: 2
+        secDecimalDigits: 2,
       })
       currentProgress.text = `${percent}${opts.step} (${timeSpent})`
       currentProgress.render()

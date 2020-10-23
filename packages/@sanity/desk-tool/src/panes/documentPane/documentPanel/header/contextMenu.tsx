@@ -19,13 +19,7 @@ interface DocumentPanelContextMenuProps {
 export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
   const {boundaryElement, isCollapsed, open, items, itemGroups, onAction, setOpen} = props
 
-  const id = useMemo(
-    () =>
-      Math.random()
-        .toString(36)
-        .substr(2, 6),
-    []
-  )
+  const id = useMemo(() => Math.random().toString(36).substr(2, 6), [])
 
   const handleAction = useCallback(
     (action: MenuItem) => {
@@ -52,7 +46,7 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
         kind: 'simple',
         padding: 'small',
         selected: open,
-        title: 'Show menu'
+        title: 'Show menu',
       }}
       menu={
         <Menu

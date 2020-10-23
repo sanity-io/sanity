@@ -13,7 +13,7 @@ const LABELS: {[key: string]: string} = {
   initial: 'created',
   editDraft: 'edited',
   publish: 'published',
-  unpublish: 'unpublished'
+  unpublish: 'unpublished',
 }
 
 const ICON_COMPONENTS: {[key: string]: React.ComponentType<Record<string, unknown>>} = {
@@ -23,7 +23,7 @@ const ICON_COMPONENTS: {[key: string]: React.ComponentType<Record<string, unknow
   initial: PlusIcon,
   editDraft: EditIcon,
   publish: PublishIcon,
-  unpublish: UnpublishIcon
+  unpublish: UnpublishIcon,
 }
 
 export function formatTimelineEventLabel(type: ChunkType) {
@@ -38,13 +38,13 @@ export function sinceTimelineProps(since: Chunk, rev: Chunk) {
   return {
     topSelection: rev,
     bottomSelection: since,
-    disabledBeforeSelection: true
+    disabledBeforeSelection: true,
   }
 }
 
 export function revTimelineProps(rev: Chunk) {
   return {
     topSelection: rev,
-    bottomSelection: rev
+    bottomSelection: rev,
   }
 }

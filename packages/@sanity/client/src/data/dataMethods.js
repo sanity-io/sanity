@@ -17,12 +17,12 @@ const getMutationQuery = (options = {}) => {
   return {
     returnIds: true,
     returnDocuments: excludeFalsey(options.returnDocuments, true),
-    visibility: options.visibility || 'sync'
+    visibility: options.visibility || 'sync',
   }
 }
 
-const isResponse = event => event.type === 'response'
-const getBody = event => event.body
+const isResponse = (event) => event.type === 'response'
+const getBody = (event) => event.body
 
 const indexBy = (docs, attr) =>
   docs.reduce((indexed, doc) => {
@@ -30,7 +30,7 @@ const indexBy = (docs, attr) =>
     return indexed
   }, Object.create(null))
 
-const toPromise = observable => observable.toPromise()
+const toPromise = (observable) => observable.toPromise()
 
 const getQuerySizeLimit = 11264
 
@@ -46,7 +46,7 @@ module.exports = {
   },
 
   fetch(query, params, options = {}) {
-    const mapResponse = options.filterResponse === false ? res => res : res => res.result
+    const mapResponse = options.filterResponse === false ? (res) => res : (res) => res.result
 
     const observable = this._dataRequest('query', {query, params}, options).pipe(map(mapResponse))
     return this.isPromiseAPI() ? toPromise(observable) : observable
@@ -56,7 +56,7 @@ module.exports = {
     const options = {uri: this.getDataUrl('doc', id), json: true}
     const observable = this._requestObservable(options).pipe(
       filter(isResponse),
-      map(event => event.body.documents && event.body.documents[0])
+      map((event) => event.body.documents && event.body.documents[0])
     )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable
@@ -66,9 +66,9 @@ module.exports = {
     const options = {uri: this.getDataUrl('doc', ids.join(',')), json: true}
     const observable = this._requestObservable(options).pipe(
       filter(isResponse),
-      map(event => {
-        const indexed = indexBy(event.body.documents || [], doc => doc._id)
-        return ids.map(id => indexed[id] || null)
+      map((event) => {
+        const indexed = indexBy(event.body.documents || [], (doc) => doc._id)
+        return ids.map((id) => indexed[id] || null)
       })
     )
 
@@ -138,13 +138,13 @@ module.exports = {
       body: useGet ? undefined : body,
       query: isMutation && getMutationQuery(options),
       timeout,
-      token
+      token,
     }
 
     return this._requestObservable(reqOptions).pipe(
       filter(isResponse),
       map(getBody),
-      map(res => {
+      map((res) => {
         if (!isMutation) {
           return res
         }
@@ -152,16 +152,18 @@ module.exports = {
         // Should we return documents?
         const results = res.results || []
         if (options.returnDocuments) {
-          return returnFirst ? results[0] && results[0].document : results.map(mut => mut.document)
+          return returnFirst
+            ? results[0] && results[0].document
+            : results.map((mut) => mut.document)
         }
 
         // Return a reduced subset
         const key = returnFirst ? 'documentId' : 'documentIds'
-        const ids = returnFirst ? results[0] && results[0].id : results.map(mut => mut.id)
+        const ids = returnFirst ? results[0] && results[0].id : results.map((mut) => mut.id)
         return {
           transactionId: res.transactionId,
           results: results,
-          [key]: ids
+          [key]: ids,
         }
       })
     )
@@ -171,5 +173,5 @@ module.exports = {
     const mutation = {[op]: doc}
     const opts = assign({returnFirst: true, returnDocuments: true}, options)
     return this.dataRequest('mutate', {mutations: [mutation]}, opts)
-  }
+  },
 }

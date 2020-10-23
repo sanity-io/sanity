@@ -6,6 +6,6 @@ export default {
   description: 'Performs a Sanity check',
   action: (args, context) =>
     sanityCheck({
-      dir: args.argsWithoutOptions[0] || context.workDir
-    })
+      dir: args.argsWithoutOptions[0] || context.workDir,
+    }),
 }

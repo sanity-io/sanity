@@ -5,7 +5,7 @@ import {
   DiscardChangesAction,
   UnpublishAction,
   DuplicateAction,
-  DeleteAction
+  DeleteAction,
 } from './defaultDocumentActions'
 
 // todo: this should be replaced with the defaultResolveDocumentActions function from ./defaultDocumentActions eventually,
@@ -17,6 +17,6 @@ export default function resolveDocumentActions(props) {
     isActionEnabled(schemaType, 'delete') && DiscardChangesAction,
     isActionEnabled(schemaType, 'delete') && UnpublishAction,
     isActionEnabled(schemaType, 'create') && DuplicateAction,
-    isActionEnabled(schemaType, 'delete') && DeleteAction
+    isActionEnabled(schemaType, 'delete') && DeleteAction,
   ].filter(Boolean)
 }

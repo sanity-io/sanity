@@ -28,9 +28,9 @@ export default function getDevServer(config = {}) {
     webpackDevMiddleware(compiler, {
       logLevel: 'silent',
       watchOptions: {
-        ignored: /node_modules/
+        ignored: /node_modules/,
       },
-      publicPath: webpackConfig.output.publicPath
+      publicPath: webpackConfig.output.publicPath,
     })
   )
 

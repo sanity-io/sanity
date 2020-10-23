@@ -17,7 +17,7 @@ class DevServerStatus extends PureComponent {
       connectionState: STATE_CONNECTING,
       hasHadConnection: false,
       buildState: events.EVENT_UP_TO_DATE,
-      reloadRequired: false
+      reloadRequired: false,
     }
   }
 
@@ -35,7 +35,7 @@ class DevServerStatus extends PureComponent {
     }
   }
 
-  handleEvent = evt => {
+  handleEvent = (evt) => {
     switch (evt.type) {
       case events.EVENT_DISCONNECTED:
         return this.setState({connectionState: STATE_CLOSED})
@@ -48,7 +48,7 @@ class DevServerStatus extends PureComponent {
       case events.EVENT_UP_TO_DATE:
         return this.setState(({reloadRequired: reloadWasRequired}) => ({
           buildState: evt.type,
-          reloadRequired: reloadWasRequired || evt.requiresReload || false
+          reloadRequired: reloadWasRequired || evt.requiresReload || false,
         }))
       default:
         if (evt.requiresReload && !this.state.reloadRequired) {

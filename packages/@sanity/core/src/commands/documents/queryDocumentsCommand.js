@@ -30,11 +30,7 @@ export default {
       throw new Error('Query must be specified')
     }
 
-    const client = dataset
-      ? apiClient()
-          .clone()
-          .config({dataset})
-      : apiClient()
+    const client = dataset ? apiClient().clone().config({dataset}) : apiClient()
 
     try {
       const docs = await client.fetch(query)
@@ -46,5 +42,5 @@ export default {
     } catch (err) {
       throw new Error(`Failed to run query:\n${err.message}`)
     }
-  }
+  },
 }

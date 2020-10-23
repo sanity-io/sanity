@@ -30,9 +30,9 @@ export default (typeDef, visitorContext) => {
       return {
         name,
         ...fieldType,
-        _problems: validateField(field, visitorContext).concat(_problems || [])
+        _problems: validateField(field, visitorContext).concat(_problems || []),
       }
     }),
-    _problems: problems
+    _problems: problems,
   }
 }

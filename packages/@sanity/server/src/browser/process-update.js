@@ -27,7 +27,7 @@ const applyOptions = {
     console.warn(
       `Ignored an error while updating module ${data.moduleId} (${data.type}): ${data.error.message}`
     )
-  }
+  },
 }
 
 function isUpToDate(hash) {
@@ -82,14 +82,14 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
         onUnaccepted: (...args) => {
           applyOptions.onUnaccepted(...args)
           callbacks.handleUnaccepted(...args)
-        }
+        },
       }
 
       const applyResult = module.hot.apply(options, applyCallback)
       // webpack 2 promise
       if (applyResult && applyResult.then) {
         // HotModuleReplacement.runtime.js refers to the result as `outdatedModules`
-        applyResult.then(outdatedModules => applyCallback(null, outdatedModules))
+        applyResult.then((outdatedModules) => applyCallback(null, outdatedModules))
         applyResult.catch(applyCallback)
       }
 
@@ -99,14 +99,14 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
     const result = module.hot.check(false, cb)
     // webpack 2 promise
     if (result && result.then) {
-      result.then(updatedModules => cb(null, updatedModules))
+      result.then((updatedModules) => cb(null, updatedModules))
       result.catch(cb)
     }
   }
 
   function logUpdates(updatedModules, renewedModules) {
     const unacceptedModules = updatedModules.filter(
-      moduleId => renewedModules && renewedModules.indexOf(moduleId) < 0
+      (moduleId) => renewedModules && renewedModules.indexOf(moduleId) < 0
     )
 
     if (unacceptedModules.length > 0) {
@@ -116,7 +116,7 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
           'This is usually because the modules which have changed ' +
           '(and their parents) do not know how to hot reload themselves. '
       )
-      unacceptedModules.forEach(moduleId => {
+      unacceptedModules.forEach((moduleId) => {
         console.warn(`[HMR]  - ${normalizeModulePath(moduleMap[moduleId] || moduleId).path}`)
       })
 
@@ -127,7 +127,7 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
       console.log('[HMR] Nothing hot updated.')
     } else {
       console.log('[HMR] Updated modules:')
-      renewedModules.forEach(moduleId => {
+      renewedModules.forEach((moduleId) => {
         console.log(`[HMR]  - ${normalizeModulePath(moduleMap[moduleId] || moduleId).path}`)
       })
     }
@@ -139,14 +139,14 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
 
   function triggerCallbacks(updatedModules, renewedModules) {
     const unacceptedModules = updatedModules.filter(
-      moduleId => renewedModules && renewedModules.indexOf(moduleId) < 0
+      (moduleId) => renewedModules && renewedModules.indexOf(moduleId) < 0
     )
 
     if (unacceptedModules.length > 0) {
       callbacks.handleUnaccepted({
-        modules: unacceptedModules.map(moduleId =>
+        modules: unacceptedModules.map((moduleId) =>
           normalizeModulePath(moduleMap[moduleId] || moduleId)
-        )
+        ),
       })
       return
     }
@@ -155,9 +155,9 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
       callbacks.handleNothingUpdated()
     } else {
       callbacks.handleUpdated({
-        modules: renewedModules.map(moduleId =>
+        modules: renewedModules.map((moduleId) =>
           normalizeModulePath(moduleMap[moduleId] || moduleId)
-        )
+        ),
       })
     }
 

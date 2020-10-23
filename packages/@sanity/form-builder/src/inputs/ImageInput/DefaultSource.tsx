@@ -40,7 +40,7 @@ class DefaultSource extends React.Component<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
-    isLoading: false
+    isLoading: false,
   }
 
   pageNo = 0
@@ -51,18 +51,18 @@ class DefaultSource extends React.Component<Props, State> {
 
     this.setState({isLoading: true})
 
-    return client.fetch(buildQuery(start, end)).then(result => {
-      this.setState(prevState => ({
+    return client.fetch(buildQuery(start, end)).then((result) => {
+      this.setState((prevState) => ({
         isLastPage: result.length < PER_PAGE,
         assets: prevState.assets.concat(result),
-        isLoading: false
+        isLoading: false,
       }))
     })
   }
 
-  handleDeleteFinished = id => {
-    this.setState(prevState => ({
-      assets: prevState.assets.filter(asset => asset._id !== id)
+  handleDeleteFinished = (id) => {
+    this.setState((prevState) => ({
+      assets: prevState.assets.filter((asset) => asset._id !== id),
     }))
   }
 
@@ -71,7 +71,7 @@ class DefaultSource extends React.Component<Props, State> {
   }
 
   select(id) {
-    const selected = this.state.assets.find(doc => doc._id === id)
+    const selected = this.state.assets.find((doc) => doc._id === id)
 
     if (selected) {
       this.props.onSelect([{kind: 'assetDocumentId', value: id}])
@@ -108,11 +108,11 @@ class DefaultSource extends React.Component<Props, State> {
     return (
       <DefaultDialog isOpen onClose={this.handleClose} size="large" title="Select image">
         <div className={styles.imageGrid}>
-          {assets.map(asset => (
+          {assets.map((asset) => (
             <Asset
               key={asset._id}
               asset={asset}
-              isSelected={selectedAssets.some(selected => selected._id === asset._id)}
+              isSelected={selectedAssets.some((selected) => selected._id === asset._id)}
               onClick={this.handleItemClick}
               onKeyPress={this.handleItemKeyPress}
               onDeleteFinished={this.handleDeleteFinished}
@@ -140,5 +140,5 @@ export default {
   name: 'sanity-default',
   title: 'Uploaded images',
   component: DefaultSource,
-  icon: ImageIcon
+  icon: ImageIcon,
 }

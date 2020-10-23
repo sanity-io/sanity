@@ -12,16 +12,16 @@ export default {
       type: 'string',
       title: 'Title',
       description: 'This is a basic string field',
-      readOnly: true
+      readOnly: true,
     },
     {
       name: 'slug',
       type: 'slug',
       readOnly: true,
       options: {
-        source: document => document.title,
-        maxLength: 96
-      }
+        source: (document) => document.title,
+        maxLength: 96,
+      },
     },
     {
       name: 'select',
@@ -34,18 +34,18 @@ export default {
         list: [
           {
             title: 'One (1)',
-            value: 'one'
+            value: 'one',
           },
           {
             title: 'Two (2)',
-            value: 'two'
+            value: 'two',
           },
           {
             title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
+            value: 'three',
+          },
+        ],
+      },
     },
     {
       name: 'radioSelectHorizontal',
@@ -60,25 +60,25 @@ export default {
         list: [
           {
             title: 'One (1)',
-            value: 'one'
+            value: 'one',
           },
           {
             title: 'Two (2)',
-            value: 'two'
+            value: 'two',
           },
           {
             title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
+            value: 'three',
+          },
+        ],
+      },
     },
     {
       name: 'switch',
       type: 'boolean',
       title: `I'm a switch`,
       readOnly: true,
-      description: 'A read only switch'
+      description: 'A read only switch',
     },
     {
       name: 'checkbox',
@@ -86,8 +86,8 @@ export default {
       title: 'Read only checkbox',
       readOnly: true,
       options: {
-        layout: 'checkbox'
-      }
+        layout: 'checkbox',
+      },
     },
     {
       name: 'selectObjectOfString',
@@ -97,15 +97,15 @@ export default {
       type: 'string',
       readOnly: true,
       options: {
-        list: ['one', 'two', 'three']
-      }
+        list: ['one', 'two', 'three'],
+      },
     },
     {
       title: 'Reference to book or author',
       name: 'multiTypeRef',
       type: 'reference',
       readOnly: true,
-      to: [{type: 'book'}, {type: 'author'}]
+      to: [{type: 'book'}, {type: 'author'}],
     },
     {
       name: 'anObject',
@@ -114,33 +114,33 @@ export default {
       readOnly: true,
       fields: [
         {name: 'first', type: 'string'},
-        {name: 'second', type: 'string'}
-      ]
+        {name: 'second', type: 'string'},
+      ],
     },
     {
       name: 'myObject',
       type: 'myObject',
       title: 'MyObject',
       description: 'The first field here should be the title',
-      readOnly: true
+      readOnly: true,
     },
     {
       title: 'Description',
       name: 'description',
       type: 'text',
-      readOnly: true
+      readOnly: true,
     },
     {
       title: 'Number',
       name: 'popularity',
       type: 'number',
-      readOnly: true
+      readOnly: true,
     },
     {
       title: 'Has the movie been released?',
       name: 'released',
       type: 'boolean',
-      readOnly: true
+      readOnly: true,
     },
     {
       title: 'Has the movie been released?',
@@ -148,15 +148,15 @@ export default {
       type: 'boolean',
       readOnly: true,
       options: {
-        layout: 'checkbox'
-      }
+        layout: 'checkbox',
+      },
     },
     {
       name: 'date',
       title: 'Date',
       description: 'A read only date',
       type: 'datetime',
-      readOnly: true
+      readOnly: true,
     },
     {
       name: 'tags',
@@ -166,7 +166,7 @@ export default {
       type: 'array',
       options: {layout: 'tags'},
       of: [{type: 'string'}],
-      readOnly: true
+      readOnly: true,
     },
     {
       name: 'readOnlyArray',
@@ -177,9 +177,9 @@ export default {
       of: [
         {
           title: 'A book',
-          type: 'book'
-        }
-      ]
+          type: 'book',
+        },
+      ],
     },
     {
       name: 'readOnlyImage',
@@ -192,20 +192,20 @@ export default {
           title: 'Caption',
           type: 'string',
           name: 'caption',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Attribution',
           name: 'attribution',
           type: 'string',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Extra',
           name: 'extra',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'readOnlyFile',
@@ -217,20 +217,20 @@ export default {
           title: 'Caption',
           type: 'string',
           name: 'caption',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Attribution',
           name: 'attribution',
           type: 'string',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Extra',
           name: 'extra',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'readOnlyArrayOfPrimitives',
@@ -241,17 +241,17 @@ export default {
       of: [
         {
           type: 'string',
-          title: 'String'
+          title: 'String',
         },
         {
           type: 'number',
-          title: 'Number'
+          title: 'Number',
         },
         {
           type: 'boolean',
-          title: 'Boolean'
-        }
-      ]
+          title: 'Boolean',
+        },
+      ],
     },
     {
       name: 'readOnlyArrayOfPredefinedOptions',
@@ -265,17 +265,17 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'name',
-              type: 'string'
-            }
+              type: 'string',
+            },
           ],
           preview: {
             select: {
               title: 'title',
-              name: 'name'
+              name: 'name',
             },
             prepare({title, name}) {
               return {
@@ -285,14 +285,14 @@ export default {
                     style={{
                       backgroundColor: name,
                       height: '100%',
-                      width: '100%'
+                      width: '100%',
                     }}
                   />
-                )
+                ),
               }
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       options: {
         direction: 'vertical',
@@ -300,9 +300,9 @@ export default {
           {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
-          {_type: 'color', title: 'Black', name: 'black', _key: 'black'}
-        ]
-      }
-    }
-  ]
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+        ],
+      },
+    },
+  ],
 }

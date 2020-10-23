@@ -8,16 +8,16 @@ export default class AuthorAnnotation extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     _ref: PropTypes.string,
-    _key: PropTypes.string
+    _key: PropTypes.string,
   }
 
   state = {
-    author: null
+    author: null,
   }
 
   fetchAuthor() {
     if (this.props._ref) {
-      return sanityClient.getDocument(this.props._ref).then(author => {
+      return sanityClient.getDocument(this.props._ref).then((author) => {
         this.setState({author: author})
       })
     }

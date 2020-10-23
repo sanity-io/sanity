@@ -7,23 +7,23 @@ export const objectWithNestedArray = {
   type: 'object',
   name: 'objectWithNestedArray',
   fields: [
-    ...range(20).map(n =>
+    ...range(20).map((n) =>
       n % 2 === 0
         ? {type: 'string', name: `fieldNo${n}`}
         : {type: 'array', name: `arrayNo${n}`, of: [{type: 'objectWithNestedArray'}]}
-    )
-  ]
+    ),
+  ],
 }
 export const collapsibleObject = {
   type: 'object',
   name: 'nestedCollapsibleObject',
   fields: [
-    ...range(4).map(n =>
+    ...range(4).map((n) =>
       n % 2 === 0
         ? {type: 'string', name: `fieldNo${n}`}
         : {type: 'nestedCollapsibleObject', name: `nestedCollapsibleObject${n}`}
-    )
-  ]
+    ),
+  ],
 }
 export default {
   name: 'presence',
@@ -36,7 +36,7 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: Rule => Rule.min(5).max(100)
+      validation: (Rule) => Rule.min(5).max(100),
     },
     {
       name: 'nested',
@@ -44,22 +44,22 @@ export default {
       fields: [
         {
           name: 'first',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'second',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'array',
       type: 'array',
       of: [
         {
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'customInputWithDefaultPresence',
@@ -67,38 +67,38 @@ export default {
       description:
         'This is a custom input component that delegates to the default presence component',
       type: 'object',
-      fields: range(4).map(row => ({
+      fields: range(4).map((row) => ({
         type: 'object',
         name: `row${row}`,
-        fields: range(8).map(cell => ({name: `cell${cell}`, type: 'string'}))
+        fields: range(8).map((cell) => ({name: `cell${cell}`, type: 'string'})),
       })),
-      inputComponent: CustomInputWithDefaultPresence
+      inputComponent: CustomInputWithDefaultPresence,
     },
     {
       name: 'customInputWithDialog',
       title: 'Custom input with dialog and overlay',
       description: 'This is an example of how to use a presence overlay inside a dialog',
       type: 'object',
-      fields: range(20).map(n => ({type: 'string', name: `fieldNo${n}`})),
-      inputComponent: CustomInputWithDialogOverlay
+      fields: range(20).map((n) => ({type: 'string', name: `fieldNo${n}`})),
+      inputComponent: CustomInputWithDialogOverlay,
     },
     {
       name: 'collapsible',
       title: 'Collapsible',
       type: 'objectWithNestedArray',
-      options: {collapsible: true, collapsed: true}
+      options: {collapsible: true, collapsed: true},
     },
     {
       name: 'portableText',
       title: 'Portable text',
       type: 'array',
-      of: [{type: 'block'}, {type: 'objectWithNestedArray'}]
+      of: [{type: 'block'}, {type: 'objectWithNestedArray'}],
     },
     {
       name: 'nestedArray',
       title: 'Nested array test',
       type: 'array',
-      of: [{type: 'objectWithNestedArray'}]
+      of: [{type: 'objectWithNestedArray'}],
     },
     {
       name: 'translations',
@@ -107,25 +107,25 @@ export default {
       fields: [
         {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
         {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)'},
-        {name: 'se', type: 'string', title: 'Swedish'}
-      ]
+        {name: 'se', type: 'string', title: 'Swedish'},
+      ],
     },
     {
       name: 'author',
       title: 'Author',
       type: 'reference',
-      to: {type: 'author', title: 'Author'}
+      to: {type: 'author', title: 'Author'},
     },
     {
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
-      options: {hotspot: true}
+      options: {hotspot: true},
     },
     {
       name: 'prologue',
       title: 'Prologue',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'address',
@@ -133,19 +133,19 @@ export default {
       fields: [
         {
           name: 'street',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'country',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'reviews',
       title: 'Reviews',
       type: 'array',
-      of: [{type: 'review'}]
-    }
-  ]
+      of: [{type: 'review'}],
+    },
+  ],
 }

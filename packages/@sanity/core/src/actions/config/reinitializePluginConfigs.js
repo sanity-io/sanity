@@ -22,7 +22,7 @@ async function reinitializePluginConfigs(options, flags = {}) {
   return missingConfigs.length > 0 ? saveNewChecksums(configPlugins) : Promise.resolve()
 
   function hasLocalConfig(plugin) {
-    return localConfigExists(workDir, plugin.name).then(configDeployed =>
+    return localConfigExists(workDir, plugin.name).then((configDeployed) =>
       Object.assign({}, plugin, {configDeployed})
     )
   }
@@ -68,7 +68,7 @@ async function reinitializePluginConfigs(options, flags = {}) {
 
   function saveNewChecksums(plugins) {
     const sums = Object.assign({}, localChecksums)
-    plugins.forEach(plugin => {
+    plugins.forEach((plugin) => {
       if (!sums[plugin.name]) {
         sums[plugin.name] = plugin.configChecksum
       }
@@ -112,11 +112,11 @@ function getPluginConfigPath(plugin) {
 
 function pluginHasDistConfig(plugin) {
   const configPath = getPluginConfigPath(plugin)
-  return pathExists(configPath).then(exists => exists && plugin)
+  return pathExists(configPath).then((exists) => exists && plugin)
 }
 
 function getPluginConfigChecksum(plugin) {
-  return generateConfigChecksum(getPluginConfigPath(plugin)).then(configChecksum =>
+  return generateConfigChecksum(getPluginConfigPath(plugin)).then((configChecksum) =>
     Object.assign({}, plugin, {configChecksum})
   )
 }

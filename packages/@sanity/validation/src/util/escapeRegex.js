@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-module.exports = string => {
+module.exports = (string) => {
   // Escape ^$.*+-?=!:|\/()[]{},
   return string.replace(/[\^\$\.\*\+\-\?\=\!\:\|\\\/\(\)\[\]\{\}\,]/g, '\\$&')
 }

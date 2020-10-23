@@ -11,7 +11,7 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 export function TagsTestStory() {
@@ -27,7 +27,7 @@ export function TagsTestStory() {
     'Moore',
     'Intel',
     'Ada',
-    'Enigma'
+    'Enigma',
   ]
 
   return (
@@ -58,13 +58,13 @@ class DefaultTextFieldTagsImplementation extends React.PureComponent<
     super(props)
 
     this.state = {
-      tags: props.tags || []
+      tags: props.tags || [],
     }
   }
 
   handleChange = (tags: string[]) => {
     this.setState({
-      tags: tags
+      tags: tags,
     })
   }
 

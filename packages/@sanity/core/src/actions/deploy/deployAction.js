@@ -26,7 +26,7 @@ export default async (args, context) => {
       (await prompt.single({
         type: 'confirm',
         message: `"${relativeOutput}" is not empty, do you want to proceed?`,
-        default: false
+        default: false,
       }))
 
     if (!shouldProceed) {
@@ -39,7 +39,7 @@ export default async (args, context) => {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   // Check that the project has a studio hostname
@@ -55,9 +55,9 @@ export default async (args, context) => {
 
     studioHostname = await prompt.single({
       type: 'input',
-      filter: inp => inp.replace(/\.sanity\.studio$/i, ''),
+      filter: (inp) => inp.replace(/\.sanity\.studio$/i, ''),
       message: 'Studio hostname (<value>.sanity.studio):',
-      validate: name => validateHostname(name, client)
+      validate: (name) => validateHostname(name, client),
     })
   }
 
@@ -91,7 +91,7 @@ export default async (args, context) => {
       method: 'POST',
       url: '/deploy',
       body: tarball,
-      maxRedirects: 0
+      maxRedirects: 0,
     })
 
     spinner.succeed()
@@ -143,7 +143,7 @@ async function checkDir(sourceDir) {
             [
               `"${sourceDir}/index.html" does not exist -`,
               '[SOURCE_DIR] must be a directory containing',
-              'a Sanity studio built using "sanity build"'
+              'a Sanity studio built using "sanity build"',
             ].join(' ')
           )
         : err

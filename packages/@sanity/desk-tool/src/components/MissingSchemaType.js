@@ -12,7 +12,7 @@ const getUnknownTypeFallback = (id, typeName) => ({
     </span>
   ),
   subtitle: <span style={{fontStyle: 'italic'}}>Document: {id}</span>,
-  media: WarningIcon
+  media: WarningIcon,
 })
 
 export default class MissingSchemaType extends React.Component {
@@ -28,5 +28,5 @@ export default class MissingSchemaType extends React.Component {
 }
 MissingSchemaType.propTypes = {
   layout: PropTypes.string,
-  value: PropTypes.object
+  value: PropTypes.object,
 }

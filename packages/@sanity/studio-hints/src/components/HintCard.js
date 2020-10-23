@@ -44,7 +44,7 @@ function HintCard(props) {
 HintCard.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   card: PropTypes.object.isRequired,
-  repoId: PropTypes.string.isRequired
+  repoId: PropTypes.string.isRequired,
   // onCardClick: PropTypes.func.isRequired
 }
 

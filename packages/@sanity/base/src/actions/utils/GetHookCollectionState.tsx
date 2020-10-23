@@ -6,7 +6,7 @@ import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 const actionIds = new WeakMap()
 
 let counter = 0
-const getHookId = action => {
+const getHookId = (action) => {
   if (actionIds.has(action)) {
     return actionIds.get(action)
   }
@@ -58,7 +58,7 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
         ricHandle.current = null
 
         if (mountedRef.current) {
-          setTick(tick => tick + 1)
+          setTick((tick) => tick + 1)
         }
       })
     },
@@ -75,18 +75,18 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
     }
   }, [])
 
-  const onReset = React.useCallback(id => {
-    setKeys(currentKeys => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
+  const onReset = React.useCallback((id) => {
+    setKeys((currentKeys) => ({...currentKeys, [id]: (currentKeys[id] || 0) + 1}))
     if (propsOnReset) {
       propsOnReset()
     }
   }, [])
 
-  const hookIds = hooks.map(hook => getHookId(hook))
+  const hookIds = hooks.map((hook) => getHookId(hook))
 
   return (
     <>
-      {hooks.map(hook => {
+      {hooks.map((hook) => {
         const id = getHookId(hook)
         const key = keys[id] || 0
         return (
@@ -104,7 +104,7 @@ export function GetHookCollectionState<T, K>(props: Props<T, K>) {
 
       <Component
         {...rest}
-        states={hookIds.map(id => statesRef.current[id]?.value).filter(Boolean)}
+        states={hookIds.map((id) => statesRef.current[id]?.value).filter(Boolean)}
       />
     </>
   )

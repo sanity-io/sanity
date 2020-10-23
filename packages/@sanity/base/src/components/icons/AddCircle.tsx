@@ -5,7 +5,7 @@ import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2
+  strokeWidth: 1.2,
 }
 
 const AddCircle = () => (

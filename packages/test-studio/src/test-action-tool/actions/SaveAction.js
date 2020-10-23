@@ -6,6 +6,6 @@ export default function SaveAction(docInfo) {
     label: 'Save',
     onHandle: () => {
       commit.execute()
-    }
+    },
   }
 }

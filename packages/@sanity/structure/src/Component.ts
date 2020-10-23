@@ -122,7 +122,7 @@ export class ComponentBuilder implements Serializable {
       ),
       menuItemGroups: (this.spec.menuItemGroups || []).map((item, i) =>
         maybeSerializeMenuItemGroup(item, i, options.path)
-      )
+      ),
     }
   }
 

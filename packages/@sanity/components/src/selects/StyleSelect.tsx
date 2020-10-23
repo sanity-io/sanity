@@ -35,20 +35,20 @@ const modifiers = [
     name: 'preventOverflow',
     options: {
       rootBoundary: 'viewport',
-      padding: 0
-    }
+      padding: 0,
+    },
   },
   {
     name: 'offset',
     options: {
-      offset: [0, 0]
-    }
+      offset: [0, 0],
+    },
   },
   {
     name: 'flip',
     options: {
-      enabled: false
-    }
+      enabled: false,
+    },
   },
   {
     name: 'maxHeight',
@@ -62,8 +62,8 @@ const modifiers = [
         const offsetHeight = (refElement as HTMLElement).offsetHeight
         state.styles.popper.maxHeight = `${offsetHeight - 3 * 16}px`
       }
-    }
-  } as Modifier<'maxHeight', any>
+    },
+  } as Modifier<'maxHeight', any>,
 ]
 
 const StyleSelectList = React.forwardRef(
@@ -86,11 +86,11 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
     padding: 'default',
     placeholder: undefined,
     transparent: false,
-    value: undefined
+    value: undefined,
   }
 
   state = {
-    showList: false
+    showList: false,
   }
 
   buttonElement = React.createRef<HTMLButtonElement>()
@@ -141,7 +141,7 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
     })
   }
 
-  handleButtonClick = event => {
+  handleButtonClick = (event) => {
     if (this.state.showList) {
       this.handleCloseList()
     } else {
@@ -187,7 +187,7 @@ class StyleSelect extends React.PureComponent<StyleSelectProps> {
       padding,
       placeholder,
       renderItem,
-      transparent
+      transparent,
     } = this.props
 
     const {showList} = this.state

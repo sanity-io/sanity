@@ -9,7 +9,7 @@ function createItemStyles() {
     date: {width: `${Math.random() * 10 + 15}%`},
     title: {width: `${Math.random() * 80 + 15}%`},
     subtitle: {width: `${Math.random() * 80 + 15}%`},
-    description: {width: `${Math.random() * 80 + 15}%`}
+    description: {width: `${Math.random() * 80 + 15}%`},
   }
 }
 

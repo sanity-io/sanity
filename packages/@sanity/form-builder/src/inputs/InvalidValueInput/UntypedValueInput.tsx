@@ -14,7 +14,7 @@ type Props = {
 function SetMissingTypeButton({
   value,
   targetType,
-  onChange
+  onChange,
 }: {
   value: Record<string, unknown>
   targetType: string
@@ -34,7 +34,7 @@ function SetMissingTypeButton({
 function UnsetItemButton({
   value,
   onChange,
-  validTypes
+  validTypes,
 }: {
   value: Record<string, unknown>
   validTypes: string[]
@@ -73,7 +73,7 @@ export function UntypedValueInput({validTypes, value, onChange}: Props) {
         <div>
           The following types are valid here according to schema:{' '}
           <ul>
-            {validTypes.map(validType => (
+            {validTypes.map((validType) => (
               <li key={validType}>
                 <code>{validType}</code>
               </li>

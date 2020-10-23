@@ -38,19 +38,19 @@ class PresenceStore {
   }
 
   // The observable that all subscribers will use to track state changes
-  presence = new Observable(observer => {
+  presence = new Observable((observer) => {
     // Send initial state
     observer.next(this.getStateReport())
 
     // Set up subscription to track subsequent changes
-    const reporter = value => {
+    const reporter = (value) => {
       observer.next(value)
     }
     this.subscriberCallbacks.push(reporter)
 
     // Create and return unsubscriber
     const unsubscribe = () => {
-      this.subscriberCallbacks = this.subscriberCallbacks.filter(cb => cb != reporter)
+      this.subscriberCallbacks = this.subscriberCallbacks.filter((cb) => cb != reporter)
     }
     return unsubscribe
   })
@@ -80,7 +80,7 @@ class PresenceStore {
     this.timestamps.set(key, Date.now())
   }
 
-  handleMessage = msg => {
+  handleMessage = (msg) => {
     // Ignore messages from ourselves
     if (msg.m.session == this.sessionId) {
       return
@@ -104,7 +104,7 @@ class PresenceStore {
   // Purge state objects for clients that have not reported for STATE_TIMEOUT_INTERVAL millis
   performPurge = () => {
     const now = Date.now()
-    Array.from(this.states.keys()).forEach(key => {
+    Array.from(this.states.keys()).forEach((key) => {
       const age = now - this.timestamps.get(key)
       if (age > STATE_TIMEOUT_INTERVAL) {
         this.states.delete(key)
@@ -124,12 +124,12 @@ class PresenceStore {
   getStateReport() {
     return Array.from(this.states.keys())
       .sort()
-      .map(key => this.states.get(key))
+      .map((key) => this.states.get(key))
   }
 
   reportChangesToAllSubscribers = () => {
     const report = this.getStateReport()
-    this.subscriberCallbacks.forEach(cb => cb(report))
+    this.subscriberCallbacks.forEach((cb) => cb(report))
   }
 
   sendMyState() {
@@ -148,7 +148,7 @@ class PresenceStore {
     return this.connection.send({
       type: msgType,
       session: this.sessionId,
-      ...msg
+      ...msg,
     })
   }
 }

@@ -54,7 +54,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
   static defaultProps = {
     level: 0,
-    markers: []
+    markers: [],
   }
 
   componentDidMount() {
@@ -115,7 +115,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
     return itemTypeName === 'object' && type.of.length === 1
       ? type.of[0]
-      : type.of.find(memberType => memberType.name === itemTypeName)
+      : type.of.find((memberType) => memberType.name === itemTypeName)
   }
 
   getTitle(): string {
@@ -155,12 +155,12 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
       readOnly,
       filterField,
       presence,
-      compareValue
+      compareValue,
     } = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
-    const childMarkers = markers.filter(marker => marker.path.length > 1)
-    const childPresence = presence.filter(_presence => _presence.path.length > 1)
+    const childMarkers = markers.filter((marker) => marker.path.length > 1)
+    const childPresence = presence.filter((_presence) => _presence.path.length > 1)
     const content = (
       <FormBuilderInput
         type={memberType}
@@ -231,13 +231,13 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const validation = markers.filter(isValidationMarker)
     const scopedValidation = validation
-      .map(marker => {
+      .map((marker) => {
         if (marker.path.length <= 1) {
           return marker
         }
         const level = marker.level === 'error' ? 'errors' : 'warnings'
         return Object.assign({}, marker, {
-          item: marker.item.cloneWithMessage(`Contains ${level}`)
+          item: marker.item.cloneWithMessage(`Contains ${level}`),
         })
       })
       .filter(Boolean)

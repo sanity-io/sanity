@@ -44,29 +44,29 @@ export function Tooltip(
         name: 'arrow',
         options: {
           element: arrowElement,
-          padding: 4
-        }
+          padding: 4,
+        },
       },
       {
         name: 'preventOverflow',
         options: {
           altAxis: true,
           boundary: ctx.boundaryElement || undefined,
-          padding: 4
-        }
+          padding: 4,
+        },
       },
       {
         name: 'offset',
-        options: {offset: [0, 3]}
+        options: {offset: [0, 3]},
       },
       {
         name: 'flip',
         options: {
           allowedAutoPlacements: props.allowedAutoPlacements,
-          fallbackPlacements: props.fallbackPlacements
-        }
-      }
-    ]
+          fallbackPlacements: props.fallbackPlacements,
+        },
+      },
+    ],
   })
   const {forceUpdate} = popper
   const [isOpen, setIsOpen] = useState(false)
@@ -104,7 +104,7 @@ export function Tooltip(
         onFocus: handleFocus,
         onMouseEnter: handleMouseEnter,
         onMouseLeave: handleMouseLeave,
-        ref: setReferenceElement
+        ref: setReferenceElement,
       })}
 
       {isOpen && (

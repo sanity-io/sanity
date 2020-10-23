@@ -29,6 +29,6 @@ module.exports = function parseArguments(argv = process.argv) {
 
     extOptions, // forwarded to commands
     argsWithoutOptions, // remaining arguments
-    extraArguments // arguments after the ended argument list (--)
+    extraArguments, // arguments after the ended argument list (--)
   }
 }

@@ -45,11 +45,7 @@ export default {
     const {replace, missing, watch, id, dataset} = args.extOptions
     const [file] = args.argsWithoutOptions
     const useJson5 = args.extOptions.json5
-    const client = dataset
-      ? apiClient()
-          .clone()
-          .config({dataset})
-      : apiClient()
+    const client = dataset ? apiClient().clone().config({dataset}) : apiClient()
 
     if (replace && missing) {
       throw new Error('Cannot use both --replace and --missing')
@@ -124,7 +120,7 @@ export default {
         }
       }
     }
-  }
+  },
 }
 
 function registerUnlinkOnSigInt(tmpFile) {
@@ -142,7 +138,7 @@ function writeDocuments(documents, operation, client) {
   }
 
   docs.forEach(validateDocument)
-  return client.transaction(docs.map(doc => ({[operation]: doc}))).commit()
+  return client.transaction(docs.map((doc) => ({[operation]: doc}))).commit()
 }
 
 function validateDocument(doc, index, arr) {
@@ -164,11 +160,11 @@ function getErrorMessage(message, index, isSingle) {
 function getResultMessage(result, operation) {
   const joiner = '\n  - '
   if (operation === 'createOrReplace') {
-    return `Upserted:\n  - ${result.results.map(res => res.id).join(joiner)}`
+    return `Upserted:\n  - ${result.results.map((res) => res.id).join(joiner)}`
   }
 
   if (operation === 'create') {
-    return `Created:\n  - ${result.results.map(res => res.id).join(joiner)}`
+    return `Created:\n  - ${result.results.map((res) => res.id).join(joiner)}`
   }
 
   // "Missing" (createIfNotExists)
@@ -184,7 +180,7 @@ function getResultMessage(result, operation) {
   if (created.length > 0 && skipped.length > 0) {
     return [
       `Created:\n  - ${created.join(joiner)}`,
-      `Skipped (already exists):${joiner}${skipped.join(joiner)}`
+      `Skipped (already exists):${joiner}${skipped.join(joiner)}`,
     ].join('\n\n')
   } else if (created.length > 0) {
     return `Created:\n  - ${created.join(joiner)}`

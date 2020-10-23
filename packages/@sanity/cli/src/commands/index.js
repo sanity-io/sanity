@@ -25,5 +25,5 @@ export default [
   helpCommand,
   projectsGroup,
   listProjectsCommand,
-  codemodCommand
+  codemodCommand,
 ]

@@ -18,22 +18,22 @@ function createUrl(slug, type) {
 
 class SanityTutorials extends React.Component {
   static propTypes = {
-    templateRepoId: PropTypes.string
+    templateRepoId: PropTypes.string,
   }
 
   static defaultProps = {
-    templateRepoId: null
+    templateRepoId: null,
   }
 
   state = {
-    feedItems: []
+    feedItems: [],
   }
 
   componentDidMount() {
     const {templateRepoId} = this.props
-    this.subscription = getFeed(templateRepoId).subscribe(response => {
+    this.subscription = getFeed(templateRepoId).subscribe((response) => {
       this.setState({
-        feedItems: response.items
+        feedItems: response.items,
       })
     })
   }
@@ -54,7 +54,7 @@ class SanityTutorials extends React.Component {
           <h1 className={styles.title}>{title}</h1>
         </header>
         <ul className={styles.grid}>
-          {feedItems.map(feedItem => {
+          {feedItems.map((feedItem) => {
             if (!feedItem.title || (!feedItem.guideOrTutorial && !feedItem.externalLink)) {
               return null
             }
@@ -71,10 +71,7 @@ class SanityTutorials extends React.Component {
                   presenterName={presenter.name}
                   presenterSubtitle={subtitle}
                   showPlayIcon={feedItem.hasVideo}
-                  posterURL={urlBuilder
-                    .image(feedItem.poster)
-                    .height(360)
-                    .url()}
+                  posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
                 />
               </li>
             )

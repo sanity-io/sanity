@@ -9,7 +9,7 @@ import {
   filter,
   distinctUntilChanged,
   catchError,
-  debounceTime
+  debounceTime,
 } from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
@@ -22,28 +22,30 @@ import {
   templateExists,
   getTemplateById,
   getTemplatesBySchemaType,
-  resolveInitialValue
+  resolveInitialValue,
 } from '@sanity/base/initial-value-templates'
 
-const withInitialValue = Pane => {
-  const WithInitialValueStream = streamingComponent(props$ =>
+const withInitialValue = (Pane) => {
+  const WithInitialValueStream = streamingComponent((props$) =>
     props$.pipe(
-      switchMap(props => {
+      switchMap((props) => {
         const {options, paneContext, ...paneProps} = props
         // See if the document ID has a draft or a published document
         return merge(
-          observePaths(getDraftId(options.id), ['_type']).pipe(map(draft => ({draft}))),
-          observePaths(getPublishedId(options.id), ['_type']).pipe(map(published => ({published})))
+          observePaths(getDraftId(options.id), ['_type']).pipe(map((draft) => ({draft}))),
+          observePaths(getPublishedId(options.id), ['_type']).pipe(
+            map((published) => ({published}))
+          )
         ).pipe(
           scan((prev, res) => ({...prev, ...res}), {}),
           // Wait until we know the state of both draft and published
-          filter(res => 'draft' in res && 'published' in res),
-          map(res => res.draft || res.published),
+          filter((res) => 'draft' in res && 'published' in res),
+          map((res) => res.draft || res.published),
           // Only update if we didn't previously have a document but we now do
           distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
           // Prevent rapid re-resolving when transitioning between different templates
           debounceTime(25),
-          switchMap(document => {
+          switchMap((document) => {
             const {templateName, parameters} = getInitialValueProps(document, props, paneContext)
             const shouldResolve = Boolean(templateName)
             const paneOptions = resolvePaneOptions(props, templateName, document)
@@ -62,7 +64,7 @@ const withInitialValue = Pane => {
             return merge(
               of({isResolving: true}),
               resolveInitialValueWithParameters(templateName, parameters).pipe(
-                catchError(resolveError => {
+                catchError((resolveError) => {
                   /* eslint-disable no-console */
                   console.group('Failed to resolve initial value')
                   console.error(resolveError)
@@ -104,9 +106,9 @@ const withInitialValue = Pane => {
     )
   )
 
-  const WithInitialValueWrapper = props => (
+  const WithInitialValueWrapper = (props) => (
     <PaneRouterContext.Consumer>
-      {context => <WithInitialValueStream {...props} paneContext={context} />}
+      {(context) => <WithInitialValueStream {...props} paneContext={context} />}
     </PaneRouterContext.Consumer>
   )
 
@@ -153,7 +155,7 @@ function resolveInitialValueWithParameters(templateName, parameters) {
   }
 
   return from(resolveInitialValue(getTemplateById(templateName), parameters)).pipe(
-    map(initialValue => ({isResolving: false, initialValue}))
+    map((initialValue) => ({isResolving: false, initialValue}))
   )
 }
 

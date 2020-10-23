@@ -11,13 +11,13 @@ export default {
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'location',
       type: 'geopoint',
       title: 'A geopoint',
-      description: 'This is a geopoint field'
+      description: 'This is a geopoint field',
     },
     {
       name: 'arrayOfLocations',
@@ -26,15 +26,15 @@ export default {
         {
           type: 'geopoint',
           title: 'A geopoint',
-          description: 'This is a geopoint field'
-        }
-      ]
-    }
+          description: 'This is a geopoint field',
+        },
+      ],
+    },
   ],
   preview: {
     select: {
       title: 'title',
-      location: 'location'
+      location: 'location',
     },
     prepare({title, location}) {
       const {apiKey} = config
@@ -53,8 +53,8 @@ export default {
               alt={title}
             />
           )
-        }
+        },
       }
-    }
-  }
+    },
+  },
 }

@@ -3,7 +3,7 @@
 import React from 'react'
 
 const strokeStyle = {
-  fill: 'currentColor'
+  fill: 'currentColor',
 }
 
 export default function EllipsisIcon() {

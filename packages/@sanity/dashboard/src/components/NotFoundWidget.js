@@ -18,12 +18,12 @@ NotFoundWidget.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   children: PropTypes.any,
   // eslint-disable-next-line react/forbid-prop-types
-  title: PropTypes.any
+  title: PropTypes.any,
 }
 
 NotFoundWidget.defaultProps = {
   children: null,
-  title: null
+  title: null,
 }
 
 export default NotFoundWidget

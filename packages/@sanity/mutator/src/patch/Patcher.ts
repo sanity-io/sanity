@@ -31,7 +31,7 @@ export default class Patcher {
     } else {
       throw new Error('Cannot apply patch to document with no _id')
     }
-    this.patches.forEach(patch => {
+    this.patches.forEach((patch) => {
       if (patch.id !== id) {
         // Ignore patches that are not targetted at this document
         // console.log("Ignored patch because id did not match document id", patch.id, id)
@@ -55,9 +55,9 @@ function process(matcher, accessor) {
   // accessor(s) for each target (there might be more than one, since the targets may
   // be ranges) and run the provided matcher on those accessors.
   const {leads, delivery} = matcher.match(accessor)
-  leads.forEach(lead => {
+  leads.forEach((lead) => {
     if (lead.target.isIndexReference()) {
-      lead.target.toIndicies().forEach(i => {
+      lead.target.toIndicies().forEach((i) => {
         result = result.setIndexAccessor(i, process(lead.matcher, result.getIndex(i)))
       })
     } else if (lead.target.isAttributeReference()) {

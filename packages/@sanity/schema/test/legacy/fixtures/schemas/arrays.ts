@@ -6,9 +6,9 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'car',
@@ -19,17 +19,17 @@ export default {
         {
           name: 'brand',
           title: 'Car brand',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'model',
           title: 'Car model',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'features',
           title: 'Features',
-          type: 'tags'
+          type: 'tags',
         },
         {
           name: 'relatedCars',
@@ -39,11 +39,11 @@ export default {
           of: [
             {
               title: 'Related car',
-              type: 'car'
-            }
-          ]
-        }
-      ]
+              type: 'car',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'cars',
@@ -54,7 +54,7 @@ export default {
           name: 'tags',
           type: 'tags',
           title: 'Array of string (defined type)',
-          description: 'This array are defined in types.'
+          description: 'This array are defined in types.',
         },
         {
           name: 'customTags',
@@ -63,9 +63,9 @@ export default {
           description: 'This array are defined in the field.',
           of: [
             {
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'car',
@@ -75,9 +75,9 @@ export default {
           of: [
             {
               title: 'Car in a list',
-              type: 'car'
-            }
-          ]
+              type: 'car',
+            },
+          ],
         },
         {
           name: 'mixed',
@@ -87,13 +87,13 @@ export default {
           of: [
             {
               type: 'string',
-              title: 'String'
+              title: 'String',
             },
             {
               type: 'car',
-              title: 'Car'
-            }
-          ]
+              title: 'Car',
+            },
+          ],
         },
         {
           name: 'carGrid',
@@ -101,14 +101,14 @@ export default {
           title: 'Array of cars in a grid',
           description: 'This array are defined in the field.',
           options: {
-            view: 'grid'
+            view: 'grid',
           },
           of: [
             {
               title: 'Car',
-              type: 'car'
-            }
-          ]
+              type: 'car',
+            },
+          ],
         },
         {
           name: 'carsSortable',
@@ -116,16 +116,16 @@ export default {
           title: 'Array of cars in a list, sortable',
           description: 'This array are defined in the field.',
           options: {
-            sortable: true
+            sortable: true,
           },
           of: [
             {
               title: 'Car',
-              type: 'car'
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              type: 'car',
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default class PreviewSubscriber extends React.Component<Props> {
-  renderChild = isVisible => {
+  renderChild = (isVisible) => {
     const {children, type, value, ordering, fields, ...props} = this.props
     // isVisible may be null which means undetermined
     return isVisible === null ? null : (
@@ -34,7 +34,7 @@ export default class PreviewSubscriber extends React.Component<Props> {
             isLive: true,
             error,
             type,
-            ordering
+            ordering,
           })
         }
       </ObserveForPreview>

@@ -5,7 +5,7 @@ import {PreviewComponent} from '../../../preview/types'
 
 export const DatetimePreview: PreviewComponent<string> = function DatetimePreview({
   value,
-  schemaType
+  schemaType,
 }) {
   return <>{formatDate(value, schemaType)}</>
 }

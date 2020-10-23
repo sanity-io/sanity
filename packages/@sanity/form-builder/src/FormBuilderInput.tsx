@@ -51,15 +51,15 @@ export class FormBuilderInput extends React.Component<Props> {
   static contextTypes = {
     presence: ENABLE_CONTEXT,
     formBuilder: ENABLE_CONTEXT,
-    getValuePath: ENABLE_CONTEXT
+    getValuePath: ENABLE_CONTEXT,
   }
   static childContextTypes = {
-    getValuePath: ENABLE_CONTEXT
+    getValuePath: ENABLE_CONTEXT,
   }
   static defaultProps = {
     focusPath: EMPTY_PATH,
     path: EMPTY_PATH,
-    markers: EMPTY_MARKERS
+    markers: EMPTY_MARKERS,
   }
   _input: FormBuilderInput | HTMLDivElement | null
   getValuePath = () => {
@@ -68,7 +68,7 @@ export class FormBuilderInput extends React.Component<Props> {
 
   getChildContext() {
     return {
-      getValuePath: this.getValuePath
+      getValuePath: this.getValuePath,
     }
   }
 
@@ -141,14 +141,14 @@ export class FormBuilderInput extends React.Component<Props> {
     )
   }
 
-  handleChange = patchEvent => {
+  handleChange = (patchEvent) => {
     const {type, onChange} = this.props
     if (type.readOnly) {
       return
     }
     onChange(patchEvent)
   }
-  handleFocus = nextPath => {
+  handleFocus = (nextPath) => {
     const {path, onFocus, focusPath} = this.props
     if (!onFocus) {
       // eslint-disable-next-line no-console
@@ -214,10 +214,10 @@ export class FormBuilderInput extends React.Component<Props> {
     let childMarkers = markers
     if (!isRoot) {
       childMarkers = markers
-        .filter(marker => PathUtils.startsWith(path, marker.path))
-        .map(marker => ({
+        .filter((marker) => PathUtils.startsWith(path, marker.path))
+        .map((marker) => ({
           ...marker,
-          path: PathUtils.trimChildPath(path, marker.path)
+          path: PathUtils.trimChildPath(path, marker.path),
         }))
     }
     const childFocusPath = this.getChildFocusPath()
@@ -228,10 +228,10 @@ export class FormBuilderInput extends React.Component<Props> {
       readOnly || !presence || presence.length === 0
         ? EMPTY_PRESENCE
         : presence
-            .filter(item => PathUtils.startsWith(path, item.path))
-            .map(item => ({
+            .filter((item) => PathUtils.startsWith(path, item.path))
+            .map((item) => ({
               ...item,
-              path: PathUtils.trimChildPath(path, item.path)
+              path: PathUtils.trimChildPath(path, item.path),
             }))
 
     const childCompareValue = PathUtils.get(compareValue, path)

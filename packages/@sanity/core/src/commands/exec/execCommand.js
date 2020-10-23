@@ -18,5 +18,5 @@ export default {
   signature: 'SCRIPT',
   description: 'Runs a script in Sanity context',
   helpText,
-  action: lazyRequire(require.resolve('../../actions/exec/execScript'))
+  action: lazyRequire(require.resolve('../../actions/exec/execScript')),
 }

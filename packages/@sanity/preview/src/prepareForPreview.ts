@@ -47,7 +47,7 @@ const errorCollector = (() => {
     },
     clear() {
       errorsByType = {}
-    }
+    },
   }
 })()
 
@@ -55,7 +55,7 @@ const reportErrors = debounce(() => {
   /* eslint-disable no-console */
   const errorsByType = errorCollector.getAll()
   const uniqueErrors = flatten(
-    Object.keys(errorsByType).map(typeName => {
+    Object.keys(errorsByType).map((typeName) => {
       const entries = errorsByType[typeName]
       return uniqBy(entries, (entry: any) => entry.error.message)
     })
@@ -72,7 +72,7 @@ const reportErrors = debounce(() => {
     'color: #ff7e7c'
   )
 
-  Object.keys(errorsByType).forEach(typeName => {
+  Object.keys(errorsByType).forEach((typeName) => {
     const entries = errorsByType[typeName]
     const first = entries[0]
     console.group(`Check the preview config for schema type "${typeName}": %o`, first.type.preview)
@@ -104,7 +104,7 @@ const reportErrors = debounce(() => {
   /* eslint-enable no-console */
 }, 1000)
 
-const isRenderable = fieldName => value => {
+const isRenderable = (fieldName) => (value) => {
   const type = typeof value
   if (
     value === null ||
@@ -123,7 +123,7 @@ const isRenderable = fieldName => value => {
           value
         )}`
       )
-    )
+    ),
   ]
 }
 const FIELD_NAME_VALIDATORS = {
@@ -136,7 +136,7 @@ const FIELD_NAME_VALIDATORS = {
   subtitle: isRenderable('subtitle'),
   description: isRenderable('description'),
   imageUrl: isRenderable('imageUrl'),
-  date: isRenderable('date')
+  date: isRenderable('date'),
 }
 
 function inspect(val, prefixType = true) {
@@ -149,7 +149,7 @@ function inspect(val, prefixType = true) {
   if (Array.isArray(val)) {
     const ellipse = val.length > 3 ? '...' : ''
     const prefix = `array with `
-    return `${prefixType ? prefix : ''}[${val.map(v => inspect(v, false))}${ellipse}]`
+    return `${prefixType ? prefix : ''}[${val.map((v) => inspect(v, false))}${ellipse}]`
   }
   return `the ${typeof val} ${val}`
 }
@@ -176,7 +176,7 @@ function validatePreparedValue(preparedValue: any) {
             preparedValue
           )}`
         )
-      )
+      ),
     ]
   }
   return Object.keys(preparedValue).reduce((acc: any, fieldName) => {
@@ -187,7 +187,7 @@ function validatePreparedValue(preparedValue: any) {
 function validateReturnedPreview(result: PrepareInvocationResult) {
   return {
     ...result,
-    errors: [...(result.errors || []), ...validatePreparedValue(result.returnValue)]
+    errors: [...(result.errors || []), ...validatePreparedValue(result.returnValue)],
   }
 }
 
@@ -197,7 +197,7 @@ function defaultPrepare(value: SelectedValue): {[key: string]: any} {
       ...acc,
       [fieldName]: isPortableTextArray(value[fieldName])
         ? extractTextFromBlocks(value[fieldName])
-        : value[fieldName]
+        : value[fieldName],
     }
   }, {})
 }
@@ -211,18 +211,18 @@ export function invokePrepare(
   try {
     return {
       returnValue: prepare ? prepare(value, viewOptions) : defaultPrepare(value),
-      errors: EMPTY
+      errors: EMPTY,
     }
   } catch (error) {
     return {
       returnValue: null,
-      errors: [assignType('prepareError', error)]
+      errors: [assignType('prepareError', error)],
     }
   }
 }
 
 function withErrors(result, type, selectedValue) {
-  result.errors.forEach(error => errorCollector.add(type, selectedValue, error))
+  result.errors.forEach((error) => errorCollector.add(type, selectedValue, error))
   reportErrors()
 
   return INVALID_PREVIEW_CONFIG

@@ -22,11 +22,11 @@ export default function resolvePathFromState(node: Node, state: Object): string 
 
   let scopedState = state
   const relative = flatten(
-    match.nodes.map(matchNode => {
+    match.nodes.map((matchNode) => {
       if (matchNode.scope) {
         scopedState = scopedState[matchNode.scope]
       }
-      return matchNode.route.segments.map(segment => {
+      return matchNode.route.segments.map((segment) => {
         if (segment.type === 'dir') {
           return segment.name
         }

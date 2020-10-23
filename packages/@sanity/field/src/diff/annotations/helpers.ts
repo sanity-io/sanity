@@ -8,7 +8,7 @@ import {
   ArrayDiff,
   ObjectDiff,
   StringDiff,
-  StringDiffSegment
+  StringDiffSegment,
 } from '../../types'
 
 export function getAnnotationColor(
@@ -63,8 +63,8 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
 
     const itemDiff = diff.items.find(
       isIndexSegment(segment)
-        ? item => item.toIndex === segment
-        : item => itemMatchesKey(item, segment)
+        ? (item) => item.toIndex === segment
+        : (item) => itemMatchesKey(item, segment)
     )
 
     if (!itemDiff) {
@@ -139,7 +139,7 @@ function visitArrayDiff(diff: ArrayDiff, visitor: DiffVisitor, path: Path) {
     return
   }
 
-  diff.items.forEach(itemDiff => {
+  diff.items.forEach((itemDiff) => {
     const _key = itemDiff.diff.type === 'object' && (itemDiff.diff.toValue?._key as string)
     const segment = _key ? {_key} : getItemDiffIndex(itemDiff)
     visitDiff(itemDiff.diff, visitor, path.concat(segment))
@@ -151,7 +151,7 @@ function visitObjectDiff(diff: ObjectDiff, visitor: DiffVisitor, path: Path) {
     return
   }
 
-  Object.keys(diff.fields).forEach(fieldName => {
+  Object.keys(diff.fields).forEach((fieldName) => {
     const fieldDiff = diff.fields[fieldName]
     visitDiff(fieldDiff, visitor, path.concat(fieldName))
   })
@@ -162,7 +162,7 @@ function visitStringDiff(diff: StringDiff, visitor: DiffVisitor, path: Path) {
     return
   }
 
-  diff.segments.forEach(segment => {
+  diff.segments.forEach((segment) => {
     visitDiff(segment, visitor, path)
   })
 }

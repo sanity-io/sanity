@@ -28,8 +28,8 @@ interface State {
 }
 
 const currentSpace$ = urlState.pipe(
-  map(event => event.state && event.state.space),
-  map(spaceName => CONFIGURED_SPACES.find(sp => sp.name === spaceName))
+  map((event) => event.state && event.state.space),
+  map((spaceName) => CONFIGURED_SPACES.find((sp) => sp.name === spaceName))
 )
 
 class DatasetSelect extends React.PureComponent<Props, State> {
@@ -37,11 +37,11 @@ class DatasetSelect extends React.PureComponent<Props, State> {
 
   state = {
     menuOpen: false,
-    currentSpace: null
+    currentSpace: null,
   }
 
   componentDidMount() {
-    this.currentSpaceSubscription = currentSpace$.subscribe(space => {
+    this.currentSpaceSubscription = currentSpace$.subscribe((space) => {
       this.setState({currentSpace: space})
     })
   }
@@ -57,7 +57,7 @@ class DatasetSelect extends React.PureComponent<Props, State> {
   }
 
   handleMenuToggle = () => {
-    this.setState(prev => ({menuOpen: !prev.menuOpen}))
+    this.setState((prev) => ({menuOpen: !prev.menuOpen}))
   }
 
   handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -80,7 +80,7 @@ class DatasetSelect extends React.PureComponent<Props, State> {
           tabIndex={tabIndex}
           value={(currentSpace && currentSpace.name) || undefined}
         >
-          {CONFIGURED_SPACES.map(space => (
+          {CONFIGURED_SPACES.map((space) => (
             <option key={space.name} value={space.name}>
               {space.title}
             </option>

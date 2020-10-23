@@ -54,12 +54,12 @@ PaneItem.propTypes = {
     _type: PropTypes.string,
     title: PropTypes.string,
     subtitle: PropTypes.string,
-    media: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
+    media: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   }),
   schemaType: PropTypes.shape({
     name: PropTypes.string,
-    icon: PropTypes.func
-  })
+    icon: PropTypes.func,
+  }),
 }
 
 PaneItem.defaultProps = {
@@ -67,5 +67,5 @@ PaneItem.defaultProps = {
   icon: undefined,
   value: null,
   isSelected: false,
-  schemaType: null
+  schemaType: null,
 }

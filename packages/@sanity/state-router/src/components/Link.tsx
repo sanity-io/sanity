@@ -22,11 +22,11 @@ export default class Link extends React.PureComponent<
   _element: HTMLAnchorElement | null = null
 
   static defaultProps = {
-    replace: false
+    replace: false,
   }
 
   static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck
+    __internalRouter: internalRouterContextTypeCheck,
   }
 
   private handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {

@@ -25,7 +25,7 @@ storiesOf('Date Picker', module)
       placeholderDate,
       placeholderTime,
       inputDate,
-      inputTime
+      inputTime,
     }
 
     return (
@@ -34,7 +34,7 @@ storiesOf('Date Picker', module)
         type={{
           title: text('title'),
           description: text('description'),
-          options: options
+          options: options,
         }}
       />
     )

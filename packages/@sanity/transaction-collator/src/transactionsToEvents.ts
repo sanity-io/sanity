@@ -14,7 +14,7 @@ export function transactionsToEvents(
       // Make sure we only deal with transactions that are relevant for our documents
       .filter(
         (transaction: Transaction) =>
-          transaction.documentIDs && transaction.documentIDs.some(id => documentIds.includes(id))
+          transaction.documentIDs && transaction.documentIDs.some((id) => documentIds.includes(id))
       )
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
@@ -46,7 +46,7 @@ function mapToEvents(
     userIds,
     transactionIds: [transaction.id],
     startTime: timestamp,
-    endTime: timestamp
+    endTime: timestamp,
   }
 }
 
@@ -83,16 +83,16 @@ function reduceEdits(
 function createReduceTruncatedFn() {
   let truncated: HistoryEvent[] | undefined
   return (acc: HistoryEvent[], current: HistoryEvent, index: number, arr: HistoryEvent[]) => {
-    truncated = truncated || arr.filter(event => event.type === 'truncated')
+    truncated = truncated || arr.filter((event) => event.type === 'truncated')
     if (!truncated.includes(current)) {
       acc.push(current)
     }
     if (index === arr.length - 1) {
       const draftTruncationEvent = truncated.find(
-        evt => !!evt.displayDocumentId && evt.displayDocumentId.startsWith('drafts.')
+        (evt) => !!evt.displayDocumentId && evt.displayDocumentId.startsWith('drafts.')
       )
       const publishedTruncationEvent = truncated.find(
-        evt => !!evt.displayDocumentId && !evt.displayDocumentId.startsWith('drafts.')
+        (evt) => !!evt.displayDocumentId && !evt.displayDocumentId.startsWith('drafts.')
       )
       if (draftTruncationEvent && publishedTruncationEvent) {
         acc.unshift({...draftTruncationEvent, type: 'edited'})
@@ -111,21 +111,23 @@ export function mutationsToEventTypeAndDocumentId(
   mutations: Mutation[],
   transactionIndex: number
 ): {type: EventType; documentId: string | null} {
-  const withoutPatches = mutations.filter(mut => mut.patch === undefined)
-  const createOrReplaceMutation = withoutPatches.find(mut => mut.createOrReplace !== undefined)
+  const withoutPatches = mutations.filter((mut) => mut.patch === undefined)
+  const createOrReplaceMutation = withoutPatches.find((mut) => mut.createOrReplace !== undefined)
   const createOrReplacePatch = createOrReplaceMutation && createOrReplaceMutation.createOrReplace
 
-  const createMutation = withoutPatches.find(mut => mut.create !== undefined)
+  const createMutation = withoutPatches.find((mut) => mut.create !== undefined)
   const createPatch = createMutation && createMutation.create
 
-  const createIfNotExistsMutation = withoutPatches.find(mut => mut.createIfNotExists !== undefined)
+  const createIfNotExistsMutation = withoutPatches.find(
+    (mut) => mut.createIfNotExists !== undefined
+  )
   const createIfNotExistsPatch =
     createIfNotExistsMutation && createIfNotExistsMutation.createIfNotExists
 
-  const deleteMutation = withoutPatches.find(mut => mut.delete !== undefined)
+  const deleteMutation = withoutPatches.find((mut) => mut.delete !== undefined)
   const deletePatch = deleteMutation && deleteMutation.delete
 
-  const squashedMutation = withoutPatches.find(mut => mut.createSquashed !== undefined)
+  const squashedMutation = withoutPatches.find((mut) => mut.createSquashed !== undefined)
   const squashedPatch = squashedMutation && squashedMutation.createSquashed
 
   const createValue = createOrReplacePatch || createPatch || createIfNotExistsPatch
@@ -158,7 +160,7 @@ export function mutationsToEventTypeAndDocumentId(
   ) {
     return {
       type: 'published',
-      documentId: (createValue && createValue._id) || null
+      documentId: (createValue && createValue._id) || null,
     }
   }
 
@@ -171,7 +173,7 @@ export function mutationsToEventTypeAndDocumentId(
   ) {
     return {
       type: 'unpublished',
-      documentId: (createValue && createValue._id) || null
+      documentId: (createValue && createValue._id) || null,
     }
   }
 
@@ -183,7 +185,7 @@ export function mutationsToEventTypeAndDocumentId(
   ) {
     return {
       type: 'edited',
-      documentId: (createValue && createValue._id) || null
+      documentId: (createValue && createValue._id) || null,
     }
   }
 
@@ -198,12 +200,12 @@ export function mutationsToEventTypeAndDocumentId(
   }
 
   // Deleted
-  if (mutations.every(mut => mut.delete !== undefined)) {
+  if (mutations.every((mut) => mut.delete !== undefined)) {
     return {type: 'deleted', documentId: null}
   }
 
   // Edited
-  const patchedMutation = mutations.find(mut => mut.patch !== undefined)
+  const patchedMutation = mutations.find((mut) => mut.patch !== undefined)
   if (patchedMutation && patchedMutation.patch) {
     return {type: 'edited', documentId: patchedMutation.patch.id}
   }
@@ -219,7 +221,7 @@ export function mutationsToEventTypeAndDocumentId(
 function findUserIds(transaction: Transaction, type: EventType): string[] {
   // The truncated event is kind of special
   if (type === 'truncated') {
-    const createSquasedMut = transaction.mutations.find(mut => mut.createSquashed !== undefined)
+    const createSquasedMut = transaction.mutations.find((mut) => mut.createSquashed !== undefined)
     const createSquasedPatch = createSquasedMut && createSquasedMut.createSquashed
     if (createSquasedPatch) {
       return createSquasedPatch.authors
@@ -234,12 +236,12 @@ function compareTimestamp(a: Transaction, b: Transaction) {
 }
 
 function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
-  return mutations.filter(mut => {
+  return mutations.filter((mut) => {
     return Object.keys(mut)
-      .map(key => {
+      .map((key) => {
         const val = (<any>mut)[key]
         return val['id'] || val['_id'] || (val['document'] && val['document']['_id']) || false
       })
-      .some(id => id && documentIds.includes(id))
+      .some((id) => id && documentIds.includes(id))
   })
 }

@@ -1,3 +1,3 @@
 module.exports = {
-  reactIconsV3: require('./reactIconsV3')
+  reactIconsV3: require('./reactIconsV3'),
 }

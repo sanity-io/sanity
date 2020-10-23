@@ -31,7 +31,7 @@ const USERIDS = [
   'pYg97z75S',
   'pdLr4quHv',
   'pkJXiDgg6',
-  'pkl4UAKcA'
+  'pkl4UAKcA',
 ]
 
 const PATHS = [
@@ -44,14 +44,14 @@ const PATHS = [
     {_key: 'a645548a8f01'},
     'arrayNo1',
     {_key: '1685e372c40f'},
-    'fieldNo0'
+    'fieldNo0',
   ],
   ['nestedArray', {_key: '565c867c8dac'}, 'fieldNo0'],
   ['nestedArray', {_key: '565c867c8dac'}, 'arrayNo19', {_key: 'a02e7a93e2a2'}, 'fieldNo0'],
   ['nestedArray', {_key: '565c867c8dac'}, 'arrayNo19', {_key: 'a02e7a93e2a2'}, 'fieldNo19'],
   ['address', 'country'],
   ['address', 'street'],
-  ['customInputWithDefaultPresence', 'row3', 'cell3']
+  ['customInputWithDefaultPresence', 'row3', 'cell3'],
 ]
 
 export const mock$ = defer(() => from(USERIDS)).pipe(
@@ -68,9 +68,9 @@ export const mock$ = defer(() => from(USERIDS)).pipe(
           // documentId: 'foo-bar',
           // path: ['bestFriend']
           lastActiveAt: new Date().toISOString(),
-          path: sample(PATHS)
-        }
-      ] as any
+          path: sample(PATHS),
+        },
+      ] as any,
     })
   ),
   shareReplay()

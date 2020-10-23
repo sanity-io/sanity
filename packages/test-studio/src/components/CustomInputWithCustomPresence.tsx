@@ -5,7 +5,7 @@ import {range, sample} from 'lodash'
 import {PatchEvent, set} from 'part:@sanity/form-builder/patch-event'
 
 const animals = [
-  ...'🐶🐱🐭🐹🐰🐯🐨🐼🐻🦊🦁🐮🐷🐽🐸🐒🙊🙉🐵🐔🐧🐦🐤🐣🐥🦆🦆🦅🦉🦇🐝🐴🐗🐺🐛🦋🐞🐌🐜🦂🕷🦗🦟🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐠🐟🐬🐳🐆🐅🐊🦈🐋🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐓🦃🦚🦜'
+  ...'🐶🐱🐭🐹🐰🐯🐨🐼🐻🦊🦁🐮🐷🐽🐸🐒🙊🙉🐵🐔🐧🐦🐤🐣🐥🦆🦆🦅🦉🦇🐝🐴🐗🐺🐛🦋🐞🐌🐜🦂🕷🦗🦟🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐠🐟🐬🐳🐆🐅🐊🦈🐋🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐓🦃🦚🦜',
 ]
 
 const sessionIdAnimal = new Map()
@@ -28,7 +28,7 @@ function AnimalAvatar(props: {sessionId: string}) {
 function MyAvatarList(props) {
   return (
     <div>
-      {props.presence.map(item => (
+      {props.presence.map((item) => (
         <AnimalAvatar sessionId={item.sessionId} />
       ))}
     </div>
@@ -39,7 +39,7 @@ export const CustomInputWithCustomPresence = React.forwardRef(
   function CustomInputWithCustomPresence(props, ref) {
     const {value, type, presence, onFocus, onChange} = props
 
-    const handleRootFocus = React.useCallback(event => {
+    const handleRootFocus = React.useCallback((event) => {
       if (event.currentTarget.element === ref) onFocus()
     }, [])
 
@@ -55,8 +55,8 @@ export const CustomInputWithCustomPresence = React.forwardRef(
         </em>
 
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
-          {range(4).map(row =>
-            range(8).map(col => {
+          {range(4).map((row) =>
+            range(8).map((col) => {
               return (
                 <div key={col + row} style={{position: 'relative'}}>
                   <div>
@@ -73,7 +73,7 @@ export const CustomInputWithCustomPresence = React.forwardRef(
                       type="text"
                       size={8}
                       value={value}
-                      onChange={e => {
+                      onChange={(e) => {
                         onChange(PatchEvent.from(set([row, col], e.currentTarget.value)))
                       }}
                       onFocus={() => {

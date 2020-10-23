@@ -9,18 +9,14 @@ import {DeveloperPreview} from './previews/developer'
 import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
-const delay = (val, ms = 10) => new Promise(resolve => setTimeout(resolve, ms, val))
+const delay = (val, ms = 10) => new Promise((resolve) => setTimeout(resolve, ms, val))
 
 export const getDefaultDocumentNode = ({schemaType}) => {
   return S.document().views(
     [
       S.view.form().icon(EditIcon),
       schemaType === 'author' &&
-        S.view
-          .component(DeveloperPreview)
-          .options({some: 'option'})
-          .icon(EyeIcon)
-          .title('Preview')
+        S.view.component(DeveloperPreview).options({some: 'option'}).icon(EyeIcon).title('Preview'),
     ].filter(Boolean)
   )
 }
@@ -30,10 +26,7 @@ export default () =>
     .id('root')
     .title('Content')
     .items([
-      S.documentListItem()
-        .id('foo-bar')
-        .title('Singleton author')
-        .schemaType('author'),
+      S.documentListItem().id('foo-bar').title('Singleton author').schemaType('author'),
 
       S.divider(),
 
@@ -46,8 +39,8 @@ export default () =>
               id: 'title-list',
               title: 'Titles!',
               options: {
-                filter: 'defined(title)'
-              }
+                filter: 'defined(title)',
+              },
             })
           )
         ),
@@ -71,11 +64,7 @@ export default () =>
             .id('json-dump')
             .options({pass: 'through'})
             .menuItems([
-              S.menuItem()
-                .title('Reload')
-                .action('reload')
-                .icon(RefreshIcon)
-                .showAsAction(true)
+              S.menuItem().title('Reload').action('reload').icon(RefreshIcon).showAsAction(true),
             ])
         ),
       S.listItem()
@@ -85,7 +74,7 @@ export default () =>
             .title('Deeper')
             .items([
               S.documentTypeListItem('book').title('Books'),
-              S.documentTypeListItem('author').title('Authors')
+              S.documentTypeListItem('author').title('Authors'),
             ])
         ),
       S.listItem()
@@ -118,17 +107,15 @@ export default () =>
                                           S.list()
                                             .title('Depth 5')
                                             .items([
-                                              S.documentListItem()
-                                                .id('grrm')
-                                                .schemaType('author')
+                                              S.documentListItem().id('grrm').schemaType('author'),
                                             ])
-                                        )
+                                        ),
                                     ])
-                                )
+                                ),
                             ])
-                        )
+                        ),
                     ])
-                )
+                ),
             ])
         ),
 
@@ -142,7 +129,7 @@ export default () =>
             .title('Developers')
             .filter('_type == $type && role == $role')
             .params({type: 'author', role: 'developer'})
-            .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
+            .initialValueTemplates(S.initialValueTemplateItem('author-developer')),
       }),
 
       S.listItem({
@@ -150,13 +137,13 @@ export default () =>
         title: 'Books by author',
         schemaType: 'book',
         child: () =>
-          S.documentTypeList('author').child(authorId =>
+          S.documentTypeList('author').child((authorId) =>
             S.documentTypeList('book')
               .title('Books by author')
               .filter('_type == $type && author._ref == $authorId')
               .params({type: 'book', authorId})
               .initialValueTemplates([S.initialValueTemplateItem('book-by-author', {authorId})])
-          )
+          ),
       }),
 
       S.divider(),
@@ -173,7 +160,5 @@ export default () =>
             .params({type: 'book'})
         ),
 
-      S.documentTypeListItem('sanity.imageAsset')
-        .title('Images')
-        .icon(ImagesIcon)
+      S.documentTypeListItem('sanity.imageAsset').title('Images').icon(ImagesIcon),
     ])

@@ -13,5 +13,5 @@ export {
   dynamicRequire,
   safeJson,
   getSanityVersions,
-  pathTools
+  pathTools,
 }

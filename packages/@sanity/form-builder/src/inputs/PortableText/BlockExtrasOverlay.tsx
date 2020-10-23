@@ -5,7 +5,7 @@ import {
   PortableTextBlock,
   PortableTextEditor,
   PortableTextFeatures,
-  usePortableTextEditor
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import PatchEvent from '../../../PatchEvent'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
@@ -24,7 +24,7 @@ type Props = {
 }
 
 const findBlockMarkers = (block: PortableTextBlock, markers: Marker[]): Marker[] =>
-  markers.filter(marker => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key)
+  markers.filter((marker) => isKeySegment(marker.path[0]) && marker.path[0]._key === block._key)
 
 export default function BlockExtrasOverlay(props: Props) {
   const {value} = props
@@ -35,7 +35,7 @@ export default function BlockExtrasOverlay(props: Props) {
   // Render overlay for each block
   return (
     <div className={styles.root}>
-      {(value || []).map(blk => (
+      {(value || []).map((blk) => (
         <BlockExtrasWithBlockActionsAndHeight
           {...props}
           block={blk}
@@ -71,7 +71,7 @@ function BlockExtrasWithBlockActionsAndHeight(
     ptFeatures,
     renderBlockActions,
     renderCustomMarkers,
-    value
+    value,
   } = props
   const editor = usePortableTextEditor()
   const blockMarkers = findBlockMarkers(block, markers)

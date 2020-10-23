@@ -50,7 +50,7 @@ function createOperationGuard(opName: string): GuardedOperation {
     disabled: 'NOT_READY',
     execute: () => {
       throw new Error(`Called ${opName} before it was ready.`)
-    }
+    },
   }
 }
 
@@ -66,7 +66,7 @@ export const GUARDED: OperationsAPI = {
   discardChanges: createOperationGuard('discardChanges'),
   unpublish: createOperationGuard('unpublish'),
   duplicate: createOperationGuard('duplicate'),
-  restore: createOperationGuard('restore')
+  restore: createOperationGuard('restore'),
 }
 const createEmitter = (operationName: keyof OperationsAPI, idPair, typeName) => (
   ...executeArgs: any[]
@@ -80,7 +80,7 @@ function wrap<ErrorStrings>(
   const disabled = op.disabled(operationArgs)
   return {
     disabled,
-    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName)
+    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName),
   }
 }
 
@@ -94,6 +94,6 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     discardChanges: wrap('discardChanges', discardChanges, args),
     unpublish: wrap('unpublish', unpublish, args),
     duplicate: wrap('duplicate', duplicate, args),
-    restore: wrap('restore', restore, args)
+    restore: wrap('restore', restore, args),
   }
 }

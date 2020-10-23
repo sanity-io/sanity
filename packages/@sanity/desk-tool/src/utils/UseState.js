@@ -7,7 +7,7 @@ export default class UseState extends React.Component {
     this.state = {value: props.startWith}
   }
 
-  setValue = nextValue => this.setState({value: nextValue})
+  setValue = (nextValue) => this.setState({value: nextValue})
 
   render() {
     return this.props.children([this.state.value, this.setValue])
@@ -16,5 +16,5 @@ export default class UseState extends React.Component {
 
 UseState.propTypes = {
   startWith: PropTypes.any,
-  children: PropTypes.func
+  children: PropTypes.func,
 }

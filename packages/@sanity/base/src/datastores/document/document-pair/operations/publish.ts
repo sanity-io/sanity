@@ -23,7 +23,7 @@ export const publish = {
       tx.create({
         ...omit(snapshots.draft, '_updatedAt'),
         _id: idPair.publishedId,
-        _type: snapshots.draft._type
+        _type: snapshots.draft._type,
       })
     } else {
       // If it exists already, we only want to update it if the revision on the remote server
@@ -31,16 +31,16 @@ export const publish = {
       tx.patch(idPair.publishedId, {
         // Hack until other mutations support revision locking
         unset: ['_revision_lock_pseudo_field_'],
-        ifRevisionID: snapshots.published._rev
+        ifRevisionID: snapshots.published._rev,
       }).createOrReplace({
         ...omit(snapshots.draft, '_updatedAt'),
         _id: idPair.publishedId,
-        _type: snapshots.draft._type
+        _type: snapshots.draft._type,
       })
     }
 
     tx.delete(idPair.draftId)
 
     return tx.commit()
-  }
+  },
 }

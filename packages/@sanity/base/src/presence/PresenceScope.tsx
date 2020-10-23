@@ -18,12 +18,12 @@ export function PresenceScope(props: Props) {
   const childPresence = readOnly
     ? []
     : (contextPresence || [])
-        .filter(presence => {
+        .filter((presence) => {
           return PathUtils.startsWith(path, presence.path)
         })
-        .map(presence => ({
+        .map((presence) => ({
           ...presence,
-          path: trimChildPath(path, presence.path)
+          path: trimChildPath(path, presence.path),
         }))
 
   return (

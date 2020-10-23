@@ -8,7 +8,7 @@ export function useObservable<T>(observable$: Observable<T>, initialValue?: T): 
   const [value, setState] = useState<T | null>(() => {
     let isSync = true
     let syncVal = typeof initialValue === 'undefined' ? null : initialValue
-    subscription.current = observable$.subscribe(nextVal => {
+    subscription.current = observable$.subscribe((nextVal) => {
       if (isSync) {
         syncVal = nextVal
       } else {

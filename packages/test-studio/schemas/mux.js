@@ -7,7 +7,7 @@ export default {
     {
       title: 'Video file',
       name: 'video',
-      type: 'mux.video'
-    }
-  ]
+      type: 'mux.video',
+    },
+  ],
 }

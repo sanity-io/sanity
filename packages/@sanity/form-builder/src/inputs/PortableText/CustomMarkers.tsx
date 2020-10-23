@@ -10,7 +10,7 @@ type Props = {
 // You will probably only see this when you first start to play with custom markers as a developer
 export default class Markers extends React.Component<Props> {
   static defaultProps = {
-    markers: []
+    markers: [],
   }
 
   handleCustomMarkerClick = (event: React.MouseEvent) => {

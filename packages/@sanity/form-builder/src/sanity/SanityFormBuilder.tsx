@@ -45,7 +45,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
     }
   }
 
-  handleChange = patchEvent => {
+  handleChange = (patchEvent) => {
     this.props.onChange(gradientPatchAdapter.toGradient(patchEvent.patches))
   }
 
@@ -62,7 +62,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       focusPath,
       filterField,
       compareValue,
-      presence
+      presence,
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>

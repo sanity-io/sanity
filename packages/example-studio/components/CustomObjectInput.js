@@ -8,16 +8,16 @@ export default class CustomObjectInput extends React.PureComponent {
   static propTypes = {
     type: PropTypes.shape({
       title: PropTypes.string,
-      name: PropTypes.string
+      name: PropTypes.string,
     }).isRequired,
     level: PropTypes.number,
     value: PropTypes.shape({
-      _type: PropTypes.string
+      _type: PropTypes.string,
     }),
     focusPath: PropTypes.array.isRequired,
     onFocus: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    onBlur: PropTypes.func.isRequired
+    onBlur: PropTypes.func.isRequired,
   }
 
   firstFieldInput = React.createRef()
@@ -50,7 +50,7 @@ export default class CustomObjectInput extends React.PureComponent {
               key={field.name}
               type={field.type}
               value={value && value[field.name]}
-              onChange={patchEvent => this.handleFieldChange(field, patchEvent)}
+              onChange={(patchEvent) => this.handleFieldChange(field, patchEvent)}
               path={[field.name]}
               focusPath={focusPath}
               onFocus={onFocus}

@@ -9,7 +9,7 @@ import getStaticBasePath from './util/getStaticBasePath'
 const docPart = 'part:@sanity/base/document'
 const initPart = 'part:@sanity/server/initializer'
 
-const getDefaultModule = mod => {
+const getDefaultModule = (mod) => {
   return mod && mod.__esModule ? mod.default : mod
 }
 
@@ -20,11 +20,11 @@ const getTitle = (project = {}) => {
 
 const assetify = (assetPath, hashes) => ({
   path: assetPath,
-  hash: hashes[assetPath]
+  hash: hashes[assetPath],
 })
 
-const getDocumentComponent = basePath =>
-  resolveParts({basePath}).then(res => {
+const getDocumentComponent = (basePath) =>
+  resolveParts({basePath}).then((res) => {
     const part = res.implementations[docPart]
     if (!part) {
       throw new Error(
@@ -43,7 +43,7 @@ export function getDocumentElement({project, basePath, hashes}, props = {}) {
   const assetHashes = hashes || {}
 
   // Project filesystem base path
-  return getDocumentComponent(basePath).then(Document =>
+  return getDocumentComponent(basePath).then((Document) =>
     React.createElement(
       Document,
       Object.assign(
@@ -51,10 +51,10 @@ export function getDocumentElement({project, basePath, hashes}, props = {}) {
           // URL base path
           basePath: process.env.STUDIO_BASEPATH || (project && project.basePath) || '',
           title: getTitle(project),
-          stylesheets: ['css/main.css'].map(item => assetify(item, assetHashes)),
-          scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map(item =>
+          stylesheets: ['css/main.css'].map((item) => assetify(item, assetHashes)),
+          scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map((item) =>
             assetify(item, assetHashes)
-          )
+          ),
         },
         props
       )
@@ -74,14 +74,11 @@ export function applyStaticRoutes(app, config = {}) {
     }
 
     return getDocumentElement(config)
-      .then(doc => res.send(`<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`))
-      .catch(err => {
+      .then((doc) => res.send(`<!doctype html>${ReactDOM.renderToStaticMarkup(doc)}`))
+      .catch((err) => {
         console.error(err.stack) // eslint-disable-line no-console
 
-        res
-          .set('Content-Type', 'text/plain')
-          .status(500)
-          .send(err.stack)
+        res.set('Content-Type', 'text/plain').status(500).send(err.stack)
       })
   })
 
@@ -89,14 +86,14 @@ export function applyStaticRoutes(app, config = {}) {
 }
 
 export function callInitializers(config) {
-  resolveParts({config}).then(res => {
+  resolveParts({config}).then((res) => {
     const parts = res.implementations[initPart]
     if (!parts) {
       return
     }
 
     res.implementations[initPart]
-      .map(part => getDefaultModule(require(part.path)))
-      .forEach(initializer => initializer(config))
+      .map((part) => getDefaultModule(require(part.path)))
+      .forEach((initializer) => initializer(config))
   })
 }

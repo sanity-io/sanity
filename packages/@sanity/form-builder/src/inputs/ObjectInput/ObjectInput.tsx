@@ -20,20 +20,20 @@ function getCollapsedWithDefaults(
     // collapsible explicit set to true
     return {
       collapsible: true,
-      collapsed: options.collapsed !== false
+      collapsed: options.collapsed !== false,
     }
   } else if (options.collapsible === false || options.collapsable === false) {
     // collapsible explicit set to false
     return {
       // hard limit to avoid infinite recursion
       collapsible: level > 9,
-      collapsed: level > 9
+      collapsed: level > 9,
     }
   }
   // default
   return {
     collapsible: level > 2,
-    collapsed: level > 2
+    collapsed: level > 2,
   }
 }
 
@@ -60,7 +60,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     level: 0,
     focusPath: [],
     isRoot: false,
-    filterField: () => true
+    filterField: () => true,
   }
 
   handleBlur() {
@@ -104,7 +104,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
       onBlur,
       compareValue,
       filterField,
-      presence
+      presence,
     } = this.props
 
     if (!filterField(type, field) || field.type.hidden) {
@@ -137,10 +137,10 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const columns = fieldset.options && fieldset.options.columns
     const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
     const isExpanded =
-      focusPath.length > 0 && fieldset.fields.some(field => focusPath[0] === field.name)
-    const fieldNames = fieldset.fields.map(f => f.name)
+      focusPath.length > 0 && fieldset.fields.some((field) => focusPath[0] === field.name)
+    const fieldNames = fieldset.fields.map((f) => f.name)
     const childPresence = presence.filter(
-      item => fieldNames.includes(item.path[0]) || item.path[0] === '$'
+      (item) => fieldNames.includes(item.path[0]) || item.path[0] === '$'
     )
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
@@ -184,9 +184,9 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
       return null
     }
 
-    const knownFieldNames = type.fields.map(field => field.name)
+    const knownFieldNames = type.fields.map((field) => field.name)
     const unknownFields = Object.keys(value || {}).filter(
-      key => !key.startsWith('_') && !knownFieldNames.includes(key)
+      (key) => !key.startsWith('_') && !knownFieldNames.includes(key)
     )
 
     if (unknownFields.length === 0) {
@@ -203,7 +203,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     )
   }
 
-  setFirstField = el => {
+  setFirstField = (el) => {
     this._firstField = el
   }
 

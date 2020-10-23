@@ -10,8 +10,8 @@ export default (typeDef, visitorContext) => {
         error(
           'Invalid/undefined type declaration, check declaration or the import/export of the schema type.',
           HELP_IDS.TYPE_INVALID
-        )
-      ]
+        ),
+      ],
     }
   }
 
@@ -51,7 +51,7 @@ export default (typeDef, visitorContext) => {
   }
   return {
     ...typeDef,
-    _problems: problems
+    _problems: problems,
   }
 }
 

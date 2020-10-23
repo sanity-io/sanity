@@ -14,7 +14,7 @@ export function useValidationStatus(publishedDocId: string, docTypeName: string)
   return useObservable(
     React.useMemo(() => documentStore.pair.validation(publishedDocId, docTypeName), [
       publishedDocId,
-      docTypeName
+      docTypeName,
     ]),
     INITIAL
   )

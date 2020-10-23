@@ -12,7 +12,7 @@ export default function CustomIcon(props: Props) {
 
   const inlineStyle = {
     backgroundImage: `url(${icon})`,
-    filter: active ? 'invert(100%)' : 'invert(0%)'
+    filter: active ? 'invert(100%)' : 'invert(0%)',
   }
 
   return <div className={styles.root} style={inlineStyle} />

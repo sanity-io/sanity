@@ -28,7 +28,7 @@ export default function getOrderedTools(): Tool[] {
     const toolIndex = order.indexOf(tool.name)
     target[tool.name] = {
       tool: tool,
-      index: toolIndex === -1 ? +Infinity : toolIndex
+      index: toolIndex === -1 ? +Infinity : toolIndex,
     }
     return target
   }, {})

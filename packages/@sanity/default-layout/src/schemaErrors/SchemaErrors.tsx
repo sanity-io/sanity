@@ -98,16 +98,16 @@ SchemaErrors.propTypes = {
         PropTypes.shape({
           kind: PropTypes.string,
           type: PropTypes.string,
-          name: PropTypes.string
+          name: PropTypes.string,
         })
       ),
       problems: PropTypes.arrayOf(
         PropTypes.shape({
-          severity: PropTypes.string
+          severity: PropTypes.string,
         })
-      )
+      ),
     }).isRequired
-  ).isRequired
+  ).isRequired,
 }
 
 export default SchemaErrors

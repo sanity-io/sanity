@@ -9,5 +9,5 @@ export const defaultContextValue = {
     document.body.appendChild(globalElement)
 
     return globalElement
-  }
+  },
 }

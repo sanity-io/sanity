@@ -9,12 +9,12 @@ export default {
     {
       name: 'first',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'second',
       type: 'number',
-      title: 'Num'
+      title: 'Num',
     },
     {
       name: 'someArray',
@@ -25,16 +25,16 @@ export default {
           type: 'object',
           fields: [
             {name: 'first', type: 'string'},
-            {name: 'focusTest', type: 'focusTest'}
-          ]
-        }
-      ]
+            {name: 'focusTest', type: 'focusTest'},
+          ],
+        },
+      ],
     },
     {
       name: 'someObject',
       type: 'object',
       title: 'An object',
-      fields: [{name: 'first', type: 'string'}]
-    }
-  ]
+      fields: [{name: 'first', type: 'string'}],
+    },
+  ],
 }

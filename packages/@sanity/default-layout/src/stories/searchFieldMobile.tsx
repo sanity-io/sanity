@@ -11,8 +11,8 @@ export function SearchFieldMobileStory() {
         {
           hit: {_id: 'foo', _type: 'foo'},
           score: 12,
-          stories: {path: 'foo', score: 1, why: 'test'}
-        }
+          stories: {path: 'foo', score: 1, why: 'test'},
+        },
       ]
     : []
   const query = text('query', '', 'props')
@@ -31,7 +31,7 @@ export function SearchFieldMobileStory() {
               isLoading={boolean('isLoading', false, 'props')}
               items={items}
               query={query}
-              renderItem={key => (
+              renderItem={(key) => (
                 <div key={key.hit._id} style={{padding: '0.75em 1em'}}>
                   {key}
                 </div>

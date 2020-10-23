@@ -10,7 +10,7 @@ export function AllVersionsStory() {
   return (
     <Container>
       <div className={styles.root}>
-        {colors.map(badgeColor => {
+        {colors.map((badgeColor) => {
           return (
             <div key={`badge_${badgeColor}`}>
               <DefaultBadge color={badgeColor}>{badgeColor || 'None'}</DefaultBadge>

@@ -26,7 +26,7 @@ const getHistoryMenuItem = (params: Params): MenuItem | null => {
     action: 'reviewChanges',
     title: 'Review changes',
     icon: HistoryIcon,
-    isDisabled: isHistoryOpen || !value
+    isDisabled: isHistoryOpen || !value,
   }
 }
 
@@ -41,7 +41,7 @@ const getInspectItem = ({value}: Params): MenuItem => ({
     </span>
   ),
   icon: BinaryIcon,
-  isDisabled: !value
+  isDisabled: !value,
 })
 
 export const getProductionPreviewItem = ({value, rev}: Params): MenuItem | null => {
@@ -75,14 +75,14 @@ export const getProductionPreviewItem = ({value, rev}: Params): MenuItem | null 
       </span>
     ),
     icon: PublicIcon,
-    url: previewUrl
+    url: previewUrl,
   }
 }
 
 export const getMenuItems = (params: Params): MenuItem[] => {
   const items = [getProductionPreviewItem, getHistoryMenuItem, getInspectItem]
     .filter(Boolean)
-    .map(fn => fn(params))
+    .map((fn) => fn(params))
 
-  return items.filter(i => i !== null) as MenuItem[]
+  return items.filter((i) => i !== null) as MenuItem[]
 }

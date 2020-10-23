@@ -4,7 +4,7 @@ import {
   useConnectionState,
   useDocumentOperation,
   useEditState,
-  useValidationStatus
+  useValidationStatus,
 } from '@sanity/react-hooks'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -55,7 +55,7 @@ export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvid
   const schemaType = schema.get(documentTypeName)
 
   const onChange = React.useCallback(
-    patches => {
+    (patches) => {
       patch.execute(patches, props.initialValue)
     },
     [patch]

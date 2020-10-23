@@ -15,9 +15,9 @@ function fixIcons(fileInfo, api) {
   // from: import PersonIcon from 'react-icons/lib/md/person'
   //   to: import {MdPerson as PersonIcon} from 'react-icons/md'
   root
-    .find(api.jscodeshift.ImportDeclaration, node => node.source.value.startsWith('react-icons/'))
-    .filter(path => isLegacyPath(path.node.source.value))
-    .forEach(path => {
+    .find(api.jscodeshift.ImportDeclaration, (node) => node.source.value.startsWith('react-icons/'))
+    .filter((path) => isLegacyPath(path.node.source.value))
+    .forEach((path) => {
       const node = path.value
       const icon = iconSpecFromPath(node.source.value)
 
@@ -46,10 +46,10 @@ function fixIcons(fileInfo, api) {
   root
     .find(j.VariableDeclarator, {
       id: {type: 'Identifier'},
-      init: {callee: {name: 'require'}}
+      init: {callee: {name: 'require'}},
     })
-    .filter(path => isLegacyPath(path.value.init.arguments[0].value))
-    .forEach(path => {
+    .filter((path) => isLegacyPath(path.value.init.arguments[0].value))
+    .forEach((path) => {
       const oldName = path.value.id.name
       const filePath = path.value.init.arguments[0].value
       const icon = iconSpecFromPath(filePath)
@@ -72,11 +72,7 @@ function fixIcons(fileInfo, api) {
 function pascalCase(input) {
   const inner = replace(input, splitRegexp, '$1\0$2')
   const result = replace(inner, stripRegexp, '\0')
-  return result
-    .slice(0, result.length)
-    .split('\0')
-    .map(pascalCaseTransform)
-    .join('')
+  return result.slice(0, result.length).split('\0').map(pascalCaseTransform).join('')
 }
 
 function replace(input, re, value) {

@@ -6,7 +6,7 @@ import {
   ObjectInput,
   DiffOptions,
   BooleanInput,
-  NumberInput
+  NumberInput,
 } from '../types'
 import {diffArray, addedArray, removedArray} from './diffArray'
 import {diffString, removedString, addedString} from './diffString'
@@ -47,7 +47,7 @@ function diffWithType<A>(
         action: 'unchanged',
         isChanged: false,
         toValue: null,
-        fromValue: null
+        fromValue: null,
       }
     case 'boolean':
       return diffBoolean(fromInput as BooleanInput<A>, toInput as BooleanInput<A>, options)
@@ -77,7 +77,7 @@ export function removedInput<A>(
         isChanged: true,
         fromValue: null,
         toValue,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'boolean':
       return {
@@ -86,7 +86,7 @@ export function removedInput<A>(
         isChanged: true,
         fromValue: input.value,
         toValue,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'number':
       return {
@@ -95,7 +95,7 @@ export function removedInput<A>(
         isChanged: true,
         fromValue: input.value,
         toValue,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'string':
       return removedString(input, toValue, options)
@@ -121,7 +121,7 @@ export function addedInput<A>(
         isChanged: true,
         fromValue,
         toValue: null,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'boolean':
       return {
@@ -130,7 +130,7 @@ export function addedInput<A>(
         isChanged: true,
         fromValue,
         toValue: input.value,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'number':
       return {
@@ -139,7 +139,7 @@ export function addedInput<A>(
         isChanged: true,
         fromValue,
         toValue: input.value,
-        annotation: input.annotation
+        annotation: input.annotation,
       }
     case 'string':
       return addedString(input, fromValue, options)

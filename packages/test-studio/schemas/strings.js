@@ -11,21 +11,21 @@ export default {
       name: 'title',
       type: 'string',
       title: 'Title',
-      description: 'This is a basic string field'
+      description: 'This is a basic string field',
     },
     {
       name: 'hooksBasedInput',
       type: 'string',
       title: 'Hooks based input',
       description: 'A string field with a custom input (using react hooks)',
-      inputComponent: HooksBasedStringInput
+      inputComponent: HooksBasedStringInput,
     },
     {
       name: 'readonlyField',
       type: 'string',
       title: 'A read only string',
       description: 'It may have a value, but it cannot be edited',
-      readOnly: true
+      readOnly: true,
     },
     {
       name: 'select',
@@ -37,18 +37,18 @@ export default {
         list: [
           {
             title: 'One (1)',
-            value: 'one'
+            value: 'one',
           },
           {
             title: 'Two (2)',
-            value: 'two'
+            value: 'two',
           },
           {
             title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
+            value: 'three',
+          },
+        ],
+      },
     },
     {
       name: 'radioSelectHorizontal',
@@ -62,18 +62,18 @@ export default {
         list: [
           {
             title: 'One (1)',
-            value: 'one'
+            value: 'one',
           },
           {
             title: 'Two (2)',
-            value: 'two'
+            value: 'two',
           },
           {
             title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
+            value: 'three',
+          },
+        ],
+      },
     },
     {
       name: 'selectObjectOfString',
@@ -82,8 +82,8 @@ export default {
         'Select a single string value from an array of strings. It should be possible to unset a selected value.',
       type: 'string',
       options: {
-        list: ['one', 'two', 'three']
-      }
+        list: ['one', 'two', 'three'],
+      },
     },
     {
       name: 'radioSelect',
@@ -97,28 +97,28 @@ export default {
         list: [
           {
             title: 'One (1)',
-            value: 'one'
+            value: 'one',
           },
           {
             title: 'Two (2)',
-            value: 'two'
+            value: 'two',
           },
           {
             title: 'Three (3)',
-            value: 'three'
-          }
-        ]
-      }
+            value: 'three',
+          },
+        ],
+      },
     },
     {
       name: 'localeTitle',
       title: 'Localized title',
       type: 'localeString',
       description: 'English required by localeString, swedish from field',
-      validation: Rule =>
+      validation: (Rule) =>
         Rule.fields({
-          se: fieldRule => fieldRule.required().max(80)
-        })
-    }
-  ]
+          se: (fieldRule) => fieldRule.required().max(80),
+        }),
+    },
+  ],
 }

@@ -18,7 +18,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 160,
   height: 160,
   aspect: 1,
-  fit: 'crop'
+  fit: 'crop',
 }
 
 export default class MediaPreview extends React.PureComponent<MediaPreviewProps> {
@@ -32,7 +32,7 @@ export default class MediaPreview extends React.PureComponent<MediaPreviewProps>
       mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
       children,
       isPlaceholder,
-      progress
+      progress,
     } = this.props
 
     const aspect = mediaDimensions?.aspect || DEFAULT_MEDIA_DIMENSIONS.aspect!

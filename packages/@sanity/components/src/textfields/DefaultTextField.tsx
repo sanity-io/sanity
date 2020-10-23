@@ -53,7 +53,7 @@ export default class DefaultTextField extends React.Component<DefaultTextFieldPr
       onKeyPress,
       onFocus,
       onBlur,
-      value = ''
+      value = '',
       // inputId
     } = this.props
 

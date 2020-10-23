@@ -30,12 +30,12 @@ class Reflector {
 
     if (token) {
       esOptions.headers = {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       }
     }
 
     const url = this.sanityClient.getUrl(`presence/listen/${channel}`)
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const es = new EventSource(url, esOptions)
       es.addEventListener('message', onMessage, false)
 
@@ -57,7 +57,7 @@ class Reflector {
     return this.sanityClient.request({
       url: `presence/send/${channel}`,
       method: 'POST',
-      body: message
+      body: message,
     })
   }
 
@@ -78,8 +78,8 @@ class Reflector {
   connect(channel) {
     return {
       listen: () => this.listen(channel),
-      send: message => this.send(channel, message),
-      sendBeacon: message => this.sendBeacon(channel, message)
+      send: (message) => this.send(channel, message),
+      sendBeacon: (message) => this.sendBeacon(channel, message),
     }
   }
 }

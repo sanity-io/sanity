@@ -13,7 +13,7 @@ type Props = {
 export default class Markers extends React.PureComponent<Props> {
   static defaultProps = {
     markers: [],
-    renderCustomMarkers: null
+    renderCustomMarkers: null,
   }
   handleValidationMarkerClick = (event: React.MouseEvent<HTMLDivElement>): void => {
     event.preventDefault()
@@ -31,7 +31,7 @@ export default class Markers extends React.PureComponent<Props> {
     if (markers.length === 0) {
       return null
     }
-    const customMarkers = markers.filter(mrkr => !isValidationMarker(mrkr))
+    const customMarkers = markers.filter((mrkr) => !isValidationMarker(mrkr))
     const validationMarkers = markers.filter(isValidationMarker)
     return (
       <div onClick={this.handleCancelEvent} className={styles.root}>

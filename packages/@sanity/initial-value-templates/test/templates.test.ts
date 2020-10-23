@@ -24,16 +24,16 @@ describe('getTemplates', () => {
         id: 'author',
         title: 'Author',
         schemaType: 'author',
-        value: {title: 'here'}
+        value: {title: 'here'},
       },
       {
         serialize: () => ({
           id: 'developer',
           title: 'Developer',
           schemaType: 'developer',
-          value: {title: 'Foo'}
-        })
-      }
+          value: {title: 'Foo'},
+        }),
+      },
     ])
     expect(getTemplates()).toMatchSnapshot()
   })
@@ -43,8 +43,8 @@ describe('getTemplates', () => {
       {
         title: 'Author',
         schemaType: 'author',
-        value: {title: 'here'}
-      }
+        value: {title: 'here'},
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -57,8 +57,8 @@ describe('getTemplates', () => {
       {
         id: 'author',
         schemaType: 'author',
-        value: {title: 'here'}
-      }
+        value: {title: 'here'},
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -71,8 +71,8 @@ describe('getTemplates', () => {
       {
         id: 'author',
         title: 'Author',
-        value: {title: 'here'}
-      }
+        value: {title: 'here'},
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -85,8 +85,8 @@ describe('getTemplates', () => {
       {
         id: 'author',
         title: 'Author',
-        schemaType: 'author'
-      }
+        schemaType: 'author',
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -108,8 +108,8 @@ describe('getTemplates', () => {
         id: 'author',
         title: 'Author',
         schemaType: 'author',
-        value: []
-      }
+        value: [],
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -123,14 +123,14 @@ describe('getTemplates', () => {
         id: 'author',
         title: 'Author',
         schemaType: 'author',
-        value: {name: 'Gunnar'}
+        value: {name: 'Gunnar'},
       },
       {
         id: 'author',
         title: 'Developer',
         schemaType: 'author',
-        value: {role: 'developer'}
-      }
+        value: {role: 'developer'},
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()

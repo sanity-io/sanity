@@ -9,12 +9,12 @@ import styles from './ListView.css'
 export default class ListView extends React.PureComponent {
   static propTypes = {
     layout: PropTypes.oneOf(['default', 'detail', 'card', 'media']),
-    children: PropTypes.node
+    children: PropTypes.node,
   }
 
   static defaultProps = {
     layout: 'default',
-    children: undefined
+    children: undefined,
   }
 
   render() {

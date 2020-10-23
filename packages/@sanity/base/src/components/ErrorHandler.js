@@ -38,8 +38,8 @@ export default class ErrorHandler extends React.PureComponent {
     // Certain errors should be ignored
     if (
       [
-        /unexpected token <$/i // Trying to load HTML as JS
-      ].some(item => item.test(err.message))
+        /unexpected token <$/i, // Trying to load HTML as JS
+      ].some((item) => item.test(err.message))
     ) {
       return
     }

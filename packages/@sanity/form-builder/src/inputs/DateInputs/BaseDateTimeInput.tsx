@@ -43,7 +43,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   _inputId = uniqueId('BaseDateTimeInput')
   state = {
     inputValue: null,
-    isDialogOpen: false
+    isDialogOpen: false,
   }
   handleInputChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const inputValue = event.currentTarget.value
@@ -61,7 +61,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     onChange(nextMoment)
     this.setState({inputValue: null})
   }
-  handleSetNow = event => {
+  handleSetNow = (event) => {
     this.handleDialogChange(moment())
   }
   focus() {
@@ -72,34 +72,34 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   setDatePicker = (datePicker: DatePicker | null) => {
     this._datepicker = datePicker
   }
-  handleInputKeyDown = event => {
+  handleInputKeyDown = (event) => {
     if (event && event.key === 'Enter') {
       this.handleOpen()
     }
     return event
   }
-  handleButtonClick = event => {
+  handleButtonClick = (event) => {
     this.focus()
     this.handleOpen()
   }
   handleOpen = () => {
     this.setState({
-      isDialogOpen: true
+      isDialogOpen: true,
     })
   }
   handleClose = () => {
     this.setState({
-      isDialogOpen: false
+      isDialogOpen: false,
     })
   }
-  handleBlur = event => {
+  handleBlur = (event) => {
     this.handleClose()
     this.setState({inputValue: null})
     if (this.props.onBlur) {
       this.props.onBlur(event)
     }
   }
-  handleFocus = event => {
+  handleFocus = (event) => {
     if (this.props.onFocus) {
       this.props.onFocus(event)
     }
@@ -124,7 +124,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       readOnly,
       timeStep,
       level,
-      presence
+      presence,
     } = this.props
     const {inputValue, isDialogOpen} = this.state
     const format = getFormat(dateFormat, timeFormat)

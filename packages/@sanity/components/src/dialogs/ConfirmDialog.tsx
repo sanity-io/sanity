@@ -44,7 +44,7 @@ export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProp
           color: cancelColor,
           action: onCancel,
           kind: 'simple',
-          secondary: true
+          secondary: true,
         }
       : null
 
@@ -54,7 +54,7 @@ export default class ConfirmDialog extends React.PureComponent<ConfirmDialogProp
           index: 1,
           title: confirmButtonText,
           color: confirmColor,
-          action: onConfirm
+          action: onConfirm,
         }
       : null
 

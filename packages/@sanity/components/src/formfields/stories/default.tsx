@@ -25,8 +25,8 @@ const mockValidationMarkers = (
       name: 'ValidationError',
       cloneWithMessage() {
         throw new Error('nope')
-      }
-    }
+      },
+    },
   }))
 }
 

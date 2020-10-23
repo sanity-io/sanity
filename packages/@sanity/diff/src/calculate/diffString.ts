@@ -2,7 +2,7 @@ import {
   diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
   DIFF_EQUAL,
-  DIFF_INSERT
+  DIFF_INSERT,
 } from 'diff-match-patch'
 import {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
@@ -24,7 +24,7 @@ export function diffString<A>(
       isChanged: false,
       fromValue,
       toValue,
-      segments: [{type: 'stringSegment', action: 'unchanged', text: fromValue}]
+      segments: [{type: 'stringSegment', action: 'unchanged', text: fromValue}],
     }
   }
 
@@ -40,7 +40,7 @@ export function diffString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments = buildSegments(fromInput, toInput)
       return replaceProperty(this, 'segments', segments)
-    }
+    },
   }
 }
 
@@ -69,7 +69,7 @@ function buildSegments<A>(
             type: 'stringSegment',
             action: 'removed',
             text: segment.text,
-            annotation: segment.annotation
+            annotation: segment.annotation,
           })
         }
         fromIdx += text.length
@@ -80,7 +80,7 @@ function buildSegments<A>(
             type: 'stringSegment',
             action: 'added',
             text: segment.text,
-            annotation: segment.annotation
+            annotation: segment.annotation,
           })
         }
         toIdx += text.length
@@ -109,10 +109,10 @@ export function removedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map(segment => ({type: 'stringSegment', action: 'removed', ...segment}))
+        .map((segment) => ({type: 'stringSegment', action: 'removed', ...segment}))
 
       return replaceProperty(this, 'segments', segments)
-    }
+    },
   }
 }
 
@@ -132,9 +132,9 @@ export function addedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map(segment => ({type: 'stringSegment', action: 'added', ...segment}))
+        .map((segment) => ({type: 'stringSegment', action: 'added', ...segment}))
 
       return replaceProperty(this, 'segments', segments)
-    }
+    },
   }
 }

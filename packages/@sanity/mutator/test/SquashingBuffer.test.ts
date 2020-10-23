@@ -4,7 +4,7 @@ import Mutation from '../src/document/Mutation'
 
 function add(sb, op) {
   const mut = new Mutation({
-    mutations: [op]
+    mutations: [op],
   })
   sb.add(mut)
 }
@@ -17,7 +17,7 @@ function assertNoStashedOperations(tap, sb) {
   tap.assert(sb.out.length === 0, 'There should not be any stashed changes yet')
 }
 
-test('basic optimization of assignments to same, explicit key', tap => {
+test('basic optimization of assignments to same, explicit key', (tap) => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strong value'}})
   assertNoStashedOperations(tap, sb)
@@ -26,10 +26,10 @@ test('basic optimization of assignments to same, explicit key', tap => {
       patch: {
         id: '1',
         diffMatchPatch: {
-          a: '@@ -2,9 +2,9 @@\n  str\n-i\n+o\n ng v\n'
-        }
-      }
-    }
+          a: '@@ -2,9 +2,9 @@\n  str\n-i\n+o\n ng v\n',
+        },
+      },
+    },
   })
   patch(sb, {id: '1', set: {a: 'A strange value'}})
   tap.same(Object.keys(sb.setOperations), ['a'], 'Should still only be one patch')
@@ -42,7 +42,7 @@ test('basic optimization of assignments to same, explicit key', tap => {
   tap.end()
 })
 
-test('optimisation of assignments to same key with aliases', tap => {
+test('optimisation of assignments to same key with aliases', (tap) => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strange value'}})
   patch(sb, {id: '1', set: {'..a': 'A strong value'}})
@@ -55,7 +55,7 @@ test('optimisation of assignments to same key with aliases', tap => {
   tap.end()
 })
 
-test('assigning non-string values to string field', tap => {
+test('assigning non-string values to string field', (tap) => {
   const initial = {_id: '1', _type: 'test', a: 'A string value'}
   const sb = new SquashingBuffer(initial)
   patch(sb, {id: '1', set: {a: 42}})
@@ -65,7 +65,7 @@ test('assigning non-string values to string field', tap => {
   tap.end()
 })
 
-test('stashing of changes when unoptimizable operations arrive', tap => {
+test('stashing of changes when unoptimizable operations arrive', (tap) => {
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
   patch(sb, {id: '1', set: {a: 'Another value'}})
@@ -86,16 +86,16 @@ test('stashing of changes when unoptimizable operations arrive', tap => {
       _type: 'test',
       _rev: 'txn_id',
       a: {
-        b: 'A wrapped value'
+        b: 'A wrapped value',
       },
-      c: 'Change after stash'
+      c: 'Change after stash',
     },
     'The mutations did not apply correctly'
   )
   tap.end()
 })
 
-test('rebase with generated diff-match-patches', tap => {
+test('rebase with generated diff-match-patches', (tap) => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strong value'}})
   const initial = {_id: '1', _type: 'test', a: 'A rebased string value!'}
@@ -108,14 +108,14 @@ test('rebase with generated diff-match-patches', tap => {
       _id: '1',
       _type: 'test',
       _rev: 'txn_id',
-      a: 'A rebased strong value!'
+      a: 'A rebased strong value!',
     },
     'The rebase then reapply did not apply correctly'
   )
   tap.end()
 })
 
-test('rebase with no local edits', tap => {
+test('rebase with no local edits', (tap) => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   const initial = {_id: '1', _type: 'test', a: 'A rebased string value!'}
   sb.rebase(initial)
@@ -126,7 +126,7 @@ test('rebase with no local edits', tap => {
     {
       _id: '1',
       _type: 'test',
-      a: 'A rebased string value!'
+      a: 'A rebased string value!',
     },
     'The rebase with no local edits applied incorrectly'
   )

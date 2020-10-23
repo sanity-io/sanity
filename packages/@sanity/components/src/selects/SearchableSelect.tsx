@@ -43,7 +43,7 @@ export default class SearchableSelect extends React.PureComponent<
     onChange: () => undefined,
     onSearch: () => undefined,
     onOpen: () => undefined,
-    onClose: () => undefined
+    onClose: () => undefined,
   }
 
   _rootElement: HTMLDivElement | null = null
@@ -59,7 +59,7 @@ export default class SearchableSelect extends React.PureComponent<
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
-      hasFocus: false
+      hasFocus: false,
       // searchResult: []
     }
   }
@@ -74,15 +74,15 @@ export default class SearchableSelect extends React.PureComponent<
 
     if (nextProps.inputValue !== this.props.inputValue) {
       this.setState({
-        inputValue: nextProps.inputValue || ''
+        inputValue: nextProps.inputValue || '',
       })
     }
   }
 
-  handleChange = item => {
+  handleChange = (item) => {
     const {onChange} = this.props
     this.setState({
-      isInputSelected: true
+      isInputSelected: true,
     })
     if (onChange) onChange(item)
     this.handleClose()
@@ -90,28 +90,28 @@ export default class SearchableSelect extends React.PureComponent<
 
   handleOpen = () => {
     this.setState({
-      isOpen: true
+      isOpen: true,
     })
     if (this.props.onOpen) this.props.onOpen()
   }
 
   handleClose = () => {
     this.setState({
-      isOpen: false
+      isOpen: false,
     })
     if (this.props.onClose) this.props.onClose()
   }
 
-  handleInputChange = inputValue => {
+  handleInputChange = (inputValue) => {
     this.setState({
       inputValue: inputValue,
       isInputSelected: false,
-      isOpen: true
+      isOpen: true,
     })
     if (this.props.onSearch) this.props.onSearch(inputValue)
   }
 
-  handleHighlightIndexChange = nextIndex => {
+  handleHighlightIndexChange = (nextIndex) => {
     this.setState({highlightIndex: nextIndex})
   }
 
@@ -130,7 +130,7 @@ export default class SearchableSelect extends React.PureComponent<
   handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     const {onFocus} = this.props
     this.setState({
-      hasFocus: true
+      hasFocus: true,
     })
     if (onFocus) {
       onFocus()
@@ -140,7 +140,7 @@ export default class SearchableSelect extends React.PureComponent<
   handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     this.setState({
       hasFocus: false,
-      inputValue: this.props.inputValue || ''
+      inputValue: this.props.inputValue || '',
     })
 
     if (
@@ -149,7 +149,7 @@ export default class SearchableSelect extends React.PureComponent<
       this._rootElement.contains(event.relatedTarget as Node | null)
     ) {
       this.setState({
-        isOpen: false
+        isOpen: false,
       })
     }
   }
@@ -162,7 +162,7 @@ export default class SearchableSelect extends React.PureComponent<
       ? {}
       : {
           onInputChange: this.handleInputChange,
-          onChange: this.handleChange
+          onChange: this.handleChange,
         }
 
     return (

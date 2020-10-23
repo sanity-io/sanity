@@ -8,7 +8,7 @@ import {
   DocumentChangeContextInstance,
   NoChanges,
   ObjectDiff,
-  ObjectSchemaType
+  ObjectSchemaType,
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar} from '@sanity/base/components'
@@ -44,7 +44,7 @@ export function ChangesPanel({
   onTimelineOpen,
   since,
   schemaType,
-  timelineMode
+  timelineMode,
 }: ChangesPanelProps): React.ReactElement | null {
   const scrollRef = useRef<HTMLElement | null>(null)
   const {close: closeHistory, historyController} = useDocumentHistory()
@@ -57,7 +57,7 @@ export function ChangesPanel({
       schemaType,
       FieldWrapper: ChangeFieldWrapper,
       rootDiff: diff,
-      isComparingCurrent
+      isComparingCurrent,
     }),
     [documentId, schemaType, diff, isComparingCurrent]
   )
@@ -151,7 +151,7 @@ function Content({
   diff,
   documentContext,
   loading,
-  schemaType
+  schemaType,
 }: {
   diff: ObjectDiff | null
   documentContext: DocumentChangeContextInstance

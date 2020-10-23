@@ -23,7 +23,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
   const timeline = useMemo(() => new Timeline({publishedId: documentId, enableTrace: __DEV__}), [
-    documentId
+    documentId,
   ])
 
   // note: this emits sync so can never be null
@@ -34,7 +34,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
         createObservableController({
           timeline,
           documentId,
-          client
+          client,
         }),
       [documentId, timeline]
     )
@@ -56,7 +56,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
       paneRouter.setParams({
         ...paneRouter.params,
         since: newSince,
-        rev: newRev ? newRev : undefined
+        rev: newRev ? newRev : undefined,
       })
     },
     [paneRouter]
@@ -78,7 +78,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
         close,
         open,
         timelineMode,
-        setTimelineMode
+        setTimelineMode,
       }}
     >
       {children}

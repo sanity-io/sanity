@@ -6,9 +6,9 @@ import {publishReplay, refCount} from 'rxjs/operators'
 
 export const memoizedPair = memoize(
   (idPair: IdPair): Observable<Pair> => {
-    return new Observable<Pair>(subscriber => {
+    return new Observable<Pair>((subscriber) => {
       subscriber.next(checkoutPair(idPair))
     }).pipe(publishReplay(1), refCount())
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

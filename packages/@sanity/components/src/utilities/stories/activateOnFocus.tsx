@@ -14,7 +14,7 @@ export function ActivateOnFocusStory() {
           width: '500px',
           border: '3px dotted #ccc',
           position: 'relative',
-          padding: '20px'
+          padding: '20px',
         }}
       >
         <ActivateOnFocus

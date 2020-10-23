@@ -7,14 +7,14 @@ function createDocumentFilters() {
       {
         fieldName: 'references',
         type: 'ID',
-        description: 'All documents referencing the given document ID.'
+        description: 'All documents referencing the given document ID.',
       },
       {
         fieldName: 'is_draft',
         type: 'Boolean',
-        description: 'All documents that are drafts.'
-      }
-    ]
+        description: 'All documents that are drafts.',
+      },
+    ],
   }
 }
 

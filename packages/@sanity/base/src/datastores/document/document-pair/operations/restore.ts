@@ -7,5 +7,5 @@ export const restore = {
   execute: ({idPair, typeName}: OperationArgs, fromRevision: string) => {
     const targetId = isLiveEditEnabled(typeName) ? idPair.publishedId : idPair.draftId
     return historyStore.restore(idPair.publishedId, targetId, fromRevision)
-  }
+  },
 }

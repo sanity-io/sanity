@@ -18,5 +18,5 @@ function fetchAllMessages() {
 
 module.exports = {
   fetchLocalizedMessages,
-  fetchAllMessages
+  fetchAllMessages,
 }

@@ -5,7 +5,7 @@ import previewStyles from './AuthorPreview.css'
 
 const staleThreshold = 3 * 24 * 60 * 60 * 1000 // 3 days
 
-const AuthorPreview = props => {
+const AuthorPreview = (props) => {
   if (!props.value) {
     return <DefaultPreview {...props} item={props.value} />
   }
@@ -20,13 +20,13 @@ const AuthorPreview = props => {
 }
 
 AuthorPreview.defaultProps = {
-  value: null
+  value: null,
 }
 
 AuthorPreview.propTypes = {
   value: PropTypes.shape({
-    lastUpdated: PropTypes.string
-  })
+    lastUpdated: PropTypes.string,
+  }),
 }
 
 export default AuthorPreview

@@ -15,7 +15,7 @@ function QueryErrorDialog(props) {
 }
 
 QueryErrorDialog.propTypes = {
-  error: PropTypes.instanceOf(Error)
+  error: PropTypes.instanceOf(Error),
 }
 
 export default QueryErrorDialog

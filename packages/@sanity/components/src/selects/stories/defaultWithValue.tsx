@@ -12,7 +12,7 @@ const chance = new Chance()
 const items = range(20).map((item, i) => {
   return {
     title: chance.name(),
-    key: `${i}`
+    key: `${i}`,
   }
 })
 
@@ -24,7 +24,7 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 export function DefaultWithValueStory() {

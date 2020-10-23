@@ -18,11 +18,11 @@ export default class StateLink extends React.PureComponent<
 
   static defaultProps = {
     replace: false,
-    toIndex: false
+    toIndex: false,
   }
 
   static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck
+    __internalRouter: internalRouterContextTypeCheck,
   }
 
   resolveUrl(): string {

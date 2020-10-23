@@ -68,7 +68,7 @@ function getIntentState(intentName, params, currentState, payload) {
       return {
         panes: paneSegments
           .slice(0, i)
-          .concat([[{id: editDocumentId, params: paneParams, payload}]])
+          .concat([[{id: editDocumentId, params: paneParams, payload}]]),
       }
     }
   }
@@ -78,7 +78,7 @@ function getIntentState(intentName, params, currentState, payload) {
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1.2
+  strokeWidth: 1.2,
 }
 
 // @todo: Move to @sanity/base
@@ -120,8 +120,8 @@ export default {
     route('/edit/:type/:editDocumentId', [
       route({
         path: '/:params',
-        transform: {params: {toState: legacyEditParamsToState, toPath: legacyEditParamsToPath}}
-      })
+        transform: {params: {toState: legacyEditParamsToState, toPath: legacyEditParamsToPath}},
+      }),
     ]),
 
     // The regular path - when the intent can be resolved to a specific pane
@@ -130,9 +130,9 @@ export default {
       // Legacy URLs, used to handle redirects
       children: [route('/:action', route('/:legacyEditDocumentId'))],
       transform: {
-        panes: {toState, toPath}
-      }
-    })
+        panes: {toState, toPath},
+      },
+    }),
   ]),
   canHandleIntent(intentName, params) {
     return Boolean(
@@ -145,5 +145,5 @@ export default {
   title: 'Desk',
   name: 'desk',
   icon: MasterDetailIcon,
-  component: DeskTool
+  component: DeskTool,
 }

@@ -13,32 +13,32 @@ const ASPECT_RATIO_OPTIONS = [
   ['Portrait', 9 / 16],
   ['Auto', 'auto', {height: 200}],
   ['Auto', 'auto', {width: 200}],
-  ['Auto', 'auto', {height: 100, width: 200}]
+  ['Auto', 'auto', {height: 100, width: 200}],
 ].map(([title, aspect, wrapperStyle]) => ({title, aspect, wrapperStyle}))
 
 const CROP = {
   top: 0.4,
   left: 0.0,
   bottom: 0.0,
-  right: 0.1
+  right: 0.1,
 }
 const HOTSPOT = {
   x: 0.5,
   y: 0.5,
   height: 0.1,
-  width: 0.1
+  width: 0.1,
 }
 
 export default class HotspotImageDemo extends React.PureComponent {
   static propTypes = {
-    src: PropTypes.string
+    src: PropTypes.string,
   }
 
   state = {
-    selectedOption: ASPECT_RATIO_OPTIONS[0]
+    selectedOption: ASPECT_RATIO_OPTIONS[0],
   }
 
-  handleSelect = event => {
+  handleSelect = (event) => {
     const selected = ASPECT_RATIO_OPTIONS[event.target.value]
     this.setState({selectedOption: selected})
   }

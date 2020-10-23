@@ -34,5 +34,5 @@ export enum HELP_URL {
   QUERY_PROVIDED_FOR_FILTER = 'structure-query-provided-for-filter',
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',
   LIST_ITEM_IDS_MUST_BE_UNIQUE = 'structure-list-item-ids-must-be-unique',
-  ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE = 'structure-action-and-intent-mutually-exclusive'
+  ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE = 'structure-action-and-intent-mutually-exclusive',
 }

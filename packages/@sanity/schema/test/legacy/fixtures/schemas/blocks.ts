@@ -9,7 +9,7 @@ export default {
           name: 'title',
           title: 'Title',
           type: 'string',
-          required: true
+          required: true,
         },
         {
           name: 'slug',
@@ -17,18 +17,18 @@ export default {
           type: 'slug',
           options: {
             source: 'title',
-            maxLength: 96
-          }
+            maxLength: 96,
+          },
         },
         {
           name: 'priority',
           title: 'Priority',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'checked',
           title: 'Published',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'content',
@@ -39,74 +39,74 @@ export default {
             {
               title: 'Paragraph',
               type: 'paragraph',
-              marks: ['bold', 'italic', 'underline', 'overline', 'line-through', 'code']
+              marks: ['bold', 'italic', 'underline', 'overline', 'line-through', 'code'],
             },
             {
               title: 'Header 1',
               type: 'header',
               marks: ['bold', 'italic', 'underline', 'line-through'],
-              level: 1
+              level: 1,
             },
             {
               title: 'Header 2',
               type: 'header',
               marks: ['bold', 'italic', 'underline', 'line-through'],
-              level: 2
+              level: 2,
             },
             {
               title: 'Header 3',
               type: 'header',
               marks: ['bold', 'italic', 'underline', 'line-through'],
-              level: 3
+              level: 3,
             },
             {
               title: 'Header 4',
               type: 'header',
               marks: ['bold', 'italic', 'underline', 'line-through'],
-              level: 4
+              level: 4,
             },
             {
               title: 'Numbered list',
               type: 'list',
-              listStyle: 'number'
+              listStyle: 'number',
             },
             {
               title: 'Bullet list',
               type: 'list',
-              listStyle: 'bullet'
+              listStyle: 'bullet',
             },
             {
               title: 'Roman list',
               type: 'list',
-              listStyle: 'roman'
+              listStyle: 'roman',
             },
             {
               title: 'List item',
               type: 'listItem',
-              marks: ['bold', 'italic', 'underline', 'line-through']
+              marks: ['bold', 'italic', 'underline', 'line-through'],
             },
             {
               title: 'Link',
               type: 'link',
-              marks: ['bold', 'italic', 'underline', 'line-through']
+              marks: ['bold', 'italic', 'underline', 'line-through'],
             },
             {
               title: 'String',
-              type: 'string'
+              type: 'string',
             },
             {
               title: 'Image',
-              type: 'simpleImage'
+              type: 'simpleImage',
             },
             {
               title: 'Author',
-              type: 'author'
+              type: 'author',
             },
             {
               title: 'Location',
-              type: 'geopoint'
-            }
-          ]
+              type: 'geopoint',
+            },
+          ],
         },
         {
           name: 'minimal',
@@ -116,11 +116,11 @@ export default {
           of: [
             {
               title: 'Paragraph',
-              type: 'paragraph'
-            }
-          ]
-        }
-      ]
+              type: 'paragraph',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'simpleImage',
@@ -129,22 +129,22 @@ export default {
         {
           title: 'Image address (url)',
           name: 'url',
-          type: 'url'
+          type: 'url',
         },
         {
           title: 'Caption',
           name: 'caption',
-          type: 'string'
-        }
+          type: 'string',
+        },
       ],
 
       options: {
-        preview: value => {
+        preview: (value) => {
           return {
-            title: value ? value.caption : ''
+            title: value ? value.caption : '',
           }
-        }
-      }
+        },
+      },
     },
     {
       name: 'geopoint',
@@ -154,15 +154,15 @@ export default {
           name: 'lat',
           title: 'Latitude',
           type: 'number',
-          required: true
+          required: true,
         },
         {
           name: 'lon',
           title: 'Longitude',
           type: 'number',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'author',
@@ -171,7 +171,7 @@ export default {
         {
           name: 'name',
           title: 'Title',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'awards',
@@ -179,9 +179,9 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'homestead',
@@ -192,17 +192,17 @@ export default {
               name: 'lat',
               title: 'Latitude',
               type: 'number',
-              required: true
+              required: true,
             },
             {
               name: 'lon',
               title: 'Longitude',
               type: 'number',
-              required: true
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

@@ -19,7 +19,7 @@ function isBundledDocType(typeName) {
 }
 
 function schemaHasUserDefinedDocumentTypes(schema) {
-  return schema.getTypeNames().some(typeName => {
+  return schema.getTypeNames().some((typeName) => {
     return !isBundledDocType(typeName) && isDocumentType(schema.get(typeName))
   })
 }
@@ -50,7 +50,7 @@ class DataAspectsResolver {
   }
 
   getField(type, fieldName) {
-    return type.fields.filter(currField => currField.name === fieldName)
+    return type.fields.filter((currField) => currField.name === fieldName)
   }
 
   getType(typeName) {
@@ -58,7 +58,7 @@ class DataAspectsResolver {
   }
 
   inferTypesLegacy() {
-    return (this.schema.getTypeNames() || []).filter(typeName => {
+    return (this.schema.getTypeNames() || []).filter((typeName) => {
       // Exclude types which come bundled with Sanity
       return (
         !bundledTypeNames.includes(typeName) &&
@@ -76,7 +76,9 @@ class DataAspectsResolver {
     }
     return this.schema
       .getTypeNames()
-      .filter(typeName => !isBundledDocType(typeName) && isDocumentType(this.schema.get(typeName)))
+      .filter(
+        (typeName) => !isBundledDocType(typeName) && isDocumentType(this.schema.get(typeName))
+      )
   }
 
   getInferredTypes() {

@@ -22,7 +22,7 @@ export const HELP_IDS = {
   REFERENCE_INVALID_OPTIONS_LOCATION: 'schema-reference-options-nesting',
   REFERENCE_INVALID_FILTER_PARAMS_COMBINATION: 'schema-reference-filter-params-combination',
   SLUG_SLUGIFY_FN_RENAMED: 'slug-slugifyfn-renamed',
-  ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid'
+  ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid',
 }
 
 function createValidationResult(
@@ -30,7 +30,7 @@ function createValidationResult(
   message: string,
   helpId: string | null
 ): ValidationResult {
-  if (helpId && !Object.keys(HELP_IDS).some(id => HELP_IDS[id] === helpId)) {
+  if (helpId && !Object.keys(HELP_IDS).some((id) => HELP_IDS[id] === helpId)) {
     throw new Error(
       `Used the unknown helpId "${helpId}", please add it to the array in createValidationResult.js`
     )
@@ -38,7 +38,7 @@ function createValidationResult(
   return {
     severity,
     message,
-    helpId
+    helpId,
   }
 }
 

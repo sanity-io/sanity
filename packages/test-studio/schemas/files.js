@@ -9,18 +9,18 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'someFile',
       title: 'A simple file',
-      type: 'file'
+      type: 'file',
     },
     {
       name: 'arrayOfFiles',
       title: 'An array of files',
       type: 'array',
-      of: [{type: 'file'}]
+      of: [{type: 'file'}],
     },
     {
       name: 'fileWithFields',
@@ -31,22 +31,22 @@ export default {
           title: 'Description',
           name: 'description',
           type: 'string',
-          options: {isHighlighted: true}
+          options: {isHighlighted: true},
         },
         {
           title: 'Not so important',
           name: 'notsoimportant',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'fileWithoutOriginalFilename',
       title: 'File without original filename',
       type: 'file',
       options: {
-        storeOriginalFilename: false
-      }
-    }
-  ]
+        storeOriginalFilename: false,
+      },
+    },
+  ],
 }

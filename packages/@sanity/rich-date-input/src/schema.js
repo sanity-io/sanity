@@ -9,23 +9,23 @@ export default {
       name: 'utc',
       type: 'datetime',
       title: 'UTC',
-      required: true
+      required: true,
     },
     {
       name: 'local',
       type: 'datetime',
-      title: 'Local'
+      title: 'Local',
     },
     {
       name: 'timezone',
       type: 'string',
-      title: 'Timezone'
+      title: 'Timezone',
     },
     {
       name: 'offset',
       type: 'number',
-      title: 'Offset'
-    }
+      title: 'Offset',
+    },
   ],
-  inputComponent: RichDateInput
+  inputComponent: RichDateInput,
 }

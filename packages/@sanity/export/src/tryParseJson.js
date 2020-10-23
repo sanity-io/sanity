@@ -1,4 +1,4 @@
-module.exports = line => {
+module.exports = (line) => {
   try {
     return JSON.parse(line)
   } catch (err) {

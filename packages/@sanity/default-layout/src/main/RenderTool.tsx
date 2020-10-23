@@ -11,7 +11,7 @@ interface Props {
 // eslint-disable-next-line react/require-optimization
 export default class RenderTool extends React.Component<Props> {
   static defaultProps = {
-    tool: null
+    tool: null,
   }
 
   state = {error: null, showErrorDetails: __DEV__}
@@ -41,7 +41,7 @@ export default class RenderTool extends React.Component<Props> {
 
   getActiveTool() {
     const activeToolName = this.props.tool
-    const activeTool = tools.find(tool => tool.name === activeToolName)
+    const activeTool = tools.find((tool) => tool.name === activeToolName)
     return activeTool
   }
 

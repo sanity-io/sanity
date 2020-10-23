@@ -13,7 +13,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 32,
   height: 32,
   fit: 'crop',
-  aspect: 1
+  aspect: 1,
 }
 
 export default class InlinePreview extends React.PureComponent<InlinePreviewProps> {

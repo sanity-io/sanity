@@ -8,12 +8,12 @@ const readPackages = require('./utils/readPackages')
 const readLicense = fs.readFile(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 
 Promise.all(
-  readPackages().map(async pkg => {
+  readPackages().map(async (pkg) => {
     const licenseTxt = await readLicense
     const targetPath = path.join(pkg.dirname, 'LICENSE')
     await fs.writeFile(targetPath, licenseTxt)
     return targetPath
   })
-).then(targetPaths => {
+).then((targetPaths) => {
   console.log('Copied the ./LICENSE file to %s to packages.', targetPaths.length)
 })

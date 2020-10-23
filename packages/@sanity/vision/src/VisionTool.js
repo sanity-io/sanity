@@ -7,5 +7,5 @@ export default {
   name: 'vision',
   title: 'Vision',
   icon: VisibilityIcon,
-  component: SanityVision
+  component: SanityVision,
 }

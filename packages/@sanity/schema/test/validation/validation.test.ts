@@ -5,13 +5,13 @@ import array from '../../src/sanity/validation/types/array'
 const coreTypes = [
   {name: 'array', type: 'type'},
   {name: 'string', type: 'type'},
-  {name: 'object', type: 'type'}
+  {name: 'object', type: 'type'},
 ]
 const schemaDef = [
   {
     type: 'array',
     name: 'myArray',
-    of: [{type: 'string'}, {type: 'string'}]
+    of: [{type: 'string'}, {type: 'string'}],
   },
   {
     type: 'object',
@@ -19,14 +19,14 @@ const schemaDef = [
     fields: [
       {type: 'string', name: {foo: 'bar'}},
       {type: 'string'},
-      {name: 'objectWithoutFields', type: 'object'}
-    ]
-  }
+      {name: 'objectWithoutFields', type: 'object'},
+    ],
+  },
 ]
 
 const visitors = {
   array: {visit: array},
-  object: {visit: object}
+  object: {visit: object},
 }
 test('Validation test', () => {
   const validation = traverseSchema(schemaDef, coreTypes, (typeDef, visitorContext) => {

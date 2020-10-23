@@ -6,7 +6,7 @@ import {
   EditorSelection,
   PortableTextEditor,
   RenderBlockFunction,
-  usePortableTextEditor
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {BlockStyleItem} from './types'
 
@@ -57,10 +57,10 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
               {
                 _key: '2',
                 _type: features.types.span.name,
-                text: item.title
-              }
+                text: item.title,
+              },
             ],
-            style: item.style
+            style: item.style,
           },
           features.types.block,
           {focused: false, selected: false, path: []},
@@ -83,7 +83,7 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
     <label className={className}>
       <span style={{display: 'none'}}>Text</span>
       <StyleSelect
-        onClick={event => event.preventDefault()}
+        onClick={(event) => event.preventDefault()}
         disabled={readOnly || disabled || _disabled}
         items={items}
         onChange={handleChange}

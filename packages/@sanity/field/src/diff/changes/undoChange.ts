@@ -5,7 +5,7 @@ import {
   getItemKeySegment,
   getValueAtPath,
   isEmptyObject,
-  pathToString
+  pathToString,
 } from '../../paths'
 import {
   ArrayDiff,
@@ -18,7 +18,7 @@ import {
   OperationsAPI,
   PatchOperations,
   SetDiffPatch,
-  UnsetDiffPatch
+  UnsetDiffPatch,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
 
@@ -41,13 +41,13 @@ export function undoChange(
     const unsetChanges = allChanges.filter(isAddedAction)
 
     allChanges
-      .filter(child => !isAddedAction(child))
-      .forEach(child => undoChange(child, rootDiff, documentOperations))
+      .filter((child) => !isAddedAction(child))
+      .forEach((child) => undoChange(child, rootDiff, documentOperations))
 
     patches.push(
       ...buildUnsetPatches(
         rootDiff,
-        unsetChanges.map(unsetChange => unsetChange.path)
+        unsetChanges.map((unsetChange) => unsetChange.path)
       )
     )
   } else if (change.diff.action === 'added') {
@@ -82,7 +82,7 @@ function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations
   const patches: Path[] = []
 
   for (let i = 0; i < paths.length; i++) {
-    const unsetByEarlierPatch = patches.some(patch => isSubpathOf(paths[i], patch))
+    const unsetByEarlierPatch = patches.some((patch) => isSubpathOf(paths[i], patch))
 
     if (unsetByEarlierPatch) {
       continue
@@ -142,7 +142,7 @@ function furthestEmptyAncestor(
      * because since we ignore it higher up in the tree it doesn't
      * matter anymore what the values of subpaths are.
      */
-    ...ignorePaths.filter(path => !isSubpathOf(path, ancestorPath))
+    ...ignorePaths.filter((path) => !isSubpathOf(path, ancestorPath)),
   ]
 
   return isStub(ancestorValue, ancestorPath, ignorePaths)
@@ -201,7 +201,7 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
     ...stubs,
     ...inserts,
     ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : [])
+    ...(hasSets ? [{set: sets}] : []),
   ]
 }
 
@@ -294,7 +294,7 @@ function onlyContainsStubs(item: unknown, path: Path, ignorePaths?: Path[]): boo
 function isStub(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
   const isIgnoredPath =
     Array.isArray(ignorePaths) &&
-    ignorePaths.some(ignorePath => pathToString(ignorePath) === pathToString(path))
+    ignorePaths.some((ignorePath) => pathToString(ignorePath) === pathToString(path))
 
   const isEmptyArray = Array.isArray(item) && item.length <= 0
 
@@ -336,7 +336,7 @@ function getFromItem(parentDiff: ArrayDiff, itemDiff: ItemDiff) {
     return {
       parentValue: parentDiff.fromValue,
       fromIndex: itemDiff.fromIndex,
-      fromValue
+      fromValue,
     }
   }
 

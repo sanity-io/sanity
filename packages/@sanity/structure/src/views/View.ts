@@ -63,7 +63,7 @@ export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
       id: validateId(id, options.path, options.index),
       title,
       icon,
-      type: 'view'
+      type: 'view',
     }
   }
 

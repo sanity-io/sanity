@@ -42,14 +42,14 @@ function limitToBoundaries(value, delta) {
     top: top + (delta.top || 0) > 0 ? top : 0,
     right: right + (delta.right || 0) > 0 ? right : 0,
     bottom: bottom + (delta.bottom || 0) > 0 ? bottom : 0,
-    left: left + (delta.left || 0) > 0 ? left : 0
+    left: left + (delta.left || 0) > 0 ? left : 0,
   }
 
   const newDelta = {
     top: top + (delta.top || 0) > 0 ? delta.top || 0 : 0,
     right: right + (delta.right || 0) > 0 ? delta.right || 0 : 0,
     bottom: bottom + (delta.bottom || 0) > 0 ? delta.bottom || 0 : 0,
-    left: left + (delta.left || 0) > 0 ? delta.left || 0 : 0
+    left: left + (delta.left || 0) > 0 ? delta.left || 0 : 0,
   }
 
   return {value: newValue, delta: newDelta}
@@ -91,26 +91,26 @@ export default class ImageTool extends React.PureComponent {
         x: PropTypes.number,
         y: PropTypes.number,
         height: PropTypes.number,
-        width: PropTypes.number
-      })
+        width: PropTypes.number,
+      }),
     }),
     image: PropTypes.shape({
       height: PropTypes.number,
-      width: PropTypes.number
+      width: PropTypes.number,
     }),
     onChange: PropTypes.func,
-    onChangeEnd: PropTypes.func
+    onChangeEnd: PropTypes.func,
   }
 
   static defaultProps = {
     onChange() {},
-    onChangeEnd() {}
+    onChangeEnd() {},
   }
 
   state = {
     cropping: false,
     cropMoving: false,
-    moving: false
+    moving: false,
   }
 
   getHotspotRect() {
@@ -178,14 +178,14 @@ export default class ImageTool extends React.PureComponent {
       bottomRight: cropHandle.setTopLeft(
         inner.right - halfCropHandleSize,
         inner.bottom - halfCropHandleSize
-      )
+      ),
     }
   }
 
   getActiveCropHandleFor({x, y}) {
     const cropHandles = this.getCropHandles()
 
-    return Object.keys(cropHandles).find(position => {
+    return Object.keys(cropHandles).find((position) => {
       return utils2d.isPointInRect({x, y}, cropHandles[position])
     })
   }
@@ -195,8 +195,8 @@ export default class ImageTool extends React.PureComponent {
     return Object.assign({}, value, {
       hotspot: Object.assign({}, value.hotspot, {
         x: currentHotspot.x + delta.x,
-        y: currentHotspot.y + delta.y
-      })
+        y: currentHotspot.y + delta.y,
+      }),
     })
   }
 
@@ -205,8 +205,8 @@ export default class ImageTool extends React.PureComponent {
     return Object.assign({}, value, {
       hotspot: Object.assign({}, currentHotspot, {
         height: currentHotspot.height + delta.height,
-        width: currentHotspot.width + delta.width
-      })
+        width: currentHotspot.width + delta.width,
+      }),
     })
   }
 
@@ -217,8 +217,8 @@ export default class ImageTool extends React.PureComponent {
         left: currentCrop.left + (delta.left || 0),
         right: currentCrop.right + (delta.right || 0),
         top: currentCrop.top + (delta.top || 0),
-        bottom: currentCrop.bottom + (delta.bottom || 0)
-      })
+        bottom: currentCrop.bottom + (delta.bottom || 0),
+      }),
     })
   }
 
@@ -227,7 +227,7 @@ export default class ImageTool extends React.PureComponent {
     const scale = this.getScale()
     const delta = {
       x: (pos.x * scale) / image.width,
-      y: (pos.y * scale) / image.height
+      y: (pos.y * scale) / image.height,
     }
 
     onChange(this.applyHotspotMoveBy(value, delta))
@@ -277,7 +277,7 @@ export default class ImageTool extends React.PureComponent {
 
     const delta = {
       x: (pos.x * scale * 2) / image.width,
-      y: (pos.y * scale * 2) / image.height
+      y: (pos.y * scale * 2) / image.height,
     }
     onChange(this.applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
   }
@@ -422,7 +422,7 @@ export default class ImageTool extends React.PureComponent {
     return {
       x: point.x,
       y: point.y,
-      radius: 8 * this.getScale()
+      radius: 8 * this.getScale(),
     }
   }
 
@@ -548,7 +548,7 @@ export default class ImageTool extends React.PureComponent {
 
     //context.globalCompositeOperation = "difference";
 
-    Object.keys(crophandles).forEach(handle => {
+    Object.keys(crophandles).forEach((handle) => {
       context.fillStyle =
         this.state.cropping === handle
           ? `rgba(202, 54, 53, ${opacity})`
@@ -639,7 +639,7 @@ export default class ImageTool extends React.PureComponent {
     }
   }
 
-  handleDrag = pos => {
+  handleDrag = (pos) => {
     if (this.state.cropping) {
       this.emitCrop(this.state.cropping, pos)
     } else if (this.state.cropMoving) {
@@ -651,7 +651,7 @@ export default class ImageTool extends React.PureComponent {
     }
   }
 
-  handleDragEnd = pos => {
+  handleDragEnd = (pos) => {
     const {onChange, onChangeEnd} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
     const {hotspot, crop} = this.getClampedValue()
@@ -661,14 +661,14 @@ export default class ImageTool extends React.PureComponent {
         top: crop.top,
         bottom: 1 - crop.bottom,
         left: crop.left,
-        right: 1 - crop.right
+        right: 1 - crop.right,
       },
       hotspot: {
         x: hotspot.center.x,
         y: hotspot.center.y,
         height: Math.abs(hotspot.height),
-        width: Math.abs(hotspot.width)
-      }
+        width: Math.abs(hotspot.width),
+      },
     }
     onChange(finalValue)
     if (onChangeEnd) {
@@ -680,17 +680,17 @@ export default class ImageTool extends React.PureComponent {
     this.setState({mousePosition: null})
   }
 
-  handleMouseMove = event => {
+  handleMouseMove = (event) => {
     const clientRect = event.target.getBoundingClientRect()
     this.setState({
       mousePosition: {
         x: (event.clientX - clientRect.left) * this.getScale(),
-        y: (event.clientY - clientRect.top) * this.getScale()
-      }
+        y: (event.clientY - clientRect.top) * this.getScale(),
+      },
     })
   }
 
-  setCanvas = node => {
+  setCanvas = (node) => {
     this.canvas = node
   }
 

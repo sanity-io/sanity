@@ -6,12 +6,12 @@ export default {
     {
       name: 'url',
       type: 'url',
-      title: 'URL'
-    }
+      title: 'URL',
+    },
   ],
   preview: {
     select: {
-      url: 'url'
-    }
-  }
+      url: 'url',
+    },
+  },
 }

@@ -7,9 +7,9 @@ test('builds document type lists with only required properties', () => {
     S.documentTypeList({
       id: 'custom-id',
       title: 'Custom author title',
-      schemaType: 'author'
+      schemaType: 'author',
     }).serialize({
-      path: []
+      path: [],
     })
   ).toMatchSnapshot()
 })
@@ -17,7 +17,7 @@ test('builds document type lists with only required properties', () => {
 test('builds document type lists with schema type as string', () => {
   expect(
     S.documentTypeList('author').serialize({
-      path: []
+      path: [],
     })
   ).toMatchSnapshot()
 })
@@ -25,7 +25,7 @@ test('builds document type lists with schema type as string', () => {
 test('builds document type lists with schema type name + schema', () => {
   expect(
     S.documentTypeList('author', getDefaultSchema()).serialize({
-      path: []
+      path: [],
     })
   ).toMatchSnapshot()
 })
@@ -33,19 +33,16 @@ test('builds document type lists with schema type name + schema', () => {
 test('builds document type lists with schema type instance', () => {
   expect(
     S.documentTypeList({
-      schemaType: getDefaultSchema().get('author') as SchemaType
+      schemaType: getDefaultSchema().get('author') as SchemaType,
     }).serialize({
-      path: []
+      path: [],
     })
   ).toMatchSnapshot()
 })
 
 test('throws if no filter is set', () => {
   expect(() =>
-    S.documentTypeList('author')
-      .id('foo')
-      .filter('')
-      .serialize()
+    S.documentTypeList('author').id('foo').filter('').serialize()
   ).toThrowErrorMatchingSnapshot()
 })
 
@@ -86,27 +83,27 @@ test('builds document type lists through setters (alt order #2)', () => {
   ).toMatchSnapshot()
 })
 
-test('default child resolver resolves to editor', done => {
+test('default child resolver resolves to editor', (done) => {
   const list = S.documentTypeList('author').serialize()
 
   const context = {parent: list, index: 1}
-  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe(child => {
+  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe((child) => {
     expect(child).toEqual({
       child: undefined,
       id: 'documentEditor',
       type: 'document',
       options: {
         id: 'asoiaf-wow',
-        type: 'author'
+        type: 'author',
       },
       views: [
         {
           id: 'editor',
           title: 'Editor',
           type: 'form',
-          icon: undefined
-        }
-      ]
+          icon: undefined,
+        },
+      ],
     })
     done()
   })
@@ -144,7 +141,7 @@ test('getters work', () => {
   expect(original.showIcons(false).getShowIcons()).toEqual(false)
   expect(original.canHandleIntent(canHandleIntent).getCanHandleIntent()).toEqual(canHandleIntent)
   expect(original.defaultOrdering([{field, direction}]).getDefaultOrdering()).toEqual([
-    {field, direction}
+    {field, direction},
   ])
 })
 
@@ -157,7 +154,7 @@ test('can disable icons from being displayed', () => {
 
   expect(list.serialize()).toMatchObject({
     id: 'blamuggost',
-    displayOptions: {showIcons: false}
+    displayOptions: {showIcons: false},
   })
 
   expect(list.getShowIcons()).toBe(false)

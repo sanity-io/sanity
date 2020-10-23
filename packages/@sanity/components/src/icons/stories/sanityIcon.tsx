@@ -10,7 +10,7 @@ export function SanityIconStory() {
         height: '100vh',
         display: 'flex',
         color: color('color', '#fff'),
-        backgroundColor: color('background', '#f43')
+        backgroundColor: color('background', '#f43'),
       }}
     >
       <div
@@ -20,7 +20,7 @@ export function SanityIconStory() {
           width: '50vw',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)'
+          transform: 'translate(-50%, -50%)',
         }}
       >
         <Sanity part="part:@sanity/base/sanity-logo-icon" propTables={[SanityLogoIcon]}>

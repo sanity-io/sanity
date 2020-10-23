@@ -20,11 +20,11 @@ export const editState = memoize(
         type: typeName,
         draft: snapshots.draft,
         published: snapshots.published,
-        liveEdit: isLiveEditEnabled(typeName)
+        liveEdit: isLiveEditEnabled(typeName),
       })),
       publishReplay(1),
       refCount()
     )
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

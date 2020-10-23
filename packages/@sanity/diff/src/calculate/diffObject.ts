@@ -49,7 +49,7 @@ export function diffObject<A>(
       isChanged: false,
       fromValue,
       toValue,
-      fields
+      fields,
     }
   }
 
@@ -60,7 +60,7 @@ export function diffObject<A>(
     fromValue,
     toValue,
     fields,
-    annotation: toInput.annotation
+    annotation: toInput.annotation,
   }
 }
 
@@ -84,7 +84,7 @@ export function removedObject<A>(
         fields[key] = removedInput(value, undefined, options)
       }
       return replaceProperty<typeof fields>(this, 'fields', fields)
-    }
+    },
   }
 }
 
@@ -108,6 +108,6 @@ export function addedObject<A>(
         fields[key] = addedInput(value, undefined, options)
       }
       return replaceProperty<typeof fields>(this, 'fields', fields)
-    }
+    },
   }
 }

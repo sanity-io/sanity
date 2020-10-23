@@ -11,7 +11,7 @@ import {
   takeUntil,
   share,
   publishReplay,
-  refCount
+  refCount,
 } from 'rxjs/operators'
 
 import {combineLatest, concat, merge, of, fromEvent} from 'rxjs'
@@ -21,33 +21,33 @@ import {listenQuery} from '../datastores/document/listenQuery'
 
 const INITIAL_CHILD_PROPS = {
   result: null,
-  error: false
+  error: false,
 }
 
-const createResultChildProps = documents => ({
+const createResultChildProps = (documents) => ({
   result: {documents},
   loading: false,
-  error: false
+  error: false,
 })
 
-const createErrorChildProps = error => ({
+const createErrorChildProps = (error) => ({
   result: null,
   loading: false,
-  error
+  error,
 })
 
-export const getQueryResults = receivedProps$ => {
+export const getQueryResults = (receivedProps$) => {
   const [onRetry$, onRetry] = createEventHandler()
 
   const queryProps$ = receivedProps$.pipe(
-    map(props => ({query: props.query, params: props.params})),
+    map((props) => ({query: props.query, params: props.params})),
     distinctUntilChanged(deepEquals),
     publishReplay(1),
     refCount()
   )
 
   const queryResults$ = queryProps$.pipe(
-    switchMap(queryProps => {
+    switchMap((queryProps) => {
       const query$ = listenQuery(queryProps.query, queryProps.params).pipe(
         map(createResultChildProps),
         share()
@@ -69,7 +69,7 @@ export const getQueryResults = receivedProps$ => {
 }
 
 // todo: split into separate standalone parts so that behavior can be re-used
-export default streamingComponent(receivedProps$ => {
+export default streamingComponent((receivedProps$) => {
   const resultProps$ = getQueryResults(receivedProps$)
   return combineLatest(receivedProps$, resultProps$).pipe(
     map(([receivedProps, queryResult]) => {

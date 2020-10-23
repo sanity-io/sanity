@@ -4,7 +4,7 @@ import {
   isValidationErrorMarker,
   isValidationMarker,
   isValidationWarningMarker,
-  Marker
+  Marker,
 } from '@sanity/types'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import WarningOutlineIcon from 'part:@sanity/base/warning-outline-icon'
@@ -98,7 +98,7 @@ export default ValidationStatus
 function ValidationSummaryTooltipContent({
   hasErrors,
   hasWarnings,
-  text
+  text,
 }: {
   hasErrors: boolean
   hasWarnings: boolean

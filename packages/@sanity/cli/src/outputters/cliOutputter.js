@@ -30,5 +30,5 @@ export default {
 
   spinner(...args) {
     return ora(...args)
-  }
+  },
 }

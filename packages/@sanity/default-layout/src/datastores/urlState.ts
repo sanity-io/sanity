@@ -19,7 +19,7 @@ function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {
     return state
   }
-  const defaultSpace = CONFIGURED_SPACES.find(ds => ds.default) || CONFIGURED_SPACES[0]
+  const defaultSpace = CONFIGURED_SPACES.find((ds) => ds.default) || CONFIGURED_SPACES[0]
   return Object.assign({}, state, {space: defaultSpace.name})
 }
 
@@ -30,7 +30,7 @@ function resolveUrlStateWithDefaultTool(state) {
   }
 
   return Object.assign({}, state, {
-    tool: defaultTool.name
+    tool: defaultTool.name,
   })
 }
 
@@ -38,7 +38,7 @@ function makeBackwardsCompatible(state) {
   if (!state) {
     return state
   }
-  if (getOrderedTools().find(tool => tool.name === state.space)) {
+  if (getOrderedTools().find((tool) => tool.name === state.space)) {
     return Object.assign({}, state, {tool: state.space, space: undefined})
   }
   return state
@@ -56,11 +56,13 @@ function resolveIntentState(currentState, intentState) {
 
   const tools = getOrderedTools()
 
-  const currentTool = currentState.tool ? tools.find(tool => tool.name === currentState.tool) : null
+  const currentTool = currentState.tool
+    ? tools.find((tool) => tool.name === currentState.tool)
+    : null
 
   // If current tool can handle intent and if so, give it precedence
   const matchingTool = (currentTool ? [currentTool, ...tools] : tools).find(
-    tool =>
+    (tool) =>
       tool &&
       typeof tool.canHandleIntent === 'function' &&
       tool.canHandleIntent(intent, params, currentState[tool.name])
@@ -76,12 +78,12 @@ function resolveIntentState(currentState, intentState) {
     const currentWithState = resolveUrlStateWithDefaultSpace(currentState) || currentState
     return Object.assign({}, currentWithState, {
       tool: matchingTool.name,
-      [matchingTool.name]: toolState
+      [matchingTool.name]: toolState,
     })
   }
   return {
     isNotFound: true,
-    intent: {name: intent, params}
+    intent: {name: intent, params},
   }
 }
 
@@ -106,7 +108,7 @@ function decodeUrlState(locationEvent: {type: string}) {
   return {
     type: locationEvent.type,
     state: rootRouter.decode(location.pathname),
-    isNotFound: rootRouter.isNotFound(location.pathname)
+    isNotFound: rootRouter.isNotFound(location.pathname),
   }
 }
 
@@ -137,7 +139,7 @@ if (HAS_SPACES) {
   // Uglybugly mutation ahead.
   state
     .pipe(
-      map(event => event.state),
+      map((event) => event.state),
       filter(Boolean),
       tap(reconfigureClient)
     )

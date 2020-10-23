@@ -23,7 +23,7 @@ function ResultView(props) {
 }
 
 ResultView.propTypes = {
-  data: PropTypes.any
+  data: PropTypes.any,
 }
 
 export default ResultView

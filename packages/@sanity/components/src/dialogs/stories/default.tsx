@@ -10,7 +10,7 @@ import React, {useRef, useEffect} from 'react'
 const chance = new Chance()
 
 const paragraph = chance.paragraph()
-const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
+const paragraphs = range(0, 20).map((i) => <p key={i}>{chance.paragraph()}</p>)
 
 function renderContent(type) {
   switch (type) {
@@ -37,18 +37,18 @@ export function DefaultStory() {
           index: '1',
           title: 'Finish',
           color: 'primary',
-          autoFocus: true
+          autoFocus: true,
         },
         {
           index: '2',
-          title: 'Cancel'
+          title: 'Cancel',
         },
         {
           index: '3',
           title: 'Secondary',
           color: 'danger',
-          secondary: true
-        }
+          secondary: true,
+        },
       ]
     : []
   const color = select(
@@ -63,7 +63,7 @@ export function DefaultStory() {
       minimal: 'minimal',
       paragraph: 'paragraph',
       longtext: 'longtext',
-      example: 'example with dialogcontent'
+      example: 'example with dialogcontent',
     },
     'minimal'
   )
@@ -76,7 +76,7 @@ export function DefaultStory() {
         none: 'None',
         small: 'Small',
         medium: 'Medium',
-        large: 'Large'
+        large: 'Large',
       },
       '',
       'Props'
@@ -91,7 +91,7 @@ export function DefaultStory() {
         small: 'Small',
         medium: 'Medium',
         large: 'Large',
-        auto: 'Auto'
+        auto: 'Auto',
       },
       '',
       'Props'

@@ -11,7 +11,7 @@ const centerStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   top: '50%',
   left: '50%',
-  transform: 'translate(-50%, -50%)'
+  transform: 'translate(-50%, -50%)',
 }
 
 export function CheckboxStory() {
@@ -21,7 +21,7 @@ export function CheckboxStory() {
       <Sanity part="part:@sanity/components/toggles/checkbox" propTables={[Checkbox]}>
         <div
           style={{
-            fontSize: `${fontSize}em`
+            fontSize: `${fontSize}em`,
           }}
         >
           <Checkbox

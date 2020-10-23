@@ -10,7 +10,7 @@ import {
   resolvePanes,
   loadStructure,
   maybeSerialize,
-  setStructureResolveError
+  setStructureResolveError,
 } from '../utils/resolvePanes'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from '../components/StructureError'
@@ -22,7 +22,7 @@ import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const EMPTY_PANE_KEYS = []
 
-const hasLoading = panes => panes.some(item => item === LOADING_PANE)
+const hasLoading = (panes) => panes.some((item) => item === LOADING_PANE)
 
 const isSaveHotkey = isHotkey('mod+s')
 
@@ -30,7 +30,7 @@ export default withRouterHOC(
   // eslint-disable-next-line react/prefer-stateless-function
   class DeskTool extends React.Component {
     static contextTypes = {
-      addToSnackQueue: PropTypes.func
+      addToSnackQueue: PropTypes.func,
     }
 
     static propTypes = {
@@ -41,20 +41,20 @@ export default withRouterHOC(
             PropTypes.arrayOf(
               PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                params: PropTypes.object
+                params: PropTypes.object,
               })
             )
           ),
           params: PropTypes.shape({
-            template: PropTypes.string
+            template: PropTypes.string,
           }),
           editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
-          action: PropTypes.string
-        })
+          action: PropTypes.string,
+        }),
       }).isRequired,
-      onPaneChange: PropTypes.func.isRequired
+      onPaneChange: PropTypes.func.isRequired,
     }
 
     state = {isResolving: true, hasNarrowScreen: isNarrowScreen(), panes: null}
@@ -65,7 +65,7 @@ export default withRouterHOC(
       props.onPaneChange([])
     }
 
-    setResolvedPanes = panes => {
+    setResolvedPanes = (panes) => {
       const router = this.props.router
       const paneSegments = router.state.panes || []
 
@@ -79,7 +79,7 @@ export default withRouterHOC(
       }
     }
 
-    setResolveError = error => {
+    setResolveError = (error) => {
       setStructureResolveError(error)
 
       // Log error for proper stacktraces
@@ -98,10 +98,10 @@ export default withRouterHOC(
         .pipe(
           distinctUntilChanged(),
           map(maybeSerialize),
-          switchMap(structure =>
+          switchMap((structure) =>
             resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
           ),
-          switchMap(panes =>
+          switchMap((panes) =>
             hasLoading(panes) ? of(panes).pipe(debounce(() => interval(50))) : of(panes)
           )
         )
@@ -169,7 +169,7 @@ export default withRouterHOC(
         legacyEditDocumentId,
         type: schemaType,
         editDocumentId,
-        params = {}
+        params = {},
       } = this.props.router.state
 
       const {template: templateName, ...payloadParams} = params
@@ -185,7 +185,7 @@ export default withRouterHOC(
           id: editDocumentId || legacyEditDocumentId,
           type,
           payloadParams,
-          templateName
+          templateName,
         }),
         {replace: true}
       )
@@ -199,12 +199,12 @@ export default withRouterHOC(
 
       const {navigate} = this.props.router
       const panes = this.props.router.state.panes || []
-      const hasSiblings = panes.some(group => group.length > 1)
+      const hasSiblings = panes.some((group) => group.length > 1)
       if (!hasSiblings) {
         return
       }
 
-      const withoutSiblings = panes.map(group => [group[0]])
+      const withoutSiblings = panes.map((group) => [group[0]])
       navigate({panes: withoutSiblings}, {replace: true})
     }
 
@@ -236,7 +236,7 @@ export default withRouterHOC(
       window.removeEventListener('keydown', this.handleGlobalKeyDown)
     }
 
-    handleGlobalKeyDown = event => {
+    handleGlobalKeyDown = (event) => {
       // Prevent `Cmd+S`
       if (isSaveHotkey(event)) {
         event.preventDefault()
@@ -248,7 +248,7 @@ export default withRouterHOC(
           kind: 'info',
           title: 'Sanity auto-saves your work!',
           autoDismissTimeout: 4000,
-          isCloseable: true
+          isCloseable: true,
         })
       }
     }
@@ -262,7 +262,7 @@ export default withRouterHOC(
 
       const keys =
         (router.state.panes || []).reduce(
-          (ids, group) => ids.concat(group.map(sibling => sibling.id)),
+          (ids, group) => ids.concat(group.map((sibling) => sibling.id)),
           []
         ) || EMPTY_PANE_KEYS
 
@@ -337,8 +337,8 @@ function getIntentRouteParams({id, type, payloadParams, templateName}) {
     params: {
       id,
       ...(type ? {type} : {}),
-      ...(templateName ? {template: templateName} : {})
+      ...(templateName ? {template: templateName} : {}),
     },
-    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined
+    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined,
   }
 }

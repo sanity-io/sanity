@@ -40,7 +40,7 @@ function BrokenRefs(props) {
             } with the following ID${nonExistent.length === 1 ? ' was' : 's were'} not found:`}
           >
             <ul className={styles.tagList}>
-              {nonExistent.map(doc => (
+              {nonExistent.map((doc) => (
                 <li className={styles.tagItem} key={doc.id}>
                   {doc.id}
                 </li>
@@ -63,7 +63,7 @@ function BrokenRefs(props) {
               documents={unpublished.map(({id, type, hasDraft}) => ({
                 _id: `drafts.${id}`,
                 _type: type,
-                _hasDraft: hasDraft
+                _hasDraft: hasDraft,
               }))}
             />
           </PanePopover>
@@ -83,15 +83,15 @@ BrokenRefs.propTypes = {
   documents: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      hasDraft: PropTypes.bool.isRequired
+      hasDraft: PropTypes.bool.isRequired,
     })
-  )
+  ),
 }
 
 // @todo consider adding a progress indicator instead?
-const BrokenReferences = streamingComponent(props$ =>
+const BrokenReferences = streamingComponent((props$) =>
   props$.pipe(
-    switchMap(props => {
+    switchMap((props) => {
       const ids = findReferences(props.document)
       const {type, schema} = props
       if (!ids.length) {
@@ -101,9 +101,9 @@ const BrokenReferences = streamingComponent(props$ =>
       return from(ids).pipe(
         mergeMap(checkExistance),
         scan((prev, curr) => uniqBy([curr, ...prev], 'id'), []),
-        filter(docs => docs.length === ids.length),
-        map(docs => docs.filter(isMissingPublished)),
-        map(broken =>
+        filter((docs) => docs.length === ids.length),
+        map((docs) => docs.filter(isMissingPublished)),
+        map((broken) =>
           broken.length > 0 ? (
             <BrokenRefs documents={broken} type={type} schema={schema} />
           ) : (
@@ -117,16 +117,16 @@ const BrokenReferences = streamingComponent(props$ =>
 
 function checkExistance(id) {
   return merge(
-    observePaths(getDraftId(id), ['_type']).pipe(map(draft => ({draft}))),
-    observePaths(getPublishedId(id), ['_type']).pipe(map(published => ({published})))
+    observePaths(getDraftId(id), ['_type']).pipe(map((draft) => ({draft}))),
+    observePaths(getPublishedId(id), ['_type']).pipe(map((published) => ({published})))
   ).pipe(
     scan((prev, res) => ({...prev, ...res}), {}),
-    filter(res => 'draft' in res && 'published' in res),
-    map(res => ({
+    filter((res) => 'draft' in res && 'published' in res),
+    map((res) => ({
       id,
       type: getDocumentType(res),
       hasDraft: Boolean(res.draft),
-      hasPublished: Boolean(res.published)
+      hasPublished: Boolean(res.published),
     }))
   )
 }
@@ -166,7 +166,7 @@ function extractStrongReferences(value) {
 }
 
 function dedupeReferences(refs) {
-  return uniq(refs.map(ref => (ref || '').replace(/^drafts\./, '')))
+  return uniq(refs.map((ref) => (ref || '').replace(/^drafts\./, '')))
 }
 
 export default BrokenReferences

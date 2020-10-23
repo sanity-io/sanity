@@ -10,7 +10,7 @@ export default {
     '@sanity/vision': 'latest',
     react: '^16.2',
     'react-dom': '^16.2',
-    'prop-types': '^15.6'
+    'prop-types': '^15.6',
   },
 
   // Only used for Sanity-style plugins (eg, the ones we build at Sanity.io)
@@ -26,7 +26,7 @@ export default {
       eslint: '^3.4.0',
       'eslint-config-sanity': '^1.1.3',
       'eslint-plugin-react': '^6.3.0',
-      rimraf: '^2.5.2'
-    }
-  }
+      rimraf: '^2.5.2',
+    },
+  },
 }

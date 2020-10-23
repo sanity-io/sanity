@@ -11,7 +11,7 @@ const colors = [
   {dark: color.magenta[400].hex, light: color.magenta[500].hex},
   {dark: color.orange[400].hex, light: color.orange[500].hex},
   {dark: color.yellow[400].hex, light: color.yellow[500].hex},
-  {dark: color.cyan[400].hex, light: color.cyan[500].hex}
+  {dark: color.cyan[400].hex, light: color.cyan[500].hex},
 ]
 
 function getRandomColor() {
@@ -28,11 +28,11 @@ export function StackStory() {
       {
         small: 'Small',
         medium: 'Medium',
-        large: 'Large'
+        large: 'Large',
       },
       'small',
       'Props'
-    )
+    ),
   }
 
   return (

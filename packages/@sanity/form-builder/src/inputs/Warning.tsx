@@ -33,7 +33,7 @@ export default function Warning({heading, message, values = [], children}: Props
                 These are not defined in the current schema as valid types for this array. This
                 could mean that the type has been removed, or that someone else has added it to
                 their own local schema that is not yet deployed.
-                {values.map(item => {
+                {values.map((item) => {
                   return (
                     <div key={item}>
                       <pre>{JSON.stringify(item)}</pre>

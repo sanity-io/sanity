@@ -10,7 +10,7 @@ import {
   // eslint-disable-next-line import/named
   SortEvent,
   // eslint-disable-next-line import/named
-  SortStart
+  SortStart,
 } from 'react-sortable-hoc'
 import {
   DragHandleComponent,
@@ -18,7 +18,7 @@ import {
   ListComponent,
   SortableItemComponent,
   SortableListComponent,
-  SortableListProps
+  SortableListProps,
 } from '../types'
 
 export function createSortableList(

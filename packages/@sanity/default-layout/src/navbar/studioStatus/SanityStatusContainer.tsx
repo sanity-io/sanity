@@ -20,7 +20,7 @@ const getHighestLevel = (outdated: Package[]) =>
 
 class SanityStatusContainer extends React.PureComponent<Props> {
   state = {
-    showDialog: false
+    showDialog: false,
   }
 
   handleHideDialog = () => {
@@ -66,13 +66,13 @@ export default withPropsStream(
       if (event.user && event.user.role === 'administrator') {
         return VersionChecker.checkVersions().then(({result}) => ({
           versionReply: result,
-          showStatus: true
+          showStatus: true,
         }))
       }
 
       return {showStatus: false}
     }) as any),
-    catchError(err => of({error: err, showStatus: false}))
+    catchError((err) => of({error: err, showStatus: false}))
   ),
   SanityStatusContainer
 )

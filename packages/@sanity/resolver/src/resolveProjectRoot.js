@@ -30,7 +30,7 @@ function isRoot(manifestDir, options) {
     const manifest = readManifest(
       Object.assign({}, options, {
         manifestDir,
-        sync: true
+        sync: true,
       })
     )
 

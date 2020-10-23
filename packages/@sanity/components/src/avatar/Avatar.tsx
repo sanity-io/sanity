@@ -27,7 +27,7 @@ export function Avatar(props: AvatarProps) {
   const {
     color = {
       dark: 'currentColor',
-      light: 'currentColor'
+      light: 'currentColor',
     },
     src,
     title,
@@ -37,7 +37,7 @@ export function Avatar(props: AvatarProps) {
     animateArrowFrom,
     status = 'online',
     size = 'small',
-    tone
+    tone,
   } = props
 
   const backgroundColor = tone === 'navbar' ? color.dark : color.light

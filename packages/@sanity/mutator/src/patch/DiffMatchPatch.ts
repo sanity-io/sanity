@@ -23,9 +23,9 @@ export default class DiffMatchPatch {
     if (result.containerType() == 'primitive') {
       return result
     }
-    targets.forEach(target => {
+    targets.forEach((target) => {
       if (target.isIndexReference()) {
-        target.toIndicies(accessor).forEach(i => {
+        target.toIndicies(accessor).forEach((i) => {
           // Skip patching unless the index actually currently exists
           if (result.getIndex(i)) {
             const oldValue = result.getIndex(i).get()

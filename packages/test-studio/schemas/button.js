@@ -6,7 +6,7 @@ export default {
     {
       name: 'buttonText',
       title: 'Text',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'buttonAction',
@@ -16,14 +16,14 @@ export default {
         list: [
           {
             title: 'Cancel',
-            value: 'cancel'
+            value: 'cancel',
           },
           {
             title: 'Submit',
-            value: 'submit'
-          }
-        ]
-      }
-    }
-  ]
+            value: 'submit',
+          },
+        ],
+      },
+    },
+  ],
 }

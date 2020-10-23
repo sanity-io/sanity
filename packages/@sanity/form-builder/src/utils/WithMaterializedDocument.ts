@@ -14,7 +14,7 @@ type State = {
 
 export default class WithMaterializedDocument extends React.Component<Props, State> {
   state = {
-    materialized: null
+    materialized: null,
   }
 
   subscription: Subscription | null
@@ -47,7 +47,7 @@ export default class WithMaterializedDocument extends React.Component<Props, Sta
     }
     this.subscription = this.props
       .materialize(docId)
-      .subscribe(materialized => this.setState({materialized}))
+      .subscribe((materialized) => this.setState({materialized}))
   }
 
   render() {

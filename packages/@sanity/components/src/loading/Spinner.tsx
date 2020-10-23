@@ -37,7 +37,7 @@ export default class Spinner extends React.PureComponent<
 
     const rootStyle = {
       ...style,
-      animationDelay: `${delay}ms`
+      animationDelay: `${delay}ms`,
     }
 
     const root = (

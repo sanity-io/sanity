@@ -16,13 +16,13 @@ export function MediaPreviewStory() {
       key: `${i}`,
       title: chance.name(),
       imageUrl: randomImage,
-      aspect: width / height
+      aspect: width / height,
     }
   })
   return (
     <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
       <GridList>
-        {items.map(item => (
+        {items.map((item) => (
           <GridItem key={item.key}>
             <MediaPreview {...item} />
           </GridItem>

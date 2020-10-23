@@ -9,7 +9,7 @@ const pkg = require('../package.json')
 const includes = (arr, val) => arr.indexOf(val) !== -1
 const tag = '[sanity-check]'
 const args = process.argv.slice(2)
-const relativeDir = args.filter(arg => arg[0] !== '-')[0]
+const relativeDir = args.filter((arg) => arg[0] !== '-')[0]
 const dir = path.resolve(process.cwd(), relativeDir || '.')
 const manifestDir = path.join(dir, 'sanity.json')
 const showHelp = includes(args, '-h') || includes(args, '--help')
@@ -36,13 +36,13 @@ if (showVersion) {
 
 fse
   .readJson(manifestDir)
-  .catch(err => {
+  .catch((err) => {
     console.error(chalk.red(`${tag} Failed to read "${manifestDir}":\n${err.message}`))
 
     process.exit(1)
   })
   .then(() => sanityCheck({dir, productionMode}))
-  .catch(err => {
+  .catch((err) => {
     console.error(chalk.red(err.sanityCheck ? `${tag}\n\n${err.message}` : err.stack))
 
     process.exit(1)

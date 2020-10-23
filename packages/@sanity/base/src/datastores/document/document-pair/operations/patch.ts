@@ -14,9 +14,9 @@ export const patch = {
       published.mutate([
         published.createIfNotExists({
           _type: typeName,
-          ...initialValue
+          ...initialValue,
         }),
-        ...published.patch(patches)
+        ...published.patch(patches),
       ])
     } else {
       draft.mutate([
@@ -24,10 +24,10 @@ export const patch = {
           ...initialValue,
           ...snapshots.published,
           _id: idPair.draftId,
-          _type: typeName
+          _type: typeName,
         }),
-        ...draft.patch(patches)
+        ...draft.patch(patches),
       ])
     }
-  }
+  },
 }

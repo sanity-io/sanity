@@ -10,5 +10,5 @@ export const remoteSnapshots = memoize(
       switchMap(({published, draft}) => merge(published.remoteSnapshot$, draft.remoteSnapshot$))
     )
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

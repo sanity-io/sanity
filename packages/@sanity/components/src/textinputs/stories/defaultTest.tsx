@@ -16,7 +16,7 @@ const VALID_TYPES = [
   'text',
   'number',
   'url',
-  'week'
+  'week',
 ]
 
 interface State {

@@ -12,7 +12,7 @@ const chance = new Chance()
 const items = range(20).map((_, i) => {
   return {
     title: chance.name(),
-    key: `${i}`
+    key: `${i}`,
   }
 })
 
@@ -24,7 +24,7 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 export function DefaultStory() {
@@ -32,7 +32,7 @@ export function DefaultStory() {
     range: true,
     min: 0,
     max: items.length,
-    step: 1
+    step: 1,
   }
   const valueIndex = number('Selected item', -1, options)
   return (
@@ -40,7 +40,7 @@ export function DefaultStory() {
       style={{
         ...centerStyle,
         color: color('color', undefined, 'test'),
-        backgroundColor: color('background color', undefined, 'test')
+        backgroundColor: color('background color', undefined, 'test'),
       }}
     >
       <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>

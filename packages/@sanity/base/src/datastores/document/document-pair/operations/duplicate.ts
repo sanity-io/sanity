@@ -15,7 +15,7 @@ export const duplicate = {
     return client.create({
       ...omit(source, omitProps),
       _id: isLiveEditEnabled(typeName) ? dupeId : getDraftId(dupeId),
-      _type: source._type
+      _type: source._type,
     })
-  }
+  },
 }

@@ -54,7 +54,7 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
       arrowPosition={position}
       color={{
         dark: userColor.tints[400].hex,
-        light: userColor.tints[500].hex
+        light: userColor.tints[500].hex,
       }}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}

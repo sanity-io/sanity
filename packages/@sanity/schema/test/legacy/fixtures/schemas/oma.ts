@@ -10,7 +10,7 @@ export default {
           name: 'name',
           type: 'string',
           title: 'Name',
-          required: true
+          required: true,
         },
         {
           name: 'logo',
@@ -20,11 +20,11 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
-        }
-      ]
+              title: 'Image',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'project',
@@ -36,13 +36,13 @@ export default {
           title: 'Title',
           placeholder: 'ex. CCTV Main building',
           description: 'This is the description',
-          required: true
+          required: true,
         },
         {
           name: 'key',
           type: 'string',
           title: 'URL-key',
-          required: false
+          required: false,
         },
         {
           name: 'mainImage',
@@ -54,15 +54,15 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'mainMediaURL',
           type: 'string',
           title: 'Hero Video',
-          required: false
+          required: false,
         },
         {
           name: 'mainImageVertical',
@@ -72,9 +72,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'description',
@@ -82,7 +82,7 @@ export default {
           title: 'Description',
           description:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-          required: false
+          required: false,
         },
         {
           name: 'extendedDescription',
@@ -90,25 +90,25 @@ export default {
           description:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
           title: 'Extended description',
-          required: false
+          required: false,
         },
         {
           name: 'sortOrder',
           type: 'number',
           title: 'Sort Year',
-          required: false
+          required: false,
         },
         {
           name: 'priority',
           type: 'number',
           title: 'Priority',
-          required: false
+          required: false,
         },
         {
           name: 'ongoing',
           type: 'boolean',
           title: 'Project ongoing',
-          required: false
+          required: false,
         },
         {
           name: 'milestones',
@@ -118,15 +118,15 @@ export default {
           of: [
             {
               type: 'milestone',
-              title: 'Milestone'
-            }
-          ]
+              title: 'Milestone',
+            },
+          ],
         },
         {
           name: 'hasTimeline',
           type: 'boolean',
           title: 'Display timeline?',
-          required: false
+          required: false,
         },
         {
           name: 'clients',
@@ -136,45 +136,45 @@ export default {
           of: [
             {
               type: 'string',
-              required: false
-            }
-          ]
+              required: false,
+            },
+          ],
         },
         {
           name: 'status',
           type: 'string',
           title: 'Status',
-          required: false
+          required: false,
         },
         {
           type: 'geoPlace',
           name: 'geoPlace',
           title: 'Geo place',
-          description: 'Set the lonlat with what you want.'
+          description: 'Set the lonlat with what you want.',
         },
         {
           name: 'isCurrentlyPhysical',
           type: 'boolean',
           title: 'Show map?',
-          required: false
+          required: false,
         },
         {
           name: 'isRelevantOnInstagram',
           type: 'boolean',
           title: 'Is it relevant on Instagram?',
-          required: false
+          required: false,
         },
         {
           name: 'locationRadius',
           type: 'number',
           title: 'Social feed radius (meters)',
-          required: false
+          required: false,
         },
         {
           name: 'totalSquareMeters',
           type: 'number',
           title: 'Total Square Meters',
-          required: false
+          required: false,
         },
         {
           name: 'program',
@@ -184,9 +184,9 @@ export default {
           of: [
             {
               type: 'programItem',
-              title: 'Program'
-            }
-          ]
+              title: 'Program',
+            },
+          ],
         },
         {
           name: 'featuredCategories',
@@ -195,9 +195,9 @@ export default {
           required: false,
           of: [
             {
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'tags',
@@ -206,14 +206,14 @@ export default {
           required: false,
           of: [
             {
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           type: 'omaCredits',
           name: 'credits',
-          title: 'Credits'
+          title: 'Credits',
         },
         {
           name: 'collaborators',
@@ -223,13 +223,13 @@ export default {
           of: [
             {
               type: 'collaboratingCompany',
-              title: 'Company'
+              title: 'Company',
             },
             {
               type: 'roleCredits',
-              title: 'People '
-            }
-          ]
+              title: 'People ',
+            },
+          ],
         },
         {
           name: 'icon',
@@ -239,9 +239,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'presentationImages',
@@ -254,15 +254,15 @@ export default {
               to: [
                 {
                   type: 'image',
-                  title: 'Image'
-                }
-              ]
+                  title: 'Image',
+                },
+              ],
             },
             {
               type: 'videoUrl',
-              title: 'Video URL'
-            }
-          ]
+              title: 'Video URL',
+            },
+          ],
         },
         {
           type: 'array',
@@ -274,11 +274,11 @@ export default {
               to: [
                 {
                   type: 'preoccupation',
-                  title: 'Preoccupation'
-                }
-              ]
-            }
-          ]
+                  title: 'Preoccupation',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'references',
@@ -291,27 +291,27 @@ export default {
               to: [
                 {
                   type: 'publication',
-                  title: 'Publication'
+                  title: 'Publication',
                 },
                 {
                   type: 'publicationPDFExcerpt',
-                  title: 'PDF Excerpt'
+                  title: 'PDF Excerpt',
                 },
                 {
                   type: 'pressCoverageItem',
-                  title: 'Coverage'
+                  title: 'Coverage',
                 },
                 {
                   type: 'lecture',
-                  title: 'Lecture'
+                  title: 'Lecture',
                 },
                 {
                   type: 'project',
-                  title: 'Project'
-                }
-              ]
-            }
-          ]
+                  title: 'Project',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'archiveSection',
@@ -321,11 +321,11 @@ export default {
           of: [
             {
               type: 'archiveSection',
-              title: 'Archive section'
-            }
-          ]
-        }
-      ]
+              title: 'Archive section',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'pressCoverageItem',
@@ -335,31 +335,31 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'publisher',
           type: 'string',
           title: 'Publisher',
-          required: false
+          required: false,
         },
         {
           name: 'date',
           type: 'date',
           title: 'Date',
-          required: false
+          required: false,
         },
         {
           name: 'mediaUrl',
           type: 'string',
           title: 'Link to story or video',
-          required: false
+          required: false,
         },
         {
           name: 'caption',
           type: 'string',
           title: 'Caption',
-          required: false
+          required: false,
         },
         {
           name: 'references',
@@ -372,25 +372,25 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
+                  title: 'Project',
                 },
                 {
                   type: 'lecture',
-                  title: 'Lecture'
+                  title: 'Lecture',
                 },
                 {
                   type: 'publication',
-                  title: 'Publication'
-                }
-              ]
+                  title: 'Publication',
+                },
+              ],
             },
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
-        }
-      ]
+              title: 'Person',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'publication',
@@ -400,43 +400,43 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'key',
           type: 'string',
           title: 'URL-key',
-          required: false
+          required: false,
         },
         {
           name: 'aboutOMA',
           type: 'boolean',
           title: 'On OMA?',
-          required: false
+          required: false,
         },
         {
           name: 'description',
           type: 'string',
           title: 'Description',
-          required: false
+          required: false,
         },
         {
           name: 'extendedDescription',
           type: 'string',
           title: 'Extended description',
-          required: false
+          required: false,
         },
         {
           name: 'yearPublished',
           type: 'number',
           title: 'Year published',
-          required: false
+          required: false,
         },
         {
           name: 'authorLine',
           type: 'string',
           title: 'Author Line',
-          required: false
+          required: false,
         },
         {
           name: 'roleCredits',
@@ -446,9 +446,9 @@ export default {
           of: [
             {
               type: 'roleCredits',
-              title: 'People '
-            }
-          ]
+              title: 'People ',
+            },
+          ],
         },
         {
           name: 'frontCoverImage',
@@ -458,9 +458,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'backCoverImage',
@@ -470,9 +470,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'spineImage',
@@ -482,9 +482,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'stackImage',
@@ -494,33 +494,33 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'publisher',
           type: 'string',
           title: 'Publisher',
-          required: false
+          required: false,
         },
         {
           name: 'publisherUrl',
           type: 'string',
           title: 'Publisher URL',
-          required: false
+          required: false,
         },
         {
           name: 'purchaseUrl',
           type: 'string',
           title: 'Purchase URL',
-          required: false
+          required: false,
         },
         {
           name: 'language',
           type: 'string',
           title: 'Language',
-          required: false
+          required: false,
         },
         {
           name: 'meta',
@@ -530,9 +530,9 @@ export default {
           of: [
             {
               type: 'metaFact',
-              title: 'Fact'
-            }
-          ]
+              title: 'Fact',
+            },
+          ],
         },
         {
           name: 'editions',
@@ -542,9 +542,9 @@ export default {
           of: [
             {
               type: 'publicationEdition',
-              title: 'Edition'
-            }
-          ]
+              title: 'Edition',
+            },
+          ],
         },
         {
           name: 'excerpts',
@@ -557,11 +557,11 @@ export default {
               to: [
                 {
                   type: 'publicationPDFExcerpt',
-                  title: 'PDF Excerpt'
-                }
-              ]
-            }
-          ]
+                  title: 'PDF Excerpt',
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'array',
@@ -573,11 +573,11 @@ export default {
               to: [
                 {
                   type: 'preoccupation',
-                  title: 'Preoccupation'
-                }
-              ]
-            }
-          ]
+                  title: 'Preoccupation',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'references',
@@ -590,25 +590,25 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
+                  title: 'Project',
                 },
                 {
                   type: 'lecture',
-                  title: 'Lecture'
+                  title: 'Lecture',
                 },
                 {
                   type: 'pressCoverageItem',
-                  title: 'Coverage'
+                  title: 'Coverage',
                 },
                 {
                   type: 'publication',
-                  title: 'Publication'
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                  title: 'Publication',
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'milestone',
@@ -618,20 +618,20 @@ export default {
           name: 'label',
           type: 'string',
           title: 'Milestone kind',
-          required: true
+          required: true,
         },
         {
           name: 'labelOverride',
           type: 'string',
           title: 'Label',
-          required: false
+          required: false,
         },
         {
           type: 'approximateDate',
           name: 'approximateDate',
-          title: 'Approximate date'
-        }
-      ]
+          title: 'Approximate date',
+        },
+      ],
     },
     {
       name: 'programItem',
@@ -641,15 +641,15 @@ export default {
           name: 'usage',
           type: 'string',
           title: 'Usage',
-          required: false
+          required: false,
         },
         {
           name: 'squareMeters',
           type: 'number',
           title: 'Square Meters',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'metaFact',
@@ -659,21 +659,21 @@ export default {
           name: 'label',
           type: 'string',
           title: 'Label',
-          required: false
+          required: false,
         },
         {
           name: 'value',
           type: 'string',
           title: 'Value',
-          required: false
+          required: false,
         },
         {
           name: 'url',
           type: 'string',
           title: 'URL',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'uberCredit',
@@ -683,15 +683,15 @@ export default {
           name: 'role',
           type: 'string',
           title: 'Role',
-          required: false
+          required: false,
         },
         {
           name: 'credited',
           type: 'string',
           title: 'Name',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'imageMetaData',
@@ -701,21 +701,21 @@ export default {
           name: 'caption',
           type: 'string',
           title: 'Caption',
-          required: false
+          required: false,
         },
         {
           name: 'attribution',
           type: 'string',
           title: 'Image credits',
-          required: false
+          required: false,
         },
         {
           name: 'altText',
           type: 'string',
           title: 'Alternate text',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'publicationEdition',
@@ -725,13 +725,13 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'year',
           type: 'number',
           title: 'Year published',
-          required: false
+          required: false,
         },
         {
           name: 'roleCredits',
@@ -741,9 +741,9 @@ export default {
           of: [
             {
               type: 'roleCredits',
-              title: 'People '
-            }
-          ]
+              title: 'People ',
+            },
+          ],
         },
         {
           name: 'frontCoverImage',
@@ -753,9 +753,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'backCoverImage',
@@ -765,9 +765,9 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'spineImage',
@@ -777,33 +777,33 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'publisher',
           type: 'string',
           title: 'Publisher',
-          required: false
+          required: false,
         },
         {
           name: 'publisherUrl',
           type: 'string',
           title: 'Publisher URL',
-          required: false
+          required: false,
         },
         {
           name: 'purchaseUrl',
           type: 'string',
           title: 'Purchase URL',
-          required: false
+          required: false,
         },
         {
           name: 'language',
           type: 'string',
           title: 'Language',
-          required: false
+          required: false,
         },
         {
           name: 'meta',
@@ -813,11 +813,11 @@ export default {
           of: [
             {
               type: 'metaFact',
-              title: 'Fact'
-            }
-          ]
-        }
-      ]
+              title: 'Fact',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'publicationPDFExcerpt',
@@ -827,7 +827,7 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Caption',
-          required: false
+          required: false,
         },
         {
           name: 'publication',
@@ -837,15 +837,15 @@ export default {
           to: [
             {
               type: 'publication',
-              title: 'Publication'
-            }
-          ]
+              title: 'Publication',
+            },
+          ],
         },
         {
           name: 'authorLine',
           type: 'string',
           title: 'Author line',
-          required: false
+          required: false,
         },
         {
           name: 'illustrationImage',
@@ -855,23 +855,23 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'pdf',
           type: 'file',
           title: 'PDF',
-          required: false
+          required: false,
         },
         {
           name: 'orderIndex',
           type: 'number',
           title: 'Order',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'lecture',
@@ -881,13 +881,13 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'key',
           type: 'string',
           title: 'URL-key',
-          required: false
+          required: false,
         },
         {
           name: 'lecturers',
@@ -897,51 +897,51 @@ export default {
           of: [
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
+              title: 'Person',
+            },
+          ],
         },
         {
           name: 'host',
           type: 'string',
           title: 'Host',
-          required: false
+          required: false,
         },
         {
           name: 'country',
           type: 'string',
           title: 'Country',
-          required: false
+          required: false,
         },
         {
           name: 'city',
           type: 'string',
           title: 'City',
-          required: false
+          required: false,
         },
         {
           name: 'happensAt',
           type: 'dateTime',
           title: 'Date',
-          required: false
+          required: false,
         },
         {
           name: 'description',
           type: 'string',
           title: 'Description',
-          required: false
+          required: false,
         },
         {
           name: 'extendedDescription',
           type: 'string',
           title: 'Extended Description',
-          required: false
+          required: false,
         },
         {
           name: 'mediaUrl',
           type: 'string',
           title: 'URL to video/media',
-          required: false
+          required: false,
         },
         {
           name: 'representativeImage',
@@ -951,15 +951,15 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'videoCaption',
           type: 'string',
           title: 'Video Caption',
-          required: false
+          required: false,
         },
         {
           name: 'meta',
@@ -969,9 +969,9 @@ export default {
           of: [
             {
               type: 'metaFact',
-              title: 'Fact'
-            }
-          ]
+              title: 'Fact',
+            },
+          ],
         },
         {
           name: 'images',
@@ -984,11 +984,11 @@ export default {
               to: [
                 {
                   type: 'image',
-                  title: 'Image'
-                }
-              ]
-            }
-          ]
+                  title: 'Image',
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'array',
@@ -1000,11 +1000,11 @@ export default {
               to: [
                 {
                   type: 'preoccupation',
-                  title: 'Preoccupation'
-                }
-              ]
-            }
-          ]
+                  title: 'Preoccupation',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'references',
@@ -1017,21 +1017,21 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
+                  title: 'Project',
                 },
                 {
                   type: 'lecture',
-                  title: 'Lecture'
+                  title: 'Lecture',
                 },
                 {
                   type: 'publication',
-                  title: 'Publication'
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                  title: 'Publication',
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'office',
@@ -1041,68 +1041,68 @@ export default {
           name: 'prefix',
           type: 'string',
           title: 'Prefix',
-          required: false
+          required: false,
         },
         {
           name: 'name',
           type: 'string',
           title: 'Name',
-          required: false
+          required: false,
         },
         {
           name: 'building',
           type: 'string',
           title: 'Building',
-          required: false
+          required: false,
         },
         {
           name: 'address',
           type: 'string',
           title: 'Address',
-          required: false
+          required: false,
         },
         {
           name: 'pobox',
           type: 'number',
           title: 'PO Box',
-          required: false
+          required: false,
         },
         {
           name: 'zipcode',
           type: 'string',
           title: 'Zipcode',
-          required: false
+          required: false,
         },
         {
           type: 'geoPlace',
           name: 'geoPlace',
-          title: 'Geo place'
+          title: 'Geo place',
         },
         {
           name: 'phone',
           type: 'string',
           title: 'Phone',
-          required: false
+          required: false,
         },
         {
           name: 'fax',
           type: 'string',
           title: 'Fax',
-          required: false
+          required: false,
         },
         {
           name: 'email',
           type: 'string',
           title: 'Email',
-          required: false
+          required: false,
         },
         {
           name: 'orderIndex',
           type: 'number',
           title: 'Order',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'officeContact',
@@ -1112,33 +1112,33 @@ export default {
           name: 'department',
           type: 'string',
           title: 'Department',
-          required: false
+          required: false,
         },
         {
           name: 'names',
           type: 'string',
           title: 'Names',
-          required: false
+          required: false,
         },
         {
           name: 'bio',
           type: 'string',
           title: 'Bio',
-          required: false
+          required: false,
         },
         {
           name: 'email',
           type: 'string',
           title: 'Email',
-          required: false
+          required: false,
         },
         {
           name: 'orderIndex',
           type: 'number',
           title: 'Order',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'newsItem',
@@ -1148,37 +1148,37 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'key',
           type: 'string',
           title: 'URL-key',
-          required: false
+          required: false,
         },
         {
           name: 'lede',
           type: 'string',
           title: 'Introduction',
-          required: false
+          required: false,
         },
         {
           name: 'body',
           type: 'string',
           title: 'Body',
-          required: false
+          required: false,
         },
         {
           name: 'publishAt',
           type: 'dateTime',
           title: 'Publish when',
-          required: true
+          required: true,
         },
         {
           name: 'happensOn',
           type: 'dateTime',
           title: 'Happens on',
-          required: false
+          required: false,
         },
         {
           name: 'images',
@@ -1191,11 +1191,11 @@ export default {
               to: [
                 {
                   type: 'image',
-                  title: 'Image'
-                }
-              ]
-            }
-          ]
+                  title: 'Image',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'references',
@@ -1208,25 +1208,25 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
+                  title: 'Project',
                 },
                 {
                   type: 'lecture',
-                  title: 'Lecture'
+                  title: 'Lecture',
                 },
                 {
                   type: 'publication',
-                  title: 'Publication'
-                }
-              ]
+                  title: 'Publication',
+                },
+              ],
             },
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
-        }
-      ]
+              title: 'Person',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'videoUrl',
@@ -1236,9 +1236,9 @@ export default {
           name: 'url',
           type: 'string',
           title: 'URL to video',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'geoPlace',
@@ -1248,13 +1248,13 @@ export default {
           name: 'country',
           type: 'string',
           title: 'Country',
-          required: false
+          required: false,
         },
         {
           name: 'city',
           type: 'string',
           title: 'City',
-          required: false
+          required: false,
         },
         {
           name: 'latlon',
@@ -1266,15 +1266,15 @@ export default {
           fields: [
             {
               name: 'lat',
-              type: 'number'
+              type: 'number',
             },
             {
               name: 'lon',
-              type: 'number'
-            }
-          ]
-        }
-      ]
+              type: 'number',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'preoccupation',
@@ -1284,13 +1284,13 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'description',
           type: 'string',
           title: 'Description',
-          required: false
+          required: false,
         },
         {
           name: 'clusters',
@@ -1300,11 +1300,11 @@ export default {
           of: [
             {
               type: 'preoccupationCluster',
-              title: 'Cluster'
-            }
-          ]
-        }
-      ]
+              title: 'Cluster',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'preoccupationCluster',
@@ -1314,7 +1314,7 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'posts',
@@ -1324,27 +1324,27 @@ export default {
           of: [
             {
               type: 'preoccupationImage',
-              title: 'Image'
+              title: 'Image',
             },
             {
               type: 'preoccupationLink',
-              title: 'Link'
+              title: 'Link',
             },
             {
               type: 'preoccupationQuote',
-              title: 'Quote'
+              title: 'Quote',
             },
             {
               type: 'preoccupationVideo',
-              title: 'Video'
+              title: 'Video',
             },
             {
               type: 'preoccupationText',
-              title: 'Text'
-            }
-          ]
-        }
-      ]
+              title: 'Text',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'preoccupationQuote',
@@ -1354,21 +1354,21 @@ export default {
           name: 'quote',
           type: 'string',
           title: 'Quote',
-          required: false
+          required: false,
         },
         {
           name: 'attribution',
           type: 'string',
           title: 'Attribution',
-          required: false
+          required: false,
         },
         {
           name: 'url',
           type: 'string',
           title: 'URL',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'preoccupationText',
@@ -1378,7 +1378,7 @@ export default {
           name: 'text',
           type: 'string',
           title: 'Text',
-          required: false
+          required: false,
         },
         {
           name: 'image',
@@ -1388,11 +1388,11 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
-        }
-      ]
+              title: 'Image',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'preoccupationImage',
@@ -1406,17 +1406,17 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'url',
           type: 'string',
           title: 'URL',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'preoccupationVideo',
@@ -1426,15 +1426,15 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'mediaUrl',
           type: 'string',
           title: 'URL to video/media',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'preoccupationLink',
@@ -1444,15 +1444,15 @@ export default {
           name: 'linkTtitle',
           type: 'string',
           title: 'Link title',
-          required: false
+          required: false,
         },
         {
           name: 'linkURL',
           type: 'string',
           title: 'Link URL',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'approximateDate',
@@ -1462,15 +1462,15 @@ export default {
           name: 'date',
           type: 'dateTime',
           title: 'Date',
-          required: true
+          required: true,
         },
         {
           name: 'approximation',
           type: 'string',
           title: 'Approximation',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'omaCredits',
@@ -1484,9 +1484,9 @@ export default {
           of: [
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
+              title: 'Person',
+            },
+          ],
         },
         {
           name: 'meta',
@@ -1496,9 +1496,9 @@ export default {
           of: [
             {
               type: 'metaFact',
-              title: 'Fact'
-            }
-          ]
+              title: 'Fact',
+            },
+          ],
         },
         {
           name: 'phases',
@@ -1508,11 +1508,11 @@ export default {
           of: [
             {
               type: 'projectPhase',
-              title: 'Project phase'
-            }
-          ]
-        }
-      ]
+              title: 'Project phase',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'collaboratingCompany',
@@ -1522,13 +1522,13 @@ export default {
           name: 'role',
           type: 'string',
           title: 'Role',
-          required: false
+          required: false,
         },
         {
           name: 'title',
           type: 'string',
           title: 'Company name',
-          required: false
+          required: false,
         },
         {
           name: 'roleCredits',
@@ -1538,11 +1538,11 @@ export default {
           of: [
             {
               type: 'roleCredits',
-              title: 'People '
-            }
-          ]
-        }
-      ]
+              title: 'People ',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'projectPhase',
@@ -1552,7 +1552,7 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Name of phase',
-          required: false
+          required: false,
         },
         {
           name: 'roleCredits',
@@ -1562,9 +1562,9 @@ export default {
           of: [
             {
               type: 'roleCredits',
-              title: 'People '
-            }
-          ]
+              title: 'People ',
+            },
+          ],
         },
         {
           name: 'team',
@@ -1574,11 +1574,11 @@ export default {
           of: [
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
-        }
-      ]
+              title: 'Person',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'roleCredits',
@@ -1588,7 +1588,7 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Role',
-          required: false
+          required: false,
         },
         {
           name: 'people',
@@ -1598,11 +1598,11 @@ export default {
           of: [
             {
               type: 'person',
-              title: 'Person'
-            }
-          ]
-        }
-      ]
+              title: 'Person',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'person',
@@ -1612,9 +1612,9 @@ export default {
           name: 'name',
           type: 'string',
           title: 'Name',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'profile',
@@ -1624,49 +1624,49 @@ export default {
           name: 'name',
           type: 'string',
           title: 'Name',
-          required: false
+          required: false,
         },
         {
           name: 'key',
           type: 'string',
           title: 'Key',
-          required: false
+          required: false,
         },
         {
           name: 'role',
           type: 'string',
           title: 'Role',
-          required: false
+          required: false,
         },
         {
           name: 'orderIndex',
           type: 'number',
           title: 'Order',
-          required: false
+          required: false,
         },
         {
           name: 'bornOn',
           type: 'date',
           title: 'Date of Birth',
-          required: false
+          required: false,
         },
         {
           name: 'isPartner',
           type: 'boolean',
           title: 'Partner?',
-          required: false
+          required: false,
         },
         {
           name: 'shortBio',
           type: 'string',
           title: 'Short Bio',
-          required: false
+          required: false,
         },
         {
           name: 'longBio',
           type: 'string',
           title: 'Long Bio',
-          required: false
+          required: false,
         },
         {
           name: 'portrait',
@@ -1676,11 +1676,11 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
-        }
-      ]
+              title: 'Image',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'archiveSection',
@@ -1690,12 +1690,12 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           type: 'approximateDate',
           name: 'approximateDate',
-          title: 'Approximate date'
+          title: 'Approximate date',
         },
         {
           name: 'media',
@@ -1708,21 +1708,21 @@ export default {
               to: [
                 {
                   type: 'image',
-                  title: 'Image'
+                  title: 'Image',
                 },
                 {
                   type: 'publicationPDFExcerpt',
-                  title: 'PDF Excerpt'
-                }
-              ]
+                  title: 'PDF Excerpt',
+                },
+              ],
             },
             {
               type: 'archiveSectionMediaURL',
-              title: 'Video URL'
-            }
-          ]
-        }
-      ]
+              title: 'Video URL',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'archiveSectionMediaURL',
@@ -1732,9 +1732,9 @@ export default {
           name: 'url',
           type: 'string',
           title: 'URL',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'aboutOMA',
@@ -1744,13 +1744,13 @@ export default {
           name: 'description',
           type: 'string',
           title: 'Description',
-          required: false
+          required: false,
         },
         {
           name: 'extendedDescription',
           type: 'string',
           title: 'Extended description',
-          required: false
+          required: false,
         },
         {
           name: 'awards',
@@ -1760,9 +1760,9 @@ export default {
           of: [
             {
               type: 'award',
-              title: 'Award'
-            }
-          ]
+              title: 'Award',
+            },
+          ],
         },
         {
           name: 'superHeroes',
@@ -1775,11 +1775,11 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
-                }
-              ]
-            }
-          ]
+                  title: 'Project',
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'exceptionalProjects',
@@ -1792,13 +1792,13 @@ export default {
               to: [
                 {
                   type: 'project',
-                  title: 'Project'
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                  title: 'Project',
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'award',
@@ -1808,15 +1808,15 @@ export default {
           name: 'year',
           type: 'number',
           title: 'Year',
-          required: false
+          required: false,
         },
         {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'contactOMA',
@@ -1830,11 +1830,11 @@ export default {
           of: [
             {
               type: 'contactDetails',
-              title: 'Contact Details'
-            }
-          ]
-        }
-      ]
+              title: 'Contact Details',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'frontPageStaticContent',
@@ -1844,27 +1844,27 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Title',
-          required: false
+          required: false,
         },
         {
           name: 'url',
           type: 'string',
           title: 'URL',
-          required: false
+          required: false,
         },
         {
           name: 'targetBlank',
           type: 'boolean',
           title: 'Open in new window?',
-          required: false
+          required: false,
         },
         {
           name: 'displayStyle',
           type: 'string',
           title: 'Display style',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'frontPage',
@@ -1878,19 +1878,19 @@ export default {
           of: [
             {
               type: 'peggerModifier',
-              title: 'Pegger'
+              title: 'Pegger',
             },
             {
               type: 'promoterModifier',
-              title: 'Promoter'
+              title: 'Promoter',
             },
             {
               type: 'repressorModifier',
-              title: 'Repressor'
-            }
-          ]
-        }
-      ]
+              title: 'Repressor',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'peggerModifier',
@@ -1904,41 +1904,41 @@ export default {
           to: [
             {
               type: 'lecture',
-              title: 'Lecture'
+              title: 'Lecture',
             },
             {
               type: 'publication',
-              title: 'Publication'
+              title: 'Publication',
             },
             {
               type: 'project',
-              title: 'Project'
+              title: 'Project',
             },
             {
               type: 'person',
-              title: 'Person'
+              title: 'Person',
             },
             {
               type: 'newsItem',
-              title: 'News item'
+              title: 'News item',
             },
             {
               type: 'pressCoverageItem',
-              title: 'Coverage'
+              title: 'Coverage',
             },
             {
               type: 'frontPageStaticContent',
-              title: 'Front page static content'
-            }
-          ]
+              title: 'Front page static content',
+            },
+          ],
         },
         {
           name: 'position',
           type: 'number',
           title: 'Position',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'promoterModifier',
@@ -1952,41 +1952,41 @@ export default {
           to: [
             {
               type: 'lecture',
-              title: 'Lecture'
+              title: 'Lecture',
             },
             {
               type: 'publication',
-              title: 'Publication'
+              title: 'Publication',
             },
             {
               type: 'project',
-              title: 'Project'
+              title: 'Project',
             },
             {
               type: 'person',
-              title: 'Person'
+              title: 'Person',
             },
             {
               type: 'newsItem',
-              title: 'News item'
+              title: 'News item',
             },
             {
               type: 'pressCoverageItem',
-              title: 'Coverage'
-            }
-          ]
+              title: 'Coverage',
+            },
+          ],
         },
         {
           type: 'powerCurve',
           name: 'powerCurve',
-          title: 'Power Curve'
+          title: 'Power Curve',
         },
         {
           type: 'timer',
           name: 'timer',
-          title: 'Timer'
-        }
-      ]
+          title: 'Timer',
+        },
+      ],
     },
     {
       name: 'repressorModifier',
@@ -2000,41 +2000,41 @@ export default {
           to: [
             {
               type: 'lecture',
-              title: 'Lecture'
+              title: 'Lecture',
             },
             {
               type: 'publication',
-              title: 'Publication'
+              title: 'Publication',
             },
             {
               type: 'project',
-              title: 'Project'
+              title: 'Project',
             },
             {
               type: 'person',
-              title: 'Person'
+              title: 'Person',
             },
             {
               type: 'newsItem',
-              title: 'News item'
+              title: 'News item',
             },
             {
               type: 'pressCoverageItem',
-              title: 'Coverage'
-            }
-          ]
+              title: 'Coverage',
+            },
+          ],
         },
         {
           type: 'powerCurve',
           name: 'powerCurve',
-          title: 'Power Curve'
+          title: 'Power Curve',
         },
         {
           type: 'timer',
           name: 'timer',
-          title: 'Timer'
-        }
-      ]
+          title: 'Timer',
+        },
+      ],
     },
     {
       name: 'powerCurve',
@@ -2044,15 +2044,15 @@ export default {
           name: 'force',
           type: 'string',
           title: 'Force',
-          required: true
+          required: true,
         },
         {
           name: 'halflife',
           type: 'string',
           title: 'Halflife',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'timer',
@@ -2062,9 +2062,9 @@ export default {
           name: 'startDate',
           type: 'date',
           title: 'Start date',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'contactDetails',
@@ -2074,19 +2074,19 @@ export default {
           name: 'departmentName',
           type: 'string',
           title: 'Department name',
-          required: false
+          required: false,
         },
         {
           name: 'territory',
           type: 'string',
           title: 'Territory',
-          required: false
+          required: false,
         },
         {
           name: 'contactPerson',
           type: 'string',
           title: 'Contact person',
-          required: false
+          required: false,
         },
         {
           name: 'portrait',
@@ -2096,23 +2096,23 @@ export default {
           to: [
             {
               type: 'image',
-              title: 'Image'
-            }
-          ]
+              title: 'Image',
+            },
+          ],
         },
         {
           name: 'bio',
           type: 'string',
           title: 'Short bio',
-          required: false
+          required: false,
         },
         {
           name: 'email',
           type: 'string',
           title: 'E-mail',
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     },
     {
       name: 'dateTime',
@@ -2120,13 +2120,13 @@ export default {
       fields: [
         {
           name: 'date',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'time',
-          type: 'string'
-        }
-      ]
-    }
-  ]
+          type: 'string',
+        },
+      ],
+    },
+  ],
 }

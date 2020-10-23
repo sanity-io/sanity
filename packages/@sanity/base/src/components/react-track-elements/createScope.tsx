@@ -50,7 +50,7 @@ const DEFAULT_CONTEXT: TrackerContext<unknown> = {
   update: useReporterGuard,
   remove: useReporterGuard,
   subscribe: useSubscribeGuard,
-  read: useReportedValueGuard
+  read: useReportedValueGuard,
 }
 
 let id = 0
@@ -83,6 +83,6 @@ export function createScope<Value>() {
     useAutoIdReporter: (
       value: Value | (() => Value),
       isEqual: IsEqualFunction<Value> = Object.is
-    ) => useReporter(`element-${React.useRef(getNextId()).current}`, value, isEqual)
+    ) => useReporter(`element-${React.useRef(getNextId()).current}`, value, isEqual),
   }
 }

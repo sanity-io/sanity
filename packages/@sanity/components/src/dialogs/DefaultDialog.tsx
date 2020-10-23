@@ -48,7 +48,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
     padding = 'medium',
     showCloseButton = true,
     size = 'medium',
-    title
+    title,
   } = props
 
   const layer = useLayer()

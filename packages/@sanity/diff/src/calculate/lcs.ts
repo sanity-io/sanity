@@ -52,7 +52,7 @@ function backtrack<E>(matrix: LengthMatrix, previous: E[], next: E[]): Subsequen
   const subsequence: Subsequence<E> = {
     sequence: [],
     prevIndices: [],
-    nextIndices: []
+    nextIndices: [],
   }
 
   while (prevIndex !== 0 && nextIndex !== 0) {

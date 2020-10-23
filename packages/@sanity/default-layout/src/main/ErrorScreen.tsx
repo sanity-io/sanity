@@ -27,10 +27,7 @@ function getErrorWithStack(err: {message: string; stack: string}) {
 }
 
 function limitStackLength(stack: string) {
-  return stack
-    .split('\n')
-    .slice(0, 15)
-    .join('\n')
+  return stack.split('\n').slice(0, 15).join('\n')
 }
 
 function formatStack(stack) {

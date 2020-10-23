@@ -6,6 +6,6 @@ export default {
     {name: 'h', type: 'number', title: 'Hue'},
     {name: 's', type: 'number', title: 'Saturation'},
     {name: 'v', type: 'number', title: 'Value'},
-    {name: 'a', type: 'number', title: 'Alpha'}
-  ]
+    {name: 'a', type: 'number', title: 'Alpha'},
+  ],
 }

@@ -22,7 +22,7 @@ interface MapState {
 export class GoogleMap extends React.PureComponent<MapProps, MapState> {
   static defaultProps = {
     defaultZoom: 8,
-    scrollWheel: true
+    scrollWheel: true,
   }
 
   state: MapState = {map: undefined}
@@ -93,7 +93,7 @@ export class GoogleMap extends React.PureComponent<MapProps, MapState> {
       scrollwheel: scrollWheel,
       streetViewControl: false,
       mapTypeControl,
-      controlSize
+      controlSize,
     })
 
     if (bounds) {

@@ -4,7 +4,7 @@ import {set} from './patch-helpers'
 import {useDocumentOperation} from '@sanity/react-hooks'
 
 function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 async function doSomeWork(id) {
@@ -26,6 +26,6 @@ export default function AsyncAction(docInfo) {
       const result = await doSomeWork(docInfo.id)
       patch.execute([set('randomNumber', result)])
       setIsWorking(false)
-    }
+    },
   }
 }

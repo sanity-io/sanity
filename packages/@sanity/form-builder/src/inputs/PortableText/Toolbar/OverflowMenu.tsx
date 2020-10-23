@@ -32,15 +32,15 @@ export function OverflowMenu(props: Props) {
     actionButtonComponent: ActionButton,
     actionMenuItemComponent: ActionMenuItem,
     actions,
-    disabled
+    disabled,
   } = props
   const actionBarRef = useRef<HTMLDivElement | null>(null)
   const [actionStates, setActionStates] = useState(
     actions.map((__, index) => ({index, visible: false}))
   )
   const actionStatesRef = useRef(actionStates)
-  const showOverflowButton = actionStates.filter(a => !a.visible).length > 0
-  const hiddenActions = actionStates.filter(a => !a.visible)
+  const showOverflowButton = actionStates.filter((a) => !a.visible).length > 0
+  const hiddenActions = actionStates.filter((a) => !a.visible)
   const lastHidden = hiddenActions.length === 1
   const ioRef = useRef<IntersectionObserver | null>(null)
   const [open, setOpen] = useState(false)
@@ -52,17 +52,17 @@ export function OverflowMenu(props: Props) {
     if (actionBar) {
       const actionContainerEls = Array.from(actionBar.childNodes) as HTMLDivElement[]
 
-      const handleEntries: IntersectionObserverCallback = entries => {
+      const handleEntries: IntersectionObserverCallback = (entries) => {
         const newActionStates = actionStatesRef.current.slice(0)
 
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           const element = entry.target as HTMLDivElement
           const actionIndex = Array.from(actionBar.childNodes).indexOf(element)
           const visible = entry.intersectionRatio === 1
 
           newActionStates[actionIndex] = {
             index: actionIndex,
-            visible
+            visible,
           }
         })
 
@@ -77,10 +77,10 @@ export function OverflowMenu(props: Props) {
       const io = new window.IntersectionObserver(handleEntries, {
         root: actionBar,
         rootMargin: `0px ${marginRight}px 0px 0px`,
-        threshold: [0, 0.1, 0.9, 1]
+        threshold: [0, 0.1, 0.9, 1],
       })
 
-      actionContainerEls.forEach(actionContainerEl => io.observe(actionContainerEl))
+      actionContainerEls.forEach((actionContainerEl) => io.observe(actionContainerEl))
       ioRef.current = io
     }
 
@@ -118,7 +118,7 @@ export function OverflowMenu(props: Props) {
             kind: 'simple',
             padding: 'small',
             selected: open,
-            title: 'More actions'
+            title: 'More actions',
           }}
           menu={
             <div className={styles.overflowMenu}>

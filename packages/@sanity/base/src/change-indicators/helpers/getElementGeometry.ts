@@ -8,6 +8,6 @@ export function getElementGeometry(
   const {rect, bounds} = getOffsetsTo(element, parent)
   return {
     bounds,
-    rect
+    rect,
   }
 }

@@ -88,13 +88,13 @@ export function ActionStateDialog(props: Props) {
           {
             key: 'confirm',
             color: dialog.color || 'danger',
-            title: 'Confirm'
+            title: 'Confirm',
           },
           {
             key: 'cancel',
             kind: 'simple',
-            title: 'Cancel'
-          }
+            title: 'Cancel',
+          },
         ]}
         hasAnimation
         onAction={handleDialogAction}

@@ -5,7 +5,7 @@ import {
   SetPatch,
   UnsetPatch,
   IncPatch,
-  DecPatch
+  DecPatch,
 } from '../typedefs/patch'
 import {Path, PathSegment} from '@sanity/types'
 
@@ -13,7 +13,7 @@ export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   return {
     type: 'setIfMissing',
     path,
-    value
+    value,
   }
 }
 
@@ -22,7 +22,7 @@ export function insert(items: any[], position: InsertPosition, path: Path = []):
     type: 'insert',
     path,
     position,
-    items
+    items,
   }
 }
 
@@ -45,6 +45,6 @@ export function dec(amount = 1, path: Path = []): DecPatch {
 export function prefixPath<T extends {path: Path}>(patch: T, segment: PathSegment): T {
   return {
     ...patch,
-    path: [segment, ...patch.path]
+    path: [segment, ...patch.path],
   }
 }

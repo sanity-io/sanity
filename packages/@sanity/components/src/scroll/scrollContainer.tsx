@@ -2,7 +2,8 @@ import React from 'react'
 import createPubSub from 'nano-pubsub'
 import {ScrollContext} from './scrollContext'
 
-interface ScrollContainerProps<T extends React.ElementType> extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
+interface ScrollContainerProps<T extends React.ElementType>
+  extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements
   onScroll?: (event: Event) => any
 }
@@ -48,7 +49,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
 
   React.useEffect(() => {
     selfRef.current!.addEventListener('scroll', handleScroll, {
-      passive: true
+      passive: true,
     })
     return () => {
       selfRef.current!.removeEventListener('scroll', handleScroll)

@@ -26,22 +26,22 @@ class QueryEditor extends React.PureComponent {
     const suggestions = [
       {
         text: '...',
-        displayText: '... (Includes everything)'
-      }
+        displayText: '... (Includes everything)',
+      },
     ]
 
     if (schema) {
-      schema._original.types.forEach(type => {
+      schema._original.types.forEach((type) => {
         suggestions.push({
           text: type.name,
-          displayText: `${type.name} (${type.type}) - ${type.title}`
+          displayText: `${type.name} (${type.type}) - ${type.title}`,
         })
       })
     }
     return {
       list: suggestions,
       from: CodeMirror.Pos(cursor.line, start),
-      to: CodeMirror.Pos(cursor.line, end)
+      to: CodeMirror.Pos(cursor.line, end),
     }
   }
 
@@ -57,9 +57,9 @@ class QueryEditor extends React.PureComponent {
       hintOptions: {hint: this.getHint},
       extraKeys: {
         'Ctrl-Space': 'autocomplete',
-        'Ctrl-Enter': this.props.onExecute
+        'Ctrl-Enter': this.props.onExecute,
       },
-      autoCloseBrackets: true
+      autoCloseBrackets: true,
     }
     return (
       <ReactCodeMirror
@@ -82,11 +82,11 @@ QueryEditor.propTypes = {
   schema: PropTypes.object,
   className: PropTypes.string,
   onHeightChange: PropTypes.func,
-  height: PropTypes.number
+  height: PropTypes.number,
 }
 
 QueryEditor.defaultProps = {
-  className: 'vision_query-editor'
+  className: 'vision_query-editor',
 }
 
 export default QueryEditor

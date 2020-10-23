@@ -32,7 +32,7 @@ export default function createButtonLike(
     _element: HTMLButtonElement | null = null
 
     state = {
-      focusSetFromOutside: false
+      focusSetFromOutside: false,
     }
 
     focus() {

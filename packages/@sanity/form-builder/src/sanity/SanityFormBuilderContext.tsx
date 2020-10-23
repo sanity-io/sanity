@@ -28,28 +28,28 @@ export default function SanityFormBuilderContext(props: Props) {
 }
 
 function prepareMutationEvent(event) {
-  const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
+  const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)
   return {
     snapshot: event.document,
-    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches)
+    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches),
   }
 }
 
 function prepareRebaseEvent(event) {
-  const remotePatches = event.remoteMutations.map(mut => mut.patch).filter(Boolean)
-  const localPatches = event.localMutations.map(mut => mut.patch).filter(Boolean)
+  const remotePatches = event.remoteMutations.map((mut) => mut.patch).filter(Boolean)
+  const localPatches = event.localMutations.map((mut) => mut.patch).filter(Boolean)
   return {
     snapshot: event.document,
     patches: gradientPatchAdapter
       .toFormBuilder('remote', remotePatches)
-      .concat(gradientPatchAdapter.toFormBuilder('local', localPatches))
+      .concat(gradientPatchAdapter.toFormBuilder('local', localPatches)),
   }
 }
 
 SanityFormBuilderContext.createPatchChannel = () => {
   const patchChannel = FormBuilderContext.createPatchChannel()
   return {
-    receiveEvent: event => {
+    receiveEvent: (event) => {
       if (event.type !== 'mutation' && event.type !== 'rebase') {
         return
       }
@@ -57,6 +57,6 @@ SanityFormBuilderContext.createPatchChannel = () => {
         event.type === 'mutation' ? prepareMutationEvent(event) : prepareRebaseEvent(event)
       )
     },
-    onPatch: patchChannel.onPatch
+    onPatch: patchChannel.onPatch,
   }
 }

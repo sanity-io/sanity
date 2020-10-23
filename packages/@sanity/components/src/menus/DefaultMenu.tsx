@@ -31,7 +31,7 @@ const ungrouped = Symbol('__ungrouped__')
 
 class DefaultMenu extends React.Component<DefaultMenuProps, State> {
   state: State = {
-    items: []
+    items: [],
   }
 
   static getDerivedStateFromProps(props: DefaultMenuProps) {
@@ -43,10 +43,10 @@ class DefaultMenu extends React.Component<DefaultMenuProps, State> {
 
         return acc.includes(item.group) ? acc : acc.concat(item.group)
       },
-      (props.groups || []).map(group => group.id)
+      (props.groups || []).map((group) => group.id)
     )
 
-    const byGroup = groupBy(props.items, item => item.group || ungrouped)
+    const byGroup = groupBy(props.items, (item) => item.group || ungrouped)
     // @todo: symbol cannot be used as index type
     const hasUngrouped = typeof byGroup[ungrouped as any] !== 'undefined'
     let targets: Array<string | symbol> = []
@@ -56,7 +56,7 @@ class DefaultMenu extends React.Component<DefaultMenuProps, State> {
       targets = groups
     }
     // @todo: symbol cannot be used as index type
-    const items = flatten(targets.map(group => byGroup[group as any] || []))
+    const items = flatten(targets.map((group) => byGroup[group as any] || []))
     return {items}
   }
 
@@ -72,7 +72,7 @@ class DefaultMenu extends React.Component<DefaultMenuProps, State> {
   handleKeyDown = (event: KeyboardEvent) => {
     const {router} = this.props
     const {focusedItem} = this.state
-    const items = this.state.items ? this.state.items.filter(item => !item.isDisabled) : []
+    const items = this.state.items ? this.state.items.filter((item) => !item.isDisabled) : []
     const currentIndex = focusedItem ? items.indexOf(focusedItem) || 0 : 0
 
     if (event.key === 'Escape') {
@@ -82,13 +82,13 @@ class DefaultMenu extends React.Component<DefaultMenuProps, State> {
 
     if (event.key === 'ArrowDown') {
       this.setState({
-        focusedItem: items[currentIndex < items.length - 1 ? currentIndex + 1 : 0]
+        focusedItem: items[currentIndex < items.length - 1 ? currentIndex + 1 : 0],
       })
     }
 
     if (event.key === 'ArrowUp') {
       this.setState({
-        focusedItem: items[currentIndex > 0 ? currentIndex - 1 : items.length - 1]
+        focusedItem: items[currentIndex > 0 ? currentIndex - 1 : items.length - 1],
       })
     }
 

@@ -13,11 +13,11 @@ const dialogTestContent = {
   minimal: 'minimal',
   paragraph: 'paragraph',
   longtext: 'longtext',
-  example: 'example with dialogcontent'
+  example: 'example with dialogcontent',
 }
 
 const paragraph = chance.paragraph()
-const paragraphs = range(0, 20).map(i => (
+const paragraphs = range(0, 20).map((i) => (
   <p key={i} style={{margin: 0}}>
     {chance.paragraph()}
   </p>
@@ -47,22 +47,22 @@ export function PopoverStory() {
       index: 1,
       color: 'success',
       title: 'Please click me',
-      autoFocus: true
-    }
+      autoFocus: true,
+    },
   ]
 
   const percentRange = {
     range: true,
     min: 0,
     max: 100,
-    step: 0.1
+    step: 0.1,
   }
 
   const sizeRange = {
     range: true,
     min: 0,
     max: 1000,
-    step: 1
+    step: 1,
   }
 
   const left = number('Reference left', 50, percentRange, 'test')
@@ -76,7 +76,7 @@ export function PopoverStory() {
     left: `${left}%`,
     width: `${width}px`,
     height: `${height}px`,
-    backgroundColor: 'lime'
+    backgroundColor: 'lime',
   }
 
   const contentTest = select('content', dialogTestContent, 'minimal')
@@ -106,7 +106,7 @@ export function PopoverStory() {
         'top-end',
         'right-end',
         'bottom-end',
-        'left-end'
+        'left-end',
       ],
       'auto',
       'Props'
@@ -118,12 +118,12 @@ export function PopoverStory() {
         small: 'Small',
         medium: 'Medium',
         large: 'Large',
-        auto: 'Auto'
+        auto: 'Auto',
       },
       'auto',
       'Props'
     ),
-    useOverlay: boolean('Use overlay', false, 'Props')
+    useOverlay: boolean('Use overlay', false, 'Props'),
   }
 
   return (

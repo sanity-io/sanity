@@ -9,7 +9,7 @@ export default class SetIfMissingPatch {
   }
   apply(targets, accessor) {
     let result = accessor
-    targets.forEach(target => {
+    targets.forEach((target) => {
       if (target.isIndexReference()) {
         // setIfMissing do not apply to arrays, since Gradient will reject nulls in arrays
       } else if (target.isAttributeReference()) {

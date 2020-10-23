@@ -6,9 +6,7 @@ export default class User extends React.Component<{
 }> {
   render() {
     const {id} = this.props
-    const nextUserId = Math.random()
-      .toString(32)
-      .substring(2)
+    const nextUserId = Math.random().toString(32).substring(2)
     return (
       <div>
         <h1>Showing a lot of information about user #{id}</h1>

@@ -16,7 +16,7 @@ const wrapperStyles: React.CSSProperties = {
   maxHeight: '70vh',
   paddingTop: '5rem',
   position: 'relative',
-  overflow: 'scroll'
+  overflow: 'scroll',
 }
 
 export function FoldStory() {

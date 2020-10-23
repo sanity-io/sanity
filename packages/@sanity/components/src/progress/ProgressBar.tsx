@@ -22,7 +22,7 @@ export default class ProgressBar extends React.Component<ProgressBarProps> {
     `
 
     const barStyle = {
-      width: `${percent}%`
+      width: `${percent}%`,
     }
 
     return (

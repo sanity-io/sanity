@@ -8,7 +8,7 @@ import {
   NavigateOptions,
   RouterProviderContext,
   RouterState,
-  IntentParameters
+  IntentParameters,
 } from './types'
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 
 export default class RouterProvider extends React.Component<Props> {
   public static childContextTypes = {
-    __internalRouter: PropTypes.object
+    __internalRouter: PropTypes.object,
   }
 
   __internalRouter: InternalRouter
@@ -36,7 +36,7 @@ export default class RouterProvider extends React.Component<Props> {
       navigate: this.navigateState,
       navigateIntent: this.navigateIntent,
       getState: this.getState,
-      channel: pubsub<RouterState>()
+      channel: pubsub<RouterState>(),
     }
   }
 
@@ -70,7 +70,7 @@ export default class RouterProvider extends React.Component<Props> {
 
   getChildContext(): RouterProviderContext {
     return {
-      __internalRouter: this.__internalRouter
+      __internalRouter: this.__internalRouter,
     }
   }
 

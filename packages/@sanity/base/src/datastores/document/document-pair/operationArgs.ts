@@ -8,7 +8,7 @@ import {memoize} from '../utils/createMemoizer'
 export const operationArgs = memoize(
   (idPair: IdPair, typeName: string): Observable<OperationArgs> => {
     return snapshotPair(idPair).pipe(
-      switchMap(versions =>
+      switchMap((versions) =>
         combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
           map(
             ([draft, published]): OperationArgs => ({
@@ -16,7 +16,7 @@ export const operationArgs = memoize(
               typeName: typeName,
               snapshots: {draft, published},
               draft: versions.draft,
-              published: versions.published
+              published: versions.published,
             })
           )
         )
@@ -25,5 +25,5 @@ export const operationArgs = memoize(
       refCount()
     )
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

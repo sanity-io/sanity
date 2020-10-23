@@ -67,7 +67,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     schemaType,
     value,
     compareValue,
-    views = []
+    views = [],
   } = props
   const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
@@ -89,8 +89,8 @@ export function DocumentPane(props: DocumentPaneProps) {
           type: 'document',
           documentId,
           path: nextFocusPath,
-          lastActiveAt: new Date().toISOString()
-        }
+          lastActiveAt: new Date().toISOString(),
+        },
       ])
     },
     [documentId]
@@ -122,7 +122,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         const item = getProductionPreviewItem({
           features,
           value,
-          rev: null
+          rev: null,
         })
 
         if (item && item.url) {
@@ -136,7 +136,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])
 
   const handleSetActiveView = useCallback((id: string | null) => paneRouter.setView(id as any), [
-    paneRouter
+    paneRouter,
   ])
 
   const handleClosePane = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
@@ -169,7 +169,7 @@ export function DocumentPane(props: DocumentPaneProps) {
       className={classNames([
         styles.root,
         isCollapsed && styles.isCollapsed,
-        isSelected ? styles.isActive : styles.isDisabled
+        isSelected ? styles.isActive : styles.isDisabled,
       ])}
       rootRef={rootRef}
     >

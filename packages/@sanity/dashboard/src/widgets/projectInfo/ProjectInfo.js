@@ -29,17 +29,17 @@ class ProjectInfo extends React.PureComponent {
   static propTypes = {
     // eslint-disable-next-line camelcase
     __experimental_before: PropTypes.array,
-    data: PropTypes.array
+    data: PropTypes.array,
   }
   static defaultProps = {
     // eslint-disable-next-line camelcase
     __experimental_before: [],
-    data: []
+    data: [],
   }
 
   state = {
     studioHost: null,
-    graphqlApi: null
+    graphqlApi: null,
   }
 
   componentDidMount() {
@@ -48,18 +48,18 @@ class ProjectInfo extends React.PureComponent {
 
     this.subscriptions.push(
       sanityClient.observable.request({uri: `/projects/${projectId}`}).subscribe({
-        next: result => {
+        next: (result) => {
           const {studioHost} = result
           this.setState({studioHost: studioHost ? `https://${studioHost}.sanity.studio` : null})
         },
-        error: error => {
+        error: (error) => {
           console.log('Error while looking for studioHost', error)
           this.setState({
             studioHost: {
-              error: 'Something went wrong while looking up studioHost. See console.'
-            }
+              error: 'Something went wrong while looking up studioHost. See console.',
+            },
           })
-        }
+        },
       })
     )
 
@@ -68,28 +68,28 @@ class ProjectInfo extends React.PureComponent {
       sanityClient.observable
         .request({
           method: 'HEAD',
-          uri: `/graphql/${dataset}/default`
+          uri: `/graphql/${dataset}/default`,
         })
         .subscribe({
           next: () => this.setState({graphqlApi: getGraphQlUrl()}),
-          error: error => {
+          error: (error) => {
             if (error.statusCode === 404) {
               this.setState({graphqlApi: null})
             } else {
               console.log('Error while looking for graphqlApi', error)
               this.setState({
                 graphqlApi: {
-                  error: 'Something went wrong while looking up graphqlApi. See console.'
-                }
+                  error: 'Something went wrong while looking up graphqlApi. See console.',
+                },
               })
             }
-          }
+          },
         })
     )
   }
 
   componentWillUnmount() {
-    this.subscriptions.forEach(sub => sub.unsubscribe())
+    this.subscriptions.forEach((sub) => sub.unsubscribe())
   }
 
   assembleTableRows() {
@@ -101,14 +101,14 @@ class ProjectInfo extends React.PureComponent {
         title: 'Sanity project',
         rows: [
           {title: 'Project ID', value: projectId},
-          {title: 'Dataset', value: dataset}
-        ]
-      }
+          {title: 'Dataset', value: dataset},
+        ],
+      },
     ]
 
     // Handle any apps
     const apps = [studioHost ? {title: 'Studio', value: studioHost} : null]
-      .concat(propsData.filter(item => item.category === 'apps'))
+      .concat(propsData.filter((item) => item.category === 'apps'))
       .filter(Boolean)
     if (apps.length > 0) {
       result = result.concat([{title: 'Apps', rows: apps}])
@@ -121,16 +121,16 @@ class ProjectInfo extends React.PureComponent {
           title: 'APIs',
           rows: [
             {title: 'GROQ', value: getGroqUrl()},
-            {title: 'GraphQL', value: graphqlApi || 'Not deployed'}
-          ]
-        }
+            {title: 'GraphQL', value: graphqlApi || 'Not deployed'},
+          ],
+        },
       ],
-      propsData.filter(item => item.category === 'apis')
+      propsData.filter((item) => item.category === 'apis')
     )
 
     // Handle whatever else there might be
     const otherStuff = {}
-    propsData.forEach(item => {
+    propsData.forEach((item) => {
       if (item.category !== 'apps' && item.category !== 'apis') {
         if (!otherStuff[item.category]) {
           otherStuff[item.category] = []
@@ -138,7 +138,7 @@ class ProjectInfo extends React.PureComponent {
         otherStuff[item.category].push(item)
       }
     })
-    Object.keys(otherStuff).forEach(category => {
+    Object.keys(otherStuff).forEach((category) => {
       result.push({title: category, rows: otherStuff[category]})
     })
 
@@ -158,7 +158,7 @@ class ProjectInfo extends React.PureComponent {
           </header>
 
           <table className={styles.table}>
-            {this.assembleTableRows().map(item => {
+            {this.assembleTableRows().map((item) => {
               if (!item || !item.rows) {
                 return null
               }
@@ -168,7 +168,7 @@ class ProjectInfo extends React.PureComponent {
                   <tr className={styles.sectionHeaderRow}>
                     <th colSpan="2">{item.title}</th>
                   </tr>
-                  {item.rows.map(row => {
+                  {item.rows.map((row) => {
                     return (
                       <tr key={row.title}>
                         <th className={styles.rowTitle}>{row.title}</th>

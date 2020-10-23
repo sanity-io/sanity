@@ -41,7 +41,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'body',
@@ -53,7 +53,7 @@ export default {
           type: 'block',
           lists: [
             {type: 'Bullet', value: 'bullet'},
-            {type: 'Number', value: 'number'}
+            {type: 'Number', value: 'number'},
           ],
           marks: {
             decorators: [
@@ -65,17 +65,22 @@ export default {
                 value: 'highlight',
                 blockEditor: {
                   icon: markerIcon,
-                  render: Highlight
-                }
-              }
+                  render: Highlight,
+                },
+              },
             ],
             annotations: [
               {
                 type: 'object',
                 name: 'link',
                 fields: [
-                  {name: 'href', type: 'string', title: 'Url', validation: Rule => Rule.required()}
-                ]
+                  {
+                    name: 'href',
+                    type: 'string',
+                    title: 'Url',
+                    validation: (Rule) => Rule.required(),
+                  },
+                ],
               },
               {
                 name: 'author',
@@ -84,10 +89,10 @@ export default {
                 to: {type: 'author'},
                 blockEditor: {
                   icon: AuthorIcon,
-                  render: AuthorAnnotation
-                }
-              }
-            ]
+                  render: AuthorAnnotation,
+                },
+              },
+            ],
           },
           styles: [
             {title: 'Normal', value: 'normal'},
@@ -98,16 +103,16 @@ export default {
               title: 'Title',
               value: 'title',
               blockEditor: {
-                render: TitleStyle
-              }
-            }
+                render: TitleStyle,
+              },
+            },
           ],
           of: [
             {
               name: 'author',
               title: 'Author',
               type: 'reference',
-              to: {type: 'author'}
+              to: {type: 'author'},
             },
             {
               title: 'Image',
@@ -118,9 +123,9 @@ export default {
                   type: 'string',
                   title: 'Caption',
                   options: {isHighlighted: true},
-                  validation: Rule => Rule.required()
-                }
-              ]
+                  validation: (Rule) => Rule.required(),
+                },
+              ],
             },
             {
               name: 'test',
@@ -130,20 +135,17 @@ export default {
                 {
                   type: 'string',
                   name: 'title',
-                  validation: Rule =>
-                    Rule.required()
-                      .min(10)
-                      .max(80)
-                }
-              ]
-            }
-          ]
+                  validation: (Rule) => Rule.required().min(10).max(80),
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'author',
           title: 'Author',
           type: 'reference',
-          to: {type: 'author'}
+          to: {type: 'author'},
         },
         {
           name: 'test',
@@ -153,12 +155,9 @@ export default {
             {
               type: 'string',
               name: 'title',
-              validation: Rule =>
-                Rule.required()
-                  .min(10)
-                  .max(80)
-            }
-          ]
+              validation: (Rule) => Rule.required().min(10).max(80),
+            },
+          ],
         },
         {
           title: 'Image',
@@ -169,11 +168,11 @@ export default {
               type: 'string',
               title: 'Caption',
               options: {isHighlighted: true},
-              validation: Rule => Rule.required()
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

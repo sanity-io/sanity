@@ -7,7 +7,7 @@ import {
   DocumentRemoteMutationVersionEvent,
   Attributes,
   CombinedDocument,
-  Doc
+  Doc,
 } from './types'
 import {Timeline} from './timeline'
 
@@ -27,12 +27,12 @@ function emptyVersionState(id: string): VersionState {
     attrs: null,
     rev: null,
     events: [],
-    aligned: false
+    aligned: false,
   }
 }
 
 function align(history: TransactionLogEvent, state: VersionState): number {
-  const idx = state.events.findIndex(evt => history.id === evt.transactionId)
+  const idx = state.events.findIndex((evt) => history.id === evt.transactionId)
   if (idx >= 0) {
     // Return the next event as we don't want this to be included.
     return idx + 1
@@ -97,7 +97,7 @@ export class Aligner {
     this.timeline = timeline
     this._states = {
       draft: emptyVersionState(timeline.draftId),
-      published: emptyVersionState(timeline.publishedId)
+      published: emptyVersionState(timeline.publishedId),
     }
   }
 
@@ -156,7 +156,7 @@ export class Aligner {
   }
 
   get isAligned() {
-    return Object.values(this._states).every(state => state.aligned)
+    return Object.values(this._states).every((state) => state.aligned)
   }
 
   get acceptsHistory(): boolean {
@@ -184,7 +184,7 @@ export class Aligner {
   }
 
   private get _isComplete() {
-    return Object.values(this._states).every(state => state.hasAttrs)
+    return Object.values(this._states).every((state) => state.hasAttrs)
   }
 
   // eslint-disable-next-line class-methods-use-this

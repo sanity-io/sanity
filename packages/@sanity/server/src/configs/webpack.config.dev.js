@@ -2,7 +2,7 @@ import webpack from 'webpack'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
 import getBaseConfig from './webpack.config'
 
-export default config => {
+export default (config) => {
   const baseConfig = getBaseConfig(config)
 
   return Object.assign({}, baseConfig, {
@@ -11,22 +11,22 @@ export default config => {
     entry: Object.assign({}, baseConfig.entry, {
       vendor: [
         require.resolve('eventsource-polyfill'),
-        require.resolve('../browser/hot-client')
-      ].concat(baseConfig.entry.vendor)
+        require.resolve('../browser/hot-client'),
+      ].concat(baseConfig.entry.vendor),
     }),
     resolve: {
       alias: Object.assign({}, baseConfig.resolve.alias, {
         'react-dom': require.resolve('@hot-loader/react-dom'),
-        'webpack-hot-middleware/client': require.resolve('../browser/hot-client')
+        'webpack-hot-middleware/client': require.resolve('../browser/hot-client'),
       }),
-      extensions: baseConfig.resolve.extensions
+      extensions: baseConfig.resolve.extensions,
     },
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin()
+      new webpack.NoEmitOnErrorsPlugin(),
     ]),
     module: Object.assign({}, baseConfig.module, {
-      rules: applyStaticLoaderFix(baseConfig, config)
-    })
+      rules: applyStaticLoaderFix(baseConfig, config),
+    }),
   })
 }

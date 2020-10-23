@@ -9,7 +9,7 @@ const bundleUrl = `${baseUrl}/v${version}/yarn-legacy-${version}.js`
 const licenseUrl = 'https://raw.githubusercontent.com/yarnpkg/yarn/master/LICENSE'
 const destination = path.join(__dirname, '..', '..', 'vendor', 'yarn')
 const writeFlags = {encoding: 'utf8', mode: 0o755}
-const request = url =>
+const request = (url) =>
   new Promise((resolve, reject) =>
     simpleGet.concat(url, (err, res, body) => {
       if (err) {
@@ -36,7 +36,7 @@ async function writeHeader() {
   const license = await request(licenseUrl)
   const commented = license
     .split('\n')
-    .map(line => ` * ${line}`)
+    .map((line) => ` * ${line}`)
     .join('\n')
   const wrappedLicense = `/*\n${commented}*/`
 

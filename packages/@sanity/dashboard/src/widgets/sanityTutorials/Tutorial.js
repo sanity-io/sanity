@@ -9,11 +9,11 @@ class Tutorial extends React.PureComponent {
     href: PropTypes.string.isRequired,
     showPlayIcon: PropTypes.bool,
     presenterName: PropTypes.string.isRequired,
-    presenterSubtitle: PropTypes.string.isRequired
+    presenterSubtitle: PropTypes.string.isRequired,
   }
   static defaultProps = {
     posterURL: null,
-    showPlayIcon: false
+    showPlayIcon: false,
   }
 
   render() {

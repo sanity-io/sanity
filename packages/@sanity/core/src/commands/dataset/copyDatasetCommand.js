@@ -15,8 +15,8 @@ Examples
   sanity dataset copy <source-dataset> <target-dataset>
 `
 
-const progress = url => {
-  return new Observable(observer => {
+const progress = (url) => {
+  return new Observable((observer) => {
     const progressSource = new EventSource(url)
 
     function onError(error) {
@@ -73,7 +73,7 @@ export default {
 
     const existingDatasets = await client.datasets
       .list()
-      .then(datasets => datasets.map(ds => ds.name))
+      .then((datasets) => datasets.map((ds) => ds.name))
 
     const sourceDatasetName = await (sourceDataset || promptForDatasetName(prompt))
     if (!existingDatasets.includes(sourceDatasetName)) {
@@ -94,7 +94,7 @@ export default {
       const response = await client.request({
         method: 'PUT',
         uri: `/datasets/${sourceDatasetName}/copy`,
-        body: {targetDataset: targetDatasetName}
+        body: {targetDataset: targetDatasetName},
       })
 
       output.print(
@@ -107,14 +107,14 @@ export default {
 
       const spinner = output
         .spinner({
-          text: `~0% done.`
+          text: `~0% done.`,
         })
         .start()
 
       const listenUrl = client.getUrl(`jobs/${response.jobId}/listen`)
       debug(`Listening on ${listenUrl}`)
       progress(listenUrl).subscribe({
-        next: event => {
+        next: (event) => {
           spinner.text = `~${event.progress}% done.`
         },
         error: () => {
@@ -126,7 +126,7 @@ export default {
               targetDatasetName
             )}.`
           )
-        }
+        },
       })
     } catch (error) {
       if (error.statusCode) {
@@ -135,5 +135,5 @@ export default {
         output.print(`${chalk.red(`Dataset copying failed:\n${error.message}`)}\n`)
       }
     }
-  }
+  },
 }

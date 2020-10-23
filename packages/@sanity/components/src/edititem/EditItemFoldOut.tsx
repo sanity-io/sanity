@@ -22,7 +22,7 @@ const sameWidthModifier: Modifier<'sameWidth', any> = {
   requires: ['computeStyles'],
   fn({state}) {
     state.styles.popper.width = `${state.rects.reference.width}px`
-  }
+  },
 }
 
 export default EditItemFoldOut
@@ -84,17 +84,17 @@ function EditItemFoldOut(props: EditItemFoldOutProps) {
       {
         name: 'preventOverflow',
         options: {
-          rootBoundary: 'viewport'
-        }
+          rootBoundary: 'viewport',
+        },
       },
       {
         name: 'offset',
         options: {
-          offset: [0, -4]
-        }
+          offset: [0, -4],
+        },
       },
-      sameWidthModifier
-    ]
+      sameWidthModifier,
+    ],
   })
 
   const {forceUpdate} = popper

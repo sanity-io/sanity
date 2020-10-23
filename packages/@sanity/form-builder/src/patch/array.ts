@@ -77,7 +77,7 @@ export default function apply(value, patch) {
   // The patch is not directed to me
   nextValue[index] = applyPatch(nextValue[index], {
     ...patch,
-    path: tail
+    path: tail,
   })
   return nextValue
 }

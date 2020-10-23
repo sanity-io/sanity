@@ -11,7 +11,7 @@ import {
   OnPasteFn,
   OnCopyFn,
   PortableTextEditor,
-  usePortableTextEditor
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -69,7 +69,7 @@ function PortableTextSanityEditor(props: Props) {
     renderChild,
     renderCustomMarkers,
     setScrollContainerElement,
-    value
+    value,
   } = props
 
   const editor = usePortableTextEditor()
@@ -94,7 +94,7 @@ function PortableTextSanityEditor(props: Props) {
           ...focus.path.slice(0, 1),
           'markDefs',
           {_key: activeAnnotations[0]._key},
-          FOCUS_TERMINATOR
+          FOCUS_TERMINATOR,
         ])
         return
       }
@@ -111,11 +111,11 @@ function PortableTextSanityEditor(props: Props) {
     custom: {
       'mod+enter': props.onToggleFullscreen,
       // 'mod+o': handleOpenObjectHotkey, // TODO: disabled for now, enable when we agree on the hotkey
-      ...(props.hotkeys || {}).custom
-    }
+      ...(props.hotkeys || {}).custom,
+    },
   }
   const defaultHotkeys = {marks: {}}
-  ptFeatures.decorators.forEach(dec => {
+  ptFeatures.decorators.forEach((dec) => {
     switch (dec.value) {
       case 'strong':
         defaultHotkeys.marks['mod+b'] = dec.value
@@ -136,23 +136,23 @@ function PortableTextSanityEditor(props: Props) {
   const marksFromProps: HotkeyOptions = {
     marks: {
       ...defaultHotkeys.marks,
-      ...(props.hotkeys || {}).marks
-    }
+      ...(props.hotkeys || {}).marks,
+    },
   }
   const hotkeys: HotkeyOptions = {
     ...marksFromProps,
-    ...customFromProps
+    ...customFromProps,
   }
 
   const hasMarkers = markers.length > 0
   const scClassNames = [
     styles.scrollContainer,
-    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras])
+    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras]),
   ].join(' ')
   const editorWrapperClassNames = [styles.editorWrapper].join(' ')
   const editorClassNames = [
     styles.editor,
-    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras])
+    ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [styles.hasNoBlockExtras]),
   ].join(' ')
 
   const blockExtras = useCallback(

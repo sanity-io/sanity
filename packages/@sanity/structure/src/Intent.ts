@@ -40,7 +40,7 @@ export const defaultIntentChecker: IntentChecker = (intentName, params, {pane}):
   const initialValueTemplates = typedSpec.initialValueTemplates || []
 
   if (isCreate && params.template) {
-    return initialValueTemplates.some(tpl => tpl.templateId === params.template)
+    return initialValueTemplates.some((tpl) => tpl.templateId === params.template)
   }
 
   return (

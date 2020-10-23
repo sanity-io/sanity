@@ -4,7 +4,7 @@ import {TrackerContext} from './types'
 export type ReporterHook<Payload> = (
   id: string,
   value: Payload | (() => Payload),
-  isEqual?: (a: Payload, b: Payload) => boolean,
+  isEqual?: (a: Payload, b: Payload) => boolean
 ) => void
 
 function isFunc<T>(value: T | (() => T)): value is () => T {
@@ -18,12 +18,12 @@ function read<T>(value: T | (() => T)): T {
 export type IsEqualFunction<Value> = (a: Value, b: Value) => boolean
 
 export function createUseReporter<Value>(
-  Context: React.Context<TrackerContext<Value>>,
+  Context: React.Context<TrackerContext<Value>>
 ): ReporterHook<Value> {
   return function useReporter(
     id: string,
     value: Value | (() => Value),
-    isEqual: IsEqualFunction<Value> = Object.is,
+    isEqual: IsEqualFunction<Value> = Object.is
   ) {
     const {add, update, remove} = React.useContext(Context)
     const previous = React.useRef<Value>()

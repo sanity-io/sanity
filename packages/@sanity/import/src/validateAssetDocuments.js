@@ -13,7 +13,7 @@ const REQUIRED_PROPERTIES = {
   path: 'string',
   sha1hash: 'string',
   size: 'number',
-  url: 'string'
+  url: 'string',
 }
 
 module.exports = async function validateAssetDocuments(docs, options) {
@@ -21,18 +21,18 @@ module.exports = async function validateAssetDocuments(docs, options) {
   const {projectId: targetProjectId, dataset: targetDataset} = config
   const concurrency = options.assetVerificationConcurrency || DEFAULT_VERIFY_CONCURRENCY
 
-  const assetDocs = docs.filter(doc => /^sanity\.[a-zA-Z]+Asset$/.test(doc._type || ''))
+  const assetDocs = docs.filter((doc) => /^sanity\.[a-zA-Z]+Asset$/.test(doc._type || ''))
   if (assetDocs.length === 0) {
     return
   }
 
   options.onProgress({step: 'Validating asset documents'})
 
-  assetDocs.forEach(doc => validateAssetDocumentProperties(doc))
+  assetDocs.forEach((doc) => validateAssetDocumentProperties(doc))
 
   // Don't allow assets that reference different datasets (unless explicitly allowing it)
   if (!options.allowAssetsInDifferentDataset) {
-    assetDocs.forEach(doc => {
+    assetDocs.forEach((doc) => {
       const id = doc._id || doc.url
       const {projectId, dataset} = getLocationFromDocument(doc)
       const resolveText = `See ${generateHelpUrl('import-asset-has-different-target')}`
@@ -78,7 +78,7 @@ async function ensureAssetUrlExists(assetDoc) {
 }
 
 function validateAssetDocumentProperties(assetDoc) {
-  Object.keys(REQUIRED_PROPERTIES).forEach(prop => {
+  Object.keys(REQUIRED_PROPERTIES).forEach((prop) => {
     const expectedType = REQUIRED_PROPERTIES[prop]
     if (typeof assetDoc[prop] !== expectedType) {
       const errorType =
@@ -105,7 +105,7 @@ function validateImageMetadata(assetDoc) {
   }
 
   const dimensionProps = ['width', 'height', 'aspectRatio']
-  dimensionProps.forEach(prop => {
+  dimensionProps.forEach((prop) => {
     if (typeof assetDoc.metadata.dimensions[prop] !== 'number') {
       throw new Error(
         `Asset document ${assetDoc._id} is missing required property "metadata.dimensions.${prop}"`

@@ -9,23 +9,23 @@ export default {
     {
       title: 'Optimistic estimate',
       name: 'optimistic',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'Nominal estimate',
       name: 'nominal',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'Pessimistic estimate',
       name: 'pessimistic',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'Pert estimate',
       name: 'calculated',
       type: 'number',
-      readOnly: true
-    }
-  ]
+      readOnly: true,
+    },
+  ],
 }

@@ -7,37 +7,37 @@ function createStringFilters() {
       {
         fieldName: 'eq',
         type: 'String',
-        description: 'Checks if the value is equal to the given input.'
+        description: 'Checks if the value is equal to the given input.',
       },
       {
         fieldName: 'neq',
         type: 'String',
-        description: 'Checks if the value is not equal to the given input.'
+        description: 'Checks if the value is not equal to the given input.',
       },
       {
         fieldName: 'matches',
         type: 'String',
-        description: 'Checks if the value matches the given word/words.'
+        description: 'Checks if the value matches the given word/words.',
       },
       {
         fieldName: 'in',
         kind: 'List',
         children: {
           type: 'String',
-          isNullable: false
+          isNullable: false,
         },
-        description: 'Checks if the value is equal to one of the given values.'
+        description: 'Checks if the value is equal to one of the given values.',
       },
       {
         fieldName: 'nin',
         kind: 'List',
         children: {
           type: 'String',
-          isNullable: false
+          isNullable: false,
         },
-        description: 'Checks if the value is not equal to one of the given values.'
-      }
-    ]
+        description: 'Checks if the value is not equal to one of the given values.',
+      },
+    ],
   }
 }
 

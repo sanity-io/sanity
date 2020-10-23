@@ -6,8 +6,8 @@ module.exports = {
     basePath: resolveProjectRoot({sync: true}),
     cssnext: {
       features: {
-        customProperties: true
-      }
-    }
-  })
+        customProperties: true,
+      },
+    },
+  }),
 }

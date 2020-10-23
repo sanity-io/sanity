@@ -126,6 +126,6 @@ export default createSchema({
     simpleBlockNoteUrl,
     hoistedPtDocument,
     hoistedPt,
-    customBlock
-  ])
+    customBlock,
+  ]),
 })

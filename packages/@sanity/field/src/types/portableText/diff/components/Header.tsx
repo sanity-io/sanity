@@ -3,7 +3,7 @@ import styles from './Header.css'
 
 export default function Header({
   style,
-  children
+  children,
 }: {
   style: string
   children: React.ReactNode

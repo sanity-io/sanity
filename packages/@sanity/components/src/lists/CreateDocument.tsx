@@ -20,7 +20,7 @@ function CreateDocumentList(props: CreateDocumentListProps) {
 
   return (
     <ul className={styles.root}>
-      {items.map(item => (
+      {items.map((item) => (
         <li key={item.key} className={styles.item}>
           <CreateDocumentPreview {...item} />
         </li>

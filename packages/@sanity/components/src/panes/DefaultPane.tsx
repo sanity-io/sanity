@@ -83,7 +83,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     menuItems: [],
     menuItemGroups: [],
     initialValueTemplates: [],
-    renderHeaderViewMenu: () => null
+    renderHeaderViewMenu: () => null,
   }
 
   actionHandlers = {}
@@ -98,18 +98,14 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
 
     this.state = {
       isMenuOpen: false,
-      isInitialValueMenuOpen: false
+      isInitialValueMenuOpen: false,
     }
 
     // Passed to rendered <Menu> components. This prevents the "click outside"
     // functionality from kicking in when pressing the toggle menu button
-    this.templateMenuId = Math.random()
-      .toString(36)
-      .substr(2, 6)
+    this.templateMenuId = Math.random().toString(36).substr(2, 6)
 
-    this.paneMenuId = Math.random()
-      .toString(36)
-      .substr(2, 6)
+    this.paneMenuId = Math.random().toString(36).substr(2, 6)
   }
 
   // Triggered by clicking "outside" of the menu when open, or after triggering action
@@ -253,7 +249,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
               kind: 'simple',
               padding: 'small',
               selected: this.state.isInitialValueMenuOpen,
-              title: 'Create new document'
+              title: 'Create new document',
             }}
             menu={
               <div className={styles.initialValueTemplateMenu}>
@@ -273,7 +269,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     const {isCollapsed, menuItems = [], renderActions} = this.props
 
     const actions = menuItems.filter(
-      action =>
+      (action) =>
         action.showAsAction &&
         (!isCollapsed ||
           (typeof action.showAsAction === 'object' && action.showAsAction.whenCollapsed))
@@ -309,7 +305,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
             kind: 'simple',
             padding: 'small',
             selected: isMenuOpen,
-            title: 'Show menu'
+            title: 'Show menu',
           }}
           menu={
             <Menu
@@ -363,7 +359,7 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
       styles = {},
       footer,
       tabIdPrefix,
-      viewId
+      viewId,
     } = this.props
 
     const mainChildren = isScrollable ? (

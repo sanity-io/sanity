@@ -8,17 +8,17 @@ export default {
     client
       .request({
         uri: '/users/me',
-        withCredentials: true
+        withCredentials: true,
       })
-      .then(user => {
+      .then((user) => {
         return user && user.id ? user : null
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.statusCode === 401) {
           return null
         }
         throw err
       }),
 
-  logout: () => client.auth.logout()
+  logout: () => client.auth.logout(),
 }

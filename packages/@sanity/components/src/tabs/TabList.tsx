@@ -13,7 +13,7 @@ interface State {
 // @todo: refactor to functional component
 export default class TabList extends React.PureComponent<TabListProps, State> {
   state: State = {
-    focusedTabIdx: -1
+    focusedTabIdx: -1,
   }
 
   handleTabFocus = (tabIdx: number) => {
@@ -24,14 +24,14 @@ export default class TabList extends React.PureComponent<TabListProps, State> {
     const numTabs = this.props.children.length
 
     if (evt.key === 'ArrowLeft') {
-      this.setState(state => {
+      this.setState((state) => {
         const focusedTabIdx = state.focusedTabIdx < 1 ? numTabs - 1 : state.focusedTabIdx - 1
         return {focusedTabIdx}
       })
     }
 
     if (evt.key === 'ArrowRight') {
-      this.setState(state => {
+      this.setState((state) => {
         const focusedTabIdx = (state.focusedTabIdx + 1) % numTabs
         return {focusedTabIdx}
       })
@@ -44,7 +44,7 @@ export default class TabList extends React.PureComponent<TabListProps, State> {
     const children = this.props.children.map((child, idx) => {
       return React.cloneElement(child, {
         isFocused: focusedTabIdx === idx,
-        onFocus: () => this.handleTabFocus(idx)
+        onFocus: () => this.handleTabFocus(idx),
       })
     })
 

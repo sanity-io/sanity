@@ -4,7 +4,7 @@ const miss = require('mississippi')
 const getUri = require('get-uri')
 const retryOnFailure = require('./retryOnFailure')
 
-module.exports = uri => retryOnFailure(() => getHashedBufferForUri(uri))
+module.exports = (uri) => retryOnFailure(() => getHashedBufferForUri(uri))
 
 async function getHashedBufferForUri(uri) {
   const stream = await getStream(uri)
@@ -12,12 +12,12 @@ async function getHashedBufferForUri(uri) {
     const hash = crypto.createHash('sha1')
     const chunks = []
 
-    stream.on('data', chunk => {
+    stream.on('data', (chunk) => {
       chunks.push(chunk)
       hash.update(chunk)
     })
 
-    miss.finished(stream, err => {
+    miss.finished(stream, (err) => {
       if (err) {
         reject(err)
         return
@@ -25,7 +25,7 @@ async function getHashedBufferForUri(uri) {
 
       resolve({
         buffer: Buffer.concat(chunks),
-        sha1hash: hash.digest('hex')
+        sha1hash: hash.digest('hex'),
       })
     })
   })

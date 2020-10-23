@@ -19,7 +19,7 @@ export default {
 
     // @todo add support for multiple simultaneous plugins to be installed
     return installPlugin(plugin, context)
-  }
+  },
 }
 
 async function installPlugin(plugin, context) {
@@ -72,7 +72,7 @@ function warnOnDifferentChecksum(plugin, sameChecksum, printer) {
     printer(
       [
         `[Warning] Default configuration for plugin '${plugin}' has changed since you first installed it,`,
-        'check local configuration vs distributed configuration to ensure your configuration is up to date'
+        'check local configuration vs distributed configuration to ensure your configuration is up to date',
       ].join(' ')
     )
   }

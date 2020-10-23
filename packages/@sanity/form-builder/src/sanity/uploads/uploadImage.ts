@@ -17,15 +17,15 @@ type Exif = {
 export default function uploadImage(file: File, options?: UploadOptions): Observable<UploadEvent> {
   const upload$ = uploadImageAsset(file, options).pipe(
     filter((event: any) => event.stage !== 'download'),
-    map(event => ({
+    map((event) => ({
       ...event,
-      progress: 2 + (event.percent / 100) * 98
+      progress: 2 + (event.percent / 100) * 98,
     })),
-    map(event => {
+    map((event) => {
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
-          set(100, [UPLOAD_STATUS_KEY, 'progress'])
+          set(100, [UPLOAD_STATUS_KEY, 'progress']),
         ])
       }
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
@@ -34,7 +34,7 @@ export default function uploadImage(file: File, options?: UploadOptions): Observ
 
   const setPreviewUrl$ = readExif(file).pipe(
     mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION)),
-    catchError(error => {
+    catchError((error) => {
       // eslint-disable-next-line no-console
       console.warn(
         'Image preprocessing failed for "%s" with the error: %s',
@@ -45,7 +45,7 @@ export default function uploadImage(file: File, options?: UploadOptions): Observ
       return observableOf(null)
     }),
     filter(Boolean),
-    map(imageUrl => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
+    map((imageUrl) => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
   )
 
   return observableOf(createInitialUploadEvent(file)).pipe(

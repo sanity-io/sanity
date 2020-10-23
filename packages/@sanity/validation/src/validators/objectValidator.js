@@ -10,7 +10,7 @@ const presence = (expected, value, message) => {
     return true
   }
 
-  const keys = value && Object.keys(value).filter(key => !metaKeys.includes(key))
+  const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
   if (typeof value === 'undefined' || (keys && keys.length === 0)) {
     return new ValidationError(message || 'Required')
   }
@@ -56,5 +56,5 @@ module.exports = Object.assign({}, genericValidator, {
   presence,
   reference,
   block,
-  assetRequired
+  assetRequired,
 })

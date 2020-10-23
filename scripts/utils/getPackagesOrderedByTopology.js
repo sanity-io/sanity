@@ -13,11 +13,11 @@ const {spawnSync} = require('child_process')
 async function getLernaTopology(dir) {
   const packages = await new Project(dir).getPackages()
   const pkgs = await getFilteredPackages(new PackageGraph(packages))
-  return toposort(pkgs, {graphType: 'allDependencies'}).map(pkg => pkg.name)
+  return toposort(pkgs, {graphType: 'allDependencies'}).map((pkg) => pkg.name)
 }
 
 if (require.main === module) {
-  getLernaTopology(process.cwd()).then(topology => process.stdout.write(JSON.stringify(topology)))
+  getLernaTopology(process.cwd()).then((topology) => process.stdout.write(JSON.stringify(topology)))
 }
 
 exports.getPackagesOrderedByTopology = function getPackagesOrderedByTopology() {

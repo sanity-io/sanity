@@ -38,7 +38,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   const [hovered, setHovered] = React.useState<string | null>(null)
 
   const allReportedValues = useReportedValues()
-  const [, forceUpdate] = React.useReducer(n => n + 1, 0)
+  const [, forceUpdate] = React.useReducer((n) => n + 1, 0)
 
   useResizeObserver(rootRef, forceUpdate)
 
@@ -74,7 +74,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
   const enabledConnectors = changeBarsWithFocusOrHover
     .map(([id]) => ({
       field: {id, ...findMostSpecificTarget('field', id, byId)},
-      change: {id, ...findMostSpecificTarget('change', id, byId)}
+      change: {id, ...findMostSpecificTarget('change', id, byId)},
     }))
     .filter(({field, change}) => field && change && field.element && change.element)
     .map(({field, change}) => ({
@@ -82,10 +82,10 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
       hasFocus: field.hasFocus,
       hasRevertHover: change.hasRevertHover,
       field: {...field, ...getElementGeometry(field.element, rootRef)},
-      change: {...change, ...getElementGeometry(change.element, rootRef)}
+      change: {...change, ...getElementGeometry(change.element, rootRef)},
     }))
 
-  const visibleConnectors = sortBy(enabledConnectors, c => -c.field.path.length).slice(0, 1)
+  const visibleConnectors = sortBy(enabledConnectors, (c) => -c.field.path.length).slice(0, 1)
 
   return (
     <ScrollMonitor onScroll={forceUpdate}>

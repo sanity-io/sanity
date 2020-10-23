@@ -34,7 +34,7 @@ function stringifyId(id: string) {
   return JSON.stringify(id)
 }
 
-const maybeEscape = fieldName =>
+const maybeEscape = (fieldName) =>
   fieldNeedsEscape(fieldName) ? `"${fieldName}": @${escapeField(fieldName)}` : fieldName
 
 function toSubQuery({ids, fields}) {
@@ -53,7 +53,7 @@ export function reassemble(queryResult: Result[], combinedSelections: CombinedSe
     const map = combinedSelections[index].map
     map.forEach((resultIdx, i) => {
       const id = combinedSelections[index].ids[i]
-      reprojected[resultIdx] = subResult.find(doc => doc._id === id)
+      reprojected[resultIdx] = subResult.find((doc) => doc._id === id)
     })
     return reprojected
   }, [])

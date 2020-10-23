@@ -25,14 +25,14 @@ export const Annotation: FunctionComponent<Props> = ({
   markers,
   attributes: {focused, selected, path},
   value,
-  onFocus
+  onFocus,
 }) => {
   const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
     focused && styles.focused,
     selected && styles.selected,
-    errors.length > 0 ? styles.error : styles.valid
+    errors.length > 0 ? styles.error : styles.valid,
   ])
 
   const markDefPath = [...path.slice(0, 1), 'markDefs', {_key: value._key}]

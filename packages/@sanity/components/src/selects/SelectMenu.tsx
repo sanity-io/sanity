@@ -17,7 +17,7 @@ interface SelectMenuProps {
 export default class SelectMenu extends React.Component<SelectMenuProps> {
   scrollContainer: HTMLDivElement | null = null
 
-  handleItemClick = event => {
+  handleItemClick = (event) => {
     const index = Number(event.currentTarget.getAttribute('data-item-index'))
     const {onSelect, items} = this.props
     if (onSelect && items) onSelect(items[index])

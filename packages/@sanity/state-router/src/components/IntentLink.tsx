@@ -14,7 +14,7 @@ export default class IntentLink extends React.PureComponent<
   context: RouterProviderContext | null = null
 
   static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck
+    __internalRouter: internalRouterContextTypeCheck,
   }
 
   _element: Link | null = null

@@ -22,7 +22,7 @@ export default function resolveDocumentActions(docInfo, type) {
     WrappedAction,
     ModalDialogAction,
     PopoverDialogAction,
-    ConfirmDialogAction
+    ConfirmDialogAction,
     // PolicyBasedReview
   ].filter(Boolean)
 }

@@ -60,7 +60,7 @@ export class MenuItemGroupBuilder implements Serializable {
 
     return {
       id: _id,
-      title: _title
+      title: _title,
     }
   }
 }

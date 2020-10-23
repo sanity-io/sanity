@@ -11,7 +11,7 @@ function validateOptions(input, opts) {
     operation: defaultOperation,
     onProgress: noop,
     allowAssetsInDifferentDataset: false,
-    replaceAssets: false
+    replaceAssets: false,
   })
 
   if (!isValidInput(input)) {
@@ -24,7 +24,7 @@ function validateOptions(input, opts) {
     throw new Error('`options.client` must be set to an instance of @sanity/client')
   }
 
-  const missing = clientMethods.find(key => typeof options.client[key] !== 'function')
+  const missing = clientMethods.find((key) => typeof options.client[key] !== 'function')
 
   if (missing) {
     throw new Error(

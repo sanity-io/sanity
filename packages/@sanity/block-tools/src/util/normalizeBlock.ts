@@ -27,8 +27,8 @@ export default function normalizeBlock(
         _type: 'span',
         _key: `${block._key}${0}`,
         text: '',
-        marks: []
-      }
+        marks: [],
+      },
     ]
     return block
   }
@@ -55,20 +55,20 @@ export default function normalizeBlock(
       acc.push(child)
       return acc
     }, [])
-    .map(child => {
+    .map((child) => {
       child._key = `${block._key}${newIndex++}`
       if (child._type === 'span' && !child.marks) {
         child.marks = []
       }
       if (allowedDecorators && child._type === 'span') {
         child.marks = child.marks.filter(
-          mark => allowedDecorators.includes(mark) || block.markDefs.find(def => def._key)
+          (mark) => allowedDecorators.includes(mark) || block.markDefs.find((def) => def._key)
         )
       }
       usedMarkDefs = usedMarkDefs.concat(child.marks)
       return child
     })
   // Remove leftover markDefs
-  block.markDefs = block.markDefs.filter(markDef => usedMarkDefs.includes(markDef._key))
+  block.markDefs = block.markDefs.filter((markDef) => usedMarkDefs.includes(markDef._key))
   return block
 }

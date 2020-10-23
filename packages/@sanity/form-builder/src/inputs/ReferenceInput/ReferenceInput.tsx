@@ -8,7 +8,7 @@ import {
   Reference,
   ReferenceFilterSearchOptions,
   ReferenceSchemaType,
-  SanityDocument
+  SanityDocument,
 } from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
@@ -82,7 +82,7 @@ const getInitialState = (): State => {
     hits: [],
     previewSnapshot: null,
     isMissing: false,
-    refCache: {}
+    refCache: {},
   }
 }
 
@@ -113,14 +113,14 @@ export default withValuePath(
         const {getPreviewSnapshot, type} = this.props
         this.subscriptions.replace(
           'previewSnapshot',
-          getPreviewSnapshot(value, type).subscribe(snapshot => {
+          getPreviewSnapshot(value, type).subscribe((snapshot) => {
             this.setState({previewSnapshot: snapshot, isMissing: !snapshot})
           })
         )
       }
       getMemberTypeFor(typeName: string) {
         const {type} = this.props
-        return type.to.find(ofType => ofType.type.name === typeName)
+        return type.to.find((ofType) => ofType.type.name === typeName)
       }
       handleFocus = () => {
         const {onFocus} = this.props
@@ -137,7 +137,7 @@ export default withValuePath(
           PatchEvent.from(
             setIfMissing({
               _type: type.name,
-              _ref: item._id
+              _ref: item._id,
             }),
             type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
             set(item._id, ['_ref'])
@@ -182,13 +182,13 @@ export default withValuePath(
         const options = this.resolveUserDefinedFilter()
 
         this.setState({
-          isFetching: true
+          isFetching: true,
         })
         this.subscriptions.replace(
           'search',
           onSearch(query, type, options).subscribe({
             next: (items: Array<SearchHit>) => {
-              this.setState(prev => {
+              this.setState((prev) => {
                 const updatedCache = items.reduce((cache, item) => {
                   cache[item._id] = item
                   return cache
@@ -197,7 +197,7 @@ export default withValuePath(
                 return {
                   hits: items,
                   isFetching: false,
-                  refCache: updatedCache
+                  refCache: updatedCache,
                 }
               })
             },
@@ -209,7 +209,7 @@ export default withValuePath(
 
               err.message = 'Invalid reference filter, please check `filter`!'
               throw err
-            }
+            },
           })
         )
       }
@@ -245,7 +245,7 @@ export default withValuePath(
       render() {
         const {type, value, level, markers, readOnly, presence, compareValue} = this.props
         const {previewSnapshot, isFetching, isMissing, hits} = this.state
-        const valueFromHit = value && hits.find(hit => hit._id === value._ref)
+        const valueFromHit = value && hits.find((hit) => hit._id === value._ref)
         const weakIs = value && value._weak ? 'weak' : 'strong'
         const weakShouldBe = type.weak === true ? 'weak' : 'strong'
 

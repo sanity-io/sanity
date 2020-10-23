@@ -56,7 +56,7 @@ const DiffCardWithAnnotation = forwardRef(
       className: classNames(styles.root, className),
       'data-hover': disableHoverEffect || !annotation ? undefined : '',
       ref,
-      style: {backgroundColor: color.background, color: color.text, ...style}
+      style: {backgroundColor: color.background, color: color.text, ...style},
     }
 
     const element = createElement(as, elementProps, children)

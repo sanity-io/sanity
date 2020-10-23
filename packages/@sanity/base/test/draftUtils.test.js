@@ -9,7 +9,7 @@ test('collate()', () => {
   expect(collate([foo, fooDraft, barDraft, baz])).toEqual([
     {id: 'foo', draft: fooDraft, published: foo},
     {id: 'bar', draft: barDraft},
-    {id: 'baz', published: baz}
+    {id: 'baz', published: baz},
   ])
 })
 

@@ -4,7 +4,7 @@ import {
   DEFAULT_SPAN,
   HTML_BLOCK_TAGS,
   HTML_HEADER_TAGS,
-  HTML_LIST_CONTAINER_TAGS
+  HTML_LIST_CONTAINER_TAGS,
 } from '../../constants'
 import {tagName} from '../helpers'
 
@@ -72,7 +72,7 @@ export default function createGDocsRules(blockContentType, options: any = {}) {
           const span = {
             ...DEFAULT_SPAN,
             marks: [],
-            text: el.innerText
+            text: el.innerText,
           }
           if (isStrong(el)) {
             span.marks.push('strong')
@@ -83,7 +83,7 @@ export default function createGDocsRules(blockContentType, options: any = {}) {
           return span
         }
         return undefined
-      }
+      },
     },
     {
       deserialize(el, next) {
@@ -93,11 +93,11 @@ export default function createGDocsRules(blockContentType, options: any = {}) {
             listItem: getListItemStyle(el),
             level: getListItemLevel(el),
             style: getBlockStyle(el, options.enabledBlockStyles),
-            children: next(el.firstChild.childNodes)
+            children: next(el.firstChild.childNodes),
           }
         }
         return undefined
-      }
-    }
+      },
+    },
   ]
 }

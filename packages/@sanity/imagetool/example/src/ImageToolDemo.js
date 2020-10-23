@@ -12,12 +12,12 @@ const PREVIEW_ASPECT_RATIOS = [
   ['Landscape', 16 / 9],
   ['Square', 1],
   ['Wide', 4],
-  ['Portrait', 9 / 16]
+  ['Portrait', 9 / 16],
 ].map(([title, aspect]) => ({title, aspect}))
 
 export default class ImageToolDemo extends React.PureComponent {
   static propTypes = {
-    src: PropTypes.string.isRequired
+    src: PropTypes.string.isRequired,
   }
 
   state = {
@@ -26,42 +26,42 @@ export default class ImageToolDemo extends React.PureComponent {
         x: 0.5,
         y: 0.5,
         height: 0.9,
-        width: 0.9
+        width: 0.9,
       },
       crop: {
         top: 0.0,
         bottom: 0.0,
         left: 0.0,
-        right: 0.0
-      }
-    }
+        right: 0.0,
+      },
+    },
   }
 
-  handleHotspotChange = event => {
+  handleHotspotChange = (event) => {
     const target = event.currentTarget
     const property = target.getAttribute('data-property')
     const {value} = this.state
     const newHotspot = Object.assign(value.hotspot, {
-      [property]: Number(target.value)
+      [property]: Number(target.value),
     })
     this.setState({value: Object.assign({}, value, {hotspot: newHotspot})})
   }
 
-  handleCropChange = event => {
+  handleCropChange = (event) => {
     const target = event.currentTarget
     const property = target.getAttribute('data-property')
     const {value} = this.state
     const newCrop = Object.assign(value.crop, {
-      [property]: Number(target.value)
+      [property]: Number(target.value),
     })
     this.setState({value: Object.assign({}, value, {crop: newCrop})})
   }
 
-  handleChange = newValue => {
+  handleChange = (newValue) => {
     this.setState({value: newValue})
   }
 
-  renderPreview = aspectRatio => {
+  renderPreview = (aspectRatio) => {
     const {value} = this.state
     const {src} = this.props
     const previewStyle =

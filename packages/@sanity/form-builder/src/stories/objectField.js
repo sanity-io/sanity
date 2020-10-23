@@ -8,11 +8,11 @@ export function ObjectFieldStory() {
     type: {
       type: 'object',
       title: 'Object',
-      fields: [{type: {type: 'string', name: 'title', title: 'Title'}}]
+      fields: [{type: {type: 'string', name: 'title', title: 'Title'}}],
     },
 
     // value?: {[key: string]: any}
-    value: {title: 'Value'}
+    value: {title: 'Value'},
 
     // onChange?: (...args: any[]) => any
     // onFocus: (...args: any[]) => any

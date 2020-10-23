@@ -8,7 +8,7 @@ import {
   Doc,
   DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
-  CombinedDocument
+  CombinedDocument,
 } from './types'
 import {diffValue, Meta} from './mendozaDiffer'
 import {TwoEndedArray} from './twoEndedArray'
@@ -88,7 +88,7 @@ export class Timeline {
       this._trace = []
       this._trace.push({
         type: 'initial',
-        publishedId: opts.publishedId
+        publishedId: opts.publishedId,
       })
       ;(window as any).__sanityTimelineTrace = this._trace
     }
@@ -140,7 +140,7 @@ export class Timeline {
           index: 0,
           id: entry.transactionId,
           timestamp: entry.timestamp.toISOString(),
-          author: entry.author
+          author: entry.author,
         }
 
     if (entry.version === 'draft') {
@@ -156,7 +156,7 @@ export class Timeline {
       this._transactions.addToEnd(transaction)
       this._possiblePendingTransactions.set(entry.transactionId, {
         transaction,
-        idx: this._transactions.lastIdx
+        idx: this._transactions.lastIdx,
       })
     }
   }
@@ -170,7 +170,7 @@ export class Timeline {
       author: event.author,
       timestamp: event.timestamp,
       draftEffect: event.effects[this.draftId],
-      publishedEffect: event.effects[this.publishedId]
+      publishedEffect: event.effects[this.publishedId],
     })
   }
 
@@ -383,7 +383,7 @@ export class Timeline {
 
         const meta = {
           chunk,
-          transactionIndex: idx
+          transactionIndex: idx,
         }
 
         const preDraftValue = draftValue

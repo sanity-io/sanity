@@ -30,12 +30,12 @@ class DefaultLayoutRoot extends React.PureComponent<{}, State> {
     maybeRedirectToBase()
 
     this.urlStateSubscription = urlStateStore.state.subscribe({
-      next: event =>
+      next: (event) =>
         this.setState({
           urlState: event.state,
           isNotFound: event.isNotFound,
-          intent: event.intent
-        })
+          intent: event.intent,
+        }),
     })
   }
 

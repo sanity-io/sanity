@@ -21,7 +21,7 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
           type="text"
           ref={ref}
           placeholder={type.placeholder}
-          onChange={event => onChange(PatchEvent.from(set(event.target.value)))}
+          onChange={(event) => onChange(PatchEvent.from(set(event.target.value)))}
           value={value}
         />
       ) : (
@@ -39,5 +39,5 @@ HooksBasedStringInput.propTypes = {
   value: PropTypes.string,
   type: PropTypes.object,
   level: PropTypes.number,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
 }

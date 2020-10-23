@@ -23,8 +23,8 @@ export default class StringInput extends React.Component<Props<string, StringSch
   }
   render() {
     const {value, readOnly, type, markers, level, onFocus, onBlur, presence} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter((marker) => marker.type === 'validation')
+    const errors = validation.filter((marker) => marker.level === 'error')
     return (
       <FormField
         markers={markers}

@@ -23,6 +23,6 @@ export function ThemeProperty({property}) {
 ThemeProperty.propTypes = {
   property: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  }).isRequired
+    value: PropTypes.string.isRequired,
+  }).isRequired,
 }

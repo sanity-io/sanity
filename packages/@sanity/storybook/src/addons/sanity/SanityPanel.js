@@ -5,12 +5,12 @@ import addons from '@storybook/addons'
 import PropTable from './PropTable'
 import styles from './styles/SanityPanel.css'
 
-addons.register('sanity/info', api => {
+addons.register('sanity/info', (api) => {
   addons.addPanel('sanity/info/panel', {
     title: 'Sanity',
     render: function render() {
       return <SanityPanel channel={addons.getChannel()} api={api} />
-    }
+    },
   })
 })
 
@@ -21,7 +21,7 @@ class SanityPanel extends React.PureComponent {
     this.state = {info: {}}
   }
 
-  onSetInfo = info => {
+  onSetInfo = (info) => {
     this.setState({info})
   }
 
@@ -94,7 +94,7 @@ class SanityPanel extends React.PureComponent {
             <dt className={styles.title}>Implemented by</dt>
             <dd>
               <ul>
-                {(implementations || []).reverse().map(impl => (
+                {(implementations || []).reverse().map((impl) => (
                   <li key={impl.path}>
                     {impl.plugin}{' '}
                     <span className={styles.light}>({this.normalizePath(impl.path)})</span>
@@ -112,9 +112,9 @@ class SanityPanel extends React.PureComponent {
 
 SanityPanel.propTypes = {
   channel: PropTypes.shape({
-    removeListener: PropTypes.func.isRequired
+    removeListener: PropTypes.func.isRequired,
   }),
   api: PropTypes.shape({
-    onStory: PropTypes.func.isRequired
-  })
+    onStory: PropTypes.func.isRequired,
+  }),
 }

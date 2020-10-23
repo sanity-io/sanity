@@ -2,7 +2,7 @@ import leven from 'leven'
 import humanize from 'humanize-list'
 import {error, HELP_IDS} from '../createValidationResult'
 
-const quote = str => `"${str}"`
+const quote = (str) => `"${str}"`
 
 export function validateTypeName(typeName: string, visitorContext) {
   const possibleTypeNames = visitorContext.getTypeNames()
@@ -12,7 +12,7 @@ export function validateTypeName(typeName: string, visitorContext) {
       error(
         `Type is missing a type. Valid types are: ${humanize(possibleTypeNames)}`,
         HELP_IDS.TYPE_MISSING_TYPE
-      )
+      ),
     ]
   }
 
@@ -23,7 +23,7 @@ export function validateTypeName(typeName: string, visitorContext) {
           possibleTypeNames
         )}`,
         HELP_IDS.TYPE_MISSING_TYPE
-      )
+      ),
     ]
   }
 
@@ -31,7 +31,7 @@ export function validateTypeName(typeName: string, visitorContext) {
 
   if (!isValid) {
     const suggestions = possibleTypeNames
-      .map(possibleTypeName => {
+      .map((possibleTypeName) => {
         if (!possibleTypeName || !typeName) {
         }
         return [leven(typeName, possibleTypeName), possibleTypeName]
@@ -47,7 +47,7 @@ export function validateTypeName(typeName: string, visitorContext) {
     return [
       error(
         `Unknown type: ${typeName}.${suggestion} Valid types are: ${humanize(possibleTypeNames)}`
-      )
+      ),
     ]
   }
   return []

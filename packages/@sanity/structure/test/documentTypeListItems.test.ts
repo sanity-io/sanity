@@ -9,8 +9,8 @@ const editor = {
   id: 'documentEditor',
   options: {
     type: 'author',
-    id: 'grrm'
-  }
+    id: 'grrm',
+  },
 }
 const defaultSchema = getDefaultSchema()
 
@@ -28,7 +28,7 @@ test('generates correct document type list item for specific type', () => {
 })
 
 test('generated canHandleIntent responds to edit/create on document type', () => {
-  const listItems = S.documentTypeListItems().map(item => item.serialize())
+  const listItems = S.documentTypeListItems().map((item) => item.serialize())
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
@@ -36,10 +36,7 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   const childResolver = listItems[0].child as ChildResolver
   const childBuilder = childResolver('author', {
     index: 0,
-    parent: S.list()
-      .id('foo')
-      .items(listItems)
-      .serialize()
+    parent: S.list().id('foo').items(listItems).serialize(),
   }) as DocumentTypeListBuilder
 
   const child = childBuilder.serialize()
@@ -51,8 +48,8 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect((child.canHandleIntent || nope)('edit', {id: 'wow'}, ctx)).toBe(false)
 })
 
-test('generated document panes responds with correct editor child', done => {
-  const listItems = S.documentTypeListItems().map(item => item.serialize())
+test('generated document panes responds with correct editor child', (done) => {
+  const listItems = S.documentTypeListItems().map((item) => item.serialize())
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
@@ -60,17 +57,14 @@ test('generated document panes responds with correct editor child', done => {
   const childResolver = listItems[0].child as ChildResolver
   const childBuilder = childResolver('author', {
     index: 0,
-    parent: S.list()
-      .id('foo')
-      .items(listItems)
-      .serialize()
+    parent: S.list().id('foo').items(listItems).serialize(),
   }) as DocumentTypeListBuilder
 
   const authorsList = childBuilder.serialize()
   expect(authorsList).toHaveProperty('canHandleIntent')
 
   const context = {parent: listItems[0], index: 0}
-  serializeStructure(authorsList.child, context, ['grrm', context]).subscribe(itemChild => {
+  serializeStructure(authorsList.child, context, ['grrm', context]).subscribe((itemChild) => {
     expect(itemChild).toMatchObject(editor)
 
     done()

@@ -10,7 +10,7 @@ import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
   DEFAULT_MAX_AVATARS_FIELDS,
-  DISABLE_OVERLAY
+  DISABLE_OVERLAY,
 } from './constants'
 import {splitRight} from './utils'
 import styles from './FieldPresence.css'
@@ -68,14 +68,14 @@ export function FieldPresenceInner({
   position = 'inside',
   animateArrowFrom = 'inside',
   maxAvatars = DEFAULT_MAX_AVATARS_FIELDS,
-  stack = true
+  stack = true,
 }: InnerProps) {
-  const uniquePresence = uniqBy(presence || [], item => item.user.id)
-  const sorted = sortBy(uniquePresence, _presence => _presence.lastActiveAt)
+  const uniquePresence = uniqBy(presence || [], (item) => item.user.id)
+  const sorted = sortBy(uniquePresence, (_presence) => _presence.lastActiveAt)
   const [hidden, visible] = stack ? splitRight(sorted, maxAvatars) : [[], sorted]
 
   const avatars = [
-    ...visible.reverse().map(_visible => ({
+    ...visible.reverse().map((_visible) => ({
       key: _visible.user.id,
       element: (
         <UserAvatar
@@ -84,14 +84,14 @@ export function FieldPresenceInner({
           status="online"
           user={_visible.user}
         />
-      )
+      ),
     })),
     hidden.length >= 2
       ? {
           key: 'counter',
-          element: <AvatarCounter count={hidden.length} />
+          element: <AvatarCounter count={hidden.length} />,
         }
-      : null
+      : null,
   ].filter(Boolean)
 
   const maxWidth = calcAvatarStackWidth(maxAvatars)
@@ -114,7 +114,7 @@ export function FieldPresenceInner({
                     transitionProperty: 'transform',
                     transitionDuration: '200ms',
                     transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
-                    zIndex: 100 - i
+                    zIndex: 100 - i,
                   }}
                 >
                   {av.element}

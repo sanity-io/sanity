@@ -15,6 +15,6 @@ export function WriteTitleAction(docInfo) {
 
   return {
     label: 'Set title to foo!',
-    onHandle: handle
+    onHandle: handle,
   }
 }

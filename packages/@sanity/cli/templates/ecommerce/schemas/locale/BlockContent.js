@@ -7,13 +7,13 @@ export default {
     {
       title: 'Translations',
       name: 'translations',
-      options: {collapsible: true}
-    }
+      options: {collapsible: true},
+    },
   ],
-  fields: supportedLanguages.map(lang => ({
+  fields: supportedLanguages.map((lang) => ({
     title: lang.title,
     name: lang.id,
     type: 'blockContent',
-    fieldset: lang.isDefault ? null : 'translations'
-  }))
+    fieldset: lang.isDefault ? null : 'translations',
+  })),
 }

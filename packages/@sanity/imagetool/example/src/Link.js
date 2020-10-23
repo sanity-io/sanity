@@ -12,5 +12,5 @@ export default function Link(props) {
 }
 
 Link.propTypes = {
-  href: PropTypes.string
+  href: PropTypes.string,
 }

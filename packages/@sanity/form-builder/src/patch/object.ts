@@ -32,7 +32,7 @@ export default function apply(value, patch) {
 
   nextValue[head] = applyPatch(nextValue[head], {
     ...patch,
-    path: tail
+    path: tail,
   })
   return nextValue
 }

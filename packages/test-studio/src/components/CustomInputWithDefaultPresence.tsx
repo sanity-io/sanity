@@ -7,7 +7,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
   function CustomInputWithDefaultPresence(props, ref) {
     const {value, type, onFocus, onChange} = props
 
-    const handleRootFocus = React.useCallback(event => {
+    const handleRootFocus = React.useCallback((event) => {
       if (event.currentTarget.element === ref) onFocus()
     }, [])
 
@@ -19,8 +19,8 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
             <em>{type.description}</em>
           </div>
           <div style={{display: 'flex', flexWrap: 'wrap'}}>
-            {range(4).map(row =>
-              range(8).map(cell => {
+            {range(4).map((row) =>
+              range(8).map((cell) => {
                 const rowField = `row${row}`
                 const cellField = `cell${cell}`
                 const path = [rowField, cellField]
@@ -38,7 +38,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                         type="text"
                         size={8}
                         value={((value || {})[rowField] || {})[cellField]}
-                        onChange={e => {
+                        onChange={(e) => {
                           onChange(
                             PatchEvent.from(
                               setIfMissing({}),

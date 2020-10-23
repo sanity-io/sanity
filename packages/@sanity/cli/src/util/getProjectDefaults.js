@@ -19,7 +19,7 @@ export default (workDir, {isPlugin, context}) => {
     projectName: isPlugin && isSanityRoot ? '' : path.basename(cwd),
 
     // If we're initing a plugin, don't use description from Sanity readme
-    description: getProjectDescription({isSanityRoot, isPlugin, outputDir: cwd})
+    description: getProjectDescription({isSanityRoot, isPlugin, outputDir: cwd}),
   })
 }
 
@@ -28,7 +28,7 @@ function resolveGitRemote(cwd) {
   return fse
     .stat(path.join(cwd, '.git'))
     .then(() => getGitConfig(cwd))
-    .then(cfg => cfg.remote && cfg.remote.origin && cfg.remote.origin.url)
+    .then((cfg) => cfg.remote && cfg.remote.origin && cfg.remote.origin.url)
     .catch(() => null)
 }
 
@@ -54,7 +54,7 @@ function getSanityUserInfo(context) {
 
   return client.users
     .getById('me')
-    .then(user => `${user.name} <${user.email}>`)
+    .then((user) => `${user.name} <${user.email}>`)
     .catch(() => null)
 }
 

@@ -14,33 +14,33 @@ export default class LoginDialog extends React.Component {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
     projectId: PropTypes.string,
-    SanityLogo: PropTypes.func
+    SanityLogo: PropTypes.func,
   }
 
   static defaultProps = {
     description: null,
     projectId: null,
-    SanityLogo: null
+    SanityLogo: null,
   }
 
   state = {
     providers: [],
     isLoaded: false,
     shouldRedirect: false,
-    error: null
+    error: null,
   }
 
   componentDidMount() {
     this.getProviders = cancelWrap(authenticationFetcher.getProviders())
     this.getProviders.promise
-      .then(providers =>
+      .then((providers) =>
         this.setState({
           providers: providers,
           isLoaded: true,
-          shouldRedirect: providers.length === 1 && pluginConfig.providers.redirectOnSingle
+          shouldRedirect: providers.length === 1 && pluginConfig.providers.redirectOnSingle,
         })
       )
-      .catch(err => this.setState({error: err}))
+      .catch((err) => this.setState({error: err}))
   }
 
   componentWillUnmount() {
@@ -66,8 +66,8 @@ export default class LoginDialog extends React.Component {
             'This project is missing the required "thirdPartyLogin" ' +
             'feature to support custom logins.',
           link: generateHelpUrl('third-party-login'),
-          hideClose: true
-        }
+          hideClose: true,
+        },
       })
       return
     }

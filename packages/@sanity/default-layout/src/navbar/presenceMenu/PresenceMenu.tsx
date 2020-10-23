@@ -36,7 +36,7 @@ export function PresenceMenu() {
 
       {presence.length > 0 && (
         <div className={styles.avatarList}>
-          {presence.map(item => (
+          {presence.map((item) => (
             <PresenceListRow key={item.user.id} presence={item} onClose={handleClose} />
           ))}
         </div>
@@ -59,7 +59,7 @@ export function PresenceMenu() {
 
   return (
     <ClickOutside onClickOutside={handleClose}>
-      {ref => (
+      {(ref) => (
         <div className={styles.root} ref={ref as React.Ref<HTMLDivElement>}>
           <Popover content={popoverContent as any} open={open}>
             <div>
@@ -87,7 +87,7 @@ export function PresenceMenu() {
                   maxLength={MAX_AVATARS_GLOBAL}
                   tone="navbar"
                 >
-                  {presence.map(item => (
+                  {presence.map((item) => (
                     <UserAvatar key={item.user.id} user={item.user} />
                   ))}
                 </AvatarStack>

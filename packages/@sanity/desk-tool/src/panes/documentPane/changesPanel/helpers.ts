@@ -2,7 +2,7 @@ import {Diff, AnnotationDetails, visitDiff} from '@sanity/field/diff'
 
 export function collectLatestAuthorAnnotations(diff: Diff): AnnotationDetails[] {
   const authorMap = new Map<string, AnnotationDetails>()
-  visitDiff(diff, child => {
+  visitDiff(diff, (child) => {
     if (child.action === 'unchanged' || !('annotation' in child) || !child.annotation) {
       return true
     }

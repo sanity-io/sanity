@@ -4,7 +4,7 @@ import React, {useCallback, useMemo} from 'react'
 
 const DISABLED_REASON_TITLE = {
   NO_CHANGES: 'This document has no unpublished changes',
-  NOT_PUBLISHED: 'This document is not published'
+  NOT_PUBLISHED: 'This document is not published',
 }
 
 export function DiscardChangesAction({id, type, published, liveEdit, onComplete}) {
@@ -27,7 +27,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
         color: 'danger',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: <>Are you sure you want to discard all changes since last published?</>
+        message: <>Are you sure you want to discard all changes since last published?</>,
       },
     [handleConfirm, isConfirmDialogOpen, onComplete]
   )
@@ -42,6 +42,6 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
     title: (discardChanges.disabled && DISABLED_REASON_TITLE[discardChanges.disabled]) || '',
     label: 'Discard changes',
     onHandle: handle,
-    dialog
+    dialog,
   }
 }

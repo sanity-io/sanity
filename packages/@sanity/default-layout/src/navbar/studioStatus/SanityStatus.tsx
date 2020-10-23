@@ -31,7 +31,7 @@ export default function SanityStatus(props: Props) {
     onShowDialog,
     outdated = [],
     showDialog,
-    versions
+    versions,
   } = props
   const elementId = useId()
   const currentLevel: Severity = outdated.length ? level : 'notice'

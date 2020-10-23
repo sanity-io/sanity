@@ -7,14 +7,14 @@ export default ({errorAt} = {}) =>
     title: 'Content',
     type: 'list',
     options: {
-      items: ['book', 'author'].map(id => ({
+      items: ['book', 'author'].map((id) => ({
         id,
         title: id.slice(0, 1).toUpperCase() + id.slice(1),
         child: {
           type: 'documentList',
           options: {
             filter: '_type == $type',
-            params: {type: id}
+            params: {type: id},
           },
           resolveChildForItem(itemId, parent) {
             const result =
@@ -22,23 +22,22 @@ export default ({errorAt} = {}) =>
                 ? undefined
                 : {
                     type: 'document',
-                    options: {id: itemId, type: parent.options.params.type}
+                    options: {id: itemId, type: parent.options.params.type},
                   }
 
             return errorAt === 2
               ? throwError(new Error(`Failed to load at ${errorAt}`))
               : merge(of(result).pipe(delay(25)), of(result).pipe(delay(50)))
-          }
-        }
-      }))
+          },
+        },
+      })),
     },
     resolveChildForItem(itemId, parent) {
-      const target = parent.options.items.find(item => item.id === itemId)
-      return new Promise(
-        (resolve, reject) =>
-          errorAt === 1
-            ? setTimeout(reject, 25, new Error(`Failed to load at ${errorAt}`))
-            : setTimeout(resolve, 25, target && target.child)
+      const target = parent.options.items.find((item) => item.id === itemId)
+      return new Promise((resolve, reject) =>
+        errorAt === 1
+          ? setTimeout(reject, 25, new Error(`Failed to load at ${errorAt}`))
+          : setTimeout(resolve, 25, target && target.child)
       )
-    }
+    },
   })

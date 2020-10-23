@@ -15,24 +15,24 @@ const menuItems: MenuItem[] = [
   {
     action: 'first',
     title: 'First item',
-    key: '1'
+    key: '1',
   },
   {
     action: 'second',
     title: 'Second item',
-    key: '2'
+    key: '2',
   },
   {
     action: 'third',
     title: 'Third item',
     key: '3',
-    params: {some: 'param'}
+    params: {some: 'param'},
   },
   {
     action: 'fourth',
     title: 'Extra item',
     key: '4',
-    group: 'extra'
+    group: 'extra',
   },
   {
     title: 'Add',
@@ -40,8 +40,8 @@ const menuItems: MenuItem[] = [
     group: 'actions',
     icon: ComposeIcon,
     showAsAction: true,
-    action: action('Add')
-  }
+    action: action('Add'),
+  },
 ]
 
 const renderActions = () => {
@@ -61,7 +61,7 @@ const renderActions = () => {
       kind="simple"
       padding="small"
       title="Delete"
-    />
+    />,
   ]
 }
 

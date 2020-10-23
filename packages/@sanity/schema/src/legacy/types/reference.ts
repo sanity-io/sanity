@@ -6,13 +6,13 @@ import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 export const REF_FIELD = {
   name: '_ref',
   title: 'Referenced document ID',
-  type: 'string'
+  type: 'string',
 }
 
 export const WEAK_FIELD = {
   name: '_weak',
   title: 'Weak reference',
-  type: 'boolean'
+  type: 'boolean',
 }
 
 const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
@@ -22,7 +22,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 const REFERENCE_CORE = {
   name: 'reference',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
 }
 
 function humanize(arr, conjunction) {
@@ -43,7 +43,9 @@ function buildTitle(type) {
     return 'Reference'
   }
   return `Reference to ${humanize(
-    arrify(type.to).map(toType => (toType.title || toType.name || toType.type || '').toLowerCase()),
+    arrify(type.to).map((toType) =>
+      (toType.title || toType.name || toType.type || '').toLowerCase()
+    ),
     'or'
   )}`
 }
@@ -60,21 +62,21 @@ export const ReferenceType = {
     }
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
-      title: subTypeDef.title || buildTitle(subTypeDef)
+      title: subTypeDef.title || buildTitle(subTypeDef),
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return REFERENCE_FIELDS.map(fieldDef => {
+      return REFERENCE_FIELDS.map((fieldDef) => {
         const {name, ...type} = fieldDef
         return {
           name: name,
-          type: createMemberType(type)
+          type: createMemberType(type),
         }
       })
     })
 
     lazyGetter(parsed, 'to', () => {
-      return arrify(subTypeDef.to).map(toType => createMemberType(toType))
+      return arrify(subTypeDef.to).map((toType) => createMemberType(toType))
     })
 
     return subtype(parsed)
@@ -84,16 +86,16 @@ export const ReferenceType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` of subtypes of "reference"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

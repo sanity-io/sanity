@@ -3,7 +3,7 @@ const genericValidator = require('./genericValidator')
 
 const DUMMY_ORIGIN = 'http://sanity'
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const isRelativeUrl = url => /^\.*\//.test(url)
+const isRelativeUrl = (url) => /^\.*\//.test(url)
 
 const min = (minLength, value, message) => {
   if (!value || value.length >= minLength) {
@@ -59,7 +59,7 @@ const uri = (constraints, value, message) => {
   }
 
   const urlScheme = url.protocol.replace(/:$/, '')
-  const matchesAllowedScheme = options.scheme.some(scheme => scheme.test(urlScheme))
+  const matchesAllowedScheme = options.scheme.some((scheme) => scheme.test(urlScheme))
   if (!matchesAllowedScheme) {
     return new ValidationError(message || 'Does not match allowed protocols/schemes')
   }
@@ -121,5 +121,5 @@ module.exports = Object.assign({}, genericValidator, {
   email,
   min,
   max,
-  uri
+  uri,
 })

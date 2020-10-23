@@ -16,7 +16,7 @@ import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
 import styles from './GeopointInput.css'
 
-const getStaticImageUrl = value => {
+const getStaticImageUrl = (value) => {
   const loc = `${value.lat},${value.lng}`
   const params = {
     key: config.apiKey,
@@ -24,7 +24,7 @@ const getStaticImageUrl = value => {
     markers: loc,
     zoom: 13,
     scale: 2,
-    size: '640x300'
+    size: '640x300',
   }
 
   const qs = Object.keys(params).reduce((res, param) => {
@@ -60,7 +60,7 @@ interface InputState {
 
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
   static defaultProps = {
-    markers: []
+    markers: [],
   }
 
   editButton: Focusable | undefined
@@ -70,7 +70,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
     this.state = {
       modalOpen: false,
-      hasFocus: false
+      hasFocus: false,
     }
   }
 
@@ -84,7 +84,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
   }
 
-  handleFocus = event => {
+  handleFocus = (event) => {
     this.setState({hasFocus: true})
     this.props.onFocus(event)
   }
@@ -97,7 +97,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   handleToggleModal = () => {
     const {onFocus, onBlur} = this.props
     this.setState(
-      prevState => ({modalOpen: !prevState.modalOpen}),
+      (prevState) => ({modalOpen: !prevState.modalOpen}),
       () => {
         if (this.state.modalOpen) {
           onFocus(['$'])
@@ -117,10 +117,10 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     onChange(
       PatchEvent.from([
         setIfMissing({
-          _type: type.name
+          _type: type.name,
         }),
         set(latLng.lat(), ['lat']),
-        set(latLng.lng(), ['lng'])
+        set(latLng.lng(), ['lng']),
       ])
     )
   }
@@ -217,7 +217,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             >
               <div className={styles.dialogInner}>
                 <GoogleMapsLoadProxy>
-                  {api => (
+                  {(api) => (
                     <GeopointSelect
                       api={api}
                       value={value}

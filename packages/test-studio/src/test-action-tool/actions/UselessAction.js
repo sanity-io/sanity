@@ -6,6 +6,6 @@ export default function UselessButSimpleAction(documentInfo) {
     label: `Count clicks: ${clickCount}`,
     onHandle: () => {
       setClickCount(clickCount + 1)
-    }
+    },
   }
 }

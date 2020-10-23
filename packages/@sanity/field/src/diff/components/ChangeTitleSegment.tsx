@@ -7,7 +7,7 @@ import styles from './ChangeTitleSegment.css'
 
 export function ChangeTitleSegment({
   change,
-  segment
+  segment,
 }: {
   change?: FieldChangeNode
   segment: string | FromToIndex
@@ -46,7 +46,7 @@ export function ChangeTitleSegment({
 function CreatedTitleSegment({
   annotation: annotationProp,
   change,
-  toIndex = 0
+  toIndex = 0,
 }: {
   annotation: Annotation | undefined
   change?: FieldChangeNode
@@ -76,7 +76,7 @@ function CreatedTitleSegment({
 
 function DeletedTitleSegment({
   annotation,
-  fromIndex = 0
+  fromIndex = 0,
 }: {
   annotation: Annotation | undefined
   fromIndex?: number
@@ -98,7 +98,7 @@ function DeletedTitleSegment({
 function MovedTitleSegment({
   annotation,
   fromIndex,
-  toIndex
+  toIndex,
 }: {
   annotation: Annotation | undefined
   fromIndex: number

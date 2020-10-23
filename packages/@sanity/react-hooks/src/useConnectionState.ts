@@ -14,8 +14,8 @@ export function useConnectionState(publishedDocId, docTypeName): ConnectionState
       () =>
         documentStore.pair.documentEvents(publishedDocId, docTypeName).pipe(
           map((ev: {type: string}) => ev.type),
-          map(eventType => eventType !== 'reconnect'),
-          switchMap(isConnected =>
+          map((eventType) => eventType !== 'reconnect'),
+          switchMap((isConnected) =>
             isConnected ? of('connected') : timer(200).pipe(mapTo('reconnecting'))
           ),
           distinctUntilChanged()

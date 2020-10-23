@@ -32,6 +32,6 @@ export default createSchema({
     localeText,
     localeBlockContent,
     localeString,
-    productVariant
-  ])
+    productVariant,
+  ]),
 })

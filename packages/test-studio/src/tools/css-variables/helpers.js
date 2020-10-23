@@ -3,10 +3,10 @@ export function getData(metadata, cssCustomProperties) {
   const unused = []
   const unknown = []
 
-  const groups = metadata.groups.map(group => {
+  const groups = metadata.groups.map((group) => {
     return {
       name: group.name,
-      properties: group.properties.map(item => {
+      properties: group.properties.map((item) => {
         const val = cssCustomProperties[item.name]
 
         used.push(item.name)
@@ -18,9 +18,9 @@ export function getData(metadata, cssCustomProperties) {
         return {
           type: item.type,
           name: item.name,
-          value: val
+          value: val,
         }
-      })
+      }),
     }
   })
 
@@ -30,7 +30,7 @@ export function getData(metadata, cssCustomProperties) {
     return 0
   })
 
-  Object.keys(cssCustomProperties).forEach(key => {
+  Object.keys(cssCustomProperties).forEach((key) => {
     if (!used.includes(key)) {
       unused.push(key)
     }
@@ -39,6 +39,6 @@ export function getData(metadata, cssCustomProperties) {
   return {
     groups,
     unknown,
-    unused
+    unused,
   }
 }

@@ -10,7 +10,7 @@ interface UserAvatarStackProps {
 export function UserAvatarStack({maxLength, userIds}: UserAvatarStackProps) {
   return (
     <AvatarStack maxLength={maxLength}>
-      {userIds.map(userId => (
+      {userIds.map((userId) => (
         <UserAvatar key={userId} userId={userId} />
       ))}
     </AvatarStack>

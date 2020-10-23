@@ -34,7 +34,7 @@ export function DefaultObjectEditing(props: Props) {
     path,
     presence,
     readOnly,
-    type
+    type,
   } = props
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   return (

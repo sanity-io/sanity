@@ -19,5 +19,5 @@ export default {
   signature: '[--secrets]',
   description: 'Gathers information on Sanity environment',
   helpText: help,
-  action: printDebugInfo
+  action: printDebugInfo,
 }

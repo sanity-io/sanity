@@ -16,5 +16,5 @@ export default {
   group: 'graphql',
   description: 'Remove a deployed GraphQL API',
   action: lazyRequire(require.resolve('../../actions/graphql/deleteApiAction')),
-  helpText
+  helpText,
 }

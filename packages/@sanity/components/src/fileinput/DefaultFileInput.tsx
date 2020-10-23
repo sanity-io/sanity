@@ -48,7 +48,7 @@ export default class DefaultFileInput extends React.PureComponent<DefaultFileInp
             height: '0.1px',
             opacity: 0,
             position: 'absolute',
-            zIndex: -1
+            zIndex: -1,
           }}
         />
         {children}

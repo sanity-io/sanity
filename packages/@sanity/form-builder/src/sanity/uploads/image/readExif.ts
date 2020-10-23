@@ -3,10 +3,10 @@ import {map, catchError} from 'rxjs/operators'
 import exif from 'exif-component'
 
 function readFileAsArrayBuffer(file: File, length: number) {
-  return new Observable(observer => {
+  return new Observable((observer) => {
     /* global window */
     const reader = new window.FileReader()
-    reader.onerror = err => observer.error(err)
+    reader.onerror = (err) => observer.error(err)
     reader.onload = () => {
       observer.next(reader.result)
       observer.complete()
@@ -23,8 +23,8 @@ const EXIF_BUFFER_LENGTH = 128000
 
 export default function readExif(file: File) {
   return observableFrom(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH)).pipe(
-    map(buf => exif(buf)),
-    catchError(error => {
+    map((buf) => exif(buf)),
+    catchError((error) => {
       if (!SKIP_EXIF_ERROR_RE.test(error.message)) {
         // Exif read failed, we do not want to fail hard
         console.warn(`Exif read failed, continuing anyway: ${error.message}`) // eslint-disable-line no-console

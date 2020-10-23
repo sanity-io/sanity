@@ -31,7 +31,7 @@ export default async (args, context) => {
         ID: project.id,
         'Display name': project.displayName,
         'Studio URL': project.studioHostname || project.studioHost,
-        'User role': project.userRole
+        'User role': project.userRole,
       },
       context
     )
@@ -45,7 +45,7 @@ export default async (args, context) => {
     printKeyValue(
       {
         'User type': globalConfig.authType || 'normal',
-        'Auth token': flags.secrets ? authToken : `<redacted>`
+        'Auth token': flags.secrets ? authToken : `<redacted>`,
       },
       context
     )
@@ -70,7 +70,7 @@ export default async (args, context) => {
   // Print installed package versions
   if (versions) {
     context.output.print('\nPackage versions:')
-    printVersionsResult(versions, line => context.output.print(`  ${line}`))
+    printVersionsResult(versions, (line) => context.output.print(`  ${line}`))
     context.output.print('')
   }
 }
@@ -81,7 +81,7 @@ function formatObject(obj) {
 
 function printKeyValue(obj, context) {
   let printedLines = 0
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (typeof obj[key] !== 'undefined') {
       context.output.print(`  ${key}: ${formatObject(obj[key])}`)
       printedLines++
@@ -96,18 +96,18 @@ function printKeyValue(obj, context) {
 async function gatherInfo(context) {
   const baseInfo = await promiseProps({
     globalConfig: gatherGlobalConfigInfo(context),
-    projectConfig: gatherProjectConfigInfo(context)
+    projectConfig: gatherProjectConfigInfo(context),
   })
 
   baseInfo.user = await gatherUserInfo(context, {
-    projectBased: Boolean(baseInfo.projectConfig && baseInfo.projectConfig.api)
+    projectBased: Boolean(baseInfo.projectConfig && baseInfo.projectConfig.api),
   })
 
   return promiseProps(
     Object.assign(
       {
         project: gatherProjectInfo(context, baseInfo),
-        versions: findSanityModuleVersions(context)
+        versions: findSanityModuleVersions(context),
       },
       baseInfo
     )
@@ -155,13 +155,13 @@ async function gatherProjectInfo(context, baseInfo) {
   }
 
   const host = projectInfo.studioHostname || projectInfo.studioHost
-  const member = (projectInfo.members || []).find(user => user.id === baseInfo.user.id)
+  const member = (projectInfo.members || []).find((user) => user.id === baseInfo.user.id)
   const hostname = host && `https://${host}.sanity.studio/`
   return {
     id: projectId,
     displayName: projectInfo.displayName,
     studioHostname: hostname,
-    userRole: member ? member.role : 'unknown'
+    userRole: member ? member.role : 'unknown',
   }
 }
 

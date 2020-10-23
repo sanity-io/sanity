@@ -3,7 +3,7 @@ import {BoundaryElementContext} from './BoundaryElementContext'
 
 export function BoundaryElementProvider({
   children,
-  element
+  element,
 }: {
   children?: React.ReactNode
   element: HTMLElement | null

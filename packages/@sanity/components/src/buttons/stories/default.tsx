@@ -9,7 +9,7 @@ import React from 'react'
 const actionsProps = {
   onBlur: action('onBlur'),
   onClick: action('onClick'),
-  onFocus: action('onFocus')
+  onFocus: action('onFocus'),
 }
 
 let buttonElement: HTMLButtonElement | null = null
@@ -49,7 +49,7 @@ export function DefaultStory() {
     size:
       select('Size', ['', 'extra-small', 'small', 'medium', 'large', 'extra-large'], '', 'props') ||
       undefined,
-    tone: select('Tone', {'': '(none)', navbar: 'Navbar'}, '', 'Props') || undefined
+    tone: select('Tone', {'': '(none)', navbar: 'Navbar'}, '', 'Props') || undefined,
   }
 
   const children = text('Text', 'Label', 'props')

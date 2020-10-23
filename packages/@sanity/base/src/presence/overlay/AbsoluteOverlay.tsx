@@ -7,7 +7,7 @@ const OVERLAY_STYLE: React.CSSProperties = {
   left: 0,
   right: 0,
   bottom: 0,
-  pointerEvents: 'none'
+  pointerEvents: 'none',
 }
 
 const ITEM_STYLE = {
@@ -20,7 +20,7 @@ const ITEM_STYLE = {
   textAlign: 'right',
   pointerEvents: 'all',
   position: 'absolute',
-  outline: '1px solid #f00'
+  outline: '1px solid #f00',
 }
 
 // This renders regions as they are reported from the RegionReporter. Useful for debugging
@@ -31,15 +31,15 @@ export function AbsoluteOverlay(props) {
       <div>{children}</div>
       <div style={OVERLAY_STYLE}>
         {sortBy(
-          regions.filter(r => r.data.presence?.length > 0),
-          region => -region.rect.top
-        ).map(region => {
+          regions.filter((r) => r.data.presence?.length > 0),
+          (region) => -region.rect.top
+        ).map((region) => {
           return (
             <div
               key={region.id}
               style={{
                 ...ITEM_STYLE,
-                ...region.rect
+                ...region.rect,
               }}
             >
               {region.id}

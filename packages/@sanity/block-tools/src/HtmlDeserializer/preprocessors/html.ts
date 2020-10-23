@@ -11,7 +11,7 @@ const unwantedWordDocumentPaths = [
   '//xml',
   '//script',
   '//meta',
-  '//link'
+  '//link',
 ]
 export default (html, doc) => {
   // Make sure text directly on the body is wrapped in spans.

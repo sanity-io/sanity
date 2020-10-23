@@ -7,7 +7,7 @@ export default {
   preview: {
     select: {
       title: 'title',
-      media: 'array'
+      media: 'array',
     },
     prepare(invalue) {
       if (rnd < 0.2) {
@@ -23,7 +23,7 @@ export default {
         return {title: new Date()}
       }
       return invalue
-    }
+    },
   },
   fields: [
     {
@@ -32,13 +32,13 @@ export default {
       type: 'object',
       fields: [
         {name: 'en', type: 'string', title: 'English'},
-        {name: 'no', type: 'string', title: 'Norwegian'}
-      ]
+        {name: 'no', type: 'string', title: 'Norwegian'},
+      ],
     },
     {
       name: 'image',
       title: 'Image',
-      type: 'image'
+      type: 'image',
     },
     {
       name: 'array',
@@ -58,19 +58,19 @@ export default {
                   name: 'someObj',
                   type: 'object',
                   title: 'Object',
-                  fields: [{name: 'someString', type: 'string'}]
-                }
+                  fields: [{name: 'someString', type: 'string'}],
+                },
               ],
               preview: {
-                select: {title: 'objectWithInvalidPreview'}
-              }
-            }
+                select: {title: 'objectWithInvalidPreview'},
+              },
+            },
           ],
           preview: {
-            select: {title: 'objectWithInvalidPreview'}
-          }
-        }
-      ]
-    }
-  ]
+            select: {title: 'objectWithInvalidPreview'},
+          },
+        },
+      ],
+    },
+  ],
 }

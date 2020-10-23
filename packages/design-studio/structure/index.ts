@@ -11,14 +11,14 @@ export const getDefaultDocumentNode = ({schemaType}) => {
   if (schemaType === 'author') {
     return S.document().views([
       S.view.form(),
-      S.view.component(JSONPreviewDocumentView).title('JSON')
+      S.view.component(JSONPreviewDocumentView).title('JSON'),
     ])
   }
 
   if (schemaType === 'allInputs') {
     return S.document().views([
       S.view.form(),
-      S.view.component(JSONPreviewDocumentView).title('JSON')
+      S.view.component(JSONPreviewDocumentView).title('JSON'),
     ])
   }
 
@@ -29,16 +29,11 @@ export const getDefaultDocumentNode = ({schemaType}) => {
 const settingsListItem = S.listItem()
   .title('Settings')
   .icon(CogIcon)
-  .child(
-    S.editor()
-      .id('settings')
-      .schemaType('settings')
-      .documentId('settings')
-  )
+  .child(S.editor().id('settings').schemaType('settings').documentId('settings'))
 
 // The default root list items (except custom ones)
 const defaultListItems = S.documentTypeListItems().filter(
-  listItem => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
+  (listItem) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
 )
 
 export default () =>

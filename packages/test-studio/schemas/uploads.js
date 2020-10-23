@@ -9,14 +9,14 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'imagesOnly',
       title: 'Only images',
       description: 'An array that accepts image',
       type: 'array',
-      of: [{type: 'image', title: 'Image'}]
+      of: [{type: 'image', title: 'Image'}],
     },
     {
       name: 'blocks',
@@ -33,22 +33,22 @@ export default {
             {
               name: 'title',
               title: 'Title',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'images',
               type: 'array',
-              of: [{type: 'image', title: 'Image'}]
-            }
+              of: [{type: 'image', title: 'Image'}],
+            },
           ],
           preview: {
             select: {
               title: 'title',
-              imageUrl: 'images.0.asset.url'
-            }
-          }
-        }
-      ]
+              imageUrl: 'images.0.asset.url',
+            },
+          },
+        },
+      ],
     },
     {
       name: 'imagesAndFiles',
@@ -57,8 +57,8 @@ export default {
       type: 'array',
       of: [
         {type: 'file', title: 'File'},
-        {type: 'image', title: 'Image'}
-      ]
+        {type: 'image', title: 'Image'},
+      ],
     },
     {
       name: 'imagesAndFilesInGrid',
@@ -66,12 +66,12 @@ export default {
       description: 'An array that accepts images and files',
       type: 'array',
       options: {
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {type: 'file', title: 'File'},
-        {type: 'image', title: 'Image'}
-      ]
+        {type: 'image', title: 'Image'},
+      ],
     },
     {
       name: 'onlyPNGAndPdf',
@@ -79,12 +79,12 @@ export default {
       description: 'An array that accepts PNG or PDF files only',
       type: 'array',
       options: {
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {type: 'file', title: 'File', options: {accept: '.pdf'}},
-        {type: 'image', title: 'Image', options: {accept: '.png'}}
-      ]
-    }
-  ]
+        {type: 'image', title: 'Image', options: {accept: '.png'}},
+      ],
+    },
+  ],
 }

@@ -21,7 +21,7 @@ function createEmpty(fields: FieldName[]): Record<string, any> {
 }
 
 function resolveMissingHeads(value, paths) {
-  return paths.filter(path => !(path[0] in value))
+  return paths.filter((path) => !(path[0] in value))
 }
 
 type ObserveFieldsFn = (id: string, fields: FieldName[]) => any
@@ -36,7 +36,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     // Reached a node that is either a document (with _id), or a reference (with _ref) that
     // needs to be "materialized"
 
-    const nextHeads: string[] = uniq(pathsWithMissingHeads.map(path => path[0]))
+    const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path) => path[0]))
 
     const isRef = isReference(value)
     if (isReference(value) || isDocument(value)) {
@@ -50,7 +50,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
             {
               ...createEmpty(nextHeads),
               ...(isRef ? {} : value),
-              ...snapshot
+              ...snapshot,
             },
             paths,
             observeFields
@@ -62,7 +62,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
 
   // We have all the fields needed already present on value
   const leads = {}
-  paths.forEach(path => {
+  paths.forEach((path) => {
     const [head, ...tail] = path
     if (!leads[head]) {
       leads[head] = []
@@ -73,7 +73,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
   const next = Object.keys(leads).reduce(
     (res, head) => {
       const tails = leads[head]
-      if (tails.every(tail => tail.length === 0)) {
+      if (tails.every((tail) => tail.length === 0)) {
         res[head] = value[head]
       } else {
         res[head] = observePaths(value[head], tails, observeFields)

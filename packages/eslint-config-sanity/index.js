@@ -1,10 +1,10 @@
 module.exports = {
   env: {
-    es6: true
+    es6: true,
   },
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   rules: {
     'accessor-pairs': 'warn',
@@ -255,6 +255,6 @@ module.exports = {
     'wrap-iife': ['error', 'any'],
     'wrap-regex': 'off',
     'yield-star-spacing': 'off',
-    yoda: 'error'
-  }
+    yoda: 'error',
+  },
 }

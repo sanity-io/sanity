@@ -33,12 +33,12 @@ function getDiffStatKey(part) {
 export default class Diff extends React.PureComponent {
   static defaultProps = {
     inputA: '',
-    inputB: ''
+    inputB: '',
   }
 
   static propTypes = {
     inputA: PropTypes.object,
-    inputB: PropTypes.object
+    inputB: PropTypes.object,
   }
 
   render() {

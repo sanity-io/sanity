@@ -5,41 +5,21 @@ test('throws on missing id', () => {
 })
 
 test('throws on missing title', () => {
-  expect(() =>
-    S.view
-      .component()
-      .id('foo')
-      .serialize()
-  ).toThrowError(/`title` is required/)
+  expect(() => S.view.component().id('foo').serialize()).toThrowError(/`title` is required/)
 })
 
 test('throws on invalid id', () => {
-  expect(() =>
-    S.view
-      .component()
-      .id('foo bar')
-      .title('Foo bar')
-      .serialize()
-  ).toThrowError('Structure node id cannot contain character " "')
+  expect(() => S.view.component().id('foo bar').title('Foo bar').serialize()).toThrowError(
+    'Structure node id cannot contain character " "'
+  )
 })
 
 test('infers id from title if not set', () => {
-  expect(
-    S.view
-      .component()
-      .title('Foo bar')
-      .getId()
-  ).toEqual('foo-bar')
+  expect(S.view.component().title('Foo bar').getId()).toEqual('foo-bar')
 })
 
 test('does not infer id from title if already set', () => {
-  expect(
-    S.view
-      .component()
-      .id('default-thing')
-      .title('Foo bar')
-      .getId()
-  ).toEqual('default-thing')
+  expect(S.view.component().id('default-thing').title('Foo bar').getId()).toEqual('default-thing')
 })
 
 test('builds component view through component constructor', () => {
@@ -56,11 +36,7 @@ test('builds component view through component constructor', () => {
 test('can override component set through constructor', () => {
   const original = () => null
   const changed = () => null
-  const builder = S.view
-    .component(original)
-    .id('custom')
-    .title('Custom')
-    .component(changed)
+  const builder = S.view.component(original).id('custom').title('Custom').component(changed)
 
   expect(builder.serialize()).toMatchSnapshot()
   expect(builder.getComponent()).toBe(changed)

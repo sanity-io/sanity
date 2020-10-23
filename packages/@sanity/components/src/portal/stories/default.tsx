@@ -41,7 +41,7 @@ function PortalExample() {
             bottom: 0,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <div style={{background: '#fff', padding: 20}}>Hello from portal</div>

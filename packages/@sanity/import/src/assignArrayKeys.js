@@ -4,7 +4,7 @@ const isPlainObject = require('lodash/isPlainObject')
 // Note: Mutates in-place
 function assignArrayKeys(obj) {
   if (Array.isArray(obj)) {
-    obj.forEach(item => {
+    obj.forEach((item) => {
       if (isPlainObject(item) && !item._key) {
         item._key = generateKey()
       }
@@ -16,7 +16,7 @@ function assignArrayKeys(obj) {
   }
 
   if (isPlainObject(obj)) {
-    Object.keys(obj).forEach(key => {
+    Object.keys(obj).forEach((key) => {
       assignArrayKeys(obj[key])
     })
 

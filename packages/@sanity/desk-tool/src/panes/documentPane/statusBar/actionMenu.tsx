@@ -35,7 +35,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
     }
 
     // this is a bit hacky, but if there is a modal open, we should not close on outside clicks
-    const hasOpenDialog = actionStates.some(state => state.dialog)
+    const hasOpenDialog = actionStates.some((state) => state.dialog)
 
     if (!hasOpenDialog) {
       onClose()
@@ -44,10 +44,10 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
 
   useOnClickOutside(clickOutsideRef, handleCloseMenu)
 
-  const [activeAction, setActiveAction] = useState(actionStates.find(s => !s.disabled))
+  const [activeAction, setActiveAction] = useState(actionStates.find((s) => !s.disabled))
 
   useEffect(() => {
-    setActiveAction(actionStates.find(s => !s.disabled))
+    setActiveAction(actionStates.find((s) => !s.disabled))
   }, [actionStates, isOpen])
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
   }, [activeAction, actionStates])
 
   const handleKeyDown = useCallback(
-    event => {
+    (event) => {
       if (event.key === 'Escape') {
         handleCloseMenu()
         return
@@ -72,7 +72,9 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
       }
 
       const dir = event.key === 'ArrowUp' ? -1 : 1
-      const enabledActions = actionStates.filter(state => state === activeAction || !state.disabled)
+      const enabledActions = actionStates.filter(
+        (state) => state === activeAction || !state.disabled
+      )
 
       setActiveAction(getNext(enabledActions, enabledActions.indexOf(activeAction), dir))
     },

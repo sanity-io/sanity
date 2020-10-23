@@ -11,7 +11,7 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 export function DefaultStory() {

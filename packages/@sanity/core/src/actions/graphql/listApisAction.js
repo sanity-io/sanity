@@ -3,14 +3,14 @@ module.exports = async function listApisAction(args, context) {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   let endpoints
   try {
     endpoints = await client.request({
       url: `/apis/graphql`,
-      method: 'GET'
+      method: 'GET',
     })
   } catch (err) {
     throw err

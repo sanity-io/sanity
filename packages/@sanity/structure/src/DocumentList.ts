@@ -11,7 +11,7 @@ import {
   GenericListBuilder,
   BuildableGenericList,
   GenericList,
-  GenericListInput
+  GenericListInput,
 } from './GenericList'
 import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 
@@ -19,7 +19,7 @@ const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return client.fetch(query, {documentId, draftId}).then(types => types[0])
+  return client.fetch(query, {documentId, draftId}).then((types) => types[0])
 }
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
@@ -43,13 +43,10 @@ const resolveDocumentChildForItem: ChildResolver = (
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
   const schemaType = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
-  return Promise.resolve(schemaType).then(schemaType =>
+  return Promise.resolve(schemaType).then((schemaType) =>
     schemaType
       ? getDefaultDocumentNode({schemaType, documentId: itemId})
-      : new DocumentBuilder()
-          .id('editor')
-          .documentId(itemId)
-          .schemaType('')
+      : new DocumentBuilder().id('editor').documentId(itemId).schemaType('')
   )
 }
 
@@ -105,7 +102,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
   params(params: {}): DocumentListBuilder {
     return this.clone({
-      options: {...(this.spec.options || {filter: ''}), params}
+      options: {...(this.spec.options || {filter: ''}), params},
     })
   }
 
@@ -119,7 +116,7 @@ export class DocumentListBuilder extends GenericListBuilder<
     }
 
     return this.clone({
-      options: {...(this.spec.options || {filter: ''}), defaultOrdering: ordering}
+      options: {...(this.spec.options || {filter: ''}), defaultOrdering: ordering},
     })
   }
 
@@ -153,8 +150,8 @@ export class DocumentListBuilder extends GenericListBuilder<
       child: this.spec.child || resolveDocumentChildForItem,
       options: {
         ...this.spec.options,
-        filter: validateFilter(this.spec, options)
-      }
+        filter: validateFilter(this.spec, options),
+      },
     }
   }
 
@@ -202,7 +199,7 @@ function inferInitialValueTemplates(
         (tpl): InitialValueTemplateItem => ({
           type: 'initialValueTemplateItem',
           id: tpl.id,
-          templateId: tpl.id
+          templateId: tpl.id,
         })
       )
     )
@@ -242,7 +239,7 @@ function getTypeNamesFromEqualityFilter(
   }
 
   return matches
-    .map(candidate => {
+    .map((candidate) => {
       const typeName = candidate[0] === '$' ? params[candidate.slice(1)] : candidate
       const normalized = (typeName || '').trim().replace(/^["']|["']$/g, '')
       return normalized
@@ -263,7 +260,7 @@ function getTypeNamesFromInTypesFilter(
 
   return matches[1]
     .split(/,\s*/)
-    .map(match => match.trim().replace(/^["']+|["']+$/g, ''))
-    .map(item => (item[0] === '$' ? params[item.slice(1)] : item))
+    .map((match) => match.trim().replace(/^["']+|["']+$/g, ''))
+    .map((item) => (item[0] === '$' ? params[item.slice(1)] : item))
     .filter(Boolean)
 }

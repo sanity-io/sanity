@@ -22,7 +22,7 @@ export default function ConfirmButton(
     if (open && buttonRef.current) buttonRef.current.focus()
   }, [open])
 
-  const handleBlur = e => {
+  const handleBlur = (e) => {
     timer = setTimeout(() => {
       setOpen(false)
     }, 200)
@@ -39,7 +39,7 @@ export default function ConfirmButton(
       buttonProps={{
         ...restProps,
         icon: TrashIcon,
-        padding: 'small'
+        padding: 'small',
       }}
       menu={
         <div className={styles.wrapper}>

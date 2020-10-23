@@ -13,11 +13,11 @@ const dialogTestContent = {
   minimal: 'minimal',
   paragraph: 'paragraph',
   longtext: 'longtext',
-  example: 'example with dialogcontent'
+  example: 'example with dialogcontent',
 }
 
 const paragraph = chance.paragraph()
-const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
+const paragraphs = range(0, 20).map((i) => <p key={i}>{chance.paragraph()}</p>)
 
 function renderFullscreenContent(type) {
   switch (type) {
@@ -41,14 +41,14 @@ export function FullscreenStory() {
   const actions = [
     {
       index: '1',
-      title: 'Default'
+      title: 'Default',
     },
     {
       index: '4',
       title: 'Secondary',
       kind: 'simple',
-      secondary: true
-    }
+      secondary: true,
+    },
   ]
 
   const dialogActions = boolean('Include actions', false, 'test') ? actions : []

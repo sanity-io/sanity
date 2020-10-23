@@ -18,7 +18,7 @@ const DEFAULT_ICONS = {
   info: <InfoIcon />,
   success: <CheckCircleIcon />,
   warning: <WarningIcon />,
-  error: <WarningIcon />
+  error: <WarningIcon />,
 }
 
 // @todo: refactor to functional component

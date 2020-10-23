@@ -29,7 +29,7 @@ export default async (args, context) => {
     httpHost,
     httpPort,
     context,
-    project: sanityConfig.get('project')
+    project: sanityConfig.get('project'),
   }
 
   checkStudioDependencyVersions(workDir)
@@ -62,7 +62,7 @@ export default async (args, context) => {
   // "done" event fires when Webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
 
-  compiler.plugin('done', stats => {
+  compiler.plugin('done', (stats) => {
     if (compileSpinner) {
       compileSpinner.succeed()
     }
@@ -161,13 +161,13 @@ async function ensureProjectConfig(context) {
     api: {
       ...apiConfig,
       projectId,
-      dataset
+      dataset,
     },
     project: {
       ...projectInfo,
       // Keep original name if present
-      name: projectInfo.name || displayName
-    }
+      name: projectInfo.name || displayName,
+    },
   }
 
   await fse.outputJSON(
@@ -177,7 +177,7 @@ async function ensureProjectConfig(context) {
       // are at top to follow sanity.json key order convention
       ...newProps,
       ...projectManifest,
-      ...newProps
+      ...newProps,
     },
     {spaces: 2}
   )
@@ -216,9 +216,9 @@ function printErrors(output, errors) {
   const formattedErrors = (errors.some(isLikelyASyntaxError)
     ? errors.filter(isLikelyASyntaxError)
     : errors
-  ).map(message => `Error in ${formatMessage(message)}`)
+  ).map((message) => `Error in ${formatMessage(message)}`)
 
-  formattedErrors.forEach(message => {
+  formattedErrors.forEach((message) => {
     output.print(message)
     output.print('')
   })
@@ -229,8 +229,8 @@ function printWarnings(output, warnings) {
   output.print()
 
   warnings
-    .map(message => `Warning in ${formatMessage(message)}`)
-    .forEach(message => {
+    .map((message) => `Warning in ${formatMessage(message)}`)
+    .forEach((message) => {
       output.print(message)
       output.print()
     })
@@ -254,45 +254,49 @@ async function getOrCreateProject(context) {
 
   debug(`User has ${projects.length} project(s) already, showing list of choices`)
 
-  const projectChoices = projects.map(project => ({
+  const projectChoices = projects.map((project) => ({
     value: project.id,
-    name: `${project.displayName} [${project.id}]`
+    name: `${project.displayName} [${project.id}]`,
   }))
 
   const selected = await prompt.single({
     message: 'Select project to use',
     type: 'list',
-    choices: [{value: 'new', name: 'Create new project'}, new prompt.Separator(), ...projectChoices]
+    choices: [
+      {value: 'new', name: 'Create new project'},
+      new prompt.Separator(),
+      ...projectChoices,
+    ],
   })
 
   if (selected === 'new') {
     debug('User wants to create a new project, prompting for name')
     return createProject(apiClient, {
       displayName: await prompt.single({
-        message: 'Informal name for your project'
-      })
+        message: 'Informal name for your project',
+      }),
     })
   }
 
   debug(`Returning selected project (${selected})`)
   return {
     projectId: selected,
-    displayName: projects.find(proj => proj.id === selected).displayName
+    displayName: projects.find((proj) => proj.id === selected).displayName,
   }
 }
 
 function createProject(apiClient, options) {
   return apiClient({
     requireUser: true,
-    requireProject: false
+    requireProject: false,
   })
     .request({
       method: 'POST',
       uri: '/projects',
-      body: options
+      body: options,
     })
-    .then(response => ({
+    .then((response) => ({
       projectId: response.projectId || response.id,
-      displayName: options.displayName || ''
+      displayName: options.displayName || '',
     }))
 }

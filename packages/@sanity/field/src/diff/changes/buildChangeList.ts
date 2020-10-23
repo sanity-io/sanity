@@ -15,7 +15,7 @@ import {
   ObjectDiff,
   ObjectField,
   ObjectSchemaType,
-  SchemaType
+  SchemaType,
 } from '../../types'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 import {isFieldChange} from '../helpers'
@@ -59,7 +59,8 @@ export function buildObjectChangeList(
   const changes: ChangeNode[] = []
 
   const childContext: DiffContext = {...diffContext, parentSchema: schemaType}
-  const fieldSets = schemaType.fieldsets || schemaType.fields.map(field => ({single: true, field}))
+  const fieldSets =
+    schemaType.fieldsets || schemaType.fields.map((field) => ({single: true, field}))
   for (const fieldSet of fieldSets) {
     if (fieldSet.single) {
       changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, childContext))
@@ -78,8 +79,8 @@ export function buildObjectChangeList(
       key: pathToString(path) || 'root',
       path,
       titlePath,
-      changes: reduceTitlePaths(changes, titlePath.length)
-    }
+      changes: reduceTitlePaths(changes, titlePath.length),
+    },
   ]
 }
 
@@ -135,8 +136,8 @@ export function buildFieldsetChangeList(
       key: pathToString(path) || 'root',
       path,
       titlePath: fieldSetTitlePath,
-      changes: reduceTitlePaths(changes, fieldSetTitlePath.length)
-    }
+      changes: reduceTitlePaths(changes, fieldSetTitlePath.length),
+    },
   ]
 }
 
@@ -147,7 +148,7 @@ export function buildArrayChangeList(
   titlePath: ChangeTitlePath = []
 ): ChangeNode[] {
   const changedOrMoved = diff.items.filter(
-    item => (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged'
+    (item) => (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged'
   )
 
   if (changedOrMoved.length === 0) {
@@ -177,7 +178,7 @@ export function buildArrayChangeList(
       toIndex: itemDiff.toIndex,
       fromIndex: itemDiff.fromIndex,
       annotation:
-        itemDiff.diff.action === 'unchanged' ? itemDiff.annotation : itemDiff.diff.annotation
+        itemDiff.diff.action === 'unchanged' ? itemDiff.annotation : itemDiff.diff.annotation,
     })
 
     const attachItemDiff = (change: ChangeNode): ChangeNode => {
@@ -220,8 +221,8 @@ export function buildArrayChangeList(
         key: pathToString(path) || 'root',
         path,
         titlePath,
-        changes: reduceTitlePaths(changes, titlePath.length)
-      }
+        changes: reduceTitlePaths(changes, titlePath.length),
+      },
     ]
   }
 
@@ -278,13 +279,13 @@ function getFieldChange(
       showHeader,
       showIndex: true,
       key: pathToString(path) || 'root',
-      diffComponent: error ? undefined : component
-    }
+      diffComponent: error ? undefined : component,
+    },
   ]
 }
 
 function reduceTitlePaths(changes: ChangeNode[], byLength = 1): ChangeNode[] {
-  return changes.map(change => {
+  return changes.map((change) => {
     change.titlePath = change.titlePath.slice(byLength)
     return change
   })

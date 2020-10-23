@@ -19,8 +19,8 @@ export function ListItemStory() {
       paths: [],
       cloneWithMessage() {
         throw new Error('nope')
-      }
-    }
+      },
+    },
   }
 
   const onClick = boolean('Has onClick', false, 'Props')

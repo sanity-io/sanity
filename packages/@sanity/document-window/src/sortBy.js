@@ -4,7 +4,7 @@ const dotProp = require('dot-prop')
 module.exports = (arr, sorting) =>
   arr.slice().sort((itemA, itemB) => {
     let ret = 0
-    sorting.some(sort => {
+    sorting.some((sort) => {
       const desc = sort[1] === 'desc'
       const x = dotProp.get(itemA, sort[0])
       const y = dotProp.get(itemB, sort[0])

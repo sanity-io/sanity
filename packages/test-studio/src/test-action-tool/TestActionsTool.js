@@ -13,11 +13,11 @@ import schema from 'part:@sanity/base/schema'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from './actions/resolveDocumentActions'
 
-const RenderActionDialog = props => {
+const RenderActionDialog = (props) => {
   return <PopOverDialog>{props.dialog}</PopOverDialog>
 }
 
-const RenderSnackbar = props => {
+const RenderSnackbar = (props) => {
   return (
     <Snackbar
       kind={props.snackbar.type}
@@ -57,14 +57,14 @@ function Footer(props) {
   )
 }
 
-const DocumentList = streamingComponent(props => {
+const DocumentList = streamingComponent((props) => {
   return documentStore.listenQuery(`*[defined(title)] {_id, _type, title} [100...121]`).pipe(
-    map(result => {
+    map((result) => {
       return (
         <div style={{overflow: 'auto'}}>
           <h2>Docs!</h2>
           <ul>
-            {result.map(doc => (
+            {result.map((doc) => (
               <li key={doc._id}>
                 <StateLink state={{id: getPublishedId(doc._id), type: doc._type}}>
                   {doc.title}
@@ -79,10 +79,10 @@ const DocumentList = streamingComponent(props => {
 })
 
 export const TestActionsTool = withRouterHOC(
-  streamingComponent(props$ => {
+  streamingComponent((props$) => {
     return props$.pipe(
-      map(props => props.router),
-      switchMap(router => {
+      map((props) => props.router),
+      switchMap((router) => {
         if (!router.state.id) {
           router.navigate({id: `38552d45-143b-4909-9a7e-c5e52a798eb6`, type: 'arraysTest'})
           return EMPTY
@@ -93,7 +93,7 @@ export const TestActionsTool = withRouterHOC(
       switchMap(([id, type]) => {
         const doc$ = documentStore.pair.editState(id, type)
         return doc$.pipe(
-          map(editState => {
+          map((editState) => {
             return (
               <div style={{padding: '1em', display: 'flex', flexDirection: 'row'}}>
                 <DocumentList />

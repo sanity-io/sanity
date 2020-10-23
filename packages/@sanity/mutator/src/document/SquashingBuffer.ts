@@ -36,7 +36,7 @@ export default class SquashingBuffer {
   }
 
   add(mut: Mutation) {
-    mut.mutations.forEach(op => this.addOperation(op))
+    mut.mutations.forEach((op) => this.addOperation(op))
   }
 
   hasChanges() {
@@ -53,7 +53,7 @@ export default class SquashingBuffer {
       result = new Mutation({
         mutations: this.out,
         resultRev: txnId,
-        transactionId: txnId
+        transactionId: txnId,
       })
     }
     this.out = []
@@ -135,7 +135,7 @@ export default class SquashingBuffer {
       try {
         const patch = this.dmp
           .patch_make(match.value, nextValue)
-          .map(patch => patch.toString())
+          .map((patch) => patch.toString())
           .join('')
         op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
       } catch {
@@ -166,7 +166,7 @@ export default class SquashingBuffer {
     const nextOps = []
 
     // Extract the existing outgoing operations if any
-    Object.keys(this.setOperations).forEach(key => {
+    Object.keys(this.setOperations).forEach((key) => {
       nextOps.push(this.setOperations[key])
     })
     nextOps.push(...this.staged)

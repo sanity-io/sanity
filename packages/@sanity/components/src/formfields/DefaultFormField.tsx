@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import {Marker} from '@sanity/types'
 import {
   ChangeIndicator,
-  ChangeIndicatorContextProvidedProps
+  ChangeIndicatorContextProvidedProps,
 } from '@sanity/base/lib/change-indicators'
 import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import styles from 'part:@sanity/components/formfields/default-style'
@@ -38,7 +38,7 @@ export default React.memo(function DefaultFormField({
   className,
   changeIndicator = true,
   markers = EMPTY_MARKERS,
-  presence
+  presence,
 }: DefaultFormFieldProps) {
   const levelClass = `level_${level}`
 

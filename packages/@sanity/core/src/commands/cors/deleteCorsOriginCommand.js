@@ -21,7 +21,7 @@ export default {
     } catch (err) {
       throw new Error(`Origin deletion failed:\n${err.message}`)
     }
-  }
+  },
 }
 
 async function promptForOrigin(specified, context) {
@@ -31,7 +31,7 @@ async function promptForOrigin(specified, context) {
 
   const origins = await client.request({url: '/cors'})
   if (specifiedOrigin) {
-    const selected = origins.filter(origin => origin.origin.toLowerCase() === specifiedOrigin)[0]
+    const selected = origins.filter((origin) => origin.origin.toLowerCase() === specifiedOrigin)[0]
     if (!selected) {
       throw new Error(`Origin "${specified} not found"`)
     }
@@ -39,10 +39,10 @@ async function promptForOrigin(specified, context) {
     return selected.id
   }
 
-  const choices = origins.map(origin => ({value: origin.id, name: origin.origin}))
+  const choices = origins.map((origin) => ({value: origin.id, name: origin.origin}))
   return prompt.single({
     message: 'Select origin to delete',
     type: 'list',
-    choices
+    choices,
   })
 }

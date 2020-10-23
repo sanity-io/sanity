@@ -3,88 +3,88 @@
 const rules = {
   start: [
     {
-      include: '#query'
+      include: '#query',
     },
     {
-      include: '#value'
+      include: '#value',
     },
     {
-      include: '#pair'
-    }
+      include: '#pair',
+    },
   ],
   '#query': [
     {
-      include: '#nullary-access-operator'
+      include: '#nullary-access-operator',
     },
     {
-      include: '#arraylike'
+      include: '#arraylike',
     },
     {
-      include: '#pipe'
+      include: '#pipe',
     },
     {
-      include: '#sort-order'
+      include: '#sort-order',
     },
     {
-      include: '#filter'
-    }
+      include: '#filter',
+    },
   ],
   '#variable': [
     {
       token: 'variable.other.groq',
-      regex: /\$[_A-Za-z][_0-9A-Za-z]*/
-    }
+      regex: /\$[_A-Za-z][_0-9A-Za-z]*/,
+    },
   ],
   '#keyword': [
     {
       token: 'keyword.other.groq',
-      regex: /\b(?:asc|desc|in|match)\b/
-    }
+      regex: /\b(?:asc|desc|in|match)\b/,
+    },
   ],
   '#comparison': [
     {
       token: 'keyword.operator.comparison.groq',
-      regex: /==|!=|>=|<=|<!=>|<|>/
-    }
+      regex: /==|!=|>=|<=|<!=>|<|>/,
+    },
   ],
   '#operator': [
     {
       token: 'keyword.operator.arithmetic.groq',
-      regex: /\+|-|\*{1,2}|\/|%/
-    }
+      regex: /\+|-|\*{1,2}|\/|%/,
+    },
   ],
   '#pipe': [
     {
       token: 'keyword.operator.pipe.groq',
-      regex: /\|/
-    }
+      regex: /\|/,
+    },
   ],
   '#logical': [
     {
       token: 'keyword.operator.logical.groq',
-      regex: /!|&&|\|\|/
-    }
+      regex: /!|&&|\|\|/,
+    },
   ],
   '#reference': [
     {
       token: 'keyword.operator.reference.groq',
-      regex: /\->/
-    }
+      regex: /\->/,
+    },
   ],
   '#pair': [
     {
-      include: '#identifier'
+      include: '#identifier',
     },
     {
-      include: '#value'
+      include: '#value',
     },
     {
-      include: '#filter'
+      include: '#filter',
     },
     {
       token: 'keyword.operator.pair.groq',
-      regex: /=>/
-    }
+      regex: /=>/,
+    },
   ],
   '#arraylike': [
     {
@@ -94,19 +94,19 @@ const rules = {
         {
           token: ['text', 'keyword.operator.descendant.groq'],
           regex: /(\])((?:\s*\.)?)/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#range'
+          include: '#range',
         },
         {
-          include: '#filter'
+          include: '#filter',
         },
         {
-          include: '#array-values'
-        }
-      ]
-    }
+          include: '#array-values',
+        },
+      ],
+    },
   ],
   '#array': [
     {
@@ -116,16 +116,16 @@ const rules = {
         {
           token: 'punctuation.definition.bracket.end.groq',
           regex: /\]/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#array-values'
+          include: '#array-values',
         },
         {
-          defaultToken: 'meta.structure.array.groq'
-        }
-      ]
-    }
+          defaultToken: 'meta.structure.array.groq',
+        },
+      ],
+    },
   ],
   '#range': [
     {
@@ -136,10 +136,10 @@ const rules = {
         'keyword.operator.range.groq',
         'meta.structure.range.groq',
         'constant.numeric.groq',
-        'meta.structure.range.groq'
+        'meta.structure.range.groq',
       ],
-      regex: /(\s*)(\d+)(\s*)(\.{2,3})(\s*)(\d+)(\s*)/
-    }
+      regex: /(\s*)(\d+)(\s*)(\.{2,3})(\s*)(\d+)(\s*)/,
+    },
   ],
   '#spread': [
     {
@@ -147,101 +147,101 @@ const rules = {
       regex: /\.\.\./,
       push: [
         {
-          include: '#array'
+          include: '#array',
         },
         {
-          include: '#function-call'
+          include: '#function-call',
         },
         {
-          include: '#projection'
+          include: '#projection',
         },
         {
           token: 'punctuation.definition.spread.end.groq',
           regex: /(?=.)/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          defaultToken: 'meta.structure.spread.groq'
-        }
-      ]
-    }
+          defaultToken: 'meta.structure.spread.groq',
+        },
+      ],
+    },
   ],
   '#array-values': [
     {
-      include: '#value'
+      include: '#value',
     },
     {
-      include: '#spread'
+      include: '#spread',
     },
     {
       token: 'punctuation.separator.array.groq',
-      regex: /,/
+      regex: /,/,
     },
     {
       token: 'invalid.illegal.expected-array-separator.groq',
-      regex: /[^\s\]]/
-    }
+      regex: /[^\s\]]/,
+    },
   ],
   '#filter': [
     {
-      include: '#function-call'
+      include: '#function-call',
     },
     {
-      include: '#keyword'
+      include: '#keyword',
     },
     {
-      include: '#constant'
+      include: '#constant',
     },
     {
-      include: '#identifier'
+      include: '#identifier',
     },
     {
-      include: '#value'
+      include: '#value',
     },
     {
-      include: '#comparison'
+      include: '#comparison',
     },
     {
-      include: '#operator'
+      include: '#operator',
     },
     {
-      include: '#logical'
-    }
+      include: '#logical',
+    },
   ],
   '#comments': [
     {
       token: ['punctuation.definition.comment.groq', 'comment.line.double-slash.js'],
-      regex: /(\/\/)(.*$)/
-    }
+      regex: /(\/\/)(.*$)/,
+    },
   ],
   '#nullary-access-operator': [
     {
       token: 'constant.language.groq',
-      regex: /[*@^]/
-    }
+      regex: /[*@^]/,
+    },
   ],
   '#constant': [
     {
       token: 'constant.language.groq',
-      regex: /\b(?:true|false|null)\b/
-    }
+      regex: /\b(?:true|false|null)\b/,
+    },
   ],
   '#number': [
     {
       token: 'constant.numeric.groq',
-      regex: /-?(?:0|[1-9]\d*)(?:(?:\.\d+)?(?:[eE][+-]?\d+)?)?/
-    }
+      regex: /-?(?:0|[1-9]\d*)(?:(?:\.\d+)?(?:[eE][+-]?\d+)?)?/,
+    },
   ],
   '#named-projection': [
     {
-      include: '#identifier'
+      include: '#identifier',
     },
     {
-      include: '#objectkey'
+      include: '#objectkey',
     },
     {
-      include: '#projection'
-    }
+      include: '#projection',
+    },
   ],
   '#projection': [
     {
@@ -251,25 +251,25 @@ const rules = {
         {
           token: 'punctuation.definition.projection.end.groq',
           regex: /\}/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#identifier'
+          include: '#identifier',
         },
         {
-          include: '#objectkey'
+          include: '#objectkey',
         },
         {
-          include: '#named-projection'
+          include: '#named-projection',
         },
         {
-          include: '#comments'
+          include: '#comments',
         },
         {
-          include: '#spread'
+          include: '#spread',
         },
         {
-          include: '#pair'
+          include: '#pair',
         },
         {
           token: 'punctuation.separator.projection.key-value.groq',
@@ -278,58 +278,58 @@ const rules = {
             {
               token: 'punctuation.separator.projection.pair.groq',
               regex: /,|(?=\})/,
-              next: 'pop'
+              next: 'pop',
             },
             {
-              include: '#nullary-access-operator'
+              include: '#nullary-access-operator',
             },
             {
-              include: '#arraylike'
+              include: '#arraylike',
             },
             {
-              include: '#value'
+              include: '#value',
             },
             {
-              include: '#spread'
+              include: '#spread',
             },
             {
-              include: '#identifier'
+              include: '#identifier',
             },
             {
-              include: '#operator'
+              include: '#operator',
             },
             {
-              include: '#comparison'
+              include: '#comparison',
             },
             {
-              include: '#pair'
+              include: '#pair',
             },
             {
               token: 'invalid.illegal.expected-projection-separator.groq',
-              regex: /[^\s,]/
+              regex: /[^\s,]/,
             },
             {
-              defaultToken: 'meta.structure.projection.value.groq'
-            }
-          ]
+              defaultToken: 'meta.structure.projection.value.groq',
+            },
+          ],
         },
         {
           token: 'invalid.illegal.expected-projection-separator.groq',
-          regex: /[^\s\},]/
+          regex: /[^\s\},]/,
         },
         {
-          defaultToken: 'meta.structure.projection.groq'
-        }
-      ]
-    }
+          defaultToken: 'meta.structure.projection.groq',
+        },
+      ],
+    },
   ],
   '#string': [
     {
-      include: '#single-string'
+      include: '#single-string',
     },
     {
-      include: '#double-string'
-    }
+      include: '#double-string',
+    },
   ],
   '#double-string': [
     {
@@ -339,16 +339,16 @@ const rules = {
         {
           token: 'punctuation.definition.string.end.groq',
           regex: /"/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#stringcontent'
+          include: '#stringcontent',
         },
         {
-          defaultToken: 'string.quoted.double.groq'
-        }
-      ]
-    }
+          defaultToken: 'string.quoted.double.groq',
+        },
+      ],
+    },
   ],
   '#single-string': [
     {
@@ -358,36 +358,36 @@ const rules = {
         {
           token: 'punctuation.definition.string.single.end.groq',
           regex: /'/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#stringcontent'
+          include: '#stringcontent',
         },
         {
-          defaultToken: 'string.quoted.single.groq'
-        }
-      ]
-    }
+          defaultToken: 'string.quoted.single.groq',
+        },
+      ],
+    },
   ],
   '#objectkey': [
     {
-      include: '#string'
-    }
+      include: '#string',
+    },
   ],
   '#stringcontent': [
     {
       token: 'constant.character.escape.groq',
-      regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/
+      regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/,
     },
     {
       token: 'invalid.illegal.unrecognized-string-escape.groq',
-      regex: /\\./
-    }
+      regex: /\\./,
+    },
   ],
   '#sort-pair': [
     {
       token: ['variable.other.readwrite.groq', 'text', 'keyword.other.groq'],
-      regex: /([_A-Za-z][_0-9A-Za-z]*)(?:(\s*)(asc|desc))?/
+      regex: /([_A-Za-z][_0-9A-Za-z]*)(?:(\s*)(asc|desc))?/,
     },
     {
       token: ['constant.language.groq', 'punctuation.definition.bracket.begin.groq'],
@@ -396,13 +396,13 @@ const rules = {
         {
           token: ['punctuation.definition.bracket.begin.groq', 'text', 'keyword.other.groq'],
           regex: /(\])(?:(\s*)(asc|desc))?/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#string'
-        }
-      ]
-    }
+          include: '#string',
+        },
+      ],
+    },
   ],
   '#sort-order': [
     {
@@ -412,35 +412,35 @@ const rules = {
         {
           token: 'support.function.sortorder.end.groq',
           regex: /\)/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#sort-pair'
+          include: '#sort-pair',
         },
         {
           token: 'punctuation.separator.array.groq',
-          regex: /,/
+          regex: /,/,
         },
         {
           token: 'invalid.illegal.expected-sort-separator.groq',
-          regex: /[^\s\]]/
+          regex: /[^\s\]]/,
         },
         {
-          defaultToken: 'support.function.sortorder.groq'
-        }
-      ]
-    }
+          defaultToken: 'support.function.sortorder.groq',
+        },
+      ],
+    },
   ],
   '#function-call': [
     {
-      include: '#function-var-arg'
+      include: '#function-var-arg',
     },
     {
-      include: '#function-single-arg'
+      include: '#function-single-arg',
     },
     {
-      include: '#function-round'
-    }
+      include: '#function-round',
+    },
   ],
   '#function-var-arg': [
     {
@@ -450,29 +450,29 @@ const rules = {
         {
           token: 'support.function.vararg.end.groq',
           regex: /\)/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#value'
+          include: '#value',
         },
         {
-          include: '#identifier'
+          include: '#identifier',
         },
         {
-          include: '#filter'
+          include: '#filter',
         },
         {
-          include: '#pair'
+          include: '#pair',
         },
         {
           token: 'punctuation.separator.array.groq',
-          regex: /,/
+          regex: /,/,
         },
         {
-          defaultToken: 'support.function.vararg.groq'
-        }
-      ]
-    }
+          defaultToken: 'support.function.vararg.groq',
+        },
+      ],
+    },
   ],
   '#function-single-arg': [
     {
@@ -482,25 +482,25 @@ const rules = {
         {
           token: 'support.function.singlearg.end.groq',
           regex: /\)/,
-          next: 'pop'
+          next: 'pop',
         },
         {
-          include: '#query'
+          include: '#query',
         },
         {
-          include: '#identifier'
+          include: '#identifier',
         },
         {
-          include: '#value'
+          include: '#value',
         },
         {
-          include: '#pair'
+          include: '#pair',
         },
         {
-          defaultToken: 'support.function.singlearg.groq'
-        }
-      ]
-    }
+          defaultToken: 'support.function.singlearg.groq',
+        },
+      ],
+    },
   ],
   '#identifier': [
     {
@@ -509,9 +509,9 @@ const rules = {
         'text',
         'punctuation.definition.block.js',
         'text',
-        'keyword.operator.reference.groq'
+        'keyword.operator.reference.groq',
       ],
-      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(\->)/
+      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(\->)/,
     },
     {
       token: [
@@ -520,51 +520,51 @@ const rules = {
         'text',
         'punctuation.definition.block.js',
         'text',
-        'keyword.operator.descendant.groq'
+        'keyword.operator.descendant.groq',
       ],
-      regex: /(?:([_A-Za-z][_0-9A-Za-z]*)|([@^]))(\s*)((?:\[\s*\])?)(\s*)(\.)/
+      regex: /(?:([_A-Za-z][_0-9A-Za-z]*)|([@^]))(\s*)((?:\[\s*\])?)(\s*)(\.)/,
     },
     {
       token: 'variable.other.readwrite.groq',
-      regex: /[_A-Za-z][_0-9A-Za-z]*/
-    }
+      regex: /[_A-Za-z][_0-9A-Za-z]*/,
+    },
   ],
   '#value': [
     {
-      include: '#constant'
+      include: '#constant',
     },
     {
-      include: '#number'
+      include: '#number',
     },
     {
-      include: '#string'
+      include: '#string',
     },
     {
-      include: '#array'
+      include: '#array',
     },
     {
-      include: '#variable'
+      include: '#variable',
     },
     {
-      include: '#projection'
+      include: '#projection',
     },
     {
-      include: '#comments'
+      include: '#comments',
     },
     {
-      include: '#function-call'
-    }
-  ]
+      include: '#function-call',
+    },
+  ],
 }
 
 ace.define(
   'ace/mode/groq_highlight_rules',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/text_highlight_rules'],
-  function(acequire, exports, module) {
+  function (acequire, exports, module) {
     const oop = acequire('../lib/oop')
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules
 
-    const GroqHighlightRules = function() {
+    const GroqHighlightRules = function () {
       this.$rules = rules
       this.normalizeRules()
     }
@@ -585,9 +585,9 @@ ace.define(
     'ace/mode/text',
     'ace/tokenizer',
     'ace/mode/groq_highlight_rules',
-    'ace/mode/folding/cstyle'
+    'ace/mode/folding/cstyle',
   ],
-  function(acequire, exports, module) {
+  function (acequire, exports, module) {
     // eslint-disable-next-line strict
     'use strict'
     const oop = acequire('../lib/oop')
@@ -596,14 +596,14 @@ ace.define(
     const GroqHighlightRules = acequire('./groq_highlight_rules').GroqHighlightRules
     const FoldMode = acequire('./folding/cstyle').FoldMode
 
-    const Mode = function() {
+    const Mode = function () {
       const highlighter = new GroqHighlightRules()
       this.foldingRules = new FoldMode()
       this.$tokenizer = new Tokenizer(highlighter.getRules())
       this.$keywordList = highlighter.$keywordList
     }
     oop.inherits(Mode, TextMode)
-    ;(function() {
+    ;(function () {
       this.lineCommentStart = "'"
     }.call(Mode.prototype))
 

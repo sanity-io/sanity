@@ -28,7 +28,7 @@ export function TimelinePopover(props: TimelinePopoverProps) {
     setRange,
     setTimelineMode,
     timeline,
-    timelineMode
+    timelineMode,
   } = useDocumentHistory()
 
   const selectRev = useCallback(
@@ -58,7 +58,7 @@ export function TimelinePopover(props: TimelinePopoverProps) {
 
   const content = (
     <ClickOutside onClickOutside={onClose}>
-      {ref =>
+      {(ref) =>
         timelineMode === 'rev' ? (
           <Timeline
             ref={ref as any}

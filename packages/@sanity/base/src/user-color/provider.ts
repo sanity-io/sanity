@@ -9,7 +9,7 @@ interface UserColorManagerProviderProps {
 
 export function UserColorManagerProvider({
   children,
-  manager
+  manager,
 }: UserColorManagerProviderProps): React.ReactElement {
   return React.createElement(UserColorManagerContext.Provider, {value: manager}, children)
 }

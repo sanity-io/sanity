@@ -210,7 +210,7 @@ function annotationForTransactionIndex(timeline: Timeline, idx: number, chunkIdx
   return {
     chunk,
     timestamp: tx.timestamp,
-    author: tx.author
+    author: tx.author,
   }
 }
 
@@ -228,7 +228,7 @@ export function diffValue(
     },
     fromMeta(meta) {
       return extractAnnotationForFromInput(timeline, firstChunk, meta)
-    }
+    },
   })
 
   const toInput = wrapValue(to, toRaw, {
@@ -237,7 +237,7 @@ export function diffValue(
     },
     fromMeta(meta) {
       return extractAnnotationForToInput(timeline, meta)
-    }
+    },
   })
   return diffInput(fromInput, toInput)
 }

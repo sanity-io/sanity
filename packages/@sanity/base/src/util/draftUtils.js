@@ -24,21 +24,21 @@ export function getPublishedId(id) {
 export function createDraftFrom(document) {
   return {
     _id: getDraftId(document._id),
-    ...document
+    ...document,
   }
 }
 
 export function newDraftFrom(document) {
   return {
     _id: DRAFTS_PREFIX,
-    ...document
+    ...document,
   }
 }
 
 export function createPublishedFrom(document) {
   return {
     _id: getPublishedId(document._id),
-    ...document
+    ...document,
   }
 }
 
@@ -62,5 +62,5 @@ export function collate(documents) {
 
 // Removes published documents that also has a draft
 export function removeDupes(documents) {
-  return collate(documents).map(entry => entry.draft || entry.published)
+  return collate(documents).map((entry) => entry.draft || entry.published)
 }

@@ -4,7 +4,7 @@ import {
   Path,
   Marker,
   isValidationErrorMarker,
-  isValidationWarningMarker
+  isValidationWarningMarker,
 } from '@sanity/types'
 import ValidationListItem from './ValidationListItem'
 
@@ -27,7 +27,7 @@ function ValidationList(props: ValidationListProps) {
     markers,
     onFocus,
     onClose,
-    truncate
+    truncate,
     // showLink,
   } = props
 
@@ -44,7 +44,7 @@ function ValidationList(props: ValidationListProps) {
 
   const resolvePathTitle = (path: Path) => {
     const fields = documentType && documentType.fields
-    const field = fields && fields.find(curr => curr.name === path[0])
+    const field = fields && fields.find((curr) => curr.name === path[0])
 
     return (field && field.type.title) || ''
   }

@@ -3,6 +3,6 @@ export default {
   title: 'Statistics',
   type: 'component',
   options: {
-    component: () => 'Stats'
-  }
+    component: () => 'Stats',
+  },
 }

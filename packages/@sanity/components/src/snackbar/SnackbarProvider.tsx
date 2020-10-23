@@ -20,11 +20,11 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   static childContextTypes = {
     addToSnackQueue: PropTypes.func,
     handleDismissSnack: PropTypes.func,
-    updateSnack: PropTypes.func
+    updateSnack: PropTypes.func,
   }
 
   state: State = {
-    activeSnacks: []
+    activeSnacks: [],
   }
 
   maxStack = 3
@@ -37,7 +37,7 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
     return activeSnacks.map((snack, index) => {
       const {view: viewOffset, snackbar: snackbarOffset} = {
         view: SNACKBAR_MARGIN_BOTTOM,
-        snackbar: 12
+        snackbar: 12,
       }
       let offset = viewOffset
       let i = index
@@ -55,7 +55,9 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   */
   handleSetHeight = (id: number, height: number) => {
     this.setState(({activeSnacks}) => ({
-      activeSnacks: activeSnacks.map(snack => (snack.id === id ? {...snack, height} : {...snack}))
+      activeSnacks: activeSnacks.map((snack) =>
+        snack.id === id ? {...snack, height} : {...snack}
+      ),
     }))
   }
 
@@ -65,12 +67,12 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
     const newSnack: SnackbarItemType = {
       ...contextSnack,
       id: new Date().getTime() + Math.floor(Math.random() * 10000),
-      isOpen: true
+      isOpen: true,
     }
 
     if (!newSnack.allowDuplicateSnackbarType) {
-      const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
-      const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
+      const isInQueue = this.snackQueue.findIndex((snack) => snack.kind === newSnack.kind) > -1
+      const isInActive = activeSnacks.findIndex((snack) => snack.kind === newSnack.kind) > -1
 
       if (isInQueue || isInActive) {
         return null
@@ -82,14 +84,14 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   }
 
   updateSnack = (snackId, contextSnack) => {
-    const indexInQueue = this.snackQueue.findIndex(snack => snack.id === snackId)
+    const indexInQueue = this.snackQueue.findIndex((snack) => snack.id === snackId)
     if (indexInQueue > -1) {
       this.snackQueue[indexInQueue] = {...this.snackQueue[indexInQueue], ...contextSnack}
     } else {
       this.setState(({activeSnacks}) => ({
-        activeSnacks: activeSnacks.map(snack =>
+        activeSnacks: activeSnacks.map((snack) =>
           snack.id === snackId ? {...snack, ...contextSnack} : snack
-        )
+        ),
       }))
     }
   }
@@ -116,7 +118,7 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
 
       if (newSnack) {
         this.setState(({activeSnacks}) => ({
-          activeSnacks: [...activeSnacks, newSnack]
+          activeSnacks: [...activeSnacks, newSnack],
         }))
       }
     }
@@ -143,8 +145,8 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
     }
     // Find the snack to hide
     activeSnacks
-      .filter(snack => snack.isOpen === true)
-      .forEach(snack => {
+      .filter((snack) => snack.isOpen === true)
+      .forEach((snack) => {
         if (!snackHasBeenRemoved && (!snack.isPersisted || ignorePersistStatus)) {
           snackHasBeenRemoved = true
           this.handleDismissSnack(snack.id)
@@ -160,10 +162,10 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   handleDismissSnack = (id: number | string) => {
     this.setState(
       ({activeSnacks}) => ({
-        activeSnacks: activeSnacks.map(snack => {
+        activeSnacks: activeSnacks.map((snack) => {
           if (snack.id === id) return {...snack, isOpen: false}
           return {...snack}
-        })
+        }),
       }),
       () => this.handleRemoveSnack(id)
     )
@@ -176,7 +178,7 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   handleRemoveSnack = (id: number | string) => {
     this._removeTimer = setTimeout(() => {
       this.setState(({activeSnacks}) => ({
-        activeSnacks: activeSnacks.filter(snack => snack.id !== id)
+        activeSnacks: activeSnacks.filter((snack) => snack.id !== id),
       }))
     }, 200)
   }
@@ -191,7 +193,7 @@ export default class SnackbarProvider extends React.Component<SnackbarProviderPr
   getChildContext = () => ({
     addToSnackQueue: this.addToSnackQueue,
     handleDismissSnack: this.handleDismissSnack,
-    updateSnack: this.updateSnack
+    updateSnack: this.updateSnack,
   })
 
   render() {

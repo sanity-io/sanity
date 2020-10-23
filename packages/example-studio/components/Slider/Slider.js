@@ -7,7 +7,7 @@ import styles from './Slider.css'
 
 const Slider = React.forwardRef(function Slider(props, ref) {
   const {type, value, level, onChange, onFocus} = props
-  const handleChange = React.useCallback(event => {
+  const handleChange = React.useCallback((event) => {
     const inputValue = event.target.value
     const patch = inputValue === '' ? unset() : set(Number(inputValue))
     onChange(PatchEvent.from(patch))
@@ -40,14 +40,14 @@ Slider.propTypes = {
       range: PropTypes.shape({
         min: PropTypes.number,
         max: PropTypes.number,
-        step: PropTypes.number
-      })
-    })
+        step: PropTypes.number,
+      }),
+    }),
   }).isRequired,
   level: PropTypes.number,
   value: PropTypes.number,
   onChange: PropTypes.func.isRequired,
-  onFocus: PropTypes.func.isRequired
+  onFocus: PropTypes.func.isRequired,
 }
 
 export default Slider

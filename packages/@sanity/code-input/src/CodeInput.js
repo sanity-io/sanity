@@ -17,7 +17,7 @@ import {
   ACE_SET_OPTIONS,
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
-  DEFAULT_THEME
+  DEFAULT_THEME,
 } from './config'
 
 /* eslint-disable import/no-unassigned-import */
@@ -55,7 +55,7 @@ function isSupportedLanguage(mode) {
     return alias
   }
 
-  const isSupported = SUPPORTED_LANGUAGES.find(lang => lang.value === mode)
+  const isSupported = SUPPORTED_LANGUAGES.find((lang) => lang.value === mode)
   if (isSupported) {
     return mode
   }
@@ -71,7 +71,7 @@ export default class CodeInput extends PureComponent {
       code: PropTypes.string,
       filename: PropTypes.string,
       language: PropTypes.string,
-      highlightedLines: PropTypes.array
+      highlightedLines: PropTypes.array,
     }),
     type: PropTypes.shape({
       name: PropTypes.string,
@@ -79,18 +79,18 @@ export default class CodeInput extends PureComponent {
       description: PropTypes.string,
       fields: PropTypes.arrayOf(
         PropTypes.shape({
-          name: PropTypes.string.isRequired
+          name: PropTypes.string.isRequired,
         })
-      )
+      ),
     }).isRequired,
     onChange: PropTypes.func,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
   }
 
   static defaultProps = {
     onChange: () => undefined,
     value: undefined,
-    readOnly: false
+    readOnly: false,
   }
 
   focus() {
@@ -101,7 +101,7 @@ export default class CodeInput extends PureComponent {
     this.editor.removeListener('guttermousedown', this.handleGutterMouseDown)
   }
 
-  handleCodeChange = code => {
+  handleCodeChange = (code) => {
     const {type, onChange} = this.props
     const path = ['code']
     const fixedLanguage = get(type, 'options.language')
@@ -109,12 +109,12 @@ export default class CodeInput extends PureComponent {
     onChange(
       PatchEvent.from([
         setIfMissing({_type: type.name, language: fixedLanguage}),
-        code ? set(code, path) : unset(path)
+        code ? set(code, path) : unset(path),
       ])
     )
   }
 
-  handleToggleSelectLine = lineNumber => {
+  handleToggleSelectLine = (lineNumber) => {
     const {type, onChange, value} = this.props
     const path = ['highlightedLines']
     const highlightedLines = (value && value.highlightedLines) || []
@@ -139,9 +139,9 @@ export default class CodeInput extends PureComponent {
       const editor = this.editor
 
       // Remove all markers from editor
-      ;[true, false].forEach(inFront => {
+      ;[true, false].forEach((inFront) => {
         const currentMarkers = editor.getSession().getMarkers(inFront)
-        Object.keys(currentMarkers).forEach(marker => {
+        Object.keys(currentMarkers).forEach((marker) => {
           editor.getSession().removeMarker(currentMarkers[marker].id)
         })
       })
@@ -153,7 +153,7 @@ export default class CodeInput extends PureComponent {
     onChange(PatchEvent.from(patches))
   }
 
-  handleGutterMouseDown = event => {
+  handleGutterMouseDown = (event) => {
     const target = event.domEvent.target
     if (target.classList.contains('ace_gutter-cell')) {
       const row = event.getDocumentPosition().row
@@ -161,31 +161,31 @@ export default class CodeInput extends PureComponent {
     }
   }
 
-  handleEditorLoad = editor => {
+  handleEditorLoad = (editor) => {
     this.editor = editor
     this.editor.focus()
     this.editor.on('guttermousedown', this.handleGutterMouseDown)
   }
 
-  handleLanguageChange = item => {
+  handleLanguageChange = (item) => {
     const {type, onChange} = this.props
     const path = ['language']
     onChange(
       PatchEvent.from([
         setIfMissing({_type: type.name}),
-        item ? set(item.value, path) : unset(path)
+        item ? set(item.value, path) : unset(path),
       ])
     )
   }
 
-  handleFilenameChange = item => {
+  handleFilenameChange = (item) => {
     const {type, onChange} = this.props
     const path = ['filename']
 
     onChange(
       PatchEvent.from([
         setIfMissing({_type: type.name}),
-        item ? set(item.target.value, path) : unset(path)
+        item ? set(item.target.value, path) : unset(path),
       ])
     )
   }
@@ -216,7 +216,7 @@ export default class CodeInput extends PureComponent {
         return acc.concat({title, value: alias})
       }
 
-      if (!SUPPORTED_LANGUAGES.find(lang => lang.value === value)) {
+      if (!SUPPORTED_LANGUAGES.find((lang) => lang.value === value)) {
         // eslint-disable-next-line no-console
         console.warn(
           `'options.languageAlternatives' lists a language which is not supported: "%s", syntax highlighting will be disabled.`,
@@ -230,7 +230,7 @@ export default class CodeInput extends PureComponent {
 
   getTheme() {
     const preferredTheme = get(this.props.type, 'options.theme')
-    return preferredTheme && SUPPORTED_THEMES.find(theme => theme === preferredTheme)
+    return preferredTheme && SUPPORTED_THEMES.find((theme) => theme === preferredTheme)
       ? preferredTheme
       : DEFAULT_THEME
   }
@@ -277,14 +277,14 @@ export default class CodeInput extends PureComponent {
     }
 
     const selectedLanguage =
-      value && value.language ? languages.find(item => item.value === value.language) : undefined
+      value && value.language ? languages.find((item) => item.value === value.language) : undefined
 
     if (!selectedLanguage) {
       languages.unshift({title: 'Select language'})
     }
 
-    const languageField = type.fields.find(field => field.name === 'language')
-    const filenameField = type.fields.find(field => field.name === 'filename')
+    const languageField = type.fields.find((field) => field.name === 'language')
+    const filenameField = type.fields.find((field) => field.name === 'filename')
 
     return (
       <Fieldset legend={type.title} description={type.description} level={level}>

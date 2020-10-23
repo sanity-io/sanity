@@ -15,7 +15,7 @@ interface Props {
 function DocumentBadgesInner({states}: Props) {
   // TODO: filter out higher up
   const customDocumentBadges = states.filter(
-    badge => badge.label && !['Published', 'Draft', 'Live document'].includes(badge.label)
+    (badge) => badge.label && !['Published', 'Draft', 'Live document'].includes(badge.label)
   )
   return (
     <div className={styles.root}>

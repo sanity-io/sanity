@@ -6,7 +6,7 @@ import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
-  usePortableTextEditor
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {RenderCustomMarkers} from './types'
 import styles from './BlockExtras.css'
@@ -24,8 +24,8 @@ export default function BlockExtras(props: Props) {
   const editor = usePortableTextEditor()
   const {block, blockActions, height, isFullscreen, markers, onFocus, renderCustomMarkers} = props
   const blockValidation = getValidationMarkers(markers)
-  const errors = blockValidation.filter(mrkr => mrkr.level === 'error')
-  const warnings = blockValidation.filter(mrkr => mrkr.level === 'warning')
+  const errors = blockValidation.filter((mrkr) => mrkr.level === 'error')
+  const warnings = blockValidation.filter((mrkr) => mrkr.level === 'warning')
   const empty = markers.length === 0 && !blockActions
   const content = (
     <div className={styles.content} style={{height: `${height}px`}}>
@@ -68,7 +68,7 @@ export default function BlockExtras(props: Props) {
         hasFocus && styles.hasFocus,
         isFullscreen && styles.hasFullScreen,
         errors.length > 0 && styles.withError,
-        warnings.length > 0 && !errors.length && styles.withWarning
+        warnings.length > 0 && !errors.length && styles.withWarning,
       ])}
     >
       {returned}
@@ -77,15 +77,15 @@ export default function BlockExtras(props: Props) {
 }
 
 function getValidationMarkers(markers: Marker[]) {
-  const validation = markers.filter(mrkr => mrkr.type === 'validation')
-  return validation.map(mrkr => {
+  const validation = markers.filter((mrkr) => mrkr.type === 'validation')
+  return validation.map((mrkr) => {
     if (mrkr.path.length <= 1) {
       return mrkr
     }
     const level = mrkr.level === 'error' ? 'errors' : 'warnings'
     return {
       ...mrkr,
-      item: mrkr.item.cloneWithMessage(`Contains ${level}`)
+      item: mrkr.item.cloneWithMessage(`Contains ${level}`),
     }
   })
 }

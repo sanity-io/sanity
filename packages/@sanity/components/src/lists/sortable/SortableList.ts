@@ -5,7 +5,7 @@ const SortableList = createSortableList(List as any, {
   axis: 'y',
   lockAxis: 'y',
   lockToContainerEdges: true,
-  useDragHandle: true
+  useDragHandle: true,
 })
 
 SortableList.displayName = 'SortableList'

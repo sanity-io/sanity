@@ -100,7 +100,7 @@ assign(Transaction.prototype, {
   _add(mut) {
     this.operations.push(mut)
     return this
-  }
+  },
 })
 
 module.exports = Transaction

@@ -27,7 +27,7 @@ export function sanityKeySort(schema: Schema): ObjectKeySorter {
     }
 
     lastParent = parent
-    lastFieldOrder = type.fields.map(field => field.name)
+    lastFieldOrder = type.fields.map((field) => field.name)
     return lastFieldOrder
   }
 

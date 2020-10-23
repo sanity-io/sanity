@@ -33,11 +33,11 @@ export function FullscreenObjectEditing({
   path,
   presence,
   readOnly,
-  type
+  type,
 }: FullscreenObjectEditingProps) {
   const handleChange = useCallback((patchEvent: PatchEvent): void => onChange(patchEvent, path), [
     onChange,
-    path
+    path,
   ])
 
   const handleEscape = useCallback((event: React.SyntheticEvent): void => onClose(event), [onClose])

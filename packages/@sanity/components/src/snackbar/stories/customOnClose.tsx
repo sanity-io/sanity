@@ -9,7 +9,7 @@ const globalDefaults = {
   id: new Date().getTime() + Math.floor(Math.random()),
   setFocus: false,
   onClose: action('onClose()'),
-  onDismiss: action('onDismiss()')
+  onDismiss: action('onDismiss()'),
 }
 
 export function CustomOnCloseStory() {

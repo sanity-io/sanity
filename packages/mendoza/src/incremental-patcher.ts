@@ -78,7 +78,9 @@ class Model<T>
 
   asArray(value: Value<T>): ArrayContent<T> {
     if (!value.content) {
-      let elements = (value.data as unknown[]).map(item => this.wrapWithMeta(item, value.startMeta))
+      let elements = (value.data as unknown[]).map((item) =>
+        this.wrapWithMeta(item, value.startMeta)
+      )
       let metas = elements.map(() => this.meta)
       value.content = {type: 'array', elements, metas}
     }
@@ -95,7 +97,7 @@ class Model<T>
         utf8size: utf8stringSize(str),
         uses: [],
         startMeta: value.startMeta,
-        endMeta: value.endMeta
+        endMeta: value.endMeta,
       }
       value.content = this.stringFromParts([part])
     }
@@ -106,7 +108,7 @@ class Model<T>
   stringFromParts(parts: StringPart<T>[]): StringContent<T> {
     let str: StringContent<T> = {
       type: 'string',
-      parts
+      parts,
     }
 
     for (let part of parts) {
@@ -174,7 +176,7 @@ class Model<T>
     } else {
       return {
         type: 'string',
-        parts: []
+        parts: [],
       }
     }
   }
@@ -182,7 +184,7 @@ class Model<T>
   copyObject(value: Value<T> | null): ObjectContent<T> {
     let obj: ObjectContent<T> = {
       type: 'object',
-      fields: {}
+      fields: {},
     }
 
     if (value) {
@@ -201,7 +203,7 @@ class Model<T>
     return {
       type: 'array',
       elements,
-      metas
+      metas,
     }
   }
 
@@ -295,7 +297,7 @@ class Model<T>
       utf8size: rightSize,
       uses: part.uses.slice(),
       startMeta: part.startMeta,
-      endMeta: part.endMeta
+      endMeta: part.endMeta,
     }
 
     part.value = leftValue
@@ -334,10 +336,10 @@ export function unwrap<T>(value: Value<T>): unknown {
   let content = value.content!
   switch (content.type) {
     case 'string':
-      result = content.parts.map(part => part.value).join('')
+      result = content.parts.map((part) => part.value).join('')
       break
     case 'array':
-      result = content.elements.map(val => unwrap(val))
+      result = content.elements.map((val) => unwrap(val))
       break
     case 'object': {
       result = {}

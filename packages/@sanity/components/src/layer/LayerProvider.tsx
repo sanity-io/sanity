@@ -6,8 +6,8 @@ export function LayerProvider({children}: {children: React.ReactNode}) {
   const [size, setSize] = useState(-1)
 
   const mount = useCallback(() => {
-    setSize(val => val + 1)
-    return () => setSize(val => val - 1)
+    setSize((val) => val + 1)
+    return () => setSize((val) => val - 1)
   }, [])
 
   const layer = useMemo(() => {
@@ -16,7 +16,7 @@ export function LayerProvider({children}: {children: React.ReactNode}) {
     return {
       depth,
       mount: parentLayer?.mount || mount,
-      size: parentLayer?.size || size
+      size: parentLayer?.size || size,
     }
   }, [mount, parentLayer, size])
 

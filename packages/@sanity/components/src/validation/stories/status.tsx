@@ -19,8 +19,8 @@ const mockMarkers = (length = 5): ValidationMarker[] =>
       paths: [],
       cloneWithMessage() {
         throw new Error('nope')
-      }
-    }
+      },
+    },
   }))
 
 export function StatusStory() {

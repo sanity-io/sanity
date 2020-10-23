@@ -2,7 +2,7 @@ import React from 'react'
 
 export default class SomeChild extends React.Component {
   state = {random: Math.random()}
-  handleClick = e => {
+  handleClick = (e) => {
     e.preventDefault()
     this.setState({random: Math.random()})
   }

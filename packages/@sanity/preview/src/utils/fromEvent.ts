@@ -7,7 +7,7 @@ let supportsPassive = () => {
       // eslint-disable-next-line getter-return
       get() {
         supportsPassive = () => true
-      }
+      },
     })
     window.addEventListener('test', null, options)
     window.removeEventListener('test', null, options)
@@ -31,8 +31,8 @@ export default function fromEvent(target, eventType, options?) {
     }
     compatOptions = options.capture
   }
-  return new Observable(observer => {
-    const listener = event => observer.next(event)
+  return new Observable((observer) => {
+    const listener = (event) => observer.next(event)
     target.addEventListener(eventType, listener, compatOptions)
     // console.log('add', eventType, options)
     return () => {

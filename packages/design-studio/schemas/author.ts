@@ -10,10 +10,7 @@ export default {
       type: 'string',
       name: 'name',
       title: 'Name',
-      validation: Rule =>
-        Rule.required()
-          .min(10)
-          .max(80)
+      validation: (Rule) => Rule.required().min(10).max(80),
     },
     {
       type: 'string',
@@ -22,15 +19,15 @@ export default {
       options: {
         layout: 'radio',
         list: ['developer', 'designer', 'manager'],
-        direction: 'horizontal' // | 'vertical'
-      }
+        direction: 'horizontal', // | 'vertical'
+      },
     },
     {
       type: 'image',
       name: 'avatar',
       title: 'Avatar',
       options: {
-        hotspot: true
+        hotspot: true,
       },
       fields: [
         {
@@ -38,27 +35,27 @@ export default {
           type: 'string',
           title: 'Caption',
           options: {
-            isHighlighted: true // <-- make this field easily accessible
-          }
+            isHighlighted: true, // <-- make this field easily accessible
+          },
         },
         {
           // Editing this field will be hidden behind an "Edit"-button
           name: 'attribution',
           type: 'string',
-          title: 'Attribution'
-        }
-      ]
+          title: 'Attribution',
+        },
+      ],
     },
     {
       type: 'array',
       name: 'bio',
       title: 'Bio',
-      of: [{type: 'block'}]
+      of: [{type: 'block'}],
     },
     {
       type: 'string',
       name: 'phoneNumber',
-      title: 'Phone #'
-    }
-  ]
+      title: 'Phone #',
+    },
+  ],
 }

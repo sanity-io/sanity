@@ -7,7 +7,7 @@ interface SvgPlaceHolderProps {
 const svgStyles: React.CSSProperties = {
   position: 'relative',
   width: '100%',
-  height: '100%'
+  height: '100%',
 }
 
 const SvgPlaceholder = ({styles}: SvgPlaceHolderProps) => {

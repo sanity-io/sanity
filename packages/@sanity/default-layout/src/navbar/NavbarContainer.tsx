@@ -72,7 +72,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
     showLabelMinWidth: -1,
     showToolMenu: false,
     showToolMenuMinWidth: -1,
-    winWidth: -1
+    winWidth: -1,
   }
 
   loginStatusElement = null
@@ -130,7 +130,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
         : this.searchElement.getBoundingClientRect()
 
       this.setState(
-        prevState =>
+        (prevState) =>
           getNextState(prevState, mostRightRect.left + mostRightRect.width, winWidth) as State
       )
     }
@@ -155,7 +155,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       onUserLogout,
       router,
       searchIsOpen,
-      tools
+      tools,
     } = this.props
     const {showLabel, showToolMenu} = this.state
 
