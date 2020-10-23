@@ -159,4 +159,8 @@
 
 .clearButton {
   composes: textInput from 'part:@sanity/base/theme/forms/clear-button-style';
+
+  @nest &:focus {
+    outline: 0;
+  }
 }
