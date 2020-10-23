@@ -34,7 +34,7 @@ function matchPath(
   } | null = null
   const children =
     typeof node.children === 'function' ? arrayify(node.children(state)) : node.children
-  children.some(childNode => {
+  children.some((childNode) => {
     // console.log('----childNode')
     // console.log(childNode)
     // console.log('----childNode')

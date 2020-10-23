@@ -19,5 +19,5 @@ export const editOperations = memoize(
       merge(operationResults$, operationArgs(idPair, typeName).pipe(map(createOperationsAPI)))
     ).pipe(publishReplay(1), refCount())
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

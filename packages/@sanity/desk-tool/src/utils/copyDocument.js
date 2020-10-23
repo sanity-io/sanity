@@ -12,7 +12,7 @@ function copyObject(object, options = {}) {
 }
 
 function copyArray(array, options = {}) {
-  return array.map(item => copyAny(item, options)).filter(Boolean)
+  return array.map((item) => copyAny(item, options)).filter(Boolean)
 }
 
 const COPY_AS_IS = ['number', 'string', 'boolean']

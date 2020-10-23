@@ -25,9 +25,9 @@ export default class Field extends React.PureComponent<FieldProps> {
   _input: any
   static defaultProps = {
     level: 0,
-    focusPath: []
+    focusPath: [],
   }
-  handleChange = event => {
+  handleChange = (event) => {
     const {field, onChange} = this.props
     if (!field.type.readOnly) {
       onChange(event, field)
@@ -38,7 +38,7 @@ export default class Field extends React.PureComponent<FieldProps> {
       this._input.focus()
     }
   }
-  setInput = input => {
+  setInput = (input) => {
     this._input = input
   }
   render() {
@@ -53,7 +53,7 @@ export default class Field extends React.PureComponent<FieldProps> {
       focusPath,
       filterField,
       compareValue,
-      presence
+      presence,
     } = this.props
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name

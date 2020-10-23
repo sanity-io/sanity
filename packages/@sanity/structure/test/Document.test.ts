@@ -9,30 +9,21 @@ test('builds document node through constructor', () => {
         id: 'docId',
         type: 'book',
         templateParameters: {
-          foo: 'bar'
-        }
-      }
+          foo: 'bar',
+        },
+      },
     }).serialize()
   ).toMatchSnapshot()
 })
 
 test('throws on missing id', () => {
-  expect(() =>
-    S.document()
-      .schemaType('book')
-      .serialize()
-  ).toThrowError(/`id` is required/)
+  expect(() => S.document().schemaType('book').serialize()).toThrowError(/`id` is required/)
 })
 
 test('reuses pane ID if document ID is not set', () => {
-  expect(
-    S.document()
-      .id('id')
-      .schemaType('book')
-      .serialize()
-  ).toMatchObject({
+  expect(S.document().id('id').schemaType('book').serialize()).toMatchObject({
     id: 'id',
-    options: {id: 'id'}
+    options: {id: 'id'},
   })
 })
 
@@ -60,12 +51,7 @@ test('can construct using builder', () => {
 
 test('can construct using builder (alt)', () => {
   expect(
-    S.document()
-      .schemaType('book')
-      .id('yeah')
-      .documentId('wow')
-      .views([])
-      .serialize()
+    S.document().schemaType('book').id('yeah').documentId('wow').views([]).serialize()
   ).toMatchSnapshot()
 })
 

@@ -2,14 +2,14 @@ import React from 'react'
 import {
   MdRateReview as icon,
   MdPhotoLibrary as imageIcon,
-  MdFormatColorFill as colorIcon
+  MdFormatColorFill as colorIcon,
 } from 'react-icons/md'
 import {BlockEditor} from 'part:@sanity/form-builder'
 
 const CustomEditor = React.forwardRef((props, ref) => {
   const {markers, value} = props
   const newMarkers = markers.concat([
-    {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
+    {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []},
   ])
   return <BlockEditor {...props} markers={newMarkers} ref={ref} />
 })
@@ -25,13 +25,13 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'first',
       title: 'Block array as first field',
       type: 'array',
-      of: [{type: 'block'}]
+      of: [{type: 'block'}],
     },
     {
       name: 'defaults',
@@ -44,13 +44,13 @@ export default {
           type: 'reference',
           name: 'authorReference',
           to: {type: 'author'},
-          title: 'Reference to author'
+          title: 'Reference to author',
         },
         {
           type: 'reference',
           name: 'bookReference',
           to: {type: 'book'},
-          title: 'Reference to book'
+          title: 'Reference to book',
         },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
@@ -58,13 +58,13 @@ export default {
           type: 'color',
           name: 'colorBlock',
           title: 'Color (block)',
-          icon: colorIcon
+          icon: colorIcon,
         },
         {
           type: 'object',
           title: 'Test object',
           name: 'testObject',
-          fields: [{name: 'field1', type: 'string'}]
+          fields: [{name: 'field1', type: 'string'}],
         },
         {
           type: 'object',
@@ -80,28 +80,28 @@ export default {
                   type: 'object',
                   fields: [
                     {name: 'aString', type: 'string'},
-                    {name: 'aNumber', type: 'number'}
-                  ]
-                }
-              ]
-            }
-          ]
+                    {name: 'aNumber', type: 'number'},
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'block',
           of: [
             {
               type: 'color',
-              title: 'Color'
-            }
-          ]
+              title: 'Color',
+            },
+          ],
         },
         {
           type: 'spotifyEmbed',
           name: 'spotifyEmbed',
-          title: 'Spotify embed'
-        }
-      ]
+          title: 'Spotify embed',
+        },
+      ],
     },
     {
       name: 'nestedWithDualColumnCTA',
@@ -129,21 +129,21 @@ export default {
                       name: 'columnone',
                       title: 'Column One',
                       type: 'array',
-                      of: [{type: 'richTextObject'}]
+                      of: [{type: 'richTextObject'}],
                     },
                     {
                       name: 'columntwo',
                       title: 'Column Two',
                       type: 'array',
-                      of: [{type: 'richTextObject'}]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                      of: [{type: 'richTextObject'}],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'readOnlyWithDefaults',
@@ -157,26 +157,26 @@ export default {
           type: 'reference',
           name: 'authorReference',
           to: {type: 'author'},
-          title: 'Reference to author'
+          title: 'Reference to author',
         },
         {
           type: 'reference',
           name: 'bookReference',
           to: {type: 'book'},
-          title: 'Reference to book'
+          title: 'Reference to book',
         },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
         {
           type: 'color',
           name: 'colorBlock',
-          title: 'Color (block)'
+          title: 'Color (block)',
         },
         {
           type: 'object',
           title: 'Test object',
           name: 'testObject',
-          fields: [{name: 'field1', type: 'string'}]
+          fields: [{name: 'field1', type: 'string'}],
         },
         {
           type: 'object',
@@ -192,23 +192,23 @@ export default {
                   type: 'object',
                   fields: [
                     {name: 'aString', type: 'string'},
-                    {name: 'aNumber', type: 'number'}
-                  ]
-                }
-              ]
-            }
-          ]
+                    {name: 'aNumber', type: 'number'},
+                  ],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'block',
           of: [
             {
               type: 'color',
-              title: 'Color'
-            }
-          ]
-        }
-      ]
+              title: 'Color',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'minimal',
@@ -221,10 +221,10 @@ export default {
           lists: [],
           marks: {
             decorators: [],
-            annotations: []
-          }
-        }
-      ]
+            annotations: [],
+          },
+        },
+      ],
     },
     {
       name: 'customized',
@@ -238,24 +238,24 @@ export default {
             {title: 'Normal', value: 'normal'},
             {title: 'H1', value: 'h1'},
             {title: 'H2', value: 'h2'},
-            {title: 'Quote', value: 'blockquote'}
+            {title: 'Quote', value: 'blockquote'},
           ],
           lists: [
             {title: 'Bullet', value: 'bullet'},
-            {title: 'Numbered', value: 'number'}
+            {title: 'Numbered', value: 'number'},
           ],
           marks: {
             decorators: [
               {title: 'Strong', value: 'strong'},
               {title: 'Emphasis', value: 'em'},
-              {title: 'Decorator with custom icon', value: 'color', icon: colorIcon}
+              {title: 'Decorator with custom icon', value: 'color', icon: colorIcon},
             ],
             annotations: [
               {
                 name: 'Author',
                 title: 'Author',
                 type: 'reference',
-                to: {type: 'author'}
+                to: {type: 'author'},
               },
               {
                 title: 'Annotation with custom icon',
@@ -265,11 +265,11 @@ export default {
                 fields: [
                   {
                     name: 'testString',
-                    type: 'string'
-                  }
-                ]
-              }
-            ]
+                    type: 'string',
+                  },
+                ],
+              },
+            ],
           },
           of: [
             {
@@ -282,26 +282,26 @@ export default {
                   name: 'authors',
                   type: 'array',
                   options: {isHighlighted: true},
-                  of: [{type: 'author', title: 'Author'}]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                  of: [{type: 'author', title: 'Author'}],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'withGeopoint',
       title: 'With geopoints',
       type: 'array',
-      of: [{type: 'block'}, {type: 'geopoint'}]
+      of: [{type: 'block'}, {type: 'geopoint'}],
     },
     {
       name: 'withMarkers',
       title: 'With markers',
       type: 'array',
       inputComponent: CustomEditor,
-      of: [{type: 'block'}]
+      of: [{type: 'block'}],
     },
     {
       name: 'deep',
@@ -322,25 +322,25 @@ export default {
                 {title: 'Normal', value: 'normal'},
                 {title: 'H1', value: 'h1'},
                 {title: 'H2', value: 'h2'},
-                {title: 'Quote', value: 'blockquote'}
+                {title: 'Quote', value: 'blockquote'},
               ],
               lists: [
                 {title: 'Bullet', value: 'bullet'},
-                {title: 'Numbered', value: 'number'}
+                {title: 'Numbered', value: 'number'},
               ],
               marks: {
                 decorators: [
                   {title: 'Strong', value: 'strong'},
-                  {title: 'Emphasis', value: 'em'}
+                  {title: 'Emphasis', value: 'em'},
                 ],
                 annotations: [
-                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
-                ]
-              }
-            }
-          ]
-        }
-      ]
+                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}},
+                ],
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       title: 'Array of articles',
@@ -348,9 +348,9 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'blocksTest'
-        }
-      ]
+          type: 'blocksTest',
+        },
+      ],
     },
     {
       title: 'Block in block',
@@ -377,18 +377,18 @@ export default {
                       marks: {
                         decorators: [
                           {title: 'Strong', value: 'strong'},
-                          {title: 'Emphasis', value: 'em'}
+                          {title: 'Emphasis', value: 'em'},
                         ],
-                        annotations: []
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                        annotations: [],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'recursive',
@@ -405,16 +405,16 @@ export default {
               lists: [],
               marks: {
                 decorators: [],
-                annotations: []
-              }
+                annotations: [],
+              },
             },
             {
               type: 'blocksTest',
-              title: 'Blocks test!'
-            }
-          ]
-        }
-      ]
+              title: 'Blocks test!',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'blockList',
@@ -428,16 +428,16 @@ export default {
             {
               name: 'title',
               title: 'Title',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'blocks',
               type: 'array',
-              of: [{type: 'block'}]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              of: [{type: 'block'}],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

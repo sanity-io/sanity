@@ -26,14 +26,14 @@ module.exports = async function addCorsOrigin(givenOrigin, flags, context) {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   return client.request({
     method: 'POST',
     url: '/cors',
     body: {origin, allowCredentials},
-    maxRedirects: 0
+    maxRedirects: 0,
   })
 }
 
@@ -67,7 +67,7 @@ function promptForCredentials(hasWildcard, context) {
     message: oneline`
       Allow credentials to be sent from this origin? Please read the warning above.
     `,
-    default: false
+    default: false,
   })
 }
 
@@ -94,7 +94,7 @@ function promptForWildcardConfirmation(origin, context) {
     message: oneline`
       Using wildcards can be ${chalk.red('risky')}.
       Are you ${chalk.underline('absolutely sure')} you want to allow this origin?`,
-    default: false
+    default: false,
   })
 }
 
@@ -103,7 +103,7 @@ function promptForOrigin(prompt) {
     type: 'input',
     message: 'Origin (including protocol):',
     filter: filterOrigin,
-    validate: validateOrigin
+    validate: validateOrigin,
   })
 }
 

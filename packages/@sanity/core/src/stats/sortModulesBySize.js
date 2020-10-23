@@ -17,7 +17,7 @@ function findLargestModules(list, node) {
   if (node.size) {
     modList.push({
       name: node.displayName || node.name,
-      size: node.size
+      size: node.size,
     })
   }
 
@@ -38,7 +38,7 @@ function getModuleName(name) {
 function groupByDepth(target, file) {
   const name = getModuleName(file.name)
   const size = file.size
-  const existing = target.find(module => module.name === name)
+  const existing = target.find((module) => module.name === name)
 
   if (existing) {
     existing.size += size

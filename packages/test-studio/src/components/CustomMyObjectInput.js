@@ -6,7 +6,7 @@ export default class CustomMyObjectInput extends React.Component {
   static propTypes = {
     value: PropTypes.object,
     type: PropTypes.object,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
   }
 
   handleChange = (field, event) => {
@@ -22,13 +22,13 @@ export default class CustomMyObjectInput extends React.Component {
       <div style={{backgroundColor: '#f5ad3d'}}>
         <h3>{type.title}</h3>
         <p>{type.description}</p>
-        {type.fields.map(field => (
+        {type.fields.map((field) => (
           <li key={field.name}>
             <input
               type="text"
               value={(value && value[field.name]) || ''}
               placeholder={type.placeholder}
-              onChange={event => this.handleChange(field, event)}
+              onChange={(event) => this.handleChange(field, event)}
             />
           </li>
         ))}

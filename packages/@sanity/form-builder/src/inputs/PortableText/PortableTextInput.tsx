@@ -13,7 +13,7 @@ import {
   PortableTextBlock,
   PortableTextEditor,
   Type,
-  HotkeyOptions
+  HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {Patch} from '../../typedefs/patch'
@@ -31,7 +31,7 @@ export type PatchWithOrigin = Patch & {
 
 type PatchSubscribe = (subscribeFn: PatchSubscriber) => void
 type PatchSubscriber = ({
-  patches
+  patches,
 }: {
   patches: PatchWithOrigin[]
   snapshot: PortableTextBlock[] | undefined
@@ -74,19 +74,15 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     renderBlockActions,
     renderCustomMarkers,
     type,
-    value
+    value,
   } = props
 
   // The PortableTextEditor will not re-render unless the value is changed (which is good).
   // But, we want to re-render it when the markers changes too,
   // (we render error indicators directly in the editor nodes for inline objects and annotations)
   const validationHash = markers
-    .filter(marker => marker.type === 'validation')
-    .map(marker =>
-      JSON.stringify(marker.path)
-        .concat(marker.type)
-        .concat(marker.level)
-    )
+    .filter((marker) => marker.type === 'validation')
+    .map((marker) => JSON.stringify(marker.path).concat(marker.type).concat(marker.level))
     .sort()
     .join('')
   const forceUpdate = (fromValue?: PortableTextBlock[] | undefined) => {
@@ -122,15 +118,15 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
 
   // Handle incoming patches from withPatchSubscriber HOC
   function handleDocumentPatches({
-    patches
+    patches,
   }: {
     patches: PatchWithOrigin[]
     snapshot: PortableTextBlock[] | undefined
   }): void {
     const patchSelection =
-      patches && patches.length > 0 && patches.filter(patch => patch.origin !== 'local')
+      patches && patches.length > 0 && patches.filter((patch) => patch.origin !== 'local')
     if (patchSelection) {
-      patchSelection.map(patch => patche$.next(patch))
+      patchSelection.map((patch) => patche$.next(patch))
     }
   }
 

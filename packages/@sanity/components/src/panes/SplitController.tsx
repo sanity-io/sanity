@@ -12,18 +12,18 @@ interface SplitControllerProps {
 
 export default class PanesSplitController extends React.PureComponent<SplitControllerProps> {
   state = {
-    isResizing: false
+    isResizing: false,
   }
 
   handleDragStarted = () => {
     this.setState({
-      isResizing: true
+      isResizing: true,
     })
   }
 
   handleDragFinished = () => {
     this.setState({
-      isResizing: false
+      isResizing: false,
     })
   }
 
@@ -85,6 +85,6 @@ export default class PanesSplitController extends React.PureComponent<SplitContr
 
     return isMobile
       ? children
-      : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))
+      : this.renderRecursivePanes(panes.filter((pane) => pane.type !== 'div'))
   }
 }

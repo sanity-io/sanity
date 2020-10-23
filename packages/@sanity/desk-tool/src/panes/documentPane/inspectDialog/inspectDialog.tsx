@@ -36,7 +36,7 @@ function mapReceivedPropsToChildProps(
 
   const viewModeSetting$: Observable<InspectViewMode> = viewModeSettings
     .listen('parsed')
-    .pipe(map((id: string) => VIEW_MODES.find(mode => mode.id === id)))
+    .pipe(map((id: string) => VIEW_MODES.find((mode) => mode.id === id)))
 
   return combineLatest(props$, viewModeSetting$).pipe(
     map(([props, viewMode]) => ({...props, viewMode, onViewModeChange}))

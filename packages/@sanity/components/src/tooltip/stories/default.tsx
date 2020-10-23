@@ -22,7 +22,7 @@ export function DefaultStory() {
       'bottom-end': 'Bottom end',
       'left-start': 'Left start',
       left: 'Left',
-      'left-end': 'Left end'
+      'left-end': 'Left end',
     },
     'bottom',
     'Props'
@@ -32,7 +32,7 @@ export function DefaultStory() {
     'Tone',
     {
       '': '(none)',
-      navbar: 'Navbar'
+      navbar: 'Navbar',
     },
     '',
     'Props'
@@ -51,7 +51,7 @@ function Example({
   content,
   placement,
   portal,
-  tone
+  tone,
 }: {
   content: React.ReactNode
   placement: Placement

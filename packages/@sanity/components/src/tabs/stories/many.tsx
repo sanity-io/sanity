@@ -34,13 +34,13 @@ export function ManyStory() {
     {id: 'tab-17', label: 'Foo'},
     {id: 'tab-18', label: 'Foo'},
     {id: 'tab-19', label: 'Foo'},
-    {id: 'tab-20', label: 'Foo'}
+    {id: 'tab-20', label: 'Foo'},
   ]
 
   return (
     <div style={{background: 'white'}}>
       <TabList>
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <Tab
             aria-controls="tab-panel"
             id={tab.id}

@@ -4,7 +4,7 @@ import serializeStructure from './util/serializeStructure'
 test('builds document lists with only required properties', () => {
   expect(
     S.documentList({id: 'foo', title: 'Foo', options: {filter: '_type == "book"'}}).serialize({
-      path: []
+      path: [],
     })
   ).toMatchSnapshot()
 })
@@ -14,31 +14,13 @@ test('throws if no id is set', () => {
 })
 
 test('infers ID from title if not specified', () => {
-  expect(
-    S.documentList()
-      .title('Hei der')
-      .getId()
-  ).toEqual('heiDer')
-  expect(
-    S.documentList()
-      .id('zing')
-      .title('Hei der')
-      .getId()
-  ).toEqual('zing')
-  expect(
-    S.documentList()
-      .title('Hei der')
-      .id('blah')
-      .getId()
-  ).toEqual('blah')
+  expect(S.documentList().title('Hei der').getId()).toEqual('heiDer')
+  expect(S.documentList().id('zing').title('Hei der').getId()).toEqual('zing')
+  expect(S.documentList().title('Hei der').id('blah').getId()).toEqual('blah')
 })
 
 test('throws if no filter is set', () => {
-  expect(() =>
-    S.documentList()
-      .id('foo')
-      .serialize()
-  ).toThrowErrorMatchingSnapshot()
+  expect(() => S.documentList().id('foo').serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('builds document lists through setters', () => {
@@ -78,7 +60,7 @@ test('builds document lists through setters (alt order #2)', () => {
   ).toMatchSnapshot()
 })
 
-test('default child resolver resolves to editor', done => {
+test('default child resolver resolves to editor', (done) => {
   const list = S.documentList()
     .id('books')
     .title('Books')
@@ -87,23 +69,23 @@ test('default child resolver resolves to editor', done => {
     .serialize()
 
   const context = {parent: list, index: 1}
-  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe(child => {
+  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe((child) => {
     expect(child).toEqual({
       child: undefined,
       id: 'documentEditor',
       type: 'document',
       options: {
         id: 'asoiaf-wow',
-        type: 'book'
+        type: 'book',
       },
       views: [
         {
           id: 'editor',
           title: 'Editor',
           type: 'form',
-          icon: undefined
-        }
-      ]
+          icon: undefined,
+        },
+      ],
     })
     done()
   })
@@ -141,19 +123,16 @@ test('getters work', () => {
   expect(original.showIcons(false).getShowIcons()).toEqual(false)
   expect(original.canHandleIntent(canHandleIntent).getCanHandleIntent()).toEqual(canHandleIntent)
   expect(original.defaultOrdering([{field, direction}]).getDefaultOrdering()).toEqual([
-    {field, direction}
+    {field, direction},
   ])
 })
 
 test('can disable icons from being displayed', () => {
-  const list = S.documentList()
-    .title('Blåmuggost')
-    .filter('_type == "bluecheese"')
-    .showIcons(false)
+  const list = S.documentList().title('Blåmuggost').filter('_type == "bluecheese"').showIcons(false)
 
   expect(list.serialize()).toMatchObject({
     id: 'blamuggost',
-    displayOptions: {showIcons: false}
+    displayOptions: {showIcons: false},
   })
 
   expect(list.getShowIcons()).toBe(false)

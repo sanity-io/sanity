@@ -9,7 +9,7 @@ import {
   DEFAULT_LIST_TYPES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
-  DEFAULT_DECORATORS
+  DEFAULT_DECORATORS,
 } from './defaults'
 
 const INHERITED_FIELDS = [
@@ -20,13 +20,13 @@ const INHERITED_FIELDS = [
   'description',
   'options',
   'fieldsets',
-  'icon'
+  'icon',
 ]
 
 const BLOCK_CORE = {
   name: 'block',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
 }
 
 const DEFAULT_OPTIONS = {}
@@ -48,15 +48,15 @@ export const BlockType = {
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
-      options: options
+      options: options,
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map(fieldDef => {
+      return fields.map((fieldDef) => {
         const {name, ...type} = fieldDef
         return {
           name: name,
-          type: extendMember(type)
+          type: extendMember(type),
         }
       })
     })
@@ -70,22 +70,24 @@ export const BlockType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "block"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }
 
 function ensureNormalStyle(styles) {
-  return styles.some(style => style.value === 'normal') ? styles : [BLOCK_STYLES.normal, ...styles]
+  return styles.some((style) => style.value === 'normal')
+    ? styles
+    : [BLOCK_STYLES.normal, ...styles]
 }
 
 function createStylesField(styles) {
@@ -94,8 +96,8 @@ function createStylesField(styles) {
     title: 'Style',
     type: 'string',
     options: {
-      list: ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES)
-    }
+      list: ensureNormalStyle(styles || DEFAULT_BLOCK_STYLES),
+    },
   }
 }
 
@@ -105,8 +107,8 @@ function createListsField(lists) {
     title: 'List type',
     type: 'string',
     options: {
-      list: lists || DEFAULT_LIST_TYPES
-    }
+      list: lists || DEFAULT_LIST_TYPES,
+    },
   }
 }
 
@@ -122,9 +124,9 @@ function createSpansField(marks, of = []) {
         type: 'span',
         fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
         annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
-        decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS
+        decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS,
       },
-      ...of.filter(memberType => memberType.type !== 'span')
-    ]
+      ...of.filter((memberType) => memberType.type !== 'span'),
+    ],
   }
 }

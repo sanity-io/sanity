@@ -6,7 +6,7 @@ const validateOptions = require('./validateOptions')
 const importers = {
   fromStream,
   fromFolder,
-  fromArray
+  fromArray,
 }
 
 module.exports = async (input, opts) => {

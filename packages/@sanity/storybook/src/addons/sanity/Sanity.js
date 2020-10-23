@@ -24,9 +24,9 @@ export default class Sanity extends PureComponent {
 Sanity.propTypes = {
   propTables: PropTypes.arrayOf(PropTypes.func),
   children: PropTypes.node,
-  part: PropTypes.string
+  part: PropTypes.string,
 }
 
 Sanity.defaultProps = {
-  propTables: []
+  propTables: [],
 }

@@ -5,7 +5,7 @@ const pickFirst = (obj, keys) => {
   if (!obj || typeof obj !== 'object') {
     return obj
   }
-  const found = keys.find(key => key in obj)
+  const found = keys.find((key) => key in obj)
   return obj[found]
 }
 
@@ -22,27 +22,27 @@ export default {
       createdAt: '_createdAt',
       lead: 'lead',
       imageUrl: 'mainImage.asset.url',
-      author: 'authorRef.name'
+      author: 'authorRef.name',
     },
     prepare(value) {
       const timeSince = distanceInWordsToNow(value.createdAt, {addSuffix: true})
       return Object.assign({}, value, {
         title: value.title ? pickFirst(value.title, LANGUAGE_PRIORITY) : '',
         subtitle: value.author ? `By ${value.author}, ${timeSince}` : timeSince,
-        description: value.lead
+        description: value.lead,
       })
-    }
+    },
   },
   fields: [
     {
       name: 'title',
       title: 'Title',
-      type: 'localeString'
+      type: 'localeString',
     },
     {
       name: 'localeSlug',
       title: 'Localized slug',
-      type: 'localeSlug'
+      type: 'localeSlug',
     },
     {
       name: 'publishAt',
@@ -53,68 +53,68 @@ export default {
         dateFormat: 'YYYY-MM-DD',
         timeFormat: 'HH:mm',
         timeStep: 60,
-        calendarTodayLabel: 'Today'
-      }
+        calendarTodayLabel: 'Today',
+      },
     },
     {
       name: 'mainImage',
       title: 'Main image',
       type: 'image',
       options: {
-        hotspot: true
+        hotspot: true,
       },
       fields: [
         {
           name: 'caption',
           type: 'string',
-          title: 'Caption'
-        }
-      ]
+          title: 'Caption',
+        },
+      ],
     },
     {
       name: 'lead',
       title: 'Lead',
       type: 'text',
-      required: true
+      required: true,
     },
     {
       name: 'body',
       type: 'localeBlockContent',
-      title: 'Content'
+      title: 'Content',
     },
     {
       name: 'tags',
       title: 'tags',
       type: 'array',
       options: {
-        layout: 'tags'
+        layout: 'tags',
       },
-      of: [{type: 'string'}]
+      of: [{type: 'string'}],
     },
     {
       name: 'firstAuthor',
       title: 'Author',
       type: 'reference',
       to: {type: 'author'},
-      required: true
+      required: true,
     },
     {
       name: 'coauthors',
       title: 'Co authors',
       type: 'array',
       options: {
-        editModal: 'fold'
+        editModal: 'fold',
       },
       of: [
         {
           type: 'reference',
           title: 'Reference to co-author',
           to: {
-            type: 'author'
-          }
-        }
+            type: 'author',
+          },
+        },
       ],
-      required: true
-    }
-  ]
+      required: true,
+    },
+  ],
 }

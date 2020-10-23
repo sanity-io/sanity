@@ -31,11 +31,11 @@ module.exports = {
     'import/no-webpack-loader-syntax': 'error',
     'import/order': 'warn',
     'import/prefer-default-export': 'off',
-    'import/unambiguous': 'off'
+    'import/unambiguous': 'off',
   },
   settings: {
     'import/resolve': {
-      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
-    }
-  }
+      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    },
+  },
 }

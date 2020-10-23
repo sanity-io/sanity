@@ -58,7 +58,7 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
       endTimestamp: right.endTimestamp,
       authors,
       draftState,
-      publishedState
+      publishedState,
     }
   }
 
@@ -92,7 +92,7 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
     endTimestamp: transaction.timestamp,
     authors: new Set([transaction.author]),
     draftState: modifedDraft ? (draftDeleted ? 'missing' : 'present') : 'unknown',
-    publishedState: modifedPublished ? (publishedDeleted ? 'missing' : 'present') : 'unknown'
+    publishedState: modifedPublished ? (publishedDeleted ? 'missing' : 'present') : 'unknown',
   }
 }
 

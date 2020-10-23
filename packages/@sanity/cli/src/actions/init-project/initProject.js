@@ -121,7 +121,7 @@ export default async function initSanity(args, context) {
       displayName,
       dataset: flags.dataset,
       aclMode: flags.visibility,
-      defaultConfig: flags['dataset-default']
+      defaultConfig: flags['dataset-default'],
     },
     context
   )
@@ -140,20 +140,20 @@ export default async function initSanity(args, context) {
       api: {
         ...(projectManifest.api || {}),
         projectId,
-        dataset: datasetName
+        dataset: datasetName,
       },
       project: {
         ...projectInfo,
         // Keep original name if present
-        name: projectInfo.name || displayName
-      }
+        name: projectInfo.name || displayName,
+      },
     }
 
     // Ensure root, api and project keys are at top to follow sanity.json key order convention
     projectManifest = {
       ...newProps,
       ...projectManifest,
-      ...newProps
+      ...newProps,
     }
 
     await fse.outputJSON(manifestPath, projectManifest, {spaces: 2})
@@ -190,7 +190,7 @@ export default async function initSanity(args, context) {
       displayName: displayName,
       dataset: datasetName,
       projectId: projectId,
-      ...answers
+      ...answers,
     }
 
     const template = templates[templateName]
@@ -224,11 +224,11 @@ export default async function initSanity(args, context) {
       throw new Error('@sanity/core module failed to be resolved')
     }
 
-    const configCheckCmd = coreCommands.find(cmd => cmd.name === 'configcheck')
+    const configCheckCmd = coreCommands.find((cmd) => cmd.name === 'configcheck')
     await configCheckCmd.action(
       {extOptions: {quiet: true}},
       Object.assign({}, context, {
-        workDir: outputPath
+        workDir: outputPath,
       })
     )
 
@@ -239,7 +239,7 @@ export default async function initSanity(args, context) {
         coreCommands,
         template,
         datasetName,
-        context
+        context,
       })
 
       print('')
@@ -277,14 +277,14 @@ export default async function initSanity(args, context) {
       type: 'confirm',
       message:
         'We have an excellent developer community, would you like us to send you an invitation to join?',
-      default: true
+      default: true,
     }))
 
   if (sendInvite) {
     apiClient({requireProject: false})
       .request({
         uri: '/invitations/community',
-        method: 'POST'
+        method: 'POST',
       })
       .catch(noop)
   }
@@ -317,7 +317,7 @@ export default async function initSanity(args, context) {
     }
 
     if (flags.project) {
-      const project = projects.find(proj => proj.id === flags.project)
+      const project = projects.find((proj) => proj.id === flags.project)
       if (!project && !unattended) {
         throw new Error(
           `Given project ID (${flags.project}) not found, or you do not have access to it`
@@ -327,7 +327,7 @@ export default async function initSanity(args, context) {
       return {
         projectId: flags.project,
         displayName: project ? project.displayName : 'Unknown project',
-        isFirstProject: false
+        isFirstProject: false,
       }
     }
 
@@ -335,17 +335,17 @@ export default async function initSanity(args, context) {
     if (isUsersFirstProject) {
       debug('No projects found for user, prompting for name')
       const projectName = await prompt.single({message: 'Project name'})
-      return createProject(apiClient, {displayName: projectName}).then(response => ({
+      return createProject(apiClient, {displayName: projectName}).then((response) => ({
         ...response,
-        isFirstProject: isUsersFirstProject
+        isFirstProject: isUsersFirstProject,
       }))
     }
 
     debug(`User has ${projects.length} project(s) already, showing list of choices`)
 
-    const projectChoices = projects.map(project => ({
+    const projectChoices = projects.map((project) => ({
       value: project.id,
-      name: `${project.displayName} [${project.id}]`
+      name: `${project.displayName} [${project.id}]`,
     }))
 
     const selected = await prompt.single({
@@ -354,8 +354,8 @@ export default async function initSanity(args, context) {
       choices: [
         {value: 'new', name: 'Create new project'},
         new prompt.Separator(),
-        ...projectChoices
-      ]
+        ...projectChoices,
+      ],
     })
 
     if (selected === 'new') {
@@ -363,19 +363,19 @@ export default async function initSanity(args, context) {
       return createProject(apiClient, {
         displayName: await prompt.single({
           message: 'Your project name:',
-          default: 'My Sanity Project'
-        })
-      }).then(response => ({
-          ...response,
-          isFirstProject: isUsersFirstProject
+          default: 'My Sanity Project',
+        }),
+      }).then((response) => ({
+        ...response,
+        isFirstProject: isUsersFirstProject,
       }))
     }
 
     debug(`Returning selected project (${selected})`)
     return {
       projectId: selected,
-      displayName: projects.find(proj => proj.id === selected).displayName,
-      isFirstProject: isUsersFirstProject
+      displayName: projects.find((proj) => proj.id === selected).displayName,
+      isFirstProject: isUsersFirstProject,
     }
   }
 
@@ -387,7 +387,7 @@ export default async function initSanity(args, context) {
     const client = apiClient({api: {projectId: opts.projectId}})
     const [datasets, projectFeatures] = await Promise.all([
       client.datasets.list(),
-      client.request({uri: '/features'})
+      client.request({uri: '/features'}),
     ])
 
     const privateDatasetsAllowed = projectFeatures.includes('privateDataset')
@@ -414,7 +414,7 @@ export default async function initSanity(args, context) {
 
     if (opts.dataset) {
       debug('User has specified dataset through a flag (%s)', opts.dataset)
-      const existing = datasets.find(ds => ds.name === opts.dataset)
+      const existing = datasets.find((ds) => ds.name === opts.dataset)
 
       if (!existing) {
         debug('Specified dataset not found, creating it')
@@ -439,7 +439,7 @@ export default async function initSanity(args, context) {
       const name = defaultConfig
         ? 'production'
         : await promptForDatasetName(prompt, {
-            message: 'Name of your first dataset:'
+            message: 'Name of your first dataset:',
           })
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
@@ -449,7 +449,7 @@ export default async function initSanity(args, context) {
     }
 
     debug(`User has ${datasets.length} dataset(s) already, showing list of choices`)
-    const datasetChoices = datasets.map(dataset => ({value: dataset.name}))
+    const datasetChoices = datasets.map((dataset) => ({value: dataset.name}))
 
     const selected = await prompt.single({
       message: 'Select dataset to use',
@@ -457,12 +457,12 @@ export default async function initSanity(args, context) {
       choices: [
         {value: 'new', name: 'Create new dataset'},
         new prompt.Separator(),
-        ...datasetChoices
-      ]
+        ...datasetChoices,
+      ],
     })
 
     if (selected === 'new') {
-      const existingDatasetNames = datasets.map(ds => ds.name)
+      const existingDatasetNames = datasets.map((ds) => ds.name)
       debug('User wants to create a new dataset, prompting for name')
       if (showDefaultConfigPrompt && !existingDatasetNames.includes('production')) {
         output.print(datasetInfo)
@@ -474,7 +474,7 @@ export default async function initSanity(args, context) {
         : await promptForDatasetName(
             prompt,
             {
-              message: 'Dataset name:'
+              message: 'Dataset name:',
             },
             existingDatasetNames
           )
@@ -493,7 +493,7 @@ export default async function initSanity(args, context) {
     return prompt.single({
       type: 'confirm',
       message: message || 'This template includes a sample dataset, would you like to use it?',
-      default: true
+      default: true,
     })
   }
 
@@ -509,21 +509,21 @@ export default async function initSanity(args, context) {
       choices: [
         {
           value: 'moviedb',
-          name: 'Movie project (schema + sample data)'
+          name: 'Movie project (schema + sample data)',
         },
         {
           value: 'ecommerce',
-          name: 'E-commerce (schema + sample data)'
+          name: 'E-commerce (schema + sample data)',
         },
         {
           value: 'blog',
-          name: 'Blog (schema)'
+          name: 'Blog (schema)',
         },
         {
           value: 'clean',
-          name: 'Clean project with no predefined schemas'
-        }
-      ]
+          name: 'Clean project with no predefined schemas',
+        },
+      ],
     })
   }
 
@@ -532,7 +532,7 @@ export default async function initSanity(args, context) {
 
     if (unattended) {
       return Object.assign({license: 'UNLICENSED'}, defaults, {
-        outputPath: specifiedPath
+        outputPath: specifiedPath,
       })
     }
 
@@ -550,8 +550,8 @@ export default async function initSanity(args, context) {
           message: 'Project output path:',
           default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
           validate: validateEmptyPath,
-          filter: absolutify
-        }))
+          filter: absolutify,
+        })),
     }
   }
 
@@ -578,7 +578,7 @@ export default async function initSanity(args, context) {
     if (unattended) {
       debug('Unattended mode, validating required options')
       const requiredForUnattended = ['dataset', 'output-path']
-      requiredForUnattended.forEach(flag => {
+      requiredForUnattended.forEach((flag) => {
         if (!cliFlags[flag]) {
           throw new Error(`\`--${flag}\` must be specified in unattended mode`)
         }
@@ -594,7 +594,7 @@ export default async function initSanity(args, context) {
     if (createProjectName) {
       debug('--create-project specified, creating a new project')
       const createdProject = await createProject(apiClient, {
-        displayName: createProjectName.trim()
+        displayName: createProjectName.trim(),
       })
       debug('Project with ID %s created', createdProject.projectId)
 
@@ -620,7 +620,7 @@ function promptForDefaultConfig(prompt) {
   return prompt.single({
     type: 'confirm',
     message: 'Use the default dataset configuration?',
-    default: true
+    default: true,
   })
 }
 
@@ -629,7 +629,7 @@ function promptImplicitReconfigure(prompt) {
     type: 'confirm',
     message:
       'The current folder contains a configured Sanity studio. Would you like to reconfigure it?',
-    default: true
+    default: true,
   })
 }
 
@@ -678,13 +678,13 @@ async function promptForAclMode(prompt, output) {
     choices: [
       {
         value: 'public',
-        name: 'Public (world readable)'
+        name: 'Public (world readable)',
       },
       {
         value: 'private',
-        name: 'Private (authenticated requests only)'
-      }
-    ]
+        name: 'Private (authenticated requests only)',
+      },
+    ],
   })
 
   if (mode === 'private') {
@@ -701,16 +701,16 @@ async function doDatasetImport(options) {
   const manifestPath = path.join(outputPath, 'sanity.json')
   const baseManifest = await loadJson(manifestPath)
   const manifest = reduceConfig(baseManifest || {}, environment, {
-    studioRootPath: outputPath
+    studioRootPath: outputPath,
   })
 
-  const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
+  const importCmd = coreCommands.find((cmd) => cmd.name === 'import' && cmd.group === 'dataset')
   return importCmd.action(
     {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
     Object.assign({}, context, {
       apiClient: clientWrapper(manifest, manifestPath),
       workDir: outputPath,
-      fromInitCommand: true
+      fromInitCommand: true,
     })
   )
 }

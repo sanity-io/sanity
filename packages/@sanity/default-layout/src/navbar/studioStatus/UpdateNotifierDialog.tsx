@@ -16,7 +16,7 @@ const upperFirst = (str: string) => `${str.slice(0, 1).toUpperCase()}${str.slice
 
 class UpdateNotifierDialog extends React.PureComponent<Props> {
   static defaultProps = {
-    outdated: []
+    outdated: [],
   }
 
   renderTable() {
@@ -35,7 +35,7 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
               </tr>
             </thead>
             <tbody>
-              {outdated.map(pkg => (
+              {outdated.map((pkg) => (
                 <tr key={pkg.name}>
                   <td className={styles.npmValue}>{pkg.name}</td>
                   <td className={styles.npmValue}>{pkg.version}</td>

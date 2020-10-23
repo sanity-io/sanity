@@ -19,7 +19,7 @@ const resolveParts = resolver.resolveParts
 const defaultResult = {
   definitions: {},
   implementations: {},
-  plugins: []
+  plugins: [],
 }
 
 function registerLoader(options) {
@@ -40,14 +40,14 @@ function registerLoader(options) {
 
   // Turn {"partName": [{path: "/foo/bar.js"}]} into {"partName": ["/foo/bar.js"]}
   parts.implementations = Object.keys(parts.implementations).reduce((implementations, part) => {
-    implementations[part] = parts.implementations[part].map(impl => impl.path)
+    implementations[part] = parts.implementations[part].map((impl) => impl.path)
     return implementations
   }, {})
 
   // Allow passing specific overrides for parts
   const overrides = options.overrides
   if (overrides) {
-    Object.keys(overrides).forEach(part => {
+    Object.keys(overrides).forEach((part) => {
       if (!Array.isArray(overrides[part])) {
         throw new Error(`Override for part '${part}' is not an array`)
       }
@@ -108,7 +108,7 @@ function registerLoader(options) {
         require.cache[request] = getModule(
           request,
           reduceConfig(sanityConfig, env, {
-            studioRootPath: basePath
+            studioRootPath: basePath,
           })
         )
         return request
@@ -196,7 +196,7 @@ function registerLoader(options) {
       generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]',
       prepend: postcss
         .getPostcssPlugins({basePath: basePath})
-        .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
+        .filter((plugin) => plugin.postcssPlugin !== 'postcss-import'),
     })
   }
 
@@ -204,10 +204,10 @@ function registerLoader(options) {
     Module._resolveFilename = realResolve
     require.extensions['.css'] = prevCssExtension
     Object.keys(require.cache)
-      .filter(request => request.endsWith('.css'))
-      .forEach(request => delete require.cache[request])
+      .filter((request) => request.endsWith('.css'))
+      .forEach((request) => delete require.cache[request])
 
-    usedImports.forEach(request => delete require.cache[request])
+    usedImports.forEach((request) => delete require.cache[request])
   }
 }
 
@@ -217,7 +217,7 @@ function getModule(request, moduleExports) {
     filename: request,
     exports: moduleExports,
     parent: null,
-    loaded: true
+    loaded: true,
   }
 }
 

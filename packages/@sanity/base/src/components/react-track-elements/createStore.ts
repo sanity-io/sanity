@@ -43,6 +43,6 @@ export function createStore<Value>() {
     remove,
     update,
     read,
-    subscribe
+    subscribe,
   }
 }

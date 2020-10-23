@@ -14,5 +14,5 @@ export default {
   signature: '[COMMAND]',
   description: 'Displays help information about Sanity',
   action: showHelp,
-  helpText: help
+  helpText: help,
 }

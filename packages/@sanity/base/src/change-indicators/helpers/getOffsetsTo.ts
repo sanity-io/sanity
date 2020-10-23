@@ -7,7 +7,7 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
     top: 0,
     left: 0,
     height: Number.MAX_SAFE_INTEGER,
-    width: Number.MAX_SAFE_INTEGER
+    width: Number.MAX_SAFE_INTEGER,
   }
 
   let top = 0
@@ -37,9 +37,9 @@ const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
       top,
       left,
       height: source.offsetHeight,
-      width: source.offsetWidth
+      width: source.offsetWidth,
     },
-    bounds: bounds
+    bounds: bounds,
   }
 }
 

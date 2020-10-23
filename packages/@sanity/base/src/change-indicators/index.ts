@@ -6,7 +6,7 @@ export {
   ChangeIndicatorScope,
   CoreChangeIndicator,
   ChangeIndicatorWithProvidedFullPath,
-  ChangeIndicatorContextProvidedProps
+  ChangeIndicatorContextProvidedProps,
 } from './ChangeIndicator'
 
 export {
@@ -15,5 +15,5 @@ export {
   useReporter,
   TrackedArea,
   TrackedChange,
-  Reported
+  Reported,
 } from './tracker'

@@ -17,7 +17,7 @@ const previewComponentMap = {
   media: PreviewComponentMedia,
   detail: PreviewComponentDetail,
   inline: PreviewComponentInline,
-  block: PreviewComponentBlock
+  block: PreviewComponentBlock,
 }
 
 function extractUploadState(value) {
@@ -36,7 +36,7 @@ type Props = {
 }
 
 export default class SanityDefaultPreview extends React.PureComponent<Props> {
-  renderMedia = options => {
+  renderMedia = (options) => {
     const imageBuilder = imageUrlBuilder(sanityClient)
 
     // This functions exists because the previews provides options
@@ -59,7 +59,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     )
   }
 
-  renderImageUrl = options => {
+  renderImageUrl = (options) => {
     // Legacy support for imageUrl
     const {dimensions} = options
     const {value} = this.props
@@ -71,7 +71,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     return undefined
   }
 
-  renderIcon = options => {
+  renderIcon = (options) => {
     const {icon} = this.props
     const Icon = icon || fileIcon
     return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
@@ -126,7 +126,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
       ? {
           ...value,
           imageUrl: _upload.previewImage,
-          title: value.title || (_upload.file && _upload.file.name) || 'Uploading…'
+          title: value.title || (_upload.file && _upload.file.name) || 'Uploading…',
         }
       : value
 

@@ -1,1 +1,1 @@
-export default pluginName => pluginName.replace(/^sanity-plugin-/, '')
+export default (pluginName) => pluginName.replace(/^sanity-plugin-/, '')

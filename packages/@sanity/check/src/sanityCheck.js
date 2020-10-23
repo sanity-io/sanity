@@ -9,8 +9,8 @@ const includes = (arr, val) => arr.indexOf(val) !== -1
 function sanityCheck(options) {
   return resolveParts({
     basePath: options.dir,
-    useCompiledPaths: options.productionMode
-  }).then(parts => checkImplementations(parts, options))
+    useCompiledPaths: options.productionMode,
+  }).then((parts) => checkImplementations(parts, options))
 }
 
 function checkImplementations(result, options) {
@@ -21,23 +21,25 @@ function checkImplementations(result, options) {
 
   const fulfillers = Object.keys(implementations).reduce((impls, partName) => {
     return impls.concat(
-      implementations[partName].map(impl => ({
+      implementations[partName].map((impl) => ({
         partName: partName,
         plugin: impl.plugin,
         path: impl.path,
         dirName: path.dirname(impl.path),
-        fileName: path.basename(impl.path)
+        fileName: path.basename(impl.path),
       }))
     )
   }, [])
 
-  return getFolderContents(fulfillers.map(impl => impl.dirName))
-    .then(folders => verifyImplementationsExist(fulfillers, folders))
-    .then(results => throwOnErrors(results, options))
+  return getFolderContents(fulfillers.map((impl) => impl.dirName))
+    .then((folders) => verifyImplementationsExist(fulfillers, folders))
+    .then((results) => throwOnErrors(results, options))
 }
 
 function throwOnErrors(results, options) {
-  const errors = results.filter(result => result instanceof Error).map(err => ` * ${err.message}`)
+  const errors = results
+    .filter((result) => result instanceof Error)
+    .map((err) => ` * ${err.message}`)
 
   if (errors.length > 0) {
     if (options.productionMode) {
@@ -64,7 +66,7 @@ function getFolderContents(dirs) {
 
 function verifyImplementationsExist(implementations, folderContents) {
   return Promise.all(
-    implementations.map(impl => verifyImplementationExists(impl, folderContents[impl.dirName]))
+    implementations.map((impl) => verifyImplementationExists(impl, folderContents[impl.dirName]))
   )
 }
 
@@ -82,7 +84,7 @@ function verifyImplementationExists(impl, parentDirContent) {
   const targetFile = impl.fileName.toLowerCase()
   const targetJsFile = `${targetFile}.js`
   const found = parentDirContent.find(
-    file => file.toLowerCase() === targetFile || file.toLowerCase() === targetJsFile
+    (file) => file.toLowerCase() === targetFile || file.toLowerCase() === targetJsFile
   )
 
   if (found) {
@@ -107,7 +109,7 @@ function checkImplementationMsg(impl) {
 function isFileOrDirectoryWithIndex(impl) {
   return fse
     .stat(impl.path)
-    .then(stats => {
+    .then((stats) => {
       return stats.isDirectory() ? directoryHasIndex(impl) : true
     })
     .catch(
@@ -120,7 +122,7 @@ function isFileOrDirectoryWithIndex(impl) {
 }
 
 function directoryHasIndex(impl) {
-  return fse.readdir(impl.path).then(dirContent => {
+  return fse.readdir(impl.path).then((dirContent) => {
     return includes(dirContent, 'index.js')
       ? true
       : new Error(

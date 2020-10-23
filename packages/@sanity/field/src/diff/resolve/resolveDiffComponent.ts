@@ -7,7 +7,7 @@ import {
   DiffComponentOptions,
   DiffComponentResolver,
   ObjectSchemaType,
-  SchemaType
+  SchemaType,
 } from '../../types'
 import {defaultComponents} from './defaultComponents'
 

@@ -84,7 +84,7 @@ class DocumentWindow extends EventEmitter {
     debug('Setting up listener')
     this._listener = this._client
       .listen(this._query.toString({constraintsOnly: true}), this._query.params(), listenOptions)
-      .subscribe(evt => this._onListenerEvent(evt))
+      .subscribe((evt) => this._onListenerEvent(evt))
   }
 
   _onListenerEvent(evt) {
@@ -139,7 +139,7 @@ class DocumentWindow extends EventEmitter {
     debug('Received mutation, processing')
     this._incPending()
 
-    const existingIndex = this._data.findIndex(doc => doc._id === mut.documentId)
+    const existingIndex = this._data.findIndex((doc) => doc._id === mut.documentId)
     const hasExisting = existingIndex !== -1
     const wasDeleted = !mut.result
 
@@ -246,7 +246,7 @@ class DocumentWindow extends EventEmitter {
     debug('Requesting snapshot from %d to %d', fromIndex, toIndex)
 
     // @todo how do we handle errors?
-    this._request = this._client.observable.fetch(query, query.params()).subscribe(data => {
+    this._request = this._client.observable.fetch(query, query.params()).subscribe((data) => {
       debug('Snapshot received, %d items', data.length)
 
       const sorted = sortBy(data, query.orderBy())
@@ -278,9 +278,9 @@ class DocumentWindow extends EventEmitter {
         operator: sortOrderToOperator(order, {
           invert,
           // Tiebreaker should never be equal
-          orEqual: i !== idOrderIndex
+          orEqual: i !== idOrderIndex,
         }),
-        value: JSON.stringify(dotProp.get(compareWith, field))
+        value: JSON.stringify(dotProp.get(compareWith, field)),
       }))
       .map(({field, operator, value}) => `${field} ${operator} ${value}`)
 
@@ -288,18 +288,15 @@ class DocumentWindow extends EventEmitter {
       query.orderBy(
         orderings.map(([field, dir]) => [
           field,
-          dir === Constants.ASCENDING ? Constants.DESCENDING : Constants.ASCENDING
+          dir === Constants.ASCENDING ? Constants.DESCENDING : Constants.ASCENDING,
         ])
       )
     }
 
-    query
-      .constraint(constraints)
-      .from(0)
-      .to(numItems)
+    query.constraint(constraints).from(0).to(numItems)
 
     // @todo how do we handle errors?
-    this._request = this._client.observable.fetch(query, query.params()).subscribe(data => {
+    this._request = this._client.observable.fetch(query, query.params()).subscribe((data) => {
       debug('Items by constraint received, %d items', data.length)
 
       // We have to depend on the fact that our client-side and server-side
@@ -389,7 +386,7 @@ class DocumentWindow extends EventEmitter {
 
       needsBackFill,
       needsFrontFill,
-      needsFill: needsBackFill || needsFrontFill
+      needsFill: needsBackFill || needsFrontFill,
     }
   }
 
@@ -441,7 +438,7 @@ class DocumentWindow extends EventEmitter {
     this.fetchItemsByConstraint({
       compareWith,
       end,
-      numItems
+      numItems,
     })
   }
 
@@ -451,7 +448,7 @@ class DocumentWindow extends EventEmitter {
     return {
       pre: {from: 0, to: windowFrom},
       window: {from: windowFrom, to: windowTo},
-      post: {from: windowTo, to: this._data.length}
+      post: {from: windowTo, to: this._data.length},
     }
   }
 
@@ -460,7 +457,7 @@ class DocumentWindow extends EventEmitter {
       return Promise.resolve()
     }
 
-    return new Promise(resolve => this.once('settle', resolve))
+    return new Promise((resolve) => this.once('settle', resolve))
   }
 
   debug() {
@@ -469,7 +466,7 @@ class DocumentWindow extends EventEmitter {
     return {
       pre: this._data.slice(indices.pre.from, indices.pre.to),
       window: this._data.slice(indices.window.from, indices.window.to),
-      post: this._data.slice(indices.post.from, indices.post.to)
+      post: this._data.slice(indices.post.from, indices.post.to),
     }
   }
 
@@ -481,7 +478,7 @@ class DocumentWindow extends EventEmitter {
     this.emit('debug', {
       pre: this._data.slice(indices.pre.from, indices.pre.to),
       window: dataWindow,
-      post: this._data.slice(indices.post.from, indices.post.to)
+      post: this._data.slice(indices.post.from, indices.post.to),
     })
   }
 }

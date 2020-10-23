@@ -7,7 +7,7 @@ import {
   RenderBlockFunction,
   usePortableTextEditor,
   usePortableTextEditorSelection,
-  PortableTextEditor
+  PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import classNames from 'classnames'
 import React from 'react'
@@ -51,8 +51,8 @@ function PTEToolbar(props: Props) {
       className={classNames(styles.root, isFullscreen && styles.fullscreen)}
       // Ensure the editor doesn't lose focus when interacting
       // with the toolbar (prevent focus click events)
-      onMouseDown={event => event.preventDefault()}
-      onKeyPress={event => event.preventDefault()}
+      onMouseDown={(event) => event.preventDefault()}
+      onKeyPress={(event) => event.preventDefault()}
     >
       {blockStyleSelectProps && blockStyleSelectProps.items.length > 1 && (
         <div className={styles.blockStyleSelectContainer}>

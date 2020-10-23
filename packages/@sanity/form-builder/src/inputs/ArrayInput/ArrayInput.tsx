@@ -59,11 +59,11 @@ type ArrayInputState = {
 
 export default class ArrayInput extends React.Component<Props, ArrayInputState> {
   static defaultProps = {
-    focusPath: []
+    focusPath: [],
   }
 
   state = {
-    isMoving: false
+    isMoving: false,
   }
 
   _element: any
@@ -169,7 +169,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
 
-    return type.of.find(memberType => memberType.name === itemTypeName) as SchemaType
+    return type.of.find((memberType) => memberType.name === itemTypeName) as SchemaType
   }
 
   renderList = () => {
@@ -184,12 +184,12 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       level,
       compareValue,
       filterField,
-      presence
+      presence,
     } = this.props
 
     const {isMoving} = this.state
     const options = type.options || {}
-    const hasMissingKeys = value.some(item => !item._key)
+    const hasMissingKeys = value.some((item) => !item._key)
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
     const {List, Item} = resolveListComponents(isSortable, isGrid)
@@ -199,7 +199,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           onSortEnd: this.handleSortEnd,
           onSortStart: this.handleSortStart,
           lockToContainerEdges: true,
-          useDragHandle: true
+          useDragHandle: true,
         }
       : {}
 
@@ -212,10 +212,10 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     return (
       <List className={listClassName} {...listProps}>
         {value.map((item, index) => {
-          const isChildMarker = marker =>
+          const isChildMarker = (marker) =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
           const childMarkers = markers.filter(isChildMarker)
-          const isChildPresence = pItem =>
+          const isChildPresence = (pItem) =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
@@ -255,7 +255,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     }
   }
 
-  setElement = el => {
+  setElement = (el) => {
     this._element = el
   }
 
@@ -267,11 +267,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     }
 
     return type.of
-      .map(memberType => ({
+      .map((memberType) => ({
         type: memberType,
-        uploader: resolveUploader(memberType, file)
+        uploader: resolveUploader(memberType, file),
       }))
-      .filter(member => member.uploader)
+      .filter((member) => member.uploader)
   }
 
   handleFixMissingKeys = () => {
@@ -286,7 +286,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const nonObjects = value
       .reduce((acc, val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
       .reverse()
-    const patches = nonObjects.map(index => unset([index]))
+    const patches = nonObjects.map((index) => unset([index]))
 
     onChange(PatchEvent.from(...patches))
   }
@@ -304,14 +304,16 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
 
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,
-      [key]: events$.subscribe(onChange)
+      [key]: events$.subscribe(onChange),
     }
   }
 
   renderUnknownValueTypes = () => {
     const {value, type, readOnly} = this.props
-    const knownTypes = (type.of || []).map(t => t.name).filter(typeName => typeName !== 'object')
-    const unknownValues = (value || []).filter(v => v._type && !knownTypes.includes(v._type))
+    const knownTypes = (type.of || [])
+      .map((t) => t.name)
+      .filter((typeName) => typeName !== 'object')
+    const unknownValues = (value || []).filter((v) => v._type && !knownTypes.includes(v._type))
 
     if (!unknownValues || unknownValues.length < 1) {
       return null
@@ -322,7 +324,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         These are not defined in the current schema as valid types for this array. This could mean
         that the type has been removed, or that someone else has added it to their own local schema
         that is not yet deployed.
-        {unknownValues.map(item => {
+        {unknownValues.map((item) => {
           return (
             <div key={item._type}>
               <h4>{item._type}</h4>
@@ -353,7 +355,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
 
   render() {
     const {type, level = 1, markers, readOnly, onChange, value, presence} = this.props
-    const hasNonObjectValues = (value || []).some(item => !isPlainObject(item))
+    const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
 
     if (hasNonObjectValues) {
       return (
@@ -384,7 +386,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       )
     }
 
-    const hasMissingKeys = (value || []).some(item => !item._key)
+    const hasMissingKeys = (value || []).some((item) => !item._key)
 
     if (hasMissingKeys) {
       return (
@@ -435,7 +437,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
-        presence={presence.filter(item => item.path[0] === '$')}
+        presence={presence.filter((item) => item.path[0] === '$')}
         changeIndicator={false}
         {...uploadProps}
       >

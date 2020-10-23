@@ -21,10 +21,10 @@ function navigate(nextUrl, options) {
       nextUrl: nextUrl,
       cancel() {
         cancelled = true
-      }
+      },
     }
 
-    interceptors.some(interceptor => {
+    interceptors.some((interceptor) => {
       interceptor(nextNavigation)
       return !cancelled
     })
@@ -42,22 +42,22 @@ function navigate(nextUrl, options) {
   return {progress: new Observable(noop)}
 }
 
-const locationChange$ = new Observable(observer => {
+const locationChange$ = new Observable((observer) => {
   return history.listen(() => observer.next(readLocation()))
 }).pipe(
-  map(location => ({
+  map((location) => ({
     type: 'change',
-    location: location
+    location: location,
   })),
   share()
 )
 
 export default function createLocationStore(options = {}) {
-  const eventStream = new Observable(observer => {
+  const eventStream = new Observable((observer) => {
     const subscription = locationChange$.subscribe(observer)
     observer.next({
       type: 'snapshot',
-      location: readLocation()
+      location: readLocation(),
     })
     return subscription
   })
@@ -71,7 +71,7 @@ export default function createLocationStore(options = {}) {
       }
     },
     actions: createActions({
-      navigate
-    })
+      navigate,
+    }),
   }
 }

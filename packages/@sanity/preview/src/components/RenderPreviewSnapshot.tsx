@@ -29,7 +29,7 @@ export default function RenderPreviewSnapshot(props: Props) {
   // TODO: Bjoerge: Check for image type with "is()"
   const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
   const typeName = snapshot?._type
-  const icon = (type.to && type.to.find(t => t.name === typeName)?.icon) || type.icon
+  const icon = (type.to && type.to.find((t) => t.name === typeName)?.icon) || type.icon
   const preview = (
     <PreviewComponent // Render media always until we have schema functionality for determining if there is media
       media={() => undefined}

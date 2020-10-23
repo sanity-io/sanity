@@ -39,7 +39,7 @@ const Model: ObjectModel<unknown, StringBuilder, ObjectBuilder, ArrayBuilder> = 
   copyObject(value: unknown | null): ObjectBuilder {
     let res: ObjectBuilder = {
       type: 'object',
-      data: {}
+      data: {},
     }
     if (value !== null) {
       for (let [key, val] of Object.entries(value as ObjectBuilder)) {
@@ -57,7 +57,7 @@ const Model: ObjectModel<unknown, StringBuilder, ObjectBuilder, ArrayBuilder> = 
   copyString(value: unknown | null): StringBuilder {
     return {
       type: 'string',
-      data: value === null ? '' : (value as string)
+      data: value === null ? '' : (value as string),
     }
   },
 
@@ -88,7 +88,7 @@ const Model: ObjectModel<unknown, StringBuilder, ObjectBuilder, ArrayBuilder> = 
 
   stringAppendValue(target: StringBuilder, value: unknown): void {
     target.data += value as string
-  }
+  },
 }
 
 // Applies a patch on a JavaScript object.

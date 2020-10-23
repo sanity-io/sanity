@@ -10,5 +10,5 @@ export const SUPPORTED_LANGUAGES = [
   {id: 'sv', title: 'Swedish'},
   {id: 'hi', title: 'Hindi'},
   {id: 'si', title: 'Sinhala'},
-  {id: 'zh_Hans', title: 'Chinese (Simplified)'}
+  {id: 'zh_Hans', title: 'Chinese (Simplified)'},
 ]

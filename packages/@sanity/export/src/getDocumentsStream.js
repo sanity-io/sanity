@@ -8,7 +8,7 @@ module.exports = (client, dataset) => {
   const token = client.config().token
   const headers = {
     'User-Agent': `${pkg.name}@${pkg.version}`,
-    ...(token ? {Authorization: `Bearer ${token}`} : {})
+    ...(token ? {Authorization: `Bearer ${token}`} : {}),
   }
 
   return requestStream({url, headers})

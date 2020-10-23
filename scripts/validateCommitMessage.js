@@ -17,7 +17,7 @@ if (!template.test(msg) && !semver.valid(msg)) {
         chalk.green('[package] Description of the change'),
         '',
         'Example:',
-        chalk.green('[desk-tool] Improve performance of list rendering')
+        chalk.green('[desk-tool] Improve performance of list rendering'),
       ].join('\n'),
       {padding: 1, margin: 1, borderStyle: 'double', borderColor: 'red'}
     )

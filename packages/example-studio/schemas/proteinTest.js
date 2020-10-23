@@ -9,12 +9,12 @@ export default {
     {
       name: 'title',
       title: 'Name',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'protein',
       title: 'Protein',
-      type: 'protein'
-    }
-  ]
+      type: 'protein',
+    },
+  ],
 }

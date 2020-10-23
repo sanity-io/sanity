@@ -51,7 +51,7 @@ export default class CaptureOutsideClicks extends React.Component<CaptureOutside
 
     return React.createElement(wrapperElement, {
       ...restProps,
-      ref: this.setWrapperElement
+      ref: this.setWrapperElement,
     })
   }
 }

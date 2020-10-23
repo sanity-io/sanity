@@ -17,10 +17,10 @@ export const unpublish = {
       tx = tx.createIfNotExists({
         ...omit(snapshots.published, '_updatedAt'),
         _id: idPair.draftId,
-        _type: snapshots.published._type
+        _type: snapshots.published._type,
       })
     }
 
     return tx.commit()
-  }
+  },
 }

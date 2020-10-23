@@ -2,7 +2,7 @@ import React from 'react'
 
 const strokeStyle = {
   stroke: 'currentColor',
-  strokeWidth: 1
+  strokeWidth: 1,
 }
 
 export function EditIcon() {

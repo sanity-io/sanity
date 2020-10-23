@@ -39,7 +39,7 @@ function PopoverExample({refIndex}: {refIndex: number}) {
           style={{
             display: 'inline-block',
             padding: '0.25em',
-            background: 'rgba(127, 127, 127, 0.5)'
+            background: 'rgba(127, 127, 127, 0.5)',
           }}
         >
           reference 1
@@ -50,7 +50,7 @@ function PopoverExample({refIndex}: {refIndex: number}) {
           style={{
             display: 'inline-block',
             padding: '0.25em',
-            background: 'rgba(127, 127, 127, 0.5)'
+            background: 'rgba(127, 127, 127, 0.5)',
           }}
         >
           reference 2

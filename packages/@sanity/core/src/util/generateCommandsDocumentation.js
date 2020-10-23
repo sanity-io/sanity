@@ -17,9 +17,9 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
   const rows = [
     'usage: sanity [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]',
     '',
-    'Commands:'
+    'Commands:',
   ]
-    .concat(commandGroup.map(cmd => `   ${padEnd(cmd.name, cmdLength)} ${cmd.description}`))
+    .concat(commandGroup.map((cmd) => `   ${padEnd(cmd.name, cmdLength)} ${cmd.description}`))
     .concat(['', "See 'sanity help <command>' for specific information on a subcommand."])
 
   return rows.join('\n')
@@ -43,6 +43,6 @@ export function generateCommandDocumentation(command, group, subCommand) {
     '',
     `   ${command.description || ''}`,
     '',
-    (command.helpText || '').trim()
+    (command.helpText || '').trim(),
   ].join('\n')
 }

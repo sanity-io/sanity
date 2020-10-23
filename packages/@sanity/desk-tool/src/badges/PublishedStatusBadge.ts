@@ -2,7 +2,7 @@ export function PublishedStatusBadge(props) {
   return props.published
     ? {
         label: 'Published',
-        color: 'success'
+        color: 'success',
       }
     : null
 }

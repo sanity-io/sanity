@@ -91,7 +91,7 @@ function CropSVG({
     x: crop.left * width,
     y: crop.top * height,
     width: (1 - crop.right - crop.left) * width,
-    height: (1 - crop.bottom - crop.top) * height
+    height: (1 - crop.bottom - crop.top) * height,
   }
 
   return <rect {...restProps} {...rectProps} style={{vectorEffect: 'non-scaling-stroke'}} />
@@ -111,7 +111,7 @@ function HotspotSVG({
     cx: hotspot.x * width,
     cy: hotspot.y * height,
     rx: (hotspot.width / 2) * width + offset,
-    ry: (hotspot.height / 2) * height + offset
+    ry: (hotspot.height / 2) * height + offset,
   }
 
   return <ellipse {...restProps} {...ellipseProps} style={{vectorEffect: 'non-scaling-stroke'}} />

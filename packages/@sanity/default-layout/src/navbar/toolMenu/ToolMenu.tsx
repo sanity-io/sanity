@@ -27,14 +27,14 @@ function ToolMenu(props: Props) {
     router,
     tools,
     showLabel: showLabelProp,
-    tone
+    tone,
   } = props
   const isVertical = direction === 'horizontal'
   const showLabel = (TOUCH_DEVICE && !isVertical) || showLabelProp
 
   return (
     <ul className={styles.root} data-direction={direction} data-tone="navbar">
-      {tools.map(tool => {
+      {tools.map((tool) => {
         const title = tool.title || tool.name || undefined
         const tooltipContent = <span className={styles.tooltipContent}>{title}</span>
 

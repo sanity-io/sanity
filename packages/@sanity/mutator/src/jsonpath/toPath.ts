@@ -66,7 +66,7 @@ function toPathInner(expr: any, inUnion: boolean): string {
       return result.join('')
     }
     case 'union':
-      const terms = expr.nodes.map(e => toPathInner(e, true))
+      const terms = expr.nodes.map((e) => toPathInner(e, true))
       return `[${terms.join(',')}]`
     default:
       throw new Error(`Unknown node type ${expr.type}`)

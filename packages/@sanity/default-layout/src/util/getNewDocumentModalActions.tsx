@@ -73,9 +73,9 @@ function createModalAction(templateItem) {
     template: tpl,
     params: {
       template: item.templateId,
-      type: tpl.schemaType
+      type: tpl.schemaType,
     },
-    templateParams: item.parameters
+    templateParams: item.parameters,
   }
 }
 
@@ -107,7 +107,7 @@ function hasRequiredParameters(item) {
 }
 
 function validateNewDocumentStructure(structureItems) {
-  const items = structureItems.map(item =>
+  const items = structureItems.map((item) =>
     item && typeof item.serialize === 'function' ? item.serialize() : item
   )
 

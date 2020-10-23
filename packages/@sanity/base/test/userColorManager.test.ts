@@ -9,7 +9,7 @@ const colorPreferences = {
   even: 'magenta',
   kokos: 'purple',
   magnus: 'cyan',
-  yggrasil: 'yellow'
+  yggrasil: 'yellow',
 }
 
 const peopleNames = Object.keys(colorPreferences)
@@ -17,8 +17,8 @@ const peopleNames = Object.keys(colorPreferences)
 const getMockUserStore = (): ManagerOptions['userStore'] => ({
   currentUser: new BehaviorSubject({
     type: 'snapshot' as 'snapshot',
-    user: {id: 'current'}
-  })
+    user: {id: 'current'},
+  }),
 })
 
 const hues = ['blue', 'cyan', 'yellow', 'orange', 'magenta', 'purple']
@@ -29,7 +29,7 @@ const colors: ManagerOptions['colors'] = hues.reduce((acc, hue) => {
 
 const options: ManagerOptions = {
   currentUserColor: 'blue',
-  colors
+  colors,
 }
 
 describe('user color manager', () => {
@@ -49,8 +49,8 @@ describe('user color manager', () => {
 
   test('returns same color when still assigned (has open subscriptions)', () => {
     const manager = createUserColorManager(options)
-    const sub1 = manager.listen('bamse').subscribe(color => expect(color).toBe(colors.magenta))
-    const sub2 = manager.listen('bamse').subscribe(color => expect(color).toBe(colors.magenta))
+    const sub1 = manager.listen('bamse').subscribe((color) => expect(color).toBe(colors.magenta))
+    const sub2 = manager.listen('bamse').subscribe((color) => expect(color).toBe(colors.magenta))
     sub1.unsubscribe()
     sub2.unsubscribe()
 
@@ -61,7 +61,7 @@ describe('user color manager', () => {
     // kokos and espen has the same preferred color (purple),
     // but as kokos got it assigned first, espen will have to waive
     let manager = createUserColorManager(options)
-    let sub = manager.listen('kokos').subscribe(color => expect(color).toBe(colors.purple))
+    let sub = manager.listen('kokos').subscribe((color) => expect(color).toBe(colors.purple))
     expectColor(manager.listen('espen'), 'blue')
     sub.unsubscribe()
 
@@ -69,7 +69,7 @@ describe('user color manager', () => {
     // kokos and espen has the same preferred color (purple),
     // but as espen got it assigned first, kokos will have to waive
     manager = createUserColorManager(options)
-    sub = manager.listen('espen').subscribe(color => expect(color).toBe(colors.purple))
+    sub = manager.listen('espen').subscribe((color) => expect(color).toBe(colors.purple))
     expectColor(manager.listen('kokos'), 'blue')
     sub.unsubscribe()
 
@@ -87,20 +87,20 @@ describe('user color manager', () => {
     // unused colors, and the previously assigned color is in use, which should prioritize
     // giving a unique color instead of giving the previously used one.
     const nonKokos = ['espen'].concat(
-      peopleNames.filter(name => name !== 'kokos' && name !== 'yggrasil')
+      peopleNames.filter((name) => name !== 'kokos' && name !== 'yggrasil')
     )
 
-    const subs = nonKokos.map(name =>
+    const subs = nonKokos.map((name) =>
       manager
         .listen(name)
-        .subscribe(color => expect(color).toBe(colors[colorPreferences[name] || 'purple']))
+        .subscribe((color) => expect(color).toBe(colors[colorPreferences[name] || 'purple']))
     )
 
     // Now, when kokos wants her previous color, and there is an unused slot, she should
     // be given the unused color instead of the previously assigned one
     expectColor(manager.listen('kokos'), 'yellow')
 
-    subs.forEach(sub => sub.unsubscribe())
+    subs.forEach((sub) => sub.unsubscribe())
 
     return nextTick()
   })
@@ -109,14 +109,14 @@ describe('user color manager', () => {
     const manager = createUserColorManager(options)
 
     const subs = [
-      manager.listen('espen').subscribe(color => expect(color).toBe(colors.purple))
+      manager.listen('espen').subscribe((color) => expect(color).toBe(colors.purple)),
     ].concat(
       peopleNames
-        .filter(name => name !== 'kokos')
-        .map(name =>
+        .filter((name) => name !== 'kokos')
+        .map((name) =>
           manager
             .listen(name)
-            .subscribe(color => expect(color).toBe(colors[colorPreferences[name]]))
+            .subscribe((color) => expect(color).toBe(colors[colorPreferences[name]]))
         )
     )
 
@@ -126,7 +126,7 @@ describe('user color manager', () => {
     // subsequent calls will still give that color
     expectColor(manager.listen('kokos'), 'blue')
 
-    subs.forEach(sub => sub.unsubscribe())
+    subs.forEach((sub) => sub.unsubscribe())
 
     return nextTick()
   })
@@ -139,11 +139,11 @@ describe('user color manager', () => {
 
   test('"current user" has static color (all slots filled state)', () => {
     const manager = createUserColorManager({...options, userStore: getMockUserStore()})
-    const subs = peopleNames.map(name => manager.listen(name).subscribe(() => null))
+    const subs = peopleNames.map((name) => manager.listen(name).subscribe(() => null))
 
     expectColor(manager.listen('current'), options.currentUserColor)
 
-    subs.forEach(sub => sub.unsubscribe())
+    subs.forEach((sub) => sub.unsubscribe())
     return nextTick()
   })
 
@@ -151,14 +151,14 @@ describe('user color manager', () => {
     const manager = createUserColorManager({...options, userStore: getMockUserStore()})
     await nextTick()
 
-    const nextHueInLine = hues.find(color => color !== options.currentUserColor)
+    const nextHueInLine = hues.find((color) => color !== options.currentUserColor)
     const prefersBlue = peopleNames.find(
-      name => colorPreferences[name] === options.currentUserColor
+      (name) => colorPreferences[name] === options.currentUserColor
     )
 
     expectColor(manager.listen(prefersBlue), nextHueInLine)
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     return nextTick()
   })
@@ -179,7 +179,7 @@ describe('user color manager', () => {
 function expectColor(obs: Observable<UserColor>, expectedHue: string) {
   let returned: UserColor | undefined
   obs
-    .subscribe(color => {
+    .subscribe((color) => {
       returned = color
     })
     .unsubscribe()
@@ -191,5 +191,5 @@ function expectColor(obs: Observable<UserColor>, expectedHue: string) {
 // returning a promise that waits until the next tick (ish) will ensure
 // that errors thrown after test code does not silently get swallowed
 function nextTick() {
-  return new Promise(resolve => setImmediate(resolve))
+  return new Promise((resolve) => setImmediate(resolve))
 }

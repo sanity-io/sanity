@@ -17,16 +17,13 @@ describe('insertion outside of main window, but within buffer', () => {
       _id: 'dat-new-product',
       name: 'That new product',
       _updatedAt: '2017-06-02T11:59:58Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -43,16 +40,13 @@ describe('insertion outside of main window, but within buffer', () => {
       _id: 'dat-new-product',
       name: 'That new product',
       _updatedAt: '2017-06-01T09:30:00Z',
-      __injected: true
+      __injected: true,
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})

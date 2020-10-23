@@ -9,7 +9,7 @@ import SanityArrayInput from '../inputs/SanityArrayInput'
 const PRIMITIVES = ['string', 'number', 'boolean']
 
 export function isArrayOfPrimitives(type) {
-  return type.of.every(ofType => PRIMITIVES.includes(ofType.jsonType))
+  return type.of.every((ofType) => PRIMITIVES.includes(ofType.jsonType))
 }
 
 function isTagsArray(type) {
@@ -20,7 +20,7 @@ function isTagsArray(type) {
 
 function isPortableText(type) {
   // TODO: better testing here, not only for type 'block' !
-  return type.of.some(memberType => is.type('block', memberType))
+  return type.of.some((memberType) => is.type('block', memberType))
 }
 
 export function hasOptionsList(type) {

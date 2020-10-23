@@ -18,36 +18,36 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'author',
       title: 'Author',
       type: 'reference',
-      to: {type: 'author', title: 'Author'}
+      to: {type: 'author', title: 'Author'},
     },
     {
       name: 'coverImage',
       title: 'Cover Image',
-      type: 'image'
+      type: 'image',
     },
     {
       name: 'publicationYear',
       title: 'Year of publication',
-      type: 'number'
-    }
+      type: 'number',
+    },
   ],
   preview: {
     select: {
       title: 'title',
       authorName: 'author.name',
-      publicationYear: 'publicationYear'
+      publicationYear: 'publicationYear',
     },
     prepare(thesis, options = {}) {
       return Object.assign({}, thesis, {
         title: thesis.title,
-        subtitle: formatSubtitle(thesis)
+        subtitle: formatSubtitle(thesis),
       })
-    }
-  }
+    },
+  },
 }

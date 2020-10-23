@@ -25,7 +25,7 @@ function extractProps(component) {
 
   return Object.keys(properties)
     .sort()
-    .map(property => properties[property])
+    .map((property) => properties[property])
 }
 
 function extractPropsForComponents(components) {
@@ -37,9 +37,9 @@ function extractPropsForComponents(components) {
     return (compA.displayName || compA.name) > (compB.displayName || compB.name)
   })
 
-  return sorted.map(component => ({
+  return sorted.map((component) => ({
     name: component.displayName || component.name,
-    props: extractProps(component)
+    props: extractProps(component),
   }))
 }
 

@@ -21,22 +21,18 @@ module.exports = (stream, options, importers) =>
     let jsonDocuments
 
     const uncompressStream = miss.pipeline(gunzipMaybe(), untarMaybe())
-    miss.pipe(
-      stream,
-      uncompressStream,
-      err => {
-        if (err) {
-          reject(err)
-          return
-        }
-
-        if (isTarStream) {
-          findAndImport()
-        } else {
-          resolve(importers.fromArray(jsonDocuments, options))
-        }
+    miss.pipe(stream, uncompressStream, (err) => {
+      if (err) {
+        reject(err)
+        return
       }
-    )
+
+      if (isTarStream) {
+        findAndImport()
+      } else {
+        resolve(importers.fromArray(jsonDocuments, options))
+      }
+    })
 
     function untarMaybe() {
       return peek({newline: false, maxBuffer: 300}, (data, swap) => {
@@ -50,7 +46,7 @@ module.exports = (stream, options, importers) =>
         const jsonStreamer = getJsonStreamer()
         const concatter = miss.concat(resolveNdjsonStream)
         const ndjsonStream = miss.pipeline(jsonStreamer, concatter)
-        ndjsonStream.on('error', err => {
+        ndjsonStream.on('error', (err) => {
           uncompressStream.emit('error', err)
           destroy([uncompressStream, jsonStreamer, concatter, ndjsonStream])
           reject(err)
@@ -79,7 +75,7 @@ module.exports = (stream, options, importers) =>
   })
 
 function destroy(streams) {
-  streams.forEach(stream => {
+  streams.forEach((stream) => {
     if (isFS(stream)) {
       // use close for fs streams to avoid fd leaks
       stream.close(noop)

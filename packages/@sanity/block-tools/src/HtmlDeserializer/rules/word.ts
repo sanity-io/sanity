@@ -46,11 +46,11 @@ export default function createWordRules(blockContentType, options = {}) {
             listItem: getListItemStyle(el),
             level: getListItemLevel(el),
             style: BLOCK_DEFAULT_STYLE,
-            children: next(el.childNodes)
+            children: next(el.childNodes),
           }
         }
         return undefined
-      }
-    }
+      },
+    },
   ]
 }

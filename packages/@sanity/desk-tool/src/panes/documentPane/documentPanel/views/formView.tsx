@@ -36,13 +36,13 @@ interface Props {
 const noop = () => undefined
 
 const INITIAL_STATE = {
-  filterField: () => true
+  filterField: () => true,
 }
 
 export class FormView extends React.PureComponent<Props> {
   static defaultProps = {
     markers: [],
-    isConnected: true
+    isConnected: true,
   }
 
   state = INITIAL_STATE
@@ -95,7 +95,7 @@ export class FormView extends React.PureComponent<Props> {
       markers,
       schemaType,
       compareValue,
-      margins
+      margins,
     } = this.props
     const {filterField} = this.state
     const readOnly = this.isReadOnly()

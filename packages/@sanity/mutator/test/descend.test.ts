@@ -8,12 +8,12 @@ function headTailToStr(headTail) {
 }
 
 function descentStateToStr(descentState): string {
-  return `(${descentState.map(ht => headTailToStr(ht)).join(', ')})`
+  return `(${descentState.map((ht) => headTailToStr(ht)).join(', ')})`
 }
 
 function descendAll(descentState): any[] {
   const result = []
-  descentState.forEach(ht => {
+  descentState.forEach((ht) => {
     const tail = ht[1]
     if (tail) {
       result.push(...descend(tail))
@@ -38,15 +38,15 @@ const cases = {
   '[a,b].c': ['(<a|c], <b|c])', '(<c|], <c|])'],
   '[0,1,2,3]._weak': [
     '(<[0]|_weak], <[1]|_weak], <[2]|_weak], <[3]|_weak])',
-    '(<_weak|], <_weak|], <_weak|], <_weak|])'
+    '(<_weak|], <_weak|], <_weak|], <_weak|])',
   ],
   'a[b.c, e].f': ['(<a|[b.c,e].f])', '(<b|c.f], <e|f])', '(<c|f], <f|])', '(<f|])'],
   'members[age > 50].name': ['(<members|[age > 50].name])', '(<[age > 50]|name])', '(<name|])'],
-  '[]': []
+  '[]': [],
 }
 
-Object.keys(cases).forEach(path => {
-  test(`Verify descent for ${path}`, tap => {
+Object.keys(cases).forEach((path) => {
+  test(`Verify descent for ${path}`, (tap) => {
     const descents = descentsFor(path)
     // console.log(path, descents)
     tap.same(descents, cases[path])

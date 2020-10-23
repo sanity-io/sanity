@@ -19,7 +19,7 @@ export default class SelectInput extends React.Component<Props<string | number>>
   _input: (RadioSelect | Select) | null
   name = uniqueId('RadioName')
   static defaultProps = {
-    value: ''
+    value: '',
   }
 
   handleChange = (item: string | number | TitledListValue<string | number>) => {
@@ -41,9 +41,9 @@ export default class SelectInput extends React.Component<Props<string | number>>
   render() {
     const {value, readOnly, markers, type, level, onFocus, presence} = this.props
     const items = ((type.options?.list || []) as unknown[]).map(toSelectItem)
-    const currentItem = items.find(item => item.value === value)
+    const currentItem = items.find((item) => item.value === value)
     const isRadio = type.options && type.options.layout === 'radio'
-    const validation = markers.filter(marker => marker.type === 'validation')
+    const validation = markers.filter((marker) => marker.type === 'validation')
     return (
       <FormField
         labelFor={this.name}

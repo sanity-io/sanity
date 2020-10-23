@@ -5,7 +5,7 @@ import {isValidationMarker, Marker, Path} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import {
   ChangeIndicator,
-  ChangeIndicatorContextProvidedProps
+  ChangeIndicatorContextProvidedProps,
 } from '@sanity/base/lib/change-indicators'
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
@@ -60,7 +60,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     tabIndex: undefined,
     transparent: undefined,
     changeIndicator: true,
-    presence: EMPTY_ARRAY
+    presence: EMPTY_ARRAY,
   }
 
   constructor(props: FieldsetProps) {
@@ -68,14 +68,14 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
     this.state = {
       isCollapsed: props.isCollapsed || false,
-      hasBeenToggled: false
+      hasBeenToggled: false,
     }
   }
 
   handleToggle = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       isCollapsed: !prevState.isCollapsed,
-      hasBeenToggled: true
+      hasBeenToggled: true,
     }))
 
     // Let parent know field has been toggled
@@ -124,7 +124,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
 
     const styles = {
       ...defaultStyles,
-      ...this.props.styles
+      ...this.props.styles,
     }
 
     const validation = markers.filter(isValidationMarker)
@@ -159,7 +159,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
                   // Uses the tabIndex 0 and -1 here to avoid focus state on click
                   tabIndex={isCollapsible ? 0 : undefined}
-                  onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
+                  onKeyDown={(event) => (event.key === 'Enter' ? this.handleToggle() : false)}
                 >
                   <div
                     className={styles.labelContainer}
@@ -179,8 +179,8 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
                     className={styles.validationStatus}
                     markers={
                       showSummary
-                        ? validation.filter(marker => marker.path.length <= level)
-                        : validation.filter(marker => marker.path.length < 1)
+                        ? validation.filter((marker) => marker.path.length <= level)
+                        : validation.filter((marker) => marker.path.length < 1)
                     }
                     showSummary={showSummary}
                     hideTooltip={hideTooltip}

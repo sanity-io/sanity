@@ -5,7 +5,7 @@ const Constants = require('../src/Constants')
 
 const clientDefaults = {
   responses: [],
-  events: []
+  events: [],
 }
 
 function getMockClient(opts) {
@@ -24,7 +24,7 @@ function getMockClient(opts) {
     throw new Error(`Tried to call fetch() without a mock (on call #${fetchCalls})`)
   })
 
-  const listenObservable = new Observable(observer => {
+  const listenObservable = new Observable((observer) => {
     const timers = [setTimeout(() => observer.next({type: 'welcome'}), 15)]
 
     options.events.forEach((event, i) => {
@@ -34,7 +34,7 @@ function getMockClient(opts) {
     timers.push(setTimeout(() => observer.complete(), 20 + (5 * options.events.length + 1)))
 
     return () => {
-      timers.forEach(timer => clearTimeout(timer))
+      timers.forEach((timer) => clearTimeout(timer))
     }
   })
 
@@ -60,7 +60,7 @@ function willBackfill(docWindow, options) {
     let hasTimedOut = false
     const timer = setTimeout(rejectOnTimeout, (Constants.DEFAULT_DEBOUNCE_MS || 1) * 1.1)
 
-    docWindow.on('backfill', data => {
+    docWindow.on('backfill', (data) => {
       if (!hasTimedOut) {
         clearTimeout(timer)
 
@@ -93,7 +93,7 @@ function mockMutation(result, transition = 'update') {
     type: 'mutation',
     documentId: result._id,
     transition,
-    result
+    result,
   })
 }
 
@@ -127,7 +127,7 @@ function gatherWindows(docWindow, numWindows = 2) {
     const windows = []
     let hasTimedOut = false
 
-    const onData = data => {
+    const onData = (data) => {
       windows.push(data)
 
       if (!hasTimedOut && windows.length === numWindows) {
@@ -154,5 +154,5 @@ module.exports = {
   gatherWindows,
   waitForEmitEvents,
   waitForEvent,
-  willBackfill
+  willBackfill,
 }

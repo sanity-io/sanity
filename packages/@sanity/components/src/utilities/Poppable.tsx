@@ -27,9 +27,9 @@ const DEFAULT_MODIFIERS: PopperModifiers = [
   {
     name: 'preventOverflow',
     options: {
-      rootBoundary: 'viewport'
-    }
-  }
+      rootBoundary: 'viewport',
+    },
+  },
 ]
 
 export default Poppable
@@ -101,7 +101,7 @@ function Poppable(props: PoppableProps) {
     modifiers = DEFAULT_MODIFIERS,
     placement = 'bottom-start',
     popperClassName,
-    referenceElement: referenceElementProp
+    referenceElement: referenceElementProp,
   } = props
 
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
@@ -110,7 +110,7 @@ function Poppable(props: PoppableProps) {
 
   const popper = usePopper(popperReferenceElement, popperElement, {
     placement,
-    modifiers
+    modifiers,
   })
 
   const {forceUpdate} = popper

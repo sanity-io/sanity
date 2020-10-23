@@ -3,7 +3,7 @@ export default (iterable, reducer, initVal) =>
     const iterator = iterable[Symbol.iterator]()
     let i = 0
 
-    const next = total => {
+    const next = (total) => {
       const el = iterator.next()
 
       if (el.done) {
@@ -12,7 +12,7 @@ export default (iterable, reducer, initVal) =>
       }
 
       Promise.all([total, el.value])
-        .then(value => {
+        .then((value) => {
           next(reducer(value[0], value[1], i++))
         })
         .catch(reject)

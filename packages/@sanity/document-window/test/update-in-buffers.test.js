@@ -18,16 +18,13 @@ describe('update outside of main window, but within buffer', () => {
       _id: 'bcdefghijklmnopqrstuvwxyz',
       _updatedAt: '2017-06-02T12:00:00Z',
       name: 'New product title',
-      productIndex: 1
+      productIndex: 1,
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -45,16 +42,13 @@ describe('update outside of main window, but within buffer', () => {
       _id: 'fghijklmnopqrstuvwxyz',
       name: 'New product name',
       productIndex: 5,
-      _updatedAt: '2017-06-02T11:59:59Z'
+      _updatedAt: '2017-06-02T11:59:59Z',
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -71,16 +65,13 @@ describe('update outside of main window, but within buffer', () => {
       _id: '3-efghijklmnopqrstuvwxyz',
       _updatedAt: '2017-05-31T12:06:40Z',
       name: 'New product title',
-      productIndex: 34
+      productIndex: 34,
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -98,16 +89,13 @@ describe('update outside of main window, but within buffer', () => {
       _id: '2-onmlkjihgfedcba',
       name: 'New product name',
       productIndex: 21,
-      _updatedAt: '2017-06-02T11:59:34Z'
+      _updatedAt: '2017-06-02T11:59:34Z',
     }
 
-    const query = new Query()
-      .from(12)
-      .to(17)
-      .orderBy('_updatedAt', 'desc')
+    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
-      events: [mockMutation(newDocument)]
+      events: [mockMutation(newDocument)],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -124,7 +112,7 @@ describe('update outside of main window, but within buffer', () => {
       _id: 'fghijklmnopqrstuvwxyz',
       name: 'New product name',
       productIndex: 105,
-      _updatedAt: '2017-09-22T12:00:00Z'
+      _updatedAt: '2017-09-22T12:00:00Z',
     }
 
     const query = new Query()
@@ -135,7 +123,7 @@ describe('update outside of main window, but within buffer', () => {
 
     const client = getMockClient({
       responses: [getSnapshotFixture(5, 40), getSnapshotFixture(42, 43)],
-      events: [mockMutation(newDocument, 'disappear')]
+      events: [mockMutation(newDocument, 'disappear')],
     })
 
     docWindow = new DocumentWindow({client, query})
@@ -152,7 +140,7 @@ describe('update outside of main window, but within buffer', () => {
       _id: '2-gfedcba',
       name: 'New product name',
       productIndex: 105,
-      _updatedAt: '2017-09-22T12:00:00Z'
+      _updatedAt: '2017-09-22T12:00:00Z',
     }
 
     const query = new Query()
@@ -163,7 +151,7 @@ describe('update outside of main window, but within buffer', () => {
 
     const client = getMockClient({
       responses: [getSnapshotFixture(5, 40), getSnapshotFixture(42, 43)],
-      events: [mockMutation(newDocument, 'disappear')]
+      events: [mockMutation(newDocument, 'disappear')],
     })
 
     docWindow = new DocumentWindow({client, query})

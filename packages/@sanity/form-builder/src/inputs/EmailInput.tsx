@@ -22,8 +22,8 @@ export default class EmailInput extends React.Component<Props<string>> {
   }
   render() {
     const {value, readOnly, type, markers, level, onFocus, presence} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter((marker) => marker.type === 'validation')
+    const errors = validation.filter((marker) => marker.level === 'error')
     return (
       <FormField
         markers={markers}

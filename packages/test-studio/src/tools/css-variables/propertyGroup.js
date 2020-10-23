@@ -9,7 +9,7 @@ export function ThemePropertyGroup({group}) {
     <details className={styles.root} open>
       <summary>{group.name}</summary>
 
-      {group.properties.map(item => {
+      {group.properties.map((item) => {
         return <ThemeProperty key={item.name} property={item} />
       })}
     </details>
@@ -23,8 +23,8 @@ ThemePropertyGroup.propTypes = {
       PropTypes.shape({
         name: PropTypes.string.isRequired,
         value: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired
+        type: PropTypes.string.isRequired,
       })
-    )
-  }).isRequired
+    ),
+  }).isRequired,
 }

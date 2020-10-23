@@ -8,7 +8,7 @@ import {
   PortableTextChild,
   PortableTextEditor,
   Type,
-  usePortableTextEditor
+  usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {Path, Marker, SchemaType} from '@sanity/types'
@@ -43,7 +43,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   path,
   presence,
   readOnly,
-  type
+  type,
 }) => {
   const boundaryElement = useBoundaryElement()
   const editor = usePortableTextEditor()

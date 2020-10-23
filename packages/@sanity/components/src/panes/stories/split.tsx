@@ -35,7 +35,7 @@ export function SplitStory() {
       key: `pane${i}`,
       isCollapsed: [false][i],
       minSize: [100, 200, 300, 400][i] || 100,
-      defaultSize: [400, 400, 400, 800][i] || 400
+      defaultSize: [400, 400, 400, 800][i] || 400,
     }
   })
 
@@ -48,11 +48,11 @@ export function SplitStory() {
 
 class AutoCollapseTest extends React.PureComponent<Props, State> {
   state: State = {
-    collapsed: []
+    collapsed: [],
   }
 
   handlePaneCollapse = (index: number) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const collapsed = prevState.collapsed.slice()
       collapsed[index].collapsed = true
       return {collapsed}
@@ -60,7 +60,7 @@ class AutoCollapseTest extends React.PureComponent<Props, State> {
   }
 
   handlePaneExpand = (index: number) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const collapsed = prevState.collapsed.slice()
       collapsed[index].collapsed = false
       return {collapsed}

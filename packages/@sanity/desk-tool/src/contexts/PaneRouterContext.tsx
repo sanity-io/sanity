@@ -10,7 +10,7 @@ interface SetParamsOptions {
 }
 
 const DEFAULT_SET_PARAMS_OPTIONS: SetParamsOptions = {
-  recurseIfInherited: false
+  recurseIfInherited: false,
 }
 
 function missingContext<T = any>(): T {
@@ -96,7 +96,7 @@ export const PaneRouterContext = React.createContext<PaneRouterContextShape>({
   setView: () => missingContext(),
   setParams: () => missingContext(),
   setPayload: () => missingContext(),
-  navigateIntent: () => missingContext()
+  navigateIntent: () => missingContext(),
 })
 
 type ChildLinkProps = {
@@ -138,9 +138,9 @@ const ParameterizedLink = React.forwardRef(function ParameterizedLink(
       {
         ...pane,
         params: newParams || pane.params,
-        payload: newPayload || pane.payload
+        payload: newPayload || pane.payload,
       },
-      ...group.slice(1)
+      ...group.slice(1),
     ]
   })
 
@@ -173,7 +173,7 @@ export function getPaneRouterContextFactory(
     siblingIndex,
     flatIndex,
     params: paneParams,
-    payload: panePayload
+    payload: panePayload,
   }): PaneRouterContextShape => {
     const cacheKey = `${flatIndex}-${groupIndex}[${siblingIndex}]`
     const existing = contexts.get(cacheKey)
@@ -192,7 +192,7 @@ export function getPaneRouterContextFactory(
       return (panes[groupIndex] || []).slice()
     }
 
-    const modifyCurrentGroup = modifier => {
+    const modifyCurrentGroup = (modifier) => {
       const {router} = instance.props
       const newPanes = (router.state.panes || []).slice()
       const group = getCurrentGroup()
@@ -203,7 +203,7 @@ export function getPaneRouterContextFactory(
       return newRouterState
     }
 
-    const setPayload: PaneRouterContextShape['setPayload'] = payload => {
+    const setPayload: PaneRouterContextShape['setPayload'] = (payload) => {
       modifyCurrentGroup((siblings, item) => {
         const newGroup = siblings.slice()
         newGroup[siblingIndex] = {...item, payload}
@@ -227,16 +227,16 @@ export function getPaneRouterContextFactory(
         if (recurseIfInherited) {
           const newParamKeys = Object.keys(params)
           const inheritedKeys = Object.keys(paneParams).filter(
-            key => rootParams[key] === paneParams[key]
+            (key) => rootParams[key] === paneParams[key]
           )
 
-          const removedInheritedKeys = inheritedKeys.filter(key => !params[key])
-          const remainingInheritedKeys = newParamKeys.filter(key => inheritedKeys.includes(key))
-          const exclusiveKeys = newParamKeys.filter(key => !inheritedKeys.includes(key))
+          const removedInheritedKeys = inheritedKeys.filter((key) => !params[key])
+          const remainingInheritedKeys = newParamKeys.filter((key) => inheritedKeys.includes(key))
+          const exclusiveKeys = newParamKeys.filter((key) => !inheritedKeys.includes(key))
           const exclusive = pick(params, exclusiveKeys)
           const inherited = {
             ...omit(rootParams, removedInheritedKeys),
-            ...pick(params, remainingInheritedKeys)
+            ...pick(params, remainingInheritedKeys),
           }
 
           newGroup[0] = {...item, params: inherited}
@@ -298,7 +298,7 @@ export function getPaneRouterContextFactory(
       // Removes the current pane from the group
       closeCurrent: (): void => {
         modifyCurrentGroup((siblings, item) =>
-          siblings.length > 1 ? siblings.filter(sibling => sibling !== item) : siblings
+          siblings.length > 1 ? siblings.filter((sibling) => sibling !== item) : siblings
         )
       },
 
@@ -310,14 +310,14 @@ export function getPaneRouterContextFactory(
           newGroup.splice(siblingIndex + 1, 0, {
             ...item,
             payload: payload || item.payload,
-            params: params || item.params
+            params: params || item.params,
           })
           return newGroup
         })
       },
 
       // Set the view for the current pane
-      setView: viewId => {
+      setView: (viewId) => {
         const {view, ...rest} = paneParams
         return setParams(viewId ? {...rest, view: viewId} : rest)
       },
@@ -329,7 +329,7 @@ export function getPaneRouterContextFactory(
       setPayload,
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
-      navigateIntent: instance.props.router.navigateIntent
+      navigateIntent: instance.props.router.navigateIntent,
     }
 
     contexts.set(cacheKey, ctx)

@@ -7,12 +7,12 @@ const main = rebundler((cache, pkgCache) => {
     cache: cache,
     packageCache: pkgCache,
     debug: true,
-    fullPaths: true
+    fullPaths: true,
   }).plugin(tsify)
 })
 
 export default {
   '/browser/bundle.js'() {
     return main().bundle()
-  }
+  },
 }

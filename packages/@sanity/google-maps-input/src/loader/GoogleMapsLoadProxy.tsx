@@ -16,7 +16,7 @@ export class GoogleMapsLoadProxy extends React.Component<LoadProps, GoogleLoadSt
     this.state = {loadState: 'loading'}
 
     let sync = true
-    this.loadSubscription = loadGoogleMapsApi().subscribe(loadState => {
+    this.loadSubscription = loadGoogleMapsApi().subscribe((loadState) => {
       if (sync) {
         this.state = loadState
       } else {

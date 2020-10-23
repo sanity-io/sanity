@@ -30,7 +30,7 @@ export const ANNOTATION_SYMBOLS = [
   ['\uF088', '\uF089'],
   ['\uF08A', '\uF08B'],
   ['\uF08C', '\uF08D'],
-  ['\uF08E', '\uF08F']
+  ['\uF08E', '\uF08F'],
 ]
 
 export const CHILD_SYMBOL = '\uF0D0'
@@ -52,7 +52,7 @@ export const DECORATOR_SYMBOLS = [
   ['\uF019', '\uF01A'],
   ['\uF01B', '\uF01C'],
   ['\uF01E', '\uF01F'],
-  ['\uF020', '\uF021']
+  ['\uF020', '\uF021'],
 ]
 
 export const EMPTY_BLOCK_SYMBOL = '\u21B2'
@@ -105,7 +105,7 @@ export const INLINE_SYMBOLS = [
   '\uF0BC',
   '\uF0BD',
   '\uF0BE',
-  '\uF0BF'
+  '\uF0BF',
 ]
 
 export const TRAILING_SPACE_SYMBOL = '\u205F'

@@ -1,15 +1,15 @@
 export default function createProject(apiClient, options) {
   return apiClient({
     requireUser: true,
-    requireProject: false
+    requireProject: false,
   })
     .request({
       method: 'POST',
       uri: '/projects',
-      body: options
+      body: options,
     })
-    .then(response => ({
+    .then((response) => ({
       projectId: response.projectId || response.id,
-      displayName: options.displayName || ''
+      displayName: options.displayName || '',
     }))
 }

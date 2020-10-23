@@ -17,7 +17,7 @@ const yarnPath = isBundled
   ? path.join(__dirname, '..', 'vendor', 'yarn')
   : dynamicRequire.resolve(path.join(binDir, 'yarn'))
 
-const parseJson = data => {
+const parseJson = (data) => {
   try {
     return JSON.parse(data)
   } catch (err) {
@@ -34,7 +34,7 @@ export default function yarnWithProgress(args, options = {}) {
   const execOpts = Object.assign(
     {
       cwd: options.rootDir || process.cwd(),
-      env: {PATH: [binDir, process.env.PATH].join(path.delimiter)}
+      env: {PATH: [binDir, process.env.PATH].join(path.delimiter)},
     },
     options.execOpts || {}
   )
@@ -45,13 +45,13 @@ export default function yarnWithProgress(args, options = {}) {
     '--non-interactive',
     '--ignore-engines',
     '--registry',
-    'https://registry.npmjs.org'
+    'https://registry.npmjs.org',
   ])
 
   const state = {firstStepReceived: false, currentProgressStep: null}
   state.progress = new Gauge(process.stderr, {
     theme: 'colorASCII',
-    enabled: true
+    enabled: true,
   })
 
   // Yarn takes a while before starting to emit events, we want to show
@@ -68,11 +68,8 @@ export default function yarnWithProgress(args, options = {}) {
   }
 
   const streams = [proc.stdout, proc.stderr]
-  streams.forEach(stream => {
-    stream
-      .pipe(split2(parseJson))
-      .on('data', onChunk)
-      .on('error', onNativeError)
+  streams.forEach((stream) => {
+    stream.pipe(split2(parseJson)).on('data', onChunk).on('error', onNativeError)
   })
 
   const interceptors = options.interceptors || {}
@@ -237,7 +234,7 @@ export default function yarnWithProgress(args, options = {}) {
     throw err
   }
 
-  return proc.catch(err => {
+  return proc.catch((err) => {
     const detailed = new Error('Command failed :(')
     detailed.code = err.code
     detailed.killed = err.killed
@@ -253,5 +250,5 @@ function shouldIgnoreError(event) {
     return false
   }
 
-  return ignoredMessages.some(ignore => event.data.indexOf(ignore) !== -1)
+  return ignoredMessages.some((ignore) => event.data.indexOf(ignore) !== -1)
 }

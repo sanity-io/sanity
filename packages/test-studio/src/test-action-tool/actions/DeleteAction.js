@@ -25,7 +25,7 @@ export default ({id, type, draft, published, onComplete}) => {
       onAction: () => {
         create.execute(deletedDocument)
         onComplete()
-      }
-    }
+      },
+    },
   }
 }

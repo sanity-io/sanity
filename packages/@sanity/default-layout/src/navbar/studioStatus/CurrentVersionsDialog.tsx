@@ -10,7 +10,7 @@ interface Props {
 
 class CurrentVersionsDialog extends React.PureComponent<Props> {
   static defaultProps = {
-    versions: []
+    versions: [],
   }
 
   renderTable() {
@@ -25,7 +25,7 @@ class CurrentVersionsDialog extends React.PureComponent<Props> {
           </tr>
         </thead>
         <tbody>
-          {Object.keys(versions).map(pkgName => (
+          {Object.keys(versions).map((pkgName) => (
             <tr key={pkgName}>
               <td>{pkgName}</td>
               <td>{versions[pkgName]}</td>

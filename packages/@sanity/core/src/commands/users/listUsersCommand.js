@@ -33,7 +33,7 @@ export default {
       order: 'asc',
       robots: true,
       invitations: true,
-      ...args.extOptions
+      ...args.extOptions,
     }
 
     if (!sortFields.includes(sort)) {
@@ -55,42 +55,43 @@ export default {
             .request({uri: `/invitations/project/${projectId}`, useGlobalApi})
             .then(getPendingInvitations)
         : [],
-      globalClient.request({uri: `/projects/${projectId}`, useGlobalApi})
+      globalClient.request({uri: `/projects/${projectId}`, useGlobalApi}),
     ])
 
-    const memberIds = project.members.map(member => member.id)
+    const memberIds = project.members.map((member) => member.id)
     const users = await globalClient
       .request({uri: `/users/${memberIds.join(',')}`, useGlobalApi})
       .then(arrayify)
 
     const members = project.members
-      .map(member => ({
+      .map((member) => ({
         ...member,
-        ...getUserProps(users.find(candidate => candidate.id === member.id))
+        ...getUserProps(users.find((candidate) => candidate.id === member.id)),
       }))
-      .filter(member => !member.isRobot || robots)
+      .filter((member) => !member.isRobot || robots)
       .concat(pendingInvitations)
 
-    const ordered = sortBy(members.map(({id, name, role, date}) => [id, name, role, date]), [
-      sortFields.indexOf(sort)
-    ])
+    const ordered = sortBy(
+      members.map(({id, name, role, date}) => [id, name, role, date]),
+      [sortFields.indexOf(sort)]
+    )
 
     const rows = order === 'asc' ? ordered : ordered.reverse()
 
     const maxWidths = rows.reduce(
       (max, row) => row.map((current, index) => Math.max(size(current), max[index])),
-      sortFields.map(str => size(str))
+      sortFields.map((str) => size(str))
     )
 
-    const printRow = row => {
+    const printRow = (row) => {
       const isInvite = row[0] === '<pending>'
       const textRow = row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
       return isInvite ? chalk.dim(textRow) : textRow
     }
 
     output.print(chalk.cyan(printRow(sortFields)))
-    rows.forEach(row => output.print(printRow(row)))
-  }
+    rows.forEach((row) => output.print(printRow(row)))
+  },
 }
 
 function arrayify(obj) {
@@ -104,11 +105,11 @@ function getUserProps(user) {
 
 function getPendingInvitations(invitations) {
   return invitations
-    .filter(invite => !invite.isAccepted && !invite.isRevoked && !invite.acceptedByUserId)
-    .map(invite => ({
+    .filter((invite) => !invite.isAccepted && !invite.isRevoked && !invite.acceptedByUserId)
+    .map((invite) => ({
       id: '<pending>',
       name: invite.email,
       role: invite.role,
-      date: invite.createdAt
+      date: invite.createdAt,
     }))
 }

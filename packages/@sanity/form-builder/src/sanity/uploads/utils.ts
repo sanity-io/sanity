@@ -7,7 +7,7 @@ const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 export function createUploadEvent(patches = []): UploadEvent {
   return {
     type: 'uploadEvent',
-    patches
+    patches,
   }
 }
 
@@ -17,10 +17,10 @@ export function createInitialUploadEvent(file: File) {
   const value = {
     progress: 2,
     initiated: new Date().toISOString(),
-    file: {name: file.name, type: file.type}
+    file: {name: file.name, type: file.type},
   }
   return createUploadEvent([
     setIfMissing({[UPLOAD_STATUS_KEY]: value}, []),
-    set(value, [UPLOAD_STATUS_KEY])
+    set(value, [UPLOAD_STATUS_KEY]),
   ])
 }

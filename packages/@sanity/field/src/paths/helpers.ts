@@ -6,7 +6,7 @@ import {
   isKeySegment,
   KeyedSegment,
   Path,
-  PathSegment
+  PathSegment,
 } from '@sanity/types'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
@@ -54,7 +54,7 @@ export function getValueAtPath(rootValue: unknown, path: Path): unknown {
 
   if (isKeySegment(segment)) {
     return getValueAtPath(
-      Array.isArray(rootValue) ? rootValue.find(item => item._key === segment._key) : undefined,
+      Array.isArray(rootValue) ? rootValue.find((item) => item._key === segment._key) : undefined,
       tail
     )
   }
@@ -76,7 +76,7 @@ export function findIndex(array: unknown[], segment: PathSegment): number {
 
   return typeof segment === 'number'
     ? segment
-    : array.findIndex(item => isKeyedObject(item) && item._key === segment._key)
+    : array.findIndex((item) => isKeyedObject(item) && item._key === segment._key)
 }
 
 export function stringToPath(path: string): Path {
@@ -118,7 +118,7 @@ export function normalizeKeySegment(segment: string): KeyedSegment {
 }
 
 export function normalizeIndexTupleSegment(segment: string): IndexTuple {
-  const [from, to] = segment.split(':').map(seg => (seg === '' ? seg : Number(seg)))
+  const [from, to] = segment.split(':').map((seg) => (seg === '' ? seg : Number(seg)))
   return [from, to]
 }
 

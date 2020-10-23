@@ -28,31 +28,28 @@ describe('basics', () => {
     expect(() => new DocumentWindow({client: getMockClient()})).toThrow(/instance of Query/)
   })
 
-  test('uses default from/to/buffer factor if not set', done => {
+  test('uses default from/to/buffer factor if not set', (done) => {
     const client = getMockClient({responses: [[]]})
     docWindow = new DocumentWindow({client, query: new Query()})
     docWindow.on('data', noop) // Trigger connect
 
-    docWindow.on('snapshot', data => {
+    docWindow.on('snapshot', (data) => {
       expect(data).toHaveLength(0)
       expectRangeQueryToMatchRange(client, {
         from: 0,
-        to: Constants.DEFAULT_LIMIT + Constants.DEFAULT_LIMIT * Constants.DEFAULT_BUFFER_FACTOR
+        to: Constants.DEFAULT_LIMIT + Constants.DEFAULT_LIMIT * Constants.DEFAULT_BUFFER_FACTOR,
       })
       done()
     })
   })
 
-  test('sends listener query with only the constraints', done => {
+  test('sends listener query with only the constraints', (done) => {
     const client = getMockClient({responses: [[]]})
-    const query = new Query()
-      .constraint('isActive == true')
-      .from(0)
-      .to(80)
+    const query = new Query().constraint('isActive == true').from(0).to(80)
     docWindow = new DocumentWindow({client, query})
     docWindow.on('data', noop) // Trigger connect
 
-    docWindow.on('snapshot', data => {
+    docWindow.on('snapshot', (data) => {
       expect(client.__mocks__.listen.calls[0][0]).toMatch('*[isActive == true]')
       done()
     })

@@ -5,8 +5,8 @@ const router = route('/', [
   route('/countries', [
     route('/:country', [route('/:county', [route('/:municipality')])]),
     route('/:country/:county'),
-    route('/:country/:county/:municipality/neighbors/:neighbor')
-  ])
+    route('/:country/:county/:municipality/neighbors/:neighbor'),
+  ]),
 ])
 
 test('root', () => {
@@ -28,7 +28,7 @@ test('finnmark', () => {
   expect(router.encode({country: 'norway', county: 'finnmark'})).toBe('/countries/norway/finnmark')
   expect(router.decode('/countries/norway/finnmark')).toEqual({
     country: 'norway',
-    county: 'finnmark'
+    county: 'finnmark',
   })
 })
 
@@ -37,7 +37,7 @@ test('kautokeino', () => {
   const state = {
     municipality: 'kautokeino',
     country: 'norway',
-    county: 'finnmark'
+    county: 'finnmark',
   }
   expect(router.encode(state)).toBe(path)
   expect(router.decode(path)).toEqual(state)
@@ -49,7 +49,7 @@ test('murmansk', () => {
     neighbor: 'murmansk',
     municipality: 'kautokeino',
     country: 'norway',
-    county: 'finnmark'
+    county: 'finnmark',
   }
   expect(router.encode(state)).toBe(path)
   expect(router.decode(path)).toEqual(state)

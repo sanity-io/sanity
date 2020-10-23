@@ -5,7 +5,7 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   SchemaType,
-  StringSchemaType
+  StringSchemaType,
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent from '../PatchEvent'

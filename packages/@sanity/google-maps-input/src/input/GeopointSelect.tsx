@@ -18,7 +18,7 @@ interface SelectProps {
 export class GeopointSelect extends React.PureComponent<SelectProps> {
   static defaultProps = {
     defaultZoom: 8,
-    defaultLocation: {lng: 10.74609, lat: 59.91273}
+    defaultLocation: {lng: 10.74609, lat: 59.91273},
   }
 
   mapRef = React.createRef<HTMLDivElement>()
@@ -61,7 +61,7 @@ export class GeopointSelect extends React.PureComponent<SelectProps> {
           onClick={this.handleMapClick}
           defaultZoom={defaultZoom}
         >
-          {map => (
+          {(map) => (
             <>
               <SearchInput api={api} map={map} onChange={this.handlePlaceChanged} />
               {value && (

@@ -42,7 +42,7 @@ export default class HistoryListItem extends React.PureComponent<HistoryListItem
     children: undefined,
     rev: undefined,
     linkParams: undefined,
-    linkComponent: undefined
+    linkComponent: undefined,
   }
 
   _rootElement: React.RefObject<HTMLDivElement> = React.createRef()
@@ -97,7 +97,7 @@ export default class HistoryListItem extends React.PureComponent<HistoryListItem
       isCurrentVersion,
       rev,
       tooltip,
-      type
+      type,
     } = this.props
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
 
@@ -136,7 +136,7 @@ export default class HistoryListItem extends React.PureComponent<HistoryListItem
       onKeyUp: this.handleKeyUp,
       onKeyDown: this.handleKeyDown,
       title: tooltip,
-      ref: this._rootElement
+      ref: this._rootElement,
     }
 
     const ParameterizedLink = linkComponent

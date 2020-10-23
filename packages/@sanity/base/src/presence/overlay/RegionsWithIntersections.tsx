@@ -5,7 +5,7 @@ import {
   SNAP_TO_DOCK_DISTANCE_TOP,
   DEBUG,
   INTERSECTION_ELEMENT_PADDING,
-  INTERSECTION_THRESHOLDS
+  INTERSECTION_THRESHOLDS,
 } from '../constants'
 import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
 import {createIntersectionObserver, ObservableIntersectionObserver} from './intersectionObserver'
@@ -24,7 +24,7 @@ const WithIntersection = (props: WithIntersectionProps) => {
     if (!el) return undefined
     const subscription = io
       .observe(el)
-      .pipe(tap(entry => onIntersection(id, entry)))
+      .pipe(tap((entry) => onIntersection(id, entry)))
       .subscribe()
     return () => subscription.unsubscribe()
   }, [io])
@@ -56,11 +56,8 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
   const io = React.useMemo(
     () =>
       createIntersectionObserver({
-        rootMargin: margins
-          .map(invert)
-          .map(toPx)
-          .join(' '),
-        threshold: INTERSECTION_THRESHOLDS
+        rootMargin: margins.map(invert).map(toPx).join(' '),
+        threshold: INTERSECTION_THRESHOLDS,
       }),
     []
   )
@@ -68,14 +65,14 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
   const [intersections, setIntersections] = React.useState({})
 
   const onIntersection = React.useCallback((id, entry) => {
-    setIntersections(current => ({...current, [id]: entry}))
+    setIntersections((current) => ({...current, [id]: entry}))
   }, [])
 
   const top = intersections['::top']
   const bottom = intersections['::bottom']
   const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] = (top && bottom
     ? regions
-        .filter(region => region.presence?.length > 0)
+        .filter((region) => region.presence?.length > 0)
         .map((region): RegionWithIntersectionDetails | null => {
           const intersection = intersections[region.id]
           if (!intersection) {
@@ -112,7 +109,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
             distanceTop,
             distanceBottom,
             region,
-            position
+            position,
           }
         })
         .filter(Boolean)
@@ -129,7 +126,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
           position: 'sticky',
           top: margins[0] - 1,
           height: 1,
-          backgroundColor: DEBUG ? 'red' : 'none'
+          backgroundColor: DEBUG ? 'red' : 'none',
         }}
       />
       <div>{children}</div>
@@ -141,7 +138,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
         {overlayRef.current &&
           render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
       </div>
-      {regions.map(region => {
+      {regions.map((region) => {
         const forceWidth = region.rect.width === 0
         return (
           <WithIntersection
@@ -154,14 +151,14 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
               ...(DEBUG
                 ? {
                     background: 'rgba(255, 0, 0, 0.25)',
-                    outline: '1px solid #00b'
+                    outline: '1px solid #00b',
                   }
                 : {}),
               width: forceWidth ? 1 : region.rect.width,
               left: region.rect.left - (forceWidth ? 1 : 0),
               top: region.rect.top - INTERSECTION_ELEMENT_PADDING,
               height: region.rect.height + INTERSECTION_ELEMENT_PADDING * 2,
-              visibility: DEBUG ? 'visible' : 'hidden'
+              visibility: DEBUG ? 'visible' : 'hidden',
             }}
           />
         )
@@ -174,7 +171,7 @@ export const RegionsWithIntersections = React.forwardRef(function RegionsWithInt
           position: 'sticky',
           bottom: -1,
           height: 1,
-          backgroundColor: DEBUG ? 'blue' : 'none'
+          backgroundColor: DEBUG ? 'blue' : 'none',
         }}
       />
     </div>

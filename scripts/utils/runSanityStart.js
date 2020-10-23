@@ -4,12 +4,12 @@ const isWindows = /^win/.test(process.platform)
 const through = require('through2')
 const mergeStream = require('merge-stream')
 
-const getProjectEnv = projectPath => {
+const getProjectEnv = (projectPath) => {
   const npmPath = path.join(projectPath, 'node_modules', '.bin')
   /* eslint-disable no-process-env */
   const paths = [npmPath].concat(process.env.PATH.split(path.delimiter)).filter(Boolean)
   return Object.assign({}, process.env, {
-    PATH: paths.join(path.delimiter)
+    PATH: paths.join(path.delimiter),
   })
   /* eslint-enable no-process-env */
 }
@@ -20,7 +20,7 @@ exports.runSanityStart = function runSanityStart(projectPath, port) {
   const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0', '--port', port], {
     shell: isWindows,
     cwd: projectPath,
-    env: getProjectEnv(projectPath)
+    env: getProjectEnv(projectPath),
   })
 
   return mergeStream([
@@ -40,6 +40,6 @@ exports.runSanityStart = function runSanityStart(projectPath, port) {
       through((data, enc, cb) => {
         cb(new Error(data.toString()))
       })
-    )
+    ),
   ])
 }

@@ -27,14 +27,14 @@ function createAction(name: string, fn: Function) {
       name: name,
       progress: retValue.progress,
       returnValue: retValue,
-      args: args
+      args: args,
     })
 
     return retValue
   }
 
-  functor.calls = new Observable(observer => {
-    return calls.subscribe(call => {
+  functor.calls = new Observable((observer) => {
+    return calls.subscribe((call) => {
       observer.next(call)
     })
   })

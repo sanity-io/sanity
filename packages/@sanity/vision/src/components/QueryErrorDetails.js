@@ -29,9 +29,9 @@ QueryErrorDetails.propTypes = {
     details: PropTypes.shape({
       line: PropTypes.string,
       lineNumber: PropTypes.number,
-      column: PropTypes.column
-    })
-  })
+      column: PropTypes.column,
+    }),
+  }),
 }
 
 export default QueryErrorDetails

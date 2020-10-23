@@ -20,7 +20,7 @@ const storybookApi = Object.assign({}, storyBook, {
       addDecorator: (...decorator) => {
         kind.decorators.push(decorator)
         return api
-      }
+      },
     }
 
     return api
@@ -32,11 +32,11 @@ const storybookApi = Object.assign({}, storyBook, {
       while (storybookApi.declaredStories.length > 0) {
         const story = storybookApi.declaredStories.pop()
         const kind = registerStoryKind(...story.kind)
-        story.decorators.forEach(dec => kind.addDecorator(...dec))
-        story.stories.forEach(stry => kind.add(...stry))
+        story.decorators.forEach((dec) => kind.addDecorator(...dec))
+        story.stories.forEach((stry) => kind.add(...stry))
       }
-    }
-  }
+    },
+  },
 })
 
 module.exports = storybookApi

@@ -9,10 +9,10 @@ export default {
           fields: ['title', 'image', 'imageUrl'],
           prepare(document) {
             return {
-              title: document.title || ''
+              title: document.title || '',
             }
-          }
-        }
+          },
+        },
       },
       fields: [
         {
@@ -22,37 +22,37 @@ export default {
           options: {
             style: {
               backgroundColor: '#075d9c',
-              color: '#fff'
-            }
+              color: '#fff',
+            },
           },
-          required: true
+          required: true,
         },
         {
           name: 'priority',
           title: 'Priority',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'checked',
           title: 'Checked',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'lead',
           title: 'Lead',
           type: 'text',
           format: 'html',
-          required: true
+          required: true,
         },
         {
           name: 'email',
           title: 'Email',
-          type: 'email'
+          type: 'email',
         },
         {
           name: 'location',
           title: 'Location',
-          type: 'latlon'
+          type: 'latlon',
         },
         {
           name: 'content',
@@ -61,9 +61,9 @@ export default {
           of: [
             {
               title: 'String',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'authors',
@@ -71,12 +71,12 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'author'
-            }
+              type: 'author',
+            },
           ],
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'latlon',
@@ -86,15 +86,15 @@ export default {
           name: 'lat',
           title: 'Latitude',
           type: 'number',
-          required: true
+          required: true,
         },
         {
           name: 'lon',
           title: 'Longitude',
           type: 'number',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       name: 'author',
@@ -105,7 +105,7 @@ export default {
         {
           name: 'name',
           title: 'Title',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'awards',
@@ -113,9 +113,9 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'homestead',
@@ -126,17 +126,17 @@ export default {
               name: 'lat',
               title: 'Latitude',
               type: 'number',
-              required: true
+              required: true,
             },
             {
               name: 'lon',
               title: 'Longitude',
               type: 'number',
-              required: true
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

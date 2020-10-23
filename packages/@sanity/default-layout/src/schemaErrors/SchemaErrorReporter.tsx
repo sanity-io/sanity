@@ -12,7 +12,7 @@ declare const __DEV__: boolean
 
 function renderPath(path) {
   return path
-    .map(segment => {
+    .map((segment) => {
       if (segment.kind === 'type') {
         return `${segment.name || '<unnamed>'}(${segment.type})`
       }
@@ -35,8 +35,8 @@ function reportWarnings() {
   /* eslint-disable no-console */
   const problemGroups = schema._validation
 
-  const groupsWithWarnings = problemGroups.filter(group =>
-    group.problems.some(problem => problem.severity === 'warning')
+  const groupsWithWarnings = problemGroups.filter((group) =>
+    group.problems.some((problem) => problem.severity === 'warning')
   )
   if (groupsWithWarnings.length === 0) {
     return
@@ -59,8 +59,8 @@ export class SchemaErrorReporter extends React.Component<Props> {
   render() {
     const problemGroups = schema._validation
 
-    const groupsWithErrors = problemGroups.filter(group =>
-      group.problems.some(problem => problem.severity === 'error')
+    const groupsWithErrors = problemGroups.filter((group) =>
+      group.problems.some((problem) => problem.severity === 'error')
     )
 
     if (groupsWithErrors.length > 0) {

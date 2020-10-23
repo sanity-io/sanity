@@ -10,5 +10,5 @@ const presence = (flag, value, message) => {
 }
 
 module.exports = Object.assign({}, genericValidator, {
-  presence
+  presence,
 })

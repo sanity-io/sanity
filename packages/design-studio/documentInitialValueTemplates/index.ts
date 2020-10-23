@@ -8,8 +8,8 @@ export default [
     title: 'Developer',
     schemaType: 'author',
     value: {
-      role: 'developer'
-    }
+      role: 'developer',
+    },
   }),
 
   T.template({
@@ -17,8 +17,8 @@ export default [
     title: 'Designer',
     schemaType: 'author',
     value: {
-      role: 'designer'
-    }
+      role: 'designer',
+    },
   }),
 
   T.template({
@@ -26,7 +26,7 @@ export default [
     title: 'Manager',
     schemaType: 'author',
     value: {
-      role: 'manager'
-    }
-  })
+      role: 'manager',
+    },
+  }),
 ]

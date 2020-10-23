@@ -13,23 +13,23 @@ export default {
         {
           name: 'title',
           type: 'string',
-          title: 'Name of your pokemon'
+          title: 'Name of your pokemon',
         },
         {
           name: 'color',
           type: 'string',
           title: 'Color',
           options: {
-            list: ['Red', 'Blue', 'Yellow']
-          }
+            list: ['Red', 'Blue', 'Yellow'],
+          },
         },
         {
           name: 'lookalike',
           type: 'string',
           title: 'Look alike',
           options: {
-            list: pets
-          }
+            list: pets,
+          },
         },
         {
           name: 'lookalikeSearchable',
@@ -37,10 +37,10 @@ export default {
           title: 'Look alike (searchable)',
           options: {
             searchable: true,
-            list: pets
-          }
-        }
-      ]
-    }
-  ]
+            list: pets,
+          },
+        },
+      ],
+    },
+  ],
 }

@@ -12,8 +12,8 @@ export function ModalDialogAction({onComplete}) {
       type: 'modal',
       onClose: onComplete,
       title: 'Demo modal',
-      content: <div>Hello modal</div>
-    }
+      content: <div>Hello modal</div>,
+    },
   }
 }
 
@@ -27,8 +27,8 @@ export function PopoverDialogAction({onComplete}) {
     dialog: dialogOpen && {
       type: 'popover',
       onClose: onComplete,
-      content: 'Hello popover!'
-    }
+      content: 'Hello popover!',
+    },
   }
 }
 
@@ -46,7 +46,7 @@ export function ConfirmDialogAction({onComplete}) {
         alert('You confirmed!')
         onComplete()
       },
-      message: 'Please confirm!'
-    }
+      message: 'Please confirm!',
+    },
   }
 }

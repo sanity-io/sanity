@@ -19,7 +19,7 @@ export default class SplitPaneWrapper extends React.Component<SplitPaneWrapperPr
     minSize: 100,
     maxSize: 500,
     defaultSize: 321,
-    children: undefined
+    children: undefined,
   }
 
   render() {

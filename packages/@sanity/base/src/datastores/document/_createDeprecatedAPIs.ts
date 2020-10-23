@@ -6,9 +6,9 @@ import {SanityDocument, WelcomeEvent} from './types'
 
 function fetchDocumentSnapshot(client, id) {
   return client.observable.getDocument(id).pipe(
-    map(document => ({
+    map((document) => ({
       type: 'snapshot',
-      document: document
+      document: document,
     }))
   )
 }
@@ -23,12 +23,12 @@ type QueryEvent = WelcomeEvent | MutationEvent | QuerySnapshotEvent
 function commitMutations(client, mutations) {
   return client.dataRequest('mutate', mutations, {
     visibility: 'async',
-    returnDocuments: false
+    returnDocuments: false,
   })
 }
 
 function _createDeprecatedAPIs(client) {
-  const _doCommit = mutations => commitMutations(client, mutations)
+  const _doCommit = (mutations) => commitMutations(client, mutations)
 
   function patchDoc(documentId, patches) {
     const doc = checkout(documentId)
@@ -66,11 +66,11 @@ function _createDeprecatedAPIs(client) {
   }
 
   function byIds(documentIds) {
-    return new Observable(observer => {
-      const documentSubscriptions = documentIds.map(id => byId(id).subscribe(observer))
+    return new Observable((observer) => {
+      const documentSubscriptions = documentIds.map((id) => byId(id).subscribe(observer))
 
       return () => {
-        documentSubscriptions.map(subscription => subscription.unsubscribe())
+        documentSubscriptions.map((subscription) => subscription.unsubscribe())
       }
     })
   }
@@ -89,9 +89,9 @@ function _createDeprecatedAPIs(client) {
 
   function fetchQuerySnapshot(groqQuery: string, params): Observable<QuerySnapshotEvent> {
     return client.observable.fetch(groqQuery, params).pipe(
-      map(documents => ({
+      map((documents) => ({
         type: 'snapshot',
-        documents: documents
+        documents: documents,
       }))
     )
   }
@@ -101,10 +101,10 @@ function _createDeprecatedAPIs(client) {
       () =>
         client.observable.listen(groqQuery, params || {}, {
           includeResult: false,
-          events: ['welcome', 'mutation', 'reconnect']
+          events: ['welcome', 'mutation', 'reconnect'],
         }) as Observable<WelcomeEvent | MutationEvent>
     ).pipe(
-      concatMap(event => {
+      concatMap((event) => {
         return event.type === 'welcome'
           ? fetchQuerySnapshot(groqQuery, params)
           : observableOf(event)
@@ -121,7 +121,7 @@ function _createDeprecatedAPIs(client) {
     patch: patchDoc,
     delete: deleteDoc,
     createOrReplace: createOrReplace,
-    createIfNotExists: createIfNotExists
+    createIfNotExists: createIfNotExists,
   }
 }
 

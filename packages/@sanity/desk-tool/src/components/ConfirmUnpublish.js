@@ -19,10 +19,10 @@ export default enhanceWithReferringDocuments(
       published: PropTypes.object,
       draft: PropTypes.object,
       referringDocuments: PropTypes.array,
-      isCheckingReferringDocuments: PropTypes.bool
+      isCheckingReferringDocuments: PropTypes.bool,
     }
 
-    handleAction = action => {
+    handleAction = (action) => {
       const {onCancel, onConfirm} = this.props
       if (action.name === 'confirm') {
         onConfirm()
@@ -39,7 +39,7 @@ export default enhanceWithReferringDocuments(
         referringDocuments,
         draft,
         published,
-        onCancel
+        onCancel,
       } = this.props
 
       const hasReferringDocuments = referringDocuments.length > 0
@@ -50,13 +50,13 @@ export default enhanceWithReferringDocuments(
         canContinue && {
           color: 'danger',
           name: 'confirm',
-          title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'
+          title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now',
         },
         {
           inverted: true,
           name: 'cancel',
-          title: 'Cancel'
-        }
+          title: 'Cancel',
+        },
       ].filter(Boolean)
 
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'

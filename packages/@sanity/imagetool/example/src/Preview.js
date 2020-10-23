@@ -12,12 +12,12 @@ function Preview(props) {
 Preview.propTypes = {
   image: PropTypes.shape({
     height: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired
-  }).isRequired
+    width: PropTypes.number.isRequired,
+  }).isRequired,
 }
 
 export default createImageLoadProxy(Preview, {
   error(error) {
     return <div>{error.message}</div>
-  }
+  },
 })

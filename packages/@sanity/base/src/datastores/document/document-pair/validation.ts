@@ -6,7 +6,7 @@ import {
   publishReplay,
   refCount,
   scan,
-  switchMap
+  switchMap,
 } from 'rxjs/operators'
 import {concat, from, Observable, of, timer} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
@@ -33,8 +33,8 @@ export interface ValidationStatus {
 const INITIAL_VALIDATION_STATUS: ValidationStatus = {isValidating: true, markers: []}
 function validateEditState(editState) {
   return getValidationMarkers(editState.draft, editState.published).pipe(
-    map(markers => ({
-      markers
+    map((markers) => ({
+      markers,
     }))
   )
 }
@@ -44,7 +44,7 @@ export const validation = memoize(
     return concat(
       of(INITIAL_VALIDATION_STATUS),
       editState(idPair, typeName).pipe(
-        switchMap(editState =>
+        switchMap((editState) =>
           concat<Partial<ValidationStatus>>(
             of({isValidating: true}),
             timer(300).pipe(mapTo(editState), mergeMap(validateEditState)),
@@ -61,5 +61,5 @@ export const validation = memoize(
       )
     ).pipe(publishReplay(1), refCount())
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

@@ -14,11 +14,11 @@ export default {
       throw new Error(`Hook list retrieval failed:\n${err.message}`)
     }
 
-    hooks.forEach(hook => {
+    hooks.forEach((hook) => {
       output.print(`Name: ${hook.name}`)
       output.print(`Dataset: ${hook.dataset}`)
       output.print(`URL: ${hook.url}`)
       output.print('')
     })
-  }
+  },
 }

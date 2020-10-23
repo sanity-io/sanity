@@ -3,7 +3,7 @@ import parse from '../src/jsonpath/parse'
 import Expression from '../src/jsonpath/Expression'
 import PlainProbe from '../src/jsonpath/PlainProbe'
 
-test('Expression union', tap => {
+test('Expression union', (tap) => {
   const expression = new Expression(parse('[1,2,3]'))
   tap.equal(false, expression.isPath())
   tap.equal(true, expression.isUnion())
@@ -13,7 +13,7 @@ test('Expression union', tap => {
   tap.end()
 })
 
-test('Expression path', tap => {
+test('Expression path', (tap) => {
   const path1 = new Expression(parse('a.b.c'))
   const path2 = new Expression(parse('d.e.f'))
   const union = new Expression(parse('[e,f]'))
@@ -27,7 +27,7 @@ test('Expression path', tap => {
   tap.end()
 })
 
-test('Expression constraints', tap => {
+test('Expression constraints', (tap) => {
   const selfCompare = new Expression(parse('[@ < 8]').nodes[0])
   tap.equal(true, selfCompare.constraintTargetIsSelf())
   tap.equal(false, selfCompare.constraintTargetIsAttribute())
@@ -59,7 +59,7 @@ test('Expression constraints', tap => {
   tap.end()
 })
 
-test('Expression toIndicies', tap => {
+test('Expression toIndicies', (tap) => {
   const range = new Expression(parse('[2:5]').nodes[0])
   tap.same([2, 3, 4], range.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))
   const index = new Expression(parse('[2]').nodes[0])

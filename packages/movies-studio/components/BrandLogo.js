@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React from 'react'
 
-const BrandLogo = props => (
+const BrandLogo = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 530">
     <g>
       <path

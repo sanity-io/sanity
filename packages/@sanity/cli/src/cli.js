@@ -29,7 +29,7 @@ module.exports = async function runCli(cliRoot) {
   const options = {
     cliRoot: cliRoot,
     workDir: workDir,
-    corePath: getCoreModulePath(workDir)
+    corePath: getCoreModulePath(workDir),
   }
 
   warnOnNonProductionEnvironment()
@@ -53,7 +53,7 @@ module.exports = async function runCli(cliRoot) {
   }
 
   const cliRunner = getCliRunner(commands)
-  cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
+  cliRunner.runCommand(args.groupOrCommand, args, options).catch((err) => {
     const error = typeof err.details === 'string' ? err.details : err
     // eslint-disable-next-line no-console
     console.error(`\n${error.stack ? neatStack(err) : error}`)
@@ -74,7 +74,7 @@ function getCoreModulePath(workDir) {
       chalk.yellow(
         [
           '@sanity/core not installed in current project',
-          'Project-specific commands not available until you run `sanity install`'
+          'Project-specific commands not available until you run `sanity install`',
         ].join('\n')
       )
     )
@@ -106,7 +106,7 @@ function resolveRootDir(cwd) {
     return (
       resolveProjectRoot({
         basePath: cwd,
-        sync: true
+        sync: true,
       }) || cwd
     )
   } catch (err) {

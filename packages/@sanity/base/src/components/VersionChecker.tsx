@@ -11,12 +11,12 @@ declare const __DEV__: boolean
 
 const fakeOutdatedModule = false
 const fakeOutdatedModuleSeverity = 'high'
-let applySeverity = inp => inp
+let applySeverity = (inp) => inp
 
 if (fakeOutdatedModule) {
   versions['@sanity/base'] = '0.118.0'
-  applySeverity = inp => {
-    const mod = (inp && inp.outdated.find(item => item.name === '@sanity/base')) || {}
+  applySeverity = (inp) => {
+    const mod = (inp && inp.outdated.find((item) => item.name === '@sanity/base')) || {}
     mod.severity = fakeOutdatedModuleSeverity
     return inp
   }
@@ -27,15 +27,15 @@ let hasWarned = false
 const buildQueryString = () => ({
   // eslint-disable-next-line id-length
   m: Object.keys(versions)
-    .filter(pkg => versions[pkg])
-    .map(pkg => `${pkg}@${versions[pkg]}`)
+    .filter((pkg) => versions[pkg])
+    .map((pkg) => `${pkg}@${versions[pkg]}`),
 })
 
-const hashQuery = items => items.join(',').replace(/@?sanity[/-]/g, '')
+const hashQuery = (items) => items.join(',').replace(/@?sanity[/-]/g, '')
 const storage: Storage | Record<string, unknown> =
   typeof sessionStorage === 'undefined' ? {} : sessionStorage
 
-const onVersionCheckError = err => {
+const onVersionCheckError = (err) => {
   // eslint-disable-next-line no-console
   console.warn('Module versions check failed. Dependencies *might* be out of date.', err)
 }
@@ -51,7 +51,7 @@ const breakify = (lines: string[]): React.ReactNode[] => {
   return nodes
 }
 
-const paragraphify = text => {
+const paragraphify = (text) => {
   return text.split('\n\n').map((para, i) => {
     const lines = para.split('\n')
     // eslint-disable-next-line react/no-array-index-key
@@ -60,7 +60,7 @@ const paragraphify = text => {
 }
 
 const getLatestInstalled = () => {
-  const versionNums = Object.keys(versions).map(pkg => versions[pkg])
+  const versionNums = Object.keys(versions).map((pkg) => versions[pkg])
   const sorted = versionNums.sort(semverCompare)
   return sorted[sorted.length - 1]
 }
@@ -94,11 +94,11 @@ const checkVersions = (options: {getOutdated?: boolean} = {}): Promise<VersionsR
       uri: '/versions',
       // resolving the right client definition seems to be an issue :shrug:
       query: buildQueryString() as any,
-      json: true
+      json: true,
     })
-    .then(result => ({
+    .then((result) => ({
       hash,
-      result: applySeverity(result)
+      result: applySeverity(result),
     }))
 }
 
@@ -131,7 +131,7 @@ class VersionChecker extends PureComponent<
     }
 
     if (__DEV__ && res.result && res.result.outdated) {
-      const modules = res.result.outdated.map(mod => mod.name).join('\n  - ')
+      const modules = res.result.outdated.map((mod) => mod.name).join('\n  - ')
       const instructions = 'Run `sanity upgrade` to update them'
       // eslint-disable-next-line no-console
       console.warn(`The following modules are outdated:\n  - ${modules}\n\n${instructions}`)
@@ -149,9 +149,7 @@ class VersionChecker extends PureComponent<
     }
 
     this.checkTimeout = requestIdleCallback(() => {
-      checkVersions()
-        .then(this.onResponse)
-        .catch(onVersionCheckError)
+      checkVersions().then(this.onResponse).catch(onVersionCheckError)
     })
   }
 

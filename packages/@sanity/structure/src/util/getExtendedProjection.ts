@@ -11,7 +11,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
     return ''
   }
 
-  const schemaField = schemaType.fields.find(field => field.name === head)
+  const schemaField = schemaType.fields.find((field) => field.name === head)
   if (!schemaField) {
     if (!IMPLICIT_FIELDS.includes(head)) {
       // eslint-disable-next-line no-console
@@ -19,7 +19,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
         'The current ordering config targeted the nonexistent field "%s" on schema type "%s". It should be one of %o',
         head,
         schemaType.name,
-        schemaType.fields.map(field => field.name)
+        schemaType.fields.map((field) => field.name)
       )
     }
     return ''
@@ -27,7 +27,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
 
   if (schemaField.type.name === 'reference' && schemaField.type.to) {
     const refTypes = schemaField.type.to
-    return `${head}->{${refTypes.map(refType => joinReferences(refType, tail)).join(',')}}`
+    return `${head}->{${refTypes.map((refType) => joinReferences(refType, tail)).join(',')}}`
   }
 
   const tailFields = tail.length > 0 && joinReferences(schemaField.type, tail)
@@ -36,5 +36,5 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
 }
 
 export function getExtendedProjection(schemaType: SchemaType, orderBy: SortItem[]): string {
-  return orderBy.map(ordering => joinReferences(schemaType, ordering.field.split('.'))).join(', ')
+  return orderBy.map((ordering) => joinReferences(schemaType, ordering.field.split('.'))).join(', ')
 }

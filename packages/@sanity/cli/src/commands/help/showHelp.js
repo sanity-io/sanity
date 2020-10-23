@@ -2,7 +2,7 @@ import debug from '../../debug'
 import noSuchCommandText from '../../util/noSuchCommandText'
 import {
   generateCommandsDocumentation,
-  generateCommandDocumentation
+  generateCommandDocumentation,
 } from '../../util/generateCommandsDocumentation'
 
 export default (args, context) => {
@@ -15,7 +15,7 @@ export default (args, context) => {
     return
   }
 
-  const defaultCommand = commandGroups.default.find(cmd => cmd.name === commandName)
+  const defaultCommand = commandGroups.default.find((cmd) => cmd.name === commandName)
   if (defaultCommand && !defaultCommand.isGroupRoot) {
     debug(`Found command in default group with name "${commandName}"`)
     context.output.print(generateCommandDocumentation(defaultCommand))

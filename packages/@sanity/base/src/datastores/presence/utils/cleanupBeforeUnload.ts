@@ -1,9 +1,9 @@
 import {MonoTypeOperatorFunction, Observable} from 'rxjs'
 
 export function doBeforeUnload<T>(cleanup): MonoTypeOperatorFunction<T> {
-  return input$ =>
-    new Observable(subscriber => {
-      const onBeforeUnload = event => {
+  return (input$) =>
+    new Observable((subscriber) => {
+      const onBeforeUnload = (event) => {
         cleanup()
         delete event.returnValue
       }

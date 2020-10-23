@@ -13,11 +13,11 @@ const dialogTestContent = {
   minimal: 'minimal',
   paragraph: 'paragraph',
   longtext: 'longtext',
-  example: 'example with dialogcontent'
+  example: 'example with dialogcontent',
 }
 
 const paragraph = chance.paragraph()
-const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
+const paragraphs = range(0, 20).map((i) => <p key={i}>{chance.paragraph()}</p>)
 
 function renderContent(type) {
   switch (type) {

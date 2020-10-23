@@ -9,10 +9,7 @@ const supported =
   typeof window.Uint8Array !== 'undefined'
 
 function toBlob(uri) {
-  const mime = uri
-    .split(',')[0]
-    .split(':')[1]
-    .split(';')[0]
+  const mime = uri.split(',')[0].split(':')[1].split(';')[0]
 
   const bytes = atob(uri.split(',')[1])
   const len = bytes.length
@@ -34,7 +31,7 @@ export function polyfillCanvasToBlob() {
   const CanvasPrototype = window.HTMLCanvasElement.prototype
 
   if (!CanvasPrototype.toBlob && CanvasPrototype.toDataURL) {
-    CanvasPrototype.toBlob = function(callback, type, quality) {
+    CanvasPrototype.toBlob = function (callback, type, quality) {
       callback(toBlob(this.toDataURL(type, quality)))
     }
   }

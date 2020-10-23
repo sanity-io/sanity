@@ -79,7 +79,7 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
     return (
       <div className={styles.root} ref={setRef} onScroll={checkIfLoadIsNeeded}>
         <ol className={styles.list} ref={listRef}>
-          {timeline.mapChunks(chunk => {
+          {timeline.mapChunks((chunk) => {
             const isSelectionTop = topSelection === chunk
             const isSelectionBottom = bottomSelection === chunk
 

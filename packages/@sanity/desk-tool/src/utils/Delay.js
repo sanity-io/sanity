@@ -24,5 +24,5 @@ export default class Delay extends React.Component {
 
 Delay.propTypes = {
   children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
-  ms: PropTypes.number.isRequired
+  ms: PropTypes.number.isRequired,
 }

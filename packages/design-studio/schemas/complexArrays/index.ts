@@ -4,5 +4,5 @@ export default {
   type: 'document',
   name: 'complexArrays',
   title: 'Complex arrays',
-  fields: [{type: 'string', name: 'title', title: 'Title'}, arrayExample1]
+  fields: [{type: 'string', name: 'title', title: 'Title'}, arrayExample1],
 }

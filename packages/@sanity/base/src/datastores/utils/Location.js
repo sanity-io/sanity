@@ -23,7 +23,7 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
       const parsed = url.parse(newPath, false, false)
       Object.assign(this, {
         pathname: parsed.pathname,
-        query: qsImpl.parse(parsed.search.substring(1))
+        query: qsImpl.parse(parsed.search.substring(1)),
       })
     }
 
@@ -31,7 +31,7 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
       const [hostname, port] = newVal.split(':')
       Object.assign(this, {
         hostname: hostname,
-        port: port
+        port: port,
       })
     }
     get href() {
@@ -48,7 +48,7 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
         port: parsed.port,
         auth: parsed.auth,
         query: qsImpl.parse((parsed.search || '').substring(1)),
-        hash: parsed.hash
+        hash: parsed.hash,
       })
     }
 
@@ -63,7 +63,7 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
   return {
     parse(urlToParse) {
       return Object.assign(new Location(), {
-        href: urlToParse
+        href: urlToParse,
       })
     },
     stringify(u) {
@@ -74,9 +74,9 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
         pathname: u.pathname,
         port: u.port,
         search: u.search,
-        hash: u.hash
+        hash: u.hash,
       })
-    }
+    },
   }
 }
 

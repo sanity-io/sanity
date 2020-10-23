@@ -10,7 +10,7 @@ const centerStyle: React.CSSProperties = {
   transform: 'translate(-50%, -50%)',
   width: '100%',
   maxWidth: '600px',
-  padding: '1rem'
+  padding: '1rem',
 }
 
 export function ProgressCircleStory() {

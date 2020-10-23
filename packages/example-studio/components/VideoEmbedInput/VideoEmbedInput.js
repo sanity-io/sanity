@@ -18,25 +18,25 @@ function select(ev) {
 export default class VideoEmbedInput extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
-      title: PropTypes.string
+      title: PropTypes.string,
     }).isRequired,
 
     level: PropTypes.number,
     value: PropTypes.shape({
       _type: PropTypes.string,
       id: PropTypes.string,
-      service: PropTypes.string
+      service: PropTypes.string,
     }),
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
   }
 
   state = {
     errorMessage: null,
     result: null,
-    shouldReplace: false
+    shouldReplace: false,
   }
 
-  handleSourceChange = event => {
+  handleSourceChange = (event) => {
     const {type} = this.props
     const inputValue = event.target.value
 
@@ -50,7 +50,7 @@ export default class VideoEmbedInput extends React.Component {
     if (!result) {
       this.setState({
         result: null,
-        errorMessage: ERROR_UNKNOWN_VIDEO_SERVICE
+        errorMessage: ERROR_UNKNOWN_VIDEO_SERVICE,
       })
       return
     }
@@ -58,7 +58,7 @@ export default class VideoEmbedInput extends React.Component {
     if (!result.id) {
       this.setState({
         result: null,
-        errorMessage: ERROR_UNKNOWN_VIDEO_ID
+        errorMessage: ERROR_UNKNOWN_VIDEO_ID,
       })
       return
     }
@@ -66,14 +66,14 @@ export default class VideoEmbedInput extends React.Component {
     const nextValue = {
       _type: type.name,
       id: result.id,
-      service: result.service
+      service: result.service,
     }
 
     const patch = inputValue === '' ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
     this.setState({
       errorMessage: null,
-      result
+      result,
     })
   }
 
@@ -81,7 +81,7 @@ export default class VideoEmbedInput extends React.Component {
     const {errorMessage, result} = this.state
     const {type, value, level} = this.props
     const placeholder = `Paste URL or embed code from ${humanizeList(
-      SUPPORTED_SERVICES.map(s => s.title),
+      SUPPORTED_SERVICES.map((s) => s.title),
       {conjunction: 'or'}
     )}…`
     return (

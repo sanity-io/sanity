@@ -8,7 +8,7 @@ export default function resolveUploader(
   type: ImageSchemaType | FileSchemaType,
   file: File
 ): Uploader | null {
-  return uploaders.find(uploader => {
+  return uploaders.find((uploader) => {
     return (
       is.type(uploader.type, type) &&
       accept(file, uploader.accepts) &&

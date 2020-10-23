@@ -10,7 +10,7 @@ type BooleanProps = {
 export const BooleanPreview: PreviewComponent<boolean> = function BooleanPreview({
   value,
   schemaType,
-  color
+  color,
 }) {
   const Preview = schemaType.options?.layout === 'checkbox' ? Checkbox : Switch
   return <Preview checked={value} color={color} />

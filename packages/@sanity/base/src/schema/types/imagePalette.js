@@ -9,6 +9,6 @@ export default {
     {name: 'vibrant', type: 'sanity.imagePaletteSwatch', title: 'Vibrant'},
     {name: 'dominant', type: 'sanity.imagePaletteSwatch', title: 'Dominant'},
     {name: 'lightMuted', type: 'sanity.imagePaletteSwatch', title: 'Light Muted'},
-    {name: 'muted', type: 'sanity.imagePaletteSwatch', title: 'Muted'}
-  ]
+    {name: 'muted', type: 'sanity.imagePaletteSwatch', title: 'Muted'},
+  ],
 }

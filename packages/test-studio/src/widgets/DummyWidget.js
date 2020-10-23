@@ -9,14 +9,14 @@ function DummyWidget(props) {
 
 DummyWidget.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  children: PropTypes.any
+  children: PropTypes.any,
 }
 
 DummyWidget.defaultProps = {
-  children: 'Dummy'
+  children: 'Dummy',
 }
 
 export default {
   name: 'dummy',
-  component: DummyWidget
+  component: DummyWidget,
 }

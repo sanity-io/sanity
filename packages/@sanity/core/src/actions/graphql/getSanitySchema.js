@@ -6,15 +6,15 @@ const registerBabelLoader = require('./registerBabelLoader')
 
 const getFakeGlobals = () => ({
   __DEV__: false,
-  requestAnimationFrame: cb => setTimeout(cb, 0),
-  cancelAnimationFrame: timer => clearTimeout(timer),
-  InputEvent: global.window && global.window.InputEvent
+  requestAnimationFrame: (cb) => setTimeout(cb, 0),
+  cancelAnimationFrame: (timer) => clearTimeout(timer),
+  InputEvent: global.window && global.window.InputEvent,
 })
 
 function provideFakeGlobals() {
   const fakeGlobals = getFakeGlobals()
   const stubbedKeys = []
-  Object.keys(fakeGlobals).forEach(key => {
+  Object.keys(fakeGlobals).forEach((key) => {
     if (!global[key]) {
       global[key] = fakeGlobals[key]
       stubbedKeys.push(key)
@@ -22,7 +22,7 @@ function provideFakeGlobals() {
   })
 
   return () => {
-    stubbedKeys.forEach(key => {
+    stubbedKeys.forEach((key) => {
       delete global[key]
     })
   }
@@ -36,7 +36,7 @@ function getSanitySchema(basePath) {
     (code, filename) => `module.exports = ${JSON.stringify(filename)}`,
     {
       ignoreNodeModules: false,
-      exts: getFileExtensions()
+      exts: getFileExtensions(),
     }
   )
 
@@ -66,7 +66,7 @@ function getFileExtensions() {
     '.woff2',
     '.ttf',
     '.eot',
-    '.otf'
+    '.otf',
   ]
 }
 

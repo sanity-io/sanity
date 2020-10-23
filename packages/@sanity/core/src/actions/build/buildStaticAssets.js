@@ -34,7 +34,7 @@ export default async (args, context) => {
     sourceMaps: flags['source-maps'],
     skipMinify: !flags.minify,
     profile: flags.profile,
-    project: Object.assign({}, config.get('project'), overrides.project)
+    project: Object.assign({}, config.get('project'), overrides.project),
   }
 
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
@@ -47,7 +47,7 @@ export default async (args, context) => {
     output.print(
       '\nIncluding the following environment variables as part of the JavaScript bundle:'
     )
-    envVarKeys.forEach(key => output.print(`- ${key}`))
+    envVarKeys.forEach((key) => output.print(`- ${key}`))
     output.print('')
   }
 
@@ -59,7 +59,7 @@ export default async (args, context) => {
     shouldDelete = await prompt.single({
       type: 'confirm',
       message: `Do you want to delete the existing directory (${outputDir}) first?`,
-      default: true
+      default: true,
     })
   }
 
@@ -90,8 +90,8 @@ export default async (args, context) => {
 
     // Get hashes for each chunk
     const chunkMap = {}
-    stats.chunks.forEach(chunk =>
-      chunk.files.forEach(file => {
+    stats.chunks.forEach((chunk) =>
+      chunk.files.forEach((file) => {
         chunkMap[file] = chunk.hash
       })
     )
@@ -111,13 +111,13 @@ export default async (args, context) => {
     const doc = await getDocumentElement(
       {...compilationConfig, hashes: chunkMap},
       {
-        scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
+        scripts: ['vendor.bundle.js', 'app.bundle.js'].map((asset) => {
           const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
           return {
             path: assetPath,
-            hash: chunkMap[assetPath] || chunkMap[asset]
+            hash: chunkMap[assetPath] || chunkMap[asset],
           }
-        })
+        }),
       }
     )
 
@@ -136,7 +136,7 @@ export default async (args, context) => {
       output.print('\nLargest modules (unminified, uncompressed sizes):')
       sortModulesBySize(bundle.stats.modules)
         .slice(0, 10)
-        .forEach(module => output.print(`[${filesize(module.size)}] ${module.name}`))
+        .forEach((module) => output.print(`[${filesize(module.size)}] ${module.name}`))
     }
 
     // Now compress the JS bundles
@@ -145,8 +145,8 @@ export default async (args, context) => {
       const compressStart = Date.now()
       await Promise.all(
         Object.keys(chunkMap)
-          .filter(fileName => path.extname(fileName) === '.js')
-          .map(fileName => path.join(compilationConfig.outputPath, fileName))
+          .filter((fileName) => path.extname(fileName) === '.js')
+          .map((fileName) => path.join(compilationConfig.outputPath, fileName))
           .map(compressJavascript)
       )
 
@@ -157,7 +157,7 @@ export default async (args, context) => {
     // Copy static assets (from /static folder) to output dir
     await fse
       .copy(path.join(workDir, 'static'), path.join(outputDir, 'static'), {overwrite: false})
-      .catch(err => {
+      .catch((err) => {
         // Allow missing static folder
         if (err.code !== 'ENOENT') {
           throw err

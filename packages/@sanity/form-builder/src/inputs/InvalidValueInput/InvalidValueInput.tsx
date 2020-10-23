@@ -13,13 +13,13 @@ function getConverters(value, actualType, validTypes) {
   }
 
   return Object.keys(CONVERTERS[actualType])
-    .filter(targetType => validTypes.includes(targetType))
-    .map(targetType => ({
+    .filter((targetType) => validTypes.includes(targetType))
+    .map((targetType) => ({
       from: actualType,
       to: targetType,
-      ...CONVERTERS[actualType][targetType]
+      ...CONVERTERS[actualType][targetType],
     }))
-    .filter(converter => converter.test(value))
+    .filter((converter) => converter.test(value))
 }
 
 type InvalidValueProps = {
@@ -33,7 +33,7 @@ export default class InvalidValueInput extends React.PureComponent<InvalidValueP
     this.props.onChange(PatchEvent.from(unset()))
   }
 
-  handleConvertTo = converted => {
+  handleConvertTo = (converted) => {
     this.props.onChange(PatchEvent.from(set(converted)))
   }
 
@@ -52,7 +52,7 @@ export default class InvalidValueInput extends React.PureComponent<InvalidValueP
     return (
       <div>
         Only the following types are valid here according to schema:{' '}
-        {validTypes.map(validType => (
+        {validTypes.map((validType) => (
           <li key={validType}>
             <code>{validType}</code>
           </li>
@@ -80,7 +80,7 @@ export default class InvalidValueInput extends React.PureComponent<InvalidValueP
         Encountered a value of type <code>{actualType}</code>.{this.renderValidTypes()}
         <h4>{actualType}</h4>
         <pre className={styles.inspectValue}>{JSON.stringify(value, null, 2)}</pre>
-        {converters.map(converter => (
+        {converters.map((converter) => (
           <DefaultButton
             key={`${converter.from}-${converter.to}`}
             onClick={() => this.handleConvertTo(converter.convert(value))}

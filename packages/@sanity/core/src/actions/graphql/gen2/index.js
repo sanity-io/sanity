@@ -2,7 +2,7 @@ const generateTypeFilters = require('./generateTypeFilters')
 const generateTypeSortings = require('./generateTypeSortings')
 const generateTypeQueries = require('./generateTypeQueries')
 
-module.exports = extracted => {
+module.exports = (extracted) => {
   const filters = generateTypeFilters(extracted.types)
   const sortings = generateTypeSortings(extracted.types)
   const queries = generateTypeQueries(extracted.types, filters, sortings)

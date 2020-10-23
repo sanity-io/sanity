@@ -14,7 +14,7 @@ export function MetaInfo({
   action,
   icon,
   children,
-  markRemoved
+  markRemoved,
 }: MetaInfoProps): React.ReactElement {
   const Icon = icon
   const iconClass = markRemoved ? styles.iconRemoved : styles.icon

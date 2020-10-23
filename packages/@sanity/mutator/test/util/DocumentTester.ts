@@ -14,7 +14,7 @@ export default class DocumentTester {
   constructor(tap, attrs) {
     this.doc = new Document(attrs)
     this.onRebaseCalled = false
-    this.doc.onRebase = edge => {
+    this.doc.onRebase = (edge) => {
       this.onRebaseCalled = true
     }
     this.doc.onMutation = (edge, mutation) => {
@@ -39,7 +39,7 @@ export default class DocumentTester {
       transactionId: toRev,
       resultRev: toRev,
       previousRev: fromRev,
-      mutations: [{patch}]
+      mutations: [{patch}],
     })
     this.doc.arrive(mut)
     return this
@@ -51,7 +51,7 @@ export default class DocumentTester {
       resultRev: toRev,
       // @ts-ignore
       _previousRev: fromRev, // not known to receiver yet
-      mutations: [{patch}]
+      mutations: [{patch}],
     })
     this.staged[toRev] = mut
     this.stagedResponders[toRev] = this.doc.stage(mut)

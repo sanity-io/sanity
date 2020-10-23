@@ -20,5 +20,5 @@ export const consistencyStatus = memoize(
       refCount()
     )
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

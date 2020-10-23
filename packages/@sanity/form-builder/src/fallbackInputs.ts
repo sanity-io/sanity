@@ -9,5 +9,5 @@ export const fallbackInputs = {
   array: ArrayInput,
   boolean: BooleanInput,
   number: NumberInput,
-  string: TextInput
+  string: TextInput,
 }

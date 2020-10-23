@@ -19,6 +19,6 @@ export default createSchema({
     complexArrays,
     live,
     pt,
-    settings
-  ])
+    settings,
+  ]),
 })

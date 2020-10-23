@@ -43,7 +43,7 @@ const valid = (allowedValues, values, message) => {
   const paths = []
   for (let i = 0; i < values.length; i++) {
     const value = values[i]
-    if (allowedValues.some(expected => deepEquals(expected, value))) {
+    if (allowedValues.some((expected) => deepEquals(expected, value))) {
       continue
     }
 
@@ -83,7 +83,7 @@ const unique = (flag, value, message) => {
   }
   /* eslint-enable max-depth */
 
-  const paths = dupeIndices.map(idx => {
+  const paths = dupeIndices.map((idx) => {
     const item = value[idx]
     const pathSegment = item && item._key ? {_key: item._key} : idx
     return [pathSegment]
@@ -100,5 +100,5 @@ module.exports = Object.assign({}, genericValidator, {
   length,
   valid,
   min,
-  max
+  max,
 })

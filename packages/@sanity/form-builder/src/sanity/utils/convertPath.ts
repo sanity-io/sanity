@@ -20,7 +20,7 @@ function parseGradientPath(focusPathStr): Path {
   return focusPathStr
     .split(/[[.\]]/g)
     .filter(Boolean)
-    .map(seg => (seg.includes('==') ? splitAttr(seg) : coerce(seg)))
+    .map((seg) => (seg.includes('==') ? splitAttr(seg) : coerce(seg)))
 }
 
 export function toGradient(formBuilderPath: Path): string {

@@ -76,5 +76,5 @@ function parseDate(date, throwOnError) {
 module.exports = Object.assign({}, genericValidator, {
   type,
   min,
-  max
+  max,
 })

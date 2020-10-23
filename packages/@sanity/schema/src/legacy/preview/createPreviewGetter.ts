@@ -17,12 +17,12 @@ function parsePreview(preview) {
   if (Array.isArray(select)) {
     return {
       ...pick(preview, ['prepare', 'component']),
-      select: parseSelection(select)
+      select: parseSelection(select),
     }
   }
   return {
     ...pick(preview, ['prepare', 'component']),
-    select
+    select,
   }
 }
 

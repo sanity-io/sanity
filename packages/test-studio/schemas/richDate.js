@@ -9,13 +9,13 @@ export default {
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'myDateField',
       type: 'richDate',
       title: 'Rich date with default config',
-      description: 'A plain richDate field'
+      description: 'A plain richDate field',
     },
     {
       name: 'myUtcDateField',
@@ -23,8 +23,8 @@ export default {
       title: 'Rich date with inputUtc: true',
       description: 'A plain richDate field',
       options: {
-        inputUtc: true
-      }
+        inputUtc: true,
+      },
     },
 
     {
@@ -34,8 +34,8 @@ export default {
       description: 'A plain richDate field',
       options: {
         inputDate: true,
-        inputTime: false
-      }
+        inputTime: false,
+      },
     },
     {
       name: 'myOnlyTimeField',
@@ -44,8 +44,8 @@ export default {
       description: 'A default select with only time select',
       options: {
         inputDate: false,
-        inputTime: true
-      }
+        inputTime: true,
+      },
     },
     {
       name: 'formatedDateField',
@@ -54,8 +54,8 @@ export default {
       description: 'A plain richDate field',
       options: {
         dateFormat: 'MMMM Do YYYY',
-        calendarTodayLabel: 'Klikk her for å gå til idag'
-      }
-    }
-  ]
+        calendarTodayLabel: 'Klikk her for å gå til idag',
+      },
+    },
+  ],
 }

@@ -33,7 +33,7 @@ const PREVIEW_ASPECT_RATIOS = [
   ['3:4', 3 / 4],
   ['Square', 1 / 1],
   ['16:9', 16 / 9],
-  ['Panorama', 4 / 1]
+  ['Panorama', 4 / 1],
 ]
 
 export default class ImageToolInput extends React.Component<
@@ -43,7 +43,7 @@ export default class ImageToolInput extends React.Component<
   constructor(props: ImageToolInputProps) {
     super(props)
     this.state = {
-      value: props.value
+      value: props.value,
     }
   }
 
@@ -53,11 +53,11 @@ export default class ImageToolInput extends React.Component<
 
     // For backwards compatibility, where hotspot/crop might not have a named type yet
     const cropField = type.fields.find(
-      field => field.name === 'crop' && field.type.name !== 'object'
+      (field) => field.name === 'crop' && field.type.name !== 'object'
     )
 
     const hotspotField = type.fields.find(
-      field => field.name === 'hotspot' && field.type.name !== 'object'
+      (field) => field.name === 'hotspot' && field.type.name !== 'object'
     )
 
     if (!readOnly) {
@@ -150,7 +150,7 @@ function ImageToolInputPreviewItem({
   imageUrl,
   ratio,
   title,
-  value
+  value,
 }: {
   imageUrl: string
   ratio: string | number

@@ -18,7 +18,7 @@ async function extractCssCustomProperties(basePath, entryPath) {
     getPostcssImportPlugin({basePath}),
     postcssCustomProperties({preserve: true}),
     postcssCalc(),
-    postcssColorFunction({preserveCustomProps: true})
+    postcssColorFunction({preserveCustomProps: true}),
   ])
 
   let result
@@ -33,9 +33,9 @@ async function extractCssCustomProperties(basePath, entryPath) {
   const customProperties = {}
 
   // Walk AST and collect :root custom properties (starting with `--`)
-  result.root.nodes.forEach(node => {
+  result.root.nodes.forEach((node) => {
     if (node.type === 'rule' && node.selector === ':root') {
-      node.nodes.forEach(ruleNode => {
+      node.nodes.forEach((ruleNode) => {
         if (ruleNode.prop && ruleNode.prop.startsWith('--')) {
           customProperties[ruleNode.prop] = ruleNode.value.replace(/(?:\r\n|\r|\n)/g, ' ')
         }

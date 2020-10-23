@@ -9,6 +9,6 @@ export default function hasEqualFields(fields: string[]) {
     if (typeof object !== 'object' || typeof otherObject !== 'object') {
       return false
     }
-    return fields.every(field => object[field] === otherObject[field])
+    return fields.every((field) => object[field] === otherObject[field])
   }
 }

@@ -16,7 +16,7 @@ const valueStyles = {
   number: {color: '#a11'},
   string: {color: '#22a', wordBreak: 'break-word'},
   bool: {color: '#a11'},
-  empty: {color: '#777'}
+  empty: {color: '#777'},
 }
 
 function previewArray(val) {

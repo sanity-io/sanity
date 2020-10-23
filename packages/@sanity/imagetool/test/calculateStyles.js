@@ -7,11 +7,11 @@ describe('calculateStyles', () => {
   describe('default aspect ratio', () => {
     it('defaults to the source image aspect ratio when no crop is given', () => {
       const style = calculateStyles({
-        image: {height: 100, width: 100}
+        image: {height: 100, width: 100},
       })
       style.image.should.containEql({
         height: '100%',
-        width: '100%'
+        width: '100%',
       })
     })
     it('considers the cropping when calculating image aspect', () => {
@@ -21,39 +21,39 @@ describe('calculateStyles', () => {
           x: 0.5,
           y: 0.5,
           height: 0.5,
-          width: 0.5
+          width: 0.5,
         },
         crop: {
           top: 0.2,
           bottom: 0.2,
           left: 0.1,
-          right: 0.1
-        }
+          right: 0.1,
+        },
       })
       style.container.should.containEql({
         height: '150%',
-        width: '100%'
+        width: '100%',
       })
       style.image.should.containEql({
         height: '166.67%',
         left: '-12.5%',
         position: 'absolute',
         top: '-33.33%',
-        width: '125%'
+        width: '125%',
       })
     })
   })
   describe('landscape oriented images', () => {
     const image = {
       height: 100,
-      width: 150
+      width: 150,
     }
 
     const hotspot = {
       height: 0.75,
       width: 0.5,
       x: 0.5,
-      y: 0.5
+      y: 0.5,
     }
 
     it('displays well in a portrait oriented container', () => {
@@ -62,22 +62,22 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 150,
-          width: 100
-        }
+          width: 100,
+        },
       })
       style.image.should.containEql({
         position: 'absolute',
         height: '100%',
         width: '100%',
         left: 0,
-        top: 0
+        top: 0,
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '150%'
+        height: '150%',
       })
     })
 
@@ -87,8 +87,8 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 150
-        }
+          width: 150,
+        },
       })
 
       style.image.should.containEql({
@@ -96,14 +96,14 @@ describe('calculateStyles', () => {
         height: '100%',
         width: '100%',
         left: 0,
-        top: 0
+        top: 0,
       })
 
       style.container.should.containEql({
         height: '66.67%',
         overflow: 'hidden',
         position: 'relative',
-        width: '100%'
+        width: '100%',
       })
     })
 
@@ -113,8 +113,8 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 100
-        }
+          width: 100,
+        },
       })
 
       style.image.should.containEql({
@@ -122,14 +122,14 @@ describe('calculateStyles', () => {
         height: '100%',
         width: '100%',
         top: 0,
-        left: 0
+        left: 0,
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '100%'
+        height: '100%',
       })
     })
   })
@@ -137,14 +137,14 @@ describe('calculateStyles', () => {
   describe('portrait oriented images', () => {
     const image = {
       height: 150,
-      width: 100
+      width: 100,
     }
 
     const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
-      y: 0.5
+      y: 0.5,
     }
 
     it('display in a portrait oriented container', () => {
@@ -153,22 +153,22 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 150,
-          width: 100
-        }
+          width: 100,
+        },
       })
       style.image.should.containEql({
         position: 'absolute',
         height: '100%',
         width: '100%',
         left: 0,
-        top: 0
+        top: 0,
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '150%'
+        height: '150%',
       })
     })
 
@@ -178,8 +178,8 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 150
-        }
+          width: 150,
+        },
       })
 
       style.image.should.containEql({
@@ -187,14 +187,14 @@ describe('calculateStyles', () => {
         left: 0,
         position: 'absolute',
         height: '100%',
-        width: '100%'
+        width: '100%',
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '66.67%'
+        height: '66.67%',
       })
     })
 
@@ -204,8 +204,8 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 100
-        }
+          width: 100,
+        },
       })
 
       style.image.should.containEql({
@@ -213,14 +213,14 @@ describe('calculateStyles', () => {
         height: '100%',
         width: '100%',
         top: 0,
-        left: 0
+        left: 0,
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '100%'
+        height: '100%',
       })
     })
   })
@@ -228,14 +228,14 @@ describe('calculateStyles', () => {
   describe('square images', () => {
     const image = {
       height: 100,
-      width: 100
+      width: 100,
     }
 
     const hotspot = {
       height: 0.5,
       width: 0.5,
       x: 0.5,
-      y: 0.5
+      y: 0.5,
     }
 
     it('display in a portrait oriented container', () => {
@@ -244,22 +244,22 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 100
-        }
+          width: 100,
+        },
       })
       style.image.should.containEql({
         position: 'absolute',
         top: 0,
         left: 0,
         height: '100%',
-        width: '100%'
+        width: '100%',
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '100%'
+        height: '100%',
       })
     })
 
@@ -269,8 +269,8 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 150
-        }
+          width: 150,
+        },
       })
 
       style.image.should.containEql({
@@ -278,14 +278,14 @@ describe('calculateStyles', () => {
         top: 0,
         left: 0,
         height: '100%',
-        width: '100%'
+        width: '100%',
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '66.67%'
+        height: '66.67%',
       })
     })
 
@@ -295,22 +295,22 @@ describe('calculateStyles', () => {
         image,
         container: {
           height: 100,
-          width: 100
-        }
+          width: 100,
+        },
       })
 
       style.image.should.containEql({
         top: 0,
         left: 0,
         height: '100%',
-        width: '100%'
+        width: '100%',
       })
 
       style.container.should.containEql({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
-        height: '100%'
+        height: '100%',
       })
     })
   })

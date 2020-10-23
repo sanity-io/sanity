@@ -58,7 +58,7 @@ export default {
 
     // Verify existence of dataset before trying to export from it
     const datasets = await client.datasets.list()
-    if (!datasets.find(set => set.name === dataset)) {
+    if (!datasets.find((set) => set.name === dataset)) {
       throw new Error(`Dataset with name "${dataset}" not found`)
     }
 
@@ -68,7 +68,7 @@ export default {
         type: 'input',
         message: 'Output path:',
         default: path.join(workDir, `${dataset}.tar.gz`),
-        filter: absolutify
+        filter: absolutify,
       })
     }
 
@@ -85,7 +85,7 @@ export default {
 
     let currentStep = 'Exporting documents...'
     let spinner = output.spinner(currentStep).start()
-    const onProgress = progress => {
+    const onProgress = (progress) => {
       if (progress.step !== currentStep) {
         spinner.succeed()
         spinner = output.spinner(progress.step).start()
@@ -103,7 +103,7 @@ export default {
         dataset,
         outputPath,
         onProgress,
-        ...flags
+        ...flags,
       })
       spinner.succeed()
     } catch (err) {
@@ -112,7 +112,7 @@ export default {
     }
 
     output.print(`Export finished (${prettyMs(Date.now() - start)})`)
-  }
+  },
 }
 
 // eslint-disable-next-line complexity
@@ -141,7 +141,7 @@ async function getOutputPath(destination, dataset, prompt, flags) {
     const shouldOverwrite = await prompt.single({
       type: 'confirm',
       message: `File "${finalPath}" already exists, would you like to overwrite it?`,
-      default: false
+      default: false,
     })
 
     if (!shouldOverwrite) {

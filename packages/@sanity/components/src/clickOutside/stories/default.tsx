@@ -9,7 +9,7 @@ export function DefaultStory() {
     <CenteredContainer>
       <Sanity part="part:@sanity/components/buttons/default" propTables={[ClickOutside]}>
         <ClickOutside onClickOutside={action('click outside')}>
-          {ref => (
+          {(ref) => (
             <div
               onClick={action('click inside')}
               ref={ref}

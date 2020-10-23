@@ -31,7 +31,7 @@ function experimental(original: SanityClient): SanityClient {
     return original
   }
 
-  ;[original.clientConfig as any, original.observable.clientConfig as any].forEach(cfg => {
+  ;[original.clientConfig as any, original.observable.clientConfig as any].forEach((cfg) => {
     cfg.url = cfg.url.replace(/\/v1$/, '/vX')
     cfg.cdnUrl = cfg.cdnUrl.replace(/\/v1$/, '/vX')
   })
@@ -45,7 +45,7 @@ Object.defineProperty(configuredClient, 'default', {
     // eslint-disable-next-line no-console
     console.warn(deprecationMessage)
     return configuredClient
-  }
+  },
 })
 
 // Expose as CJS to allow Node scripts to consume it without `.default`

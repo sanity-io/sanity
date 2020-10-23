@@ -4,13 +4,13 @@ import {ListBuilder, ListInput} from './List'
 import {
   getDocumentTypeListItems,
   getDocumentTypeListItem,
-  getDocumentTypeList
+  getDocumentTypeList,
 } from './documentTypeListItems'
 import {
   MenuItemBuilder,
   MenuItem,
   getOrderingMenuItemsForSchemaType,
-  getOrderingMenuItem
+  getOrderingMenuItem,
 } from './MenuItem'
 import {ListItemBuilder, ListItemInput} from './ListItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
@@ -22,7 +22,7 @@ import {
   PartialDocumentNode,
   documentFromEditor,
   documentFromEditorWithInitialValue,
-  getDefaultDocumentNode
+  getDefaultDocumentNode,
 } from './Document'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
@@ -31,7 +31,7 @@ import * as views from './views'
 import {
   InitialValueTemplateItemBuilder,
   defaultInitialValueTemplateItems,
-  menuItemsFromInitialValueTemplateItems
+  menuItemsFromInitialValueTemplateItems,
 } from './InitialValueTemplateItem'
 
 const StructureBuilder = {
@@ -67,7 +67,7 @@ const StructureBuilder = {
     new InitialValueTemplateItemBuilder({
       id: templateId,
       parameters,
-      templateId
+      templateId,
     }),
 
   component: (spec?: ComponentInput | Function) => {
@@ -78,7 +78,7 @@ const StructureBuilder = {
 
   divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'}),
 
-  view: views
+  view: views,
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {
@@ -95,7 +95,7 @@ function getDefaultStructure(): ListBuilder {
     .id('__root__')
     .title('Content')
     .items(items)
-    .showIcons(items.some(item => hasIcon(item.getSchemaType())))
+    .showIcons(items.some((item) => hasIcon(item.getSchemaType())))
 }
 
 export {StructureBuilder, SerializeError}

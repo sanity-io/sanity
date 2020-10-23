@@ -22,7 +22,7 @@ function requestIdleCallbackShim(callback: IdleCallback, options?: IdleOptions):
       didTimeout: false,
       timeRemaining() {
         return Math.max(0, Date.now() - start)
-      }
+      },
     })
   }, 1)
 }

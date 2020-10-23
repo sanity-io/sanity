@@ -16,7 +16,7 @@ export function urlToFile(url: string, filename?: string): Promise<File> {
       }
       reader.readAsDataURL(xhr.response)
     }
-    xhr.onerror = error => {
+    xhr.onerror = (error) => {
       reject(error)
     }
     xhr.open('GET', url)

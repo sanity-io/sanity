@@ -16,20 +16,20 @@ export default class HintsPackage extends React.PureComponent {
     error: null,
     hintsPackage: null,
     sidebarRemovalInstructions: null,
-    isLoading: true
+    isLoading: true,
   }
 
   subscription = null
 
   fetchHintsPackage(repoId) {
     this.fetchSubscription = getHints(repoId, removeHintsArticleSlug).subscribe({
-      next: result => {
+      next: (result) => {
         const {hintsPackage, sidebarRemovalInstructions} = result
         this.setState({hintsPackage, sidebarRemovalInstructions, isLoading: false})
       },
-      error: error => {
+      error: (error) => {
         this.setState({error, isLoading: false})
-      }
+      },
     })
   }
 

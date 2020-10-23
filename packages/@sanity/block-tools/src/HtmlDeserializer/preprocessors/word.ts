@@ -13,7 +13,7 @@ export default (html, doc) => {
   const unwantedPaths = [
     '//o:p',
     "//span[@style='mso-list:Ignore']",
-    "//span[@style='mso-list: Ignore']"
+    "//span[@style='mso-list: Ignore']",
   ]
 
   // xPaths for elements that needs to be remapped into other tags
@@ -23,7 +23,7 @@ export default (html, doc) => {
     "//p[@class='MsoToaHeading']",
     "//p[@class='MsoSubtitle']",
     "//span[@class='MsoSubtleEmphasis']",
-    "//span[@class='MsoIntenseEmphasis']"
+    "//span[@class='MsoIntenseEmphasis']",
   ]
 
   // Which HTML element(s) to map the elements matching mappedPaths into
@@ -33,14 +33,14 @@ export default (html, doc) => {
     MsoToaHeading: ['h2'],
     MsoSubtitle: ['h5'],
     MsoSubtleEmphasis: ['span', 'em'],
-    MsoIntenseEmphasis: ['span', 'em', 'strong']
+    MsoIntenseEmphasis: ['span', 'em', 'strong'],
     // Remove cruft
   }
 
   const unwantedNodes = doc.evaluate(
     unwantedPaths.join('|'),
     doc,
-    prefix => {
+    (prefix) => {
       if (prefix === 'o') {
         return 'urn:schemas-microsoft-com:office:office'
       }
@@ -69,7 +69,7 @@ export default (html, doc) => {
     const parentElement = document.createElement(tags[0])
     let parent = parentElement
     let child = parentElement
-    tags.slice(1).forEach(tag => {
+    tags.slice(1).forEach((tag) => {
       child = document.createElement(tag)
       parent.appendChild(child)
       parent = child

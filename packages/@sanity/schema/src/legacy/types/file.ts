@@ -6,7 +6,7 @@ import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 export const ASSET_FIELD = {
   name: 'asset',
   type: 'reference',
-  to: {type: 'sanity.fileAsset'}
+  to: {type: 'sanity.fileAsset'},
 }
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
@@ -14,11 +14,11 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 const FILE_CORE = {
   name: 'file',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
 }
 
 const DEFAULT_OPTIONS = {
-  accept: ''
+  accept: '',
 }
 
 export const FileType = {
@@ -33,15 +33,15 @@ export const FileType = {
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
       options: options,
-      isCustomized: Boolean(subTypeDef.fields)
+      isCustomized: Boolean(subTypeDef.fields),
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map(fieldDef => {
+      return fields.map((fieldDef) => {
         const {name, ...type} = fieldDef
         return {
           name: name,
-          type: extendMember(type)
+          type: extendMember(type),
         }
       })
     })
@@ -55,16 +55,16 @@ export const FileType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "file"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

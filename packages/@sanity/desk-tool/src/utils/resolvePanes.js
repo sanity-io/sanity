@@ -19,7 +19,7 @@ if (__DEV__) {
   }
 
   if (module.hot) {
-    module.hot.dispose(data => {
+    module.hot.dispose((data) => {
       data.prevError = prevStructureError
     })
   }
@@ -28,7 +28,9 @@ if (__DEV__) {
 export function resolvePanes(structure, paneGroups, prevStructure, fromIndex, options) {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
   return waitStructure.pipe(
-    switchMap(struct => resolveForStructure(struct, paneGroups, prevStructure, fromIndex, options))
+    switchMap((struct) =>
+      resolveForStructure(struct, paneGroups, prevStructure, fromIndex, options)
+    )
   )
 }
 
@@ -47,7 +49,7 @@ function sumPaneSegments(paneGroups) {
 }
 
 function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, options = {}) {
-  return Observable.create(subscriber => {
+  return Observable.create((subscriber) => {
     try {
       validateStructure(structure)
     } catch (err) {
@@ -57,7 +59,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
 
     const paneSegments = [[{id: structure.id}]]
       .concat(paneGroups)
-      .filter(pair => pair && pair.length > 0)
+      .filter((pair) => pair && pair.length > 0)
 
     const totalPanes = sumPaneSegments(paneSegments)
     const [fromRootIndex, fromSplitIndex] = fromIndex
@@ -81,7 +83,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
       }
 
       const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
-      const path = paneSegments.slice(0, index + 1).map(segment => segment[0].id)
+      const path = paneSegments.slice(0, index + 1).map((segment) => segment[0].id)
       const context = {parent, index, splitIndex, path}
 
       if (index === 0) {
@@ -113,8 +115,8 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
       const source = serializeStructure(pane, context, resolverArgs)
       subscriptions.push(
         source.subscribe(
-          result => emit(result, index, splitIndex),
-          error => subscriber.error(error)
+          (result) => emit(result, index, splitIndex),
+          (error) => subscriber.error(error)
         )
       )
     }
@@ -200,7 +202,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
       return {
         id: 'editor',
         type: 'document',
-        options: {id, template, type, templateParameters: payload}
+        options: {id, template, type, templateParameters: payload},
       }
     }
 
@@ -212,7 +214,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, op
   })
 }
 
-export const maybeSerialize = structure =>
+export const maybeSerialize = (structure) =>
   structure && typeof structure.serialize === 'function'
     ? structure.serialize({path: []})
     : structure
@@ -275,11 +277,13 @@ export const useStructure = (segments, options = {}) => {
       .pipe(
         distinctUntilChanged(),
         map(maybeSerialize),
-        switchMap(newStructure => resolvePanes(newStructure, segments, structure, [0, 0], options))
+        switchMap((newStructure) =>
+          resolvePanes(newStructure, segments, structure, [0, 0], options)
+        )
       )
       .subscribe(
-        newStructure => setStructure({structure: newStructure}),
-        resolveError => setStructure({error: resolveError})
+        (newStructure) => setStructure({structure: newStructure}),
+        (resolveError) => setStructure({error: resolveError})
       )
 
     return () => subscription.unsubscribe()
@@ -288,7 +292,7 @@ export const useStructure = (segments, options = {}) => {
   return {structure, error}
 }
 
-export const setStructureResolveError = err => {
+export const setStructureResolveError = (err) => {
   prevStructureError = err
 }
 
@@ -311,8 +315,8 @@ function warnOnUnknownExports(mod) {
   const known = KNOWN_STRUCTURE_EXPORTS.concat('default')
   const keys = Object.keys(mod)
   keys
-    .filter(key => !known.includes(key))
-    .forEach(key => {
+    .filter((key) => !known.includes(key))
+    .forEach((key) => {
       const {closest} = known.reduce(
         (acc, current) => {
           const distance = leven(current, key)

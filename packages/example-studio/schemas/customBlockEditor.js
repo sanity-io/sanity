@@ -41,7 +41,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'body',
@@ -53,7 +53,7 @@ export default {
           type: 'block',
           lists: [
             {type: 'Bullet', value: 'bullet'},
-            {type: 'Number', value: 'number'}
+            {type: 'Number', value: 'number'},
           ],
           marks: {
             decorators: [
@@ -65,17 +65,22 @@ export default {
                 value: 'highlight',
                 blockEditor: {
                   icon: markerIcon,
-                  render: Highlight
-                }
-              }
+                  render: Highlight,
+                },
+              },
             ],
             annotations: [
               {
                 type: 'object',
                 name: 'link',
                 fields: [
-                  {name: 'href', type: 'string', title: 'Url', validation: Rule => Rule.required()}
-                ]
+                  {
+                    name: 'href',
+                    type: 'string',
+                    title: 'Url',
+                    validation: (Rule) => Rule.required(),
+                  },
+                ],
               },
               {type: 'videoEmbed'},
               {
@@ -84,14 +89,14 @@ export default {
                 type: 'reference',
                 to: {type: 'author'},
                 options: {
-                  editModal: 'popover'
+                  editModal: 'popover',
                 },
                 blockEditor: {
                   icon: AuthorIcon,
-                  render: AuthorAnnotation
-                }
-              }
-            ]
+                  render: AuthorAnnotation,
+                },
+              },
+            ],
           },
           styles: [
             {title: 'Normal', value: 'normal'},
@@ -102,16 +107,16 @@ export default {
               title: 'Title',
               value: 'title',
               blockEditor: {
-                render: TitleStyle
-              }
-            }
+                render: TitleStyle,
+              },
+            },
           ],
           of: [
             {
               name: 'author',
               title: 'Author',
               type: 'reference',
-              to: {type: 'author'}
+              to: {type: 'author'},
             },
             {
               title: 'Image',
@@ -122,35 +127,32 @@ export default {
                   type: 'string',
                   title: 'Caption',
                   options: {isHighlighted: true},
-                  validation: Rule => Rule.required()
-                }
-              ]
+                  validation: (Rule) => Rule.required(),
+                },
+              ],
             },
             {
               name: 'test',
               title: 'Test',
               type: 'object',
               options: {
-                editModal: 'fold'
+                editModal: 'fold',
               },
               fields: [
                 {
                   type: 'string',
                   name: 'title',
-                  validation: Rule =>
-                    Rule.required()
-                      .min(10)
-                      .max(80)
-                }
-              ]
-            }
-          ]
+                  validation: (Rule) => Rule.required().min(10).max(80),
+                },
+              ],
+            },
+          ],
         },
         {
           name: 'author',
           title: 'Author',
           type: 'reference',
-          to: {type: 'author'}
+          to: {type: 'author'},
         },
         {
           name: 'test',
@@ -160,12 +162,9 @@ export default {
             {
               type: 'string',
               name: 'title',
-              validation: Rule =>
-                Rule.required()
-                  .min(10)
-                  .max(80)
-            }
-          ]
+              validation: (Rule) => Rule.required().min(10).max(80),
+            },
+          ],
         },
         {type: 'code'},
         {
@@ -178,35 +177,35 @@ export default {
               title: 'Caption',
               description: 'Is required',
               options: {isHighlighted: true},
-              validation: Rule => Rule.required()
+              validation: (Rule) => Rule.required(),
             },
             {
               name: 'subtitle',
               title: 'Subtitle',
               type: 'string',
               options: {
-                isHighlighted: true
-              }
+                isHighlighted: true,
+              },
             },
             {
               title: 'Description',
               name: 'description',
               type: 'text',
               options: {
-                isHighlighted: true
-              }
-            }
+                isHighlighted: true,
+              },
+            },
           ],
           preview: {
             select: {
               title: 'caption',
               subtitle: 'subtitle',
               description: 'description',
-              media: 'asset'
-            }
-          }
-        }
-      ]
-    }
-  ]
+              media: 'asset',
+            },
+          },
+        },
+      ],
+    },
+  ],
 }

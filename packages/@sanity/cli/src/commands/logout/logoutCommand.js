@@ -33,7 +33,7 @@ export default {
     const confirm = await prompt.single({
       type: 'confirm',
       message: 'Are you sure you want to log out?',
-      default: false
+      default: false,
     })
 
     if (!confirm) {
@@ -59,5 +59,5 @@ export default {
 
       output.print(chalk.green('Logged out'))
     }
-  }
+  },
 }

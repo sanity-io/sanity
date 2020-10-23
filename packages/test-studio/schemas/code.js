@@ -9,7 +9,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'code',
@@ -26,9 +26,9 @@ export default {
           {title: 'SASS', value: 'sass'},
           {title: 'SCSS', value: 'scss'},
           {title: 'GROQ', value: 'groq'},
-          {title: 'My super custom language', value: 'custom'}
-        ]
-      }
+          {title: 'My super custom language', value: 'custom'},
+        ],
+      },
     },
     {
       name: 'cssOrJsCode',
@@ -38,9 +38,9 @@ export default {
         theme: 'github',
         languageAlternatives: [
           {title: 'JavaScript', value: 'javascript'},
-          {title: 'CSS', value: 'css'}
-        ]
-      }
+          {title: 'CSS', value: 'css'},
+        ],
+      },
     },
     {
       name: 'jscode',
@@ -49,8 +49,8 @@ export default {
       type: 'code',
       options: {
         theme: 'monokai',
-        language: 'javascript'
-      }
-    }
-  ]
+        language: 'javascript',
+      },
+    },
+  ],
 }

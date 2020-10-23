@@ -23,8 +23,8 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
       observer: Subscriber<ResizeObserverEntry>,
       options?: ResizeObserverOptions
     ) => {
-      const unsubscribe = event.subscribe(entries => {
-        const entry = entries.find(e => e.target === element)
+      const unsubscribe = event.subscribe((entries) => {
+        const entry = entries.find((e) => e.target === element)
         if (entry) {
           observer(entry)
         }
@@ -34,7 +34,7 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
         unsubscribe()
         resizeObserver.unobserve(element)
       }
-    }
+    },
   }
 }
 export const resizeObserver = createSharedResizeObserver()

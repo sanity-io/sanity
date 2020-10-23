@@ -10,19 +10,19 @@ export const recursiveObject = {
     {
       name: 'first',
       type: 'string',
-      title: 'First'
+      title: 'First',
     },
     {
       name: 'second',
       type: 'string',
-      title: 'Second'
+      title: 'Second',
     },
     {
       name: 'myself',
       title: 'A field of my own type',
-      type: 'recursiveObject'
-    }
-  ]
+      type: 'recursiveObject',
+    },
+  ],
 }
 
 export default {
@@ -31,19 +31,19 @@ export default {
   title: 'Recursive Objects test',
   preview: {
     select: {
-      title: 'recursiveObject.first'
-    }
+      title: 'recursiveObject.first',
+    },
   },
   fields: [
     {
       name: 'recursiveObject',
       type: 'recursiveObject',
-      title: 'A field of a recursive object type'
+      title: 'A field of a recursive object type',
     },
-    ...[1, 2, 3, 4].map(n => ({
+    ...[1, 2, 3, 4].map((n) => ({
       name: `myself${n}`,
       title: `Field ${n}`,
-      type: 'recursiveObject'
-    }))
-  ]
+      type: 'recursiveObject',
+    })),
+  ],
 }

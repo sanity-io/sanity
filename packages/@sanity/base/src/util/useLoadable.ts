@@ -33,11 +33,11 @@ export function useLoadable<T>(observable$: Observable<T>, initialValue?: T): Lo
         : {isLoading: false, value: initialValue, error: undefined}
 
     subscription.current = observable$.subscribe(
-      nextVal => {
+      (nextVal) => {
         const nextState: LoadedState<T> = {
           isLoading: false,
           value: nextVal,
-          error: undefined
+          error: undefined,
         }
 
         if (isSync) {
@@ -46,7 +46,7 @@ export function useLoadable<T>(observable$: Observable<T>, initialValue?: T): Lo
           setState(nextState)
         }
       },
-      error => {
+      (error) => {
         setState({isLoading: false, error, value: undefined})
       }
     )

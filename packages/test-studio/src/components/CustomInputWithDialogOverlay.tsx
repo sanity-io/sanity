@@ -34,7 +34,7 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
                   key={field.name}
                   type={field.type}
                   value={value && value[field.name]}
-                  onChange={patchEvent => handleFieldChange(field, patchEvent)}
+                  onChange={(patchEvent) => handleFieldChange(field, patchEvent)}
                   path={[field.name]}
                   focusPath={focusPath}
                   onFocus={onFocus}

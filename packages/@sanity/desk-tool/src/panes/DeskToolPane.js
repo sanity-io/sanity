@@ -13,7 +13,7 @@ const paneMap = {
   list: ListPane,
   documentList: DocumentsListPane,
   document: DocumentPaneProvider,
-  component: UserComponentPane
+  component: UserComponentPane,
 }
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -23,14 +23,14 @@ export default class DeskToolPane extends React.PureComponent {
     title: PropTypes.string,
     type: PropTypes.string.isRequired,
     onCollapse: PropTypes.func,
-    onExpand: PropTypes.func
+    onExpand: PropTypes.func,
   }
 
   static defaultProps = {
     title: '',
     index: 0,
     onCollapse: noop,
-    onExpand: noop
+    onExpand: noop,
   }
 
   handlePaneCollapse = () => this.props.onCollapse(this.props.index)

@@ -11,7 +11,7 @@ const mockUser = () => {
     identity: chance.guid(),
     displayName: chance.name(),
     email: chance.email(),
-    imageUrl: `https://placeimg.com/64/64/any?${Math.random() * 1000}`
+    imageUrl: `https://placeimg.com/64/64/any?${Math.random() * 1000}`,
   }
 }
 
@@ -20,7 +20,7 @@ const mockHistoryItem = () => {
     title: 'Test',
     status: 'published',
     key: chance.guid(),
-    users: range(Math.floor(Math.random() * 4) + 1).map(() => mockUser())
+    users: range(Math.floor(Math.random() * 4) + 1).map(() => mockUser()),
   }
 }
 

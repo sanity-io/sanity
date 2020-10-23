@@ -16,7 +16,7 @@ type VisitContext = {
 
 type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
 
-const NOOP_VISITOR: Visitor = typeDef => typeDef
+const NOOP_VISITOR: Visitor = (typeDef) => typeDef
 
 export class UnknownType {
   name: string
@@ -38,13 +38,13 @@ export default function traverseSchema(
   const coreTypesRegistry = Object.create(null)
   const registry = Object.create(null)
 
-  const coreTypeNames = coreTypes.map(typeDef => typeDef.name)
+  const coreTypeNames = coreTypes.map((typeDef) => typeDef.name)
 
   const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames)
 
-  const typeNames = types.map(typeDef => typeDef && typeDef.name).filter(Boolean)
+  const typeNames = types.map((typeDef) => typeDef && typeDef.name).filter(Boolean)
 
-  coreTypes.forEach(coreType => {
+  coreTypes.forEach((coreType) => {
     coreTypesRegistry[coreType.name] = coreType
   })
 
@@ -71,7 +71,7 @@ export default function traverseSchema(
     return typeName === 'type' || reservedTypeNames.includes(typeName)
   }
 
-  const visitType = isRoot => (typeDef, index) => {
+  const visitType = (isRoot) => (typeDef, index) => {
     return visitor(typeDef, {
       visit: visitType(false),
       isRoot,
@@ -79,11 +79,11 @@ export default function traverseSchema(
       getTypeNames,
       isReserved,
       isDuplicate,
-      index
+      index,
     })
   }
 
-  coreTypes.forEach(coreTypeDef => {
+  coreTypes.forEach((coreTypeDef) => {
     Object.assign(coreTypesRegistry[coreTypeDef.name], visitType(coreTypeDef))
   })
 
@@ -113,6 +113,6 @@ export default function traverseSchema(
     },
     toJSON() {
       return this.getTypes()
-    }
+    },
   }
 }

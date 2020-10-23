@@ -15,7 +15,7 @@ export default {
       title: 'Author',
       type: 'reference',
       to: {type: 'author'},
-      inputComponent: AuthorReferenceInput
+      inputComponent: AuthorReferenceInput,
     },
     {
       name: 'title',
@@ -23,26 +23,26 @@ export default {
       description: 'A custom input defined by "field.inputComponent"',
       type: 'string',
       placeholder: 'This is the placeholder',
-      inputComponent: CustomStringInput
+      inputComponent: CustomStringInput,
     },
     {
       name: 'myObject',
       title: 'A custom input for a custom object type',
       description: 'A custom input for a custom object type',
       type: 'myObject',
-      inputComponent: CustomMyObjectInput
+      inputComponent: CustomMyObjectInput,
     },
     {
       name: 'customFont',
       title: 'Input with custom font',
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
-      inputComponent: CustomFontStringInput
+      inputComponent: CustomFontStringInput,
     },
     {
       name: 'taskEstimate',
       title: 'Task estimate',
-      type: 'pertEstimate'
-    }
-  ]
+      type: 'pertEstimate',
+    },
+  ],
 }

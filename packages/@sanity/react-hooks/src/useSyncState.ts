@@ -16,7 +16,7 @@ export function useSyncState(publishedDocId): SyncState {
       () =>
         documentStore.pair
           .consistencyStatus(publishedDocId)
-          .pipe(map(isConsistent => (isConsistent ? NOT_SYNCING : SYNCING))),
+          .pipe(map((isConsistent) => (isConsistent ? NOT_SYNCING : SYNCING))),
       [publishedDocId]
     ),
     NOT_SYNCING

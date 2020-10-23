@@ -12,18 +12,18 @@ export function DialogContentStory() {
       index: '1',
       title: 'Finish',
       color: 'primary',
-      autoFocus: true
+      autoFocus: true,
     },
     {
       index: '2',
-      title: 'Cancel'
+      title: 'Cancel',
     },
     {
       index: '3',
       title: 'Secondary',
       color: 'danger',
-      secondary: true
-    }
+      secondary: true,
+    },
   ]
 
   const dialogActions = boolean('Show actions', false, 'test') ? actions : []

@@ -12,7 +12,7 @@ const CONTAINER_BREAKPOINTS: ContainerBreakpoint[] = [
   {name: 'medium', minWidth: 512},
   {name: 'default', minWidth: 640},
   {name: 'large', minWidth: 960},
-  {name: 'xlarge', minWidth: 1600}
+  {name: 'xlarge', minWidth: 1600},
 ]
 
 function findMinBreakpoints(width: number) {
@@ -38,7 +38,7 @@ export function ContainerQuery(props: React.HTMLProps<HTMLDivElement>) {
     let ro: ResizeObserver
 
     if (rootRef.current) {
-      const handleResizeEntries: ResizeObserverCallback = entries => {
+      const handleResizeEntries: ResizeObserverCallback = (entries) => {
         setWidth(entries[0].contentRect.width)
       }
 
@@ -58,7 +58,7 @@ export function ContainerQuery(props: React.HTMLProps<HTMLDivElement>) {
   return (
     <div
       {...restProps}
-      data-container-min={min.length ? min.map(bp => bp.name).join(' ') : undefined}
+      data-container-min={min.length ? min.map((bp) => bp.name).join(' ') : undefined}
       ref={rootRef}
     >
       {children}

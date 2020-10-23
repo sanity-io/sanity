@@ -13,7 +13,7 @@ function addScope(
   return (
     scopedState && {
       ...routerState,
-      [scope]: scopedState
+      [scope]: scopedState,
     }
   )
 }
@@ -28,11 +28,11 @@ export default class RouteScope extends React.Component<Props> {
   __internalRouter: InternalRouter
 
   static childContextTypes = {
-    __internalRouter: PropTypes.object
+    __internalRouter: PropTypes.object,
   }
 
   static contextTypes = {
-    __internalRouter: PropTypes.object
+    __internalRouter: PropTypes.object,
   }
 
   constructor(props: Props, context: RouterProviderContext) {
@@ -43,13 +43,13 @@ export default class RouteScope extends React.Component<Props> {
       ...parentInternalRouter,
       resolvePathFromState: this.resolvePathFromState,
       navigate: this.navigate,
-      getState: this.getScopedState
+      getState: this.getScopedState,
     }
   }
 
   public getChildContext(): RouterProviderContext {
     return {
-      __internalRouter: this.__internalRouter
+      __internalRouter: this.__internalRouter,
     }
   }
 

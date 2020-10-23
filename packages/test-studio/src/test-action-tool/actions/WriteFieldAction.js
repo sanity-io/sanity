@@ -19,10 +19,10 @@ export function WriteFieldAction({id, type, published, draft}) {
         <input
           type="text"
           value={currentTitle}
-          onChange={event => patch.execute([set('title', event.currentTarget.value)])}
+          onChange={(event) => patch.execute([set('title', event.currentTarget.value)])}
         />
         <button onClick={() => setIsWriting(false)}>OK</button>
       </>
-    )
+    ),
   }
 }

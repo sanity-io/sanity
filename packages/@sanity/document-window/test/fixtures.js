@@ -1,11 +1,7 @@
 // 2017-06-01T12:00:00.000Z
 const baseTime = 1496318400000
-const reverse = str =>
-  str
-    .split('')
-    .reverse()
-    .join('')
-const timestamp = diff => new Date(baseTime + diff).toISOString().replace(/\.\d+Z$/, 'Z')
+const reverse = (str) => str.split('').reverse().join('')
+const timestamp = (diff) => new Date(baseTime + diff).toISOString().replace(/\.\d+Z$/, 'Z')
 
 exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
   const items = []
@@ -21,7 +17,7 @@ exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
       _id: baseId.slice(i),
       name: `Product ${++productIndex}`,
       productIndex,
-      _updatedAt: initialUpdatedAt
+      _updatedAt: initialUpdatedAt,
     })
   }
 
@@ -31,7 +27,7 @@ exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
       _id: `2-${reverse(baseId).slice(i)}`,
       name: `Product ${++productIndex}`,
       productIndex,
-      _updatedAt: timestamp(baseTimeDiff - (i + 1) * 3000)
+      _updatedAt: timestamp(baseTimeDiff - (i + 1) * 3000),
     })
   }
 
@@ -42,7 +38,7 @@ exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
       _id: `3-${baseId.slice(i)}`,
       name: `Product ${++productIndex}`,
       productIndex,
-      _updatedAt: secondUpdatedAt
+      _updatedAt: secondUpdatedAt,
     })
   }
 
@@ -52,7 +48,7 @@ exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
       _id: `4-group-${productIndex}`,
       name: `Product ${++productIndex}`,
       productIndex,
-      _updatedAt: timestamp(0 - (260000 * 1000 - i * 3000))
+      _updatedAt: timestamp(0 - (260000 * 1000 - i * 3000)),
     })
   }
 

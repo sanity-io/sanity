@@ -5,7 +5,7 @@ import {
   from as observableFrom,
   merge,
   Observable,
-  of as observableOf
+  of as observableOf,
 } from 'rxjs'
 import {
   distinctUntilChanged,
@@ -16,7 +16,7 @@ import {
   refCount,
   share,
   switchMap,
-  tap
+  tap,
 } from 'rxjs/operators'
 import {difference, flatten} from 'lodash'
 import debounceCollect from './utils/debounceCollect'
@@ -54,7 +54,7 @@ const getGlobalEvents = () => {
     const mutations$ = allEvents$.pipe(filter((event: any) => event.type === 'mutation'))
     _globalListener = {
       welcome$,
-      mutations$
+      mutations$,
     }
   }
   return _globalListener
@@ -83,7 +83,7 @@ function listenFields(id: Id, fields: FieldName[]) {
     switchMap((event: any) => {
       if (event.type === 'welcome' || event.visibility === 'query') {
         return fetchDocumentPathsFast(id, fields).pipe(
-          mergeMap(result => {
+          mergeMap((result) => {
             return concat(
               observableOf(result),
               result === undefined // hack: if we get undefined as result here it can be because the document has
@@ -120,13 +120,13 @@ const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-
 function createCachedFieldObserver(id, fields): CachedFieldObserver {
   let latest = null
   const changes$ = merge(
-    new Observable(observer => {
+    new Observable((observer) => {
       observer.next(latest)
       observer.complete()
     }).pipe(filter(Boolean)),
     listenFields(id, fields)
   ).pipe(
-    tap(v => (latest = v)),
+    tap((v) => (latest = v)),
     publishReplay(1),
     refCount()
   )
@@ -142,7 +142,7 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
   const existingObservers = CACHE[id]
   const missingFields = difference(
     fields,
-    flatten(existingObservers.map(cachedFieldObserver => cachedFieldObserver.fields))
+    flatten(existingObservers.map((cachedFieldObserver) => cachedFieldObserver.fields))
   )
 
   if (missingFields.length > 0) {
@@ -150,15 +150,15 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
   }
 
   const cachedFieldObservers = existingObservers
-    .filter(observer => observer.fields.some(fieldName => fields.includes(fieldName)))
-    .map(cached => cached.changes$)
+    .filter((observer) => observer.fields.some((fieldName) => fields.includes(fieldName)))
+    .map((cached) => cached.changes$)
 
   return combineLatest(cachedFieldObservers).pipe(
     // in the event that a document gets deleted, the cached values will be updated to store `undefined`
     // if this happens, we should not pick any fields from it, but rather just return null
-    map(snapshots => snapshots.filter(Boolean)), // make sure all snapshots agree on same revision
-    filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev)), // pass on value with the requested fields (or null if value is deleted)
-    map(snapshots => (snapshots.length === 0 ? null : pickFrom(snapshots, fields))), // emit values only if changed
+    map((snapshots) => snapshots.filter(Boolean)), // make sure all snapshots agree on same revision
+    filter((snapshots) => isUniqueBy(snapshots, (snapshot) => snapshot._rev)), // pass on value with the requested fields (or null if value is deleted)
+    map((snapshots) => (snapshots.length === 0 ? null : pickFrom(snapshots, fields))), // emit values only if changed
     distinctUntilChanged(hasEqualFields(fields))
   )
 }
@@ -175,7 +175,7 @@ function pickFrom(objects: Record<string, any>[], fields: string[]) {
 
 function getFirstFieldValue(objects: Record<string, any>[], fieldName: string) {
   let value
-  objects.some(object => {
+  objects.some((object) => {
     if (fieldName in object) {
       value = object[fieldName]
       return true

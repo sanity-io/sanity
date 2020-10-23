@@ -8,8 +8,8 @@ const config = require('../lerna.json')
 const corePkg = require('../package.json')
 
 const rootPath = path.join(__dirname, '..')
-const stripRange = version => version.replace(/^[~^]/, '')
-const sortRanges = ranges =>
+const stripRange = (version) => version.replace(/^[~^]/, '')
+const sortRanges = (ranges) =>
   ranges.sort((a, b) => {
     try {
       return semver.compare(stripRange(a), stripRange(b))
@@ -17,29 +17,29 @@ const sortRanges = ranges =>
       return 1
     }
   })
-const patterns = config.packages.map(pkg => path.join(pkg, 'package.json'))
+const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 const flatten = (target, item) => target.concat(item)
 const globFlatten = (files, pattern) => glob.sync(pattern).reduce(flatten, files)
 const dependencies = patterns
   .reduce(globFlatten, [])
-  .map(file => path.join(rootPath, file))
-  .map(file => fs.readFileSync(file, 'utf8'))
-  .map(file => JSON.parse(file))
+  .map((file) => path.join(rootPath, file))
+  .map((file) => fs.readFileSync(file, 'utf8'))
+  .map((file) => JSON.parse(file))
   .concat(corePkg)
-  .map(file => ({
+  .map((file) => ({
     name: file.name,
-    deps: Object.assign({}, file.dependencies || {}, file.devDependencies || {})
+    deps: Object.assign({}, file.dependencies || {}, file.devDependencies || {}),
   }))
 
 const versionRanges = {}
 const fixable = {}
 
-dependencies.forEach(item => {
+dependencies.forEach((item) => {
   if (!item.name) {
     return
   }
 
-  Object.keys(item.deps).forEach(pkg => {
+  Object.keys(item.deps).forEach((pkg) => {
     const version = item.deps[pkg]
     versionRanges[pkg] = versionRanges[pkg] || {}
     versionRanges[pkg][version] = versionRanges[pkg][version] || []
@@ -47,7 +47,7 @@ dependencies.forEach(item => {
   })
 })
 
-Object.keys(versionRanges).forEach(depName => {
+Object.keys(versionRanges).forEach((depName) => {
   const versions = Object.keys(versionRanges[depName])
   if (versions.length === 1) {
     return
@@ -55,7 +55,7 @@ Object.keys(versionRanges).forEach(depName => {
 
   const plain = versions
     .map(stripRange)
-    .filter(version => /^\d+\.\d+\.\d+/.test(version))
+    .filter((version) => /^\d+\.\d+\.\d+/.test(version))
     .sort(semver.rcompare)
 
   const greatestVersion = plain[0]
@@ -65,7 +65,7 @@ Object.keys(versionRanges).forEach(depName => {
   console.log('')
   console.log(chalk.cyan(depName))
 
-  sortRanges(versions).forEach(range => {
+  sortRanges(versions).forEach((range) => {
     const packages = versionRanges[depName][range]
 
     let isFixable
@@ -85,7 +85,7 @@ Object.keys(versionRanges).forEach(depName => {
       return
     }
 
-    packages.forEach(pkgName => {
+    packages.forEach((pkgName) => {
       fixable[pkgName] = fixable[pkgName] || []
       fixable[pkgName].push({depName, version: greatestRange})
     })
@@ -94,7 +94,7 @@ Object.keys(versionRanges).forEach(depName => {
 
 const fixablePackages = Object.keys(fixable)
 
-fixablePackages.forEach(pkg => {
+fixablePackages.forEach((pkg) => {
   const toFix = fixable[pkg]
   const manifestPath =
     pkg === corePkg.name
@@ -103,7 +103,7 @@ fixablePackages.forEach(pkg => {
 
   // eslint-disable-next-line import/no-dynamic-require
   const manifest = require(manifestPath)
-  toFix.forEach(dep => {
+  toFix.forEach((dep) => {
     const depSection = (manifest.dependencies || {})[dep.depName]
       ? manifest.dependencies
       : manifest.devDependencies
@@ -122,7 +122,7 @@ if (fixablePackages.length > 0) {
     [
       'Updated version ranges for %d packages,',
       'you might want to run "npm run bootstrap"',
-      'and run some tests before pushing changes'
+      'and run some tests before pushing changes',
     ].join(' '),
     fixablePackages.length
   )

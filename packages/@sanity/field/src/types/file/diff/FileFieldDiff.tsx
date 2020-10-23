@@ -7,7 +7,7 @@ import {
   FromTo,
   MetaInfo,
   ChangeList,
-  ObjectDiff
+  ObjectDiff,
 } from '../../../diff'
 import {useRefValue} from '../../../diff/hooks'
 import {getSizeDiff} from './helpers'
@@ -23,12 +23,12 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const next = useRefValue<FileAsset>(toAsset?._ref)
 
   const changedFields = Object.keys(fields).filter(
-    name => fields[name].isChanged && name !== '_type'
+    (name) => fields[name].isChanged && name !== '_type'
   )
 
   const nestedFields = schemaType.fields
-    .filter(field => field.name !== 'asset' && changedFields.includes(field.name))
-    .map(field => field.name)
+    .filter((field) => field.name !== 'asset' && changedFields.includes(field.name))
+    .map((field) => field.name)
 
   const didAssetChange = changedFields.includes('asset')
 

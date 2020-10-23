@@ -1,6 +1,6 @@
 import defaultSchema from '../../../fixtures/defaultSchema'
 
-const blockContentType = defaultSchema.get('blogPost').fields.find(field => field.name === 'body')
+const blockContentType = defaultSchema.get('blogPost').fields.find((field) => field.name === 'body')
   .type
 
 const rules = [
@@ -14,21 +14,21 @@ const rules = [
       const childNodes =
         code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes
       let text = ''
-      childNodes.forEach(node => {
+      childNodes.forEach((node) => {
         text += node.textContent
       })
       return block({
         _type: 'code',
-        text: text
+        text: text,
       })
-    }
-  }
+    },
+  },
 ]
 
 export default (html, blockTools, commonOptions) => {
   const options = {
     ...commonOptions,
-    rules
+    rules,
   }
   return blockTools.htmlToBlocks(html, blockContentType, options)
 }

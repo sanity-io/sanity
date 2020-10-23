@@ -56,7 +56,7 @@ storiesOf('@sanity/base/Variables', module)
     return (
       <div>
         <div className={styles.shadows}>
-          {[1, 6, 12, 16, 24].map(i => {
+          {[1, 6, 12, 16, 24].map((i) => {
             return (
               <div key={i} className={shadowStyles[`shadow-${i}dp`]}>
                 shadow-{i}dp

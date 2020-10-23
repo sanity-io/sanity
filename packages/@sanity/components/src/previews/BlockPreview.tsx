@@ -30,7 +30,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 160,
   height: 160,
   aspect: 1,
-  fit: 'crop'
+  fit: 'crop',
 }
 
 export default class BlockPreview extends React.PureComponent<BlockPreviewProps> {
@@ -43,7 +43,7 @@ export default class BlockPreview extends React.PureComponent<BlockPreviewProps>
       media,
       status,
       children,
-      extendedPreview
+      extendedPreview,
     } = this.props
 
     return (
@@ -54,7 +54,7 @@ export default class BlockPreview extends React.PureComponent<BlockPreviewProps>
               {typeof media === 'function' &&
                 media({
                   dimensions: mediaDimensions || DEFAULT_MEDIA_DIMENSIONS,
-                  layout: 'default'
+                  layout: 'default',
                 })}
               {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
               {React.isValidElement(media) && media}

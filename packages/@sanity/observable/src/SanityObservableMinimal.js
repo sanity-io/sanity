@@ -17,7 +17,7 @@ Object.defineProperty(SanityObservableMinimal.prototype, 'constructor', {
   value: SanityObservableMinimal,
   enumerable: false,
   writable: true,
-  configurable: true
+  configurable: true,
 })
 
 SanityObservableMinimal.prototype.lift = function lift(operator) {

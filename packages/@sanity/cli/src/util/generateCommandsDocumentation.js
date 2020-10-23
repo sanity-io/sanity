@@ -6,7 +6,7 @@ import noSuchCommandText from './noSuchCommandText'
  */
 export function generateCommandsDocumentation(commandGroups, group = 'default') {
   const commandGroup = commandGroups[group]
-  const commands = commandGroup && commandGroup.filter(cmd => !cmd.hideFromHelp)
+  const commands = commandGroup && commandGroup.filter((cmd) => !cmd.hideFromHelp)
 
   if (!commands || commands.length === 0) {
     throw new Error(noSuchCommandText(group))
@@ -19,9 +19,9 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
   const rows = [
     `usage: sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
     '',
-    'Commands:'
+    'Commands:',
   ]
-    .concat(commands.map(cmd => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
+    .concat(commands.map((cmd) => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
     .concat(['', `See 'sanity help${prefix} <command>' for specific information on a subcommand.`])
 
   return rows.join('\n')
@@ -45,6 +45,6 @@ export function generateCommandDocumentation(command, group, subCommand) {
     '',
     `   ${command.description}`,
     '',
-    (command.helpText || '').trim()
+    (command.helpText || '').trim(),
   ].join('\n')
 }

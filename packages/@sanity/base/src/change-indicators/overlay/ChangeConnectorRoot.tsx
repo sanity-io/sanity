@@ -18,7 +18,7 @@ function EnabledChangeConnectorRoot({
   className,
   onSetFocus,
   isReviewChangesOpen,
-  onOpenReviewChanges
+  onOpenReviewChanges,
 }: Props) {
   const [rootRef, setRootRef] = React.useState<HTMLDivElement | null>()
   return (

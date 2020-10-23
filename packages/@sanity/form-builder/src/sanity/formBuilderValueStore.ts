@@ -4,10 +4,10 @@ import {map, scan} from 'rxjs/operators'
 import {Patch} from '../typedefs/patch'
 
 function prepareMutationEvent(event) {
-  const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
+  const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)
   return {
     ...event,
-    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches)
+    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches),
   }
 }
 
@@ -15,16 +15,16 @@ function prepareRebaseEvent(event) {
   const patches = [
     {
       id: event.document._id,
-      set: event.document
-    }
+      set: event.document,
+    },
   ]
   return {
     type: 'mutation',
     document: event.document,
-    mutations: patches.map(patch => ({
-      patch
+    mutations: patches.map((patch) => ({
+      patch,
     })),
-    patches: gradientPatchAdapter.toFormBuilder('internal', patches)
+    patches: gradientPatchAdapter.toFormBuilder('internal', patches),
   }
 }
 
@@ -49,7 +49,7 @@ function wrap(document) {
 
       return {
         ...currentEvent,
-        deletedSnapshot
+        deletedSnapshot,
       }
     }, null)
   )
@@ -59,7 +59,7 @@ function wrap(document) {
     events: events$,
     patch(patches: Array<Patch>) {
       document.patch(gradientPatchAdapter.toGradient(patches))
-    }
+    },
   }
 }
 
@@ -76,6 +76,6 @@ export function checkoutPair(idPair) {
 
   return {
     draft: wrap(draft),
-    published: wrap(published)
+    published: wrap(published),
   }
 }

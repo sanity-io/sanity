@@ -12,7 +12,7 @@ import {
   DiffTooltip,
   ObjectDiff,
   ObjectSchemaType,
-  useDiffAnnotationColor
+  useDiffAnnotationColor,
 } from '../../../../diff'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
@@ -88,7 +88,7 @@ function AnnnotationWithDiff({
   const markDefPath = [path[0]].concat(['markDefs', {_key: object._key}])
   const prefix = fullPath.slice(
     0,
-    fullPath.findIndex(seg => isKeySegment(seg) && seg._key === object._key)
+    fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key)
   )
   const annotationPath = prefix.concat(path)
   const myPath = prefix.concat(markDefPath)
@@ -104,7 +104,7 @@ function AnnnotationWithDiff({
   }, [isEditing, open])
 
   const handleOpenPopup = useCallback(
-    event => {
+    (event) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

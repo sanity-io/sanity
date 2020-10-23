@@ -5,7 +5,7 @@ import {useRouter} from 'part:@sanity/base/router'
 import React, {useCallback} from 'react'
 
 const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DUPLICATE: "This document doesn't yet exist so there's nothing to duplicate"
+  NOTHING_TO_DUPLICATE: "This document doesn't yet exist so there's nothing to duplicate",
 }
 
 export function DuplicateAction({id, type, onComplete}) {
@@ -28,6 +28,6 @@ export function DuplicateAction({id, type, onComplete}) {
     disabled: Boolean(isDuplicating || duplicate.disabled),
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
     title: (duplicate.disabled && DISABLED_REASON_TITLE[duplicate.disabled]) || '',
-    onHandle: handle
+    onHandle: handle,
   }
 }

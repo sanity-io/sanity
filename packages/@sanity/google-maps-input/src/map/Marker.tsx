@@ -41,7 +41,7 @@ export class Marker extends React.PureComponent<Props> {
         strokeColor: color.border,
         strokeWeight: 2,
         anchor: new api.Point(10, 35),
-        labelOrigin: new api.Point(10, 11)
+        labelOrigin: new api.Point(10, 11),
       }
     }
 
@@ -52,7 +52,7 @@ export class Marker extends React.PureComponent<Props> {
       zIndex,
       opacity,
       label,
-      icon
+      icon,
     })
 
     if (markerRef) {

@@ -100,20 +100,20 @@ class Query {
       from: this._from,
       constraints: this._constraints,
       orderBy: this._orderBy,
-      params: this._params
+      params: this._params,
     }
   }
 
   toString(options = {}) {
     const constraints = this._constraints
-    const enclose = constraints.length > 1 ? group => `(${group})` : inp => inp
+    const enclose = constraints.length > 1 ? (group) => `(${group})` : (inp) => inp
     const constraint = constraints.map(enclose).join(' && ')
     const baseQuery = `*[${constraint}]`
     if (options.constraintsOnly) {
       return baseQuery
     }
 
-    const order = this._orderBy.map(pair => pair.join(' ')).join(', ')
+    const order = this._orderBy.map((pair) => pair.join(' ')).join(', ')
     const range = `${this._from}...${this._to}`
     const query = `${baseQuery} | order(${order}) [${range}]`
     return query

@@ -9,11 +9,11 @@ const cases = [
   '[1:4]',
   '[count > 5]',
   '..a',
-  '[name == "\\"quoted\\""]'
+  '[name == "\\"quoted\\""]',
 ]
 
-test(tap => {
-  cases.forEach(path => {
+test((tap) => {
+  cases.forEach((path) => {
     tap.same(path, toPath(parse(path)))
   })
   tap.end()

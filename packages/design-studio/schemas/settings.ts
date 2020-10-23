@@ -8,10 +8,7 @@ export default {
       type: 'string',
       name: 'title',
       title: 'Title',
-      validation: Rule =>
-        Rule.required()
-          .min(10)
-          .max(80)
-    }
-  ]
+      validation: (Rule) => Rule.required().min(10).max(80),
+    },
+  ],
 }

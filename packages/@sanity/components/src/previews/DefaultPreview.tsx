@@ -34,7 +34,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 80,
   height: 80,
   aspect: 1,
-  fit: 'crop'
+  fit: 'crop',
 }
 
 class DefaultPreview extends React.PureComponent<DefaultPreviewProps> {
@@ -49,7 +49,7 @@ class DefaultPreview extends React.PureComponent<DefaultPreviewProps> {
       isPlaceholder,
       progress,
       mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
-      styles = {}
+      styles = {},
     } = this.props
 
     if (isPlaceholder) {

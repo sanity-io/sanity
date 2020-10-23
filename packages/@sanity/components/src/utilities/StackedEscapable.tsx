@@ -12,9 +12,9 @@ function StackedEscapable(props: StackedExampleProps) {
 
   return (
     <Stacked>
-      {isActive => (
+      {(isActive) => (
         // eslint-disable-next-line react/jsx-no-bind
-        <Escapable onEscape={event => (isActive || event.shiftKey) && onEscape(event)}>
+        <Escapable onEscape={(event) => (isActive || event.shiftKey) && onEscape(event)}>
           {children}
         </Escapable>
       )}

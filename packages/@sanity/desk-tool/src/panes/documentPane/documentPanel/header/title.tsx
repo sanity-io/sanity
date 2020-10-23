@@ -6,7 +6,7 @@ import {Doc} from '../../types'
 export function DocumentHeaderTitle({
   documentType,
   paneTitle,
-  value
+  value,
 }: {
   documentType: string
   paneTitle?: string

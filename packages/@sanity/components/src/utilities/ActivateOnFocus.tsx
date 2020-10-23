@@ -20,17 +20,17 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
   static defaultProps = {
     className: undefined,
     message: 'Click to activate…',
-    isActive: false
+    isActive: false,
   }
 
   state = {
-    hasFocus: false
+    hasFocus: false,
   }
 
   handleClick = () => {
     if (!this.state.hasFocus) {
       this.setState({
-        hasFocus: true
+        hasFocus: true,
       })
       const {onActivate} = this.props
       if (onActivate) {
@@ -42,7 +42,7 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
   handleClickOutside = () => {
     if (this.state.hasFocus) {
       this.setState({
-        hasFocus: false
+        hasFocus: false,
       })
     }
   }
@@ -55,7 +55,7 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
       isActive,
       html,
       overlayClassName: overlayClassNameProp,
-      inputId
+      inputId,
     } = this.props
     const {hasFocus} = this.state
     const className = classNames(hasFocus ? styles.hasFocus : styles.noFocus, classNameProp)

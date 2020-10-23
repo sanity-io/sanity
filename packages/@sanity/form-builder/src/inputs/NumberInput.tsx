@@ -24,8 +24,8 @@ export default class NumberInput extends React.Component<Props<number, NumberSch
   }
   render() {
     const {value = '', readOnly, markers, type, level, onFocus, presence} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    const validation = markers.filter((marker) => marker.type === 'validation')
+    const errors = validation.filter((marker) => marker.level === 'error')
     // Show numpad on mobile if only positive numbers is preferred
     const minRule = getValidationRule(type, 'min')
     const onlyPositiveNumber = minRule && minRule.constraint >= 0

@@ -18,9 +18,9 @@ storiesOf('@sanity/desk-tool', module)
       canContinue && {
         name: 'confirm',
         title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now',
-        color: 'danger'
+        color: 'danger',
       },
-      {name: 'cancel', title: 'Keep', kind: 'simple'}
+      {name: 'cancel', title: 'Keep', kind: 'simple'},
     ].filter(Boolean)
     const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
 
@@ -76,9 +76,9 @@ storiesOf('@sanity/desk-tool', module)
     const actions = [
       canContinue && {
         name: 'confirm',
-        title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'
+        title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now',
       },
-      {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+      {name: 'cancel', title: 'Cancel', kind: 'secondary'},
     ].filter(Boolean)
 
     const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'

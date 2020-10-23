@@ -14,14 +14,14 @@ export default {
         {
           name: 'someString',
           title: 'Some string',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'home',
           title: 'Home address',
-          type: 'homeAddress'
-        }
-      ]
+          type: 'homeAddress',
+        },
+      ],
     },
     {
       name: 'homeAddress',
@@ -31,9 +31,9 @@ export default {
         {
           name: 'zip',
           title: 'Zip code',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'latlon',
@@ -43,14 +43,14 @@ export default {
         {
           name: 'lat',
           title: 'Latitude',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'lon',
           title: 'Longitude',
-          type: 'number'
-        }
-      ]
+          type: 'number',
+        },
+      ],
     },
     {
       name: 'image',
@@ -60,12 +60,12 @@ export default {
         {
           name: 'fullsize',
           title: 'Full size',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'aspectRatio',
           title: 'Aspect ratio',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'versions',
@@ -73,11 +73,11 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'imageVersion'
-            }
-          ]
-        }
-      ]
+              type: 'imageVersion',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'imageVersion',
@@ -87,18 +87,18 @@ export default {
         {
           name: 'width',
           title: 'Width',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'square',
           title: 'Square',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'url',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'person',
@@ -108,7 +108,7 @@ export default {
         {
           name: 'name',
           type: 'string',
-          title: 'Name'
+          title: 'Name',
         },
         {
           name: 'contact',
@@ -118,25 +118,25 @@ export default {
             {
               name: 'type',
               title: 'Type',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'person',
               title: 'Person reference',
               type: 'reference',
               to: {
-                type: 'person'
-              }
+                type: 'person',
+              },
             },
             {
               name: 'relation',
               title: 'Relation string',
               type: 'string',
-              placeholder: 'Fetter, mor, etc.'
-            }
-          ]
-        }
-      ]
+              placeholder: 'Fetter, mor, etc.',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'client',
@@ -151,20 +151,20 @@ export default {
             {
               name: 'foo',
               title: 'Foo string',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'contactPerson',
           title: 'Contact Person',
-          type: 'person'
+          type: 'person',
         },
         {
           name: 'name',
           type: 'string',
           title: 'Name',
-          placeholder: 'Hva heter kunden?'
+          placeholder: 'Hva heter kunden?',
         },
         {
           name: 'names',
@@ -172,37 +172,37 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'string'
+              type: 'string',
             },
             {
-              type: 'number'
-            }
-          ]
+              type: 'number',
+            },
+          ],
         },
         {
           name: 'tags',
           type: 'tag',
           title: 'Tag',
-          placeholder: 'Hva heter kunden?'
-        }
-      ]
+          placeholder: 'Hva heter kunden?',
+        },
+      ],
     },
     {
       name: 'tag',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'placeholder',
       type: 'string',
-      value: 'placeholder'
+      value: 'placeholder',
     },
     {
       name: 'personName',
       title: 'Autocomplete person (legacy)',
       type: 'string',
       autocompletes: {
-        scope: 'person'
-      }
+        scope: 'person',
+      },
     },
     {
       name: 'something',
@@ -210,19 +210,19 @@ export default {
       type: 'any',
       of: [
         {
-          type: 'string'
+          type: 'string',
         },
         {
-          type: 'person'
+          type: 'person',
         },
         {
           type: 'reference',
           to: {
             type: 'person',
-            title: 'Person'
-          }
-        }
-      ]
-    }
-  ]
+            title: 'Person',
+          },
+        },
+      ],
+    },
+  ],
 }

@@ -5,71 +5,71 @@ import parse from '../src/jsonpath/parse'
 const cases = {
   a: {
     type: 'attribute',
-    name: 'a'
+    name: 'a',
   },
   'a.b': {
     type: 'path',
     nodes: [
       {
         type: 'attribute',
-        name: 'a'
+        name: 'a',
       },
       {
         type: 'attribute',
-        name: 'b'
-      }
-    ]
+        name: 'b',
+      },
+    ],
   },
   '[7]': {
     type: 'union',
     nodes: [
       {
         type: 'index',
-        value: 7
-      }
-    ]
+        value: 7,
+      },
+    ],
   },
   '[-4]': {
     type: 'union',
     nodes: [
       {
         type: 'index',
-        value: -4
-      }
-    ]
+        value: -4,
+      },
+    ],
   },
   'a.b[7]': {
     type: 'path',
     nodes: [
       {
         type: 'attribute',
-        name: 'a'
+        name: 'a',
       },
       {
         type: 'attribute',
-        name: 'b'
+        name: 'b',
       },
       {
         type: 'union',
         nodes: [
           {
             type: 'index',
-            value: 7
-          }
-        ]
-      }
-    ]
+            value: 7,
+          },
+        ],
+      },
+    ],
   },
   'some.array[@ == "snafu"]': {
     type: 'path',
     nodes: [
       {
         type: 'attribute',
-        name: 'some'
+        name: 'some',
       },
       {
         type: 'attribute',
-        name: 'array'
+        name: 'array',
       },
       {
         type: 'union',
@@ -79,16 +79,16 @@ const cases = {
             operator: '==',
             lhs: {
               type: 'alias',
-              target: 'self'
+              target: 'self',
             },
             rhs: {
               type: 'string',
-              value: 'snafu'
-            }
-          }
-        ]
-      }
-    ]
+              value: 'snafu',
+            },
+          },
+        ],
+      },
+    ],
   },
   '[count > 5]': {
     type: 'union',
@@ -98,25 +98,25 @@ const cases = {
         operator: '>',
         lhs: {
           type: 'attribute',
-          name: 'count'
+          name: 'count',
         },
         rhs: {
           type: 'number',
-          value: 5
-        }
-      }
-    ]
+          value: 5,
+        },
+      },
+    ],
   },
   '..a': {
     type: 'recursive',
     term: {
       type: 'attribute',
-      name: 'a'
-    }
+      name: 'a',
+    },
   },
   '[]': {
     type: 'union',
-    nodes: []
+    nodes: [],
   },
   '[0,1]._weak': {
     type: 'path',
@@ -126,37 +126,37 @@ const cases = {
         nodes: [
           {
             type: 'index',
-            value: 0
+            value: 0,
           },
           {
             type: 'index',
-            value: 1
-          }
-        ]
+            value: 1,
+          },
+        ],
       },
       {
         type: 'attribute',
-        name: '_weak'
-      }
-    ]
+        name: '_weak',
+      },
+    ],
   },
   '[_ref?]': {
     nodes: [
       {
         lhs: {
           name: '_ref',
-          type: 'attribute'
+          type: 'attribute',
         },
         operator: '?',
-        type: 'constraint'
-      }
+        type: 'constraint',
+      },
     ],
-    type: 'union'
-  }
+    type: 'union',
+  },
 }
 
-Object.keys(cases).forEach(path => {
-  test(`Parsing jsonpath ${path}`, tap => {
+Object.keys(cases).forEach((path) => {
+  test(`Parsing jsonpath ${path}`, (tap) => {
     const expect = cases[path]
     if (expect) {
       tap.same(parse(path), expect, `Tokenization failed for '${path}'`)

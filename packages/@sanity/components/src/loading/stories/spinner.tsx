@@ -23,7 +23,7 @@ export function SpinnerStory() {
           minWidth: 300,
           maxWidth: 500,
           background: '#fff',
-          lineHeight: 0
+          lineHeight: 0,
         }}
       >
         <Sanity part="part:@sanity/components/loading/spinner" propTables={[Spinner]}>

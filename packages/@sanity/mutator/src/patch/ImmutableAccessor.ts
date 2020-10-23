@@ -102,10 +102,7 @@ export default class ImmutableAccessor {
     if (this.length() === 0 && pos === 0) {
       nextValue = items
     } else {
-      nextValue = this._value
-        .slice(0, pos)
-        .concat(items)
-        .concat(this._value.slice(pos))
+      nextValue = this._value.slice(0, pos).concat(items).concat(this._value.slice(pos))
     }
     return new ImmutableAccessor(nextValue, this.path)
   }

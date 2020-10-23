@@ -6,20 +6,20 @@ function assembleMock() {
   const result = {}
 
   result.connection = {
-    send: msg => {
+    send: (msg) => {
       result.lastSentMessage = msg
     },
-    sendBeacon: msg => {
+    sendBeacon: (msg) => {
       result.lastSentBeacon = msg
     },
     listen: () => {
-      return new Observable(observer => {
-        result.broadcast = msg => observer.next(msg)
+      return new Observable((observer) => {
+        result.broadcast = (msg) => observer.next(msg)
         return () => {
           result.ubsubscribed = true
         }
       })
-    }
+    },
   }
 
   result.store = new PresenceStore(result.connection, 'channel')
@@ -32,7 +32,7 @@ function assembleMock() {
   return result
 }
 
-test('can send a state report', t => {
+test('can send a state report', (t) => {
   const mock = assembleMock()
   mock.store.reportMyState({hello: 'friends'})
   const sent = mock.lastSentMessage
@@ -43,15 +43,15 @@ test('can send a state report', t => {
   t.end()
 })
 
-test('correctly models states', t => {
+test('correctly models states', (t) => {
   const mock = assembleMock()
   mock.broadcast({
     i: 'identity1',
     m: {
       type: 'state',
       session: 'session1',
-      im: 'away'
-    }
+      im: 'away',
+    },
   })
 
   mock.broadcast({
@@ -59,8 +59,8 @@ test('correctly models states', t => {
     m: {
       type: 'state',
       session: 'session1',
-      im: 'here'
-    }
+      im: 'here',
+    },
   })
 
   mock.broadcast({
@@ -68,8 +68,8 @@ test('correctly models states', t => {
     m: {
       type: 'state',
       session: 'session2',
-      im: 'here too'
-    }
+      im: 'here too',
+    },
   })
 
   mock.broadcast({
@@ -77,8 +77,8 @@ test('correctly models states', t => {
     m: {
       type: 'state',
       session: 'session1',
-      im: 'over here'
-    }
+      im: 'over here',
+    },
   })
 
   t.deepEqual(
@@ -86,7 +86,7 @@ test('correctly models states', t => {
     [
       {identity: 'identity1', session: 'session1', im: 'here'},
       {identity: 'identity1', session: 'session2', im: 'here too'},
-      {identity: 'identity2', session: 'session1', im: 'over here'}
+      {identity: 'identity2', session: 'session1', im: 'over here'},
     ],
     'the state report must reflect the latest state seen'
   )
@@ -95,10 +95,10 @@ test('correctly models states', t => {
   t.end()
 })
 
-test('sends debounced state reports to subscribers', t => {
+test('sends debounced state reports to subscribers', (t) => {
   const mock = assembleMock()
   let initialSent = false
-  mock.store.presence.subscribe(msg => {
+  mock.store.presence.subscribe((msg) => {
     if (!initialSent) {
       t.deepEqual(msg, [], 'initial state should be empty')
       initialSent = true
@@ -118,8 +118,8 @@ test('sends debounced state reports to subscribers', t => {
     m: {
       type: 'state',
       session: 'session1',
-      im: 'away'
-    }
+      im: 'away',
+    },
   })
 
   mock.broadcast({
@@ -127,25 +127,25 @@ test('sends debounced state reports to subscribers', t => {
     m: {
       type: 'state',
       session: 'session1',
-      im: 'here'
-    }
+      im: 'here',
+    },
   })
 })
 
-test('sends initial state reports to new subscribers', t => {
+test('sends initial state reports to new subscribers', (t) => {
   const mock = assembleMock()
   mock.broadcast({
     i: 'identity1',
     m: {
       type: 'state',
       session: 'session1',
-      im: 'here'
-    }
+      im: 'here',
+    },
   })
 
   // Wait for the debounce to fire before subscribing
   setTimeout(() => {
-    mock.store.presence.subscribe(msg => {
+    mock.store.presence.subscribe((msg) => {
       t.deepEqual(
         msg,
         [{identity: 'identity1', session: 'session1', im: 'here'}],
@@ -157,34 +157,34 @@ test('sends initial state reports to new subscribers', t => {
   }, 500)
 })
 
-test('removes state for disconnected clients', t => {
+test('removes state for disconnected clients', (t) => {
   const mock = assembleMock()
   mock.broadcast({
     i: 'identity1',
     m: {
       type: 'state',
       session: 'session1',
-      im: 'away'
-    }
+      im: 'away',
+    },
   })
   mock.broadcast({
     i: 'identity1',
     m: {
       type: 'disconnect',
-      session: 'session1'
-    }
+      session: 'session1',
+    },
   })
   t.deepEqual(mock.store.getStateReport(), [], 'report should be empty because client disconnected')
   mock.close()
   t.end()
 })
 
-test('sends disconnect beacon when closed', t => {
+test('sends disconnect beacon when closed', (t) => {
   const mock = assembleMock()
   mock.close()
   t.deepEqual(mock.lastSentBeacon, {
     type: 'disconnect',
-    session: 'my-session-uuid'
+    session: 'my-session-uuid',
   })
   t.end()
 })

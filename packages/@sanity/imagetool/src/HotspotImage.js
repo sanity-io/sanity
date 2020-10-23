@@ -31,7 +31,7 @@ export default class HotspotImage extends React.PureComponent {
     style: PropTypes.object,
     alt: PropTypes.string,
     onError: PropTypes.func,
-    onLoad: PropTypes.func
+    onLoad: PropTypes.func,
   }
 
   static defaultProps = {
@@ -40,11 +40,11 @@ export default class HotspotImage extends React.PureComponent {
     className: '',
     crop: DEFAULT_CROP,
     hotspot: DEFAULT_HOTSPOT,
-    aspectRatio: 'none'
+    aspectRatio: 'none',
   }
 
   state = {
-    containerAspect: null
+    containerAspect: null,
   }
 
   componentDidMount() {
@@ -79,11 +79,11 @@ export default class HotspotImage extends React.PureComponent {
     if (props.aspectRatio === 'auto') {
       const parentNode = this.containerElement.parentNode
       this.setState({
-        containerAspect: parentNode.offsetWidth / parentNode.offsetHeight
+        containerAspect: parentNode.offsetWidth / parentNode.offsetHeight,
       })
     } else {
       this.setState({
-        containerAspect: null
+        containerAspect: null,
       })
     }
   }
@@ -100,13 +100,13 @@ export default class HotspotImage extends React.PureComponent {
     return aspectRatio
   }
 
-  setImageElement = el => {
+  setImageElement = (el) => {
     this.imageElement = el
   }
 
   handleResize = debounce(() => this.updateContainerAspect(this.props))
 
-  setContainerElement = el => {
+  setContainerElement = (el) => {
     this.containerElement = el
   }
 
@@ -123,7 +123,7 @@ export default class HotspotImage extends React.PureComponent {
       style,
       alt,
       onError,
-      onLoad
+      onLoad,
     } = this.props
 
     const targetAspect = this.getTargetAspectValue()
@@ -135,8 +135,8 @@ export default class HotspotImage extends React.PureComponent {
       crop,
       align: {
         x: alignX,
-        y: alignY
-      }
+        y: alignY,
+      },
     })
     return (
       <div className={`${styles.root} ${className}`} style={style} ref={this.setContainerElement}>

@@ -34,7 +34,7 @@ export class SearchInput extends React.PureComponent<Props> {
     const searchBounds = new Circle({center: map.getCenter(), radius: 100}).getBounds()
     this.autoComplete = new places.Autocomplete(input, {
       bounds: searchBounds,
-      types: [] // return all kinds of places
+      types: [], // return all kinds of places
     })
 
     event.addListener(this.autoComplete, 'place_changed', this.handleChange)

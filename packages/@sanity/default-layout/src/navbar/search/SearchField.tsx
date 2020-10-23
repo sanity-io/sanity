@@ -34,12 +34,12 @@ class SearchField extends React.PureComponent<Props> {
     onKeyDown: undefined,
     onMouseDown: undefined,
     placeholder: 'Search',
-    results: null
+    results: null,
   }
 
   inputElement = null
 
-  setInputElement = ref => {
+  setInputElement = (ref) => {
     this.inputElement = ref
   }
 
@@ -57,7 +57,7 @@ class SearchField extends React.PureComponent<Props> {
       onMouseDown,
       placeholder,
       results,
-      value
+      value,
     } = this.props
     let className = styles.root
     if (isBleeding) className += ` ${styles.isBleeding}`

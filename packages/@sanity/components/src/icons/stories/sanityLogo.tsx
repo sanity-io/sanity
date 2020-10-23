@@ -9,7 +9,7 @@ export function SanityLogoStory() {
     <CenteredContainer
       style={{
         color: color('color', '#fff'),
-        backgroundColor: color('background', '#f43')
+        backgroundColor: color('background', '#f43'),
       }}
     >
       <div style={{width: '100%', maxWidth: 320}}>

@@ -11,5 +11,5 @@ export default {
   group: 'graphql',
   description: 'Lists all the GraphQL endpoints deployed for this project',
   action: lazyRequire(require.resolve('../../actions/graphql/listApisAction')),
-  helpText
+  helpText,
 }

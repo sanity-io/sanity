@@ -8,7 +8,7 @@ import styles from './PTDiff.css'
 
 export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff,
-  schemaType
+  schemaType,
 }: {
   diff: ObjectDiff
   schemaType: ObjectSchemaType
@@ -16,7 +16,7 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   const ptDiff = useMemo(() => createPortableTextDiff(diff, schemaType), [diff, schemaType])
   const portableTextDiff = useMemo(() => <PortableText diff={ptDiff} schemaType={schemaType} />, [
     ptDiff,
-    schemaType
+    schemaType,
   ])
   const classNames = [styles.root, styles[diff.action]].join(' ')
   return <div className={classNames}>{portableTextDiff}</div>

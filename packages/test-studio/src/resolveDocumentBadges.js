@@ -4,7 +4,7 @@ function CustomBadge() {
   return {
     label: 'Hello World',
     title: 'Hello I am a custom document badge',
-    color: 'success'
+    color: 'success',
   }
 }
 

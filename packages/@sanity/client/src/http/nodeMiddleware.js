@@ -7,7 +7,7 @@ const pkg = require('../../package.json')
 const middleware = [
   debug({verbose: true, namespace: 'sanity:client'}),
   headers({'User-Agent': `${pkg.name} ${pkg.version}`}),
-  retry({maxRetries: 3})
+  retry({maxRetries: 3}),
 ]
 
 module.exports = middleware

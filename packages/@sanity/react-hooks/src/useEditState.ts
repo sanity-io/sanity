@@ -6,7 +6,7 @@ export function useEditState(publishedDocId, docTypeName) {
   return useObservable(
     React.useMemo(() => documentStore.pair.editState(publishedDocId, docTypeName), [
       publishedDocId,
-      docTypeName
+      docTypeName,
     ])
   )
 }

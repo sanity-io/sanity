@@ -27,25 +27,19 @@ describe('generics', () => {
   })
 
   test('can demote errors to warnings', async () => {
-    const result = await Rule.string()
-      .warning()
-      .validate(123)
+    const result = await Rule.string().warning().validate(123)
 
     expect(result).toMatchSnapshot()
   })
 
   test('can customize error messages', async () => {
-    const result = await Rule.string()
-      .error('Dude it needs to be a string')
-      .validate(123)
+    const result = await Rule.string().error('Dude it needs to be a string').validate(123)
 
     expect(result).toMatchSnapshot()
   })
 
   test('can customize warning messages', async () => {
-    const result = await Rule.string()
-      .warning('Dude it should probably be a string')
-      .validate(123)
+    const result = await Rule.string().warning('Dude it should probably be a string').validate(123)
 
     expect(result).toMatchSnapshot()
   })

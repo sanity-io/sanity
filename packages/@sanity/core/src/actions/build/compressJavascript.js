@@ -3,7 +3,7 @@ import execa from 'execa'
 import fse from 'fs-extra'
 import resolveBin from 'resolve-bin'
 
-export default async inputFile => {
+export default async (inputFile) => {
   const terserBin = resolveBin.sync('terser')
   if (!terserBin) {
     throw new Error(`Can't find terser binary, cannot compress bundles`)

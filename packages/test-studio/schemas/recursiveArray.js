@@ -9,7 +9,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'arrayWithAnonymousObject',
@@ -30,12 +30,12 @@ export default {
               title: 'Image array',
               type: 'array',
               options: {
-                layout: 'grid'
+                layout: 'grid',
               },
               of: [
                 {
                   title: 'Book',
-                  type: 'book'
+                  type: 'book',
                 },
                 {
                   title: 'Image',
@@ -46,12 +46,12 @@ export default {
                       type: 'string',
                       title: 'Caption',
                       options: {
-                        isHighlighted: true
-                      }
-                    }
-                  ]
-                }
-              ]
+                        isHighlighted: true,
+                      },
+                    },
+                  ],
+                },
+              ],
             },
             {
               name: 'arrayOfNamedReferences',
@@ -60,35 +60,35 @@ export default {
               description:
                 'The values here should get _type == authorReference or _type == bookReference',
               options: {
-                editModal: 'fold'
+                editModal: 'fold',
               },
               of: [
                 {
                   type: 'reference',
                   name: 'authorReference',
-                  to: [{type: 'author', title: 'Reference to author'}]
+                  to: [{type: 'author', title: 'Reference to author'}],
                 },
                 {
                   type: 'reference',
                   name: 'bookReference',
-                  to: [{type: 'book', title: 'Reference to book'}]
-                }
-              ]
+                  to: [{type: 'book', title: 'Reference to book'}],
+                },
+              ],
             },
             {
               name: 'aReferenceAtTheEnd',
               type: 'reference',
-              to: [{type: 'book', title: 'Reference to book'}]
+              to: [{type: 'book', title: 'Reference to book'}],
             },
             {
               name: 'aDateTimeAtTheEnd',
-              type: 'datetime'
-            }
-          ]
-        }
-      ]
+              type: 'datetime',
+            },
+          ],
+        },
+      ],
     },
     {name: 'end', type: 'string', title: 'A field at the end'},
-    {name: 'anotherEnd', type: 'string', title: 'Another field at the end'}
-  ]
+    {name: 'anotherEnd', type: 'string', title: 'Another field at the end'},
+  ],
 }

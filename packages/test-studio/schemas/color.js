@@ -10,7 +10,7 @@ export default {
   preview: {
     select: {
       title: 'title',
-      color: 'testColor1'
+      color: 'testColor1',
     },
 
     prepare({title, color}) {
@@ -36,24 +36,24 @@ export default {
               height: '100%',
               width: '100%',
               top: '0',
-              left: '0'
+              left: '0',
             }}
           />
-        )
+        ),
       }
-    }
+    },
   },
   fields: [
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'testColor1',
       title: 'Color to be used in preview',
       description: 'A color input',
-      type: 'color'
+      type: 'color',
     },
     {
       name: 'testColor2',
@@ -61,8 +61,8 @@ export default {
       description: 'A color input with no alpha',
       type: 'color',
       options: {
-        disableAlpha: true
-      }
+        disableAlpha: true,
+      },
     },
     {
       name: 'colorList',
@@ -71,16 +71,16 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'color'
-        }
-      ]
+          type: 'color',
+        },
+      ],
     },
     {
       name: 'readOnlyColor',
       title: 'Read-only color',
       description: 'Color input in readOnly mode',
       readOnly: true,
-      type: 'color'
+      type: 'color',
     },
     {
       name: 'colorGrid',
@@ -88,13 +88,13 @@ export default {
       description: 'An grid of colors with the built in color preview',
       type: 'array',
       options: {
-        layout: 'grid'
+        layout: 'grid',
       },
       of: [
         {
-          type: 'color'
-        }
-      ]
+          type: 'color',
+        },
+      ],
     },
     {
       name: 'objectWithObjectWithColors',
@@ -108,10 +108,10 @@ export default {
           fields: [
             {name: 'primaryColor', title: 'Primary color', type: 'color'},
             {name: 'secondaryColor', title: 'Secondary color', type: 'color'},
-            {name: 'extraColor', title: 'Extra color', type: 'color'}
-          ]
-        }
-      ]
-    }
-  ]
+            {name: 'extraColor', title: 'Extra color', type: 'color'},
+          ],
+        },
+      ],
+    },
+  ],
 }

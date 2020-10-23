@@ -8,7 +8,7 @@ import {
   ARROW_THRESHOLD,
   DEBUG,
   INTERACTIVE_STROKE_WIDTH,
-  STROKE_WIDTH
+  STROKE_WIDTH,
 } from '../constants'
 import {Rect} from './types'
 import styles from './Connector.css'

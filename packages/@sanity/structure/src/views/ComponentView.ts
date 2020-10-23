@@ -64,7 +64,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
       ...base,
       component,
       options: this.spec.options || {},
-      type: 'component'
+      type: 'component',
     }
   }
 

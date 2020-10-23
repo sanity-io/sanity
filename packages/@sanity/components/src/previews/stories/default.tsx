@@ -50,14 +50,14 @@ const renderCustomChildren = () => {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
       }}
     >
       <div
         style={{
           position: 'absolute',
           top: '0',
-          right: '0'
+          right: '0',
         }}
       >
         <div
@@ -71,7 +71,7 @@ const renderCustomChildren = () => {
             boxShadow: '0 0 5px rgba(0,0,0,0.2)',
             backgroundColor: 'yellow',
             padding: '0.2em 3em',
-            transform: 'translate(28%, 43%) rotate(45deg)'
+            transform: 'translate(28%, 43%) rotate(45deg)',
           }}
         >
           New
@@ -84,7 +84,7 @@ const renderCustomChildren = () => {
 const options = {
   functions: 'Functions',
   strings: 'Strings',
-  elements: 'Element'
+  elements: 'Element',
 }
 
 export function DefaultStory() {

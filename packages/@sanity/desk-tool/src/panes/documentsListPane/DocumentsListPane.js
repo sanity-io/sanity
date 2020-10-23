@@ -22,12 +22,12 @@ const FULL_LIST_LIMIT = 2000
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
-  return collate(documents).map(entry => {
+  return collate(documents).map((entry) => {
     const doc = entry.draft || entry.published
     return {
       ...doc,
       hasPublished: !!entry.published,
-      hasDraft: !!entry.draft
+      hasDraft: !!entry.draft,
     }
   })
 }
@@ -54,9 +54,9 @@ function isSimpleTypeFilter(filter) {
 
 function toOrderClause(orderBy) {
   return orderBy
-    .map(ordering =>
+    .map((ordering) =>
       [ordering.field, (ordering.direction || '').toLowerCase()]
-        .map(str => str.trim())
+        .map((str) => str.trim())
         .filter(Boolean)
         .join(' ')
     )
@@ -76,34 +76,34 @@ export default class DocumentsListPane extends React.PureComponent {
       defaultOrdering: PropTypes.arrayOf(
         PropTypes.shape({
           field: PropTypes.string.isRequired,
-          direction: PropTypes.oneOf(['asc', 'desc'])
+          direction: PropTypes.oneOf(['asc', 'desc']),
         })
       ),
-      params: PropTypes.object // eslint-disable-line react/forbid-prop-types
+      params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     }).isRequired,
     menuItems: PropTypes.arrayOf(
       PropTypes.shape({
-        title: PropTypes.string.isRequired
+        title: PropTypes.string.isRequired,
       })
     ),
     menuItemGroups: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired
+        id: PropTypes.string.isRequired,
       })
     ),
     initialValueTemplates: PropTypes.arrayOf(
       PropTypes.shape({
         templateId: PropTypes.string,
-        parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+        parameters: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       })
     ),
     displayOptions: PropTypes.shape({
-      showIcons: PropTypes.bool
+      showIcons: PropTypes.bool,
     }),
     isSelected: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
-    onCollapse: PropTypes.func
+    onCollapse: PropTypes.func,
   }
 
   static defaultProps = {
@@ -115,16 +115,16 @@ export default class DocumentsListPane extends React.PureComponent {
     onExpand: undefined,
     onCollapse: undefined,
     defaultLayout: undefined,
-    initialValueTemplates: undefined
+    initialValueTemplates: undefined,
   }
 
   actionHandlers = {
     setLayout: ({layout}) => {
       this.layoutSetting.set(layout)
     },
-    setSortOrder: sort => {
+    setSortOrder: (sort) => {
       this.sortOrderSetting.set(sort)
-    }
+    },
   }
 
   state = {
@@ -132,7 +132,7 @@ export default class DocumentsListPane extends React.PureComponent {
     sortOrder: null,
     layout: null,
     isLoadingMore: false,
-    hasFullSubscription: false
+    hasFullSubscription: false,
   }
 
   constructor(props) {
@@ -146,9 +146,7 @@ export default class DocumentsListPane extends React.PureComponent {
 
     // Passed to rendered <Menu> components. This prevents the "click outside"
     // functionality from kicking in when pressing the toggle menu button
-    this.templateMenuId = Math.random()
-      .toString(36)
-      .substr(2, 6)
+    this.templateMenuId = Math.random().toString(36).substr(2, 6)
 
     let sync = true
     this.settingsSubscription = combineLatest(
@@ -158,9 +156,9 @@ export default class DocumentsListPane extends React.PureComponent {
       .pipe(
         map(([sortOrder, layout]) => ({
           sortOrder,
-          layout
+          layout,
         })),
-        tap(nextState => {
+        tap((nextState) => {
           if (sync) {
             this.state = {...this.state, ...nextState}
           } else {
@@ -189,7 +187,7 @@ export default class DocumentsListPane extends React.PureComponent {
     return this.props.childItemId === getPublishedId(item._id)
   }
 
-  renderItem = item => (
+  renderItem = (item) => (
     <PaneItem
       id={getPublishedId(item._id)}
       layout={this.state.layout || this.props.defaultLayout || 'default'}
@@ -200,7 +198,7 @@ export default class DocumentsListPane extends React.PureComponent {
     />
   )
 
-  handleAction = item => {
+  handleAction = (item) => {
     const handler =
       typeof item.action === 'function' ? item.action : this.actionHandlers[item.action]
 
@@ -236,7 +234,7 @@ export default class DocumentsListPane extends React.PureComponent {
 
     this.queryResults$ = getQueryResults(of({query, params}))
       .pipe(filterEvents(fullList ? ({result}) => result : () => true))
-      .subscribe(queryResult =>
+      .subscribe((queryResult) =>
         this.setState({queryResult, isLoadingMore: false, hasFullSubscription: fullList})
       )
   }
@@ -292,7 +290,7 @@ export default class DocumentsListPane extends React.PureComponent {
         `*[${filter}] [0...${limit}]`,
         `{${firstProjection}}`,
         `order(${toOrderClause(sort)})`,
-        `{${finalProjection}}`
+        `{${finalProjection}}`,
       ].join(' | ')
     }
 
@@ -382,7 +380,7 @@ export default class DocumentsListPane extends React.PureComponent {
       onExpand,
       menuItems,
       menuItemGroups,
-      initialValueTemplates
+      initialValueTemplates,
     } = this.props
 
     return (

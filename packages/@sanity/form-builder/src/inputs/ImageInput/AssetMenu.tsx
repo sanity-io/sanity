@@ -9,19 +9,19 @@ const menuItems: AssetAction[] = [
   {
     name: 'showRefs',
     title: 'Show documents using this',
-    icon: LinkIcon
+    icon: LinkIcon,
   },
   {
     name: 'delete',
     title: 'Delete',
     color: 'danger',
-    icon: TrashIcon
-  }
+    icon: TrashIcon,
+  },
 ]
 
 export default function AssetMenu({
   isSelected,
-  onAction
+  onAction,
 }: {
   isSelected: boolean
   onAction: (action: AssetAction) => void
@@ -32,7 +32,7 @@ export default function AssetMenu({
       padding="small"
       placement="bottom-end"
       showArrow={false}
-      items={isSelected ? menuItems.filter(item => item.name !== 'delete') : menuItems}
+      items={isSelected ? menuItems.filter((item) => item.name !== 'delete') : menuItems}
       onAction={onAction}
     />
   )

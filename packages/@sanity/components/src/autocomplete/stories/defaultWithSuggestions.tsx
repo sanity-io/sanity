@@ -11,7 +11,7 @@ export function DefaultWithSuggestionsStory() {
   const suggestions = range(10).map((item, i) => {
     return {
       id: `${i}`,
-      title: chance.name()
+      title: chance.name(),
     }
   })
 

@@ -21,7 +21,7 @@ export const HookStateContainer = React.memo(
       ...args,
       onComplete: () => {
         onReset(id)
-      }
+      },
     })
 
     useShallowCompareEffect(() => {

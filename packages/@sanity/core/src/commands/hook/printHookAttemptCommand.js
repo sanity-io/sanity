@@ -29,7 +29,7 @@ export default {
       const body = resultBody ? `\n---\n${resultBody}\n---\n` : '<empty>'
       output.print(`Response body: ${body}`)
     }
-  }
+  },
 }
 
 export function formatFailure(attempt, {includeHelp} = {}) {

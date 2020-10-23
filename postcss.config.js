@@ -10,5 +10,5 @@ module.exports = {
   // postcss-import is an async plugin and the typescript plugin currently does
   // not support async processing, so we need to remove it
   // see this issue: https://github.com/mrmckeb/typescript-plugin-css-modules/issues/46
-  plugins: config.plugins.filter(plugin => plugin.postcssPlugin !== 'postcss-import')
+  plugins: config.plugins.filter((plugin) => plugin.postcssPlugin !== 'postcss-import'),
 }

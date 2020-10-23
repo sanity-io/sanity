@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import './PertEstimate.css?raw' // eslint-disable-line
 
-const calculateEstimate = estimates => {
+const calculateEstimate = (estimates) => {
   const {optimistic, nominal, pessimistic} = estimates || {}
   if (!optimistic || !nominal || !pessimistic) {
     return {optimistic, nominal, pessimistic, calculated: null}
@@ -18,13 +18,13 @@ export default class PertEstimateInput extends React.Component {
   static propTypes = {
     value: PropTypes.object,
     type: PropTypes.object,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
   }
 
   handleChange = (field, event) => {
     const {type, onChange} = this.props
     const value = Object.assign({}, this.props.value || {}, {
-      [field.name]: event.target.valueAsNumber
+      [field.name]: event.target.valueAsNumber,
     })
     const {calculated} = calculateEstimate(value)
 
@@ -45,19 +45,21 @@ export default class PertEstimateInput extends React.Component {
         <p>{type.description}</p>
         <table>
           <tbody>
-            {type.fields.filter(field => !field.type.readOnly).map(field => (
-              <tr key={field.name}>
-                <td>{field.type.title}</td>
-                <td>
-                  <input
-                    type="number"
-                    value={(value && value[field.name]) || ''}
-                    placeholder={type.placeholder}
-                    onChange={event => this.handleChange(field, event)}
-                  />
-                </td>
-              </tr>
-            ))}
+            {type.fields
+              .filter((field) => !field.type.readOnly)
+              .map((field) => (
+                <tr key={field.name}>
+                  <td>{field.type.title}</td>
+                  <td>
+                    <input
+                      type="number"
+                      value={(value && value[field.name]) || ''}
+                      placeholder={type.placeholder}
+                      onChange={(event) => this.handleChange(field, event)}
+                    />
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
 

@@ -24,13 +24,13 @@ const DIALOG_DELETE_ACTION: AssetAction = {
   icon: TrashIcon,
   inverted: true,
   name: 'delete',
-  title: 'Delete'
+  title: 'Delete',
 }
 
 const DIALOG_CLOSE_ACTION: AssetAction = {
   inverted: true,
   name: 'close',
-  title: 'Close'
+  title: 'Close',
 }
 
 function getDialogActions(dialogType: string) {
@@ -64,7 +64,7 @@ export default function AssetDialog({asset, dialogType, onAction, onClose}: Prop
               []
             )
 
-            const filteredDocuments = referringDocuments.filter(doc => !drafts.includes(doc._id))
+            const filteredDocuments = referringDocuments.filter((doc) => !drafts.includes(doc._id))
 
             if (isLoading) {
               return <Spinner>Loading…</Spinner>
@@ -92,7 +92,7 @@ export default function AssetDialog({asset, dialogType, onAction, onClose}: Prop
                     )}
 
                     <List>
-                      {filteredDocuments.map(doc => {
+                      {filteredDocuments.map((doc) => {
                         return (
                           <Item key={doc._id}>
                             <IntentLink

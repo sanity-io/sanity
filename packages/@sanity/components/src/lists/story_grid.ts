@@ -10,6 +10,6 @@ storiesOf('@sanity/components/list (grid)', module)
   .add('MediaPreview', MediaPreviewStory)
   .add('MediaPreview (sortable)', MediaPreviewSortableStory, {
     propTables: [GridList],
-    role: 'part:@sanity/components/lists/grid'
+    role: 'part:@sanity/components/lists/grid',
   })
   .add('Cards', CardsStory)

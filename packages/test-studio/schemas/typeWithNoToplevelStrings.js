@@ -13,8 +13,8 @@ export default {
       fields: [
         {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
         {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)', fieldset: 'other'},
-        {name: 'se', type: 'string', title: 'Swedish', fieldset: 'other'}
-      ]
+        {name: 'se', type: 'string', title: 'Swedish', fieldset: 'other'},
+      ],
     },
     {
       name: 'name',
@@ -24,13 +24,13 @@ export default {
       fields: [
         {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
         {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)', fieldset: 'other'},
-        {name: 'se', type: 'string', title: 'Swedish', fieldset: 'other'}
-      ]
+        {name: 'se', type: 'string', title: 'Swedish', fieldset: 'other'},
+      ],
     },
     {
       name: 'externalId',
       title: 'External id',
-      type: 'string'
-    }
-  ]
+      type: 'string',
+    },
+  ],
 }

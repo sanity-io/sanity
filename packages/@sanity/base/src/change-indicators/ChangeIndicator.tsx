@@ -45,7 +45,7 @@ const ChangeBarWrapper = (
       path: props.fullPath,
       isChanged: props.isChanged,
       hasFocus: props.hasFocus,
-      hasHover: hasHover
+      hasHover: hasHover,
     }),
     // note: deepCompare should be ok here since we're not comparing deep values
     deepCompare
@@ -97,7 +97,7 @@ export function ChangeIndicatorProvider(props: {
         compareValue: props.compareValue,
         focusPath: props.focusPath || [],
         path: props.path,
-        fullPath: fullPath
+        fullPath: fullPath,
       }}
     >
       {props.children}
@@ -124,7 +124,7 @@ export const CoreChangeIndicator = ({
   compareValue,
   hasFocus,
   compareDeep,
-  children
+  children,
 }: CoreProps) => {
   // todo: lazy compare debounced (possibly with intersection observer)
   const isChanged =
@@ -154,7 +154,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
   value,
   hasFocus,
   compareDeep,
-  children
+  children,
 }: any) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
@@ -195,7 +195,7 @@ export const ChangeIndicatorCompareValueProvider = (props: {
         compareValue: props.compareValue,
         focusPath: parentContext.focusPath || [],
         path: parentContext.path,
-        fullPath: parentContext.fullPath
+        fullPath: parentContext.fullPath,
       }}
     >
       {props.children}

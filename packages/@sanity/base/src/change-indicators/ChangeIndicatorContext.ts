@@ -17,7 +17,7 @@ export interface ConnectorContext {
 export const ConnectorContext: React.Context<ConnectorContext> = React.createContext({
   isReviewChangesOpen: false as boolean,
   onOpenReviewChanges: () => {},
-  onSetFocus: (nextPath: Path) => {}
+  onSetFocus: (nextPath: Path) => {},
 })
 
 const initial: ChangeIndicatorContext = {path: [], fullPath: [], focusPath: []}

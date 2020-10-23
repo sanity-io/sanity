@@ -29,7 +29,7 @@ export const BlockObjectPreview: FunctionComponent<Props> = ({
   type,
   readOnly,
   onClickingEdit,
-  onClickingDelete
+  onClickingDelete,
 }): JSX.Element => {
   const menuItems: DropDownMenuItemProps[] = []
   if (value._ref) {
@@ -37,26 +37,26 @@ export const BlockObjectPreview: FunctionComponent<Props> = ({
       title: 'Go to reference',
       icon: LinkIcon,
       intent: 'edit',
-      params: {id: value._ref}
+      params: {id: value._ref},
     })
   }
   if (readOnly) {
     menuItems.push({
       title: 'View',
       icon: VisibilityIcon,
-      name: 'view'
+      name: 'view',
     })
   } else {
     menuItems.push({
       title: 'Edit',
       icon: EditIcon,
-      name: 'edit'
+      name: 'edit',
     })
     menuItems.push({
       title: 'Delete',
       icon: TrashIcon,
       name: 'delete',
-      color: 'danger'
+      color: 'danger',
     })
   }
 

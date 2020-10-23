@@ -20,7 +20,7 @@ module.exports = (onRequest, cb) => {
     onRequest({request, channel, response})
   })
 
-  server.listen(0, '127.0.0.1', err => {
+  server.listen(0, '127.0.0.1', (err) => {
     cb(err, err ? null : server)
   })
 }

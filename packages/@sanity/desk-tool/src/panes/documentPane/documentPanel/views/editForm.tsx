@@ -46,7 +46,7 @@ export const EditForm = memo((props: Props) => {
     compareValue,
     readOnly,
     schema,
-    type
+    type,
   } = props
 
   const startSegment = focusPath[0]

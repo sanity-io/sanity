@@ -9,5 +9,5 @@ module.exports = {
 
   DEFAULT_DEBOUNCE_MS: isNode ? 0 : 100,
   DEFAULT_LIMIT: 50,
-  DEFAULT_BUFFER_FACTOR: 3
+  DEFAULT_BUFFER_FACTOR: 3,
 }

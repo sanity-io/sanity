@@ -18,7 +18,7 @@ from: import PersonIcon from 'react-icons/lib/md/person'
 module.exports = {
   purpose,
   description,
-  verify: async context => {
+  verify: async (context) => {
     const {workDir} = context
 
     const studioPkg = await maybeReadJson(path.join(workDir, 'package.json'))
@@ -37,7 +37,7 @@ module.exports = {
     if (iconPkg && semverCompare(iconPkg.version, '3.0.0') < 0) {
       throw new Error('The installed version of react-icon seems to be < 3.0.0')
     }
-  }
+  },
 }
 
 async function maybeReadJson(jsonPath) {

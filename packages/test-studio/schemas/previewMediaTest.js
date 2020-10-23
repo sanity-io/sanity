@@ -8,26 +8,26 @@ export default {
   preview: {
     select: {
       title: 'title',
-      media: 'image'
-    }
+      media: 'image',
+    },
   },
   fields: [
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {hotspot: true} // tweaking the hotspot should be reflected in the preview
+      options: {hotspot: true}, // tweaking the hotspot should be reflected in the preview
     },
     {
       name: 'array',
       type: 'array',
       title: 'Array',
-      of: [{type: 'reference', to: {type: 'previewMediaTest'}}]
-    }
-  ]
+      of: [{type: 'reference', to: {type: 'previewMediaTest'}}],
+    },
+  ],
 }

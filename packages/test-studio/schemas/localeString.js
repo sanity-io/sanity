@@ -1,7 +1,7 @@
 const supportedLanguages = [
   {title: 'English', id: 'en', isDefault: true},
   {title: 'Norwegian', id: 'nb'},
-  {title: 'Swedish', id: 'se'}
+  {title: 'Swedish', id: 'se'},
 ]
 
 export default {
@@ -11,14 +11,14 @@ export default {
     {
       title: 'Translations',
       name: 'translations',
-      options: {collapsible: true}
-    }
+      options: {collapsible: true},
+    },
   ],
-  fields: supportedLanguages.map(lang => ({
+  fields: supportedLanguages.map((lang) => ({
     title: lang.title,
     name: lang.id,
     type: 'string',
-    validation: lang.isDefault ? Rule => Rule.required() : null,
-    fieldset: lang.isDefault ? null : 'translations'
-  }))
+    validation: lang.isDefault ? (Rule) => Rule.required() : null,
+    fieldset: lang.isDefault ? null : 'translations',
+  })),
 }

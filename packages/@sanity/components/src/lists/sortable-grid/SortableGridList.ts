@@ -5,7 +5,7 @@ const SortableGridList = createSortableList(GridList as any, {
   axis: 'xy',
   distance: 1,
   lockToContainerEdges: true,
-  transitionDuration: 600
+  transitionDuration: 600,
 })
 
 SortableGridList.displayName = 'SortableGridList'

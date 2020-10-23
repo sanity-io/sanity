@@ -13,17 +13,17 @@ const testDoc = {
       array: [
         'contents',
         {_type: 'reference', _ref: 'abc123'},
-        {_type: 'nonref', someProp: 'yes-it-exists'}
-      ]
-    }
+        {_type: 'nonref', someProp: 'yes-it-exists'},
+      ],
+    },
   },
   arrayOfStrings: ['a', 'b', 'c'],
   arrayOfObjects: [
     {_type: 'foo', prop: 'yes'},
     {_type: 'reference', _ref: 'random'},
     {_type: 'foo', prop: 'no'},
-    {_type: 'reference', _ref: 'd987abc'}
-  ]
+    {_type: 'reference', _ref: 'd987abc'},
+  ],
 }
 
 describe('removeMissingReferences', () => {

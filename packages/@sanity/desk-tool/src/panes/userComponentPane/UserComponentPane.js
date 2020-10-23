@@ -23,14 +23,14 @@ export default class UserComponentPane extends React.PureComponent {
     renderActions: PropTypes.func,
     menuItems: PropTypes.arrayOf(
       PropTypes.shape({
-        title: PropTypes.string.isRequired
+        title: PropTypes.string.isRequired,
       })
     ),
     menuItemGroups: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired
+        id: PropTypes.string.isRequired,
       })
-    )
+    ),
   }
 
   static defaultProps = {
@@ -41,7 +41,7 @@ export default class UserComponentPane extends React.PureComponent {
     styles: undefined,
     onExpand: undefined,
     onCollapse: undefined,
-    renderActions: undefined
+    renderActions: undefined,
   }
 
   constructor(props) {
@@ -50,7 +50,7 @@ export default class UserComponentPane extends React.PureComponent {
     this.userComponent = React.createRef()
   }
 
-  handleAction = item => {
+  handleAction = (item) => {
     let handler
     if (typeof item.action === 'function') {
       handler = item.action

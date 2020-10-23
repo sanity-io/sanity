@@ -17,7 +17,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 
   const isInitialized =
     Array.isArray(typeDef.validation) &&
-    typeDef.validation.every(item => typeof item.validate === 'function')
+    typeDef.validation.every((item) => typeof item.validate === 'function')
 
   if (isInitialized) {
     inferForFields(typeDef, schema, visited)
@@ -58,7 +58,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   }
 
   if (typeDef.annotations) {
-    typeDef.annotations.forEach(annotation => inferFromSchemaType(annotation))
+    typeDef.annotations.forEach((annotation) => inferFromSchemaType(annotation))
   }
 
   if (typeDef.options && typeDef.options.list) {
@@ -78,14 +78,14 @@ function inferForFields(typeDef, schema, visited) {
   }
 
   const fieldRules = typeDef.validation
-    .map(rule => rule._fieldRules)
+    .map((rule) => rule._fieldRules)
     .filter(Boolean)
     .reduce((acc, current) => ({fields: {...acc.fields, ...current}, hasRules: true}), {
       fields: {},
-      hasRules: false
+      hasRules: false,
     })
 
-  typeDef.fields.forEach(field => {
+  typeDef.fields.forEach((field) => {
     field.type.validation = fieldRules.fields[field.name] || field.type.validation
     inferFromSchemaType(field.type, schema, visited)
   })
@@ -93,7 +93,7 @@ function inferForFields(typeDef, schema, visited) {
 
 function inferForMemberTypes(typeDef, schema, visited) {
   if (typeDef.of && typeDef.jsonType === 'array') {
-    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, schema, visited))
+    typeDef.of.forEach((candidate) => inferFromSchemaType(candidate, schema, visited))
   }
 }
 

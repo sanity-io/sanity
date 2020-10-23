@@ -17,14 +17,14 @@ export function CardsStory() {
       title: chance.name(),
       subtitle: chance.sentence(),
       description: chance.sentence({words: 1}),
-      media: <img src={randomImage} height={height} width={width} />
+      media: <img src={randomImage} height={height} width={width} />,
     }
   })
 
   return (
     <Sanity part="part:@sanity/components/lists/grid" propTables={[GridList]}>
       <GridList>
-        {items.map(item => (
+        {items.map((item) => (
           <GridItem key={item.key}>
             <CardPreview {...item} />
           </GridItem>

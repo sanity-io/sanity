@@ -42,7 +42,7 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 15,
-    calendarTodayLabel: options.calendarTodayLabel || 'Now'
+    calendarTodayLabel: options.calendarTodayLabel || 'Now',
   }
 }
 export default class DateInput extends React.Component<Props> {

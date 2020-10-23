@@ -41,25 +41,25 @@ module.exports = {
                           first: 'ksadfjasfhjashfjkashfjkashfasdf',
                           myself: {
                             _type: 'recursiveObject',
-                            second: 'dsdfsadfsafsadfasfaskdfhkjdsahfkjashdf'
-                          }
+                            second: 'dsdfsadfsafsadfasfaskdfhkjdsahfkjashdf',
+                          },
                         },
-                        second: 'jdshfaisdhuifhsaudihfiudos'
+                        second: 'jdshfaisdhuifhsaudihfiudos',
                       },
                       second:
-                        'lsijadfha djksdaf jksdfhaskjd fhaskjfhaskjfhaskjfhaskjfhasjkfhisufhiuasd fiusahf'
+                        'lsijadfha djksdaf jksdfhaskjd fhaskjfhaskjfhaskjfhaskjfhasjkfhisufhiuasd fiusahf',
                     },
-                    second: 'a'
+                    second: 'a',
                   },
-                  second: 'øaslkdfjaødsklfjsadlkfjaøslkdf'
-                }
+                  second: 'øaslkdfjaødsklfjsadlkfjaøslkdf',
+                },
               },
-              second: 'sdafdasiofhasuifhasuifhaiusfhiusahfisdufhui'
-            }
-          }
+              second: 'sdafdasiofhasuifhasuifhaiusfhiusahfisdufhui',
+            },
+          },
         },
-        second: 'oasidfhasifasufhuiasfh aisoufhasiuof hasiufhsadfiuh'
-      }
-    }
-  }
+        second: 'oasidfhasifasufhuiasfh aisoufhasiuof hasiufhsadfiuh',
+      },
+    },
+  },
 }

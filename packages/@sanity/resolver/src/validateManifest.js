@@ -4,7 +4,7 @@ const matchers = {
   partPrefix: /^part:/,
   partPackage: /^part:[@A-Za-z0-9_-]+\//,
   partComponent: /^part:[@A-Za-z0-9_-]+\/[A-Za-z0-9_/-]+/,
-  partMultiPrefixed: /:.*?:/
+  partMultiPrefixed: /:.*?:/,
 }
 
 export default function validateManifest(manifest, plugin) {
@@ -31,7 +31,7 @@ export default function validateManifest(manifest, plugin) {
         [
           baseError,
           'A part that has a defined `path` needs to also define either `name` or `implements`',
-          `See ${generateHelpUrl('plugin-parts-syntax')}`
+          `See ${generateHelpUrl('plugin-parts-syntax')}`,
         ].join('\n')
       )
     }
@@ -41,7 +41,7 @@ export default function validateManifest(manifest, plugin) {
         [
           baseError,
           'A part that has not defined a `path` needs to include a `description`',
-          `See ${generateHelpUrl('plugin-parts-syntax')}`
+          `See ${generateHelpUrl('plugin-parts-syntax')}`,
         ].join('\n')
       )
     }
@@ -74,7 +74,7 @@ function validatePartName(name, baseError) {
     '- part:package-name/part-name',
     '- part:package-name/part-name-style',
     '',
-    `See ${generateHelpUrl('part-name-format')}`
+    `See ${generateHelpUrl('part-name-format')}`,
   ].join('\n')
 
   if (name.indexOf('all:') !== -1) {

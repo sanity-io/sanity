@@ -27,12 +27,12 @@ const presence = (expected, value, message) => {
 const multiple = (children, value) => {
   const validate = require('../validate')
 
-  const items = children.map(child => validate(child, value, {isChild: true}))
+  const items = children.map((child) => validate(child, value, {isChild: true}))
   return Promise.all(items).then(flatten)
 }
 
 const all = (children, value, message) =>
-  multiple(children, value).then(results => {
+  multiple(children, value).then((results) => {
     const numErrors = results.length
     return numErrors === 0
       ? true
@@ -40,7 +40,7 @@ const all = (children, value, message) =>
   })
 
 const either = (children, value, message) =>
-  multiple(children, value).then(results => {
+  multiple(children, value).then((results) => {
     const numErrors = results.length
 
     // Read: There is at least one rule that matched
@@ -62,7 +62,7 @@ const valid = (allowedValues, actual, message) => {
     ? `Value "${strValue}" did not match any of allowed values`
     : 'Value did not match any of allowed values'
 
-  return allowedValues.some(expected => deepEquals(expected, actual))
+  return allowedValues.some((expected) => deepEquals(expected, actual))
     ? true
     : new ValidationError(message || defaultMessage)
 }
@@ -94,13 +94,13 @@ const custom = async (fn, value, message, options) => {
 function formatValidationErrors(message, results, options = {}) {
   const errOpts = {
     children: results.length > 1 ? results : undefined,
-    operator: options.operator
+    operator: options.operator,
   }
 
   return results.length === 1
     ? new ValidationError(message || results[0].item.message, errOpts)
     : new ValidationError(
-        message || `[${results.map(err => err.item.message).join(options.separator)}]`,
+        message || `[${results.map((err) => err.item.message).join(options.separator)}]`,
         errOpts
       )
 }
@@ -111,5 +111,5 @@ module.exports = {
   either,
   valid,
   custom,
-  presence
+  presence,
 }

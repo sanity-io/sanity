@@ -16,13 +16,13 @@ export function DefaultStory() {
   const tabs = [
     {id: 'tab-edit', label: 'Edit'},
     {id: 'tab-seo', label: 'SEO'},
-    {id: 'tab-preview', label: 'Preview'}
+    {id: 'tab-preview', label: 'Preview'},
   ]
 
   return (
     <div style={{background: 'white'}}>
       <TabList>
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <Tab
             aria-controls="tab-panel"
             id={tab.id}

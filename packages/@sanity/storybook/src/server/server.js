@@ -9,7 +9,7 @@ const storybook = middleware.default || middleware
 
 let app = null
 
-process.on('message', msg => {
+process.on('message', (msg) => {
   switch (msg.event) {
     case 'start':
       return startServer(msg)
@@ -34,7 +34,7 @@ function startServer(msg) {
   app.use(express.static(msg.config.staticPath, {index: false}))
   app.use(storybook(path.join(__dirname, '..', 'config')))
 
-  app.listen(port, msg.config.httpHost, error => {
+  app.listen(port, msg.config.httpHost, (error) => {
     if (error) {
       // @todo message back that we've exited
       throw error

@@ -8,7 +8,7 @@ import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
 const defaultOptions = {
-  includeCli: true
+  includeCli: true,
 }
 
 export default async (context, target, opts = {}) => {
@@ -25,7 +25,7 @@ export default async (context, target, opts = {}) => {
   const packages = values(versions)
   spin.stop()
 
-  return packages.map(mod => {
+  return packages.map((mod) => {
     mod.needsUpdate =
       target === 'latest'
         ? semverCompare(mod.version, mod.latest) === -1
@@ -50,7 +50,7 @@ function filterSanityModules(manifest) {
   )
 
   const sanityDeps = Object.keys(dependencies)
-    .filter(mod => mod.indexOf('@sanity/') === 0)
+    .filter((mod) => mod.indexOf('@sanity/') === 0)
     .sort()
 
   return sanityDeps.reduce((versions, dependency) => {
@@ -68,7 +68,7 @@ function buildPackageArray(packages, workDir, options = {}) {
     initial.push({
       name: pkg.name,
       version: pkg.version,
-      latest: tryFindLatestVersion(pkg.name, target)
+      latest: tryFindLatestVersion(pkg.name, target),
     })
   }
 
@@ -76,7 +76,7 @@ function buildPackageArray(packages, workDir, options = {}) {
     result.push({
       name: pkgName,
       version: getLocalVersion(pkgName, workDir) || '???',
-      latest: tryFindLatestVersion(pkgName, target)
+      latest: tryFindLatestVersion(pkgName, target),
     })
     return result
   }, initial)

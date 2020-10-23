@@ -10,8 +10,8 @@ module.exports = (url, headers = {}) =>
         followRedirects: false,
         headers: {
           'User-Agent': `${pkg.name} ${pkg.version}`,
-          ...headers
-        }
+          ...headers,
+        },
       },
       (err, res) => {
         if (err) {

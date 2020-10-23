@@ -20,7 +20,7 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
   return {
     snapshots$: pair.events.pipe(
       filter(isSnapshotEvent),
-      map(event => event.document),
+      map((event) => event.document),
       publishReplay(1),
       refCount()
     ),
@@ -32,7 +32,7 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
     delete: pair.delete,
 
     mutate: pair.mutate,
-    commit: pair.commit
+    commit: pair.commit,
   }
 }
 export interface DocumentVersionSnapshots {
@@ -61,7 +61,7 @@ export const snapshotPair = memoize(
         ({published, draft}): SnapshotPair => {
           return {
             published: withSnapshots(published),
-            draft: withSnapshots(draft)
+            draft: withSnapshots(draft),
           }
         }
       ),
@@ -69,5 +69,5 @@ export const snapshotPair = memoize(
       refCount()
     )
   },
-  idPair => idPair.publishedId
+  (idPair) => idPair.publishedId
 )

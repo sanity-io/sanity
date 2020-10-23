@@ -5,7 +5,7 @@ import ReferenceInput, {Props} from '../../inputs/ReferenceInput'
 
 export default class SanityReference extends React.Component<Props> {
   _input: any
-  setInput = input => {
+  setInput = (input) => {
     this._input = input
   }
   focus() {

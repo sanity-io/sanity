@@ -1,7 +1,7 @@
 const miss = require('mississippi')
 const debug = require('./debug')
 
-const isSystemDocument = doc => doc && doc._id && doc._id.indexOf('_.') === 0
+const isSystemDocument = (doc) => doc && doc._id && doc._id.indexOf('_.') === 0
 
 module.exports = () =>
   miss.through.obj((doc, enc, callback) => {

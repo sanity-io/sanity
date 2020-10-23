@@ -12,7 +12,7 @@ export default withDocument(
         this._input.focus()
       }
     }
-    setInput = input => {
+    setInput = (input) => {
       this._input = input
     }
     render() {

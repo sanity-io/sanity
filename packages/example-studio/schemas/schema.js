@@ -28,6 +28,6 @@ export default createSchema({
     proteinTest,
     protein,
     blockContent,
-    customBlockEditor
-  ])
+    customBlockEditor,
+  ]),
 })

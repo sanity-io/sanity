@@ -11,7 +11,7 @@ import Paragraph from './Paragraph'
 export default function Block({
   diff,
   block,
-  children
+  children,
 }: {
   diff: PortableTextDiff
   block: PortableTextBlock
@@ -21,7 +21,7 @@ export default function Block({
   const classNames = [
     styles.root,
     styles[diff.action],
-    `style_${diff.displayValue.style || 'undefined'}`
+    `style_${diff.displayValue.style || 'undefined'}`,
   ]
   const {path: fullPath} = React.useContext(DiffContext)
   const {onSetFocus} = React.useContext(ConnectorContext)
@@ -29,7 +29,7 @@ export default function Block({
   let returned = children
 
   const handleClick = useCallback(
-    event => {
+    (event) => {
       event.stopPropagation()
       if (!isRemoved) {
         onSetFocus(fullPath)

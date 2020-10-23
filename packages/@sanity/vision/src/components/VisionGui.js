@@ -67,7 +67,7 @@ class VisionGui extends React.PureComponent {
       params: lastParams && tryParseParams(lastParams),
       rawParams: lastParams,
       queryInProgress: false,
-      dataset
+      dataset,
     }
 
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
@@ -115,7 +115,7 @@ class VisionGui extends React.PureComponent {
     this.setState({
       query: parts.query,
       params: parts.params,
-      rawParams: JSON.stringify(parts.params, null, 2)
+      rawParams: JSON.stringify(parts.params, null, 2),
     })
   }
 
@@ -179,7 +179,7 @@ class VisionGui extends React.PureComponent {
       error: paramsError || undefined,
       result: undefined,
       queryTime: null,
-      e2eTime: null
+      e2eTime: null,
     })
 
     if (!query || paramsError) {
@@ -188,12 +188,12 @@ class VisionGui extends React.PureComponent {
 
     this.subscribers.listen = client.listen(query, params, {}).subscribe({
       next: this.handleListenerMutation,
-      error: error =>
+      error: (error) =>
         this.setState({
           error,
           query,
-          listenInProgress: false
-        })
+          listenInProgress: false,
+        }),
     })
   }
 
@@ -213,7 +213,7 @@ class VisionGui extends React.PureComponent {
       error: paramsError || undefined,
       result: undefined,
       queryTime: null,
-      e2eTime: null
+      e2eTime: null,
     })
 
     if (!query || paramsError) {
@@ -224,7 +224,7 @@ class VisionGui extends React.PureComponent {
     const queryStart = Date.now()
 
     this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
-      next: res =>
+      next: (res) =>
         this.setState({
           query,
           url,
@@ -232,14 +232,14 @@ class VisionGui extends React.PureComponent {
           e2eTime: Date.now() - queryStart,
           result: res.result,
           queryInProgress: false,
-          error: null
+          error: null,
         }),
-      error: error =>
+      error: (error) =>
         this.setState({
           error,
           query,
-          queryInProgress: false
-        })
+          queryInProgress: false,
+        }),
     })
   }
 
@@ -262,12 +262,12 @@ class VisionGui extends React.PureComponent {
       listenInProgress,
       queryTime,
       e2eTime,
-      listenMutations
+      listenMutations,
     } = this.state
     const {Button, Select} = components
     const styles = this.context.styles.visionGui
     const dataset = client.config().dataset
-    const datasets = this.props.datasets.map(set => set.name)
+    const datasets = this.props.datasets.map((set) => set.name)
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
 
     // Note that because of react-json-inspector, we need at least one
@@ -390,15 +390,15 @@ VisionGui.propTypes = {
   schema: PropTypes.object,
   datasets: PropTypes.arrayOf(
     PropTypes.shape({
-      name: PropTypes.string
+      name: PropTypes.string,
     })
-  )
+  ),
 }
 
 VisionGui.contextTypes = {
   client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
   styles: PropTypes.object,
-  components: PropTypes.object
+  components: PropTypes.object,
 }
 
 export default VisionGui

@@ -5,11 +5,11 @@ test('route(options)', () => {
     path: '/root/:param',
     transform: {
       param: {
-        toState: param => param.toUpperCase(),
-        toPath: param => param.toLowerCase()
-      }
+        toState: (param) => param.toUpperCase(),
+        toPath: (param) => param.toLowerCase(),
+      },
     },
-    children: [route({path: '/sub/:subparam'})]
+    children: [route({path: '/sub/:subparam'})],
   })
 
   expect(router.decode('/root/banana')).toEqual({param: 'BANANA'})
@@ -17,7 +17,7 @@ test('route(options)', () => {
 
   expect(router.decode('/root/banana/sub/lemon')).toEqual({
     param: 'BANANA',
-    subparam: 'lemon'
+    subparam: 'lemon',
   })
   expect(router.encode({param: 'BANANA', subparam: 'lemon'})).toEqual('/root/banana/sub/lemon')
 })
@@ -26,11 +26,11 @@ test('route(path, options)', () => {
   const router = route('/root/:param', {
     transform: {
       param: {
-        toState: param => param.toUpperCase(),
-        toPath: param => param.toLowerCase()
-      }
+        toState: (param) => param.toUpperCase(),
+        toPath: (param) => param.toLowerCase(),
+      },
     },
-    children: [route('/sub/:subparam')]
+    children: [route('/sub/:subparam')],
   })
 
   expect(router.decode('/root/banana')).toEqual({param: 'BANANA'})
@@ -38,7 +38,7 @@ test('route(path, options)', () => {
 
   expect(router.decode('/root/banana/sub/lemon')).toEqual({
     param: 'BANANA',
-    subparam: 'lemon'
+    subparam: 'lemon',
   })
   expect(router.encode({param: 'BANANA', subparam: 'lemon'})).toEqual('/root/banana/sub/lemon')
 })
@@ -49,10 +49,10 @@ test('route(path, options, children)', () => {
     {
       transform: {
         param: {
-          toState: param => param.toUpperCase(),
-          toPath: param => param.toLowerCase()
-        }
-      }
+          toState: (param) => param.toUpperCase(),
+          toPath: (param) => param.toLowerCase(),
+        },
+      },
     },
     [route('/sub/:subparam')]
   )
@@ -62,7 +62,7 @@ test('route(path, options, children)', () => {
 
   expect(router.decode('/root/banana/sub/lemon')).toEqual({
     param: 'BANANA',
-    subparam: 'lemon'
+    subparam: 'lemon',
   })
   expect(router.encode({param: 'BANANA', subparam: 'lemon'})).toEqual('/root/banana/sub/lemon')
 })
@@ -75,7 +75,7 @@ test('route(path, children)', () => {
 
   expect(router.decode('/root/banana/sub/lemon')).toEqual({
     param: 'banana',
-    subparam: 'lemon'
+    subparam: 'lemon',
   })
   expect(router.encode({param: 'banana', subparam: 'lemon'})).toEqual('/root/banana/sub/lemon')
 })
@@ -87,11 +87,11 @@ test('overrides conflicting params', () => {
       path: '/root/:param',
       transform: {
         param: {
-          toState: param => param.toUpperCase(),
-          toPath: param => param.toLowerCase()
-        }
+          toState: (param) => param.toUpperCase(),
+          toPath: (param) => param.toLowerCase(),
+        },
       },
-      children: [route('/sub/:thiswillbeignored')]
+      children: [route('/sub/:thiswillbeignored')],
     },
     [route('/sub/:subparam')]
   )
@@ -101,7 +101,7 @@ test('overrides conflicting params', () => {
 
   expect(router.decode('/root/banana/sub/lemon')).toEqual({
     param: 'BANANA',
-    subparam: 'lemon'
+    subparam: 'lemon',
   })
   expect(router.encode({param: 'BANANA', subparam: 'lemon'})).toEqual('/root/banana/sub/lemon')
 })

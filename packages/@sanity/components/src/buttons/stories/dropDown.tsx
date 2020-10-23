@@ -17,14 +17,14 @@ const items = [
   {index: '8', title: 'Test 8'},
   {index: '9', title: 'Test 9'},
   {index: '10', title: 'Test 10'},
-  {index: '11', title: 'Test 11'}
+  {index: '11', title: 'Test 11'},
 ]
 
 const actionsProps = {
   onAction: action('onAction'),
   onBlur: action('onBlur'),
   onClick: action('onClick'),
-  onFocus: action('onFocus')
+  onFocus: action('onFocus'),
 }
 
 export function DropDownStory() {

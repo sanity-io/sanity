@@ -15,22 +15,22 @@ export default class AuthorReferenceInput extends React.Component {
     type: PropTypes.shape({
       title: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      description: PropTypes.string
+      description: PropTypes.string,
     }).isRequired,
 
     value: PropTypes.shape({
       _ref: PropTypes.string.isRequired,
-      _type: PropTypes.string.isRequired
+      _type: PropTypes.string.isRequired,
     }),
 
     readOnly: PropTypes.bool,
     level: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
     readOnly: false,
-    value: undefined
+    value: undefined,
   }
 
   state = {loading: true, authors: []}
@@ -52,9 +52,9 @@ export default class AuthorReferenceInput extends React.Component {
     this.fetchObservable.unsubscribe()
   }
 
-  handleAuthorsReceived = authors => this.setState({authors, loading: false})
+  handleAuthorsReceived = (authors) => this.setState({authors, loading: false})
 
-  handleChange = item => {
+  handleChange = (item) => {
     const {type} = this.props
 
     // Are we selecting the same value as previously selected?
@@ -69,7 +69,7 @@ export default class AuthorReferenceInput extends React.Component {
         // A reference is an object, so we need to initialize it before attempting to set subproperties
         setIfMissing({
           _type: type.name,
-          _ref: item._id
+          _ref: item._id,
         }),
 
         // Allow setting weak reference in schema options
@@ -85,7 +85,7 @@ export default class AuthorReferenceInput extends React.Component {
     this.props.onChange(PatchEvent.from(unset()))
   }
 
-  setFirstInputRef = input => {
+  setFirstInputRef = (input) => {
     this._input = input
   }
 
@@ -120,12 +120,7 @@ export default class AuthorReferenceInput extends React.Component {
                   className={styles.authorImage}
                   title={author.name}
                   alt={`${author.name || 'Author'}.`}
-                  src={imageBuilder
-                    .image(author.image)
-                    .width(150)
-                    .height(150)
-                    .fit('crop')
-                    .url()}
+                  src={imageBuilder.image(author.image).width(150).height(150).fit('crop').url()}
                 />
               </button>
             ))

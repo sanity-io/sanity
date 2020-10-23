@@ -12,12 +12,12 @@ import incDec from './patchExamples/incDec'
 
 const examples = [].concat(set, setIfMissing, unset, diffMatchPatch, insert, incDec)
 
-examples.forEach(example => {
-  test(example.name, tap => {
+examples.forEach((example) => {
+  test(example.name, (tap) => {
     // Fake some id's in there
     example.before._id = 'a'
     if (Array.isArray(example.patch)) {
-      example.patch.forEach(patch => (patch.id = 'a'))
+      example.patch.forEach((patch) => (patch.id = 'a'))
     } else {
       example.patch.id = 'a'
     }

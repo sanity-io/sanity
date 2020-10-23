@@ -34,14 +34,14 @@ export default (typeDef, visitorContext) => {
       return {
         ...typeDef,
         of: [],
-        _problems: invalid
+        _problems: invalid,
       }
     }
   }
 
   const problems = flatten([
     ofIsArray
-      ? getDupes(typeDef.of, t => `${t.name};${t.type}`).map(dupes =>
+      ? getDupes(typeDef.of, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
             `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in array. This makes it impossible to tell their values apart and you should consider naming them`,
             HELP_IDS.ARRAY_OF_NOT_UNIQUE
@@ -50,15 +50,15 @@ export default (typeDef, visitorContext) => {
       : error(
           'The array type is missing or having an invalid value for the required "of" property',
           HELP_IDS.ARRAY_OF_INVALID
-        )
+        ),
   ])
   const of = ofIsArray ? typeDef.of : []
 
   // Don't allow object types without a name in block arrays
   const hasObjectTypesWithoutName = of.some(
-    type => type.type === 'object' && typeof type.name === 'undefined'
+    (type) => type.type === 'object' && typeof type.name === 'undefined'
   )
-  const hasBlockType = of.some(ofType => ofType.type === 'block')
+  const hasBlockType = of.some((ofType) => ofType.type === 'block')
   if (hasBlockType && hasObjectTypesWithoutName) {
     problems.push(
       error(
@@ -71,6 +71,6 @@ export default (typeDef, visitorContext) => {
   return {
     ...typeDef,
     of: of.map(visitorContext.visit),
-    _problems: problems
+    _problems: problems,
   }
 }

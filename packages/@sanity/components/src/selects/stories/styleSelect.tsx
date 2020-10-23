@@ -7,28 +7,28 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 const styleItems: StyleSelectItem[] = [
   {
     title: 'Paragraph',
-    key: 'style-paragraph'
+    key: 'style-paragraph',
   },
   {
     title: 'Heading 1',
-    key: 'style-heading1'
+    key: 'style-heading1',
   },
   {
     title: 'Heading 2',
-    key: 'style-heading2'
+    key: 'style-heading2',
   },
   {
     title: 'Heading 3',
-    key: 'style-heading3'
+    key: 'style-heading3',
   },
   {
     title: 'Heading 4',
-    key: 'style-heading4'
+    key: 'style-heading4',
   },
   {
     title: 'Heading 5',
-    key: 'style-heading5'
-  }
+    key: 'style-heading5',
+  },
 ]
 
 const centerStyle: React.CSSProperties = {
@@ -39,10 +39,10 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
-const renderStyleItem = function(item) {
+const renderStyleItem = function (item) {
   switch (item.key) {
     case 'style-paragraph':
       return <div style={{fontSize: '1em', fontWeight: 'normal'}}>{item.title}</div>

@@ -10,7 +10,7 @@ import {
   BooleanSchemaType as BaseBooleanSchemaType,
   NumberSchemaType as BaseNumberSchemaType,
   ObjectSchemaType as BaseObjectSchemaType,
-  StringSchemaType as BaseStringSchemaType
+  StringSchemaType as BaseStringSchemaType,
 } from '@sanity/types'
 import {ComponentType} from 'react'
 import {
@@ -26,7 +26,7 @@ import {
   // Diff internals
   ItemDiff as AgnosticItemDiff,
   StringSegmentChanged as AgnosticStringSegmentChanged,
-  StringSegmentUnchanged as AgnosticStringSegmentUnchanged
+  StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
 } from '@sanity/diff'
 import {FieldValueError} from './validation'
 

@@ -6,7 +6,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'slug',
@@ -14,24 +14,24 @@ export default {
       type: 'slug',
       options: {
         source: 'title',
-        maxLength: 96
-      }
+        maxLength: 96,
+      },
     },
     {
       name: 'logo',
       title: 'logo',
-      type: 'image'
+      type: 'image',
     },
     {
       name: 'description',
       title: 'Description',
-      type: 'blockContent'
-    }
+      type: 'blockContent',
+    },
   ],
   preview: {
     select: {
       title: 'title',
-      media: 'logo'
-    }
-  }
+      media: 'logo',
+    },
+  },
 }

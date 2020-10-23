@@ -93,8 +93,8 @@ function notifyErrors(title) {
       error: '<%= error.message %>',
       // Sound can be one of these: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink.
       // See https://github.com/mikaelbr/node-notifier#all-notification-options-with-their-defaults
-      sound: process.env.TS_ERROR_SOUND === 'off' ? false : process.env.TS_ERROR_SOUND || 'Purr'
-    })
+      sound: process.env.TS_ERROR_SOUND === 'off' ? false : process.env.TS_ERROR_SOUND || 'Purr',
+    }),
   })
 }
 
@@ -123,7 +123,7 @@ const isTSProject = (packageDir) => {
 }
 
 // We the list of packages ordered by topology to make sure we compile in the correct order
-const ORDERED_PACKAGES = getPackagesOrderedByTopology().map(pkgName =>
+const ORDERED_PACKAGES = getPackagesOrderedByTopology().map((pkgName) =>
   path.resolve(__dirname, `packages/${pkgName}`)
 )
 

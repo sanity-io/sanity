@@ -24,17 +24,13 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
     const {pretty, dataset} = args.extOptions
-    const [docId] = args.argsWithoutOptions.map(str => `${str}`)
+    const [docId] = args.argsWithoutOptions.map((str) => `${str}`)
 
     if (!docId) {
       throw new Error('Document ID must be specified')
     }
 
-    const client = dataset
-      ? apiClient()
-          .clone()
-          .config({dataset})
-      : apiClient()
+    const client = dataset ? apiClient().clone().config({dataset}) : apiClient()
 
     try {
       const doc = await client.getDocument(docId)
@@ -46,5 +42,5 @@ export default {
     } catch (err) {
       throw new Error(`Failed to fetch document:\n${err.message}`)
     }
-  }
+  },
 }

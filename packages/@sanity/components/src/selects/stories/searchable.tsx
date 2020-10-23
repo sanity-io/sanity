@@ -12,7 +12,7 @@ const chance = new Chance()
 const items = range(20).map((item, i) => {
   return {
     title: chance.name(),
-    key: `${i}`
+    key: `${i}`,
   }
 })
 
@@ -24,12 +24,12 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 // When provided with items, the component searches inside these when no onInputChange is provided
 export function SearchableStory() {
-  const renderItem = function(item) {
+  const renderItem = function (item) {
     return <div>{item.title}</div>
   }
   const hasOnclear = boolean('has onClear', false, 'test')
@@ -37,7 +37,7 @@ export function SearchableStory() {
     range: true,
     min: -1,
     max: items.length,
-    step: 1
+    step: 1,
   })
 
   const hasItems = boolean('hasItems', false, 'test') || undefined

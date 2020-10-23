@@ -34,6 +34,6 @@ export function extractTextFromBlocks(blocks: Block[]): string {
 
   return firstBlock.children
     .filter(isSpan)
-    .map(span => span.text)
+    .map((span) => span.text)
     .join('')
 }

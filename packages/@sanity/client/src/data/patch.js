@@ -22,7 +22,7 @@ assign(Patch.prototype, {
     const stack = new Error().stack
       .toString()
       .split('\n')
-      .filter(str => str.trim())
+      .filter((str) => str.trim())
       .slice(2)
 
     console.warn(
@@ -131,10 +131,10 @@ assign(Patch.prototype, {
   _assign(op, props, merge = true) {
     validateObject(op, props)
     this.operations = assign({}, this.operations, {
-      [op]: assign({}, (merge && this.operations[op]) || {}, props)
+      [op]: assign({}, (merge && this.operations[op]) || {}, props),
     })
     return this
-  }
+  },
 })
 
 module.exports = Patch

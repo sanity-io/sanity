@@ -1,3 +1,3 @@
 export default {
-  templateRepoId: 'sanity-io/sanity-template-gatsby-blog'
+  templateRepoId: 'sanity-io/sanity-template-gatsby-blog',
 }

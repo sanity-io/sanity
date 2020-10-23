@@ -8,7 +8,7 @@ const assign = require('xtend')
 const sanityClient = require('../src/sanityClient')
 const sseServer = require('./helpers/sseServer')
 
-const getClient = options =>
+const getClient = (options) =>
   sanityClient(
     assign(
       {
@@ -16,7 +16,7 @@ const getClient = options =>
         namespace: 'beerns',
         apiHost: `http://localhost:${options.port}`,
         useProjectHostname: false,
-        useCdn: false
+        useCdn: false,
       },
       options
     )
@@ -37,7 +37,7 @@ const testSse = (onRequest, options) =>
 /*****************
  * LISTENER      *
  *****************/
-test('[listener] can listen for mutations', t => {
+test('[listener] can listen for mutations', (t) => {
   const eventData = {
     documentId: 'beer-123',
     eventId: 'blah#beer-123',
@@ -49,12 +49,12 @@ test('[listener] can listen for mutations', t => {
       _type: 'beer',
       brewery: 'Trillium',
       title: 'Headroom Double IPA',
-      abv: 8
+      abv: 8,
     },
     resultRev: 'Blatti',
     timestamp: '2017-03-29T12:36:20.506516Z',
     transactionId: 'foo',
-    transition: 'update'
+    transition: 'update',
   }
 
   testSse(({request, channel}) => {
@@ -63,7 +63,7 @@ test('[listener] can listen for mutations', t => {
       [
         '/v1/data/listen/prod',
         '?query=*%5Bis%20%22beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D',
-        '&%24beerName=%22Headroom%20Double%20IPA%22&includeResult=true'
+        '&%24beerName=%22Headroom%20Double%20IPA%22&includeResult=true',
       ].join(''),
       'url should be correct'
     )
@@ -76,7 +76,7 @@ test('[listener] can listen for mutations', t => {
       const params = {beerName: 'Headroom Double IPA'}
 
       const subscription = client.listen(query, params).subscribe({
-        next: msg => {
+        next: (msg) => {
           t.deepEqual(
             msg,
             assign({}, eventData, {type: 'mutation'}),
@@ -86,17 +86,17 @@ test('[listener] can listen for mutations', t => {
           server.close()
           t.end()
         },
-        error: err => {
+        error: (err) => {
           subscription.unsubscribe()
           server.close()
           t.end(err)
-        }
+        },
       })
     })
     .catch(t.end)
 })
 
-test('[listener] listener sends auth token if given (node)', t => {
+test('[listener] listener sends auth token if given (node)', (t) => {
   let httpServer = null
   testSse(
     ({request, channel}) => {
@@ -113,17 +113,17 @@ test('[listener] listener sends auth token if given (node)', t => {
     .then(({server, client}) => {
       httpServer = server
       const subscription = client.listen('*').subscribe({
-        error: err => {
+        error: (err) => {
           subscription.unsubscribe()
           server.close()
           t.end(err)
-        }
+        },
       })
     })
     .catch(t.end)
 })
 
-test('[listener] reconnects if disconnected', t => {
+test('[listener] reconnects if disconnected', (t) => {
   testSse(({request, channel}) => {
     channel.send({event: 'welcome'})
     channel.close()
@@ -131,23 +131,23 @@ test('[listener] reconnects if disconnected', t => {
   })
     .then(({server, client}) => {
       const subscription = client.listen('*', {}, {events: ['reconnect']}).subscribe({
-        next: msg => {
+        next: (msg) => {
           t.equal(msg.type, 'reconnect', 'emits reconnect events if told to')
           subscription.unsubscribe()
           server.close()
           t.end()
         },
-        error: err => {
+        error: (err) => {
           subscription.unsubscribe()
           server.close()
           t.end(err)
-        }
+        },
       })
     })
     .catch(t.end)
 })
 
-test('[listener] emits channel errors', t => {
+test('[listener] emits channel errors', (t) => {
   testSse(({request, channel}) => {
     channel.send({event: 'channelError', data: {message: 'Unfortunate error'}})
     channel.close()
@@ -155,18 +155,18 @@ test('[listener] emits channel errors', t => {
   })
     .then(({server, client}) => {
       const subscription = client.listen('*').subscribe({
-        error: err => {
+        error: (err) => {
           t.equal(err.message, 'Unfortunate error', 'should have passed error message')
           subscription.unsubscribe()
           server.close()
           t.end()
-        }
+        },
       })
     })
     .catch(t.end)
 })
 
-test('[listener] emits channel errors with deep error description', t => {
+test('[listener] emits channel errors with deep error description', (t) => {
   testSse(({request, channel}) => {
     channel.send({event: 'channelError', data: {error: {description: 'Expected error'}}})
     channel.close()
@@ -174,12 +174,12 @@ test('[listener] emits channel errors with deep error description', t => {
   })
     .then(({server, client}) => {
       const subscription = client.listen('*').subscribe({
-        error: err => {
+        error: (err) => {
           t.equal(err.message, 'Expected error', 'should have passed error message')
           subscription.unsubscribe()
           server.close()
           t.end()
-        }
+        },
       })
     })
     .catch(t.end)

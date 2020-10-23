@@ -6,7 +6,7 @@ export function useDocumentOperationEvent(publishedDocId, docTypeName) {
   return useObservable(
     React.useMemo(() => documentStore.pair.operationEvents(publishedDocId, docTypeName), [
       publishedDocId,
-      docTypeName
+      docTypeName,
     ])
   )
 }

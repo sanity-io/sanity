@@ -118,11 +118,11 @@ const AppLoaderStyles = `
 
 export default class AppLoadingScreen extends React.PureComponent {
   static propTypes = {
-    text: PropTypes.string
+    text: PropTypes.string,
   }
 
   static defaultProps = {
-    text: 'Loading Content Studio'
+    text: 'Loading Content Studio',
   }
 
   render() {

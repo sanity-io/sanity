@@ -14,7 +14,7 @@ const {
   getStrongRefs,
   weakenStrongRefs,
   setTypeOnReferences,
-  strengthenReferences
+  strengthenReferences,
 } = require('./references')
 
 async function importDocuments(documents, options) {
@@ -26,25 +26,25 @@ async function importDocuments(documents, options) {
 
   // Replace relative asset paths if one is defined
   // (file://./images/foo-bar.png -> file:///abs/olute/images/foo-bar.png)
-  const absPathed = documents.map(doc => absolutifyPaths(doc, options.assetsBase))
+  const absPathed = documents.map((doc) => absolutifyPaths(doc, options.assetsBase))
 
   // Assign document IDs for document that do not have one. This is necessary
   // for us to strengthen references and import assets properly.
-  const ided = absPathed.map(doc => assignDocumentId(doc))
+  const ided = absPathed.map((doc) => assignDocumentId(doc))
 
   // User might not have applied `_key` on array elements which are objects;
   // if this is the case, generate random keys to help realtime engine
-  const keyed = ided.map(doc => assignArrayKeys(doc))
+  const keyed = ided.map((doc) => assignArrayKeys(doc))
 
   // Sanity prefers to have a `_type` on every object. Make sure references
   // has `_type` set to `reference`.
-  const docs = keyed.map(doc => setTypeOnReferences(doc))
+  const docs = keyed.map((doc) => setTypeOnReferences(doc))
 
   // Find references that will need strengthening when import is done
   const strongRefs = docs.map(getStrongRefs).filter(Boolean)
 
   // Extract asset references from the documents
-  const assetRefs = flatten(docs.map(getAssetRefs).filter(ref => ref.length))
+  const assetRefs = flatten(docs.map(getAssetRefs).filter((ref) => ref.length))
 
   // Remove asset references from the documents
   const assetless = docs.map(unsetAssetRefs)

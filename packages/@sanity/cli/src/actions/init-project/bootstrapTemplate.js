@@ -24,7 +24,7 @@ export default async (opts, context) => {
   let spinner = output.spinner('Bootstrapping files from template').start()
   await fse.copy(sourceDir, outputDir, {
     overwrite: false,
-    errorOnExist: true
+    errorOnExist: true,
   })
   spinner.succeed()
 
@@ -57,7 +57,7 @@ export default async (opts, context) => {
   // Write non-template files to disc
   await Promise.all([
     writeFileIfNotExists('sanity.json', `${JSON.stringify(sanityManifest, null, 2)}\n`),
-    writeFileIfNotExists('package.json', packageManifest)
+    writeFileIfNotExists('package.json', packageManifest),
   ])
 
   // Finish up by providing init process with template-specific info

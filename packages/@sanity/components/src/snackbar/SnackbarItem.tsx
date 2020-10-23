@@ -32,7 +32,7 @@ const DEFAULT_ICONS = {
   info: <InfoIcon />,
   success: <CheckCircleIcon />,
   warning: <WarningIcon />,
-  error: <ErrorIcon />
+  error: <ErrorIcon />,
 }
 
 interface State {
@@ -45,7 +45,7 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
   _snackRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   state: State = {
-    isEntering: true
+    isEntering: true,
   }
 
   snackIcon = () => {
@@ -125,7 +125,7 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
 
     this._enterTimer = setTimeout(() => {
       this.setState({
-        isEntering: false
+        isEntering: false,
       })
     }, 100)
   }
@@ -153,7 +153,7 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
       kind = 'info',
       title,
       subtitle,
-      offset
+      offset,
     } = this.props
 
     const rootStyles = this.state.isEntering
@@ -178,7 +178,7 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
         onMouseLeave={() => this.handleMouseLeave()}
         onFocus={() => this.handleFocus()}
         onBlur={() => this.handleBlur()}
-        onKeyDown={e => e.key === 'escape' && this.handleAction()}
+        onKeyDown={(e) => e.key === 'escape' && this.handleAction()}
         data-kind={kind}
       >
         <div className={styles.inner}>

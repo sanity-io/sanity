@@ -6,7 +6,7 @@ import {
   PortableTextEditor,
   PortableTextBlock,
   Type,
-  RenderAttributes
+  RenderAttributes,
 } from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
@@ -32,14 +32,14 @@ export const BlockObject: FunctionComponent<Props> = ({
   onFocus,
   readOnly,
   type,
-  value
+  value,
 }): JSX.Element => {
   const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
     focused && styles.focused,
     selected && styles.selected,
-    errors.length > 0 && styles.hasErrors
+    errors.length > 0 && styles.hasErrors,
   ])
 
   const handleClickToOpen = (event: SyntheticEvent<HTMLElement>): void => {

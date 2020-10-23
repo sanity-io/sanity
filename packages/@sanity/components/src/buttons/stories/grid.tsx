@@ -18,7 +18,7 @@ export function GridStory() {
       <Sanity part="part:@sanity/components/buttons/button-grid" propTables={[ButtonGrid]}>
         <ButtonGrid
           align={select('align', ['start', 'end'], 'start', 'props')}
-          secondary={range(0, number('# secondary', 1)).map(i => {
+          secondary={range(0, number('# secondary', 1)).map((i) => {
             return (
               <Button inverted key={i}>
                 {buttonText || (i % 2 ? chance.word() : chance.name())}
@@ -26,7 +26,7 @@ export function GridStory() {
             )
           })}
         >
-          {range(0, qtyButtons).map(i => {
+          {range(0, qtyButtons).map((i) => {
             return <Button key={i}>{buttonText || (i % 2 ? chance.word() : chance.name())}</Button>
           })}
         </ButtonGrid>

@@ -5,14 +5,14 @@ const miss = require('mississippi')
 const split = require('split2')
 const {getAssetHandler, arrayToStream} = require('./helpers')
 
-const docById = (docs, id) => docs.find(doc => doc._id === id)
+const docById = (docs, id) => docs.find((doc) => doc._id === id)
 
 describe('asset handler', () => {
   afterAll(async () => {
     await fse.remove(path.join(os.tmpdir(), 'asset-handler-tests'))
   })
 
-  test('can rewrite documents / queue downloads', done => {
+  test('can rewrite documents / queue downloads', (done) => {
     // prettier-ignore
     const docs = [
       {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}, nested: {_type: 'image', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}}},
@@ -48,7 +48,7 @@ describe('asset handler', () => {
     }
   })
 
-  test('can remove asset documents', done => {
+  test('can remove asset documents', (done) => {
     // prettier-ignore
     const docs = [
       {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},
@@ -79,7 +79,7 @@ describe('asset handler', () => {
     }
   })
 
-  test('downloads assets that are not referenced by documents', done => {
+  test('downloads assets that are not referenced by documents', (done) => {
     // prettier-ignore
     const docs = [
       {_id: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png', _type: 'sanity.imageAsset', url: 'https://cdn.sanity.io/images/__fixtures__/__test__/6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840.png'},
@@ -103,7 +103,7 @@ describe('asset handler', () => {
     }
   })
 
-  test('can skip asset documents', done => {
+  test('can skip asset documents', (done) => {
     // prettier-ignore
     const docs = [
       {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-6dcdb82c282dbe0a09ff7a6b58b639732f2fb8de-3360x840-png'}}},

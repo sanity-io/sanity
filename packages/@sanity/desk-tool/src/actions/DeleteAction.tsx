@@ -4,7 +4,7 @@ import React, {useCallback} from 'react'
 import ConfirmDelete from '../components/ConfirmDelete'
 
 const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DELETE: "This document doesn't yet exist or is already deleted"
+  NOTHING_TO_DELETE: "This document doesn't yet exist or is already deleted",
 }
 
 export function DeleteAction({id, type, draft, published, onComplete}) {
@@ -46,7 +46,7 @@ export function DeleteAction({id, type, draft, published, onComplete}) {
           onCancel={handleCancel}
           onConfirm={handleConfirm}
         />
-      )
-    }
+      ),
+    },
   }
 }

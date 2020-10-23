@@ -9,15 +9,15 @@ const filterCreators = {
   Boolean: createBooleanFilters,
   Datetime: createDateFilters,
   Date: createDateFilters,
-  Object: createObjectFilters
+  Object: createObjectFilters,
 }
 
 function generateTypeFilters(types) {
   const queryable = types.filter(
-    type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
-  return queryable.map(type => {
+  return queryable.map((type) => {
     const name = `${type.name}Filter`
     const fields = flatten(type.fields.map(createFieldFilters)).filter(Boolean)
     return {name, kind: 'InputObject', fields: fields.concat(getDocumentFilters(type))}
@@ -53,9 +53,9 @@ function getDocumentFilters(type) {
         type: 'ID',
         description: 'All documents references the given document ID',
         constraint: {
-          comparator: 'REFERENCES'
-        }
-      }
+          comparator: 'REFERENCES',
+        },
+      },
     ],
     {
       fieldName: 'is_draft',
@@ -63,8 +63,8 @@ function getDocumentFilters(type) {
       description: 'All documents that are drafts',
       constraint: {
         field: '_id',
-        comparator: 'IS_DRAFT'
-      }
+        comparator: 'IS_DRAFT',
+      },
     }
   )
 }
@@ -76,8 +76,8 @@ function createEqualityFilter(field) {
     description: 'All documents that are equal to given value',
     constraint: {
       field: field.fieldName,
-      comparator: 'EQUALS'
-    }
+      comparator: 'EQUALS',
+    },
   }
 }
 
@@ -88,8 +88,8 @@ function createInequalityFilter(field) {
     description: 'All documents that are not equal to given value',
     constraint: {
       field: field.fieldName,
-      comparator: 'NOT_EQUALS'
-    }
+      comparator: 'NOT_EQUALS',
+    },
   }
 }
 
@@ -105,8 +105,8 @@ function createGtLtFilters(field) {
       description: 'All documents are less than given value',
       constraint: {
         field: field.fieldName,
-        comparator: 'LT'
-      }
+        comparator: 'LT',
+      },
     },
     {
       fieldName: getFieldName(field, 'lte'),
@@ -114,8 +114,8 @@ function createGtLtFilters(field) {
       description: 'All documents are less than or equal to given value',
       constraint: {
         field: field.fieldName,
-        comparator: 'LTE'
-      }
+        comparator: 'LTE',
+      },
     },
     {
       fieldName: getFieldName(field, 'gt'),
@@ -123,8 +123,8 @@ function createGtLtFilters(field) {
       description: 'All documents are greater than given value',
       constraint: {
         field: field.fieldName,
-        comparator: 'GT'
-      }
+        comparator: 'GT',
+      },
     },
     {
       fieldName: getFieldName(field, 'gte'),
@@ -132,9 +132,9 @@ function createGtLtFilters(field) {
       description: 'All documents are greater than or equal to given value',
       constraint: {
         field: field.fieldName,
-        comparator: 'GTE'
-      }
-    }
+        comparator: 'GTE',
+      },
+    },
   ]
 }
 
@@ -158,35 +158,35 @@ function createStringFilters(field) {
       description: 'All documents contain (match) the given word/words',
       constraint: {
         field: field.fieldName,
-        comparator: 'MATCHES'
-      }
+        comparator: 'MATCHES',
+      },
     },
     {
       fieldName: getFieldName(field, 'in'),
       kind: 'List',
       children: {
         type: 'String',
-        isNullable: false
+        isNullable: false,
       },
       description: 'All documents match one of the given values',
       constraint: {
         field: field.fieldName,
-        comparator: 'IN'
-      }
+        comparator: 'IN',
+      },
     },
     {
       fieldName: getFieldName(field, 'not_in'),
       kind: 'List',
       children: {
         type: 'String',
-        isNullable: false
+        isNullable: false,
       },
       description: 'None of the values match any of the given values',
       constraint: {
         field: field.fieldName,
-        comparator: 'NOT_IN'
-      }
-    }
+        comparator: 'NOT_IN',
+      },
+    },
   ])
 }
 
@@ -216,9 +216,9 @@ function createReferenceFilters(field) {
       type: 'ID',
       constraint: {
         field: `${field.fieldName}._ref`,
-        comparator: 'EQUALS'
-      }
-    }
+        comparator: 'EQUALS',
+      },
+    },
   ]
 }
 

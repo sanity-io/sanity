@@ -3,12 +3,12 @@ const test = require('tape')
 const interopRequire = require('interop-require')
 const pluginLoader = require('../loader')
 
-test('throws if options object is not passed', t => {
+test('throws if options object is not passed', (t) => {
   t.throws(pluginLoader, /options/)
   t.end()
 })
 
-test('allows passing *only* overrides, bypassing resolving', t => {
+test('allows passing *only* overrides, bypassing resolving', (t) => {
   const overrides = {'part:foo/bar/baz': ['moo']}
   const restore = pluginLoader({overrides})
   t.is(require('part:foo/bar/baz'), 'moo')
@@ -16,13 +16,13 @@ test('allows passing *only* overrides, bypassing resolving', t => {
   t.end()
 })
 
-test('overrides *must* be arrays', t => {
+test('overrides *must* be arrays', (t) => {
   const overrides = {'part:foo/bar/baz': 'moo'}
   t.throws(() => pluginLoader({overrides}), /array/)
   t.end()
 })
 
-test('should be able to override a part with multiple fulfillers', t => {
+test('should be able to override a part with multiple fulfillers', (t) => {
   const part = 'part:foo/bar/baz'
   const func1 = () => '1'
   const func2 = () => '2'
@@ -35,7 +35,7 @@ test('should be able to override a part with multiple fulfillers', t => {
   t.end()
 })
 
-test('should pass unmocked requests onto the default resolver', t => {
+test('should pass unmocked requests onto the default resolver', (t) => {
   const overrides = {foo: [{}]}
   const restore = pluginLoader({overrides})
   t.is(require('interop-require'), interopRequire)
@@ -43,7 +43,7 @@ test('should pass unmocked requests onto the default resolver', t => {
   t.end()
 })
 
-test('should be able to resolve an actual filesystem structure', t => {
+test('should be able to resolve an actual filesystem structure', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const getBar = require('part:base/bar')
@@ -54,14 +54,14 @@ test('should be able to resolve an actual filesystem structure', t => {
   t.end()
 })
 
-test('should be able to require all fulfillers of a part', t => {
+test('should be able to require all fulfillers of a part', (t) => {
   const start = Date.now()
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const timestampers = require('all:part:date/timestamp')
   t.is(timestampers.length, 2)
 
-  timestampers.forEach(fn => {
+  timestampers.forEach((fn) => {
     const stamp = fn()
     t.true(stamp > start && stamp <= Date.now())
   })
@@ -70,7 +70,7 @@ test('should be able to require all fulfillers of a part', t => {
   t.end()
 })
 
-test('should be able to include the sanity debug part', t => {
+test('should be able to include the sanity debug part', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
   const debug = require('sanity:debug')
   t.is(debug.plugins[0].name, 'date')
@@ -79,7 +79,7 @@ test('should be able to include the sanity debug part', t => {
   t.end()
 })
 
-test('should be able to load sanity instance config', t => {
+test('should be able to load sanity instance config', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const config = require('config:sanity')
@@ -90,7 +90,7 @@ test('should be able to load sanity instance config', t => {
   t.end()
 })
 
-test('should be able to load config for a plugin', t => {
+test('should be able to load config for a plugin', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const config = require('config:better-date')
@@ -100,7 +100,7 @@ test('should be able to load config for a plugin', t => {
   t.end()
 })
 
-test('should be able to load config for a namespaced plugin', t => {
+test('should be able to load config for a namespaced plugin', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const config = require('config:@sanity/some-plugin')
@@ -110,20 +110,20 @@ test('should be able to load config for a namespaced plugin', t => {
   t.end()
 })
 
-test('should be able to load sanity plugin versions', t => {
+test('should be able to load sanity plugin versions', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'versionsFixture')})
 
   const versions = require('sanity:versions')
   t.deepEqual(versions, {
     '@sanity/base': '0.999.99',
-    '@sanity/components': '0.777.77'
+    '@sanity/components': '0.777.77',
   })
 
   restore()
   t.end()
 })
 
-test('should be able to load CSS files through PostCSS', t => {
+test('should be able to load CSS files through PostCSS', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const styles = require('part:date/datepicker-style')
@@ -134,7 +134,7 @@ test('should be able to load CSS files through PostCSS', t => {
   t.end()
 })
 
-test('should be able stub CSS loading', t => {
+test('should be able stub CSS loading', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture'), stubCss: true})
 
   const styles = require('part:date/datepicker-style')
@@ -145,7 +145,7 @@ test('should be able stub CSS loading', t => {
   t.end()
 })
 
-test('should resolve correctly when using optional part requires (?-postfix)', t => {
+test('should resolve correctly when using optional part requires (?-postfix)', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const getBar = require('part:base/bar?')
@@ -156,7 +156,7 @@ test('should resolve correctly when using optional part requires (?-postfix)', t
   t.end()
 })
 
-test('should resolve correctly when overriding and using optional part requires', t => {
+test('should resolve correctly when overriding and using optional part requires', (t) => {
   const overrides = {'part:base/bar': ['moo']}
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture'), overrides})
 
@@ -167,7 +167,7 @@ test('should resolve correctly when overriding and using optional part requires'
   t.end()
 })
 
-test('should return undefined when using optional part requires on an unfulfilled part', t => {
+test('should return undefined when using optional part requires on an unfulfilled part', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const result = require('part:not/existant?')
@@ -177,7 +177,7 @@ test('should return undefined when using optional part requires on an unfulfille
   t.end()
 })
 
-test('should resolve parts that point to a path which is a directory containing an index.js-file', t => {
+test('should resolve parts that point to a path which is a directory containing an index.js-file', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const result = require('part:base/indexpart')
@@ -187,7 +187,7 @@ test('should resolve parts that point to a path which is a directory containing 
   t.end()
 })
 
-test('should be able to override config parts', t => {
+test('should be able to override config parts', (t) => {
   const overrides = {'config:sanity': [{api: {projectId: 'heisann'}}]}
   const restore = pluginLoader({overrides})
 
@@ -198,7 +198,7 @@ test('should be able to override config parts', t => {
   t.end()
 })
 
-test('should be able to get a stubbed css-custom-properties part', t => {
+test('should be able to get a stubbed css-custom-properties part', (t) => {
   const restore = pluginLoader({basePath: path.join(__dirname, 'fixture')})
 
   const customProps = require('sanity:css-custom-properties')

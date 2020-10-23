@@ -7,12 +7,12 @@ const defaults = {
   server: {
     staticPath: './static',
     port: 3333,
-    hostname: 'localhost'
-  }
+    hostname: 'localhost',
+  },
 }
 
-const configContainer = values => ({
-  get: (dotPath, defaultValue) => get(values, dotPath, defaultValue)
+const configContainer = (values) => ({
+  get: (dotPath, defaultValue) => get(values, dotPath, defaultValue),
 })
 
 const getConfig = (rootDir, options: {env?: string} = {}) => {

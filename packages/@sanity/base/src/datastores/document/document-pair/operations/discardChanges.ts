@@ -12,9 +12,6 @@ export const discardChanges = {
     return false
   },
   execute: ({idPair}: OperationArgs) => {
-    return client.observable
-      .transaction()
-      .delete(idPair.draftId)
-      .commit()
-  }
+    return client.observable.transaction().delete(idPair.draftId).commit()
+  },
 }

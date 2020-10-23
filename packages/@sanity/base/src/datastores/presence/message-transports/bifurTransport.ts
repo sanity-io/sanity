@@ -32,7 +32,7 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
     return {
       type: 'rollCall',
       userId: event.i,
-      sessionId: event.session
+      sessionId: event.session,
     }
   }
   if (event.type === 'state') {
@@ -42,7 +42,7 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
       userId: event.i,
       sessionId: sessionId,
       timestamp: new Date().toISOString(),
-      locations
+      locations,
     }
   }
 
@@ -51,7 +51,7 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
       type: 'disconnect',
       userId: event.i,
       sessionId: event.m.session,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
   }
 
@@ -70,7 +70,7 @@ export const createBifurTransport = (bifur: BifurClient, sessionId: string): Tra
 
     if (message.type === 'state') {
       return bifur.request('presence_announce', {
-        data: {locations: message.locations, sessionId}
+        data: {locations: message.locations, sessionId},
       })
     }
 

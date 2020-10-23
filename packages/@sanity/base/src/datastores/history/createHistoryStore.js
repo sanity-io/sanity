@@ -18,12 +18,12 @@ const compileTransactions = (acc, curr) => {
   return acc
 }
 
-const ndjsonToArray = ndjson => {
+const ndjsonToArray = (ndjson) => {
   return ndjson
     .toString('utf8')
     .split('\n')
     .filter(Boolean)
-    .map(line => JSON.parse(line))
+    .map((line) => JSON.parse(line))
 }
 
 const getHistory = (documentIds, options = {}) => {
@@ -56,8 +56,8 @@ const getDocumentAtRevision = (documentId, revision) => {
     const dataset = client.clientConfig.dataset
     const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
     documentRevisionCache[cacheKey] = client.request({url}).then(({documents}) => {
-      const published = documents.find(res => res._id === publishedId)
-      const draft = documents.find(res => res._id === draftId)
+      const published = documents.find((res) => res._id === publishedId)
+      const draft = documents.find((res) => res._id === draftId)
       return draft || published
     })
   }
@@ -65,7 +65,7 @@ const getDocumentAtRevision = (documentId, revision) => {
   return documentRevisionCache[cacheKey]
 }
 
-const getTransactions = documentIds => {
+const getTransactions = (documentIds) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const dataset = client.clientConfig.dataset
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}?excludeContent=true`
@@ -78,24 +78,24 @@ function historyEventsFor(documentId) {
   const query = '*[_id in $documentIds]'
 
   const pastTransactions$ = from(getTransactions(pairs)).pipe(
-    mergeMap(transactions => from(transactions)),
-    map(trans => ({
+    mergeMap((transactions) => from(transactions)),
+    map((trans) => ({
       author: trans.author,
       documentIDs: pairs,
       id: trans.id,
       mutations: trans.mutations,
-      timestamp: trans.timestamp
+      timestamp: trans.timestamp,
     })),
     reduce(compileTransactions, {})
   )
 
   const realtimeTransactions$ = client.observable.listen(query, {documentIds: pairs}).pipe(
-    map(item => ({
+    map((item) => ({
       author: item.identity,
       documentIDs: pairs,
       id: item.transactionId,
       mutations: item.mutations,
-      timestamp: item.timestamp
+      timestamp: item.timestamp,
     })),
     scan(compileTransactions, {})
   )
@@ -104,16 +104,16 @@ function historyEventsFor(documentId) {
     scan((prev, next) => {
       return {...prev, ...next}
     }, {}),
-    map(transactions =>
+    map((transactions) =>
       transactionsToEvents(
         pairs,
-        Object.keys(transactions).map(key => transactions[key])
+        Object.keys(transactions).map((key) => transactions[key])
       ).reverse()
     )
   )
 }
 
-const getAllRefIds = doc =>
+const getAllRefIds = (doc) =>
   jsonReduce(
     doc,
     (acc, node) =>
@@ -125,7 +125,7 @@ const getAllRefIds = doc =>
 
 function jsonMap(value, mapFn) {
   if (Array.isArray(value)) {
-    return mapFn(value.map(item => jsonMap(item, mapFn)).filter(item => !isUndefined(item)))
+    return mapFn(value.map((item) => jsonMap(item, mapFn)).filter((item) => !isUndefined(item)))
   }
 
   if (value && typeof value === 'object') {
@@ -145,41 +145,36 @@ function jsonMap(value, mapFn) {
 }
 
 const mapRefNodes = (doc, mapFn) =>
-  jsonMap(doc, node => {
-    return node && typeof node === 'object' && typeof node._ref === 'string'
-      ? mapFn(node)
-      : node
+  jsonMap(doc, (node) => {
+    return node && typeof node === 'object' && typeof node._ref === 'string' ? mapFn(node) : node
   })
 
 export const removeMissingReferences = (doc, existingIds) =>
-  mapRefNodes(doc, refNode => {
+  mapRefNodes(doc, (refNode) => {
     const documentExists = existingIds[refNode._ref]
     return documentExists ? refNode : undefined
   })
 
 function restore(id, targetId, rev) {
   return from(getDocumentAtRevision(id, rev)).pipe(
-    mergeMap(documentAtRevision => {
+    mergeMap((documentAtRevision) => {
       const existingIdsQuery = getAllRefIds(documentAtRevision)
-        .map(refId => `"${refId}": defined(*[_id=="${refId}"]._id)`)
+        .map((refId) => `"${refId}": defined(*[_id=="${refId}"]._id)`)
         .join(',')
 
       return client.observable
         .fetch(`{${existingIdsQuery}}`)
-        .pipe(map(existingIds => removeMissingReferences(documentAtRevision, existingIds)))
+        .pipe(map((existingIds) => removeMissingReferences(documentAtRevision, existingIds)))
     }),
-    map(documentAtRevision =>
+    map((documentAtRevision) =>
       // Remove _updatedAt and create a new draft from the document at given revision
       ({
         ...omit(documentAtRevision, '_updatedAt'),
-        _id: targetId
+        _id: targetId,
       })
     ),
-    mergeMap(restoredDraft =>
-      client.observable
-        .transaction()
-        .createOrReplace(restoredDraft)
-        .commit()
+    mergeMap((restoredDraft) =>
+      client.observable.transaction().createOrReplace(restoredDraft).commit()
     )
   )
 }
@@ -190,6 +185,6 @@ export default function createHistoryStore() {
     getHistory,
     getTransactions,
     historyEventsFor,
-    restore
+    restore,
   }
 }

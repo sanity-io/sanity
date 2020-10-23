@@ -10,7 +10,7 @@ export default () => {
   if (pane.getItems().length === 0) {
     return Structure.component({
       id: 'empty-list-pane',
-      component: <MissingDocumentTypesMessage />
+      component: <MissingDocumentTypesMessage />,
     })
   }
 

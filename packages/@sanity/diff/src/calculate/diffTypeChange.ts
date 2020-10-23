@@ -19,6 +19,6 @@ export function diffTypeChange<A>(
     toValue: toInput.value,
     toDiff: addedInput(toInput, undefined, options),
 
-    annotation: toInput.annotation
+    annotation: toInput.annotation,
   }
 }

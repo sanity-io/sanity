@@ -16,13 +16,13 @@ function getConfig() {
           require.resolve('@babel/preset-env'),
           {
             targets: {
-              node: 'current'
-            }
-          }
-        ]
+              node: 'current',
+            },
+          },
+        ],
       ],
       plugins: [require.resolve('@babel/plugin-proposal-class-properties')],
-      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
     }
   }
 }

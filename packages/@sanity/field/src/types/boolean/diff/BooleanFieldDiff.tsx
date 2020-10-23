@@ -4,7 +4,7 @@ import {
   DiffComponent,
   DiffTooltip,
   FromToArrow,
-  useDiffAnnotationColor
+  useDiffAnnotationColor,
 } from '../../../diff'
 import {Checkbox, Switch} from '../preview'
 import styles from './BooleanFieldDiff.css'

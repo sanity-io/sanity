@@ -16,7 +16,7 @@ const OPERATIONS = {
   },
   dec(currentValue, nextValue) {
     return currentValue - nextValue
-  }
+  },
 }
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
@@ -35,7 +35,7 @@ export default function apply(value, patch) {
       `Cannot apply deep operations on primitive values. Received patch with type "${
         patch.type
       }" and path "${patch.path
-        .map(path => JSON.stringify(path))
+        .map((path) => JSON.stringify(path))
         .join('.')} that targeted the value "${JSON.stringify(value)}"`
     )
   }

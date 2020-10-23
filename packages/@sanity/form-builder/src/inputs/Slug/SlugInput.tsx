@@ -8,7 +8,7 @@ import {
   SlugifierFn,
   SlugSchemaType,
   Marker,
-  isValidationErrorMarker
+  isValidationErrorMarker,
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
@@ -29,7 +29,7 @@ const defaultSlugify: SlugifierFn = (value, type) => {
 
 const defaultState = {
   inputText: undefined,
-  loading: false
+  loading: false,
 }
 
 interface Slug {
@@ -63,7 +63,7 @@ export default withValuePath(
         value: {current: undefined},
         readOnly: false,
         onChange() {},
-        markers: []
+        markers: [],
       }
 
       state = defaultState
@@ -111,11 +111,11 @@ export default withValuePath(
         }
       }
 
-      setTextInput = input => {
+      setTextInput = (input) => {
         this._textInput = input
       }
 
-      handleChange = event => {
+      handleChange = (event) => {
         this.updateCurrent(event.target.value)
       }
 
@@ -130,9 +130,9 @@ export default withValuePath(
 
         this.setState({loading: true})
         this.getNewFromSource()
-          .then(newFromSource => this.slugify(newFromSource || ''))
-          .then(newSlug => this.updateCurrent(newSlug))
-          .catch(err => {
+          .then((newFromSource) => this.slugify(newFromSource || ''))
+          .then((newSlug) => this.updateCurrent(newSlug))
+          .catch((err) => {
             // eslint-disable-next-line no-console
             console.error(`An error occured while slugifying:\n${err.message}\n${err.stack}`)
           })
@@ -168,7 +168,7 @@ export default withValuePath(
           level: level,
           markers,
           presence,
-          labelFor: this._inputId
+          labelFor: this._inputId,
         }
         const errors = markers.filter(isValidationErrorMarker)
         return (

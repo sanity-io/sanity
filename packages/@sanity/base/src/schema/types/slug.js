@@ -6,7 +6,7 @@ export default {
     {
       name: 'current',
       title: 'Current slug',
-      type: 'string'
-    }
-  ]
+      type: 'string',
+    },
+  ],
 }

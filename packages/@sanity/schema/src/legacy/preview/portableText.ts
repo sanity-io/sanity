@@ -5,5 +5,5 @@ type FieldDef = {
 }
 
 export function isBlockField(field: FieldDef): boolean {
-  return field.type === 'array' && field.of && field.of.some(member => member.type === 'block')
+  return field.type === 'array' && field.of && field.of.some((member) => member.type === 'block')
 }

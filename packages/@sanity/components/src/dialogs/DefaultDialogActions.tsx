@@ -10,7 +10,7 @@ export function DefaultDialogActions(props: {
   onAction?: (action: DialogAction) => void
 }) {
   const {actions, actionsAlign = 'end', onAction} = props
-  const [secondaryActions, primaryActions] = partition(actions, action => action.secondary)
+  const [secondaryActions, primaryActions] = partition(actions, (action) => action.secondary)
 
   const primaryButtons = primaryActions.map((action, actionIndex) => {
     return (

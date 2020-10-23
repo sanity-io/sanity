@@ -20,10 +20,10 @@ function ActionModal(props: Props) {
     >
       {actions.length > 0 ? (
         <CreateDocumentList
-          items={actions.map(action => ({
+          items={actions.map((action) => ({
             ...action,
             icon: action.icon || FileIcon,
-            onClick: onClose
+            onClick: onClose,
           }))}
         />
       ) : (

@@ -13,8 +13,6 @@ function isEmptyObject(value: {[key: string]: any}): boolean {
 }
 
 function isEmptyArray(value: Array<any>): boolean {
-
-
   for (let i = 0; i < value.length; i++) {
     if (isEmpty(value[i])) {
       return true

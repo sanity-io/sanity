@@ -11,22 +11,22 @@ export function toGradient(patches: Patch[]): GradientPatch[] {
 }
 
 export function toFormBuilder(origin: Origin, patches: GradientPatch[]): Patch[] {
-  return flatten(patches.map(patch => toFormBuilderPatches(origin, patch)))
+  return flatten(patches.map((patch) => toFormBuilderPatches(origin, patch)))
 }
 
-const notIn = values => value => !values.includes(value)
+const notIn = (values) => (value) => !values.includes(value)
 
 function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
   return flatten(
     Object.keys(patch)
       .filter(notIn(['id', 'ifRevisionID', 'query']))
-      .map(type => {
+      .map((type) => {
         if (type === 'unset') {
-          return patch.unset.map(path => {
+          return patch.unset.map((path) => {
             return {
               type: 'unset',
               path: convertPath.toFormBuilder(path),
-              origin
+              origin,
             }
           })
         }
@@ -37,17 +37,17 @@ function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
             position: position,
             path: convertPath.toFormBuilder(patch.insert[position]),
             items: patch.insert.items,
-            origin
+            origin,
           }
         }
         return Object.keys(patch[type])
-          .map(gradientPath => {
+          .map((gradientPath) => {
             if (type === 'set') {
               return {
                 type: 'set',
                 path: convertPath.toFormBuilder(gradientPath),
                 value: patch[type][gradientPath],
-                origin
+                origin,
               }
             }
             if (type === 'inc' || type === 'dec') {
@@ -55,7 +55,7 @@ function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
                 type: type,
                 path: convertPath.toFormBuilder(gradientPath),
                 value: patch[type][gradientPath],
-                origin
+                origin,
               }
             }
             if (type === 'setIfMissing') {
@@ -63,7 +63,7 @@ function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
                 type: 'setIfMissing',
                 path: convertPath.toFormBuilder(gradientPath),
                 value: patch[type][gradientPath],
-                origin
+                origin,
               }
             }
             if (type === 'diffMatchPatch') {
@@ -71,7 +71,7 @@ function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
                 type: 'diffMatchPatch',
                 path: convertPath.toFormBuilder(gradientPath),
                 value: patch[type][gradientPath],
-                origin
+                origin,
               }
             }
             console.warn(new Error(`Unsupported patch type: ${type}`))
@@ -89,14 +89,14 @@ function toGradientPatch(patch: Patch): GradientPatch {
     return {
       insert: {
         [position]: matchPath,
-        items: items
-      }
+        items: items,
+      },
     }
   }
 
   if (patch.type === 'unset') {
     return {
-      unset: [matchPath]
+      unset: [matchPath],
     }
   }
 
@@ -104,11 +104,11 @@ function toGradientPatch(patch: Patch): GradientPatch {
   if (matchPath) {
     return {
       [patch.type]: {
-        [matchPath]: patch.value
-      }
+        [matchPath]: patch.value,
+      },
     }
   }
   return {
-    [patch.type]: patch.value
+    [patch.type]: patch.value,
   }
 }

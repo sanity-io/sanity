@@ -7,27 +7,27 @@ export default {
   icon,
   preview: {
     select: {
-      title: 'myObject.first'
-    }
+      title: 'myObject.first',
+    },
   },
   fieldsets: [
     {
       name: 'recursive',
       title: 'Recursive',
-      options: {collapsable: true}
+      options: {collapsable: true},
     },
     {
       name: 'settings',
       title: 'Settings',
-      options: {columns: 2}
-    }
+      options: {columns: 2},
+    },
   ],
   fields: [
     {
       name: 'myObject',
       type: 'myObject',
       title: 'MyObject',
-      description: 'The first field here should be the title'
+      description: 'The first field here should be the title',
     },
     {type: 'number', name: 'x', title: 'X position', fieldset: 'settings'},
     {type: 'number', name: 'y', title: 'Y position', fieldset: 'settings'},
@@ -40,34 +40,34 @@ export default {
         {
           name: 'social',
           title: 'Social media handles [collapsed by default]',
-          options: {collapsible: true, collapsed: true}
-        }
+          options: {collapsible: true, collapsed: true},
+        },
       ],
       fields: [
         {
           name: 'name',
           title: 'Name',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'twitter',
           title: 'Twitter',
           type: 'string',
-          fieldset: 'social'
+          fieldset: 'social',
         },
         {
           name: 'instagram',
           title: 'Instagram',
           type: 'string',
-          fieldset: 'social'
+          fieldset: 'social',
         },
         {
           name: 'facebook',
           title: 'Facebook',
           type: 'string',
-          fieldset: 'social'
-        }
-      ]
+          fieldset: 'social',
+        },
+      ],
     },
     {
       name: 'fieldWithObjectType',
@@ -81,15 +81,15 @@ export default {
           name: 'field2',
           type: 'myObject',
           title: 'A field of myObject',
-          description: 'This is another field of "myObject"'
-        }
-      ]
+          description: 'This is another field of "myObject"',
+        },
+      ],
     },
     {
       name: 'recursive',
       title: 'This field is of type objectsTest',
       type: 'objectsTest',
-      fieldset: 'recursive'
-    }
-  ]
+      fieldset: 'recursive',
+    },
+  ],
 }

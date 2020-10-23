@@ -11,7 +11,7 @@ const chance = new Chance()
 const radioItems = range(10).map((item, i) => {
   return {
     title: chance.name(),
-    key: `${i}`
+    key: `${i}`,
   }
 })
 
@@ -23,7 +23,7 @@ const centerStyle: React.CSSProperties = {
   width: '100%',
   position: 'absolute',
   top: 0,
-  left: 0
+  left: 0,
 }
 
 // When an onInputChange is provided. Populate the items, and remember to set _loading prop_ when

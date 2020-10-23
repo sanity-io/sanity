@@ -30,7 +30,7 @@ function concatPaths(path1, path2) {
   const nodes2 = path2 ? path2.nodes : []
   return {
     type: 'path',
-    nodes: nodes1.concat(nodes2)
+    nodes: nodes1.concat(nodes2),
   }
 }
 
@@ -39,7 +39,7 @@ function spreadIfUnionHead(head, tail): any[] {
   if (head.type !== 'union') {
     return [[head, tail]]
   }
-  return head.nodes.map(node => {
+  return head.nodes.map((node) => {
     if (node.type === 'path') {
       const [subHead, subTail] = splitIfPath(node)
       return [subHead, concatPaths(subTail, tail)]

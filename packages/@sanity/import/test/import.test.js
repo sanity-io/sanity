@@ -9,20 +9,16 @@ const defaultClient = sanityClient({
   projectId: 'foo',
   dataset: 'bar',
   useCdn: false,
-  token: 'foo'
+  token: 'foo',
 })
 
 const uuidMatcher = /^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$/
 const importOptions = {client: defaultClient}
 const fixturesDir = path.join(__dirname, 'fixtures')
-const getFixturePath = fix => path.join(fixturesDir, `${fix}.ndjson`)
-const getFixtureStream = fix => fs.createReadStream(getFixturePath(fix), 'utf8')
-const getFixtureArray = fix =>
-  fs
-    .readFileSync(getFixturePath(fix), 'utf8')
-    .trim()
-    .split('\n')
-    .map(JSON.parse)
+const getFixturePath = (fix) => path.join(fixturesDir, `${fix}.ndjson`)
+const getFixtureStream = (fix) => fs.createReadStream(getFixturePath(fix), 'utf8')
+const getFixtureArray = (fix) =>
+  fs.readFileSync(getFixturePath(fix), 'utf8').trim().split('\n').map(JSON.parse)
 
 test('rejects on invalid input type (null/undefined)', async () => {
   expect.assertions(1)
@@ -113,7 +109,7 @@ test('accepts a stream as source', async () => {
 
 test('generates uuids for documents without id', async () => {
   expect.assertions(4)
-  const match = body => {
+  const match = (body) => {
     expect(body.mutations[0].create._id).toMatch(uuidMatcher)
     expect(body.mutations[1].create._id).toBe('pk')
     expect(body.mutations[2].create._id).toMatch(uuidMatcher)
@@ -125,7 +121,7 @@ test('generates uuids for documents without id', async () => {
 })
 
 function getMockMutationHandler(match = 'employee creation') {
-  return req => {
+  return (req) => {
     const options = req.context.options
     const uri = options.uri || options.url
 
@@ -138,9 +134,9 @@ function getMockMutationHandler(match = 'employee creation') {
         expect(body).toMatchSnapshot(match)
       }
 
-      const results = body.mutations.map(mut => ({
+      const results = body.mutations.map((mut) => ({
         id: mut.create.id,
-        operation: 'create'
+        operation: 'create',
       }))
       return {body: {results}}
     }

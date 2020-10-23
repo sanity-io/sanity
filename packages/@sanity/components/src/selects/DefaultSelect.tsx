@@ -29,7 +29,7 @@ export default class DefaultSelect extends React.Component<
     hasError: false,
     hasFocus: false,
     value: {},
-    items: []
+    items: [],
   }
 
   _input: any
@@ -44,7 +44,7 @@ export default class DefaultSelect extends React.Component<
     }
   }
 
-  setInput = el => {
+  setInput = (el) => {
     this._input = el
   }
 

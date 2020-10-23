@@ -7,4 +7,5 @@ function prompt(questions) {
 }
 
 prompt.Separator = inquirer.Separator
-prompt.single = question => prompt([{...question, name: 'value'}]).then(answers => answers.value)
+prompt.single = (question) =>
+  prompt([{...question, name: 'value'}]).then((answers) => answers.value)

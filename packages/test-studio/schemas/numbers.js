@@ -8,26 +8,26 @@ export default {
   preview: {
     select: {
       title: 'title',
-      subtitle: 'myNumberField'
-    }
+      subtitle: 'myNumberField',
+    },
   },
   fields: [
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'myNumberField',
       type: 'number',
       title: 'Plain number',
-      description: 'A plain number field'
+      description: 'A plain number field',
     },
     {
       name: 'myCustomNumberField',
       type: 'customNumber',
       title: 'Number between 0 and 1000',
-      description: 'A subclassed number, with validation!'
+      description: 'A subclassed number, with validation!',
     },
     {
       name: 'testNumberWithListObjects',
@@ -36,32 +36,32 @@ export default {
       options: {
         list: [
           {value: 1, title: 'One'},
-          {value: 2, title: 'Two'}
-        ]
-      }
+          {value: 2, title: 'Two'},
+        ],
+      },
     },
     {
       name: 'testNumberWithListObjectsAndNumbers',
       title: 'Test Number - List objects and numbers',
       type: 'number',
       options: {
-        list: [{value: 1, title: 'One'}, {value: 2, title: 'Two'}, 3]
-      }
+        list: [{value: 1, title: 'One'}, {value: 2, title: 'Two'}, 3],
+      },
     },
     {
       name: 'testNumberWithListValues',
       title: 'Test Number - List Values',
       type: 'number',
       options: {
-        list: [1, 2]
-      }
+        list: [1, 2],
+      },
     },
     {
       name: 'readonlyField',
       type: 'number',
       title: 'A read only number',
       description: 'It may have a value, but it cannot be edited',
-      readOnly: true
-    }
-  ]
+      readOnly: true,
+    },
+  ],
 }

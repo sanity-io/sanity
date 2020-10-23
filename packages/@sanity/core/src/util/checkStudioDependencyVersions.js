@@ -7,14 +7,14 @@ const generateHelpUrl = require('@sanity/generate-help-url')
 // https://docs.sanity.studio/production/desk/edit/helpArticle/upgrade-packages
 const PACKAGES = [
   {name: 'react', minVersion: '^16.9', deprecatedBelow: null, maxVersion: null /*todo*/},
-  {name: 'react-dom', minVersion: '^16.9', deprecatedBelow: null, maxVersion: null /*todo*/}
+  {name: 'react-dom', minVersion: '^16.9', deprecatedBelow: null, maxVersion: null /*todo*/},
 ]
 
-module.exports = workDir => {
+module.exports = (workDir) => {
   const manifest = require(path.join(workDir, 'package.json'))
   const dependencies = Object.assign({}, manifest.dependencies, manifest.devDependencies)
 
-  const installedPackages = PACKAGES.map(pkg => {
+  const installedPackages = PACKAGES.map((pkg) => {
     if (!dependencies[pkg.name]) {
       return null
     }
@@ -30,12 +30,12 @@ module.exports = workDir => {
       installed: installedVersion,
       isUnsupported:
         pkg.minVersion && !semver.satisfies(semver.coerce(installedVersion), pkg.minVersion),
-      isDeprecated: pkg.deprecatedBelow && semver.ltr(installedVersion, pkg.deprecatedBelow)
+      isDeprecated: pkg.deprecatedBelow && semver.ltr(installedVersion, pkg.deprecatedBelow),
     }
   }).filter(Boolean)
 
-  const unsupported = installedPackages.filter(pkg => pkg.isUnsupported)
-  const deprecated = installedPackages.filter(pkg => !pkg.isUnsupported && pkg.isDeprecated)
+  const unsupported = installedPackages.filter((pkg) => pkg.isUnsupported)
+  const deprecated = installedPackages.filter((pkg) => !pkg.isUnsupported && pkg.isDeprecated)
 
   if (deprecated.length > 0) {
     // eslint-disable-next-line no-console
@@ -66,13 +66,13 @@ Support for these will be removed in a future release!
 function listPackages(pkgs) {
   return pkgs
     .map(
-      pkg =>
+      (pkg) =>
         `${pkg.name} (installed: ${pkg.installed}, want: ${pkg.deprecatedBelow || pkg.minVersion})`
     )
     .join('\n  ')
 }
 function getUpgradeInstructions(pkgs) {
-  const inst = pkgs.map(pkg => `"${pkg.name}@${pkg.minVersion}"`).join(' ')
+  const inst = pkgs.map((pkg) => `"${pkg.name}@${pkg.minVersion}"`).join(' ')
 
   return `To upgrade run either:
 

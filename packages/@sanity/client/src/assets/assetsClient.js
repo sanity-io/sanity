@@ -19,7 +19,7 @@ function toDocument(body) {
         'The promise returned from client.asset.upload(...) now resolves with the asset document'
       )
       return document
-    }
+    },
   })
   return document
 }
@@ -32,7 +32,7 @@ function optionsFromFile(opts, file) {
   return assign(
     {
       filename: opts.preserveFilename === false ? undefined : file.name,
-      contentType: file.type
+      contentType: file.type,
     },
     opts
   )
@@ -83,7 +83,7 @@ assign(AssetsClient.prototype, {
       description,
       filename,
       meta,
-      creditLine
+      creditLine,
     }
     if (source) {
       query.sourceId = source.id
@@ -96,14 +96,14 @@ assign(AssetsClient.prototype, {
       uri: `/assets/${assetEndpoint}/${dataset}`,
       headers: options.contentType ? {'Content-Type': options.contentType} : {},
       query,
-      body
+      body,
     })
 
     return this.client.isPromiseAPI()
       ? observable
           .pipe(
-            filter(event => event.type === 'response'),
-            map(event => toDocument(event.body))
+            filter((event) => event.type === 'response'),
+            map((event) => toDocument(event.body))
           )
           .toPromise()
       : observable
@@ -145,7 +145,7 @@ assign(AssetsClient.prototype, {
     const {projectId, dataset} = this.client.clientConfig
     const qs = query ? queryString(query) : ''
     return `https://cdn.sanity.io/images/${projectId}/${dataset}/${assetId}-${size}.${format}${qs}`
-  }
+  },
 })
 
 module.exports = AssetsClient

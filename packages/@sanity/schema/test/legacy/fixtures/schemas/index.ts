@@ -19,5 +19,5 @@ export default {
   blocks,
   oma,
   selects,
-  messyDevSchema
+  messyDevSchema,
 }

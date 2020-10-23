@@ -13,5 +13,5 @@ export default {
   signature: '',
   description: 'Installs dependencies of the current project',
   action: installDependencies,
-  helpText: help
+  helpText: help,
 }

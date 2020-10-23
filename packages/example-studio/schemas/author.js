@@ -12,20 +12,20 @@ export default {
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
       imageUrl: 'image.asset.url',
-      lastUpdated: '_updatedAt'
+      lastUpdated: '_updatedAt',
     },
-    component: AuthorPreview
+    component: AuthorPreview,
   },
   fields: [
     {
       name: 'name',
       title: 'Name',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'image',
       title: 'Image',
-      type: 'image'
+      type: 'image',
     },
     {
       name: 'awards',
@@ -33,31 +33,31 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'awesomeness',
       title: 'Awesomeness',
       type: 'number',
       options: {
-        range: {min: 0, max: 10}
-      }
+        range: {min: 0, max: 10},
+      },
     },
     {
       name: 'relatedAuthors',
       title: 'Related authors',
       type: 'array',
       options: {
-        editModal: 'fold'
+        editModal: 'fold',
       },
       of: [
         {
           type: 'reference',
-          to: {type: 'author'}
-        }
-      ]
-    }
-  ]
+          to: {type: 'author'},
+        },
+      ],
+    },
+  ],
 }

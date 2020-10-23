@@ -9,13 +9,13 @@ export default {
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'myUrlField',
       type: 'email',
       title: 'Plain email field',
-      description: 'A plain email field'
-    }
-  ]
+      description: 'A plain email field',
+    },
+  ],
 }

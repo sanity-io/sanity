@@ -24,14 +24,14 @@ test('points to unmapped keys', () => {
       if (params.tool === 'another-tool') {
         return [route.scope('foo', '/omg/:nope')]
       }
-    })
+    }),
   ])
   const state = {
     dataset: 'some-dataset',
     tool: 'another-tool',
     foo: {
-      nop: 'bar'
-    }
+      nop: 'bar',
+    },
   }
   expect(() => resolvePathFromState(routesDef, state)).toThrow(
     'Unable to find matching route for state. Could not map the following state keys to a valid url: tool, foo'
@@ -48,14 +48,14 @@ test('Resolves this', () => {
       if (params.tool === 'another-tool') {
         return [route.scope('foo', '/omg/:nope')]
       }
-    })
+    }),
   ])
   const state = {
     dataset: 'some-dataset',
     tool: 'another-tool',
     foo: {
-      nope: 'foo'
-    }
+      nope: 'foo',
+    },
   }
   expect(resolvePathFromState(routesDef, state)).toBe('/some-dataset/tools/another-tool/omg/foo')
 })

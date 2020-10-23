@@ -11,7 +11,7 @@ const inputStyles = {
     padding: '4px 10% 3px',
     border: 'none',
     boxShadow: 'inset 0 0 0 1px #ccc',
-    fontSize: '11px'
+    fontSize: '11px',
   },
   label: {
     display: 'block',
@@ -20,8 +20,8 @@ const inputStyles = {
     color: '#222',
     paddingTop: '3px',
     paddingBottom: '4px',
-    textTransform: 'capitalize'
-  }
+    textTransform: 'capitalize',
+  },
 }
 
 export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
@@ -31,7 +31,7 @@ export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
         onChange(
           {
             hex: data.hex,
-            source: 'hex'
+            source: 'hex',
           },
           e
         )
@@ -42,7 +42,7 @@ export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
           g: data.g || rgb.g,
           b: data.b || rgb.b,
           a: rgb.a,
-          source: 'rgb'
+          source: 'rgb',
         },
         e
       )
@@ -60,7 +60,7 @@ export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
           s: hsl.s,
           l: hsl.l,
           a: data.a,
-          source: 'rgb'
+          source: 'rgb',
         },
         e
       )

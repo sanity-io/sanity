@@ -5,8 +5,8 @@ import {exclusiveParams} from '../contexts/PaneRouterContext'
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
 
 const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
-const isParam = str => /^[a-z0-9]+=[^=]+/i.test(str)
-const isPayload = str =>
+const isParam = (str) => /^[a-z0-9]+=[^=]+/i.test(str)
+const isPayload = (str) =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
 
 function parseChunks(chunks, initial = {}) {
@@ -61,21 +61,21 @@ export function parsePanesSegment(str) {
 
   return str
     .split(';')
-    .map(group =>
+    .map((group) =>
       group
         .split('|')
-        .map(segment => {
+        .map((segment) => {
           const [id, ...chunks] = segment.split(',')
           return parseChunks(chunks, {id})
         })
         .map((pane, i, siblings) => (pane.id ? pane : {...pane, id: siblings[0].id}))
     )
-    .filter(group => group.length > 0)
+    .filter((group) => group.length > 0)
 }
 
 export function encodePanesSegment(panes) {
   return (panes || [])
-    .map(group => group.map(encodeChunks).join('|'))
+    .map((group) => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')
 }

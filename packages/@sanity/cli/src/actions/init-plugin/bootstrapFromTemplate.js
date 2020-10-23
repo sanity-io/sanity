@@ -36,7 +36,7 @@ module.exports = async (context, url) => {
 
   debug('Looking up template manifest from zip')
   const manifest = zip.find(
-    file => path.basename(file.path) === 'package.json' && !file.path.includes('node_modules')
+    (file) => path.basename(file.path) === 'package.json' && !file.path.includes('node_modules')
   )
 
   if (!manifest) {
@@ -48,7 +48,9 @@ module.exports = async (context, url) => {
   debug('Manifest path resolved to %s', manifest.path)
   debug('Base directory resolved to %s', baseDir)
 
-  const templateFiles = zip.filter(file => file.type === 'file' && file.path.indexOf(baseDir) === 0)
+  const templateFiles = zip.filter(
+    (file) => file.type === 'file' && file.path.indexOf(baseDir) === 0
+  )
   debug('%d files found in template', templateFiles.length)
 
   const manifestContent = manifest.data.toString()
@@ -82,7 +84,7 @@ module.exports = async (context, url) => {
     type: 'input',
     message: 'Plugin name:',
     default: tplVars.suggestedName || '',
-    validate: async pkgName => {
+    validate: async (pkgName) => {
       const {validForNewPackages} = validateNpmPackageName(pkgName)
       if (!validForNewPackages) {
         return 'Name must be a valid npm package name (https://docs.npmjs.com/files/package.json#name)'
@@ -95,7 +97,7 @@ module.exports = async (context, url) => {
       }
 
       return true
-    }
+    },
   })
 
   let outputPath = path.join(workDir, 'plugins', name)
@@ -106,7 +108,7 @@ module.exports = async (context, url) => {
       message: 'Output path:',
       default: cwdIsEmpty ? workDir : path.join(workDir, name),
       validate: validateEmptyPath,
-      filter: absolutify
+      filter: absolutify,
     })
   }
 
@@ -117,7 +119,7 @@ module.exports = async (context, url) => {
     createConfig = await prompt.single({
       type: 'confirm',
       message: 'Does the plugin need a configuration file?',
-      default: false
+      default: false,
     })
   }
 
@@ -125,7 +127,7 @@ module.exports = async (context, url) => {
   await fse.ensureDir(outputPath)
 
   await Promise.all(
-    templateFiles.map(file => {
+    templateFiles.map((file) => {
       const filename = file.path.slice(baseDir.length)
 
       debug('Writing template file "%s" to "%s"', filename, outputPath)

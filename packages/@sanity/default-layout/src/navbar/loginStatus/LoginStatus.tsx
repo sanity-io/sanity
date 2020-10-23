@@ -35,7 +35,7 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
   }
 
   handleButtonClick = () => {
-    this.setState(state => ({isOpen: !state.isOpen}))
+    this.setState((state) => ({isOpen: !state.isOpen}))
   }
 
   handleClose = () => {
@@ -47,8 +47,8 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
       {
         title: `Sign out`,
         icon: IconSignOut,
-        action: 'signOut'
-      }
+        action: 'signOut',
+      },
     ]
 
     const popoverContent = (
@@ -59,7 +59,7 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
 
     return (
       <ClickOutside onClickOutside={this.handleClose}>
-        {ref => (
+        {(ref) => (
           <button
             className={styles.root}
             onClick={this.handleButtonClick}

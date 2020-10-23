@@ -22,7 +22,7 @@ const SESSION_BADGE_STYLE: React.CSSProperties = {
   position: 'absolute',
   top: 0,
   left: 0,
-  transform: 'translate(0, 0, 0)'
+  transform: 'translate(0, 0, 0)',
 }
 
 interface SessionBadge extends Badge {
@@ -57,26 +57,26 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
   const syncState = useSyncState(timeline?.publishedId)
   const isLiveDocument = editState?.liveEdit
 
-  const chunks = timeline.mapChunks(chunk => chunk)
+  const chunks = timeline.mapChunks((chunk) => chunk)
   // Find the first unpublish or publish event and use it as the base event if it exists
   const lastUnpublishOrPublishSession = chunks.find(
-    chunk => chunk.type === 'unpublish' || chunk.type === 'publish'
+    (chunk) => chunk.type === 'unpublish' || chunk.type === 'publish'
   )
 
   const lastPublishedTimeAgo = useTimeAgo(lastUnpublishOrPublishSession?.endTimestamp || '', {
     minimal: true,
-    agoSuffix: true
+    agoSuffix: true,
   })
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
 
   // Make sure we only show editDraft sessions (and count the unpublish as a draft session)
   const filteredSessions = lastUnpublishOrPublishSession
     ? chunks.filter(
-        session =>
+        (session) =>
           (session.type === 'editDraft' || session.type === 'unpublish') &&
           session.index >= lastUnpublishOrPublishSession.index
       )
-    : chunks.filter(session => session.type === 'editDraft')
+    : chunks.filter((session) => session.type === 'editDraft')
 
   // Track the amount of sessions for the transition to work
   const prevSessionsCount = usePrevious(filteredSessions.length)
@@ -171,7 +171,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
                     icon={icon}
                     style={{
                       ...SESSION_BADGE_STYLE,
-                      transform: `translate3d(${spacing}px, 0, 0)`
+                      transform: `translate3d(${spacing}px, 0, 0)`,
                     }}
                   />
                 )
@@ -189,7 +189,7 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
         style={{
           // TODO: hacky solution. Should probably be fixed.
           transform:
-            filteredSessions.length > 0 ? `translate3d(0, 0, 0)` : `translate3d(-100px, 0, 0)`
+            filteredSessions.length > 0 ? `translate3d(0, 0, 0)` : `translate3d(-100px, 0, 0)`,
         }}
       >
         <DocumentBadges editState={editState} badges={badges} />

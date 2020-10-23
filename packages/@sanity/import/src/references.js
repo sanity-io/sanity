@@ -14,7 +14,7 @@ function getStrongRefs(doc) {
   if (refs.length) {
     return {
       documentId: doc._id,
-      references: refs
+      references: refs,
     }
   }
 
@@ -25,7 +25,7 @@ function getStrongRefs(doc) {
 function weakenStrongRefs(doc) {
   const refs = findStrongRefs(doc)
 
-  refs.forEach(item => {
+  refs.forEach((item) => {
     item.ref._weak = true
   })
 
@@ -35,10 +35,10 @@ function weakenStrongRefs(doc) {
 // Note: mutates in-place
 function setTypeOnReferences(doc) {
   extractWithPath('..[_ref]', doc)
-    .map(match => match.path.slice(0, -1))
-    .map(path => ({path, ref: get(doc, path)}))
-    .filter(item => typeof item.ref._type === 'undefined')
-    .forEach(item => {
+    .map((match) => match.path.slice(0, -1))
+    .map((path) => ({path, ref: get(doc, path)}))
+    .filter((item) => typeof item.ref._type === 'undefined')
+    .forEach((item) => {
       item.ref._type = 'reference'
     })
 
@@ -47,9 +47,9 @@ function setTypeOnReferences(doc) {
 
 function findStrongRefs(doc) {
   return extractWithPath('..[_ref]', doc)
-    .map(match => match.path.slice(0, -1))
-    .map(path => ({path, ref: get(doc, path)}))
-    .filter(item => item.ref._weak !== true)
+    .map((match) => match.path.slice(0, -1))
+    .map((path) => ({path, ref: get(doc, path)}))
+    .filter((item) => item.ref._weak !== true)
 }
 
 function strengthenReferences(strongRefs, options) {
@@ -66,7 +66,7 @@ function strengthenReferences(strongRefs, options) {
 
   const progress = progressStepper(options.onProgress, {
     step: 'Strengthening references',
-    total: batches.length
+    total: batches.length,
   })
 
   const mapOptions = {concurrency: STRENGTHEN_CONCURRENCY}
@@ -81,18 +81,18 @@ function unsetWeakBatch(client, progress, batch) {
         .reduce(reducePatch, client.transaction())
         .commit({visibility: 'async'})
         .then(progress)
-        .then(res => res.results.length)
-        .catch(err => {
+        .then((res) => res.results.length)
+        .catch((err) => {
           err.step = 'strengthen-references'
           throw err
         }),
-    {isRetriable: err => !err.statusCode || err.statusCode !== 409}
+    {isRetriable: (err) => !err.statusCode || err.statusCode !== 409}
   )
 }
 
 function reducePatch(trx, task) {
-  return trx.patch(task.documentId, patch =>
-    patch.unset(task.references.map(path => `${path}._weak`))
+  return trx.patch(task.documentId, (patch) =>
+    patch.unset(task.references.map((path) => `${path}._weak`))
   )
 }
 

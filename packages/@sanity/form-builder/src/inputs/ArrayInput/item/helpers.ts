@@ -10,5 +10,5 @@ export function hasFocusInPath(path, value) {
 }
 
 export function isEmpty(value) {
-  return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
+  return Object.keys(value).every((key) => IGNORE_KEYS.includes(key))
 }

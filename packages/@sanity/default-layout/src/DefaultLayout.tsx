@@ -39,7 +39,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
     menuIsOpen: false,
     showLoadingScreen: true,
     searchIsOpen: false,
-    loaded: false
+    loaded: false,
   }
 
   userSubscription: Subscription | null = null
@@ -48,7 +48,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
-    this.userSubscription = userStore.currentUser.subscribe(event =>
+    this.userSubscription = userStore.currentUser.subscribe((event) =>
       this.setState({user: event.type === 'snapshot' ? event.user : null})
     )
   }
@@ -66,7 +66,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
     }
   }
 
-  handleClickCapture = event => {
+  handleClickCapture = (event) => {
     // Do not handle click if the event is not within DefaultLayout (portals)
     const rootTarget = event.target.closest(`.${styles.root}`)
     if (!rootTarget) return
@@ -84,7 +84,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
 
   handleAnimationEnd = () => {
     this.setState({
-      showLoadingScreen: false
+      showLoadingScreen: false,
     })
   }
 
@@ -96,26 +96,26 @@ class DefaultLayout extends React.PureComponent<Props, State> {
   }
 
   handleCreateButtonClick = () => {
-    this.setState(prevState => ({
-      createMenuIsOpen: !prevState.createMenuIsOpen
+    this.setState((prevState) => ({
+      createMenuIsOpen: !prevState.createMenuIsOpen,
     }))
   }
 
   handleActionModalClose = () => {
     this.setState({
-      createMenuIsOpen: false
+      createMenuIsOpen: false,
     })
   }
 
   handleToggleMenu = () => {
-    this.setState(prevState => ({
-      menuIsOpen: !prevState.menuIsOpen
+    this.setState((prevState) => ({
+      menuIsOpen: !prevState.menuIsOpen,
     }))
   }
 
   handleSwitchTool = () => {
     this.setState({
-      menuIsOpen: false
+      menuIsOpen: false,
     })
   }
 
@@ -127,7 +127,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
     this.setState({searchIsOpen: false})
   }
 
-  setLoadingScreenElement = element => {
+  setLoadingScreenElement = (element) => {
     this._loadingScreenElement = element
   }
 

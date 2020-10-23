@@ -37,7 +37,7 @@ function isAncestor(path1, path2) {
 }
 function shouldReset(path, patches) {
   return patches.some(
-    patch => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
+    (patch) => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
   )
 }
 function getValueAtPath(value, path) {
@@ -60,21 +60,21 @@ export default function withPatchSubscriber(ComposedComponent: any) {
     static displayName = `withPatches(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
       getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any
+      formBuilder: PropTypes.any,
     }
     subscribe = (subscriber: Subscriber) => {
       return this.context.formBuilder.onPatch(({snapshot, patches}) => {
         const selfPath = this.context.getValuePath()
         const filtered = patches
-          .filter(patch => startsWith(patch.path, selfPath))
-          .map(patch => ({
+          .filter((patch) => startsWith(patch.path, selfPath))
+          .map((patch) => ({
             ...patch,
-            path: patch.path.slice(selfPath.length)
+            path: patch.path.slice(selfPath.length),
           }))
         subscriber({
           shouldReset: shouldReset(selfPath, patches),
           snapshot: getValueAtPath(snapshot, selfPath),
-          patches: filtered
+          patches: filtered,
         })
       })
     }
@@ -83,7 +83,7 @@ export default function withPatchSubscriber(ComposedComponent: any) {
         this._input.focus()
       }
     }
-    setInput = input => {
+    setInput = (input) => {
       this._input = input
     }
     render() {

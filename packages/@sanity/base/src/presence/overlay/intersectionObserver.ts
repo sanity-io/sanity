@@ -9,16 +9,16 @@ export const createIntersectionObserver = (
   options?: IntersectionObserverInit
 ): ObservableIntersectionObserver => {
   const entries$ = new Subject<IntersectionObserverEntry>()
-  const intersectionObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+  const intersectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
       entries$.next(entry)
     })
   }, options)
   return {
     observe: (element: Element) => {
-      return new Observable<IntersectionObserverEntry>(subscriber => {
+      return new Observable<IntersectionObserverEntry>((subscriber) => {
         const subscription = entries$
-          .pipe(filter(entry => entry.target === element))
+          .pipe(filter((entry) => entry.target === element))
           .subscribe(subscriber)
         intersectionObserver.observe(element)
         return () => {
@@ -26,6 +26,6 @@ export const createIntersectionObserver = (
           intersectionObserver.unobserve(element)
         }
       })
-    }
+    },
   }
 }

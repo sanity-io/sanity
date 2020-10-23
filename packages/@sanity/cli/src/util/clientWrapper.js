@@ -9,7 +9,7 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 
 const apiHosts = {
   staging: 'https://api.sanity.work',
-  development: 'http://api.sanity.wtf'
+  development: 'http://api.sanity.wtf',
 }
 
 /**
@@ -19,31 +19,31 @@ const apiHosts = {
  */
 const defaults = {
   requireUser: true,
-  requireProject: true
+  requireProject: true,
 }
 
 const authErrors = () => ({
-  onError: err => {
+  onError: (err) => {
     const statusCode = err.response && err.response.body && err.response.body.statusCode
     if (statusCode === 401) {
       err.message = `${err.message}. For more information, see ${generateHelpUrl('cli-errors')}.`
     }
     return err
-  }
+  },
 })
 
 export default function clientWrapper(manifest, configPath) {
   const requester = client.requester.clone()
   requester.use(authErrors())
 
-  return function(opts = {}) {
+  return function (opts = {}) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const token = envAuthToken || userConfig.get('authToken')
     const apiHost = apiHosts[sanityEnv]
     const apiConfig = {
       ...((manifest && manifest.api) || {}),
-      ...(api || {})
+      ...(api || {}),
     }
 
     if (apiHost) {
@@ -67,7 +67,7 @@ export default function clientWrapper(manifest, configPath) {
       token: token,
       useProjectHostname: requireProject,
       requester: requester,
-      useCdn: false
+      useCdn: false,
     })
   }
 }

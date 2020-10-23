@@ -16,7 +16,7 @@ import styles from './documentPanel.css'
 import {
   DEFAULT_MARGINS,
   MARGINS_NARROW_SCREEN_WITH_TABS,
-  MARGINS_NARROW_SCREEN_WITHOUT_TABS
+  MARGINS_NARROW_SCREEN_WITHOUT_TABS,
 } from './constants'
 
 interface DocumentPanelProps {
@@ -60,14 +60,14 @@ export function DocumentPanel(props: DocumentPanelProps) {
     views,
     activeViewId,
     onFormInputFocus,
-    formInputFocusPath
+    formInputFocusPath,
   } = props
 
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
   const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
-  const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
+  const activeView = views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'}
 
   const {revTime} = historyController
 
@@ -77,13 +77,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
         features,
         isHistoryOpen: props.isHistoryOpen,
         rev: revTime ? revTime.id : null,
-        value: props.value
+        value: props.value,
       }) || []
     )
   }, [features, props.isHistoryOpen, revTime, props.value])
 
   const handleContextMenuAction = useCallback(
-    item => {
+    (item) => {
       if (item.action === 'production-preview') {
         window.open(item.url)
         return true
@@ -179,11 +179,11 @@ export function DocumentPanel(props: DocumentPanelProps) {
                   draft: props.draft,
                   displayed: displayed || props.value || props.initialValue,
                   historical: displayed,
-                  published: props.published
+                  published: props.published,
                 },
                 documentId: props.documentId,
                 options: activeView.options,
-                schemaType: props.schemaType
+                schemaType: props.schemaType,
               })}
           </ScrollContainer>
 

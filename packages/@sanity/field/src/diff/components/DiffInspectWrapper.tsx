@@ -13,7 +13,7 @@ export function DiffInspectWrapper({children, className, change}: Props): React.
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
 
-  const toggleInspect = useCallback(() => setIsInspecting(state => !state), [setIsInspecting])
+  const toggleInspect = useCallback(() => setIsInspecting((state) => !state), [setIsInspecting])
   const handleMouseEnter = useCallback(() => (isHovering.current = true), [])
   const handleMouseLeave = useCallback(() => (isHovering.current = false), [isHovering])
 
@@ -46,7 +46,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.ReactElement 
           toIndex: change.itemDiff?.toIndex,
           hasMoved: change.itemDiff?.hasMoved,
           action: change.diff.action,
-          isChanged: change.diff.isChanged
+          isChanged: change.diff.isChanged,
         })}
       </div>
       <pre className={styles.fromJson}>{jsonify(change.diff.fromValue)}</pre>

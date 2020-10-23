@@ -12,6 +12,6 @@ export function SaveAction({id, type, onComplete}) {
   return {
     disabled: Boolean(commit.disabled),
     label: 'Save',
-    onHandle: handle
+    onHandle: handle,
   }
 }

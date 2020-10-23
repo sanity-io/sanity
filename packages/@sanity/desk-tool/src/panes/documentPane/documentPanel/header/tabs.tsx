@@ -45,7 +45,7 @@ function DocumentHeaderTab(props: {
 }) {
   const handleClick = useCallback(() => props.onSetView(props.viewId), [
     props.onSetView,
-    props.viewId
+    props.viewId,
   ])
 
   return (

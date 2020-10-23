@@ -38,6 +38,6 @@ export default {
     operationEvents: (publishedId, type) =>
       operationEvents(getIdPairFromPublished(publishedId), type),
 
-    consistencyStatus: publishedId => consistencyStatus(getIdPairFromPublished(publishedId))
-  }
+    consistencyStatus: (publishedId) => consistencyStatus(getIdPairFromPublished(publishedId)),
+  },
 }

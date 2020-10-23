@@ -7,10 +7,10 @@ const DEFAULT_FEATURES = [
   'titlebar=yes',
   'directories=no',
   'status=yes',
-  'menubar=no'
+  'menubar=no',
 ]
 
-const toFeatureStr = features => Object.keys(features).map(name => `${name}=${features[name]}`)
+const toFeatureStr = (features) => Object.keys(features).map((name) => `${name}=${features[name]}`)
 
 const openWindow = (url, target, features) => {
   const win = window.open(url, target, features)
@@ -19,9 +19,9 @@ const openWindow = (url, target, features) => {
   }
   return win
 }
-const waitForEnd = win =>
-  new Observable(subscriber => {
-    const onMessage = ev => {
+const waitForEnd = (win) =>
+  new Observable((subscriber) => {
+    const onMessage = (ev) => {
       if (ev.data === 'close') {
         subscriber.next()
         subscriber.complete()
@@ -44,7 +44,7 @@ const waitForEnd = win =>
   })
 
 export const openPopup = (url, positionFeatures) => {
-  return new Observable(subscriber => {
+  return new Observable((subscriber) => {
     const win = openWindow(
       // note: we need to start with about:blank here as MS Edge will throw
       // when attempting to call .focus() or .moveTo() on a window with an untrusted origin

@@ -57,7 +57,7 @@ export function ExampleStory() {
               <HamburgerIcon />
             </button>
           </div>
-          <a className={NavbarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
+          <a className={NavbarStyles.branding} href="#" onClick={(evt) => evt.preventDefault()}>
             <Branding projectName="Storybook" />
           </a>
           <button className={NavbarStyles.createButton} onClick={noop} type="button">
@@ -103,18 +103,18 @@ export function ExampleStory() {
                 {
                   name: 'desk',
                   title: 'Desk',
-                  icon: ViewColumnIcon
+                  icon: ViewColumnIcon,
                 },
                 {
                   name: 'plugin1',
                   title: 'Plugin 1',
-                  icon: PluginIcon
+                  icon: PluginIcon,
                 },
                 {
                   name: 'plugin2',
                   title: 'Plugin 2',
-                  icon: PluginIcon
-                }
+                  icon: PluginIcon,
+                },
               ]}
             />
           </div>

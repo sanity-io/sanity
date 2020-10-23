@@ -14,20 +14,20 @@ const globalDefaults: Omit<SnackbarItemProps, 'onSetHeight'> = {
   id: new Date().getTime() + Math.floor(Math.random()),
   setFocus: false,
   onClose: action('onClose()'),
-  onDismiss: action('onDismiss()')
+  onDismiss: action('onDismiss()'),
 }
 
 // @todo: refactor to functional component
 class SnackQueue extends React.PureComponent<SnackQueueProps> {
   static contextTypes = {
-    addToSnackQueue: PropTypes.func
+    addToSnackQueue: PropTypes.func,
   }
 
   addToQueue = () => {
     const {snack} = this.props
     const newSnack = {
       ...snack,
-      id: new Date().getTime() + Math.floor(Math.random())
+      id: new Date().getTime() + Math.floor(Math.random()),
     }
     this.context.addToSnackQueue(newSnack)
   }
@@ -52,7 +52,7 @@ export function TransitionsStory() {
     isCloseable: boolean('isCloseable', false, 'props'),
     onClose: action(text('onClose', 'Custom onClose', 'props')),
     onSetHeight: action(text('onSetHeight', 'onSetHeight', 'props')),
-    children: text('children', 'This is a children placeholder', 'props')
+    children: text('children', 'This is a children placeholder', 'props'),
   }
 
   return <SnackQueue snack={snack} />

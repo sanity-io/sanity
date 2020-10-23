@@ -6,7 +6,7 @@ import styles from './ChangeBreadcrumb.css'
 
 export function ChangeBreadcrumb({
   change,
-  titlePath
+  titlePath,
 }: {
   change?: FieldChangeNode
   titlePath: ChangeTitlePath

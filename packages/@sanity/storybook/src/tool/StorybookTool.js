@@ -9,7 +9,7 @@ const styles = {
   width: '100%',
   height: '100%',
   display: 'block',
-  boxSizing: 'border-box'
+  boxSizing: 'border-box',
 }
 
 export default class StorybookTool extends PureComponent {
@@ -19,13 +19,13 @@ export default class StorybookTool extends PureComponent {
     this.state = {styles}
   }
 
-  assignRef = ref => {
+  assignRef = (ref) => {
     this.iframe = ref
   }
 
   positionAbsolute = () => {
     this.setState(() => ({
-      styles: Object.assign({}, styles, {position: 'absolute'})
+      styles: Object.assign({}, styles, {position: 'absolute'}),
     }))
   }
 

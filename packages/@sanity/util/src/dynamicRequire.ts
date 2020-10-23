@@ -9,7 +9,7 @@ const requireFunc: typeof require =
 
 /* eslint-enable camelcase, no-undef */
 
-export default request => {
+export default (request) => {
   const mod = requireFunc(request)
   return mod.__esModule && mod.default ? mod.default : mod
 }

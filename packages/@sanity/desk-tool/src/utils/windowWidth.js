@@ -1,9 +1,9 @@
 import {Observable, merge} from 'rxjs'
 import {map, shareReplay, debounceTime, startWith} from 'rxjs/operators'
 
-const fromWindowEvent = eventName =>
-  new Observable(subscriber => {
-    const handler = event => subscriber.next(event)
+const fromWindowEvent = (eventName) =>
+  new Observable((subscriber) => {
+    const handler = (event) => subscriber.next(event)
     window.addEventListener(eventName, handler, false)
     return () => {
       window.removeEventListener(eventName, handler, false)

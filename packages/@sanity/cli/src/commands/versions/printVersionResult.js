@@ -8,7 +8,7 @@ export default async (args, context) => {
 
 export function printResult(versions, print) {
   const {versionLength, formatName} = getFormatters(versions)
-  versions.forEach(mod => {
+  versions.forEach((mod) => {
     const version = padStart(mod.version, versionLength)
     const latest =
       mod.version === mod.latest
@@ -21,7 +21,7 @@ export function printResult(versions, print) {
 export function getFormatters(versions) {
   const nameLength = versions.reduce(longestProp('name'), 0)
   const versionLength = versions.reduce(longestProp('version'), 0)
-  const formatName = name =>
+  const formatName = (name) =>
     padEnd(name, nameLength + 1).replace(
       /^@sanity\/(.*)/,
       `${chalk.yellow('@sanity/')}${chalk.cyan('$1')}`

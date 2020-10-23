@@ -7,7 +7,7 @@ const DEFAULT_ACTIONS = ['create', 'update', 'delete', 'publish']
 const VALID_ACTIONS = DEFAULT_ACTIONS
 
 const hasWarned = {}
-const readActions = schemaType => {
+const readActions = (schemaType) => {
   // todo: enable this when officially deprecating experimental actions
   if (false && !(schemaType.name in hasWarned)) {
     console.warn(`Heads up! Experimental actions is now deprecated and replaced by Document Actions. Read more about how to migrate on ${helpUrl(
@@ -40,7 +40,7 @@ const validateActions = (typeName, actions) => {
   return actions
 }
 
-export const resolveEnabledActions = schemaType =>
+export const resolveEnabledActions = (schemaType) =>
   validateActions(schemaType.name, readActions(schemaType))
 
 export const isActionEnabled = (schemaType, action) =>

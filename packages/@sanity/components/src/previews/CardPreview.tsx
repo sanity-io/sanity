@@ -23,7 +23,7 @@ const DEFAULT_MEDIA_DIMENSIONS: MediaDimensions = {
   width: 300,
   height: 225,
   aspect: 4 / 3,
-  fit: 'crop'
+  fit: 'crop',
 }
 
 let index = 0
@@ -31,7 +31,7 @@ let index = 0
 const svgStyles: React.CSSProperties = {
   position: 'relative',
   width: '100%',
-  height: '100%'
+  height: '100%',
 }
 
 export default class CardPreview extends React.PureComponent<CardPreviewProps> {
@@ -43,14 +43,14 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
     status: undefined,
     media: undefined,
     isPlaceholder: false,
-    children: undefined
+    children: undefined,
   }
 
   index = index++
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
 
   state = {
-    emWidth: 10
+    emWidth: 10,
   }
 
   dateElement: HTMLDivElement | null = null
@@ -81,14 +81,11 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
     const el = this.dateElement
     if (el) {
       const fontSize = Number(
-        window
-          .getComputedStyle(el, null)
-          .getPropertyValue('font-size')
-          .split('px')[0]
+        window.getComputedStyle(el, null).getPropertyValue('font-size').split('px')[0]
       )
       const emWidth = el.offsetWidth / fontSize
       this.setState({
-        emWidth: Math.round(emWidth)
+        emWidth: Math.round(emWidth),
       })
     }
   }, 1000 / 60)
@@ -103,7 +100,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
       mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
       children,
       isPlaceholder,
-      status
+      status,
     } = this.props
     const {emWidth} = this.state
     const aspect = mediaDimensions.aspect || DEFAULT_MEDIA_DIMENSIONS.aspect!
@@ -118,7 +115,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
                   <div
                     className={styles.mediaPadding}
                     style={{
-                      paddingTop: `${100 / aspect}%`
+                      paddingTop: `${100 / aspect}%`,
                     }}
                   />
                 )}
@@ -147,7 +144,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
               <div
                 className={styles.mediaPadding}
                 style={{
-                  paddingTop: `${100 / aspect}%`
+                  paddingTop: `${100 / aspect}%`,
                 }}
               />
               <div className={aspect ? styles.mediaContent : styles.mediaContentRelative}>
@@ -185,7 +182,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
                 {typeof subtitle === 'string' &&
                   truncate(subtitle, {
                     length: 30,
-                    separator: /,? +/
+                    separator: /,? +/,
                   })}
               </h3>
             )}
@@ -196,7 +193,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
                 {typeof description === 'string' &&
                   truncate(description, {
                     length: 100,
-                    separator: /,? +/
+                    separator: /,? +/,
                   })}
               </p>
             )}

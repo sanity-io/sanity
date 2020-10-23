@@ -5,5 +5,5 @@ export const commit = {
   disabled: (): false => false,
   execute: ({draft, published}: OperationArgs) => {
     return merge(draft.commit(), published.commit())
-  }
+  },
 }

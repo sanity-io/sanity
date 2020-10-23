@@ -6,21 +6,21 @@ export default {
     {
       type: 'simpleBlockNoteUrl',
       name: 'ul',
-      title: 'URL'
+      title: 'URL',
     },
     {
       type: 'block',
       of: [
         {
           type: 'reference',
-          to: [{type: 'author'}]
-        }
-      ]
+          to: [{type: 'author'}],
+        },
+      ],
     },
     {
       title: 'Code Block',
       name: 'code',
-      type: 'code'
+      type: 'code',
     },
     {
       title: 'Image',
@@ -32,10 +32,10 @@ export default {
           name: 'caption',
           type: 'string',
           options: {
-            isHighlighted: true
-          }
-        }
-      ]
-    }
-  ]
+            isHighlighted: true,
+          },
+        },
+      ],
+    },
+  ],
 }

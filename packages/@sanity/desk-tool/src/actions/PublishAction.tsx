@@ -8,7 +8,7 @@ import {useDocumentHistory} from '../panes/documentPane/documentHistory'
 const DISABLED_REASON_TITLE = {
   LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
   ALREADY_PUBLISHED: 'Already published',
-  NO_CHANGES: 'No unpublished changes'
+  NO_CHANGES: 'No unpublished changes',
 }
 
 function getDisabledReason(reason, publishedAt) {
@@ -31,7 +31,7 @@ export function PublishAction(props) {
   const syncState = useSyncState(id)
   const {open: historyOpen, historyController} = useDocumentHistory()
 
-  const hasValidationErrors = validationStatus.markers.some(marker => marker.level === 'error')
+  const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
 
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
@@ -99,7 +99,7 @@ export function PublishAction(props) {
       label: 'Publish',
       title:
         'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
-      disabled: true
+      disabled: true,
     }
   }
 
@@ -122,6 +122,6 @@ export function PublishAction(props) {
       ? null
       : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
-    onHandle: handle
+    onHandle: handle,
   }
 }

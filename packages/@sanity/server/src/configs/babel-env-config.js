@@ -4,7 +4,7 @@ module.exports = {
     chrome: '59',
     safari: '10',
     firefox: '56',
-    edge: '14'
+    edge: '14',
   },
-  modules: 'commonjs'
+  modules: 'commonjs',
 }

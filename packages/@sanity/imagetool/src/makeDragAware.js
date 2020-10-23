@@ -16,7 +16,7 @@ export default function makeDragAware(Component) {
       onDragStart: PropTypes.func.isRequired,
       onDrag: PropTypes.func.isRequired,
       onDragEnd: PropTypes.func.isRequired,
-      readOnly: PropTypes.bool
+      readOnly: PropTypes.bool,
     }
 
     currentPos = null
@@ -46,14 +46,14 @@ export default function makeDragAware(Component) {
       }
     }
 
-    handleTouchMove = event => {
+    handleTouchMove = (event) => {
       // Disables mobile scroll by touch
       if (this.isDragging) {
         event.preventDefault()
       }
     }
 
-    handleDragStart = event => {
+    handleDragStart = (event) => {
       const {onDragStart} = this.props
 
       if (this.isDragging) {
@@ -71,7 +71,7 @@ export default function makeDragAware(Component) {
       this.currentPos = nextPos
     }
 
-    handleDrag = event => {
+    handleDrag = (event) => {
       if (!this.isDragging) {
         return
       }
@@ -83,7 +83,7 @@ export default function makeDragAware(Component) {
       this.currentPos = nextPos
     }
 
-    handleDragEnd = event => {
+    handleDragEnd = (event) => {
       const {onDragEnd} = this.props
       if (!this.isDragging) {
         return
@@ -97,7 +97,7 @@ export default function makeDragAware(Component) {
       debug('Done moving %o', nextPos)
     }
 
-    handleDragCancel = event => {
+    handleDragCancel = (event) => {
       if (!this.isDragging) {
         return
       }
@@ -113,7 +113,7 @@ export default function makeDragAware(Component) {
       this.currentPos = null
     }
 
-    setDomNode = node => {
+    setDomNode = (node) => {
       this.domNode = node
     }
 
@@ -135,7 +135,7 @@ export default function makeDragAware(Component) {
 function getPositionRelativeToRect(x, y, rect) {
   return {
     x: x - rect.left,
-    y: y - rect.top
+    y: y - rect.top,
   }
 }
 
@@ -148,13 +148,13 @@ function getPos(event) {
 
   return {
     x: event.clientX,
-    y: event.clientY
+    y: event.clientY,
   }
 }
 
 function diffPos(pos, otherPos) {
   return {
     x: pos.x - otherPos.x,
-    y: pos.y - otherPos.y
+    y: pos.y - otherPos.y,
   }
 }

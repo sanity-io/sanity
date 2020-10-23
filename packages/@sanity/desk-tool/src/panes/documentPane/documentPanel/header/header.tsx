@@ -74,7 +74,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     timelineMode,
     title,
     versionSelectRef,
-    views
+    views,
   } = props
   const features = useDeskToolFeatures()
   const contextMenuItems = menuItems.filter(isMenuButton)

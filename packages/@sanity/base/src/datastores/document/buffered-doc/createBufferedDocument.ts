@@ -6,7 +6,7 @@ import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
   SnapshotEvent,
-  RemoteSnapshotEvent
+  RemoteSnapshotEvent,
 } from './types'
 import {ListenerEvent} from '../getPairListener'
 import {Mutation} from '../types'
@@ -17,7 +17,7 @@ export type BufferedDocumentEvent =
   | DocumentMutationEvent
   | CommittedEvent
 
-const prepare = id => document => {
+const prepare = (id) => (document) => {
   const {_id, _rev, _updatedAt, ...rest} = document
   return {_id: id, ...rest}
 }
@@ -54,13 +54,13 @@ export const createBufferedDocument = (
     consistency$: bufferedDocument.consistency$,
     remoteSnapshot$: bufferedDocument.remoteSnapshot$,
 
-    patch: patches => patches.map(patch => ({patch: {...patch, id: documentId}})),
-    create: document => ({create: prepareDoc(document)}),
-    createIfNotExists: document => ({createIfNotExists: prepareDoc(document)}),
-    createOrReplace: document => ({createOrReplace: prepareDoc(document)}),
+    patch: (patches) => patches.map((patch) => ({patch: {...patch, id: documentId}})),
+    create: (document) => ({create: prepareDoc(document)}),
+    createIfNotExists: (document) => ({createIfNotExists: prepareDoc(document)}),
+    createOrReplace: (document) => ({createOrReplace: prepareDoc(document)}),
     delete: () => DELETE,
 
     mutate: (mutations: Mutation[]) => bufferedDocument.addMutations(mutations),
-    commit: () => bufferedDocument.commit()
+    commit: () => bufferedDocument.commit(),
   }
 }

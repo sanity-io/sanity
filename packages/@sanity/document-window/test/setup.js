@@ -17,13 +17,13 @@ const serializeDocWindow = {
       '[=== Post ===]',
       serialize(debug.post),
       '[=== /Post ===]',
-      ''
+      '',
     ].join('\n')
   },
 
   test(val) {
     return val && val instanceof DocumentWindow
-  }
+  },
 }
 
 const serializeInjected = {
@@ -37,13 +37,13 @@ const serializeInjected = {
     return wrapped
       .replace(/\n\s\s/g, '\n')
       .split('\n')
-      .map(line => line.replace(/\s+$/, ''))
+      .map((line) => line.replace(/\s+$/, ''))
       .join('\n')
   },
 
   test(val) {
     return val && (val.hasOwnProperty('__injected') || val.hasOwnProperty('__updated'))
-  }
+  },
 }
 
 expect.addSnapshotSerializer(serializeDocWindow)

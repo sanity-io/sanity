@@ -16,7 +16,7 @@ export function CreateDocumentStory() {
       title: chance.animal(),
       subtitle: 'test',
       template: 'test',
-      icon: FileIcon
+      icon: FileIcon,
     }
   })
 

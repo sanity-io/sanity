@@ -5,22 +5,22 @@ export const blockContent = {
   of: [
     {
       title: 'Block',
-      type: 'block'
+      type: 'block',
     },
     {
       name: 'video',
       title: 'A video embed',
-      type: 'videoEmbed'
+      type: 'videoEmbed',
     },
     {
       type: 'code',
       title: 'Code example',
-      description: 'Code'
+      description: 'Code',
     },
     {
       type: 'protein',
       title: 'Protein',
-      description: 'Protein'
+      description: 'Protein',
     },
     {
       title: 'Image',
@@ -29,9 +29,9 @@ export const blockContent = {
         {
           name: 'caption',
           type: 'string',
-          title: 'Caption'
-        }
-      ]
-    }
-  ]
+          title: 'Caption',
+        },
+      ],
+    },
+  ],
 }

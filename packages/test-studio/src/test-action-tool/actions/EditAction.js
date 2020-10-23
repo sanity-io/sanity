@@ -8,12 +8,10 @@ export default function EditAction(docInfo) {
       patch.execute([
         {
           set: {
-            title: `hello ${Math.random()
-              .toString(32)
-              .substring(2)}`
-          }
-        }
+            title: `hello ${Math.random().toString(32).substring(2)}`,
+          },
+        },
       ])
-    }
+    },
   }
 }

@@ -16,7 +16,7 @@ export function createStack<T = unknown>() {
   const changes = pubsub<T>()
 
   function remove(instance: T) {
-    stack = stack.filter(entry => entry !== instance)
+    stack = stack.filter((entry) => entry !== instance)
     onChange()
   }
 
@@ -37,7 +37,7 @@ export function createStack<T = unknown>() {
     remove,
     peek,
     push,
-    subscribe: changes.subscribe
+    subscribe: changes.subscribe,
   }
 }
 
@@ -46,11 +46,11 @@ const DEFAULT_STACK = createStack()
 // @todo: refactor to functional component
 export default class Stacked extends React.Component<StackedProps> {
   static defaultProps = {
-    stack: DEFAULT_STACK
+    stack: DEFAULT_STACK,
   }
 
   state = {
-    top: null
+    top: null,
   }
 
   _unsubscribe?: () => void

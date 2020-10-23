@@ -34,12 +34,12 @@ export default async (args, context) => {
 
   // Find which modules needs update according to the target range
   const allNeedsUpdate = await getModulesInNeedOfUpdate(context, targetRange)
-  debug('In need of update: %s', allNeedsUpdate.map(mod => mod.name).join(', '))
+  debug('In need of update: %s', allNeedsUpdate.map((mod) => mod.name).join(', '))
 
   const needsUpdate =
     modules.length === 0
       ? allNeedsUpdate
-      : allNeedsUpdate.filter(outOfDate => modules.indexOf(outOfDate.name) !== -1)
+      : allNeedsUpdate.filter((outOfDate) => modules.indexOf(outOfDate.name) !== -1)
 
   // If all modules are up-to-date, say so and exit
   if (needsUpdate.length === 0) {
@@ -50,7 +50,7 @@ export default async (args, context) => {
 
   // Forcefully remove non-symlinked module paths to force upgrade
   await Promise.all(
-    needsUpdate.map(mod =>
+    needsUpdate.map((mod) =>
       deleteIfNotSymlink(
         path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep))
       )
@@ -99,7 +99,7 @@ export default async (args, context) => {
   context.output.print(`${chalk.green('✔')} Modules upgraded:`)
 
   const {versionLength, formatName} = getFormatters(needsUpdate)
-  needsUpdate.forEach(mod => {
+  needsUpdate.forEach((mod) => {
     const current = chalk.yellow(padStart(mod.version, versionLength))
     const latest = chalk.green(mod.latest)
     context.output.print(`${formatName(mod.name)} ${current} → ${latest}`)
@@ -108,5 +108,5 @@ export default async (args, context) => {
 
 async function getModulesInNeedOfUpdate(context, target) {
   const versions = await findSanityModuleVersions(context, target, {includeCli: false})
-  return versions.filter(mod => mod.needsUpdate)
+  return versions.filter((mod) => mod.needsUpdate)
 }

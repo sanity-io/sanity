@@ -46,7 +46,7 @@ class Parser {
       // console.log(" -> nay", token)
       return null
     }
-    const mismatch = Object.keys(pattern).find(key => {
+    const mismatch = Object.keys(pattern).find((key) => {
       const value = pattern[key]
       if (!token[key] || token[key] != value) {
         // console.log(" -> nay", key)
@@ -74,14 +74,14 @@ class Parser {
     if (token) {
       return {
         type: 'attribute',
-        name: token.name
+        name: token.name,
       }
     }
     const quoted = this.match({type: 'quoted', quote: 'single'})
     if (quoted) {
       return {
         type: 'attribute',
-        name: quoted.value
+        name: quoted.value,
       }
     }
     return null
@@ -91,7 +91,7 @@ class Parser {
     if (this.match({type: 'keyword', symbol: '@'}) || this.match({type: 'keyword', symbol: '$'})) {
       return {
         type: 'alias',
-        target: 'self'
+        target: 'self',
       }
     }
     return null
@@ -102,7 +102,7 @@ class Parser {
     if (token) {
       return {
         type: 'number',
-        value: token.value
+        value: token.value,
       }
     }
     return null
@@ -119,7 +119,7 @@ class Parser {
   parseSliceSelector() {
     const start = this.i
     const result: any = {
-      type: 'range'
+      type: 'range',
     }
     result.start = this.parseNumberValue()
     const colon1 = this.match({type: 'operator', symbol: ':'})
@@ -156,14 +156,14 @@ class Parser {
     if (literalString) {
       return {
         type: 'string',
-        value: literalString.value
+        value: literalString.value,
       }
     }
     const literalBoolean = this.match({type: 'boolean'})
     if (literalBoolean) {
       return {
         type: 'boolean',
-        value: literalBoolean.symbol == 'true'
+        value: literalBoolean.symbol == 'true',
       }
     }
     return this.parseNumber()
@@ -181,7 +181,7 @@ class Parser {
       return {
         type: 'constraint',
         operator: '?',
-        lhs: expr
+        lhs: expr,
       }
     }
     const binOp = this.match({type: 'comparator'})
@@ -199,7 +199,7 @@ class Parser {
       type: 'constraint',
       operator: binOp.symbol,
       lhs: lhs,
-      rhs: rhs
+      rhs: rhs,
     }
   }
 
@@ -231,7 +231,7 @@ class Parser {
     // return unionFromTerms(terms)
     return {
       type: 'union',
-      nodes: terms
+      nodes: terms,
     }
   }
 
@@ -243,7 +243,7 @@ class Parser {
       }
       return {
         type: 'recursive',
-        term: subpath
+        term: subpath,
       }
     }
     return null
@@ -283,7 +283,7 @@ class Parser {
     }
     return {
       type: 'path',
-      nodes: nodes
+      nodes: nodes,
     }
   }
 }

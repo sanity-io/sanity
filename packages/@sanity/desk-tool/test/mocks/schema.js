@@ -1,12 +1,12 @@
 const types = {
   author: author(),
-  post: post()
+  post: post(),
 }
 
 module.exports = {
   name: 'blog',
-  get: typeName => types[typeName],
-  getTypeNames: () => Object.keys(types)
+  get: (typeName) => types[typeName],
+  getTypeNames: () => Object.keys(types),
 }
 
 function author() {
@@ -18,7 +18,7 @@ function author() {
       {
         name: 'name',
         title: 'Name',
-        type: 'string'
+        type: 'string',
       },
       {
         name: 'slug',
@@ -26,24 +26,24 @@ function author() {
         type: 'slug',
         options: {
           source: 'name',
-          maxLength: 96
-        }
+          maxLength: 96,
+        },
       },
       {
         name: 'image',
         title: 'Image',
         type: 'image',
         options: {
-          hotspot: true
-        }
-      }
+          hotspot: true,
+        },
+      },
     ],
     preview: {
       select: {
         title: 'name',
-        media: 'image'
-      }
-    }
+        media: 'image',
+      },
+    },
   }
 }
 
@@ -57,7 +57,7 @@ function post() {
       {
         name: 'title',
         title: 'Title',
-        type: 'string'
+        type: 'string',
       },
       {
         name: 'slug',
@@ -65,32 +65,32 @@ function post() {
         type: 'slug',
         options: {
           source: 'title',
-          maxLength: 96
-        }
+          maxLength: 96,
+        },
       },
       {
         name: 'author',
         title: 'Author',
         type: 'reference',
-        to: {type: 'author'}
+        to: {type: 'author'},
       },
       {
         name: 'mainImage',
         title: 'Main image',
         type: 'image',
         options: {
-          hotspot: true
-        }
+          hotspot: true,
+        },
       },
       {
         name: 'publishedAt',
         title: 'Published at',
-        type: 'datetime'
+        type: 'datetime',
       },
       {
         name: 'publicationYear',
         title: 'Publication year',
-        type: 'string'
+        type: 'string',
       },
       {
         name: 'translations',
@@ -100,42 +100,48 @@ function post() {
           {
             name: 'se',
             title: 'Swedish',
-            type: 'string'
+            type: 'string',
           },
           {
             name: 'no',
             title: 'Norwegian',
-            type: 'string'
-          }
-        ]
+            type: 'string',
+          },
+        ],
       },
       {
         name: 'body',
         title: 'Body',
-        type: 'text'
-      }
+        type: 'text',
+      },
     ],
     preview: {
       select: {
         title: 'title',
         author: 'author.name',
-        media: 'mainImage'
-      }
+        media: 'mainImage',
+      },
     },
     initialValue: {
-      slug: {_type: 'slug', current: 'default-slug'}
+      slug: {_type: 'slug', current: 'default-slug'},
     },
     orderings: [
       {
         title: 'Title',
         name: 'title',
-        by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}]
+        by: [
+          {field: 'title', direction: 'asc'},
+          {field: 'publicationYear', direction: 'asc'},
+        ],
       },
       {
         title: 'Swedish title',
         name: 'swedishTitle',
-        by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
-      }
-    ]
+        by: [
+          {field: 'translations.se', direction: 'asc'},
+          {field: 'title', direction: 'asc'},
+        ],
+      },
+    ],
   }
 }

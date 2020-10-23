@@ -9,17 +9,17 @@ export default {
   getIntentState(intentName, params) {
     return {
       type: params.type || '*',
-      id: params.id
+      id: params.id,
     }
   },
   title: 'Test intent',
   name: 'test-intent',
-  component: withRouterHOC(props => (
+  component: withRouterHOC((props) => (
     <div style={{padding: 10}}>
       <h2>Test intent precedence</h2>
       If you click an intent link (e.g. from search results) while this tool is open, it should be
       opened here.
       <pre>{JSON.stringify(props.router.state, null, 2)}</pre>
     </div>
-  ))
+  )),
 }

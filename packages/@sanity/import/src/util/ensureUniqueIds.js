@@ -15,7 +15,7 @@ function reduceDuplicateIds(ids, doc) {
 module.exports = function ensureUniqueIds(documents) {
   const {duplicates} = documents.reduce(reduceDuplicateIds, {
     seen: [],
-    duplicates: []
+    duplicates: [],
   })
 
   const numDupes = duplicates.length

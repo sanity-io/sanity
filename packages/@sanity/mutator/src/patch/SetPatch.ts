@@ -9,11 +9,11 @@ export default class SetPatch {
   }
   apply(targets, accessor) {
     let result = accessor
-    targets.forEach(target => {
+    targets.forEach((target) => {
       if (target.isSelfReference()) {
         result = result.set(this.value)
       } else if (target.isIndexReference()) {
-        target.toIndicies(accessor).forEach(i => {
+        target.toIndicies(accessor).forEach((i) => {
           result = result.setIndex(i, this.value)
         })
       } else if (target.isAttributeReference()) {

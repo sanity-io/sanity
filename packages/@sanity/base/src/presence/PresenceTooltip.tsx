@@ -18,7 +18,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   const content = (
     <div className={styles.root}>
-      {items.map(item => (
+      {items.map((item) => (
         <div className={styles.item} key={item.user.id}>
           <div className={styles.avatarContainer}>
             <UserAvatar user={item.user} status="online" />

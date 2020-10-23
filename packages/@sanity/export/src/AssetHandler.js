@@ -31,7 +31,7 @@ class AssetHandler {
     this.queue = options.queue || new PQueue({concurrency})
 
     this.rejectedError = null
-    this.reject = err => {
+    this.reject = (err) => {
       this.rejectedError = err
     }
   }
@@ -190,7 +190,7 @@ class AssetHandler {
           parseInt(contentLength, 10) !== size &&
           `Asset should be ${contentLength} bytes, got ${size}`,
 
-        `Did not succeed after ${attemptNum} attempts.`
+        `Did not succeed after ${attemptNum} attempts.`,
       ]
 
       const detailsString = `Details:\n - ${details.filter(Boolean).join('\n - ')}`
@@ -216,7 +216,7 @@ class AssetHandler {
     }
 
     this.downloading.splice(
-      this.downloading.findIndex(datUrl => datUrl === url),
+      this.downloading.findIndex((datUrl) => datUrl === url),
       1
     )
 
@@ -226,7 +226,7 @@ class AssetHandler {
 
   findAndModify = (item, action) => {
     if (Array.isArray(item)) {
-      const children = item.map(child => this.findAndModify(child, action))
+      const children = item.map((child) => this.findAndModify(child, action))
       return children.filter(Boolean)
     }
 
@@ -246,7 +246,7 @@ class AssetHandler {
       const filePath = `${assetType}s/${generateFilename(assetId)}`
       return {
         _sanityAsset: `${assetType}@file://./${filePath}`,
-        ...this.findAndModify(other, action)
+        ...this.findAndModify(other, action),
       }
     }
 
@@ -306,7 +306,7 @@ function writeHashedStream(filePath, stream) {
   })
 
   return new Promise((resolve, reject) =>
-    miss.pipe(stream, hasher, fse.createWriteStream(filePath), err => {
+    miss.pipe(stream, hasher, fse.createWriteStream(filePath), (err) => {
       if (err) {
         reject(err)
         return
@@ -315,7 +315,7 @@ function writeHashedStream(filePath, stream) {
       resolve({
         size,
         sha1: sha1.digest('hex'),
-        md5: md5.digest('hex')
+        md5: md5.digest('hex'),
       })
     })
   )
@@ -323,7 +323,7 @@ function writeHashedStream(filePath, stream) {
 
 function tryGetErrorFromStream(stream) {
   return new Promise((resolve, reject) => {
-    miss.pipe(stream, miss.concat(parse), err => (err ? reject(err) : noop))
+    miss.pipe(stream, miss.concat(parse), (err) => (err ? reject(err) : noop))
 
     function parse(body) {
       try {

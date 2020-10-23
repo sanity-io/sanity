@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = basePath => {
+module.exports = (basePath) => {
   const configPath = path.join(basePath, '.babelrc')
   let babelConfig
   try {
@@ -36,12 +36,12 @@ module.exports = basePath => {
             '@babel/preset-env',
             {
               targets: {
-                node: 'current'
-              }
-            }
-          ]
+                node: 'current',
+              },
+            },
+          ],
         ],
-        plugins: ['@babel/plugin-proposal-class-properties']
+        plugins: ['@babel/plugin-proposal-class-properties'],
       }
     }
   }

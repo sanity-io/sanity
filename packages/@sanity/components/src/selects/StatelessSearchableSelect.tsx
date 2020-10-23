@@ -54,7 +54,7 @@ const sameWidthModifier: Modifier<'sameWidth', any> = {
   requires: ['computeStyles'],
   fn({state}) {
     state.styles.popper.width = `${state.rects.reference.width}px`
-  }
+  },
 }
 
 const StatelessSearchableSelectResults = forwardRef(
@@ -184,11 +184,11 @@ const StatelessSearchableSelect = forwardRef(
           options: {
             altAxis: true,
             padding: 8,
-            tether: false
-          }
+            tether: false,
+          },
         },
-        sameWidthModifier
-      ]
+        sameWidthModifier,
+      ],
     })
 
     const handleSelect = useCallback(

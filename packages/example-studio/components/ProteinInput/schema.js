@@ -9,7 +9,7 @@ export default {
     {
       name: 'pdb',
       title: 'PDB',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'Camera',
@@ -19,18 +19,18 @@ export default {
         {
           name: 'rotation',
           type: 'array',
-          of: [{type: 'number'}]
+          of: [{type: 'number'}],
         },
         {
           name: 'center',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'zoom',
           type: 'array',
-          of: [{type: 'number'}]
-        }
-      ]
-    }
-  ]
+          of: [{type: 'number'}],
+        },
+      ],
+    },
+  ],
 }

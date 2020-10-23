@@ -13,37 +13,37 @@ export default class SelectLanguage extends React.Component {
   static propTypes = {
     languages: PropTypes.arrayOf(LanguagePropType),
     selected: PropTypes.arrayOf(LanguagePropType),
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
   }
 
   state = {isOpen: false}
   refElement = React.createRef()
 
-  handleToggle = () => this.setState(prevState => ({isOpen: !prevState.isOpen}))
+  handleToggle = () => this.setState((prevState) => ({isOpen: !prevState.isOpen}))
   handleOpen = () => this.setState({isOpen: true})
   handleClose = () => {
     this.setState({isOpen: false})
   }
 
-  selectLang = langId => {
+  selectLang = (langId) => {
     const {selected, onChange} = this.props
     onChange(selected.concat(langId))
   }
 
-  unselectLang = langId => {
+  unselectLang = (langId) => {
     const {selected, onChange} = this.props
-    onChange(selected.filter(id => id !== langId))
+    onChange(selected.filter((id) => id !== langId))
   }
 
-  handleSelectAll = event => {
+  handleSelectAll = (event) => {
     const {languages, onChange} = this.props
-    onChange(languages.map(l => l.id))
+    onChange(languages.map((l) => l.id))
   }
-  handleSelectNone = event => {
+  handleSelectNone = (event) => {
     const {onChange} = this.props
     onChange([])
   }
-  handleLangCheckboxChange = event => {
+  handleLangCheckboxChange = (event) => {
     const id = event.target.getAttribute('data-lang-id')
     const checked = event.target.checked
     this[checked ? 'selectLang' : 'unselectLang'](id)
@@ -93,7 +93,7 @@ export default class SelectLanguage extends React.Component {
                 </Button>
               </div>
               <ul className={styles.list}>
-                {languages.map(lang => (
+                {languages.map((lang) => (
                   <li className={styles.item} key={lang.id}>
                     <Checkbox
                       onChange={this.handleLangCheckboxChange}

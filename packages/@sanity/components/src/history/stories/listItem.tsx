@@ -13,7 +13,7 @@ const mockUser = () => {
     identity: chance.guid(),
     displayName: chance.name(),
     email: chance.email(),
-    imageUrl: `https://placeimg.com/64/64/any?${Math.random() * 1000}`
+    imageUrl: `https://placeimg.com/64/64/any?${Math.random() * 1000}`,
   }
 }
 

@@ -7,7 +7,7 @@ import {
   StringSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
-  ReferenceSchemaType
+  ReferenceSchemaType,
 } from '../diff'
 
 export type PreviewComponent<T> = ComponentType<{

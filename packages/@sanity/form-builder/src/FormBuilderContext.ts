@@ -74,20 +74,20 @@ export default class FormBuilderContext extends React.Component<Props> {
     formBuilder: PropTypes.shape({
       schema: PropTypes.object,
       resolveInputComponent: PropTypes.func,
-      document: PropTypes.any
-    })
+      document: PropTypes.any,
+    }),
   }
 
   getDocument = () => {
     return this.props.value
   }
 
-  resolveInputComponent = memoizeMap(type => {
+  resolveInputComponent = memoizeMap((type) => {
     const {resolveInputComponent} = this.props
     return resolve(type, resolveInputComponent) || fallbackInputs[type.jsonType]
   })
 
-  resolvePreviewComponent = memoizeMap(type => {
+  resolvePreviewComponent = memoizeMap((type) => {
     const {resolvePreviewComponent} = this.props
     return resolve(type, resolvePreviewComponent)
   })
@@ -110,8 +110,8 @@ export default class FormBuilderContext extends React.Component<Props> {
         schema,
         resolveInputComponent: this.resolveInputComponent,
         resolvePreviewComponent: this.resolvePreviewComponent,
-        getDocument: this.getDocument
-      }
+        getDocument: this.getDocument,
+      },
     }
   })
 

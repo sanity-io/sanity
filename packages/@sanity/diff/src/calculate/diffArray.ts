@@ -22,7 +22,7 @@ export function diffArray<A>(
         const items = diffExactByPosition(fromInput, toInput, options)
         if (!items) throw new Error('invariant broken: equivalent input, but diff detected')
         return replaceProperty<typeof items>(this, 'items', items)
-      }
+      },
     }
   }
 
@@ -59,7 +59,7 @@ function buildArrayDiff<A>(
         fromValue,
         toValue,
         items,
-        annotation: toInput.annotation
+        annotation: toInput.annotation,
       }
     : {
         type: 'array',
@@ -67,7 +67,7 @@ function buildArrayDiff<A>(
         isChanged: false,
         fromValue,
         toValue,
-        items
+        items,
       }
 }
 
@@ -97,7 +97,7 @@ function diffExactByPosition<A>(
       toIndex: idx,
       hasMoved: false,
       diff,
-      annotation: toInput.annotationAt(idx)
+      annotation: toInput.annotationAt(idx),
     })
   }
 
@@ -119,7 +119,7 @@ function diffArrayByReinsert<A>(
       toIndex: idx,
       hasMoved: false,
       diff: addedInput(input, undefined, options),
-      annotation: input.annotation
+      annotation: input.annotation,
     })
   }
 
@@ -131,7 +131,7 @@ function diffArrayByReinsert<A>(
       toIndex: undefined,
       hasMoved: false,
       diff: removedInput(input, undefined, options),
-      annotation: input.annotation
+      annotation: input.annotation,
     })
   }
 
@@ -166,7 +166,7 @@ function diffArrayByKey<A>(
       toIndex,
       hasMoved,
       diff,
-      annotation: toArray.annotationAt(toIndex)
+      annotation: toArray.annotationAt(toIndex),
     })
 
     if (diff.isChanged || fromIndex !== toIndex) {
@@ -189,7 +189,7 @@ function diffArrayByKey<A>(
     // Not a part of the subsequence. Try to find another item which has the same key
     // and also is not part of the common subsequence.
     const toIndexes = toKeyIndex.index.get(key)
-    const toIndex = toIndexes && toIndexes.find(idx => !lcs.nextIndices.includes(idx))
+    const toIndex = toIndexes && toIndexes.find((idx) => !lcs.nextIndices.includes(idx))
     if (toIndex !== undefined) {
       diffCommon(key, fromIndex, toIndex, true)
       continue
@@ -202,7 +202,7 @@ function diffArrayByKey<A>(
       toIndex: undefined,
       hasMoved: false,
       diff: removedInput(input, undefined, options),
-      annotation: fromArray.annotationAt(fromIndex)
+      annotation: fromArray.annotationAt(fromIndex),
     })
 
     isChanged = true
@@ -217,7 +217,7 @@ function diffArrayByKey<A>(
         toIndex,
         hasMoved: false,
         diff: addedInput(input, undefined, options),
-        annotation: toArray.annotationAt(toIndex)
+        annotation: toArray.annotationAt(toIndex),
       })
     }
 
@@ -352,12 +352,12 @@ export function removedArray<A>(
           toIndex: undefined,
           hasMoved: false,
           diff: removedInput(item, undefined, options),
-          annotation: input.annotationAt(i)
+          annotation: input.annotationAt(i),
         })
       }
 
       return replaceProperty<typeof items>(this, 'items', items)
-    }
+    },
   }
 }
 
@@ -383,11 +383,11 @@ export function addedArray<A>(
           toIndex: i,
           hasMoved: false,
           diff: addedInput(item, undefined, options),
-          annotation: input.annotationAt(i)
+          annotation: input.annotationAt(i),
         })
       }
 
       return replaceProperty<typeof items>(this, 'items', items)
-    }
+    },
   }
 }

@@ -4,8 +4,8 @@ const objectExample = {
   title: 'Object (1)',
   fields: [
     {type: 'string', name: 'title', title: 'Title'},
-    {type: 'reference', name: 'author', to: {type: 'author'}}
-  ]
+    {type: 'reference', name: 'author', to: {type: 'author'}},
+  ],
 }
 
 const imageExample = {
@@ -13,8 +13,8 @@ const imageExample = {
   name: 'imageExample',
   title: 'Image example',
   options: {
-    hotspot: true
-  }
+    hotspot: true,
+  },
 }
 
 const pt = {
@@ -24,7 +24,7 @@ const pt = {
   of: [
     {
       type: 'block',
-      of: [{...objectExample, validation: Rule => Rule.required()}],
+      of: [{...objectExample, validation: (Rule) => Rule.required()}],
       marks: {
         annotations: [
           {
@@ -35,7 +35,7 @@ const pt = {
                 type: 'string',
                 name: 'href',
                 title: 'URL',
-                validation: Rule => Rule.required()
+                validation: (Rule) => Rule.required(),
               },
               {
                 type: 'string',
@@ -44,19 +44,19 @@ const pt = {
                 options: {
                   list: [
                     {value: '_blank', title: 'Blank'},
-                    {value: '_parent', title: 'Parent'}
-                  ]
-                }
-              }
-            ]
+                    {value: '_parent', title: 'Parent'},
+                  ],
+                },
+              },
+            ],
           },
-          objectExample
-        ]
-      }
+          objectExample,
+        ],
+      },
     },
     imageExample,
-    objectExample
-  ]
+    objectExample,
+  ],
 }
 
 const arrayWithPt = {
@@ -68,13 +68,13 @@ const arrayWithPt = {
       type: 'object',
       name: 'objectWithPT',
       title: 'Object with PT',
-      fields: [{type: 'string', name: 'title', title: 'Title'}, pt]
-    }
+      fields: [{type: 'string', name: 'title', title: 'Title'}, pt],
+    },
   ],
   options: {
     // editModal: undefined // 'fullscreen' | 'fold' | 'popover' | undefined
     // sortable: false
-  }
+  },
 }
 
 export default {
@@ -85,9 +85,9 @@ export default {
     {
       type: 'string',
       name: 'title',
-      title: 'Title'
+      title: 'Title',
     },
     pt,
-    arrayWithPt
-  ]
+    arrayWithPt,
+  ],
 }

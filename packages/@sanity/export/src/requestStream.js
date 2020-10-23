@@ -37,11 +37,11 @@ function getStream(options) {
 }
 
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /* eslint-disable no-await-in-loop, max-depth */
-module.exports = async options => {
+module.exports = async (options) => {
   const agent = options.url.startsWith('https:') ? httpsAgent : httpAgent
   const reqOptions = {...options, followRedirects: false, agent}
   let error

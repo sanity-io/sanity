@@ -7,7 +7,7 @@ import {
   HTML_SPAN_TAGS,
   HTML_LIST_CONTAINER_TAGS,
   HTML_LIST_ITEM_TAGS,
-  HTML_DECORATOR_TAGS
+  HTML_DECORATOR_TAGS,
 } from '../../constants'
 import {tagName} from '../helpers'
 
@@ -45,11 +45,11 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return {
             ...DEFAULT_SPAN,
             marks: [],
-            text: el.textContent.replace(/\s\s+/g, ' ')
+            text: el.textContent.replace(/\s\s+/g, ' '),
           }
         }
         return undefined
-      }
+      },
     }, // Blockquote element
     {
       deserialize(el, next) {
@@ -63,7 +63,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           if (node.nodeType === 1 && Object.keys(blocks).includes(node.localName.toLowerCase())) {
             const span = el.ownerDocument.createElement('span')
             span.appendChild(el.ownerDocument.createTextNode('\r'))
-            node.childNodes.forEach(cn => {
+            node.childNodes.forEach((cn) => {
               span.appendChild(cn.cloneNode(true))
             })
             if (index !== el.childNodes.length) {
@@ -79,9 +79,9 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           _type: 'block',
           style: 'blockquote',
           markDefs: [],
-          children: next(children)
+          children: next(children),
         }
-      }
+      },
     }, // Block elements
     {
       deserialize(el, next) {
@@ -100,9 +100,9 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
         }
         return {
           ...block,
-          children: next(el.childNodes)
+          children: next(el.childNodes),
         }
-      }
+      },
     }, // Ignore span tags
     {
       deserialize(el, next) {
@@ -111,7 +111,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return undefined
         }
         return next(el.childNodes)
-      }
+      },
     }, // Ignore div tags
     {
       deserialize(el, next) {
@@ -120,7 +120,7 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return undefined
         }
         return next(el.childNodes)
-      }
+      },
     }, // Ignore list containers
     {
       deserialize(el, next) {
@@ -129,18 +129,18 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           return undefined
         }
         return next(el.childNodes)
-      }
+      },
     }, // Deal with br's
     {
       deserialize(el, next) {
         if (tagName(el) === 'br') {
           return {
             ...DEFAULT_SPAN,
-            text: '\n'
+            text: '\n',
           }
         }
         return undefined
-      }
+      },
     }, // Deal with list items
     {
       deserialize(el, next) {
@@ -151,9 +151,9 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
         listItem.listItem = resolveListItem(tagName(el.parentNode))
         return {
           ...listItem,
-          children: next(el.childNodes)
+          children: next(el.childNodes),
         }
-      }
+      },
     }, // Deal with decorators
     {
       deserialize(el, next) {
@@ -164,9 +164,9 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
         return {
           _type: '__decorator',
           name: decorator,
-          children: next(el.childNodes)
+          children: next(el.childNodes),
         }
-      }
+      },
     }, // Special case for hyperlinks, add annotation (if allowed by schema),
     // If not supported just write out the link text and href in plain text.
     {
@@ -184,16 +184,16 @@ export default function createHTMLRules(blockContentType, options: any = {}) {
           markDef = {
             _key: randomKey(12),
             _type: 'link',
-            href: href
+            href: href,
           }
           return {
             _type: '__annotation',
             markDef: markDef,
-            children: next(el.childNodes)
+            children: next(el.childNodes),
           }
         }
         return el.appendChild(el.ownerDocument.createTextNode(` (${href})`)) && next(el.childNodes)
-      }
-    }
+      },
+    },
   ]
 }

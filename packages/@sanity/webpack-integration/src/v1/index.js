@@ -9,7 +9,7 @@ const resolveStyleImport = require('./resolveStyleImport')
 const partLoaderPath = require.resolve('@sanity/webpack-loader/lib/partLoader')
 
 const absolute = /^(\/|\w+:\/\/)/
-const isAbsolute = url => absolute.test(url)
+const isAbsolute = (url) => absolute.test(url)
 
 function resolveUrl(url, decl, from, dirname) {
   if (typeof url !== 'string') {
@@ -39,7 +39,7 @@ function getPlugins(options) {
 function getPartLoader(options) {
   return {
     test: /[?&]sanityPart=/,
-    loader: partLoaderPath
+    loader: partLoaderPath,
   }
 }
 
@@ -72,8 +72,8 @@ function getConfig(options) {
     plugins: getPlugins(options),
     loaders: getLoaders(options),
     postcss: () => ({
-      plugins: getPostcssPlugins(options)
-    })
+      plugins: getPostcssPlugins(options),
+    }),
   }
 }
 
@@ -87,5 +87,5 @@ module.exports = {
   getPostcssImportPlugin: getPostcssImportPlugin,
   getPostcssUrlPlugin: getPostcssUrlPlugin,
   getPostcssPlugins: getPostcssPlugins,
-  getConfig: getConfig
+  getConfig: getConfig,
 }

@@ -32,7 +32,7 @@ export default class ArrayFunctions extends React.Component<ArrayFunctionsProps>
     this.handleInsertItem(this.props.type.of[0])
   }
 
-  handleInsertItem = type => {
+  handleInsertItem = (type) => {
     const {onCreateValue, onAppendItem} = this.props
     const item = onCreateValue(type)
 
@@ -40,7 +40,7 @@ export default class ArrayFunctions extends React.Component<ArrayFunctionsProps>
   }
 
   renderSelectType() {
-    const items = this.props.type.of.map(memberDef => {
+    const items = this.props.type.of.map((memberDef) => {
       // Use reference icon if reference is to one type only
       const referenceIcon =
         isReferenceSchemaType(memberDef) &&
@@ -51,7 +51,7 @@ export default class ArrayFunctions extends React.Component<ArrayFunctionsProps>
       return {
         title: memberDef.title || memberDef.type.name,
         type: memberDef,
-        icon
+        icon,
       }
     })
 

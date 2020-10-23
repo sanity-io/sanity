@@ -2,7 +2,7 @@ const React = require('react')
 const PropTypes = require('prop-types')
 const styles = require('./styles/FullscreenError.css')
 
-const FullscreenError = props => {
+const FullscreenError = (props) => {
   return (
     <div className={styles.container}>
       <button className={styles.closeButton} onClick={props.onClose}>
@@ -21,7 +21,7 @@ const FullscreenError = props => {
 FullscreenError.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 }
 
 module.exports = FullscreenError

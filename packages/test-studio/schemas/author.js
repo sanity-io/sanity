@@ -13,28 +13,28 @@ export default {
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
       lastUpdated: '_updatedAt',
-      media: 'image'
+      media: 'image',
     },
     prepare({title, media, awards}) {
       return {
         title: title,
         media: media,
-        subtitle: awards && awards.join(', ')
+        subtitle: awards && awards.join(', '),
       }
-    }
+    },
   },
   fields: [
     {
       name: 'name',
       title: 'Name',
       type: 'string',
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'bestFriend',
       title: 'Best friend',
       type: 'reference',
-      to: [{type: 'author'}]
+      to: [{type: 'author'}],
     },
     {
       name: 'role',
@@ -44,15 +44,15 @@ export default {
         list: [
           {value: 'developer', title: 'Developer'},
           {value: 'designer', title: 'Designer'},
-          {value: 'ops', title: 'Operations'}
-        ]
-      }
+          {value: 'ops', title: 'Operations'},
+        ],
+      },
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {hotspot: true}
+      options: {hotspot: true},
     },
     {
       name: 'awards',
@@ -60,9 +60,9 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'favoriteBooks',
@@ -71,9 +71,9 @@ export default {
       of: [
         {
           type: 'reference',
-          to: {type: 'book'}
-        }
-      ]
+          to: {type: 'book'},
+        },
+      ],
     },
     {
       name: 'minimalBlock',
@@ -86,18 +86,18 @@ export default {
           lists: [],
           marks: {
             decorators: [],
-            annotations: []
-          }
-        }
-      ]
+            annotations: [],
+          },
+        },
+      ],
     },
     {
       name: 'specie',
       title: 'Specie',
       description: 'There are a lot of species. Use this to test reference search performence',
       type: 'reference',
-      to: {type: 'species'}
-    }
+      to: {type: 'species'},
+    },
   ],
 
   initialValue: () => ({
@@ -107,8 +107,8 @@ export default {
       _type: 'image',
       asset: {
         _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
-        _type: 'reference'
-      }
-    }
-  })
+        _type: 'reference',
+      },
+    },
+  }),
 }

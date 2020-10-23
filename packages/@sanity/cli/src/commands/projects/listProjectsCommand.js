@@ -16,7 +16,7 @@ Examples
 
 const defaultFlags = {
   sort: 'created',
-  order: 'desc'
+  order: 'desc',
 }
 
 export default {
@@ -30,11 +30,11 @@ export default {
     const flags = {...defaultFlags, ...args.extOptions}
     const client = apiClient({
       requireUser: true,
-      requireProject: false
+      requireProject: false,
     })
     const projects = await client.request({
       method: 'GET',
-      uri: '/projects'
+      uri: '/projects',
     })
 
     const ordered = sortBy(
@@ -49,12 +49,12 @@ export default {
 
     const maxWidths = rows.reduce(
       (max, row) => row.map((current, index) => Math.max(size(current), max[index])),
-      headings.map(str => size(str))
+      headings.map((str) => size(str))
     )
 
-    const printRow = row => row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
+    const printRow = (row) => row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
 
     output.print(chalk.cyan(printRow(headings)))
-    rows.forEach(row => output.print(printRow(row)))
-  }
+    rows.forEach((row) => output.print(printRow(row)))
+  },
 }

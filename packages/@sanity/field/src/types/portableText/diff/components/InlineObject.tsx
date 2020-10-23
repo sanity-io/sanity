@@ -14,7 +14,7 @@ import {
   DiffTooltip,
   ObjectDiff,
   ObjectSchemaType,
-  useDiffAnnotationColor
+  useDiffAnnotationColor,
 } from '../../../../diff'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
@@ -79,17 +79,14 @@ function InlineObjectWithDiff({
   const isRemoved = diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
-    fullPath.findIndex(seg => isKeySegment(seg) && seg._key === object._key)
+    fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key)
   )
   const myPath = prefix.concat(path)
   const myValue = `field-${toString(myPath)}`
   const values = useReportedValues()
   const isEditing = values.filter(([p]) => p.startsWith(myValue)).length > 0
 
-  const focusPath = fullPath
-    .slice(0, -1)
-    .concat(path)
-    .concat([FOCUS_TERMINATOR])
+  const focusPath = fullPath.slice(0, -1).concat(path).concat([FOCUS_TERMINATOR])
 
   useEffect(() => {
     if (isEditing) {
@@ -99,7 +96,7 @@ function InlineObjectWithDiff({
   }, [isEditing])
 
   const handleOpenPopup = useCallback(
-    event => {
+    (event) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {
@@ -149,7 +146,7 @@ function PopoverContent({
   diff,
   emptyObject,
   onClose,
-  schemaType
+  schemaType,
 }: {
   diff: ObjectDiff
   emptyObject: boolean

@@ -4,11 +4,11 @@ import path from 'path'
 import normalizePluginName from './normalizePluginName'
 
 const baseChecksums = {
-  '#': 'Used by Sanity to keep track of configuration file checksums, do not delete or modify!'
+  '#': 'Used by Sanity to keep track of configuration file checksums, do not delete or modify!',
 }
 
 export function setChecksum(sanityPath, pluginName, checksum) {
-  return getChecksums(sanityPath).then(checksums => {
+  return getChecksums(sanityPath).then((checksums) => {
     checksums[pluginName] = checksum
     return fse.writeJson(getChecksumsPath(sanityPath), checksums, {spaces: 2})
   })
@@ -20,7 +20,7 @@ export function setChecksums(sanityPath, checksums) {
 }
 
 export function getChecksum(sanityPath, pluginName) {
-  return getChecksums(sanityPath).then(sums => sums[pluginName])
+  return getChecksums(sanityPath).then((sums) => sums[pluginName])
 }
 
 export function getChecksums(sanityPath) {
@@ -32,7 +32,7 @@ export function getChecksumsPath(sanityPath) {
 }
 
 export function hasSameChecksum(sanityPath, pluginName, checksum) {
-  return getChecksum(sanityPath, pluginName).then(sum => sum === checksum)
+  return getChecksum(sanityPath, pluginName).then((sum) => sum === checksum)
 }
 
 export function localConfigExists(sanityPath, pluginName) {

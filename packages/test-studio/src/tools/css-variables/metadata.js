@@ -5,8 +5,8 @@ export default {
       properties: [
         {name: '--screen-medium-break', type: 'size'},
         {name: '--screen-large-break', type: 'size'},
-        {name: '--screen-xlarge-break', type: 'size'}
-      ]
+        {name: '--screen-xlarge-break', type: 'size'},
+      ],
     },
 
     {
@@ -14,8 +14,8 @@ export default {
       properties: [
         {name: '--black', type: 'color'},
         {name: '--white', type: 'color'},
-        {name: '--gray-base', type: 'color'}
-      ]
+        {name: '--gray-base', type: 'color'},
+      ],
     },
 
     {
@@ -28,8 +28,8 @@ export default {
         {name: '--brand-primary--inverted', type: 'color'},
         {name: '--brand-secondary', type: 'color'},
         {name: '--brand-secondary--inverted', type: 'color'},
-        {name: '--brand-faded', type: 'color'}
-      ]
+        {name: '--brand-faded', type: 'color'},
+      ],
     },
     {
       name: 'gray',
@@ -49,22 +49,22 @@ export default {
         {name: '--gray--transparent', type: 'color'},
         {name: '--gray-light--transparent', type: 'color'},
         {name: '--gray-lighter--transparent', type: 'color'},
-        {name: '--gray-lightest--transparent', type: 'color'}
-      ]
+        {name: '--gray-lightest--transparent', type: 'color'},
+      ],
     },
     {
       name: 'code',
       properties: [
         {name: '--code-bg', type: 'color'},
-        {name: '--code-color', type: 'color'}
-      ]
+        {name: '--code-color', type: 'color'},
+      ],
     },
     {
       name: 'kbd',
       properties: [
         {name: '--kbd-bg', type: 'color'},
-        {name: '--kbd-color', type: 'color'}
-      ]
+        {name: '--kbd-color', type: 'color'},
+      ],
     },
     {
       name: 'pre',
@@ -72,23 +72,23 @@ export default {
         {name: '--pre-bg', type: 'color'},
         {name: '--pre-color', type: 'color'},
         {name: '--pre-border-color', type: 'color'},
-        {name: '--pre-scrollable-max-height', type: 'size'}
-      ]
+        {name: '--pre-scrollable-max-height', type: 'size'},
+      ],
     },
     {
       name: 'body',
       properties: [
         {name: '--body-bg', type: 'color'},
-        {name: '--body-text', type: 'color'}
-      ]
+        {name: '--body-text', type: 'color'},
+      ],
     },
     {
       name: 'component',
       properties: [
         {name: '--component-bg', type: 'color'},
         {name: '--component-text-color', type: 'color'},
-        {name: '--component-border-color', type: 'color'}
-      ]
+        {name: '--component-border-color', type: 'color'},
+      ],
     },
     {
       name: 'preview',
@@ -96,27 +96,27 @@ export default {
         {name: '--preview-placeholder-color', type: 'color'},
         {
           name: '--preview-placeholder-text-color',
-          type: 'color'
-        }
-      ]
+          type: 'color',
+        },
+      ],
     },
     {
       name: 'backdrop',
-      properties: [{name: '--backdrop-color', type: 'color'}]
+      properties: [{name: '--backdrop-color', type: 'color'}],
     },
     {
       name: 'main-navigation',
       properties: [
         {name: '--main-navigation-color', type: 'color'},
-        {name: '--main-navigation-color--inverted', type: 'color'}
-      ]
+        {name: '--main-navigation-color--inverted', type: 'color'},
+      ],
     },
     {
       name: 'dialog',
       properties: [
         {name: '--dialog-header-color', type: 'color'},
-        {name: '--dialog-header-color--inverted', type: 'color'}
-      ]
+        {name: '--dialog-header-color--inverted', type: 'color'},
+      ],
     },
     {
       name: 'default-button',
@@ -136,23 +136,23 @@ export default {
         {name: '--default-button-success-color--inverted', type: 'color'},
 
         {name: '--default-button-warning-color', type: 'color'},
-        {name: '--default-button-warning-color--inverted', type: 'color'}
-      ]
+        {name: '--default-button-warning-color--inverted', type: 'color'},
+      ],
     },
 
     {
       name: 'header',
-      properties: [{name: '--header-height', type: 'size'}]
+      properties: [{name: '--header-height', type: 'size'}],
     },
 
     {
       name: 'checkerboard',
-      properties: [{name: '--checkerboard-color', type: 'color'}]
+      properties: [{name: '--checkerboard-color', type: 'color'}],
     },
 
     {
       name: 'hairline',
-      properties: [{name: '--hairline-color', type: 'color'}]
+      properties: [{name: '--hairline-color', type: 'color'}],
     },
 
     {
@@ -161,8 +161,8 @@ export default {
         {name: '--shadow-base', type: 'color'},
         {name: '--shadow-color-umbra', type: 'color'},
         {name: '--shadow-color-penumbra', type: 'color'},
-        {name: '--shadow-color-ambient', type: 'color'}
-      ]
+        {name: '--shadow-color-ambient', type: 'color'},
+      ],
     },
 
     {
@@ -171,8 +171,8 @@ export default {
         {name: '--border-radius-base', type: 'border-radius'},
         {name: '--border-radius-large', type: 'border-radius'},
         {name: '--border-radius-medium', type: 'border-radius'},
-        {name: '--border-radius-small', type: 'border-radius'}
-      ]
+        {name: '--border-radius-small', type: 'border-radius'},
+      ],
     },
 
     {
@@ -187,21 +187,21 @@ export default {
         {name: '--small-padding--em', type: 'size'},
         {name: '--medium-padding--em', type: 'size'},
         {name: '--large-padding--em', type: 'size'},
-        {name: '--extra-large-padding--em', type: 'size'}
-      ]
+        {name: '--extra-large-padding--em', type: 'size'},
+      ],
     },
 
     {
       name: 'text-selection',
-      properties: [{name: '--text-selection-color', type: 'color'}]
+      properties: [{name: '--text-selection-color', type: 'color'}],
     },
 
     {
       name: 'block-editor',
       properties: [
         {name: '--block-editor-base-font-family', type: 'font-family'},
-        {name: '--block-editor-header-font-family', type: 'font-family'}
-      ]
+        {name: '--block-editor-header-font-family', type: 'font-family'},
+      ],
     },
 
     {
@@ -209,18 +209,18 @@ export default {
       properties: [
         {name: '--block-extras-width', type: 'size'},
         {name: '--block-extras-border-color', type: 'color'},
-        {name: '--block-extras-background-color', type: 'color'}
-      ]
+        {name: '--block-extras-background-color', type: 'color'},
+      ],
     },
 
     {
       name: 'pane-header',
-      properties: [{name: '--pane-header-height', type: 'size'}]
+      properties: [{name: '--pane-header-height', type: 'size'}],
     },
 
     {
       name: 'button',
-      properties: [{name: '--button-border-radius', type: 'border-radius'}]
+      properties: [{name: '--button-border-radius', type: 'border-radius'}],
     },
 
     {
@@ -250,36 +250,36 @@ export default {
         {name: '--input-box-shadow--hover', type: 'box-shadow'},
         {name: '--input-box-shadow--focus', type: 'box-shadow'},
         {name: '--input-box-shadow--invalid', type: 'box-shadow'},
-        {name: '--input-box-shadow--invalid-focus', type: 'box-shadow'}
-      ]
+        {name: '--input-box-shadow--invalid-focus', type: 'box-shadow'},
+      ],
     },
 
     {
       name: 'focus',
-      properties: [{name: '--focus-color', type: 'color'}]
+      properties: [{name: '--focus-color', type: 'color'}],
     },
 
     {
       name: 'label',
-      properties: [{name: '--label-color', type: 'color'}]
+      properties: [{name: '--label-color', type: 'color'}],
     },
 
     {
       name: 'legend',
-      properties: [{name: '--legend-color', type: 'color'}]
+      properties: [{name: '--legend-color', type: 'color'}],
     },
 
     {
       name: 'cursor',
-      properties: [{name: '--cursor-disabled', type: 'cursor'}]
+      properties: [{name: '--cursor-disabled', type: 'cursor'}],
     },
 
     {
       name: 'clear-cross',
       properties: [
         {name: '--clear-cross-color', type: 'color'},
-        {name: '--clear-cross-color-hover', type: 'color'}
-      ]
+        {name: '--clear-cross-color-hover', type: 'color'},
+      ],
     },
 
     {
@@ -291,8 +291,8 @@ export default {
         {name: '--fieldset-box-shadow--invalid', type: 'box-shadow'},
         {name: '--fieldset-box-shadow--focus', type: 'box-shadow'},
         {name: '--fieldset-box-shadow--invalid-focus', type: 'box-shadow'},
-        {name: '--fieldset-bg', type: 'color'}
-      ]
+        {name: '--fieldset-bg', type: 'color'},
+      ],
     },
 
     {
@@ -309,8 +309,8 @@ export default {
         {name: '--form-builder-block-shadow--focus', type: 'box-shadow'},
         {name: '--form-builder-block-shadow--invalid', type: 'box-shadow'},
         {name: '--form-builder-block-shadow--invalid-focus', type: 'box-shadow'},
-        {name: '--form-builder-block-border-radius', type: 'border-radius'}
-      ]
+        {name: '--form-builder-block-border-radius', type: 'border-radius'},
+      ],
     },
 
     {
@@ -330,16 +330,16 @@ export default {
         {name: '--zindex-moving-item', type: 'z-index'},
         {name: '--zindex-spinner', type: 'z-index'},
         {name: '--zindex-drawershade', type: 'z-index'},
-        {name: '--zindex-drawer', type: 'z-index'}
-      ]
+        {name: '--zindex-drawer', type: 'z-index'},
+      ],
     },
 
     {
       name: 'list-border',
       properties: [
         {name: '--list-border-color', type: 'color'},
-        {name: '--list-border', type: 'border'}
-      ]
+        {name: '--list-border', type: 'border'},
+      ],
     },
 
     {
@@ -352,8 +352,8 @@ export default {
         {name: '--progress-bar-success-bg', type: 'color'},
         {name: '--progress-bar-warning-bg', type: 'color'},
         {name: '--progress-bar-danger-bg', type: 'color'},
-        {name: '--progress-bar-info-bg', type: 'color'}
-      ]
+        {name: '--progress-bar-info-bg', type: 'color'},
+      ],
     },
 
     {
@@ -368,8 +368,8 @@ export default {
         {name: '--selectable-item-color-focus--inverted', type: 'color'},
         {name: '--selectable-item-color-active', type: 'color'},
         {name: '--selectable-item-color-active--inverted', type: 'color'},
-        {name: '--selectable-item-color-highlighted', type: 'color'}
-      ]
+        {name: '--selectable-item-color-highlighted', type: 'color'},
+      ],
     },
 
     {
@@ -378,8 +378,8 @@ export default {
         {name: '--selected-item-color', type: 'color'},
         {name: '--selected-item-color--inverted', type: 'color'},
         {name: '--selected-item-color-hover', type: 'color'},
-        {name: '--selected-item-color-hover--inverted', type: 'color'}
-      ]
+        {name: '--selected-item-color-hover--inverted', type: 'color'},
+      ],
     },
 
     {
@@ -400,8 +400,8 @@ export default {
         {name: '--state-danger-color', type: 'color'},
         {name: '--state-danger-color--faded', type: 'color'},
         {name: '--state-danger-color--strong', type: 'color'},
-        {name: '--state-danger-color--inverted', type: 'color'}
-      ]
+        {name: '--state-danger-color--inverted', type: 'color'},
+      ],
     },
 
     {
@@ -409,16 +409,16 @@ export default {
       properties: [
         {name: '--text-color', type: 'color'},
         {name: '--text-color-secondary', type: 'color'},
-        {name: '--text-muted', type: 'color'}
-      ]
+        {name: '--text-muted', type: 'color'},
+      ],
     },
 
     {
       name: 'link',
       properties: [
         {name: '--link-color', type: 'color'},
-        {name: '--link-hover-color', type: 'color'}
-      ]
+        {name: '--link-hover-color', type: 'color'},
+      ],
     },
 
     {
@@ -455,23 +455,23 @@ export default {
         {name: '--blockquote-color', type: 'color'},
         {name: '--blockquote-font-size', type: 'font-size'},
         {name: '--blockquote-border-color', type: 'color'},
-        {name: '--blockquote-small-color', type: 'color'}
-      ]
+        {name: '--blockquote-small-color', type: 'color'},
+      ],
     },
 
     {
       name: 'page-header',
-      properties: [{name: '--page-header-border-color', type: 'color'}]
+      properties: [{name: '--page-header-border-color', type: 'color'}],
     },
 
     {
       name: 'hr',
-      properties: [{name: '--hr-border', type: 'color'}]
+      properties: [{name: '--hr-border', type: 'color'}],
     },
 
     {
       name: 'icon',
-      properties: [{name: '--icon-size', type: 'size'}]
-    }
-  ]
+      properties: [{name: '--icon-size', type: 'size'}],
+    },
+  ],
 }

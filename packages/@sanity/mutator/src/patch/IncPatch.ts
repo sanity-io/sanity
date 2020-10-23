@@ -18,9 +18,9 @@ export default class IncPatch {
     if (result.containerType() == 'primitive') {
       return result
     }
-    targets.forEach(target => {
+    targets.forEach((target) => {
       if (target.isIndexReference()) {
-        target.toIndicies(accessor).forEach(i => {
+        target.toIndicies(accessor).forEach((i) => {
           // Skip patching unless the index actually currently exists
           if (result.getIndex(i)) {
             const previousValue = result.getIndex(i).get()

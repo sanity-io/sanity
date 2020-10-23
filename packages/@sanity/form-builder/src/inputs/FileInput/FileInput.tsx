@@ -64,7 +64,7 @@ type FileInputState = {
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
   static contextTypes = {
-    getValuePath: PropTypes.func
+    getValuePath: PropTypes.func,
   }
 
   _focusArea: any
@@ -74,7 +74,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     isUploading: false,
     isAdvancedEditOpen: false,
     uploadError: null,
-    hasFocus: false
+    hasFocus: false,
   }
 
   handleRemoveButtonClick = () => {
@@ -95,13 +95,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     // value and remove it for us
     const allKeys = Object.keys(value)
     const remainingKeys = allKeys.filter(
-      key => !['_type', '_key', '_upload', 'asset'].includes(key)
+      (key) => !['_type', '_key', '_upload', 'asset'].includes(key)
     )
 
     const isEmpty = remainingKeys.length === 0
     const removeKeys = ['asset']
-      .concat(allKeys.filter(key => ['_upload'].includes(key)))
-      .map(key => unset([key]))
+      .concat(allKeys.filter((key) => ['_upload'].includes(key)))
+      .map((key) => unset([key]))
 
     this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
@@ -131,7 +131,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       uploader: Uploader
       file: globalThis.File
     } | null
-    Array.from(fileList).some(file => {
+    Array.from(fileList).some((file) => {
       const uploader = resolveUploader(type, file)
       if (uploader) {
         match = {file, uploader}
@@ -148,25 +148,25 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const {type, onChange} = this.props
     const options = {
       metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
     }
     this.cancelUpload()
     this.setState({isUploading: true})
     onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
     this.uploadSubscription = uploader.upload(file, type, options).subscribe({
-      next: uploadEvent => {
+      next: (uploadEvent) => {
         if (uploadEvent.patches) {
           onChange(PatchEvent.from(uploadEvent.patches))
         }
       },
-      error: err => {
+      error: (err) => {
         this.setState({uploadError: err})
         this.clearUploadStatus()
       },
       complete: () => {
         onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
         this.setState({isUploading: false})
-      }
+      },
     })
   }
 
@@ -219,7 +219,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     onChange(
       event.prefixAll(field.name).prepend(
         setIfMissing({
-          _type: type.name
+          _type: type.name,
         })
       )
     )
@@ -253,19 +253,19 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderFields(fields: Array<FieldT>) {
-    return fields.map(field => this.renderField(field))
+    return fields.map((field) => this.renderField(field))
   }
 
-  handleFocus = event => {
+  handleFocus = (event) => {
     this.setState({
-      hasFocus: true
+      hasFocus: true,
     })
     this.props.onFocus(event)
   }
 
   handleBlur = () => {
     this.setState({
-      hasFocus: false
+      hasFocus: false,
     })
     this.props.onBlur()
   }
@@ -278,7 +278,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         key={field.name}
         value={fieldValue}
         type={field.type}
-        onChange={ev => this.handleFieldChange(ev, field)}
+        onChange={(ev) => this.handleFieldChange(ev, field)}
         path={[field.name]}
         onFocus={onFocus}
         onBlur={onBlur}
@@ -330,16 +330,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const {type, value, compareValue, level, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
-      type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
+      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
     const accept = get(type, 'options.accept', '')
     const hasAsset = value && value.asset
 
     const isInside = presence
-      .map(item => {
-        const otherFieldsPath = otherFields.map(field => field.name)
-        return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
+      .map((item) => {
+        const otherFieldsPath = otherFields.map((field) => field.name)
+        return item.path.some((path) => otherFieldsPath.includes(path)) ? item.identity : null
       })
       .filter(String)
 
@@ -354,7 +354,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         onUpload={this.handleUpload}
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
-        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
+        presence={presence.filter(
+          (item) => item.path[0] === '$' || isInside.includes(item.identity)
+        )}
         changeIndicator={false}
       >
         {uploadError && (

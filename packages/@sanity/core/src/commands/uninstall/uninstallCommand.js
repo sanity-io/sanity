@@ -18,7 +18,7 @@ export default {
 
     // @todo add support for multiple simultaneous plugins to be uninstalled
     return uninstallPlugin(plugin, context)
-  }
+  },
 }
 
 async function uninstallPlugin(plugin, context) {
@@ -75,7 +75,7 @@ function promptOnAlteredConfiguration(plugin, sameChecksum, prompt) {
       type: 'confirm',
       name: 'deleteConfig',
       message: `Local configuration for '${plugin}' has modifications - remove anyway?`,
-      default: true
-    }
+      default: true,
+    },
   ])
 }

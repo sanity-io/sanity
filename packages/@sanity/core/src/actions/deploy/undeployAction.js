@@ -3,7 +3,7 @@ export default async (args, context) => {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   // Check that the project has a studio hostname
@@ -27,7 +27,7 @@ export default async (args, context) => {
     default: false,
     message: `This will undeploy ${url} and make it unavailable for your users.
   The hostname will be available for anyone to claim.
-  Are you ${chalk.red('sure')} you want to undeploy?`.trim()
+  Are you ${chalk.red('sure')} you want to undeploy?`.trim(),
   })
 
   if (!shouldUndeploy) {

@@ -6,7 +6,7 @@ const exportDefaults = {
   compress: true,
   drafts: true,
   assets: true,
-  raw: false
+  raw: false,
 }
 
 function validateOptions(opts) {
@@ -24,7 +24,7 @@ function validateOptions(opts) {
     throw new Error('`options.client` must be set to an instance of @sanity/client')
   }
 
-  const missing = clientMethods.find(key => typeof options.client[key] !== 'function')
+  const missing = clientMethods.find((key) => typeof options.client[key] !== 'function')
   if (missing) {
     throw new Error(
       `\`options.client\` is not a valid @sanity/client instance - no "${missing}" method found`
@@ -36,7 +36,7 @@ function validateOptions(opts) {
     throw new Error('Client is not instantiated with a `token`')
   }
 
-  booleanFlags.forEach(flag => {
+  booleanFlags.forEach((flag) => {
     if (typeof options[flag] !== 'boolean') {
       throw new Error(`Flag ${flag} must be a boolean (true/false)`)
     }

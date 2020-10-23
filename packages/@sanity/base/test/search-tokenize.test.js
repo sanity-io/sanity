@@ -15,7 +15,7 @@ const tests = [
   ['foo   , bar   , baz', ['foo', 'bar', 'baz']],
   ['a.b.c', ['a.b.c']],
   ['fourty-two', ['fourty', 'two']],
-  ['abc -23 def', ['abc', '23', 'def']]
+  ['abc -23 def', ['abc', '23', 'def']],
 ]
 
 tests.forEach(([input, expected]) => {

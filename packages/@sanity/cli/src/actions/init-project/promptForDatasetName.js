@@ -9,7 +9,7 @@ export default function promptForDatasetName(prompt, options = {}, existingDatas
   return prompt.single({
     type: 'input',
     message: 'Dataset name:',
-    validate: name => {
+    validate: (name) => {
       if (existingDatasets.includes(name)) {
         return `Dataset name already exists`
       }
@@ -44,7 +44,7 @@ export default function promptForDatasetName(prompt, options = {}, existingDatas
         ? `Disallowed characters found: ${printInvalid(name, invalid)}`
         : datasetNameError
     },
-    ...options
+    ...options,
   })
 }
 

@@ -4,7 +4,7 @@ import {LayerContext, LayerContextValue} from './LayerContext'
 const DEFAULT_LAYER_VALUE: LayerContextValue = {
   depth: 0,
   mount: () => () => undefined,
-  size: 0
+  size: 0,
 }
 
 export function useLayer(): LayerContextValue {

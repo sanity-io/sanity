@@ -11,7 +11,7 @@ import {StackedStory} from './stories/stacked'
 import {WithChildrenStory} from './stories/withChildren'
 import {TransitionsStory} from './stories/transitions'
 
-const Provider = storyFn => (
+const Provider = (storyFn) => (
   <Sanity part="part:@sanity/components/snackbar/item" propTables={[Snackbar]}>
     <SnackbarProvider>{storyFn()}</SnackbarProvider>
   </Sanity>

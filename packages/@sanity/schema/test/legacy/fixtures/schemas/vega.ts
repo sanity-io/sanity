@@ -12,13 +12,13 @@ export default {
       fields: [
         {
           name: 'someString',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'someNumber',
-          type: 'number'
-        }
-      ]
+          type: 'number',
+        },
+      ],
     },
     {
       name: 'latlon',
@@ -27,14 +27,14 @@ export default {
         {
           name: 'lat',
           title: 'Latitude',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'lon',
           title: 'Longitude',
-          type: 'number'
-        }
-      ]
+          type: 'number',
+        },
+      ],
     },
     {
       name: 'image',
@@ -42,22 +42,22 @@ export default {
       fields: [
         {
           name: 'fullsize',
-          type: 'string'
+          type: 'string',
         },
         {
           name: 'aspectRatio',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'versions',
           type: 'array',
           of: [
             {
-              type: 'imageVersion'
-            }
-          ]
-        }
-      ]
+              type: 'imageVersion',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'imageVersion',
@@ -65,17 +65,17 @@ export default {
       fields: [
         {
           name: 'width',
-          type: 'number'
+          type: 'number',
         },
         {
           name: 'square',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'url',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'person',
@@ -84,7 +84,7 @@ export default {
         {
           name: 'name',
           type: 'string',
-          title: 'Name'
+          title: 'Name',
         },
         {
           name: 'contact',
@@ -92,23 +92,23 @@ export default {
           fields: [
             {
               name: 'type',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'person',
               type: 'reference',
               to: {
-                type: 'person'
-              }
+                type: 'person',
+              },
             },
             {
               name: 'relation',
               type: 'string',
-              placeholder: 'Fetter, mor, etc.'
-            }
-          ]
-        }
-      ]
+              placeholder: 'Fetter, mor, etc.',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'client',
@@ -120,20 +120,20 @@ export default {
           fields: [
             {
               name: 'foo',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'contactPerson',
           type: 'person',
-          title: 'Kontaktperson'
+          title: 'Kontaktperson',
         },
         {
           name: 'name',
           type: 'string',
           title: 'Tittel',
-          placeholder: 'Hva heter kunden?'
+          placeholder: 'Hva heter kunden?',
         },
         {
           name: 'names',
@@ -141,49 +141,49 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'string'
+              type: 'string',
             },
             {
-              type: 'number'
-            }
-          ]
+              type: 'number',
+            },
+          ],
         },
         {
           name: 'tags',
           type: 'tag',
           title: 'Tag',
-          placeholder: 'Hva heter kunden?'
-        }
-      ]
+          placeholder: 'Hva heter kunden?',
+        },
+      ],
     },
     {
       name: 'placeholder',
       type: 'string',
-      value: 'placeholder'
+      value: 'placeholder',
     },
     {
       name: 'personName',
       type: 'string',
       autocompletes: {
-        scope: 'person'
-      }
+        scope: 'person',
+      },
     },
     {
       name: 'something',
       type: 'any',
       of: [
         {
-          type: 'string'
+          type: 'string',
         },
         {
-          type: 'person'
+          type: 'person',
         },
         {
           type: 'reference',
           to: {
             type: 'person',
-            title: 'Person'
-          }
+            title: 'Person',
+          },
         },
         {
           type: 'object',
@@ -191,18 +191,18 @@ export default {
           fields: [
             {
               name: 'field1',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'field2',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
-          type: 'person'
-        }
-      ]
+          type: 'person',
+        },
+      ],
     },
     {
       name: 'contentList',
@@ -212,35 +212,35 @@ export default {
           type: 'reference',
           to: [
             {
-              type: 'image'
-            }
+              type: 'image',
+            },
           ],
           meta: {
-            type: 'imageMetadata'
-          }
+            type: 'imageMetadata',
+          },
         },
         {
-          type: 'tag'
+          type: 'tag',
         },
         {
-          type: 'placeholder'
+          type: 'placeholder',
         },
         {
           type: 'array',
           of: [
             {
-              type: 'string'
-            }
-          ]
-        }
+              type: 'string',
+            },
+          ],
+        },
       ],
       validates: {
-        maxLength: 4
-      }
+        maxLength: 4,
+      },
     },
     {
       name: 'tag',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'story',
@@ -250,7 +250,7 @@ export default {
           name: 'title',
           type: 'string',
           title: 'Tittel',
-          placeholder: 'Slik får du tettere bart enn Poirot'
+          placeholder: 'Slik får du tettere bart enn Poirot',
         },
         {
           name: 'ingress',
@@ -258,23 +258,23 @@ export default {
           format: 'html',
           title: 'Ingress',
           validates: {
-            maxLength: 10
-          }
+            maxLength: 10,
+          },
         },
         {
           name: 'location',
           title: 'Where is the bear',
-          type: 'latlon'
+          type: 'latlon',
         },
         {
           name: 'image',
           type: 'image',
-          title: 'Image'
+          title: 'Image',
         },
         {
           name: 'client',
           type: 'client',
-          title: 'Klient'
+          title: 'Klient',
         },
         {
           name: 'content',
@@ -283,11 +283,11 @@ export default {
           type: 'array',
           of: [
             {
-              type: 'person'
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              type: 'person',
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

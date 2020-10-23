@@ -118,7 +118,7 @@ export default class Expression {
     }
     return new Expression({
       type: 'path',
-      nodes: node.pathNodes().concat(this.pathNodes())
+      nodes: node.pathNodes().concat(this.pathNodes()),
     })
   }
   concat(other) {
@@ -128,11 +128,11 @@ export default class Expression {
     return other.prepend(this)
   }
   descend() {
-    return descend(this.expr).map(headTail => {
+    return descend(this.expr).map((headTail) => {
       const [head, tail] = headTail
       return {
         head: head ? new Expression(head) : null,
-        tail: tail ? new Expression(tail) : null
+        tail: tail ? new Expression(tail) : null,
       }
     })
   }
@@ -179,13 +179,13 @@ export default class Expression {
   static attributeReference(name: string) {
     return new Expression({
       type: 'attribute',
-      name: name
+      name: name,
     })
   }
   static indexReference(i: number) {
     return new Expression({
       type: 'index',
-      value: i
+      value: i,
     })
   }
 }

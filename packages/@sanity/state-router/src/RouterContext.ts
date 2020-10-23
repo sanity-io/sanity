@@ -12,7 +12,7 @@ const missingRouter: InternalRouter = {
   navigateIntent: missingContext,
   navigateUrl: missingContext,
   resolveIntentLink: missingContext,
-  resolvePathFromState: missingContext
+  resolvePathFromState: missingContext,
 }
 
 export const RouterContext = React.createContext(missingRouter)
@@ -23,7 +23,7 @@ export const useRouterState = (deps?: string[]) => {
 
   let dependencies
   if (deps) {
-    dependencies = deps.map(key => routerState[key])
+    dependencies = deps.map((key) => routerState[key])
   }
 
   // subscribe() returns an unsubscribe function, so this'll handle unmounting

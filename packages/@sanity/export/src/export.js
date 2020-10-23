@@ -24,7 +24,7 @@ function exportDataset(opts) {
   const onProgress = options.onProgress || noop
   const archive = archiver('tar', {
     gzip: true,
-    gzipOptions: {level: options.compress ? zlib.Z_DEFAULT_COMPRESSION : zlib.Z_NO_COMPRESSION}
+    gzipOptions: {level: options.compress ? zlib.Z_DEFAULT_COMPRESSION : zlib.Z_NO_COMPRESSION},
   })
 
   const slugDate = new Date()
@@ -35,7 +35,7 @@ function exportDataset(opts) {
   const prefix = `${opts.dataset}-export-${slugDate}`
   const tmpDir = path.join(os.tmpdir(), prefix)
   const cleanup = () =>
-    fse.remove(tmpDir).catch(err => {
+    fse.remove(tmpDir).catch((err) => {
       debug(`Error while cleaning up temporary files: ${err.message}`)
     })
 
@@ -43,7 +43,7 @@ function exportDataset(opts) {
     client: options.client,
     tmpDir,
     prefix,
-    concurrency: options.assetConcurrency
+    concurrency: options.assetConcurrency,
   })
 
   debug('Outputting assets (temporarily) to %s', tmpDir)
@@ -57,7 +57,7 @@ function exportDataset(opts) {
   }
 
   return new Promise(async (resolve, reject) => {
-    miss.finished(archive, async archiveErr => {
+    miss.finished(archive, async (archiveErr) => {
       if (archiveErr) {
         debug('Archiving errored! %s', archiveErr.stack)
         await cleanup()
@@ -82,7 +82,7 @@ function exportDataset(opts) {
           step: 'Exporting documents...',
           current: documentCount,
           total: '?',
-          update: true
+          update: true,
         })
 
         lastReported = now
@@ -108,7 +108,7 @@ function exportDataset(opts) {
       miss.through(reportDocumentCount)
     )
 
-    miss.finished(jsonStream, async err => {
+    miss.finished(jsonStream, async (err) => {
       if (err) {
         return
       }
@@ -117,7 +117,7 @@ function exportDataset(opts) {
         step: 'Exporting documents...',
         current: documentCount,
         total: documentCount,
-        update: true
+        update: true,
       })
 
       if (!options.raw && options.assets) {
@@ -138,7 +138,7 @@ function exportDataset(opts) {
           step: 'Downloading assets...',
           current: completed,
           total: assetHandler.queueSize,
-          update: true
+          update: true,
         })
       }, 500)
 
@@ -151,7 +151,7 @@ function exportDataset(opts) {
           step: 'Downloading assets...',
           current: assetHandler.queueSize,
           total: assetHandler.queueSize,
-          update: true
+          update: true,
         })
 
         archive.append(JSON.stringify(assetMap), {name: 'assets.json', prefix})
@@ -172,7 +172,7 @@ function exportDataset(opts) {
       archive.finalize()
     })
 
-    archive.on('warning', err => {
+    archive.on('warning', (err) => {
       debug('Archive warning: %s', err.message)
     })
 

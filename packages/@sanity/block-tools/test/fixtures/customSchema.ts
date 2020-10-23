@@ -6,7 +6,7 @@ export default Schema.compile({
     {
       type: 'document',
       name: 'author',
-      fields: [{type: 'string', name: 'name', title: 'Name'}]
+      fields: [{type: 'string', name: 'name', title: 'Name'}],
     },
     {
       name: 'customBlock',
@@ -15,7 +15,7 @@ export default Schema.compile({
       styles: [
         {title: 'Normal', value: 'normal'},
         {title: 'H1', value: 'h1'},
-        {title: 'H2', value: 'h2'}
+        {title: 'H2', value: 'h2'},
       ],
       // Only allow numbered lists
       lists: [{title: 'Numbered', value: 'number'}],
@@ -23,7 +23,7 @@ export default Schema.compile({
         // Only allow these decorators
         decorators: [
           {title: 'Strong', value: 'strong'},
-          {title: 'Emphasis', value: 'em'}
+          {title: 'Emphasis', value: 'em'},
         ],
         // Support annotating text with a reference to an author
         annotations: [
@@ -31,10 +31,10 @@ export default Schema.compile({
             name: 'author',
             title: 'Author',
             type: 'reference',
-            to: {type: 'author'}
-          }
-        ]
-      }
+            to: {type: 'author'},
+          },
+        ],
+      },
     },
     {
       type: 'object',
@@ -43,15 +43,15 @@ export default Schema.compile({
         {
           title: 'Title',
           type: 'string',
-          name: 'title'
+          name: 'title',
         },
         {
           title: 'Body',
           name: 'body',
           type: 'array',
-          of: [{type: 'customBlock'}]
-        }
-      ]
-    }
-  ]
+          of: [{type: 'customBlock'}],
+        },
+      ],
+    },
+  ],
 })

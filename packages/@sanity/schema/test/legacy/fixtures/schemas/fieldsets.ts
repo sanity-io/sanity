@@ -11,8 +11,8 @@ export default {
           title: 'Headings',
           description: 'FIELDSET HEADINGS DESCRIPTION',
           options: {
-            columns: 2
-          }
+            columns: 2,
+          },
         },
         {
           name: 'author',
@@ -20,8 +20,8 @@ export default {
           description: 'Author details with 2 column grid',
           options: {
             columns: 2,
-            collapsable: true
-          }
+            collapsable: true,
+          },
         },
         {
           name: 'checkboxes',
@@ -29,9 +29,9 @@ export default {
           description: 'Lets put 3 checkboxes in an a 3 column',
           options: {
             columns: 3,
-            collapsable: true
-          }
-        }
+            collapsable: true,
+          },
+        },
       ],
       fields: [
         {
@@ -39,47 +39,47 @@ export default {
           title: 'Foo',
           description: 'Foo foo foo fooooooooooo',
           type: 'string',
-          fieldset: 'headings'
+          fieldset: 'headings',
         },
         {
           name: 'title',
           title: 'Title',
           description: 'Title title title…',
           type: 'string',
-          fieldset: 'headings'
+          fieldset: 'headings',
         },
         {
           name: 'author',
           title: 'Author',
           description: 'Author author author…',
           type: 'person',
-          fieldset: 'author'
+          fieldset: 'author',
         },
         {
           name: 'test',
           title: 'Author details extra string',
           description: 'Details extra string',
           type: 'string',
-          fieldset: 'author'
+          fieldset: 'author',
         },
         {
           name: 'murgh',
           type: 'string',
           title: 'Murgh',
-          description: 'Murgh is nice, and this is a description of it.'
+          description: 'Murgh is nice, and this is a description of it.',
         },
         {
           name: 'lead',
           title: 'Lead',
           description: 'Lead is a metal and a chemical element',
           type: 'text',
-          format: 'html'
+          format: 'html',
         },
         {
           name: 'check-one',
           title: 'Check one?',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          fieldset: 'checkboxes',
         },
         {
           name: 'check-two',
@@ -87,14 +87,14 @@ export default {
             'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
           description: 'Description',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          fieldset: 'checkboxes',
         },
         {
           name: 'check-three',
           title: 'Check three?',
           description: 'Description',
           type: 'boolean',
-          fieldset: 'checkboxes'
+          fieldset: 'checkboxes',
         },
         {
           name: 'content',
@@ -104,15 +104,15 @@ export default {
           of: [
             {
               title: 'String',
-              type: 'string'
-            }
-          ]
+              type: 'string',
+            },
+          ],
         },
         {
           name: 'standalone-check',
           title: 'Standalone checkbox',
           description: 'Description',
-          type: 'boolean'
+          type: 'boolean',
         },
         {
           name: 'gnargh',
@@ -124,17 +124,17 @@ export default {
               name: 'petpeeve',
               type: 'string',
               title: 'Pet peeve',
-              description: 'Description'
+              description: 'Description',
             },
             {
               name: 'color',
               type: 'string',
               title: 'Color',
-              description: 'Description'
-            }
-          ]
-        }
-      ]
+              description: 'Description',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'address',
@@ -144,13 +144,13 @@ export default {
         {
           name: 'basics',
           title: 'Basics',
-          description: 'This is a fieldset'
+          description: 'This is a fieldset',
         },
         {
           name: 'street',
           title: 'Street',
-          description: 'This is a fieldset'
-        }
+          description: 'This is a fieldset',
+        },
       ],
       fields: [
         {
@@ -158,23 +158,23 @@ export default {
           type: 'string',
           title: 'Street',
           description: 'Description',
-          fieldset: 'street'
+          fieldset: 'street',
         },
         {
           name: 'zip',
           type: 'string',
           title: 'Zip',
           description: 'Description',
-          fieldset: 'basics'
+          fieldset: 'basics',
         },
         {
           name: 'place',
           type: 'string',
           title: 'Place',
           description: 'Description',
-          fieldset: 'basics'
-        }
-      ]
+          fieldset: 'basics',
+        },
+      ],
     },
     {
       name: 'person',
@@ -184,8 +184,8 @@ export default {
       fields: [
         {name: 'firstname', type: 'string', title: 'First name', description: 'Description'},
         {name: 'lastname', type: 'string', title: 'Last name', description: 'Description'},
-        {name: 'address', type: 'address', title: 'Address', description: 'Description'}
-      ]
-    }
-  ]
+        {name: 'address', type: 'address', title: 'Address', description: 'Description'},
+      ],
+    },
+  ],
 }

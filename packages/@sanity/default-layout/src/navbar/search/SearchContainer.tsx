@@ -11,7 +11,7 @@ import {
   mergeMapTo,
   switchMap,
   takeUntil,
-  tap
+  tap,
 } from 'rxjs/operators'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -25,7 +25,7 @@ import resultsStyles from './SearchResults.css'
 const hotKeys = {
   // NOTE: Remove until we know what hotkey to use
   // openSearch: isKeyHotkey('ctrl+t'),
-  debugSearch: isKeyHotkey('ctrl+shift+d')
+  debugSearch: isKeyHotkey('ctrl+shift+d'),
 }
 
 const searchOrEmpty = (queryStr: string) => {
@@ -54,7 +54,7 @@ class SearchContainer extends React.PureComponent<Props, State> {
   static propTypes = {
     onOpen: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
-    shouldBeFocused: PropTypes.bool.isRequired
+    shouldBeFocused: PropTypes.bool.isRequired,
   }
   fieldRef: React.RefObject<SearchField> = React.createRef()
   resultsRef: React.RefObject<SearchResults> = React.createRef()
@@ -71,7 +71,7 @@ class SearchContainer extends React.PureComponent<Props, State> {
     isPressing: false,
     results: [],
     value: '',
-    isDebug: false
+    isDebug: false,
   }
 
   componentDidMount() {
@@ -93,7 +93,7 @@ class SearchContainer extends React.PureComponent<Props, State> {
         ),
         // catch any error
         catchError((error: Error, caught$) => concat(of({error}), caught$)),
-        tap(nextState => this.setState(nextState as State)),
+        tap((nextState) => this.setState(nextState as State)),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
       .subscribe()
@@ -184,9 +184,9 @@ class SearchContainer extends React.PureComponent<Props, State> {
     this.setState({isPressing: true})
   }
 
-  handleWindowKeyDown = event => {
+  handleWindowKeyDown = (event) => {
     if (hotKeys.debugSearch(event)) {
-      this.setState(prevState => ({isDebug: !prevState.isDebug}))
+      this.setState((prevState) => ({isDebug: !prevState.isDebug}))
     }
   }
 
@@ -212,7 +212,7 @@ class SearchContainer extends React.PureComponent<Props, State> {
           <strong>Total score: {Math.round(score * 100) / 100}</strong>
           <ul>
             {stories
-              .filter(story => story.score > 0)
+              .filter((story) => story.score > 0)
               .map((story, i) => (
                 <li key={String(i)}>
                   {story.path}: {story.score} ({story.why})

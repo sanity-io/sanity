@@ -7,7 +7,7 @@ const DOCUMENT_IMPORT_CONCURRENCY = 3
 async function importBatches(batches, options) {
   const progress = progressStepper(options.onProgress, {
     step: 'Importing documents',
-    total: batches.length
+    total: batches.length,
   })
 
   const mapOptions = {concurrency: DOCUMENT_IMPORT_CONCURRENCY}
@@ -26,7 +26,7 @@ function importBatch(options, progress, batch) {
         .reduce((trx, doc) => trx[operation](doc), client.transaction())
         .commit({visibility: 'async'})
         .then(progress)
-        .then(res => res.results.length),
+        .then((res) => res.results.length),
     {maxRetries, isRetriable}
   )
 }

@@ -7,7 +7,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import rxPaths from 'rxjs/_esm5/path-mapping'
 import getStaticBasePath from '../util/getStaticBasePath'
 
-const resolve = mod => require.resolve(mod)
+const resolve = (mod) => require.resolve(mod)
 
 // eslint-disable-next-line complexity
 export default (config = {}) => {
@@ -23,7 +23,7 @@ export default (config = {}) => {
   if (!reactPath || !reactDomPath) {
     const missingErr = [
       `Could not find ${missing.join(', ')} dependencies in project directory`,
-      'These need to be declared in `package.json` and be installed for Sanity to work'
+      'These need to be declared in `package.json` and be installed for Sanity to work',
     ].join('\n')
 
     throw new Error(missingErr)
@@ -36,16 +36,16 @@ export default (config = {}) => {
     filename: 'css/main.css',
     allChunks: true,
     ignoreOrder: true,
-    disable: !isProd
+    disable: !isProd,
   })
 
   const postcssLoader = {
     loader: resolve('postcss-loader'),
     options: {
       config: {
-        path: path.join(__dirname, 'postcss.config.js')
-      }
-    }
+        path: path.join(__dirname, 'postcss.config.js'),
+      },
+    },
   }
 
   const cssLoaderLocation = resolve('@sanity/css-loader')
@@ -61,23 +61,23 @@ export default (config = {}) => {
     entry: {
       app: [
         resolve('normalize.css'),
-        path.join(__dirname, '..', 'browser', isProd ? 'entry.js' : 'entry-dev.js')
+        path.join(__dirname, '..', 'browser', isProd ? 'entry.js' : 'entry-dev.js'),
       ].filter(Boolean),
-      vendor: ['react', 'react-dom']
+      vendor: ['react', 'react-dom'],
     },
     output: {
       path: config.outputPath || path.join(__dirname, '..', '..', 'dist'),
       filename: 'js/[name].bundle.js',
-      publicPath: `${staticPath}/`
+      publicPath: `${staticPath}/`,
     },
     resolve: {
       alias: {
         react: path.dirname(reactPath),
         'react-dom': path.dirname(reactDomPath),
         moment$: 'moment/moment.js',
-        ...rxPaths()
+        ...rxPaths(),
       },
-      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
     },
     module: {
       rules: [
@@ -90,12 +90,12 @@ export default (config = {}) => {
               presets: [
                 resolve('@babel/preset-typescript'),
                 resolve('@babel/preset-react'),
-                [resolve('@babel/preset-env'), require('./babel-env-config')]
+                [resolve('@babel/preset-env'), require('./babel-env-config')],
               ],
               plugins: [resolve('@babel/plugin-proposal-class-properties')].filter(Boolean),
-              cacheDirectory: true
-            }
-          }
+              cacheDirectory: true,
+            },
+          },
         },
         {
           test: /\.css(\?|$)/,
@@ -107,8 +107,8 @@ export default (config = {}) => {
                     fallback: {
                       loader: resolve('style-loader'),
                       options: {
-                        hmr: false
-                      }
+                        hmr: false,
+                      },
                     },
                     use: [
                       {
@@ -116,37 +116,37 @@ export default (config = {}) => {
                         options: {
                           importLoaders: 1,
                           minimize: true,
-                          sourceMap: true
-                        }
-                      }
-                    ]
+                          sourceMap: true,
+                        },
+                      },
+                    ],
                   })
                 : [
                     resolve('style-loader'),
                     {
                       loader: resolve('@sanity/css-loader'),
                       options: {
-                        importLoaders: 1
-                      }
-                    }
-                  ]
+                        importLoaders: 1,
+                      },
+                    },
+                  ],
             },
             {
               use: isProd
                 ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
-                : [resolve('style-loader'), cssLoader, postcssLoader]
-            }
-          ]
+                : [resolve('style-loader'), cssLoader, postcssLoader],
+            },
+          ],
         },
         {
           test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,
           use: {
             loader: resolve('file-loader'),
-            options: {name: 'assets/[name]-[hash].[ext]'}
-          }
+            options: {name: 'assets/[name]-[hash].[ext]'},
+          },
         },
-        webpackIntegration.getPartLoader(wpIntegrationOptions)
-      ]
+        webpackIntegration.getPartLoader(wpIntegrationOptions),
+      ],
     },
     profile: config.profile || false,
     plugins: [
@@ -154,8 +154,8 @@ export default (config = {}) => {
       new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|nb/),
       webpackIntegration.getPartResolverPlugin(wpIntegrationOptions),
       cssExtractor,
-      commonChunkPlugin
-    ].filter(Boolean)
+      commonChunkPlugin,
+    ].filter(Boolean),
   }
 }
 

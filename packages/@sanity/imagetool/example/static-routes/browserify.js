@@ -8,12 +8,12 @@ const browser = rebundler((cache, pkgCache) => {
     cache: cache,
     packageCache: pkgCache,
     debug: true,
-    fullPaths: true
+    fullPaths: true,
   })
     .transform(babelify)
     .transform(envify)
 })
 
 module.exports = {
-  '/browser.js': () => browser().bundle()
+  '/browser.js': () => browser().bundle(),
 }

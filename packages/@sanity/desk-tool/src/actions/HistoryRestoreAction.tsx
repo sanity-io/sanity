@@ -26,7 +26,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
         color: 'danger',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: <>Are you sure you want to restore this document?</>
+        message: <>Are you sure you want to restore this document?</>,
       }
     }
 
@@ -38,7 +38,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
       type: 'error',
       onClose: () => setError(null),
       title: 'An error occured',
-      content: error.message
+      content: error.message,
     }
   }, [error, handleConfirm, isConfirmDialogOpen, onComplete])
 
@@ -53,6 +53,6 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
       : 'Restore to this version',
     icon: HistoryIcon,
     dialog,
-    disabled: isRevisionInitialVersion
+    disabled: isRevisionInitialVersion,
   }
 }

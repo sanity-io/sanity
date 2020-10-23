@@ -42,15 +42,15 @@ function convertImagesToFilesAndClearContentEditable(
       `Expected element to be contentEditable="true". Instead found a non contenteditable ${element.tagName}`
     )
   }
-  return new Promise(resolve => setTimeout(resolve, 10)) // add a delay so the paste event can finish
+  return new Promise((resolve) => setTimeout(resolve, 10)) // add a delay so the paste event can finish
     .then(() => Array.from(element.querySelectorAll('img')))
-    .then(imageElements => {
+    .then((imageElements) => {
       element.innerHTML = '' // clear
       return imageElements
     })
-    .then(images => Promise.all(images.map(img => imageUrlToBlob(img.src))))
-    .then(imageBlobs =>
-      imageBlobs.map(blob => new File([blob], 'pasted-image.jpg', {type: targetFormat}))
+    .then((images) => Promise.all(images.map((img) => imageUrlToBlob(img.src))))
+    .then((imageBlobs) =>
+      imageBlobs.map((blob) => new File([blob], 'pasted-image.jpg', {type: targetFormat}))
     )
 }
 
@@ -69,13 +69,13 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
     _element: any
     dragEnteredEls: Array<Element> = []
     static defaultProps = {
-      tabIndex: 0
+      tabIndex: 0,
     }
     state: State = {
       isDraggingOver: false,
       showPasteInput: false,
       rejected: [],
-      ambiguous: []
+      ambiguous: [],
     }
     handleFocus = (event: FocusEvent) => {
       const {onFocus} = this.props
@@ -95,12 +95,12 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
     }
     handlePaste = (event: React.ClipboardEvent) => {
       extractPastedFiles(event.clipboardData)
-        .then(files => {
+        .then((files) => {
           return files.length > 0
             ? files // Invoke Safari hack
             : convertImagesToFilesAndClearContentEditable(this._pasteInput, 'image/jpeg')
         })
-        .then(files => {
+        .then((files) => {
           this.uploadFiles(files)
           this.setState({showPasteInput: false})
         })
@@ -110,7 +110,7 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
       event.preventDefault()
       event.stopPropagation()
       if (this.props.onUpload) {
-        extractDroppedFiles(event.nativeEvent.dataTransfer).then(files => {
+        extractDroppedFiles(event.nativeEvent.dataTransfer).then((files) => {
           if (files) {
             this.uploadFiles(files)
           }
@@ -140,21 +140,21 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
     }
 
     uploadFiles(files: Array<File>) {
-      const tasks: UploadTask[] = files.map(file => ({
+      const tasks: UploadTask[] = files.map((file) => ({
         file,
-        uploaderCandidates: this.props.getUploadOptions(file)
+        uploaderCandidates: this.props.getUploadOptions(file),
       }))
-      const ready = tasks.filter(task => task.uploaderCandidates.length > 0)
-      const rejected: UploadTask[] = tasks.filter(task => task.uploaderCandidates.length === 0)
+      const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
+      const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
       this.setState({rejected})
       // todo: consider if we need to ask the user
       // the list of candidates is sorted by their priority and the first one is selected
       // const ambiguous = tasks
       //   .filter(task => task.uploaderCandidates.length > 1)
-      ready.forEach(task => {
+      ready.forEach((task) => {
         this.uploadFile(
           task.file,
-          sortBy(task.uploaderCandidates, candidate => candidate.uploader.priority)[0]
+          sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0]
         )
       })
     }
@@ -178,7 +178,7 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
       // Only care about focus events from children
       this._pasteInput = element
     }
-    setElement = element => {
+    setElement = (element) => {
       // Only care about focus events from children
       this._element = element
     }
@@ -204,18 +204,18 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
               actions={[{title: 'Cancel'}]}
               onAction={() => this.setState({ambiguous: []})}
             >
-              {ambiguous.map(task => (
+              {ambiguous.map((task) => (
                 <div key={task.file.name}>
                   The file {task.file.name} can be converted to several types of content. Please
                   select how you want to represent it:
                   <ul>
-                    {task.uploaderCandidates.map(uploaderCandidate => (
+                    {task.uploaderCandidates.map((uploaderCandidate) => (
                       <li key={uploaderCandidate.type.name}>
                         <Button
                           onClick={() => {
                             this.uploadFile(task.file, uploaderCandidate)
                             this.setState({
-                              ambiguous: ambiguous.filter(t => t !== task)
+                              ambiguous: ambiguous.filter((t) => t !== task),
                             })
                           }}
                         >
@@ -235,7 +235,7 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
               actionTitle="OK"
               onAction={() => this.setState({rejected: []})}
               title="File(s) not accepted:"
-              subtitle={humanize(rejected.map(task => task.file.name))}
+              subtitle={humanize(rejected.map((task) => task.file.name))}
             />
           )}
         </div>

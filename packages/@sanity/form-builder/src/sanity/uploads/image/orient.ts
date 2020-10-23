@@ -39,16 +39,16 @@ const ORIENTATION_OPS = [
   {op: 'flip-x', degrees: 0},
   {
     op: 'none',
-    degrees: 180
+    degrees: 180,
   },
   {op: 'flip-y', degrees: 0},
   {op: 'flip-x', degrees: 90},
   {op: 'none', degrees: 90},
   {
     op: 'flip-x',
-    degrees: -90
+    degrees: -90,
   },
-  {op: 'none', degrees: -90}
+  {op: 'none', degrees: -90},
 ]
 
 export type Orientation =
@@ -69,7 +69,7 @@ const ORIENTATIONS: Array<Orientation> = [
   'left-top',
   'right-top',
   'right-bottom',
-  'left-bottom'
+  'left-bottom',
 ]
 
 export const DEFAULT_ORIENTATION: Orientation = 'top-left'
@@ -110,7 +110,7 @@ function _orient(img: HTMLImageElement, orientationNumber: number): HTMLCanvasEl
     rotate(ctx, {
       degrees: orientation.degrees,
       x: canvas.width / 2,
-      y: canvas.height / 2
+      y: canvas.height / 2,
     })
 
     if (rotated(orientationNumber)) {
@@ -125,7 +125,7 @@ function _orient(img: HTMLImageElement, orientationNumber: number): HTMLCanvasEl
 
 /* eslint-enable */
 export default function orient(image: HTMLImageElement, orientationId: Orientation) {
-  return new Observable(observer => {
+  return new Observable((observer) => {
     // console.time('canvas to blob')
     const orientation = ORIENTATIONS.indexOf(orientationId) + 1
     const canvas = _orient(image, orientation)

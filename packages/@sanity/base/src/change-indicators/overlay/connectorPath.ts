@@ -3,7 +3,7 @@ import {
   ARROW_MARGIN_Y,
   ARROW_SIZE,
   ARROW_THRESHOLD,
-  CORNER_RADIUS
+  CORNER_RADIUS,
 } from '../constants'
 import {ConnectorLine} from './types'
 
@@ -11,7 +11,7 @@ export function arrowPath(x: number, y: number, dir: number) {
   return [
     `M ${x - ARROW_SIZE} ${y - ARROW_SIZE * dir} `,
     `L ${x} ${y}`,
-    `L ${x + ARROW_SIZE} ${y - ARROW_SIZE * dir}`
+    `L ${x + ARROW_SIZE} ${y - ARROW_SIZE * dir}`,
   ].join('')
 }
 

@@ -13,7 +13,7 @@ export function DefaultStory() {
           '': '(none)',
           top: 'Top',
           inside: 'Inside',
-          bottom: 'Bottom'
+          bottom: 'Bottom',
         },
         '',
         'Props'
@@ -25,14 +25,14 @@ export function DefaultStory() {
           '': '(none)',
           top: 'Top',
           inside: 'Inside',
-          bottom: 'Bottom'
+          bottom: 'Bottom',
         },
         '',
         'Props'
       ) || undefined,
     color: {
       dark: color('Color (dark)', '#0f0', 'Props'),
-      light: color('Color (light)', '#0c0', 'Props')
+      light: color('Color (light)', '#0c0', 'Props'),
     },
     initials: text('Intitials', 'si', 'Props'),
     size: select(
@@ -40,7 +40,7 @@ export function DefaultStory() {
       {
         small: 'Small',
         medium: 'Medium',
-        large: 'Large'
+        large: 'Large',
       },
       'small',
       'Props'
@@ -53,7 +53,7 @@ export function DefaultStory() {
           '': '(none)',
           online: 'Online',
           editing: 'Editing',
-          inactive: 'Inactive'
+          inactive: 'Inactive',
         },
         '',
         'Props'
@@ -64,11 +64,11 @@ export function DefaultStory() {
         'Tone',
         {
           '': '(none)',
-          navbar: 'Navbar'
+          navbar: 'Navbar',
         },
         '',
         'Props'
-      ) || undefined
+      ) || undefined,
   }
 
   return (

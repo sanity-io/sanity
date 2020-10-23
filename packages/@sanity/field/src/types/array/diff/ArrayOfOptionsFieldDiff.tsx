@@ -12,7 +12,7 @@ import {
   FromToArrow,
   getAnnotationColor,
   ItemDiff,
-  SchemaType
+  SchemaType,
 } from '../../../diff'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
@@ -43,7 +43,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
   return (
     <div>
       {diff.items
-        .map(item => normalizeItems(item, diff, schemaType))
+        .map((item) => normalizeItems(item, diff, schemaType))
         .filter((item): item is NormalizedListOption => item !== null)
         .sort(sortItems)
         .map((item, index) => {
@@ -92,7 +92,7 @@ function normalizeItems(
     itemIndex: getOptionIndex(value, schemaType),
     annotation: item.annotation,
     isPresent,
-    value
+    value,
   }
 }
 
@@ -115,7 +115,7 @@ function ItemPreview({value, memberType}: {memberType?: SchemaType; value: unkno
 function isInArray(value: unknown, parent?: unknown[] | null): boolean {
   const array = parent || []
   return typeof value === 'object' && value !== null
-    ? array.some(item => isEqual(item, value))
+    ? array.some((item) => isEqual(item, value))
     : array.includes(value)
 }
 
@@ -130,7 +130,7 @@ function getValue(diff: Diff) {
 
 function resolveMemberType(item: unknown, schemaType: ArraySchemaType) {
   const itemTypeName = resolveTypeName(item)
-  return schemaType.of.find(memberType => memberType.name === itemTypeName)
+  return schemaType.of.find((memberType) => memberType.name === itemTypeName)
 }
 
 function resolveTypeName(value: unknown): string {
@@ -161,7 +161,7 @@ function isNamedOption(item: unknown | NamedListOption): item is NamedListOption
 
 function getOptionIndex(item: unknown, schemaType: ArraySchemaType): number {
   const list = schemaType.options?.list || []
-  return list.findIndex(opt => isEqual(isNamedOption(opt) ? opt.value : opt, item))
+  return list.findIndex((opt) => isEqual(isNamedOption(opt) ? opt.value : opt, item))
 }
 
 function getItemTitle(item: unknown, schemaType: ArraySchemaType): string | undefined {

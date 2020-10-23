@@ -7,6 +7,6 @@ export default {
     const {apiClient, output} = context
     const client = apiClient()
     const datasets = await client.datasets.list()
-    output.print(datasets.map(set => set.name).join('\n'))
-  }
+    output.print(datasets.map((set) => set.name).join('\n'))
+  },
 }

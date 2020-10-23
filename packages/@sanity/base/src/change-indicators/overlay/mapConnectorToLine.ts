@@ -15,7 +15,7 @@ function getConnectorLinePoint(rect: Rect, bounds: Rect): ConnectorLinePoint {
     endY: rect.top + rect.height - CONNECTOR_MARGIN,
     isAbove,
     isBelow,
-    outOfBounds: isAbove || isBelow
+    outOfBounds: isAbove || isBelow,
   }
 }
 
@@ -31,7 +31,7 @@ export function mapConnectorToLine(connector: Connector) {
     left: connector.from.bounds.left,
     right: connector.from.bounds.left + connector.from.bounds.width,
     width: connector.from.bounds.width,
-    height: connector.from.bounds.height - ARROW_THRESHOLD * 2
+    height: connector.from.bounds.height - ARROW_THRESHOLD * 2,
   }
 
   const from = getConnectorLinePoint(connector.from.rect, fromBounds)
@@ -43,7 +43,7 @@ export function mapConnectorToLine(connector: Connector) {
     left: connector.to.bounds.left,
     right: connector.to.bounds.left + connector.to.bounds.width,
     width: connector.to.bounds.width,
-    height: connector.to.bounds.height - ARROW_THRESHOLD * 2
+    height: connector.to.bounds.height - ARROW_THRESHOLD * 2,
   }
 
   const to = getConnectorLinePoint(connector.to.rect, toBounds)

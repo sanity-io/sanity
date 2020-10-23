@@ -81,7 +81,7 @@ export class ListItemBuilder implements Serializable {
 
   showIcon(enabled: boolean) {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled}
+      displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled},
     })
   }
 
@@ -163,7 +163,7 @@ export class ListItemBuilder implements Serializable {
       schemaType,
       child: listChild,
       title,
-      type: 'listItem'
+      type: 'listItem',
     }
   }
 

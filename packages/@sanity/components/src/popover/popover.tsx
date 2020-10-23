@@ -67,8 +67,8 @@ export const Popover = forwardRef(
           name: 'arrow',
           options: {
             element: arrowElement,
-            padding: 4
-          }
+            padding: 4,
+          },
         },
         {
           name: 'preventOverflow',
@@ -76,14 +76,14 @@ export const Popover = forwardRef(
             // altAxis: true,
             rootBoundary: boundaryElement ? undefined : 'viewport',
             boundary: boundaryElement || 'clippingParents',
-            padding: 8
-          }
+            padding: 8,
+          },
         },
         {
           name: 'offset',
           options: {
-            offset: [0, 4]
-          }
+            offset: [0, 4],
+          },
         },
         {
           name: 'flip',
@@ -91,16 +91,16 @@ export const Popover = forwardRef(
             rootBoundary: boundaryElement ? undefined : 'viewport',
             boundary: boundaryElement || 'clippingParents',
             allowedAutoPlacements,
-            fallbackPlacements
-          }
+            fallbackPlacements,
+          },
         },
         {
           ...maxSize,
           options: {
-            padding: 8
-          }
-        }
-      ]
+            padding: 8,
+          },
+        },
+      ],
     })
 
     const {forceUpdate} = popper

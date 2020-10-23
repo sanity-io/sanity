@@ -8,16 +8,16 @@ describe('normalizeBlock', () => {
       markDefs: [
         {
           _key: '123123',
-          something: 'bogus'
-        }
+          something: 'bogus',
+        },
       ],
       children: [
         {
           _type: 'span',
           text: 'Foobar',
-          marks: ['lala']
-        }
-      ]
+          marks: ['lala'],
+        },
+      ],
     }
     assert.deepEqual(normalizeBlock(block), {
       _key: 'randomKey0',
@@ -27,10 +27,10 @@ describe('normalizeBlock', () => {
           _key: 'randomKey00',
           _type: 'span',
           marks: ['lala'],
-          text: 'Foobar'
-        }
+          text: 'Foobar',
+        },
       ],
-      markDefs: []
+      markDefs: [],
     })
     assert.deepEqual(normalizeBlock(block, {allowedDecorators: ['strong']}), {
       _key: 'randomKey0',
@@ -40,10 +40,10 @@ describe('normalizeBlock', () => {
           _key: 'randomKey00',
           _type: 'span',
           marks: [],
-          text: 'Foobar'
-        }
+          text: 'Foobar',
+        },
       ],
-      markDefs: []
+      markDefs: [],
     })
   })
 })

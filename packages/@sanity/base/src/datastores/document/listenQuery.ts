@@ -11,7 +11,7 @@ const listen = (query: string, params: {}) =>
     client.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
-      visibility: 'query'
+      visibility: 'query',
     })
   ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 

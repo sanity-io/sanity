@@ -5,7 +5,7 @@ function formatSubtitle(book) {
     'By',
     book.authorName || '<unknown>',
     book.authorBFF && `[BFF ${book.authorBFF} 🤞]`,
-    book.publicationYear && `(${book.publicationYear})`
+    book.publicationYear && `(${book.publicationYear})`,
   ]
     .filter(Boolean)
     .join(' ')
@@ -22,7 +22,7 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: Rule => Rule.min(5).max(100)
+      validation: (Rule) => Rule.min(5).max(100),
     },
     {
       name: 'translations',
@@ -31,38 +31,38 @@ export default {
       fields: [
         {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
         {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)'},
-        {name: 'se', type: 'string', title: 'Swedish'}
-      ]
+        {name: 'se', type: 'string', title: 'Swedish'},
+      ],
     },
     {
       name: 'author',
       title: 'Author',
       type: 'reference',
-      to: {type: 'author', title: 'Author'}
+      to: {type: 'author', title: 'Author'},
     },
     {
       name: 'coverImage',
       title: 'Cover Image',
       type: 'image',
-      options: {hotspot: true}
+      options: {hotspot: true},
     },
     {
       name: 'publicationYear',
       title: 'Year of publication',
-      type: 'number'
+      type: 'number',
     },
     {
       name: 'isbn',
       title: 'ISBN number',
       description: 'ISBN-number of the book. Not shown in studio.',
       type: 'number',
-      hidden: true
+      hidden: true,
     },
     {
       name: 'reviews',
       title: 'Reviews',
       type: 'array',
-      of: [{type: 'review'}]
+      of: [{type: 'review'}],
     },
     {
       name: 'reviewsInline',
@@ -75,12 +75,12 @@ export default {
             {
               name: 'title',
               title: 'Title',
-              type: 'string'
-            }
-          ]
-        }
-      ]
-    }
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
   ],
   orderings: [
     {
@@ -88,32 +88,32 @@ export default {
       name: 'title',
       by: [
         {field: 'title', direction: 'asc'},
-        {field: 'publicationYear', direction: 'asc'}
-      ]
+        {field: 'publicationYear', direction: 'asc'},
+      ],
     },
     {
       title: 'Author name',
       name: 'authorName',
-      by: [{field: 'author.name', direction: 'asc'}]
+      by: [{field: 'author.name', direction: 'asc'}],
     },
     {
       title: 'Authors best friend',
       name: 'authorBFF',
-      by: [{field: 'author.bestFriend.name', direction: 'asc'}]
+      by: [{field: 'author.bestFriend.name', direction: 'asc'}],
     },
     {
       title: 'Size of coverImage',
       name: 'coverImageSize',
-      by: [{field: 'coverImage.asset.size', direction: 'asc'}]
+      by: [{field: 'coverImage.asset.size', direction: 'asc'}],
     },
     {
       title: 'Swedish title',
       name: 'swedishTitle',
       by: [
         {field: 'translations.se', direction: 'asc'},
-        {field: 'title', direction: 'asc'}
-      ]
-    }
+        {field: 'title', direction: 'asc'},
+      ],
+    },
   ],
   preview: {
     select: {
@@ -124,18 +124,18 @@ export default {
       authorName: 'author.name',
       authorBFF: 'author.bestFriend.name',
       publicationYear: 'publicationYear',
-      media: 'coverImage'
+      media: 'coverImage',
     },
     prepare(book, options = {}) {
       return Object.assign({}, book, {
         title:
           ((options.ordering || {}).name === 'swedishTitle' && (book.translations || {}).se) ||
           book.title,
-        subtitle: formatSubtitle(book)
+        subtitle: formatSubtitle(book),
       })
-    }
+    },
   },
   initialValue: {
-    title: 'Foo'
-  }
+    title: 'Foo',
+  },
 }

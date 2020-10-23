@@ -77,5 +77,5 @@ export default [
   installCommand,
   startCommand,
   uninstallCommand,
-  execCommand
+  execCommand,
 ]

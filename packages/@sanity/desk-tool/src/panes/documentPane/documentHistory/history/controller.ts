@@ -324,7 +324,7 @@ export class Controller {
 export function createObservableController(
   options: Omit<Options, 'handler'>
 ): Observable<{historyController: Controller}> {
-  return new Observable(observer => {
+  return new Observable((observer) => {
     const controller = new Controller({
       ...options,
       handler: (err, innerController) => {
@@ -333,12 +333,12 @@ export function createObservableController(
         } else {
           observer.next({historyController: innerController})
         }
-      }
+      },
     })
     return remoteSnapshots({
       publishedId: options.documentId,
-      draftId: `drafts.${options.documentId}`
-    }).subscribe(ev => {
+      draftId: `drafts.${options.documentId}`,
+    }).subscribe((ev) => {
       controller.handleRemoteMutation(ev)
     })
   })

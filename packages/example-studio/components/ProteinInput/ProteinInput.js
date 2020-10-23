@@ -22,7 +22,7 @@ const VIEWER_OPTIONS = {
   transparency: 'screendoor',
   background: '#fff',
   animateTime: 500,
-  doubleClick: null
+  doubleClick: null,
 }
 
 const DEFAULT_PDB = PDBS[0].id
@@ -32,7 +32,7 @@ const getAttr = (value, propName) => value && value[propName]
 export default class ProteinInput extends React.Component {
   static propTypes = {
     type: PropTypes.shape({
-      title: PropTypes.string
+      title: PropTypes.string,
     }).isRequired,
     value: PropTypes.shape({
       _type: PropTypes.string,
@@ -40,15 +40,15 @@ export default class ProteinInput extends React.Component {
       camera: PropTypes.shape({
         rotation: PropTypes.arrayOf(PropTypes.number),
         center: PropTypes.arrayOf(PropTypes.number),
-        zoom: PropTypes.number
-      })
+        zoom: PropTypes.number,
+      }),
     }),
     level: PropTypes.number,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
   }
 
   state = {
-    isLoading: true
+    isLoading: true,
   }
 
   componentDidMount() {
@@ -84,20 +84,20 @@ export default class ProteinInput extends React.Component {
 
   loadPdb(id) {
     this.setState({
-      isLoading: true
+      isLoading: true,
     })
     this.viewer.clear()
-    io.fetchPdb(`//www.rcsb.org/pdb/files/${id}.pdb`, structure => {
+    io.fetchPdb(`//www.rcsb.org/pdb/files/${id}.pdb`, (structure) => {
       const ligand = structure.select({rnames: ['SAH', 'RVP']})
       this.viewer.spheres('structure.ligand', ligand, {})
       this.viewer.cartoon('structure.protein', structure, {boundingSpheres: false})
       this.setState({
-        isLoading: false
+        isLoading: false,
       })
     })
   }
 
-  updateViewerCamera = camera => {
+  updateViewerCamera = (camera) => {
     this.viewer.setCamera(camera.rotation, camera.center, camera.zoom)
   }
 
@@ -127,19 +127,19 @@ export default class ProteinInput extends React.Component {
           {
             rotation: Array.from(_rotation),
             center: Array.from(_center),
-            zoom: _zoom
+            zoom: _zoom,
           },
           ['camera']
-        )
+        ),
       ])
     )
   }
 
-  handleSelectChange = item => {
+  handleSelectChange = (item) => {
     this.setPdb(item.id)
   }
 
-  handlePdbStringChange = event => {
+  handlePdbStringChange = (event) => {
     const pdbId = event.target.value
     if (pdbId && pdbId.length === 4) {
       this.setPdb(pdbId)
@@ -155,11 +155,11 @@ export default class ProteinInput extends React.Component {
     onChange(PatchEvent.from([set({_type: type.name, pdb: pdbId})]))
   }
 
-  getPdbById = id => {
-    return PDBS.find(item => item.id === id)
+  getPdbById = (id) => {
+    return PDBS.find((item) => item.id === id)
   }
 
-  setViewerElement = element => {
+  setViewerElement = (element) => {
     this._viewerElement = element
   }
 
@@ -186,7 +186,7 @@ export default class ProteinInput extends React.Component {
                 zIndex: 100,
                 backgroundColor: 'rgba(255,255,255,0.8)',
                 width: '100%',
-                height: '100%'
+                height: '100%',
               }}
             >
               <Spinner center />

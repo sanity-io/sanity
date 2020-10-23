@@ -43,7 +43,7 @@ const createErrorStatus = ({
   error,
   isOffline,
   attemptNo,
-  retryAt
+  retryAt,
 }: {
   error: Error
   isOffline: boolean
@@ -54,7 +54,7 @@ const createErrorStatus = ({
   error,
   attemptNo,
   isOffline,
-  retryAt
+  retryAt,
 })
 
 export const connectionStatus$: Observable<ConnectionStatus> = merge(
@@ -71,7 +71,7 @@ export const connectionStatus$: Observable<ConnectionStatus> = merge(
       error,
       retryAt,
       isOffline,
-      attemptNo: successiveErrorsCount
+      attemptNo: successiveErrorsCount,
     })
 
     const triggerRetry$ = NEVER.pipe(

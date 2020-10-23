@@ -6,7 +6,7 @@ export default class Resize extends React.Component {
     image: PropTypes.instanceOf(HTMLImageElement).isRequired,
     maxWidth: PropTypes.number.isRequired,
     maxHeight: PropTypes.number.isRequired,
-    children: PropTypes.func.isRequired
+    children: PropTypes.func.isRequired,
   }
 
   componentWillUnmount() {

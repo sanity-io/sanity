@@ -12,10 +12,10 @@ export const calculateScore = (searchTerms, value) => {
     : [fieldScore / 2, `Matched ${matches.length} of ${all.length} terms: [${matches.join(', ')}]`]
 }
 
-const stringify = value => (typeof value === 'string' ? value : JSON.stringify(value))
+const stringify = (value) => (typeof value === 'string' ? value : JSON.stringify(value))
 
 export function applyWeights(searchSpec, hits, terms = []) {
-  const specByType = keyBy(searchSpec, spec => spec.typeName)
+  const specByType = keyBy(searchSpec, (spec) => spec.typeName)
   return hits.map((hit, index) => {
     const typeSpec = specByType[hit._type]
     const stories = typeSpec.paths.map((pathSpec, idx) => {
@@ -27,7 +27,7 @@ export function applyWeights(searchSpec, hits, terms = []) {
       return {
         path: pathSpec.path,
         score: score * pathSpec.weight,
-        why: `${why} (*${pathSpec.weight})`
+        why: `${why} (*${pathSpec.weight})`,
       }
     })
 

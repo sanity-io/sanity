@@ -23,7 +23,7 @@ export default class DefaultSnackbar extends React.PureComponent<DefaultSnackbar
   static contextTypes = {
     addToSnackQueue: PropTypes.func,
     handleDismissSnack: PropTypes.func,
-    updateSnack: PropTypes.func
+    updateSnack: PropTypes.func,
   }
 
   snackId?: string
@@ -51,12 +51,12 @@ export default class DefaultSnackbar extends React.PureComponent<DefaultSnackbar
       onAction,
       isPersisted,
       isCloseable,
-      allowDuplicateSnackbarType
+      allowDuplicateSnackbarType,
     } = this.props
 
     const action = (actionTitle || onAction) && {
       title: actionTitle || actionProp?.title,
-      callback: onAction || actionProp?.callback
+      callback: onAction || actionProp?.callback,
     }
 
     return {
@@ -69,7 +69,7 @@ export default class DefaultSnackbar extends React.PureComponent<DefaultSnackbar
       isPersisted,
       isCloseable,
       autoDismissTimeout: timeout,
-      allowDuplicateSnackbarType
+      allowDuplicateSnackbarType,
     }
   }
 

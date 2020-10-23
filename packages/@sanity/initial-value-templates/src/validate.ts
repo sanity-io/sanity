@@ -20,7 +20,7 @@ function validateTemplates(templates: Template[]) {
       throw new Error(`Template ${id} is missing "value" property, but contained "values". Typo?`)
     }
 
-    const missing = REQUIRED_TEMPLATE_PROPS.filter(prop => !template[prop])
+    const missing = REQUIRED_TEMPLATE_PROPS.filter((prop) => !template[prop])
     if (missing.length > 0) {
       throw new Error(`Template ${id} is missing required properties: ${missing.join(', ')}`)
     }
@@ -156,7 +156,7 @@ function validateReference(value, path: (string | number)[] = []) {
     )
   }
 
-  const disallowed = Object.keys(value).filter(key => !ALLOWED_REF_PROPS.includes(key))
+  const disallowed = Object.keys(value).filter((key) => !ALLOWED_REF_PROPS.includes(key))
   if (disallowed.length > 0) {
     const plural = disallowed.length > 1 ? 'properties' : 'property'
     throw new Error(

@@ -54,7 +54,7 @@ export default {
     }
 
     const exts = cliFlags.extensions
-      ? cliFlags.extensions.split(',').map(ext => ext.trim().replace(/^\./, ''))
+      ? cliFlags.extensions.split(',').map((ext) => ext.trim().replace(/^\./, ''))
       : ['js', 'ts', 'tsx']
 
     const dryRun = Boolean(typeof cliFlags.dry === 'undefined' ? false : cliFlags.dry)
@@ -77,27 +77,27 @@ export default {
       '--extensions',
       exts.join(','),
       dryRun && '--dry',
-      workDir
+      workDir,
     ].filter(Boolean)
 
     const child = childProcess.spawn('npx', cmdArgs, {
-      stdio: 'inherit'
+      stdio: 'inherit',
     })
 
     process.on('SIGINT', () => {
       child.kill(2)
     })
 
-    child.on('close', code => {
+    child.on('close', (code) => {
       process.exit(code)
     })
-  }
+  },
 }
 
 function printMods(output) {
   output.print('Available code modifications:\n')
 
-  Object.keys(mods).forEach(modName => {
+  Object.keys(mods).forEach((modName) => {
     const mod = mods[modName]
     output.print(`${modName} - ${mod.purpose}`)
   })

@@ -12,5 +12,5 @@ export default function ErrorPane(props) {
 }
 
 ErrorPane.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 }

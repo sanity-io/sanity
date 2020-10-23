@@ -12,7 +12,7 @@ const gen2 = require('./gen2')
 const latestGeneration = 'gen2'
 const generations = {
   gen1,
-  gen2
+  gen2,
 }
 
 module.exports = async function deployApiActions(args, context) {
@@ -26,7 +26,7 @@ module.exports = async function deployApiActions(args, context) {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   const dataset = flags.dataset || client.config().dataset
@@ -41,10 +41,10 @@ module.exports = async function deployApiActions(args, context) {
 
   spinner = output.spinner('Checking for deployed API').start()
   const currentGeneration = await getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
-    Authorization: `Bearer ${client.config().token}`
+    Authorization: `Bearer ${client.config().token}`,
   })
-    .then(res => res['x-sanity-graphql-generation'])
-    .catch(err => {
+    .then((res) => res['x-sanity-graphql-generation'])
+    .catch((err) => {
       if (err.statusCode === 404) {
         return null
       }
@@ -65,7 +65,7 @@ module.exports = async function deployApiActions(args, context) {
       ? await prompt.single({
           type: 'confirm',
           message: 'Do you want to enable a GraphQL playground?',
-          default: true
+          default: true,
         })
       : playground
 
@@ -98,7 +98,7 @@ module.exports = async function deployApiActions(args, context) {
       url: `/apis/graphql/${dataset}/${tag}/validate`,
       method: 'POST',
       body: {enablePlayground, schema},
-      maxRedirects: 0
+      maxRedirects: 0,
     })
   } catch (err) {
     const validationError = get(err, 'response.body.validationError')
@@ -117,7 +117,7 @@ module.exports = async function deployApiActions(args, context) {
       url: `/apis/graphql/${dataset}/${tag}`,
       method: 'PUT',
       body: {enablePlayground, schema},
-      maxRedirects: 0
+      maxRedirects: 0,
     })
 
     spinner.succeed()
@@ -150,12 +150,12 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
 
   if (dangerousChanges.length > 0) {
     output.print('\nFound potentially dangerous changes from previous schema:')
-    dangerousChanges.forEach(change => output.print(` - ${change.description}`))
+    dangerousChanges.forEach((change) => output.print(` - ${change.description}`))
   }
 
   if (breakingChanges.length > 0) {
     output.print('\nFound BREAKING changes from previous schema:')
-    breakingChanges.forEach(change => output.print(` - ${change.description}`))
+    breakingChanges.forEach((change) => output.print(` - ${change.description}`))
   }
 
   output.print('')
@@ -163,7 +163,7 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
   const shouldDeploy = await prompt.single({
     type: 'confirm',
     message: 'Do you want to deploy a new API despite the dangerous changes?',
-    default: false
+    default: false,
   })
 
   return shouldDeploy
@@ -196,7 +196,7 @@ async function resolveApiGeneration({currentGeneration, flags, output, prompt, c
       (await prompt.single({
         type: 'confirm',
         message: 'Are you sure you want to deploy?',
-        default: false
+        default: false,
       }))
 
     return confirmDeploy ? flags.generation : null

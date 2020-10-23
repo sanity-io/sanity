@@ -39,11 +39,11 @@ function isEqual(item, otherItem) {
   if (keys.length !== otherKeys.length) {
     return false
   }
-  return keys.every(keyName => isEqual(item[keyName], otherItem[keyName]))
+  return keys.every((keyName) => isEqual(item[keyName], otherItem[keyName]))
 }
 
 function inArray(array, candidate) {
-  return array ? array.some(item => isEqual(item, candidate)) : false
+  return array ? array.some((item) => isEqual(item, candidate)) : false
 }
 
 type OptionsArrayInputProps = {
@@ -69,7 +69,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
       this.props.onChange(PatchEvent.from(unset([{_key: optionValue._key}])))
     }
     const nextValue = list
-      .filter(item =>
+      .filter((item) =>
         isEqual(optionValue, item)
           ? isChecked
           : inArray(value, resolveValueWithLegacyOptionsSupport(item))
@@ -81,7 +81,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
   getMemberTypeOfItem(option) {
     const {type} = this.props
     return type.of.find(
-      memberType =>
+      (memberType) =>
         memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
     )
   }
@@ -100,10 +100,10 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     this.props.onFocus([FOCUS_TERMINATOR])
   }
 
-  renderInvalidOptions = options => {
+  renderInvalidOptions = (options) => {
     const invalidOptions = options
-      .filter(option => !this.getMemberTypeOfItem(option))
-      .map(option => resolveTypeName(resolveValueWithLegacyOptionsSupport(option)))
+      .filter((option) => !this.getMemberTypeOfItem(option))
+      .map((option) => resolveTypeName(resolveValueWithLegacyOptionsSupport(option)))
     const len = invalidOptions.length
     const heading = (
       <>

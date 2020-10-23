@@ -11,23 +11,23 @@ export const SUPPORTED_SERVICES = [
   {
     id: 'youtube',
     title: 'YouTube',
-    url: id => `https://www.youtube.com/embed/${id}?rel=0`,
-    icon: FaYoutube
+    url: (id) => `https://www.youtube.com/embed/${id}?rel=0`,
+    icon: FaYoutube,
   },
   {
     id: 'vimeo',
     title: 'Vimeo',
-    url: id => `https://player.vimeo.com/video/${id}`,
-    icon: FaVimeo
-  }
+    url: (id) => `https://player.vimeo.com/video/${id}`,
+    icon: FaVimeo,
+  },
 ]
 
 export default class VideoEmbedPreview extends React.Component {
   static propTypes = {
     value: PropTypes.shape({
       service: PropTypes.string,
-      id: PropTypes.string
-    })
+      id: PropTypes.string,
+    }),
   }
 
   render() {
@@ -42,14 +42,14 @@ export default class VideoEmbedPreview extends React.Component {
       )
     }
 
-    const service = value && SUPPORTED_SERVICES.find(s => s.id === value.service)
+    const service = value && SUPPORTED_SERVICES.find((s) => s.id === value.service)
 
     if (!service) {
       return (
         <div className={styles.root}>
           <div className={styles.unrecognizedService}>
             Unrecognized video service. Supported services are{' '}
-            {humanizeList(SUPPORTED_SERVICES.map(s => s.title))}
+            {humanizeList(SUPPORTED_SERVICES.map((s) => s.title))}
           </div>
         </div>
       )

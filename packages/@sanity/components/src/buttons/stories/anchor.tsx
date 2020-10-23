@@ -10,7 +10,7 @@ import React from 'react'
 const actionsProps = {
   onBlur: action('onBlur'),
   onClick: action('onClick'),
-  onFocus: action('onFocus')
+  onFocus: action('onFocus'),
 }
 
 export function AnchorStory() {

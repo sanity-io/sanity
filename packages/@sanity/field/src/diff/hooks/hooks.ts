@@ -36,7 +36,7 @@ export function useRefPreview(
   useEffect(() => {
     let subscription
     if (value) {
-      subscription = observeForPreview(value, schemaType).subscribe(result =>
+      subscription = observeForPreview(value, schemaType).subscribe((result) =>
         setPreview(result.snapshot)
       )
     }

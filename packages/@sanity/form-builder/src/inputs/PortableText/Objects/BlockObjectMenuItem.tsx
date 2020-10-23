@@ -20,7 +20,7 @@ export const MenuItem: FunctionComponent<DropDownMenuItemProps> = ({
   color,
   icon,
   intent,
-  params
+  params,
 }): JSX.Element => {
   const Icon = icon
   return (

@@ -12,5 +12,5 @@ export const del = {
     }
 
     return tx.delete(idPair.draftId).commit()
-  }
+  },
 }

@@ -23,7 +23,7 @@ export default function InsertMenu(props: InsertMenuProps) {
 
   const menu = (
     <div className={styles.menu}>
-      {items.map(item => (
+      {items.map((item) => (
         <InsertMenuItem item={item} onClick={handleClose} key={item.key} />
       ))}
     </div>
@@ -42,7 +42,7 @@ export default function InsertMenu(props: InsertMenuProps) {
           kind: 'simple',
           padding: 'small',
           selected: open,
-          title: 'Insert elements'
+          title: 'Insert elements',
         }}
         menu={menu}
         open={open}

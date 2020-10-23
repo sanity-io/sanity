@@ -51,7 +51,7 @@ export function TextWithDiff({
   const prefix = fullPath.slice(
     0,
     fullPath.findIndex(
-      seg => isKeySegment(seg) && isKeySegment(spanSegment) && seg._key === spanSegment._key
+      (seg) => isKeySegment(seg) && isKeySegment(spanSegment) && seg._key === spanSegment._key
     )
   )
   const focusPath = prefix.concat(path)
@@ -66,7 +66,7 @@ export function TextWithDiff({
     },
     [focusPath]
   )
-  const realSeg = diff && diff.segments.find(rSeg => rSeg.text === segment.text)
+  const realSeg = diff && diff.segments.find((rSeg) => rSeg.text === segment.text)
 
   const diffWithFallback = realSeg || diff || childDiff
   const annotation =

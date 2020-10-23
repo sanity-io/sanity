@@ -6,7 +6,7 @@ export default class Preview extends React.Component {
   static propTypes = {
     layout: PropTypes.string,
     value: PropTypes.object,
-    type: PropTypes.object.isRequired
+    type: PropTypes.object.isRequired,
   }
 
   render() {

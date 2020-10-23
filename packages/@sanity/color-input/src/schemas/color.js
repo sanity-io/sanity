@@ -2,7 +2,7 @@
 import React from 'react'
 import ColorInput from '../ColorInput'
 
-const round = val => Math.round(val * 100)
+const round = (val) => Math.round(val * 100)
 
 export default {
   name: 'color',
@@ -13,35 +13,35 @@ export default {
     {
       title: 'Hex',
       name: 'hex',
-      type: 'string'
+      type: 'string',
     },
     {
       title: 'Alpha',
       name: 'alpha',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'Hue Saturation Lightness',
       name: 'hsl',
-      type: 'hslaColor'
+      type: 'hslaColor',
     },
     {
       title: 'Hue Saturation Value',
       name: 'hsv',
-      type: 'hsvaColor'
+      type: 'hsvaColor',
     },
     {
       title: 'Red Green Blue (rgb)',
       name: 'rgb',
-      type: 'rgbaColor'
-    }
+      type: 'rgbaColor',
+    },
   ],
   preview: {
     select: {
       title: 'hex',
       alpha: 'alpha',
       hex: 'hex',
-      hsl: 'hsl'
+      hsl: 'hsl',
     },
     prepare({title, hex, hsl, alpha}) {
       let subtitle = hex || 'No color set'
@@ -60,11 +60,11 @@ export default {
               height: '100%',
               width: '100%',
               top: '0',
-              left: '0'
+              left: '0',
             }}
           />
-        )
+        ),
       }
-    }
-  }
+    },
+  },
 }

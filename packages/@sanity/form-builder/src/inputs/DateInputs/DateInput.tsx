@@ -35,7 +35,7 @@ type Props = {
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
-    calendarTodayLabel: options.calendarTodayLabel || 'Today'
+    calendarTodayLabel: options.calendarTodayLabel || 'Today',
   }
 }
 export default class DateInput extends React.Component<Props> {

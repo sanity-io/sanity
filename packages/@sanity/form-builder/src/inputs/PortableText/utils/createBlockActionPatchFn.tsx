@@ -13,7 +13,7 @@ export default function createBlockActionPatchFn(
   portableTextFeatures: PortableTextFeatures
 ): UnsetFunction | SetFunction | InsertFunction {
   let toInsert
-  const allowedDecorators = portableTextFeatures.decorators.map(item => item.value)
+  const allowedDecorators = portableTextFeatures.decorators.map((item) => item.value)
   switch (type) {
     case 'set':
       return (givenBlock: PortableTextBlock): void => {
@@ -21,7 +21,7 @@ export default function createBlockActionPatchFn(
           PatchEvent.from(
             set(
               normalizeBlock(givenBlock, {
-                allowedDecorators
+                allowedDecorators,
               }),
               [{_key: block._key}]
             )
@@ -35,9 +35,9 @@ export default function createBlockActionPatchFn(
     case 'insert':
       return (givenBlock: PortableTextBlock | PortableTextBlock[]): void => {
         toInsert = Array.isArray(givenBlock) ? givenBlock : [givenBlock]
-        toInsert = toInsert.map(blk =>
+        toInsert = toInsert.map((blk) =>
           normalizeBlock(blk, {
-            allowedDecorators
+            allowedDecorators,
           })
         )
         return onPatch(PatchEvent.from(insert(toInsert, 'after', [{_key: block._key}])))

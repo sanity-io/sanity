@@ -11,7 +11,7 @@ export default function ReferringDocumentsList(props) {
   const {documents} = props
   return (
     <DefaultList className={styles.root}>
-      {documents.map(document => {
+      {documents.map((document) => {
         const schemaType = schema.get(document._type)
         return (
           <DefaultItem className={styles.item} key={document._id}>
@@ -40,7 +40,7 @@ ReferringDocumentsList.propTypes = {
   documents: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string,
-      _type: PropTypes.string
+      _type: PropTypes.string,
     })
-  )
+  ),
 }

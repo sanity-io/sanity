@@ -4,7 +4,7 @@ module.exports = async function deleteApiAction(args, context) {
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   const dataset = flags.dataset || client.config().dataset
@@ -19,7 +19,7 @@ module.exports = async function deleteApiAction(args, context) {
     !(await prompt.single({
       type: 'confirm',
       message: confirmMessage,
-      default: false
+      default: false,
     }))
   ) {
     return
@@ -28,7 +28,7 @@ module.exports = async function deleteApiAction(args, context) {
   try {
     await client.request({
       url: `/apis/graphql/${dataset}/${tag}`,
-      method: 'DELETE'
+      method: 'DELETE',
     })
   } catch (err) {
     throw err

@@ -7,14 +7,14 @@ export default {
   preview: {
     select: {
       title: 'barcode',
-      subtitle: 'format'
-    }
+      subtitle: 'format',
+    },
   },
   fields: [
     {
       name: 'barcode',
       title: 'Barcode',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'format',
@@ -42,9 +42,9 @@ export default {
           'MSI1110',
           'pharmacode',
           'codabar',
-          'GenericBarcode'
-        ]
-      }
-    }
-  ]
+          'GenericBarcode',
+        ],
+      },
+    },
+  ],
 }

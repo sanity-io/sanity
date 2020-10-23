@@ -7,9 +7,7 @@ import NeverUpdate from './NeverUpdate'
 export default class Product extends React.Component<{id: string}> {
   render() {
     const {id} = this.props
-    const nextProductId = Math.random()
-      .toString(32)
-      .substring(2)
+    const nextProductId = Math.random().toString(32).substring(2)
     return (
       <div>
         <h1>Showing a lot of information about product #{id}</h1>
@@ -23,12 +21,12 @@ export default class Product extends React.Component<{id: string}> {
         </IntentLink>
         <p>
           <WithRouter>
-            {router => (
+            {(router) => (
               <button
                 onClick={() =>
                   router.navigateIntent('open', {
                     type: 'product',
-                    id: 'foobar'
+                    id: 'foobar',
                   })
                 }
               >
@@ -37,7 +35,7 @@ export default class Product extends React.Component<{id: string}> {
             )}
           </WithRouter>
         </p>
-        <WithRouter>{router => <pre>{JSON.stringify(router.state)}</pre>}</WithRouter>
+        <WithRouter>{(router) => <pre>{JSON.stringify(router.state)}</pre>}</WithRouter>
         <p>
           <StateLink toIndex>Up…</StateLink>
         </p>

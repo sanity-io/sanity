@@ -7,7 +7,7 @@ import {
   ReconnectEvent,
   SanityClient,
   SanityDocument,
-  WelcomeEvent
+  WelcomeEvent,
 } from './types'
 
 interface Snapshots {
@@ -33,17 +33,21 @@ export function getPairListener(client: SanityClient, idPair: IdPair) {
         `*[_id == $publishedId || _id == $draftId]`,
         {
           publishedId,
-          draftId
+          draftId,
         },
-        {includeResult: false, events: ['welcome', 'mutation', 'reconnect'], effectFormat: 'mendoza'}
+        {
+          includeResult: false,
+          events: ['welcome', 'mutation', 'reconnect'],
+          effectFormat: 'mendoza',
+        }
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
   ).pipe(
-    concatMap(event =>
+    concatMap((event) =>
       event.type === 'welcome'
         ? fetchInitialDocumentSnapshots({publishedId, draftId}).pipe(
-            concatMap(snapshots => [
+            concatMap((snapshots) => [
               createSnapshotEvent(draftId, snapshots.draft),
-              createSnapshotEvent(publishedId, snapshots.published)
+              createSnapshotEvent(publishedId, snapshots.published),
             ])
           )
         : observableOf(event)
@@ -56,7 +60,7 @@ export function getPairListener(client: SanityClient, idPair: IdPair) {
       .pipe(
         map(([draft, published]) => ({
           draft,
-          published
+          published,
         }))
       )
   }
@@ -69,6 +73,6 @@ function createSnapshotEvent(
   return {
     type: 'snapshot',
     documentId,
-    document
+    document,
   }
 }

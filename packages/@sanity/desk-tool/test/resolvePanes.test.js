@@ -10,21 +10,21 @@ import typeDocumentStructure from './fixtures/structures/typeDocumentStructure'
 import fullyAsyncStructure from './fixtures/structures/fullyAsyncStructure'
 import failStructure from './fixtures/structures/failStructure'
 
-const isLoading = panes => panes.some(pane => pane === LOADING_PANE)
+const isLoading = (panes) => panes.some((pane) => pane === LOADING_PANE)
 
-const collectUntilDone = source =>
+const collectUntilDone = (source) =>
   source
     .pipe(
-      concatMap(panes => (isLoading(panes) ? observableOf(panes) : observableOf(panes, false))),
-      takeWhile(panes => Boolean(panes)),
+      concatMap((panes) => (isLoading(panes) ? observableOf(panes) : observableOf(panes, false))),
+      takeWhile((panes) => Boolean(panes)),
       reduce((acc, update) => acc.concat([update]), [])
     )
     .toPromise()
 
-const collectLast = source =>
+const collectLast = (source) =>
   new Promise((resolve, reject) => {
     let last = null
-    const sub = source.subscribe(val => {
+    const sub = source.subscribe((val) => {
       last = val
     }, reject)
 
@@ -36,13 +36,13 @@ const collectLast = source =>
 describe.skip('resolvePanes', () => {
   test('can resolve one-pane structure', () =>
     expect(collectLast(resolvePanes(singleStatsStructure, []))).resolves.toMatchObject([
-      singleStatsStructure
+      singleStatsStructure,
     ]))
 
   test('can resolve singleton structure', () =>
     expect(collectLast(resolvePanes(singletonStructure, ['b']))).resolves.toMatchObject([
       singletonStructure,
-      singletonStructure.options.items[1].child
+      singletonStructure.options.items[1].child,
     ]))
 
   test('can resolve singleton structure asyncronously', () =>
@@ -53,9 +53,9 @@ describe.skip('resolvePanes', () => {
         asyncSingletonStructure,
         {
           type: 'document',
-          options: {id: 'b', type: 'someType'}
-        }
-      ]
+          options: {id: 'b', type: 'someType'},
+        },
+      ],
     ]))
 
   test('can resolve asyncronous structures using mix of promises & observables', () =>
@@ -79,13 +79,13 @@ describe.skip('resolvePanes', () => {
   describe('can resolve plain old content structure', () => {
     test('root', () =>
       expect(collectLast(resolvePanes(typeDocumentStructure, []))).resolves.toMatchObject([
-        typeDocumentStructure
+        typeDocumentStructure,
       ]))
 
     test('root => type', () =>
       expect(collectLast(resolvePanes(typeDocumentStructure, ['book']))).resolves.toMatchObject([
         typeDocumentStructure,
-        typeDocumentStructure.options.items[0].child
+        typeDocumentStructure.options.items[0].child,
       ]))
 
     test('root => type => document', () =>
@@ -96,15 +96,15 @@ describe.skip('resolvePanes', () => {
         typeDocumentStructure.options.items[0].child,
         {
           type: 'document',
-          options: {id: 'got', type: 'book'}
-        }
+          options: {id: 'got', type: 'book'},
+        },
       ]))
   })
 
   describe('halts at first item which does not resolve to child', () => {
     test('at index 0', () =>
       expect(collectLast(resolvePanes(typeDocumentStructure, ['zing']))).resolves.toMatchObject([
-        typeDocumentStructure
+        typeDocumentStructure,
       ]))
 
     test('at index 1', () =>
@@ -112,7 +112,7 @@ describe.skip('resolvePanes', () => {
         collectLast(resolvePanes(typeDocumentStructure, ['book', '404']))
       ).resolves.toMatchObject([
         typeDocumentStructure,
-        typeDocumentStructure.options.items[0].child
+        typeDocumentStructure.options.items[0].child,
       ]))
 
     test('at index 1, with more items to go', () =>
@@ -120,7 +120,7 @@ describe.skip('resolvePanes', () => {
         collectLast(resolvePanes(typeDocumentStructure, ['book', '404', '404']))
       ).resolves.toMatchObject([
         typeDocumentStructure,
-        typeDocumentStructure.options.items[0].child
+        typeDocumentStructure.options.items[0].child,
       ]))
   })
 
@@ -131,6 +131,6 @@ describe.skip('resolvePanes', () => {
       recursiveStructure,
       recursiveStructure,
       recursiveStructure,
-      {type: 'document', options: {id: 'Singleton', type: 'whatever'}}
+      {type: 'document', options: {id: 'Singleton', type: 'whatever'}},
     ]))
 })

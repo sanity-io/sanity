@@ -17,7 +17,7 @@ export function DefaultStory() {
     return {
       title: chance.name(),
       icon: icon || undefined,
-      key: String(i)
+      key: String(i),
     }
   })
 
@@ -26,7 +26,7 @@ export function DefaultStory() {
     height: '70vh',
     border: '1px dotted #ccc',
     position: 'relative',
-    overflow: 'scroll'
+    overflow: 'scroll',
   }
 
   return (

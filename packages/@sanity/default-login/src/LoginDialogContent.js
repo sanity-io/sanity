@@ -74,14 +74,14 @@ export default class LoginDialogContent extends React.Component {
     // eslint-disable-next-line react/forbid-prop-types
     providers: PropTypes.array,
     onLoginButtonClick: PropTypes.func,
-    SanityLogo: PropTypes.func
+    SanityLogo: PropTypes.func,
   }
 
   static defaultProps = {
     description: null,
     providers: null,
     onLoginButtonClick: null,
-    SanityLogo: null
+    SanityLogo: null,
   }
 
   handleLoginButtonClicked = (provider, event) => {
@@ -127,7 +127,7 @@ export default class LoginDialogContent extends React.Component {
               </div>
 
               <ul className={styles.providers}>
-                {providers.map(provider => {
+                {providers.map((provider) => {
                   const ProviderLogo = getProviderLogo(provider)
                   const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
                   return (

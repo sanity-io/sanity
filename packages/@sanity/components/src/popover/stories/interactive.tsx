@@ -21,7 +21,7 @@ export function InteractiveStory() {
       'bottom-end': 'Bottom end',
       'left-start': 'Left start',
       left: 'Left',
-      'left-end': 'Left end'
+      'left-end': 'Left end',
     },
     'bottom',
     'Props'

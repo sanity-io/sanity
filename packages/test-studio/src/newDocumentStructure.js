@@ -1,6 +1,6 @@
 import {
   initialValueTemplateItem,
-  defaultInitialValueTemplateItems
+  defaultInitialValueTemplateItems,
 } from '@sanity/base/structure-builder'
 
 export default [
@@ -9,5 +9,5 @@ export default [
     .title('GRRM book')
     .description('Book by George R. R. Martin'),
 
-  ...defaultInitialValueTemplateItems()
+  ...defaultInitialValueTemplateItems(),
 ]

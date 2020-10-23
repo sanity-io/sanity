@@ -9,7 +9,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 const IMAGE_CORE = {
   name: 'image',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
 }
 
 const DEFAULT_OPTIONS = {}
@@ -23,7 +23,7 @@ export const ImageType = {
 
     let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
     if (!options.hotspot) {
-      hotspotFields = hotspotFields.map(field => ({...field, hidden: true}))
+      hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
     }
 
     const fields = (subTypeDef.fields || []).concat(ASSET_FIELD).concat(hotspotFields)
@@ -32,15 +32,15 @@ export const ImageType = {
       type: IMAGE_CORE,
       title: subTypeDef.title || startCase(subTypeDef.name || subTypeDef.type || ''),
       options: options,
-      isCustomized: Boolean(subTypeDef.fields)
+      isCustomized: Boolean(subTypeDef.fields),
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map(fieldDef => {
+      return fields.map((fieldDef) => {
         const {name, ...type} = fieldDef
         return {
           name: name,
-          type: extendMember(type)
+          type: extendMember(type),
         }
       })
     })
@@ -54,16 +54,16 @@ export const ImageType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "image"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

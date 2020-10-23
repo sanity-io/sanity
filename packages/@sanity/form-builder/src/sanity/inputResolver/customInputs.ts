@@ -22,5 +22,5 @@ export default {
   richDate: RichDateInput,
   email: EmailInput,
   geopoint: GeoPointInput,
-  url: UrlInput
+  url: UrlInput,
 }

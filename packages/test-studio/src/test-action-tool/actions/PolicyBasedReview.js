@@ -6,7 +6,7 @@ function addReviewer(id, reviewerId) {
   return mutate(id, [
     setIfMissing('reviewers', []),
     unset([`reviewers[_key=="${reviewerId}"]`]),
-    append(`reviewers`, [{_key: reviewerId, userId: reviewerId}])
+    append(`reviewers`, [{_key: reviewerId, userId: reviewerId}]),
   ])
 }
 
@@ -34,12 +34,12 @@ export default function PolicyBasedReview(docInfo) {
       label: 'Publish',
       handle: () => {
         publish(docInfo.id)
-      }
+      },
     }
   } else if (
     currentUser &&
     currentReviewers.length > 0 &&
-    currentReviewers.some(r => r.userId === currentUser.id)
+    currentReviewers.some((r) => r.userId === currentUser.id)
   ) {
     return {
       label: 'Review & approve',
@@ -54,7 +54,7 @@ export default function PolicyBasedReview(docInfo) {
             Looks good to me!
           </button>
         </>
-      )
+      ),
     }
   }
 
@@ -68,14 +68,14 @@ export default function PolicyBasedReview(docInfo) {
         <h2>Select who should approve</h2>
         <SelectReviewer
           reviewers={currentReviewers}
-          onAdd={reviewerId => addReviewer(docInfo.id, reviewerId)}
-          onRemove={reviewerId => removeReviewer(docInfo.id, reviewerId)}
+          onAdd={(reviewerId) => addReviewer(docInfo.id, reviewerId)}
+          onRemove={(reviewerId) => removeReviewer(docInfo.id, reviewerId)}
         />
         <button type="button" onClick={() => setSelectReviewersDialogOpen(false)}>
           OK
         </button>
       </>
-    )
+    ),
   }
 }
 
@@ -92,15 +92,15 @@ function SelectReviewer(props) {
   }
   return (
     <div>
-      {policyDocument.permissions.map(perm => {
+      {policyDocument.permissions.map((perm) => {
         const canReview = canApprove(perm)
         return (
           <label key={perm._key} style={{display: 'block'}}>
             <input
               type="checkbox"
               disabled={!canReview}
-              checked={props.reviewers.some(r => r._key === perm.userId)}
-              onClick={event => {
+              checked={props.reviewers.some((r) => r._key === perm.userId)}
+              onClick={(event) => {
                 const op = event.currentTarget.checked ? props.onAdd : props.onRemove
                 op(perm.userId)
               }}

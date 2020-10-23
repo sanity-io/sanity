@@ -84,12 +84,12 @@ const requireContext = (directory, recursive, regExp) => {
 
     const keys = klaw(basePath, {depthLimit: recursive ? 30 : 0, nodir: false})
       // Make sure we only match the provided regexp (or use the default (.json/.js))
-      .filter(file => file.path.match(regExp || /\.(json|js)$/))
+      .filter((file) => file.path.match(regExp || /\.(json|js)$/))
       // Use relative paths for the keys
-      .map(file => path.join('.', file.path.slice(basePath.length + 1)))
+      .map((file) => path.join('.', file.path.slice(basePath.length + 1)))
 
-    const context = key => require(context.resolve(key))
-    context.resolve = key => path.resolve(basePath, key)
+    const context = (key) => require(context.resolve(key))
+    context.resolve = (key) => path.resolve(basePath, key)
     context.keys = () => keys
 
     return context
@@ -110,7 +110,7 @@ function register() {
   }
 
   try {
-    module.constructor.wrap = script => {
+    module.constructor.wrap = (script) => {
       const requireContextScript = requireContext
         .toString()
         .replace(/hookPath/g, JSON.stringify(hookPath))
@@ -137,5 +137,5 @@ function register() {
 }
 
 module.exports = {
-  register
+  register,
 }

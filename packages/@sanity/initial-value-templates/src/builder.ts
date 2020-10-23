@@ -18,7 +18,7 @@ function defaultTemplateForType(
     schemaType: type.name,
     title: type.title || type.name,
     icon: type.icon,
-    value: type.initialValue || {_type: type.name}
+    value: type.initialValue || {_type: type.name},
   })
 }
 
@@ -32,9 +32,9 @@ function defaults(sanitySchema?: Schema) {
 
   return schema
     .getTypeNames()
-    .filter(typeName => !/^sanity\./.test(typeName))
-    .filter(typeName => isDocumentSchemaType(typeName, schema))
-    .map(typeName => defaultTemplateForType(schema.get(typeName), schema))
+    .filter((typeName) => !/^sanity\./.test(typeName))
+    .filter((typeName) => isDocumentSchemaType(typeName, schema))
+    .map((typeName) => defaultTemplateForType(schema.get(typeName), schema))
 }
 
 function isDocumentSchemaType(typeName: string, schema: Schema) {
@@ -45,5 +45,5 @@ function isDocumentSchemaType(typeName: string, schema: Schema) {
 export default {
   template: (spec?: Template) => new TemplateBuilder(spec),
   defaults,
-  defaultTemplateForType
+  defaultTemplateForType,
 }
