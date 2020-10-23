@@ -621,6 +621,20 @@ test('delete() can use query', t => {
     .then(() => t.end())
 })
 
+test('delete() can use query with params', t => {
+  const query = 'beerfiesta.beer[.title == $beerName]'
+  const params = { beerName: 'Headroom Double IPA' };
+  const expectedBody = {mutations: [{delete: {query: query, params: params}}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123'})
+
+  getClient()
+    .delete({query: query, params: params})
+    .catch(t.ifError)
+    .then(() => t.end())
+})
+
 test('delete() can be told not to return documents', t => {
   const expectedBody = {mutations: [{delete: {id: 'abc123'}}]}
   nock(projectHost())
@@ -757,7 +771,7 @@ test('patch() can take a query', t => {
     .patch({query: 'beerfiesta.beer'})
     .inc({count: 1})
     .serialize()
-  t.deepEqual(patch, {query: 'beerfiesta.beer', inc: {count: 1}})
+  t.deepEqual(patch, {query: 'beerfiesta.beer', params: undefined, inc: {count: 1}})
   t.end()
 })
 
