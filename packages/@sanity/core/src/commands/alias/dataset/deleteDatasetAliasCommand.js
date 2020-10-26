@@ -2,7 +2,7 @@ import validateDatasetAliasName from '../../../actions/alias/validateDatasetAlia
 
 export default {
   name: 'delete',
-  group: 'dataset',
+  group: 'dataset-alias',
   signature: '[aliasName]',
   description: 'Delete an alias within your project',
   action: async (args, context) => {

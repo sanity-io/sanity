@@ -38,6 +38,7 @@ import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import linkDatasetAliasCommand from './alias/dataset/linkDatasetAliasCommand'
+import unlinkDatasetAliasCommand from './alias/dataset/unlinkDatasetAliasCommand'
 import createDatasetAliasCommand from './alias/dataset/createDatasetAliasCommand'
 import listDatasetAliasesCommand from './alias/dataset/listDatasetAliasesCommand'
 import deleteDatasetAliasCommand from './alias/dataset/deleteDatasetAliasCommand'
@@ -49,6 +50,7 @@ export default [
   listDatasetAliasesCommand,
   createDatasetAliasCommand,
   linkDatasetAliasCommand,
+  unlinkDatasetAliasCommand,
   aliasDatasetGroup,
   aliasGroup,
   buildCommand,

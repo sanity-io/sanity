@@ -1,6 +1,6 @@
 export default {
   name: 'list',
-  group: 'dataset',
+  group: 'dataset-alias',
   signature: '',
   description: 'List dataset aliases of your project',
   action: async (args, context) => {

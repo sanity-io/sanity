@@ -3,13 +3,13 @@ import validateDatasetAliasName from '../../../actions/alias/validateDatasetAlia
 
 const helpText = `
 Examples
-  sanity alias dataset unlink
-  sanity alias dataset unlink <name>
+  sanity dataset-alias dataset unlink
+  sanity dataset-alias dataset unlink <name>
 `
 
 export default {
   name: 'unlink',
-  group: 'dataset',
+  group: 'dataset-alias',
   signature: '[NAME]',
   helpText,
   description: 'Unlink a dataset from the dataset alias within your project',

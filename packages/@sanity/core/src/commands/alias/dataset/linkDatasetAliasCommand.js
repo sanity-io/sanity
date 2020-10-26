@@ -5,9 +5,9 @@ import validateDatasetName from '../../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Examples
-  sanity alias dataset link
-  sanity alias dataset link <name>
-  sanity alias dataset link <name> <target-dataset>
+  sanity dataset-alias dataset link
+  sanity dataset-alias dataset link <name>
+  sanity dataset-alias dataset link <name> <target-dataset>
 `
 
 export default {

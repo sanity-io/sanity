@@ -5,14 +5,14 @@ import validateDatasetName from '../../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Examples
-  sanity alias create
-  sanity alias create <name>
-  sanity alias create <name> <target-dataset>
+  sanity dataset-alias create
+  sanity dataset-alias create <name>
+  sanity dataset-alias create <name> <target-dataset>
 `
 
 export default {
   name: 'create',
-  group: 'dataset',
+  group: 'dataset-alias',
   signature: '[NAME, TARGET_DATASET]',
   helpText,
   description: 'Create a new dataset alias within your project',

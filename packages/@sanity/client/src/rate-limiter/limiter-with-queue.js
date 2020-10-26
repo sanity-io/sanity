@@ -3,7 +3,6 @@ const helpUrl = require('@sanity/generate-help-url')
 const {QueueLimitError} = require('./errors')
 
 function RateLimiterWithQueue(options) {
-  this.store = []
   this.queue = []
   this.onRateLimited = null
   this.ttls = null
