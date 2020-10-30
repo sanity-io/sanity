@@ -5,17 +5,17 @@ import validateDatasetName from '../../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Examples
-  sanity dataset-alias dataset link
-  sanity dataset-alias dataset link <name>
-  sanity dataset-alias dataset link <name> <target-dataset>
+  sanity dataset-alias link
+  sanity dataset-alias link <name>
+  sanity dataset-alias link <name> <target-dataset>
 `
 
 export default {
   name: 'link',
-  group: 'dataset',
+  group: 'dataset-alias',
   signature: '[NAME, TARGET_DATASET]',
   helpText,
-  description: 'Create a new dataset alias within your project',
+  description: 'Link a dataset to a dataset alias within your project',
   action: async (args, context) => {
     const {apiClient, output, prompt} = context
     const [alias, targetDataset] = args.argsWithoutOptions

@@ -4,7 +4,7 @@ export default {
   name: 'delete',
   group: 'dataset-alias',
   signature: '[aliasName]',
-  description: 'Delete an alias within your project',
+  description: 'Delete a dataset alias within your project',
   action: async (args, context) => {
     const {apiClient, prompt, output} = context
     const [ds] = args.argsWithoutOptions

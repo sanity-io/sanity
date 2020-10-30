@@ -3,8 +3,8 @@ import validateDatasetAliasName from '../../../actions/alias/validateDatasetAlia
 
 const helpText = `
 Examples
-  sanity dataset-alias dataset unlink
-  sanity dataset-alias dataset unlink <name>
+  sanity dataset-alias unlink
+  sanity dataset-alias unlink <name>
 `
 
 export default {
