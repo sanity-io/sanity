@@ -108,7 +108,7 @@
   },
   "husky": {
     "hooks": {
-      "commitmsg": "node scripts/validateCommitMessage.js"
+      "commit-msg": "node scripts/validateCommitMessage.js"
     }
   }
 }
