@@ -88,8 +88,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
   handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
     // Make sure we don't trigger onFocus for child elements
     if (event.target === this._focusElement) {
-      // @todo: don't call with `event` here?
-      if (this.props.onFocus) this.props.onFocus(event as any)
+      if (this.props.onFocus) this.props.onFocus([FOCUS_TERMINATOR])
     }
   }
 
