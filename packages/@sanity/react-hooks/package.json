@@ -30,7 +30,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/base": "2.0.5",
     "@sanity/types": "2.0.1",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3",

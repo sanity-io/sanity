@@ -6,9 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "start": "npm run example-testbed",
-    "test": "#todo: jest"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -26,8 +24,6 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "2.0.5",
-    "@sanity/check": "2.0.1",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },

@@ -9,9 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf lib",
-    "start": "npm run example-testbed",
-    "test": "#todo: jest"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -24,8 +22,6 @@
     "sanity-plugin"
   ],
   "devDependencies": {
-    "@sanity/base": "2.0.5",
-    "@sanity/check": "2.0.1",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
