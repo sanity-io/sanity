@@ -1,4 +1,4 @@
-import EventSource from 'eventsource'
+import EventSource from '@sanity/eventsource'
 import Observable from '@sanity/observable/minimal'
 import chalk from 'chalk'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
