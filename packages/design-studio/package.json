@@ -25,8 +25,8 @@
     "@sanity/types": "2.0.1",
     "@sanity/vision": "2.0.5",
     "prop-types": "^15.6.0",
-    "react": "16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "react-jason": "^1.1.2",
     "sanity-plugin-asset-source-unsplash": "^0.1.3"
   },

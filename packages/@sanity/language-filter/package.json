@@ -19,7 +19,7 @@
   },
   "peerDependencies": {
     "prop-types": "^15.3",
-    "react": "^16.9"
+    "react": "^16.9 || ^17"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
