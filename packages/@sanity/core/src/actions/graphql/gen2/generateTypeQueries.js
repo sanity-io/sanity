@@ -1,13 +1,17 @@
 const {upperFirst} = require('lodash')
 
-function generateTypeQueries(types, filters, sortings) {
+function generateTypeQueries(types, sortings) {
   const queries = []
-  const queryable = types.filter(
-    (type) =>
-      type.name === 'Document' ||
-      (type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'))
+  const documentTypes = types.filter(
+    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
+  const documentTypeNames = documentTypes.map((docType) =>
+    JSON.stringify(docType.originalName || docType.name)
+  )
+  const documentsFilter = `_type in [${documentTypeNames.join(', ')}]`
+
+  const queryable = [...documentTypes, types.find((type) => type.name === 'Document')]
   const isSortable = (type) => sortings.some((sorting) => sorting.name === `${type.name}Sorting`)
 
   // Single ID-based result lookup queries
@@ -38,9 +42,9 @@ function generateTypeQueries(types, filters, sortings) {
     queries.push({
       fieldName: `all${upperFirst(type.name)}`,
       filter:
-        type.name === 'Document'
-          ? 'defined(_type)'
-          : '_type == "'.concat(type.originalName || type.name, '"'),
+        type.name === 'Document' && type.kind === 'Interface'
+          ? documentsFilter
+          : `_type == ${JSON.stringify(type.originalName || type.name)}`,
       type: {
         kind: 'List',
         isNullable: false,
