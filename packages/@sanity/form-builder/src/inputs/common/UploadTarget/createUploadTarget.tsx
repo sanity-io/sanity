@@ -77,11 +77,10 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
       rejected: [],
       ambiguous: [],
     }
-    handleFocus = (event: FocusEvent) => {
+    handleFocus = (path: Path) => {
       const {onFocus} = this.props
-      event.stopPropagation()
       if (onFocus) {
-        onFocus(['$'])
+        onFocus(Array.isArray(path) ? path : ['$'])
       }
     }
     handleKeyPress = (event: KeyboardEvent) => {
