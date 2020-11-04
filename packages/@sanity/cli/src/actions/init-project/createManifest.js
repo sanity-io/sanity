@@ -48,6 +48,7 @@ export function createPackageManifest(data) {
       scripts: {
         start: 'sanity start',
         test: 'sanity check',
+        build: 'sanity build',
       },
     },
     deps
