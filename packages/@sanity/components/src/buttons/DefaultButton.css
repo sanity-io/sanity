@@ -439,15 +439,16 @@
 
 .icon {
   position: relative;
+  font-size: calc(17 / 16 * 1rem); /* 17px */
+  line-height: 1;
+  min-width: 1rem;
 
   @nest & > svg {
-    font-size: calc(17 / 16 * 1em); /* 17px */
     display: block;
-    font-size: calc(17 / 16 * 1em); /* 17px */
 
     @nest &[data-sanity-icon='true'] {
-      font-size: calc(25 / 16 * 1em); /* 25px */
-      margin: calc(4 / 25 * -1em); /* -4px */
+      font-size: calc(25 / 16 * 1rem); /* 25px */
+      margin: calc(4 / 25 * -1rem); /* -4px */
     }
   }
 }
