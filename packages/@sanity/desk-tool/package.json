@@ -59,13 +59,13 @@
     "@types/classnames": "^2.2.10",
     "jest": "^26.4.2",
     "prop-types": "^15.6.0",
-    "react": "16.9.0",
+    "react": "17.0.1",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^1.150.3",
+    "@sanity/base": "^2.0.0",
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9"
+    "react": "^16.9 || ^17"
   },
   "jest": {
     "verbose": true,

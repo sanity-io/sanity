@@ -33,10 +33,10 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^1.150.0",
-    "@sanity/components": "^1.150.0",
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "@sanity/base": "^2.0.0",
+    "@sanity/components": "^2.0.0",
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",

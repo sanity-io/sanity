@@ -29,7 +29,7 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9"
+    "react": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",

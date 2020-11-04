@@ -32,13 +32,13 @@
   },
   "devDependencies": {
     "prop-types": "^15.6.0",
-    "react": "16.9.0",
-    "react-dom": "^16.9.0"
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",

@@ -45,13 +45,13 @@
     "@types/chance": "^1.1.0",
     "@types/element-resize-detector": "1.1.2",
     "prop-types": "^15.6.0",
-    "react": "16.9.0",
+    "react": "17.0.1",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",
