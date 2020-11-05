@@ -1,6 +1,6 @@
 {
   "name": "@sanity/preview",
-  "version": "2.0.5",
+  "version": "2.0.9",
   "description": "Utilities for previewing content in Sanity",
   "main": "index.js",
   "scripts": {

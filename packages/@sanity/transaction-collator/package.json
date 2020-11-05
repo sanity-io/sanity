@@ -1,6 +1,6 @@
 {
   "name": "@sanity/transaction-collator",
-  "version": "2.0.1",
+  "version": "2.0.9",
   "description": "Collate events from a series of transactions",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

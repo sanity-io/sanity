@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "2.0.1",
+  "version": "2.0.9",
   "description": "Export Sanity documents and assets",
   "main": "lib/export.js",
   "engines": {
@@ -33,7 +33,7 @@
     "split2": "^3.2.2"
   },
   "devDependencies": {
-    "@sanity/client": "2.0.1",
+    "@sanity/client": "2.0.9",
     "decompress": "^4.2.0",
     "jest": "^26.4.2",
     "rimraf": "^2.7.1",

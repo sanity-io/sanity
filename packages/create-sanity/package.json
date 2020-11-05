@@ -1,6 +1,6 @@
 {
   "name": "create-sanity",
-  "version": "2.0.5",
+  "version": "2.0.9",
   "description": "Initialize a new Sanity project",
   "bin": "index.js",
   "engines": {
@@ -21,7 +21,7 @@
   "homepage": "https://www.sanity.io/",
   "license": "MIT",
   "dependencies": {
-    "@sanity/cli": "2.0.5"
+    "@sanity/cli": "2.0.9"
   },
   "repository": {
     "type": "git",

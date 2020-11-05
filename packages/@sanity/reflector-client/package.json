@@ -1,6 +1,6 @@
 {
   "name": "@sanity/reflector-client",
-  "version": "2.0.1",
+  "version": "2.0.9",
   "description": "A client for the client to client message bus",
   "main": "lib/Reflector.js",
   "scripts": {
