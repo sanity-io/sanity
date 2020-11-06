@@ -1,12 +1,9 @@
-/* eslint-disable max-depth, complexity */
-import {Chunk} from '@sanity/field/diff'
-import {applyPatch, incremental, RawPatch} from 'mendoza'
-import {Value} from 'mendoza/lib/incremental-patcher'
+import {Diff} from '@sanity/diff'
+import {Chunk, Annotation} from '@sanity/field/diff'
+import {applyPatch, incremental} from 'mendoza'
 import {
   Transaction,
   TransactionLogEvent,
-  Doc,
-  DocumentRemoteMutationEvent,
   DocumentRemoteMutationVersionEvent,
   CombinedDocument,
 } from './types'
@@ -18,39 +15,9 @@ import {getAttrs} from './utils'
 
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
-type Attributes = Record<string, unknown>
-
 type Options = {
   publishedId: string
   enableTrace?: boolean
-}
-
-function createAttributes(
-  id: string,
-  document: Doc | null,
-  extraEvents?: DocumentRemoteMutationEvent[]
-): Attributes | null {
-  let attributes: Attributes | null = null
-
-  if (document) {
-    attributes = {...document}
-    delete attributes._rev
-  }
-
-  if (extraEvents) {
-    for (let evt of extraEvents) {
-      const effect = evt.effects[id].apply
-      if (effect) {
-        attributes = applyPatch(attributes, effect as RawPatch)
-      }
-    }
-  }
-
-  return attributes
-}
-
-type DocumentVersion = {
-  attributes: Attributes | null
 }
 
 /**
@@ -94,7 +61,7 @@ export class Timeline {
     }
   }
 
-  get chunkCount() {
+  get chunkCount(): number {
     return this._chunks.length
   }
 
@@ -112,7 +79,7 @@ export class Timeline {
     return result
   }
 
-  reset() {
+  reset(): void {
     this._transactions = new TwoEndedArray()
     this._chunks = new TwoEndedArray()
     this._possiblePendingTransactions = new Map()
@@ -129,7 +96,7 @@ export class Timeline {
    * version in the same transaction) is a valid input. [P1, D2, D1] is _not_ valid since
    * the mutation for the draft is out of order.
    */
-  addRemoteMutation(entry: DocumentRemoteMutationVersionEvent) {
+  addRemoteMutation(entry: DocumentRemoteMutationVersionEvent): void {
     if (this._trace) this._trace.push({type: 'addRemoteMutation', event: entry})
 
     const pending = this._possiblePendingTransactions.get(entry.transactionId)
@@ -161,7 +128,7 @@ export class Timeline {
     }
   }
 
-  addTranslogEntry(event: TransactionLogEvent) {
+  addTranslogEntry(event: TransactionLogEvent): void {
     if (this._trace) this._trace.push({type: 'addTranslogEntry', event})
 
     this._transactions.addToBeginning({
@@ -175,7 +142,7 @@ export class Timeline {
   }
 
   /** Mark that we've reached the earliest entry. */
-  didReachEarliestEntry() {
+  didReachEarliestEntry(): void {
     if (this._trace) this._trace.push({type: 'didReachEarliestEntry'})
 
     this.reachedEarliestEntry = true
@@ -186,7 +153,7 @@ export class Timeline {
    * of the transactions array. After calling this method you need
    * to invalidate all Chunks.
    */
-  updateChunks() {
+  updateChunks(): void {
     if (this._trace) this._trace.push({type: 'updateChunks'})
 
     this._removeInvalidatedChunks()
@@ -288,9 +255,9 @@ export class Timeline {
       chunkIdx >= this._chunks.firstIdx;
       chunkIdx--
     ) {
-      const chunk = this._chunks.get(chunkIdx)
-      if (chunk.type === 'publish' || chunk.type === 'initial') {
-        return chunk
+      const currentChunk = this._chunks.get(chunkIdx)
+      if (currentChunk.type === 'publish' || currentChunk.type === 'initial') {
+        return currentChunk
       }
     }
 
@@ -299,7 +266,7 @@ export class Timeline {
     return this._chunks.first
   }
 
-  isLatestChunk(chunk: Chunk) {
+  isLatestChunk(chunk: Chunk): boolean {
     return chunk === this._chunks.last
   }
 
@@ -365,7 +332,7 @@ export class Timeline {
     finalDoc: CombinedDocument,
     firstIdx: number,
     lastIdx: number
-  ) {
+  ): Diff<Annotation> {
     let draftValue = incremental.wrap<Meta>(initialDoc.draft, null)
     let publishedValue = incremental.wrap<Meta>(initialDoc.published, null)
 
@@ -422,6 +389,6 @@ export class Timeline {
   }
 }
 
-function getValue(draftValue: Value<Meta>, publishedValue: Value<Meta>) {
+function getValue(draftValue: incremental.Value<Meta>, publishedValue: incremental.Value<Meta>) {
   return incremental.getType(draftValue) === 'null' ? publishedValue : draftValue
 }
