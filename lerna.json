@@ -14,7 +14,6 @@
     "packages/ecommerce-studio",
     "packages/example-studio",
     "packages/groq",
-    "packages/mendoza",
     "packages/movies-studio",
     "packages/sanity",
     "packages/storybook",
