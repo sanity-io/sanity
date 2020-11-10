@@ -29,7 +29,6 @@
   "dependencies": {
     "@sanity/asset-utils": "^1.1.2",
     "@sanity/base": "2.0.9",
-    "@sanity/components": "2.0.9",
     "@sanity/diff": "2.0.9",
     "@sanity/react-hooks": "2.0.9",
     "@sanity/types": "2.0.1",

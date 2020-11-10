@@ -31,7 +31,6 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/base": "2.0.9",
-    "@sanity/components": "2.0.9",
     "@sanity/generate-help-url": "2.0.9",
     "@sanity/util": "2.0.9",
     "classnames": "^2.2.5",

@@ -22,7 +22,6 @@
     "@sanity/cli": "2.0.9",
     "@sanity/code-input": "2.0.9",
     "@sanity/color-input": "2.0.9",
-    "@sanity/components": "2.0.9",
     "@sanity/core": "2.0.9",
     "@sanity/dashboard": "2.0.9",
     "@sanity/default-layout": "2.0.9",
