@@ -13,6 +13,6 @@ export function isSameAnnotation(a: Annotation, b: Annotation): boolean {
   return false
 }
 
-export function getAttrs(doc: CombinedDocument) {
+export function getAttrs(doc: CombinedDocument): Record<string, unknown> | null {
   return doc.draft || doc.published
 }

@@ -1,6 +1,5 @@
-/* eslint-disable max-depth */
-
 import {applyPatch} from 'mendoza'
+import {Timeline} from './timeline'
 import {
   RemoteSnapshotVersionEvent,
   TransactionLogEvent,
@@ -9,7 +8,6 @@ import {
   CombinedDocument,
   Doc,
 } from './types'
-import {Timeline} from './timeline'
 
 type VersionState = {
   id: string
@@ -106,7 +104,7 @@ export class Aligner {
     published: VersionState
   }
 
-  appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent) {
+  appendRemoteSnapshotEvent(evt: RemoteSnapshotVersionEvent): void {
     const state = this._states[evt.version]
 
     if (evt.type === 'snapshot') {
@@ -128,7 +126,7 @@ export class Aligner {
     }
   }
 
-  prependHistoryEvent(evt: TransactionLogEvent) {
+  prependHistoryEvent(evt: TransactionLogEvent): void {
     if (!this.acceptsHistory) throw new Error('cannot prepend history at this point')
 
     for (const state of Object.values(this._states)) {
@@ -145,7 +143,7 @@ export class Aligner {
     this.earliestTransactionId = evt.id
   }
 
-  didReachEarliestEntry() {
+  didReachEarliestEntry(): void {
     for (const state of Object.values(this._states)) {
       if (!state.aligned) {
         if (state.attrs !== null) throw new Error('unable to find translog entry to align to')
@@ -155,7 +153,7 @@ export class Aligner {
     this.timeline.didReachEarliestEntry()
   }
 
-  get isAligned() {
+  get isAligned(): boolean {
     return Object.values(this._states).every((state) => state.aligned)
   }
 
@@ -183,7 +181,7 @@ export class Aligner {
     state.aligned = true
   }
 
-  private get _isComplete() {
+  private get _isComplete(): boolean {
     return Object.values(this._states).every((state) => state.hasAttrs)
   }
 

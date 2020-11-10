@@ -135,7 +135,6 @@ class StringContentWrapper implements StringInput<Annotation> {
 
         // If the end of the slice is before this part, then we're guaranteed
         // that there are no more parts.
-        // eslint-disable-next-line max-depth
         if (subEnd <= 0) break
 
         push(part.value.slice(subStart, subEnd), this.extractor.fromValue(part))

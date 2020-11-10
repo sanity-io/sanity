@@ -1,10 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {Transaction, MendozaPatch, ChunkType, Chunk} from './types'
 
-function didDeleteDraft(type: ChunkType) {
-  return type === 'delete' || type === 'discardDraft'
-}
-
 function canMergeEdit(type: ChunkType) {
   return type === 'create' || type === 'editDraft'
 }
@@ -15,7 +11,6 @@ function isWithinMergeWindow(a: string, b: string) {
   return Date.parse(b) - Date.parse(a) < CHUNK_WINDOW
 }
 
-// eslint-disable-next-line complexity
 export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   if (left.end !== right.start) throw new Error('chunks are not next to each other')
 
@@ -66,15 +61,16 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
 }
 
 export function chunkFromTransaction(transaction: Transaction): Chunk {
-  const modifedDraft = transaction.draftEffect != null
-  const modifedPublished = transaction.publishedEffect != null
+  const modifiedDraft = Boolean(transaction.publishedEffect)
+  const modifiedPublished = Boolean(transaction.publishedEffect)
 
-  const draftDeleted = modifedDraft && isDeletePatch(transaction.draftEffect!.apply)
-  const publishedDeleted = modifedPublished && isDeletePatch(transaction.publishedEffect!.apply)
+  const draftDeleted = transaction.draftEffect && isDeletePatch(transaction.draftEffect.apply)
+  const publishedDeleted =
+    transaction.publishedEffect && isDeletePatch(transaction.publishedEffect.apply)
 
   let type: ChunkType = 'editDraft'
 
-  if (draftDeleted && modifedPublished && !publishedDeleted) {
+  if (draftDeleted && modifiedPublished && !publishedDeleted) {
     type = 'publish'
   } else if (draftDeleted || publishedDeleted) {
     // We don't really know anything more at this point since the actual
@@ -91,8 +87,8 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
     startTimestamp: transaction.timestamp,
     endTimestamp: transaction.timestamp,
     authors: new Set([transaction.author]),
-    draftState: modifedDraft ? (draftDeleted ? 'missing' : 'present') : 'unknown',
-    publishedState: modifedPublished ? (publishedDeleted ? 'missing' : 'present') : 'unknown',
+    draftState: modifiedDraft ? (draftDeleted ? 'missing' : 'present') : 'unknown',
+    publishedState: modifiedPublished ? (publishedDeleted ? 'missing' : 'present') : 'unknown',
   }
 }
 
@@ -103,6 +99,6 @@ function combineState(
   return right === 'unknown' ? left : right
 }
 
-export function isDeletePatch(patch: MendozaPatch) {
+export function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }

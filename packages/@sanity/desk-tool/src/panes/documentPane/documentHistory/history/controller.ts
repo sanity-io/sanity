@@ -1,8 +1,8 @@
-/* eslint-disable complexity */
 import {SanityClient} from '@sanity/client'
+import {Annotation} from '@sanity/field/diff'
 import {Observable} from 'rxjs'
 import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'
-import {ObjectDiff} from '@sanity/diff'
+import {Diff, ObjectDiff} from '@sanity/diff'
 import {Timeline, ParsedTimeRef} from './timeline'
 import {getJsonStream} from './ndjsonStreamer'
 import {RemoteSnapshotVersionEvent, Chunk} from './types'
@@ -60,11 +60,11 @@ export class Controller {
   private _rev: string | null = null
   private _revTime: ParsedTimeRef | null = null
 
-  clearRange() {
+  clearRange(): void {
     this.setRange(null, null)
   }
 
-  setRange(since: string | null, rev: string | null) {
+  setRange(since: string | null, rev: string | null): void {
     if (rev !== this._rev) this.setRevTime(rev)
     if (since !== this._since) this.setSinceTime(since)
 
@@ -77,13 +77,13 @@ export class Controller {
     } else if (this._sinceTime) {
       this.selectionState = 'range'
 
-      const rev = this._revTime || this.timeline.lastChunk()
+      const targetRev = this._revTime || this.timeline.lastChunk()
 
-      if (this._sinceTime.index > rev.index) {
+      if (this._sinceTime.index > targetRev.index) {
         this._revTime = 'invalid'
         this.selectionState = 'invalid'
       } else {
-        this.setReconstruction(this._sinceTime, rev)
+        this.setReconstruction(this._sinceTime, targetRev)
       }
     } else if (this._revTime) {
       this.selectionState = 'rev'
@@ -98,7 +98,7 @@ export class Controller {
     this.start()
   }
 
-  setLoadMore(state: boolean) {
+  setLoadMore(state: boolean): void {
     this._fetchMore = state
     this.start()
   }
@@ -116,28 +116,28 @@ export class Controller {
   }
 
   /** Returns true when there's an older revision we want to render. */
-  onOlderRevision() {
+  onOlderRevision(): boolean {
     return Boolean(this._rev) && (this.selectionState === 'range' || this.selectionState === 'rev')
   }
 
   /** Returns true when the changes panel should be active. */
-  changesPanelActive() {
+  changesPanelActive(): boolean {
     return Boolean(this._since) && this.selectionState !== 'invalid'
   }
 
   findRangeForNewRev(rev: Chunk): [string | null, string | null] {
     const revTimeId = this.timeline.isLatestChunk(rev) ? null : this.timeline.createTimeId(rev)
 
-    if (this._since) {
-      const sinceChunk = this.sinceTime
-      if (sinceChunk && sinceChunk.index < rev.index) {
-        return [this._since, revTimeId]
-      } else {
-        return ['@lastPublished', revTimeId]
-      }
-    } else {
+    if (!this._since) {
       return [null, revTimeId]
     }
+
+    const sinceChunk = this.sinceTime
+    if (sinceChunk && sinceChunk.index < rev.index) {
+      return [this._since, revTimeId]
+    }
+
+    return ['@lastPublished', revTimeId]
   }
 
   findRangeForNewSince(since: Chunk): [string, string | null] {
@@ -148,12 +148,12 @@ export class Controller {
 
     if (revChunk && since.index < revChunk.index) {
       return [this.timeline.createTimeId(since), this._rev]
-    } else {
-      return [this.timeline.createTimeId(since), null]
     }
+
+    return [this.timeline.createTimeId(since), null]
   }
 
-  setRevTime(rev: string | null) {
+  setRevTime(rev: string | null): void {
     this._rev = rev
     this._revTime = rev ? this.timeline.parseTimeId(rev) : null
 
@@ -164,7 +164,7 @@ export class Controller {
     }
   }
 
-  setSinceTime(since: string | null) {
+  setSinceTime(since: string | null): void {
     if (since === '@lastPublished') {
       if (typeof this._revTime === 'string') {
         this._sinceTime = this._revTime
@@ -178,17 +178,17 @@ export class Controller {
     this._since = since
   }
 
-  sinceAttributes() {
+  sinceAttributes(): Record<string, unknown> | null {
     return this._sinceTime && this._reconstruction ? this._reconstruction.startAttributes() : null
   }
 
-  displayed() {
+  displayed(): Record<string, unknown> | null {
     return this._revTime && this._reconstruction ? this._reconstruction.endAttributes() : null
   }
 
   private _reconstruction?: Reconstruction
 
-  setReconstruction(since: Chunk | null, rev: Chunk) {
+  setReconstruction(since: Chunk | null, rev: Chunk): void {
     if (this._reconstruction && this._reconstruction.same(since, rev)) return
     this._reconstruction = new Reconstruction(
       this.timeline,
@@ -198,11 +198,11 @@ export class Controller {
     )
   }
 
-  currentDiff() {
+  currentDiff(): Diff<Annotation> | null {
     return this._reconstruction ? this._reconstruction.diff() : null
   }
 
-  currentObjectDiff(): ObjectDiff<any> | null {
+  currentObjectDiff(): ObjectDiff<Annotation> | null {
     const diff = this.currentDiff()
     if (diff) {
       if (diff.type === 'null') return null
@@ -211,7 +211,7 @@ export class Controller {
     return diff
   }
 
-  handleRemoteMutation(ev: RemoteSnapshotVersionEvent) {
+  handleRemoteMutation(ev: RemoteSnapshotVersionEvent): void {
     this._aligner.appendRemoteSnapshotEvent(ev)
     this.markChange()
 
@@ -219,7 +219,7 @@ export class Controller {
     if (this._aligner.acceptsHistory) this.start()
   }
 
-  start() {
+  start(): void {
     if (this._didErr) return
 
     if (!this._isRunning) {

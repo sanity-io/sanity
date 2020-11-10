@@ -1,4 +1,4 @@
-import {Doc, DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
+import {DocumentRemoteMutationVersionEvent, TransactionLogEvent} from './types'
 import {Timeline} from './timeline'
 
 export type TraceEvent =
@@ -19,8 +19,10 @@ export function replay(events: TraceEvent[]): Timeline {
     publishedId: fst.publishedId,
   })
 
+  /* eslint-disable no-console */
   console.log('Replaying')
   console.log({events})
+  /* eslint-enable no-console */
 
   for (let i = 1; i < events.length; i++) {
     const event = events[i]
@@ -40,6 +42,7 @@ export function replay(events: TraceEvent[]): Timeline {
       case 'updateChunks':
         timeline.updateChunks()
         break
+      default:
     }
   }
 
