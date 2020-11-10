@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-filename-extension */
 
 import React, {useEffect} from 'react'
-import UUID from '@sanity/uuid'
+import {uuid} from '@sanity/uuid'
 import {route, useRouterState} from 'part:@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from '../utils/parsePanesSegment'
 import IntentResolver from '../components/IntentResolver'
@@ -57,7 +57,7 @@ function DeskToolPaneStateSyncer(props) {
 function getIntentState(intentName, params, currentState, payload) {
   const paneSegments = (currentState && currentState.panes) || []
   const activePanes = state.activePanes || []
-  const editDocumentId = params.id || UUID()
+  const editDocumentId = params.id || uuid()
   const isTemplate = intentName === 'create' && params.template
 
   // Loop through open panes and see if any of them can handle the intent

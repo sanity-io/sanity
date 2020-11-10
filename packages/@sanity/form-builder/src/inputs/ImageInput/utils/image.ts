@@ -1,4 +1,4 @@
-import UUID from '@sanity/uuid'
+import {uuid} from '@sanity/uuid'
 
 export function urlToFile(url: string, filename?: string): Promise<File> {
   return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ export function urlToFile(url: string, filename?: string): Promise<File> {
           reject(new Error('Could not find mime type for image'))
           return
         }
-        resolve(dataURLtoFile(reader.result, filename || `${UUID()}.${ext}`))
+        resolve(dataURLtoFile(reader.result, filename || `${uuid()}.${ext}`))
       }
       reader.readAsDataURL(xhr.response)
     }
@@ -33,7 +33,7 @@ export function base64ToFile(base64Data: string | ArrayBuffer, filename?: string
       reject(new Error('Could not find mime type for image'))
       return
     }
-    resolve(dataURLtoFile(base64Data, filename || `${UUID()}.${ext}`))
+    resolve(dataURLtoFile(base64Data, filename || `${uuid()}.${ext}`))
   })
 }
 

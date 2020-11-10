@@ -1,4 +1,4 @@
-import uuid from '@sanity/uuid'
+import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import {useRouter} from 'part:@sanity/base/router'

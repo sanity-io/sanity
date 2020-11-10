@@ -1,4 +1,5 @@
-/* eslint-disable react/no-multi-comp, react/prop-types */
+import {uuid} from '@sanity/uuid'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'
@@ -9,8 +10,6 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import {useStructure} from '../utils/resolvePanes'
 import {LOADING_PANE} from '../constants'
 import StructureError from './StructureError'
-import UUID from '@sanity/uuid'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const FALLBACK_ID = '__fallback__'
 
@@ -54,7 +53,7 @@ const IntentResolver = React.memo(function IntentResolver({params, payload}) {
 
   if (!documentType) {
     return isLoaded ? (
-      <Redirect panes={[[{id: `__edit__${id || UUID()}`, params: otherParams}]]} />
+      <Redirect panes={[[{id: `__edit__${id || uuid()}`, params: otherParams}]]} />
     ) : (
       <Spinner center message="Resolving document type…" delay={600} />
     )
@@ -87,7 +86,7 @@ function getNewRouterState({structure, documentType, params, payload, documentId
   const template = isTemplateCreate && getTemplateById(params.template)
   const type = (template && template.schemaType) || documentType
   const fallbackParameters = {...otherParams, type, template: params.template}
-  const newDocumentId = documentId === FALLBACK_ID ? UUID() : removeDraftPrefix(documentId)
+  const newDocumentId = documentId === FALLBACK_ID ? uuid() : removeDraftPrefix(documentId)
 
   return terminatesInDocument
     ? paneSegments
@@ -110,8 +109,8 @@ function Redirect({panes}) {
 function useDocumentType(documentId, specifiedType) {
   const [{documentType, isLoaded}, setDocumentType] = useState({isLoaded: false})
   useEffect(() => {
-    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((documentType) =>
-      setDocumentType({documentType, isLoaded: true})
+    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((typeName) =>
+      setDocumentType({documentType: typeName, isLoaded: true})
     )
     return () => sub.unsubscribe()
   })
