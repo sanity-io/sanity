@@ -6,8 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "prepublishOnly": "sanity-check"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -24,7 +23,6 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/check": "2.0.9",
     "rimraf": "^2.7.1"
   },
   "repository": {

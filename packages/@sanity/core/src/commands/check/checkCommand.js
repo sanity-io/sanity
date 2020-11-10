@@ -1,11 +1,10 @@
-import sanityCheck from '@sanity/check'
-
 export default {
   name: 'check',
-  signature: '[DIRECTORY]',
-  description: 'Performs a Sanity check',
-  action: (args, context) =>
-    sanityCheck({
-      dir: args.argsWithoutOptions[0] || context.workDir,
-    }),
+  signature: '',
+  description: '[deprecated]',
+  hideFromHelp: true,
+  action: (args, context) => {
+    const {output} = context
+    output.print('`sanity check` is deprecated and no longer has any effect')
+  },
 }
