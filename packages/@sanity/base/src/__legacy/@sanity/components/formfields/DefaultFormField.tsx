@@ -1,14 +1,11 @@
 import React from 'react'
 import classNames from 'classnames'
 import {Marker} from '@sanity/types'
-import {
-  ChangeIndicator,
-  ChangeIndicatorContextProvidedProps,
-} from '@sanity/base/lib/change-indicators'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import {FieldPresence, FormFieldPresence} from '../../../../presence'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
 import FieldStatus from '../fieldsets/FieldStatus'
 
 const EMPTY_MARKERS = []

@@ -2,15 +2,12 @@ import React from 'react'
 import classNames from 'classnames'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isValidationMarker, Marker, Path} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
-import {
-  ChangeIndicator,
-  ChangeIndicatorContextProvidedProps,
-} from '@sanity/base/lib/change-indicators'
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import {FieldPresence, FormFieldPresence} from '../../../../presence'
 import FieldStatus from './FieldStatus'
 
 const EMPTY_ARRAY = []

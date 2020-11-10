@@ -1,3 +1,3 @@
-# components
+# @sanity/components
 
-Basic UX components
+This module is deprecated. Import modules from `@sanity/base/__legacy/components` for legacy support.

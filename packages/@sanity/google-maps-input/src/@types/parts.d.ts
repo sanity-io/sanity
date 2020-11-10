@@ -18,14 +18,14 @@ declare module 'config:@sanity/google-maps-input' {
 
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
-  export * from '@sanity/components/src/buttons/DefaultButton'
-  export {default} from '@sanity/components/src/buttons/DefaultButton'
+  export * from '@sanity/base/src/__legacy/@sanity/components/buttons/DefaultButton'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/DefaultButton'
 }
 
 declare module 'part:@sanity/components/avatar' {
-  export * from '@sanity/components/src/avatar'
+  export * from '@sanity/base/src/__legacy/@sanity/components/avatar'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  export * from '@sanity/components/src/tooltip'
+  export * from '@sanity/base/src/__legacy/@sanity/components/tooltip'
 }

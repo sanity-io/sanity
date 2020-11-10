@@ -279,96 +279,96 @@ declare module 'part:@sanity/base/authentication-fetcher' {
  */
 
 declare module 'part:@sanity/components/avatar' {
-  export * from '@sanity/components/src/avatar'
+  export * from '@sanity/base/src/__legacy/@sanity/components/avatar'
 }
 
 declare module 'part:@sanity/components/click-outside' {
-  export * from '@sanity/components/src/clickOutside'
+  export * from '@sanity/base/src/__legacy/@sanity/components/clickOutside'
 }
 
 declare module 'part:@sanity/components/container-query' {
-  export * from '@sanity/components/src/containerQuery'
+  export * from '@sanity/base/src/__legacy/@sanity/components/containerQuery'
 }
 
 declare module 'part:@sanity/components/buttons/button-grid-style'
 declare module 'part:@sanity/components/buttons/button-grid' {
-  export {default} from '@sanity/components/src/buttons/ButtonGrid'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/ButtonGrid'
 }
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
-  export {default} from '@sanity/components/src/buttons/DefaultButton'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/DefaultButton'
 }
 declare module 'part:@sanity/components/buttons/state' {
-  export {default} from '@sanity/components/src/buttons/StateButton'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/StateButton'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen-style'
 declare module 'part:@sanity/components/dialogs/fullscreen' {
-  export {default} from '@sanity/components/src/dialogs/FullscreenDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/FullscreenDialog'
 }
 
 declare module 'part:@sanity/components/dialogs/popover-style'
 
 declare module 'part:@sanity/components/lists/create-document' {
-  export {default} from '@sanity/components/src/lists/CreateDocument'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/lists/CreateDocument'
 }
 
 declare module 'part:@sanity/components/layer' {
-  export * from '@sanity/components/src/layer'
+  export * from '@sanity/base/src/__legacy/@sanity/components/layer'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  export * from '@sanity/components/src/tooltip'
+  export * from '@sanity/base/src/__legacy/@sanity/components/tooltip'
 }
 
 declare module 'part:@sanity/components/menus/default-style'
 declare module 'part:@sanity/components/menus/default' {
-  export {default} from '@sanity/components/src/menus/DefaultMenu'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/menus/DefaultMenu'
 }
 
 declare module 'part:@sanity/components/loading/spinner-style'
 declare module 'part:@sanity/components/loading/spinner' {
-  export {default} from '@sanity/components/src/loading/Spinner'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/loading/Spinner'
 }
 
 declare module 'part:@sanity/components/typography/hotkeys' {
-  export {default} from '@sanity/components/src/typography/Hotkeys'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/typography/Hotkeys'
 }
 
 declare module 'part:@sanity/components/dialogs/default-style'
 declare module 'part:@sanity/components/dialogs/default' {
-  export {default} from '@sanity/components/src/dialogs/DefaultDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/DefaultDialog'
 }
 
 declare module 'part:@sanity/components/dialogs/content-style'
 declare module 'part:@sanity/components/dialogs/content' {
-  export {default} from '@sanity/components/src/dialogs/DialogContent'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/DialogContent'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen-message' {
-  export {default} from '@sanity/components/src/dialogs/FullscreenMessageDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/FullscreenMessageDialog'
 }
 
 declare module 'part:@sanity/components/popover' {
-  export * from '@sanity/components/src/popover'
+  export * from '@sanity/base/src/__legacy/@sanity/components/popover'
 }
 
 declare module 'part:@sanity/components/portal' {
-  export * from '@sanity/components/src/portal'
+  export * from '@sanity/base/src/__legacy/@sanity/components/portal'
 }
 
 declare module 'part:@sanity/components/previews/create-document' {
-  export {default} from '@sanity/components/src/previews/CreateDocumentPreview'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/previews/CreateDocumentPreview'
 }
 
 declare module 'part:@sanity/components/scroll' {
-  export * from '@sanity/components/src/scroll'
+  export * from '@sanity/base/src/__legacy/@sanity/components/scroll'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  export * from '@sanity/components/src/tooltip'
+  export * from '@sanity/base/src/__legacy/@sanity/components/tooltip'
 }
 
 declare module 'part:@sanity/components/utilities/escapable' {
-  export {default} from '@sanity/components/src/utilities/Escapable'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/utilities/Escapable'
 }
