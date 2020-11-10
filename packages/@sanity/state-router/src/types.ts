@@ -17,7 +17,7 @@ export type Route = {
 }
 
 // eslint-disable-next-line no-use-before-define
-export type RouteChildren = Node[] | ((state: Object) => Node[])
+export type RouteChildren = Node[] | ((state: Record<string, unknown>) => Node[])
 
 export type Node = {
   route: Route
@@ -30,8 +30,8 @@ export type Node = {
 
 export type Router = Node & {
   _isRoute: boolean
-  encode: (state: Object) => string
-  decode: (path: string) => Object | null
+  encode: (state: Record<string, unknown>) => string
+  decode: (path: string) => Record<string, unknown> | null
   isNotFound: (path: string) => boolean
   getBasePath: () => string
   getRedirectBase: (pathname: string) => string | null
