@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "posttest": "tsc --noEmit",
+    "posttest": "tsc --noEmit -p tsconfig.dist.json",
     "clean": "rimraf lib coverage"
   },
   "keywords": [

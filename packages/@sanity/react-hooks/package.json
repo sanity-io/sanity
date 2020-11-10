@@ -14,7 +14,7 @@
     "test:watch": "jest --watch",
     "posttest": "tsc --noEmit",
     "clean": "rimraf lib coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json"
   },
   "keywords": [
     "sanity",

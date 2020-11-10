@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.dist",
   "include": ["src"],
   "compilerOptions": {
     "outDir": "./lib",
@@ -15,10 +15,10 @@
       }
     ],
 
-    // prettier-ignore
+    "baseUrl": "./src",
     "paths": {
-      "part:@sanity/base/datastore/history": ["./@sanity/base/src/datastores/history"],
-      "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"]
+      "part:@sanity/base/datastore/history": ["./datastores/history"],
+      "part:@sanity/base/user": ["./datastores/user"]
     }
   }
 }

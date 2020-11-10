@@ -1,6 +1,6 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
+  "extends": "../../../tsconfig.dist",
+  "include": ["src"],
   "compilerOptions": {
     "strict": true,
     "outDir": "./lib",

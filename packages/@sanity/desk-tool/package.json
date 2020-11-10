@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "test": "jest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json"
   },
   "keywords": [
     "sanity",

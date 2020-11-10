@@ -1,22 +1,42 @@
 {
+  "extends": "./tsconfig.dist",
   "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": false,
-    "noImplicitReturns": true,
-    "skipLibCheck": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "target": "es2016",
-    "declaration": true,
+    "baseUrl": "./packages",
 
-    /* Note this must be false or else the gulp task will not emit any d.ts files for some bizarre reason */
-    "emitDeclarationOnly": false,
+    // prettier-ignore
+    "paths": {
+      // Documented paths
+      "@sanity/base/initial-value-template-builder": ["./@sanity/base/initial-value-template-builder"],
+      "@sanity/desk-tool/structure-builder": ["./@sanity/desk-tool/structure-builder"],
 
-    "declarationMap": true,
-    "lib": ["dom", "es2016", "es2020.string"],
-    "moduleResolution": "node",
-    "sourceMap": true
+      // Internal paths
+      "@sanity/base/components": ["./@sanity/base/src/components"],
+      "@sanity/base/hooks": ["./@sanity/base/src/hooks"],
+      "@sanity/base/lib/datastores/document/document-pair/remoteSnapshots": ["./@sanity/base/src/datastores/document/document-pair/remoteSnapshots"],
+      "@sanity/base/initial-value-templates": ["./@sanity/base/initial-value-templates"],
+      "@sanity/base/lib/change-indicators": ["./@sanity/base/src/change-indicators"],
+      "@sanity/base/lib/change-indicators/ChangeFieldWrapper": ["./@sanity/base/src/change-indicators/ChangeFieldWrapper"],
+      "@sanity/base/lib/util/resizeObserver": ["./@sanity/base/src/util/resizeObserver"],
+      "@sanity/base/structure-builder": ["./@sanity/base/structure-builder"],
+      "@sanity/base": ["./@sanity/base/src"],
+      "@sanity/block-tools": ["./@sanity/block-tools/src"],
+      "@sanity/components/lib/fieldsets/FieldStatus": ["./@sanity/components/src/fieldsets/FieldStatus"],
+      "@sanity/components": ["./@sanity/components/src"],
+      "@sanity/field/lib/diff/resolve/diffResolver": ["./@sanity/field/src/diff/resolve/diffResolver"],
+      "@sanity/field": ["./@sanity/field/src"],
+      "@sanity/initial-value-templates": ["./@sanity/initial-value-templates/src"],
+      "@sanity/mutator": ["./@sanity/mutator/src"],
+      "@sanity/preview/components": ["./@sanity/preview/components"],
+      "@sanity/preview": ["./@sanity/preview"],
+      "@sanity/schema/lib": ["./@sanity/schema/src"],
+      "@sanity/schema": ["./@sanity/schema/src/legacy"],
+      "@sanity/state-router/components": ["./@sanity/state-router/src/components"],
+      "@sanity/state-router": ["./@sanity/state-router/src"],
+      "@sanity/structure": ["./@sanity/structure/src"],
+      "@sanity/util/paths": ["./@sanity/util/src/pathUtils"],
+      "@sanity/util": ["./@sanity/util/src"],
+      "@sanity/types": ["./@sanity/types/src"],
+      "@sanity/validation": ["./@sanity/validation/src"]
+    }
   }
 }

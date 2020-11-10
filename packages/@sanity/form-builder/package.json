@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "test": "NODE_ENV=test jest",
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json"
   },
   "keywords": [
     "sanity",

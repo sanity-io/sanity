@@ -1,15 +1,15 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.dist",
   "include": ["src"],
   "compilerOptions": {
-    "strict": true,
-    "outDir": "./lib",
+    "strict": false,
     "jsx": "react",
+    "outDir": "./lib",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
         "options": {
-          "customMatcher": "\\.css$"
+          "customMatcher": ".*\\.css$"
         }
       }
     ]

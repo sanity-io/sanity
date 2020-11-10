@@ -1,9 +1,8 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "test/**/*.ts"],
+  "include": ["src"],
   "compilerOptions": {
-    "declaration": true,
+    "strict": true,
     "jsx": "react",
     "outDir": "./lib"
   }

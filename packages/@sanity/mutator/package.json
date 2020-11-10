@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "rimraf lib",
     "test": "tap -t120 test/*.test.ts",
-    "perf": "node ./perf/run.js"
+    "perf": "node ./perf/run.js",
+    "type-check": "tsc --noEmit -p tsconfig.dist.json"
   },
   "keywords": [
     "sanity",

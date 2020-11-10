@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.dist",
   "include": ["src"],
   "compilerOptions": {
     "strict": false,
@@ -14,10 +14,11 @@
       }
     ],
 
+    "baseUrl": "./src",
     // prettier-ignore
     "paths": {
-      "part:@sanity/default-layout/tool-switcher": ["./@sanity/default-layout/src/navbar/toolMenu/ToolMenu"],
-      "part:@sanity/default-layout/sidecar-datastore": ["./@sanity/default-layout/src/datastores/sidecar"]
+      "part:@sanity/default-layout/tool-switcher": ["./navbar/toolMenu/ToolMenu"],
+      "part:@sanity/default-layout/sidecar-datastore": ["./datastores/sidecar"]
     }
   }
 }
