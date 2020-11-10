@@ -1,11 +1,9 @@
-export {Doc} from '../../types'
-
-export {ChunkType, Chunk} from '@sanity/field/diff'
-
 import {RemoteSnapshotVersionEvent} from '@sanity/base/lib/datastores/document/document-pair/checkoutPair'
-export {RemoteSnapshotVersionEvent}
 
 export {DocumentRemoteMutationEvent} from '@sanity/base/lib/datastores/document/buffered-doc/types'
+export {ChunkType, Chunk} from '@sanity/field/diff'
+export {Doc} from '../../types'
+export {RemoteSnapshotVersionEvent}
 
 export type DocumentRemoteMutationVersionEvent = Exclude<
   RemoteSnapshotVersionEvent,

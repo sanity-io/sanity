@@ -1,5 +1,3 @@
-import {Observable, from} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
 import {TransactionLogEvent} from './types'
 
 type StreamResult = TransactionLogEvent | {error: {description?: string; type: string}}

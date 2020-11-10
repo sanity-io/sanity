@@ -1,6 +1,7 @@
+import {Diff} from '@sanity/diff'
+import {Annotation} from '@sanity/field/diff'
 import {Timeline} from './timeline'
 import {CombinedDocument, Chunk} from './types'
-import {Diff} from '@sanity/diff'
 
 /**
  * A reconstruction represents a single reconstruction of a
@@ -18,16 +19,16 @@ export class Reconstruction {
     this.doc = doc
   }
 
-  same(start: Chunk | null, end: Chunk) {
+  same(start: Chunk | null, end: Chunk): boolean {
     return this.start === start && this.end === end
   }
 
   private _startDocument?: CombinedDocument
   private _endDocument?: CombinedDocument
-  private _diff?: Diff<any>
+  private _diff?: Diff<Annotation>
 
   /** Returns the attributes as seen at the end of the range. */
-  endAttributes() {
+  endAttributes(): Record<string, unknown> | null {
     return getAttrs(this.endDocument())
   }
 
@@ -40,7 +41,7 @@ export class Reconstruction {
   }
 
   /** Returns the attributes as seen at the end of the range. */
-  startAttributes() {
+  startAttributes(): Record<string, unknown> | null {
     return getAttrs(this.startDocument())
   }
 
@@ -58,7 +59,7 @@ export class Reconstruction {
     return this._startDocument
   }
 
-  diff() {
+  diff(): Diff<Annotation> {
     if (!this._diff) {
       if (!this.start) throw new Error('start required')
 
