@@ -40,15 +40,17 @@ type State = {
 
 export default class WithVisibility extends React.Component<Props, State> {
   element: React.RefObject<HTMLElement> = React.createRef()
-  subscription: Subscription
-  state = {isVisible: null}
+  subscription: Subscription | null = null
+  state: State = {isVisible: false}
 
   componentDidMount() {
     const {hideDelay = 0} = this.props
+    if (!this.element.current) {
+      return
+    }
     const inViewport$ = intersectionObservableFor(this.element.current).pipe(
       map((event) => event.isIntersecting)
     )
-
     this.subscription = documentVisibility$
       .pipe(
         switchMap((isVisible) => (isVisible ? inViewport$ : observableOf(false))),
@@ -64,8 +66,10 @@ export default class WithVisibility extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.subscription.unsubscribe()
-    this.subscription = null
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+      this.subscription = null
+    }
   }
 
   render() {

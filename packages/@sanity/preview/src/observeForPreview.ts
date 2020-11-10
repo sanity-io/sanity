@@ -54,6 +54,6 @@ export default function observeForPreview(
   }
   return observableOf({
     type: type,
-    snapshot: invokePrepare(type, value, viewOptions),
+    snapshot: invokePrepare(type, value, viewOptions || {}),
   })
 }

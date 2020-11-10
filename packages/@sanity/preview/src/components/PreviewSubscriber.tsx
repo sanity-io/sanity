@@ -45,7 +45,7 @@ export default class PreviewSubscriber extends React.Component<Props> {
     // Disable visibility for 'inline' and 'block' types which is used in the block editor (for now)
     // This led to strange side effects inside the block editor, and needs to be disabled for now.
     // https://github.com/sanity-io/sanity/pull/1411
-    if (['inline', 'block'].includes(this.props.layout)) {
+    if (this.props.layout && ['inline', 'block'].includes(this.props.layout)) {
       return this.renderChild(true)
     }
     return <WithVisibility hideDelay={HIDE_DELAY}>{this.renderChild}</WithVisibility>

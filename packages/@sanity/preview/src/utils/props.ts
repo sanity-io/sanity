@@ -1,5 +1,4 @@
-import {Observable, of as observableOf, from as observableFrom} from 'rxjs'
-import isObservable from 'is-observable'
+import {Observable, of as observableOf, from as observableFrom, isObservable} from 'rxjs'
 import {map, mergeAll, combineAll, switchMap, scan} from 'rxjs/operators'
 
 function setKey(source, key, value) {
@@ -9,11 +8,19 @@ function setKey(source, key, value) {
   }
 }
 
-export default function props(options: {wait?: boolean} = {}) {
-  return (source) => {
-    return new Observable((observer) => source.subscribe(observer)).pipe(
+function keys<T>(value: T) {
+  return Object.keys(value) as (keyof T)[]
+}
+
+type Props<K extends keyof any, T> = {
+  [P in K]: T | Observable<T>
+}
+
+export default function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
+  return (source: Observable<Props<K, T>>) => {
+    return new Observable<Props<K, T>>((observer) => source.subscribe(observer)).pipe(
       switchMap((object) => {
-        const keyObservables = Object.keys(object).map((key) => {
+        const keyObservables = keys(object).map((key) => {
           const value = object[key]
           return isObservable(value)
             ? observableFrom(value).pipe(map((val) => [key, val]))

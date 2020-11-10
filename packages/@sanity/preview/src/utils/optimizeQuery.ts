@@ -49,11 +49,12 @@ export function toGradientQuery(combinedSelections: CombinedSelection[]) {
 }
 
 export function reassemble(queryResult: Result[], combinedSelections: CombinedSelection[]) {
-  return queryResult.reduce((reprojected, subResult, index) => {
+  return queryResult.reduce((reprojected: (Doc | null)[], subResult, index) => {
     const map = combinedSelections[index].map
     map.forEach((resultIdx, i) => {
       const id = combinedSelections[index].ids[i]
-      reprojected[resultIdx] = subResult.find((doc) => doc._id === id)
+      const found = subResult.find((doc) => doc._id === id)
+      reprojected[resultIdx] = found || null
     })
     return reprojected
   }, [])

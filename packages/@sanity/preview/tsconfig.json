@@ -2,7 +2,7 @@
   "extends": "../../../tsconfig",
   "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "compilerOptions": {
-    "strict": false,
+    "strict": true,
     "jsx": "react",
     "outDir": "./lib",
     "plugins": [

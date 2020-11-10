@@ -18,7 +18,7 @@ type PreparedValue = {
 
 type PreviewConfig = {
   select: {[key: string]: string}
-  prepare?: (SelectedValue, ViewOptions) => PreparedValue
+  prepare?: (value: SelectedValue, viewOptions: ViewOptions) => PreparedValue
 }
 
 type Type = {
@@ -29,7 +29,7 @@ type Type = {
 export type PrepareInvocationResult = {
   selectedValue?: SelectedValue
   returnValue: null | PreparedValue | SelectedValue
-  errors?: Error[]
+  errors: Error[]
 }
 
 const errorCollector = (() => {

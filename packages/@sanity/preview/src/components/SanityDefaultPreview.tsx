@@ -49,12 +49,14 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     return (
       <img
         alt={value.title}
-        src={imageBuilder
-          .image(media)
-          .width(dimensions.width || 100)
-          .height(dimensions.height || 100)
-          .fit(dimensions.fit)
-          .url()}
+        src={
+          imageBuilder
+            .image(media)
+            .width(dimensions.width || 100)
+            .height(dimensions.height || 100)
+            .fit(dimensions.fit)
+            .url() || ''
+        }
       />
     )
   }

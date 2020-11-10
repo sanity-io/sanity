@@ -2,6 +2,8 @@ import client from 'part:@sanity/base/client'
 import {
   combineLatest,
   concat,
+  defer,
+  EMPTY,
   from as observableFrom,
   merge,
   Observable,
@@ -117,16 +119,13 @@ type Cache = {
 }
 const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
-function createCachedFieldObserver(id, fields): CachedFieldObserver {
-  let latest = null
-  const changes$ = merge(
-    new Observable((observer) => {
-      observer.next(latest)
-      observer.complete()
-    }).pipe(filter(Boolean)),
-    listenFields(id, fields)
+function createCachedFieldObserver<T>(id, fields): CachedFieldObserver {
+  let latest: T | null = null
+  const changes$ = merge<T | null>(
+    defer(() => (latest === null ? EMPTY : observableOf(latest))),
+    listenFields(id, fields) as Observable<T>
   ).pipe(
-    tap((v) => (latest = v)),
+    tap((v: T | null) => (latest = v)),
     publishReplay(1),
     refCount()
   )
