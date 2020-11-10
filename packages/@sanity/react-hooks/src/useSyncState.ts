@@ -10,7 +10,7 @@ interface SyncState {
 const SYNCING = {isSyncing: true}
 const NOT_SYNCING = {isSyncing: false}
 
-export function useSyncState(publishedDocId): SyncState {
+export function useSyncState(publishedDocId: string): SyncState {
   return useObservable<SyncState>(
     React.useMemo(
       () =>

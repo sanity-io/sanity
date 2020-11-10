@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.23",
     "@types/lodash": "^4.14.149",
+    "@types/shallow-equals": "^1.0.0",
     "jest": "^26.4.2",
     "react": "17.0.1",
     "rimraf": "^2.7.1",

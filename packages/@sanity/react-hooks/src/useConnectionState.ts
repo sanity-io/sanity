@@ -8,7 +8,7 @@ type ConnectionState = 'connecting' | 'reconnecting' | 'connected'
 
 const INITIAL: ConnectionState = 'connecting'
 
-export function useConnectionState(publishedDocId, docTypeName): ConnectionState {
+export function useConnectionState(publishedDocId: string, docTypeName: string): ConnectionState {
   return useObservable<ConnectionState>(
     React.useMemo(
       () =>
