@@ -8,19 +8,7 @@ const defaultConfig = {
   apiHost: 'https://api.sanity.io',
   useProjectHostname: true,
   gradientMode: false,
-  isPromiseAPI: true,
-  rateLimit: {
-    maxRps: 40,
-    ttl: 2,
-    interval: 1000,
-    onRateLimited: null,
-    retry: {
-      maxRetryAttempts: 3,
-      scalingDuration: 1000,
-      initialDuration: 100,
-      includedStatusCodes: [429]
-    }
-  }
+  isPromiseAPI: true
 }
 
 const LOCALHOSTS = ['localhost', '127.0.0.1', '0.0.0.0']

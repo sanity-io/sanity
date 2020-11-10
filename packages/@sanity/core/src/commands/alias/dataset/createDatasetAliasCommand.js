@@ -33,8 +33,8 @@ export default {
     ])
 
     const aliasName = await (alias || promptForDatasetAliasName(prompt))
-    if (aliases.includes(aliasName) || datasets.includes(aliasName)) {
-      throw new Error(`Dataset alias "${aliasName}" already exists as a dataset or alias name `)
+    if (aliases.includes(aliasName)) {
+      throw new Error(`Dataset alias "${aliasName}" already exists`)
     }
 
     if (targetDataset) {
@@ -56,7 +56,7 @@ export default {
 
     try {
       await client.datasetAliases.create(aliasName, {datasetName})
-      output.print('Dataset alias created successfully')
+      output.print(`Dataset alias ${aliasName} created successfully`)
     } catch (err) {
       throw new Error(`Dataset alias creation failed:\n${err.message}`)
     }

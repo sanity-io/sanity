@@ -10,8 +10,6 @@ const ProjectsClient = require('./projects/projectsClient')
 const AssetsClient = require('./assets/assetsClient')
 const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
-const RateLimiter = require('./rate-limiter/limiter')
-const rxBackoff = require('./rate-limiter/rx-backoff')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
@@ -31,9 +29,6 @@ function SanityClient(config = defaultConfig) {
   this.projects = new ProjectsClient(this)
   this.users = new UsersClient(this)
   this.auth = new AuthClient(this)
-
-  // initialize limiter
-  this.limiter = new RateLimiter(this.clientConfig.rateLimit)
 
   if (this.clientConfig.isPromiseAPI) {
     const observableConfig = assign({}, this.clientConfig, {isPromiseAPI: false})
@@ -84,12 +79,11 @@ assign(SanityClient.prototype, {
       })
     )
 
-    return this.limiter.handleRequest(httpRequest(reqOptions, this.clientConfig.requester))
+    return httpRequest(reqOptions, this.clientConfig.requester)
   },
 
   request(options) {
     const observable = this._requestObservable(options).pipe(
-      rxBackoff(this.clientConfig.rateLimit.retry),
       filter(event => event.type === 'response'),
       map(event => event.body)
     )

@@ -33,8 +33,7 @@ export default {
     }
 
     try {
-      const rsp = await client.datasetAliases.unlink(aliasName)
-      console.log(rsp)
+      await client.datasetAliases.unlink(aliasName)
       output.print(`Dataset alias ${aliasName} unlinked from successfully`)
     } catch (err) {
       throw new Error(`Dataset alias link failed:\n${err.message}`)

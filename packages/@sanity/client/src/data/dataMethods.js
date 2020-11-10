@@ -2,7 +2,6 @@ const assign = require('object-assign')
 const {filter} = require('@sanity/observable/operators/filter')
 const {map} = require('@sanity/observable/operators/map')
 const validators = require('../validators')
-const rxBackoff = require('../rate-limiter/rx-backoff')
 const getSelection = require('../util/getSelection')
 const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
@@ -56,7 +55,6 @@ module.exports = {
   getDocument(id) {
     const options = {uri: this.getDataUrl('doc', id), json: true}
     const observable = this._requestObservable(options).pipe(
-      rxBackoff(this.clientConfig.rateLimit.retry),
       filter(isResponse),
       map(event => event.body.documents && event.body.documents[0])
     )
@@ -67,7 +65,6 @@ module.exports = {
   getDocuments(ids) {
     const options = {uri: this.getDataUrl('doc', ids.join(',')), json: true}
     const observable = this._requestObservable(options).pipe(
-      rxBackoff(this.clientConfig.rateLimit.retry),
       filter(isResponse),
       map(event => {
         const indexed = indexBy(event.body.documents || [], doc => doc._id)
@@ -145,7 +142,6 @@ module.exports = {
     }
 
     return this._requestObservable(reqOptions).pipe(
-      rxBackoff(this.clientConfig.rateLimit.retry),
       filter(isResponse),
       map(getBody),
       map(res => {
