@@ -33,7 +33,7 @@ interface NormalizedListOption {
 }
 
 export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaType}) => {
-  const options = schemaType.options?.list
+  const options = (schemaType as any).options?.list
   const colorManager = useUserColorManager()
   if (!Array.isArray(options)) {
     // Shouldn't happen, because the resolver should only resolve here if it does
@@ -43,7 +43,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
   return (
     <div>
       {diff.items
-        .map((item) => normalizeItems(item, diff, schemaType))
+        .map(item => normalizeItems(item, diff, schemaType as any))
         .filter((item): item is NormalizedListOption => item !== null)
         .sort(sortItems)
         .map((item, index) => {
@@ -160,12 +160,12 @@ function isNamedOption(item: unknown | NamedListOption): item is NamedListOption
 }
 
 function getOptionIndex(item: unknown, schemaType: ArraySchemaType): number {
-  const list = schemaType.options?.list || []
+  const list = (schemaType as any).options?.list || []
   return list.findIndex((opt) => isEqual(isNamedOption(opt) ? opt.value : opt, item))
 }
 
 function getItemTitle(item: unknown, schemaType: ArraySchemaType): string | undefined {
-  const list = (schemaType.options?.list || []) as NamedListOption[]
+  const list = ((schemaType as any).options?.list || []) as NamedListOption[]
   const index = getOptionIndex(item, schemaType)
   return index === -1 ? undefined : list[index].title || undefined
 }

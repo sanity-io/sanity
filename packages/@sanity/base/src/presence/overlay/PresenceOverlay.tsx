@@ -8,10 +8,12 @@ interface Props {
   margins?: [number, number, number, number]
 }
 
+const DEFAULT_MARGINS: [number, number, number, number] = [0, 0, 0, 0]
+
 function OverlayEnabled({children, margins}: Props) {
   return (
     <Tracker>
-      <StickyOverlay margins={margins}>{children}</StickyOverlay>
+      <StickyOverlay margins={margins || DEFAULT_MARGINS}>{children}</StickyOverlay>
     </Tracker>
   )
 }

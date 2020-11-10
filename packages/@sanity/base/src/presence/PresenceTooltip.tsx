@@ -1,5 +1,3 @@
-/* eslint-disable react/require-default-props */
-
 import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
 import React from 'react'
 import {UserAvatar} from '../components/UserAvatar'
@@ -8,7 +6,7 @@ import {FormFieldPresence} from './types'
 import styles from './PresenceTooltip.css'
 
 interface PresenceTooltipProps {
-  children?: JSX.Element
+  children?: React.ReactElement
   items: FormFieldPresence[]
   placement?: TooltipPlacement
 }
@@ -34,7 +32,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   return (
     <Tooltip content={content} placement={placement}>
-      {children}
+      {children as any}
     </Tooltip>
   )
 }

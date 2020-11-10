@@ -203,7 +203,7 @@ function normalizeIndexSegment(segment: string): PathSegment {
 
 function normalizeKeySegment(segment: string): KeyedSegment {
   const segments = segment.match(reKeySegment)
-  return {_key: segments[1]}
+  return {_key: segments![1]}
 }
 
 function normalizeIndexTupleSegment(segment: string): IndexTuple {

@@ -4,6 +4,9 @@ declare module 'part:@sanity/base/authentication-fetcher'
 declare module 'part:@sanity/base/client'
 declare module 'part:@sanity/base/user'
 
+// used by @sanity/react-hooks
+declare module 'part:@sanity/base/datastore/document'
+
 declare module 'part:@sanity/base/preview' {
   import {Observable} from 'rxjs'
 

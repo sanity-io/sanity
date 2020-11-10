@@ -92,16 +92,16 @@ export const createObservableBufferedDocument = (
       // 2) remote mutations originating from another client has arrived and been applied
       mutations$.next({
         type: 'mutation',
-        document: getUpdatedSnapshot(bufferedDocument),
+        document: getUpdatedSnapshot(bufferedDocument) as any,
         mutations: mutation.mutations,
         origin: remote ? 'remote' : 'local',
       })
     }
 
-    bufferedDocument.onRemoteMutation = (mutation) => {
+    ;(bufferedDocument as any).onRemoteMutation = mutation => {
       remoteMutations.next({
         type: 'remoteMutation',
-        head: bufferedDocument.document.HEAD,
+        head: bufferedDocument.document.HEAD as any,
         transactionId: mutation.transactionId,
         timestamp: mutation.timestamp,
         author: mutation.identity,

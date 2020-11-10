@@ -31,7 +31,7 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   const ref = React.useRef(null)
 
-  useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
+  useReporter(useId() || '', () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
 
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
   return (
