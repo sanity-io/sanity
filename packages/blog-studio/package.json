@@ -7,7 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "start": "cd ../.. && npm run blog-studio"
+    "start": "sanity start --port 3336"
   },
   "keywords": [
     "sanity",
