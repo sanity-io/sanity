@@ -1,3 +1,4 @@
 {
-  presets: ['@babel/react']
+  "extends": "../../../.babelrc",
+  "presets": ["@babel/react"]
 }
