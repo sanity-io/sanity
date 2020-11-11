@@ -47,7 +47,7 @@ PartResolverPlugin.prototype.apply = function (compiler) {
     instance.sanity = compiler.sanity || {basePath: basePath}
     return partResolver
       .resolveParts({env, basePath, additionalPlugins, isSanityMonorepo})
-      .then(parts => {
+      .then((parts) => {
         instance.sanity.parts = parts
         return {instance, parts}
       })
@@ -60,7 +60,7 @@ PartResolverPlugin.prototype.apply = function (compiler) {
     }
 
     return extractCssCustomProperties(basePath, impl[0].path, isSanityMonorepo).then(
-      cssCustomProperties => {
+      (cssCustomProperties) => {
         instance.sanity.cssCustomProperties = cssCustomProperties
       }
     )

@@ -27,7 +27,7 @@ function resolveNodeImport(moduleId, basedir) {
 }
 
 function resolveSanityImport(id, basePath, isSanityMonorepo) {
-  return partsCache.get(basePath, isSanityMonorepo).then(cached => {
+  return partsCache.get(basePath, isSanityMonorepo).then((cached) => {
     const parts = cached.value
     const loadAll = id.indexOf('all:') === 0
     const partName = loadAll ? id.substr(4) : id

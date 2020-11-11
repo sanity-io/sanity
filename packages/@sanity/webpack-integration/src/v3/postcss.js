@@ -5,7 +5,7 @@ const resolveStyleImport = require('./resolveStyleImport')
 function getStyleResolver(options) {
   return resolveStyleImport({
     from: options.basePath,
-    isSanityMonorepo: options.isSanityMonorepo
+    isSanityMonorepo: options.isSanityMonorepo,
   })
 }
 

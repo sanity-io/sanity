@@ -43,7 +43,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
   return (
     <div>
       {diff.items
-        .map(item => normalizeItems(item, diff, schemaType as any))
+        .map((item) => normalizeItems(item, diff, schemaType as any))
         .filter((item): item is NormalizedListOption => item !== null)
         .sort(sortItems)
         .map((item, index) => {

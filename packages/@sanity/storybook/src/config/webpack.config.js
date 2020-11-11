@@ -3,9 +3,9 @@ const sanityServer = require('@sanity/server')
 const wpIntegration = require('@sanity/webpack-integration/v3')
 const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/webpack.config.js')
 
-const skipCssLoader = rule => !rule.test || (rule.test && !rule.test.toString().includes('.css'))
-const isCssLoader = rule => rule.test && rule.test.toString().includes('.css')
-const isJsxLoader = rule => rule.test && rule.test.toString().includes('jsx')
+const skipCssLoader = (rule) => !rule.test || (rule.test && !rule.test.toString().includes('.css'))
+const isCssLoader = (rule) => rule.test && rule.test.toString().includes('.css')
+const isJsxLoader = (rule) => rule.test && rule.test.toString().includes('jsx')
 
 // This is very hacky, but I couldn't figure out a way to pass config from
 // the parent task onto this configuration, which we need to infer the base
@@ -34,14 +34,14 @@ function getWebpackConfig(baseConfig, env) {
   config.module.rules = config.module.rules.filter(skipCssLoader)
   config.module.rules.unshift(sanityWpConfig.module.rules.find(isCssLoader))
 
-  const jsonLoaderAt = config.module.rules.findIndex(rule =>
+  const jsonLoaderAt = config.module.rules.findIndex((rule) =>
     (rule.loader || '').includes('json-loader')
   )
 
   const jsonHackLoader = {
     test: /\.json$/,
     resourceQuery: /sanityPart=/,
-    loader: require.resolve('./jsonHackLoader.js')
+    loader: require.resolve('./jsonHackLoader.js'),
   }
 
   if (jsonLoaderAt !== -1) {
@@ -49,7 +49,7 @@ function getWebpackConfig(baseConfig, env) {
   }
 
   config.resolve = Object.assign({}, config.resolve, sanityWpConfig.resolve, {
-    alias: Object.assign({}, config.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
+    alias: Object.assign({}, config.resolve.alias || {}, sanityWpConfig.resolve.alias || {}),
   })
 
   const storybookJsxLoader = config.module.rules.find(isJsxLoader)
@@ -65,7 +65,7 @@ function getWebpackConfig(baseConfig, env) {
   return config
 }
 
-getWebpackConfig.setSanityContext = context => {
+getWebpackConfig.setSanityContext = (context) => {
   sanityContext = context
 }
 

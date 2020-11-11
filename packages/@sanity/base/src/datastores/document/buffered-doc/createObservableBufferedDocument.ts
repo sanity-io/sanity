@@ -97,8 +97,7 @@ export const createObservableBufferedDocument = (
         origin: remote ? 'remote' : 'local',
       })
     }
-
-    ;(bufferedDocument as any).onRemoteMutation = mutation => {
+    ;(bufferedDocument as any).onRemoteMutation = (mutation) => {
       remoteMutations.next({
         type: 'remoteMutation',
         head: bufferedDocument.document.HEAD as any,

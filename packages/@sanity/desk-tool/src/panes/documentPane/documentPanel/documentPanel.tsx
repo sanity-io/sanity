@@ -54,12 +54,7 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
-  const {
-    toggleInspect,
-    isHistoryOpen,
-    views,
-    activeViewId,
-  } = props
+  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
 
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()

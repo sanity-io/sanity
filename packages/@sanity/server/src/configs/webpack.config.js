@@ -19,7 +19,7 @@ export default (config = {}) => {
     basePath: config.basePath,
     env: config.env,
     webpack,
-    isSanityMonorepo: inSanityMonorepo
+    isSanityMonorepo: inSanityMonorepo,
   }
 
   const basePath = config.basePath || process.cwd()

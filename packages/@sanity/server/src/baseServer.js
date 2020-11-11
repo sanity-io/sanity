@@ -23,9 +23,9 @@ const assetify = (assetPath, hashes) => ({
   hash: hashes[assetPath],
 })
 
-const getDocumentComponent = basePath => {
+const getDocumentComponent = (basePath) => {
   // Explicitly pass false here to not use uncompiled JSX etc
-  return resolveParts({basePath, isSanityMonorepo: false}).then(res => {
+  return resolveParts({basePath, isSanityMonorepo: false}).then((res) => {
     const part = res.implementations[docPart]
     if (!part) {
       throw new Error(
@@ -88,7 +88,7 @@ export function applyStaticRoutes(app, config = {}) {
 }
 
 export function callInitializers(config) {
-  resolveParts(config).then(res => {
+  resolveParts(config).then((res) => {
     const parts = res.implementations[initPart]
     if (!parts) {
       return
