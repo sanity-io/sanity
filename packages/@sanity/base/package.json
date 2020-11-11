@@ -36,7 +36,6 @@
     "@sanity/image-url": "^0.140.19",
     "@sanity/initial-value-templates": "2.0.9",
     "@sanity/mutator": "2.0.9",
-    "@sanity/observable": "2.0.9",
     "@sanity/preview": "2.0.9",
     "@sanity/schema": "2.0.9",
     "@sanity/state-router": "2.0.9",

@@ -1,5 +1,5 @@
 import EventSource from '@sanity/eventsource'
-import Observable from '@sanity/observable/minimal'
+import {Observable} from 'rxjs'
 import chalk from 'chalk'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
