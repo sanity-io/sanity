@@ -13,12 +13,6 @@
           "customMatcher": "\\.css$"
         }
       }
-    ],
-
-    // prettier-ignore
-    "paths": {
-      "part:@sanity/base/datastore/history": ["./@sanity/base/src/datastores/history"],
-      "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"]
-    }
+    ]
   }
 }

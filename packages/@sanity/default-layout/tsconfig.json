@@ -12,12 +12,6 @@
           "customMatcher": "\\.css$"
         }
       }
-    ],
-
-    // prettier-ignore
-    "paths": {
-      "part:@sanity/default-layout/tool-switcher": ["./@sanity/default-layout/src/navbar/toolMenu/ToolMenu"],
-      "part:@sanity/default-layout/sidecar-datastore": ["./@sanity/default-layout/src/datastores/sidecar"]
-    }
+    ]
   }
 }
