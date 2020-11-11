@@ -9,13 +9,13 @@
       "@sanity/base/initial-value-template-builder": ["./@sanity/base/initial-value-template-builder"],
       "@sanity/desk-tool/structure-builder": ["./@sanity/desk-tool/structure-builder"],
 
-      // Internal paths
+      // Internal paths (order matters)
       "@sanity/base/components": ["./@sanity/base/src/components"],
       "@sanity/base/hooks": ["./@sanity/base/src/hooks"],
-      "@sanity/base/lib/datastores/document/document-pair/remoteSnapshots": ["./@sanity/base/src/datastores/document/document-pair/remoteSnapshots"],
       "@sanity/base/initial-value-templates": ["./@sanity/base/initial-value-templates"],
       "@sanity/base/lib/change-indicators": ["./@sanity/base/src/change-indicators"],
       "@sanity/base/lib/change-indicators/ChangeFieldWrapper": ["./@sanity/base/src/change-indicators/ChangeFieldWrapper"],
+      "@sanity/base/lib/datastores/document/document-pair/remoteSnapshots": ["./@sanity/base/src/datastores/document/document-pair/remoteSnapshots"],
       "@sanity/base/lib/util/resizeObserver": ["./@sanity/base/src/util/resizeObserver"],
       "@sanity/base/structure-builder": ["./@sanity/base/structure-builder"],
       "@sanity/base": ["./@sanity/base/src"],
