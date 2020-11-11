@@ -5,7 +5,7 @@ import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
-import {useClickOutside} from '@sanity/components'
+import {useClickOutside} from '@sanity/base/__legacy/@sanity/components'
 import {
   ChangeList,
   DiffContext,

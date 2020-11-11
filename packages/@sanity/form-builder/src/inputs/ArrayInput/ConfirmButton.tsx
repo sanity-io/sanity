@@ -1,4 +1,4 @@
-import {Placement} from '@sanity/components'
+import {Placement} from '@sanity/base/__legacy/@sanity/components'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuButton} from 'part:@sanity/components/menu-button'

@@ -1,4 +1,4 @@
-import {MenuItemGroup} from '@sanity/components'
+import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'

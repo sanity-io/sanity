@@ -1,5 +1,5 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {MenuItem, MenuItemGroup} from '@sanity/components'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Chunk} from '@sanity/field/diff'
 import {Path} from '@sanity/types'
 import classNames from 'classnames'

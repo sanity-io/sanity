@@ -1,4 +1,4 @@
-import {DialogAction} from '@sanity/components'
+import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import Button from 'part:@sanity/components/buttons/default'

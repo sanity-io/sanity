@@ -1,4 +1,4 @@
-import {ButtonColor, DialogAction} from '@sanity/components'
+import {ButtonColor, DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import React, {useCallback} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'

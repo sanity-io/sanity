@@ -10,6 +10,7 @@
       "@sanity/desk-tool/structure-builder": ["./@sanity/desk-tool/structure-builder"],
 
       // Internal paths (order matters)
+      "@sanity/base/__legacy/@sanity/components": ["./@sanity/base/src/__legacy/@sanity/components"],
       "@sanity/base/components": ["./@sanity/base/src/components"],
       "@sanity/base/hooks": ["./@sanity/base/src/hooks"],
       "@sanity/base/initial-value-templates": ["./@sanity/base/initial-value-templates"],

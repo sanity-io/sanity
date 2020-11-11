@@ -1,5 +1,5 @@
 import React from 'react'
-import {MenuItem, MenuItemGroup} from '@sanity/components'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {
   useConnectionState,
   useDocumentOperation,
