@@ -21,6 +21,11 @@ export function getMonorepoAliases() {
     const aliases = pathEntries.map(([key, value]) => [key, value[0]])
 
     const aliasMap = aliases.reduce((acc, [key, relativePath]) => {
+      // ignore `part:*` paths
+      if (key.startsWith('part:')) {
+        return acc
+      }
+
       acc[key] = resolve(compilerOptions.baseUrl, relativePath)
       return acc
     }, {})
