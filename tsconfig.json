@@ -51,8 +51,9 @@
 
       // Parts in @sanity/base
       "part:@sanity/base/datastore/history": ["./@sanity/base/src/datastores/history"],
-      "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"],
+      "part:@sanity/base/presence": ["./presence"],
       "part:@sanity/base/router": ["./@sanity/base/src/router"],
+      "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"],
       // logos
       "part:@sanity/base/sanity-logo": ["./@sanity/base/src/components/logos/SanityLogo"],
       "part:@sanity/base/sanity-logo-alpha": ["./@sanity/base/src/components/logos/SanityLogoAlpha"],
