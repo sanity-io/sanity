@@ -11,7 +11,7 @@ import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-i
 import sanityClient from 'part:@sanity/base/client'
 import fileIcon from 'part:@sanity/base/file-icon'
 
-const previewComponentMap = {
+const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
   default: PreviewComponentDefault,
   card: PreviewComponentCard,
   media: PreviewComponentMedia,

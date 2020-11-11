@@ -22,6 +22,7 @@
       "part:@sanity/base/user": ["./datastores/user"],
       "part:@sanity/base/presence": ["./presence"],
       "part:@sanity/base/router": ["./router"],
+      "part:@sanity/base/root": ["./components/DefaultRootComponent"],
 
       // logos
       "part:@sanity/base/sanity-logo": ["./components/logos/SanityLogo"],

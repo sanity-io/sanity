@@ -50,8 +50,9 @@
       "@sanity/validation": ["./@sanity/validation/src"],
 
       // Parts in @sanity/base
+      "part:@sanity/base/root": ["./@sanity/base/src/components/DefaultRootComponent"],
       "part:@sanity/base/datastore/history": ["./@sanity/base/src/datastores/history"],
-      "part:@sanity/base/presence": ["./presence"],
+      "part:@sanity/base/presence": ["./@sanity/base/src/presence"],
       "part:@sanity/base/router": ["./@sanity/base/src/router"],
       "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"],
       // logos

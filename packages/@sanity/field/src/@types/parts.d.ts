@@ -104,6 +104,7 @@ declare module 'part:@sanity/components/avatar' {
 }
 
 declare module 'part:@sanity/components/buttons/button-grid'
+declare module 'part:@sanity/components/buttons/button-grid-style'
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
   export * from '@sanity/base/src/__legacy/@sanity/components/buttons/DefaultButton'

@@ -36,7 +36,7 @@ const ChangeBarWrapper = (
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
   const onMouseLeave = React.useCallback(() => setHover(false), [])
-  const ref = React.useRef()
+  const ref = React.useRef<HTMLDivElement | null>(null)
 
   useReporter(
     `field-${PathUtils.toString(props.fullPath)}`,
@@ -214,7 +214,7 @@ export const ContextProvidedChangeIndicator = (props: ChangeIndicatorContextProv
       value={value}
       compareValue={compareValue}
       hasFocus={PathUtils.hasFocus(focusPath, path)}
-      compareDeep={props.compareDeep}
+      compareDeep={props.compareDeep || false}
       className={props.className}
     >
       {props.children}

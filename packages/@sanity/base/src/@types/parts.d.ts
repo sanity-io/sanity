@@ -1,8 +1,9 @@
 /* eslint-disable import/no-duplicates */
 /* eslint-disable import/export */
 
-// @todo: define interface
-declare module 'part:@sanity/base/authentication-fetcher'
+/*
+ * config:*
+ */
 
 declare module 'config:sanity' {
   interface SanityConfig {
@@ -15,6 +16,10 @@ declare module 'config:sanity' {
   const config: SanityConfig
   export default config
 }
+
+/*
+ * sanity:*
+ */
 
 declare module 'sanity:css-custom-properties' {
   const cssCustomProperties: Record<string, string>
@@ -31,6 +36,9 @@ declare module 'sanity:versions' {
 /*
  * part:@sanity/base/*
  */
+
+// @todo: define interface
+declare module 'part:@sanity/base/authentication-fetcher'
 
 declare module 'part:@sanity/base/theme/typography/headings-style'
 declare module 'part:@sanity/base/theme/typography/text-blocks-style'
@@ -68,8 +76,6 @@ declare module 'part:@sanity/base/schema' {
 
   export default schema
 }
-
-declare module 'all:part:*'
 
 /*
  * part:@sanity/components/*
