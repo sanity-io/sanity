@@ -9,7 +9,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json",
+    "type-check:src": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

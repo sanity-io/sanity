@@ -9,7 +9,8 @@
     "compile:watch": "npm run compile -- --watch",
     "test": "#todo: jest",
     "test:watch": "jest --watchAll",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json",
+    "type-check:src": "tsc --noEmit"
   },
   "keywords": [
     "sanity",

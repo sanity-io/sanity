@@ -12,7 +12,8 @@
   "scripts": {
     "test": "tsc --noEmit",
     "clean": "rimraf lib coverage",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json",
+    "type-check:src": "tsc --noEmit"
   },
   "keywords": [
     "sanity",
