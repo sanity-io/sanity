@@ -24,6 +24,12 @@ jobs:
 
       - name: Install npm dependencies
         run: npm install
+      
+      # Required for import lint rules to work - packages pointing to ex
+      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
+      - name: Build modules
+        id: buildModules
+        run: npm run build
 
       - name: List which files changed
         id: listChangedFiles
