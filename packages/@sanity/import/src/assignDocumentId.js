@@ -1,4 +1,4 @@
-const uuid = require('@sanity/uuid')
+const {uuid} = require('@sanity/uuid')
 
 function assignDocumentId(doc) {
   if (doc._id) {

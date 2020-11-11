@@ -44,7 +44,6 @@
     "@sanity/transaction-collator": "2.0.9",
     "@sanity/types": "2.0.1",
     "@sanity/util": "2.0.9",
-    "@sanity/uuid": "2.0.1",
     "@sanity/validation": "2.0.9",
     "dataloader": "^2.0.0",
     "date-fns": "^2.16.1",

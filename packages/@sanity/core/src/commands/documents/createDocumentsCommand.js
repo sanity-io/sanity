@@ -5,7 +5,7 @@ const json5 = require('json5')
 const execa = require('execa')
 const chokidar = require('chokidar')
 const {isPlainObject, isEqual, noop} = require('lodash')
-const uuid = require('@sanity/uuid')
+const {uuid} = require('@sanity/uuid')
 
 const helpText = `
 Options

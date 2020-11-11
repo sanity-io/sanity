@@ -29,7 +29,6 @@ const IGNORED_PACKAGES = [
   'packages/@sanity/plugin-loader',
   'packages/@sanity/eventsource',
   'packages/@sanity/date-input',
-  'packages/@sanity/uuid',
   'packages/eslint-config-sanity',
   'packages/create-sanity',
   'packages/storybook',

@@ -29,7 +29,7 @@
     "@sanity/portable-text-editor": "0.1.22",
     "@sanity/types": "2.0.1",
     "@sanity/util": "2.0.9",
-    "@sanity/uuid": "2.0.1",
+    "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
     "classnames": "^2.2.5",
     "date-fns": "^2.16.1",

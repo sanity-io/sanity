@@ -36,7 +36,7 @@
     "@sanity/schema": "2.0.9",
     "@sanity/server": "2.0.9",
     "@sanity/util": "2.0.9",
-    "@sanity/uuid": "2.0.1",
+    "@sanity/uuid": "^3.0.1",
     "@sanity/webpack-integration": "2.0.9",
     "batch-stream-operation": "^1.0.2",
     "chokidar": "^2.0.3",
