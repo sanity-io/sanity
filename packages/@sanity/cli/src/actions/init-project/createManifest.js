@@ -47,7 +47,6 @@ export function createPackageManifest(data) {
       keywords: ['sanity'],
       scripts: {
         start: 'sanity start',
-        test: 'sanity check',
         build: 'sanity build',
       },
     },

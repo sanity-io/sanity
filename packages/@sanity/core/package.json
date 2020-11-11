@@ -25,7 +25,6 @@
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
-    "@sanity/check": "2.0.9",
     "@sanity/eventsource": "2.0.1",
     "@sanity/export": "2.0.9",
     "@sanity/generate-help-url": "2.0.9",
