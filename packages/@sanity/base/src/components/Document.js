@@ -47,6 +47,7 @@ function Document(props) {
         <meta charSet={props.charset} />
         <title>{props.title}</title>
         <meta name="viewport" content={props.viewport} />
+        <meta name="robots" content="noindex" />
         <style>{`html {background-color: #e4e8ed;}`}</style>
         {stylesheets}
         {subresources}
