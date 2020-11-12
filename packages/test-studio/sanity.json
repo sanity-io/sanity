@@ -29,7 +29,6 @@
     "@sanity/components",
     "@sanity/default-layout",
     "@sanity/default-login",
-    "@sanity/rich-date-input",
     "@sanity/code-input",
     "@sanity/color-input",
     "@sanity/dashboard",

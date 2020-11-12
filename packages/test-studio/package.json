@@ -33,7 +33,6 @@
     "@sanity/image-url": "^0.140.19",
     "@sanity/production-preview": "2.0.5",
     "@sanity/react-hooks": "2.0.9",
-    "@sanity/rich-date-input": "2.0.9",
     "@sanity/studio-hints": "2.0.9",
     "@sanity/util": "2.0.9",
     "@sanity/vision": "2.0.9",
