@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "noImplicitAny": false,
-    "noImplicitReturns": true,
     "skipLibCheck": true,
     "module": "commonjs",
     "esModuleInterop": true,
