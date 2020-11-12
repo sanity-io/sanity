@@ -83,7 +83,7 @@ export function removedObject<A>(
         const value = input.get(key)!
         fields[key] = removedInput(value, undefined, options)
       }
-      return replaceProperty<typeof fields>(this, 'fields', fields)
+      return replaceProperty(this, 'fields', fields)
     },
   }
 }
@@ -107,7 +107,7 @@ export function addedObject<A>(
         const value = input.get(key)!
         fields[key] = addedInput(value, undefined, options)
       }
-      return replaceProperty<typeof fields>(this, 'fields', fields)
+      return replaceProperty(this, 'fields', fields)
     },
   }
 }
