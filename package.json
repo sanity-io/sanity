@@ -42,7 +42,7 @@
     "prettify": "lerna run clean && npm run prettier -- --write",
     "prettier": "node_modules/.bin/prettier '**/*.{ts,js,tsx,jsx}'",
     "verify-format": "npm run prettier -- -c",
-    "postinstall": "lerna bootstrap",
+    "postinstall": "npm run bootstrap",
     "vercel-build": "npm run build && cd packages/test-studio && node ../@sanity/cli/bin/sanity build -y",
     "type-check": "lerna run --parallel type-check"
   },
