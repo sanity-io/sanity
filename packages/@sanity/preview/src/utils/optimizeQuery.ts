@@ -34,10 +34,10 @@ function stringifyId(id: string) {
   return JSON.stringify(id)
 }
 
-const maybeEscape = (fieldName) =>
+const maybeEscape = (fieldName: string) =>
   fieldNeedsEscape(fieldName) ? `"${fieldName}": @${escapeField(fieldName)}` : fieldName
 
-function toSubQuery({ids, fields}) {
+function toSubQuery({ids, fields}: {ids: string[], fields: string[]}) {
   const allFields = [...INCLUDE_FIELDS_QUERY, ...fields]
   return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${allFields
     .map(maybeEscape)

@@ -1,5 +1,5 @@
 import {isObject, uniq} from 'lodash'
-import {of as observableOf} from 'rxjs'
+import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import props from './utils/props'
 
@@ -13,21 +13,29 @@ function isDocument(value: Reference | Document | Record<string, any>): value is
   return '_id' in value
 }
 
-function createEmpty(fields: FieldName[]): Record<string, any> {
-  return fields.reduce((result, field) => {
+function createEmpty(fields: FieldName[]) {
+  return fields.reduce((result: Record<string, undefined>, field) => {
     result[field] = undefined
     return result
   }, {})
 }
 
-function resolveMissingHeads(value, paths) {
+function resolveMissingHeads(value: Record<string, unknown>, paths: string[][]) {
   return paths.filter((path) => !(path[0] in value))
 }
 
-type ObserveFieldsFn = (id: string, fields: FieldName[]) => any
+type ObserveFieldsFn = (id: string, fields: FieldName[]) => Observable<Record<string, any> | null>
 
-function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsFn) {
-  if (!isObject(value)) {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return isObject(value)
+}
+
+function observePaths(
+  value: Value,
+  paths: Path[],
+  observeFields: ObserveFieldsFn
+): Observable<Record<string, unknown> | null | unknown> {
+  if (!isRecord(value)) {
     // Reached a leaf. Return as is
     return observableOf(value)
   }
@@ -36,13 +44,13 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     // Reached a node that is either a document (with _id), or a reference (with _ref) that
     // needs to be "materialized"
 
-    const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path) => path[0]))
+    const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path: string[]) => path[0]))
 
     const isRef = isReference(value)
     if (isReference(value) || isDocument(value)) {
       const id = isRef ? (value as Reference)._ref : (value as Document)._id
       return observeFields(id, nextHeads).pipe(
-        switchMap((snapshot: object | null) => {
+        switchMap((snapshot) => {
           if (snapshot === null) {
             return observableOf(null)
           }
@@ -61,7 +69,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
   }
 
   // We have all the fields needed already present on value
-  const leads = {}
+  const leads: Record<string, string[][]> = {}
   paths.forEach((path) => {
     const [head, ...tail] = path
     if (!leads[head]) {
@@ -71,7 +79,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
   })
 
   const next = Object.keys(leads).reduce(
-    (res, head) => {
+    (res: Record<string, unknown>, head) => {
       const tails = leads[head]
       if (tails.every((tail) => tail.length === 0)) {
         res[head] = value[head]

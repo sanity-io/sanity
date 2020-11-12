@@ -2,7 +2,7 @@ import React from 'react'
 import PreviewSubscriber from './PreviewSubscriber'
 import {Type} from '../types'
 
-function arrify(val) {
+function arrify<T>(val: T | T[]) {
   if (Array.isArray(val)) {
     return val
   }

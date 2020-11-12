@@ -1,9 +1,11 @@
+import {SchemaType} from '@sanity/types'
+
 export type Id = string
 
-export type Reference = {_ref: string}
-export type Document = {_id: string}
+export type Reference = {_ref: string, [key: string]: unknown}
+export type Document = {_id: string, [key: string]: unknown}
 
-export type Value = Document | Reference | any
+export type Value = Document | Reference | unknown
 
 export type FieldName = string
 
@@ -18,10 +20,4 @@ export type PreviewConfig = {
     description: string
   }
 }
-export type Type = {
-  preview: PreviewConfig
-  type: Type | null
-  icon: any
-  name: string
-  to: any // todo fixme
-}
+export type Type = SchemaType

@@ -5,8 +5,8 @@ import prepareForPreview, {invokePrepare, PrepareInvocationResult} from './prepa
 import observePaths from './observePaths'
 import {FieldName, Type, ViewOptions} from './types'
 
-function is(typeName: string, type: Type) {
-  return type.name === typeName || (type.type && is(typeName, type.type))
+function is(typeName: string, type: Type): boolean {
+  return type.name === typeName || ('type' in type && is(typeName, type.type!))
 }
 
 interface PreviewValue {
@@ -42,7 +42,7 @@ export default function observeForPreview(
     )
   }
 
-  const selection = type.preview.select
+  const selection = type.preview?.select
   if (selection) {
     const paths = Object.keys(selection).map((key) => selection[key].split('.'))
     return observePaths(value, paths).pipe(

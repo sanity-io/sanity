@@ -1,7 +1,7 @@
 import {Observable, of as observableOf, from as observableFrom, isObservable} from 'rxjs'
 import {map, mergeAll, combineAll, switchMap, scan} from 'rxjs/operators'
 
-function setKey(source, key, value) {
+function setKey(source: Record<string, unknown>, key: any, value: unknown) {
   return {
     ...source,
     [key]: value,

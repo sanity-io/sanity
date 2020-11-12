@@ -18,6 +18,15 @@ export interface BaseSchemaType {
   readOnly?: boolean
   icon?: React.ComponentType
 
+  preview?: {
+    select?: {
+      title?: string
+      subtitle?: string
+      description?: string
+      media?: string
+    }
+  }
+
   /**
    * @deprecated
    */

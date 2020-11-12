@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default class PreviewSubscriber extends React.Component<Props> {
-  renderChild = (isVisible) => {
+  renderChild = (isVisible: boolean) => {
     const {children, type, value, ordering, fields, ...props} = this.props
     // isVisible may be null which means undetermined
     return isVisible === null ? null : (

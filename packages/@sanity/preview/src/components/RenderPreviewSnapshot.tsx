@@ -3,11 +3,12 @@ import customResolver from 'part:@sanity/base/preview-resolver?'
 import {get} from 'lodash'
 import {Type} from '../types'
 import SanityDefaultPreview from './SanityDefaultPreview'
+import {isReferenceSchemaType} from '@sanity/types'
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
 
-function resolvePreview(type) {
+function resolvePreview(type: Type) {
   const fromPreview = get(type, 'preview.component')
   if (fromPreview) {
     return fromPreview
@@ -22,6 +23,7 @@ type Props = {
   isLive: boolean
   layout: string
 }
+
 export default function RenderPreviewSnapshot(props: Props) {
   const {snapshot, type, isLive, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
@@ -29,7 +31,8 @@ export default function RenderPreviewSnapshot(props: Props) {
   // TODO: Bjoerge: Check for image type with "is()"
   const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
   const typeName = snapshot?._type
-  const icon = (type.to && type.to.find((t) => t.name === typeName)?.icon) || type.icon
+  const icon =
+    (isReferenceSchemaType(type) && type.to.find((t) => t.name === typeName)?.icon) || type.icon
   const preview = (
     <PreviewComponent // Render media always until we have schema functionality for determining if there is media
       media={() => undefined}
