@@ -32,7 +32,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   return (
     <Tooltip content={content} placement={placement}>
-      {children as any}
+      {children}
     </Tooltip>
   )
 }

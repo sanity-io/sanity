@@ -9,7 +9,7 @@ import {TooltipPlacement} from './types'
 import styles from './tooltip.css'
 
 export interface TooltipProps {
-  children: React.ReactElement
+  children?: React.ReactElement
   className?: string
   content: React.ReactNode
   disabled?: boolean
@@ -80,7 +80,7 @@ export function Tooltip(
   }, [forceUpdate, content])
 
   if (disabled) {
-    return children
+    return children || <></>
   }
 
   const popperNode = (
@@ -99,13 +99,14 @@ export function Tooltip(
 
   return (
     <>
-      {React.cloneElement(children, {
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave,
-        ref: setReferenceElement,
-      })}
+      {children &&
+        React.cloneElement(children, {
+          onBlur: handleBlur,
+          onFocus: handleFocus,
+          onMouseEnter: handleMouseEnter,
+          onMouseLeave: handleMouseLeave,
+          ref: setReferenceElement,
+        })}
 
       {isOpen && (
         <>
