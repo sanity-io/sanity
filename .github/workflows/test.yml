@@ -1,0 +1,70 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          # added -vX just to reset the cache, feel free to up it if you need
+          # to reset the cache again
+          cache-name: cache-node-modules-v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build modules
+        run: npm run build
+
+      - name: Test individual modules
+        run: npx lerna run test --concurrency 2 --stream
+
+      - name: Build CLI
+        run: |
+          # Build CLI to a single file
+          cd packages/@sanity/cli
+          npm run pack
+
+          # Remove source and dependencies from CLI to ensure it works standalone
+          rm -rf packages/@sanity/cli/node_modules
+          rm -rf packages/@sanity/cli/src && rm -rf packages/@sanity/cli/lib
+
+          # Allow running the Sanity CLI tool without specifying absolute path
+          echo "${GITHUB_WORKSPACE}/packages/@sanity/cli/bin" >> $GITHUB_PATH
+
+      - name: Test sanity build command
+        run: |
+          # Test building the test studio with all customizations
+          cd $GITHUB_WORKSPACE/packages/test-studio
+          sanity build
+
+      - name: Test sanity init command
+        run: |
+          # Test initializing a project in unattended mode
+          cd /tmp
+          sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
+
+      - name: Test build with new code
+        run: |
+          # Use the newly commited changes instead of the latest dependencies from NPM
+          cd /tmp/test-project
+          $GITHUB_WORKSPACE/scripts/symlinkDependencies.js .
+
+          # Test building the project with latest dependencies
+          sanity build --skip-minify
