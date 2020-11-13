@@ -21,7 +21,6 @@
     "lint": "npm run eslint -- .",
     "eslint": "node_modules/.bin/eslint --ext=.js,.jsx,.mjs,.ts,.tsx --quiet",
     "lint:fix": "eslint . --quiet --fix",
-    "typecheck": "lerna run typecheck",
     "start": "npm run test-studio",
     "storybook": "cd packages/storybook && npm start",
     "ecommerce-studio": "cd packages/ecommerce-studio && npm start",
