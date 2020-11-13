@@ -1,7 +1,8 @@
 import client from 'part:@sanity/base/client'
 import {from as observableFrom} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Reference, Type} from './types'
+import {Reference} from './types'
+import {ReferenceSchemaType} from '@sanity/types'
 
 const CACHE = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
@@ -12,7 +13,7 @@ function resolveRefTypeName(reference: Reference) {
   return observableFrom(CACHE[reference._ref])
 }
 
-export default function resolveRefType(value: Reference, type: Type) {
+export default function resolveRefType(value: Reference, type: ReferenceSchemaType) {
   return resolveRefTypeName(value).pipe(
     map((refTypeName) => type.to.find((toType) => toType.name === refTypeName))
   )

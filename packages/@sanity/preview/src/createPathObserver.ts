@@ -30,11 +30,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return isObject(value)
 }
 
-function observePaths(
-  value: Value,
-  paths: Path[],
-  observeFields: ObserveFieldsFn
-): Observable<Record<string, unknown> | null | unknown> {
+function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsFn) {
   if (!isRecord(value)) {
     // Reached a leaf. Return as is
     return observableOf(value)
@@ -98,9 +94,10 @@ function observePaths(
 // - ['propA.propB', 'propA.propC']
 // - [['propA', 'propB'], ['propA', 'propC']]
 
-function normalizePaths(path: FieldName[] | Path[]): Path[] {
-  // @ts-ignore (not sure why this happens)
-  return path.map((segment: any) => (typeof segment === 'string' ? segment.split('.') : segment))
+function normalizePaths(path: (FieldName | Path)[]): Path[] {
+  return path.map((segment: FieldName | Path) =>
+    typeof segment === 'string' ? segment.split('.') : segment
+  )
 }
 
 // Supports passing either an id or a value (document/reference/object)
@@ -109,6 +106,6 @@ function normalizeValue(value: Value | Id): Value {
 }
 
 export default function createPathObserver(observeFields: ObserveFieldsFn) {
-  return (value: Value, paths: Path[]) =>
+  return (value: Value, paths: (FieldName | Path)[]): Observable<Record<string, unknown> | null> =>
     observePaths(normalizeValue(value), normalizePaths(paths), observeFields)
 }

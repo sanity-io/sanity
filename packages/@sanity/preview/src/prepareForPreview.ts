@@ -2,28 +2,15 @@
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_CONFIG} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
+import {Type} from './types'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
 
-type ViewOptions = {}
-
-type SelectedValue = {}
-
-type PreparedValue = {
+export type PreparedValue = {
   title: string
   subtitle: string
   description: string
-}
-
-type PreviewConfig = {
-  select: {[key: string]: string}
-  prepare?: (value: SelectedValue, viewOptions: ViewOptions) => PreparedValue
-}
-
-type Type = {
-  name: string
-  preview: PreviewConfig
 }
 
 export type PrepareInvocationResult = {
@@ -207,7 +194,7 @@ export function invokePrepare(
   value: SelectedValue,
   viewOptions: ViewOptions
 ): PrepareInvocationResult {
-  const prepare = type.preview.prepare
+  const prepare = type.preview?.prepare
   try {
     return {
       returnValue: prepare ? prepare(value, viewOptions) : defaultPrepare(value),

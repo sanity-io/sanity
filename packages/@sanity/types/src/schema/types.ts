@@ -10,6 +10,16 @@ export interface Schema {
   getTypeNames: () => string[]
 }
 
+interface PreviewValue {
+  title?: string
+  subtitle?: string
+  description?: string
+  media?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface PrepareViewOptions {}
+
 export interface BaseSchemaType {
   name: string
   title?: string
@@ -19,12 +29,16 @@ export interface BaseSchemaType {
   icon?: React.ComponentType
 
   preview?: {
-    select?: {
-      title?: string
-      subtitle?: string
-      description?: string
-      media?: string
-    }
+    select?: PreviewValue
+    prepare: (
+      value: {
+        title?: unknown
+        subtitle?: unknown
+        description?: unknown
+        media?: unknown
+      },
+      viewOptions?: PrepareViewOptions
+    ) => PreviewValue
   }
 
   /**

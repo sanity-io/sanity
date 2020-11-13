@@ -1,17 +1,18 @@
-import {of as observableOf, Observable} from 'rxjs'
+import {Observable, of as observableOf} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 import resolveRefType from './resolveRefType'
-import prepareForPreview, {invokePrepare, PrepareInvocationResult} from './prepareForPreview'
+import prepareForPreview, {
+  invokePrepare,
+  PreparedValue,
+  PrepareInvocationResult,
+} from './prepareForPreview'
 import observePaths from './observePaths'
 import {FieldName, Type, ViewOptions} from './types'
-
-function is(typeName: string, type: Type): boolean {
-  return type.name === typeName || ('type' in type && is(typeName, type.type!))
-}
+import {isReferenceSchemaType} from '@sanity/types'
 
 interface PreviewValue {
   type?: Type
-  snapshot: null | PrepareInvocationResult
+  snapshot: symbol | null | PrepareInvocationResult | PreparedValue
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
@@ -21,7 +22,7 @@ export default function observeForPreview(
   fields: FieldName[],
   viewOptions?: ViewOptions
 ): Observable<PreviewValue> {
-  if (is('reference', type)) {
+  if (isReferenceSchemaType(type)) {
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
     if (!value._ref) {
@@ -44,7 +45,7 @@ export default function observeForPreview(
 
   const selection = type.preview?.select
   if (selection) {
-    const paths = Object.keys(selection).map((key) => selection[key].split('.'))
+    const paths: string[] = Object.keys(selection).map((key) => selection[key].split('.'))
     return observePaths(value, paths).pipe(
       map((snapshot) => ({
         type: type,
