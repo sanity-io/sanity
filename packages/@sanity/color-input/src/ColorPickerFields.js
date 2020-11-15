@@ -26,15 +26,14 @@ const inputStyles = {
 
 export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
   const handleChange = (data, e) => {
-    if (data.hex) {
-      color.isValidHex(data.hex) &&
-        onChange(
-          {
-            hex: data.hex,
-            source: 'hex',
-          },
-          e
-        )
+    if (data.hex && color.isValidHex(data.hex)) {
+      onChange(
+        {
+          hex: data.hex,
+          source: 'hex',
+        },
+        e
+      )
     } else if (data.r || data.g || data.b) {
       onChange(
         {
