@@ -1,3 +1,4 @@
+import path from 'path'
 import webpack from 'webpack'
 import registerBabel from '@babel/register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
@@ -22,7 +23,16 @@ export default function getDevServer(config = {}) {
 
   // Use babel-register in order to be able to load things like
   // the document component, which can contain JSX etc
-  registerBabel()
+  if (config.isSanityMonorepo) {
+    registerBabel({
+      babelrc: false,
+      configFile: path.resolve(__dirname, '../.babelrc'),
+      // Ignore all files in node_modules except `node_modules/@sanity/base/**/*`
+      ignore: [/node_modules\/(?!@sanity\/base).*/],
+    })
+  } else {
+    registerBabel()
+  }
 
   // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
