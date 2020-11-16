@@ -3,6 +3,7 @@
   "include": ["src"],
   "compilerOptions": {
     "strict": true,
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "noImplicitAny": false
   }
 }
