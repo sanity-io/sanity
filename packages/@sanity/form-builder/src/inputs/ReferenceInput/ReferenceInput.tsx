@@ -100,6 +100,8 @@ export default withValuePath(
       componentDidMount() {
         this.getPreviewSnapshot(this.props.value)
       }
+
+      // eslint-disable-next-line camelcase
       UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (nextProps.value !== this.props.value) {
           this.setState(getInitialState())
