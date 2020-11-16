@@ -51,6 +51,11 @@ declare module 'part:@sanity/base/schema' {
   export default schema
 }
 
+declare module 'part:@sanity/base/root' {
+  const RootComponent: React.ComponentType
+  export default RootComponent
+}
+
 declare module 'part:@sanity/components/avatar' {
   export * from '@sanity/components/src/avatar'
 }
