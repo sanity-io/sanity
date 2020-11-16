@@ -70,7 +70,9 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
+    "@types/refractor": "^3.0.0",
     "@types/resize-observer-browser": "^0.1.4",
+    "@types/styled-components": "^5.1.4",
     "jest": "^26.4.2",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
