@@ -18,7 +18,14 @@
     "baseUrl": "./src",
     "paths": {
       "part:@sanity/base/datastore/history": ["./datastores/history"],
-      "part:@sanity/base/user": ["./datastores/user"]
+      "part:@sanity/base/user": ["./datastores/user"],
+      // icons
+      "part:@sanity/base/circle-check-icon": ["./components/icons/CheckCircle"],
+      "part:@sanity/base/close-icon": ["./components/icons/CloseIcon"],
+      "part:@sanity/base/spinner-icon": ["./components/icons/SpinnerIcon"],
+      "part:@sanity/base/warning-icon": ["./components/icons/Warning"],
+      "part:@sanity/base/error-icon": ["./components/icons/Error"],
+      "part:@sanity/base/info-icon": ["./components/icons/Info"]
     }
   }
 }

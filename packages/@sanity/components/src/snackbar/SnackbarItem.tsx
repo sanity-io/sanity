@@ -40,8 +40,8 @@ interface State {
 }
 
 export default class SnackbarItem extends React.Component<SnackbarItemProps> {
-  _dismissTimer?: NodeJS.Timer
-  _enterTimer?: NodeJS.Timer
+  _dismissTimer?: number
+  _enterTimer?: number
   _snackRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   state: State = {

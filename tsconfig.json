@@ -41,6 +41,13 @@
       // Parts in @sanity/base
       "part:@sanity/base/datastore/history": ["./@sanity/base/src/datastores/history"],
       "part:@sanity/base/user": ["./@sanity/base/src/datastores/user"],
+      // icons
+      "part:@sanity/base/circle-check-icon": ["./@sanity/base/src/components/icons/CheckCircle"],
+      "part:@sanity/base/close-icon": ["./@sanity/base/src/components/icons/CloseIcon"],
+      "part:@sanity/base/spinner-icon": ["./@sanity/base/src/components/icons/SpinnerIcon"],
+      "part:@sanity/base/warning-icon": ["./@sanity/base/src/components/icons/Warning"],
+      "part:@sanity/base/error-icon": ["./@sanity/base/src/components/icons/Error"],
+      "part:@sanity/base/info-icon": ["./@sanity/base/src/components/icons/Info"],
 
       // Parts in @sanity/components
       "part:@sanity/components/alerts/alert": ["./@sanity/components/src/alerts/Alert"],
