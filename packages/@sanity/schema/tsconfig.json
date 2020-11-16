@@ -1,7 +1,6 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test/**/*.ts"],
+  "include": ["src"],
   "compilerOptions": {
     "strict": false,
     "noUnusedLocals": false,

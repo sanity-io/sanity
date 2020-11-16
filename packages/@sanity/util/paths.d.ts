@@ -1,1 +1,3 @@
-export * from './lib/pathUtils'
+import * as pathUtils from './src/pathUtils'
+
+export = pathUtils

@@ -1,0 +1,9 @@
+{
+  "extends": "../../../tsconfig.dist",
+  "include": ["src"],
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./lib",
+    "jsx": "react"
+  }
+}

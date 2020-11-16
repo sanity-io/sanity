@@ -1,0 +1,24 @@
+{
+  "extends": "../../../tsconfig.dist",
+  "include": ["src"],
+  "compilerOptions": {
+    "strict": false,
+    "outDir": "./lib",
+    "jsx": "react",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "customMatcher": "\\.css$"
+        }
+      }
+    ],
+
+    "baseUrl": "./src",
+    // prettier-ignore
+    "paths": {
+      "part:@sanity/default-layout/tool-switcher": ["./navbar/toolMenu/ToolMenu"],
+      "part:@sanity/default-layout/sidecar-datastore": ["./datastores/sidecar"]
+    }
+  }
+}

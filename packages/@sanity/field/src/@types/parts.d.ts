@@ -4,11 +4,15 @@ declare module 'part:@sanity/base/authentication-fetcher'
 declare module 'part:@sanity/base/client'
 declare module 'part:@sanity/base/user'
 
+// used by @sanity/react-hooks
+declare module 'part:@sanity/base/datastore/document'
+
 declare module 'part:@sanity/base/preview' {
+  import {SchemaType} from '@sanity/types'
   import {Observable} from 'rxjs'
 
   const PreviewBase: React.ComponentType<{
-    type?: object // Schema type
+    type?: SchemaType
     fields?: string[]
     value: any
     children?: (props: any) => React.ComponentType
@@ -17,7 +21,7 @@ declare module 'part:@sanity/base/preview' {
 
   type previewObserver = (
     value: Reference | string,
-    schemaType: object
+    schemaType: SchemaType
   ) => Observable<{snapshot: {title: string}}>
 
   export const observeForPreview: previewObserver

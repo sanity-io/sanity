@@ -11,7 +11,7 @@ import styles from './BooleanFieldDiff.css'
 
 export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
-  const {title, options} = schemaType
+  const {title, options} = schemaType as any
   const Preview = options?.layout === 'checkbox' ? Checkbox : Switch
   const userColor = useDiffAnnotationColor(diff, []) || {background: '', text: '', border: ''}
 

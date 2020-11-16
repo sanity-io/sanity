@@ -1,0 +1,9 @@
+{
+  "extends": "../../../tsconfig.dist",
+  "include": ["src"],
+  "compilerOptions": {
+    "strict": false,
+    "noUnusedLocals": false,
+    "outDir": "./lib"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "extends": "../../../tsconfig.dist",
+  "include": ["src"],
+  "compilerOptions": {
+    "outDir": "./lib",
+    "strict": false,
+    "strictNullChecks": false,
+    "jsx": "react",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "customMatcher": "\\.css$"
+        }
+      }
+    ],
+
+    "baseUrl": "./src",
+    "paths": {
+      "part:@sanity/base/datastore/history": ["./datastores/history"],
+      "part:@sanity/base/user": ["./datastores/user"]
+    }
+  }
+}

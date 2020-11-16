@@ -23,6 +23,7 @@ const PartResolverPlugin = function (options) {
   this.additionalPlugins = options.additionalPlugins || []
   this.configPath = path.join(this.basePath, 'config')
   this.extractCssCustomProperties = options.extractCssCustomProperties
+  this.isSanityMonorepo = options.isSanityMonorepo
 }
 
 PartResolverPlugin.prototype.apply = function (compiler) {
@@ -30,6 +31,7 @@ PartResolverPlugin.prototype.apply = function (compiler) {
   const basePath = this.basePath
   const additionalPlugins = this.additionalPlugins
   const configPath = this.configPath
+  const isSanityMonorepo = this.isSanityMonorepo
   const extractCssCustomProperties = this.extractCssCustomProperties
 
   compiler.plugin('watch-run', (watcher, cb) => {
@@ -43,10 +45,12 @@ PartResolverPlugin.prototype.apply = function (compiler) {
   function cacheParts(params) {
     const instance = params.compiler || params
     instance.sanity = compiler.sanity || {basePath: basePath}
-    return partResolver.resolveParts({env, basePath, additionalPlugins}).then((parts) => {
-      instance.sanity.parts = parts
-      return {instance, parts}
-    })
+    return partResolver
+      .resolveParts({env, basePath, additionalPlugins, isSanityMonorepo})
+      .then((parts) => {
+        instance.sanity.parts = parts
+        return {instance, parts}
+      })
   }
 
   function resolveCssCustomProperties({instance, parts}) {
@@ -55,9 +59,11 @@ PartResolverPlugin.prototype.apply = function (compiler) {
       return Promise.resolve()
     }
 
-    return extractCssCustomProperties(basePath, impl[0].path).then((cssCustomProperties) => {
-      instance.sanity.cssCustomProperties = cssCustomProperties
-    })
+    return extractCssCustomProperties(basePath, impl[0].path, isSanityMonorepo).then(
+      (cssCustomProperties) => {
+        instance.sanity.cssCustomProperties = cssCustomProperties
+      }
+    )
   }
 
   compiler.plugin('compilation', () => {

@@ -18,7 +18,7 @@ export const diffResolver: DiffComponentResolver = function diffResolver({schema
     return SlugFieldDiff
   }
 
-  if (schemaType.jsonType === 'array' && Array.isArray(schemaType.options?.list)) {
+  if (schemaType.jsonType === 'array' && Array.isArray((schemaType as any).options?.list)) {
     return ArrayOfOptionsFieldDiff
   }
 

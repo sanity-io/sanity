@@ -54,14 +54,7 @@ interface DocumentPanelProps {
 }
 
 export function DocumentPanel(props: DocumentPanelProps) {
-  const {
-    toggleInspect,
-    isHistoryOpen,
-    views,
-    activeViewId,
-    onFormInputFocus,
-    formInputFocusPath,
-  } = props
+  const {toggleInspect, isHistoryOpen, views, activeViewId} = props
 
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
@@ -174,7 +167,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
             )}
 
             {activeView.type === 'component' &&
-              createElement(activeView.component, {
+              createElement((activeView as any).component, {
                 document: {
                   draft: props.draft,
                   displayed: displayed || props.value || props.initialValue,
@@ -182,7 +175,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                   published: props.published,
                 },
                 documentId: props.documentId,
-                options: activeView.options,
+                options: (activeView as any).options,
                 schemaType: props.schemaType,
               })}
           </ScrollContainer>

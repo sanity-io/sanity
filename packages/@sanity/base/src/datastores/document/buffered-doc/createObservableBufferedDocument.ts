@@ -14,6 +14,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
+import {ListenerEvent, MutationEvent} from '../getPairListener'
 import {
   CommitFunction,
   DocumentMutationEvent,
@@ -23,8 +24,6 @@ import {
   DocumentRemoteMutationEvent,
   RemoteSnapshotEvent,
 } from './types'
-
-import {ListenerEvent, MutationEvent} from '../getPairListener'
 
 interface MutationAction {
   type: 'mutation'
@@ -92,16 +91,15 @@ export const createObservableBufferedDocument = (
       // 2) remote mutations originating from another client has arrived and been applied
       mutations$.next({
         type: 'mutation',
-        document: getUpdatedSnapshot(bufferedDocument),
+        document: getUpdatedSnapshot(bufferedDocument) as any,
         mutations: mutation.mutations,
         origin: remote ? 'remote' : 'local',
       })
     }
-
-    bufferedDocument.onRemoteMutation = (mutation) => {
+    ;(bufferedDocument as any).onRemoteMutation = (mutation) => {
       remoteMutations.next({
         type: 'remoteMutation',
-        head: bufferedDocument.document.HEAD,
+        head: bufferedDocument.document.HEAD as any,
         transactionId: mutation.transactionId,
         timestamp: mutation.timestamp,
         author: mutation.identity,
@@ -109,8 +107,13 @@ export const createObservableBufferedDocument = (
       })
     }
 
-    bufferedDocument.onRebase = (edge, remoteMutations, localMutations) => {
-      rebase$.next({type: 'rebase', document: edge, remoteMutations, localMutations})
+    bufferedDocument.onRebase = (edge, nextRemoteMutations, localMutations) => {
+      rebase$.next({
+        type: 'rebase',
+        document: edge,
+        remoteMutations: nextRemoteMutations,
+        localMutations,
+      })
     }
 
     bufferedDocument.onConsistencyChanged = (isConsistent) => {
@@ -118,9 +121,9 @@ export const createObservableBufferedDocument = (
     }
 
     bufferedDocument.commitHandler = (opts: {
-      success: () => {}
-      failure: () => {}
-      cancel: (error) => {}
+      success: () => void
+      failure: () => void
+      cancel: (error) => void
       mutation: Mutation
     }) => {
       const {resultRev, ...mutation} = opts.mutation.params

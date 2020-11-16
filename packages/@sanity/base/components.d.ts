@@ -1,1 +1,3 @@
-export * from './src/components'
+import * as components from './src/components'
+
+export = components

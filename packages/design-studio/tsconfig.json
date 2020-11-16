@@ -1,16 +1,9 @@
 {
   "extends": "../../tsconfig",
+  "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
+    "strict": true,
     "outDir": "./lib",
-    "jsx": "react",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "customMatcher": "\\.css$"
-        }
-      }
-    ]
-  },
-  "include": ["./typings/*.d.ts", "../@sanity/base/src/@types/*.d.ts", "./**/*.tsx", "./**/*.ts"]
+    "jsx": "react"
+  }
 }

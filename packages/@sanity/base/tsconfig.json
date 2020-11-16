@@ -1,7 +1,6 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["test/**/*.ts"],
+  "include": ["src"],
   "compilerOptions": {
     "outDir": "./lib",
     "strict": false,
@@ -14,12 +13,6 @@
           "customMatcher": "\\.css$"
         }
       }
-    ],
-
-    "baseUrl": "./src",
-    "paths": {
-      "part:@sanity/base/datastore/history": ["./datastores/history"],
-      "part:@sanity/base/user": ["./datastores/user"]
-    }
+    ]
   }
 }

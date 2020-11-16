@@ -1,10 +1,10 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
-  "exclude": ["src/**/*.test.ts"],
+  "extends": "../../../tsconfig",
+  "include": ["src"],
   "compilerOptions": {
+    "strict": false,
     "outDir": "./lib",
     "jsx": "react",
-    "esModuleInterop": true,
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
@@ -12,11 +12,6 @@
           "customMatcher": "\\.css$"
         }
       }
-    ],
-    "baseUrl": "./src",
-    "paths": {
-      "part:@sanity/default-layout/tool-switcher": ["./navbar/toolMenu/ToolMenu"],
-      "part:@sanity/default-layout/sidecar-datastore": ["./datastores/sidecar"]
-    }
+    ]
   }
 }

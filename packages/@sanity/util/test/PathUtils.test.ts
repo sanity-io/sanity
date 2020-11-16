@@ -24,6 +24,7 @@ test('fromString: throws if not a string', (t) => {
   t.throws(() => fromString(), 'Path is not a string')
   // @ts-ignore
   t.throws(() => fromString(13), 'Path is not a string')
+  // @ts-ignore
   t.throws(() => fromString(null), 'Path is not a string')
   // @ts-ignore
   t.throws(() => fromString(false), 'Path is not a string')
@@ -84,6 +85,7 @@ test('toString: throws if not an array', (t) => {
   t.throws(() => toString(), 'Path is not an array')
   // @ts-ignore
   t.throws(() => toString(13), 'Path is not an array')
+  // @ts-ignore
   t.throws(() => toString(null), 'Path is not an array')
   // @ts-ignore
   t.throws(() => toString(false), 'Path is not an array')
@@ -169,7 +171,7 @@ test('get: can pass default value', (t) => {
 
 test('get: can use array indexes', (t) => {
   t.strictDeepEqual(get(srcObject, ['body', 0]), srcObject.body[0])
-  t.strictDeepEqual(get(srcObject, ['body', 1, 'children', 0]), srcObject.body[1].children[0])
+  t.strictDeepEqual(get(srcObject, ['body', 1, 'children', 0]), srcObject.body[1].children![0])
   t.strictDeepEqual(get(srcObject, ['multiDimensional', 1, 1]), srcObject.multiDimensional[1][1])
   t.end()
 })
@@ -178,7 +180,7 @@ test('get: can use key lookup', (t) => {
   t.strictDeepEqual(get(srcObject, ['body', {_key: 'bar'}]), srcObject.body[1])
   t.strictDeepEqual(
     get(srcObject, ['body', {_key: 'bar'}, 'children', {_key: 'child1'}]),
-    srcObject.body[1].children[0]
+    srcObject.body[1].children![0]
   )
   t.end()
 })

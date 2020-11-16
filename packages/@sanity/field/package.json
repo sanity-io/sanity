@@ -10,9 +10,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "tsc --noEmit",
+    "test": "npm run type-check",
     "clean": "rimraf lib coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit -p tsconfig.dist.json",
+    "type-check:src": "tsc --noEmit"
   },
   "keywords": [
     "sanity",
