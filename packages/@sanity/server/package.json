@@ -4,8 +4,9 @@
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "start": "node bin/sanity-server.js",
     "start-dev": "node bin/sanity-server.js --dev"
   },

@@ -4,7 +4,9 @@
   "description": "Utilities shared across projects of Sanity",
   "main": "lib/index.js",
   "scripts": {
+    "build": "babel src --copy-files --extensions '.js,.jsx,.ts,.tsx' --out-dir lib",
     "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "test": "tap -j1"
   },
   "engines": {

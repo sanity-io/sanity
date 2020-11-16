@@ -6,7 +6,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib"
+    "build": "babel src --copy-files --out-dir lib",
+    "clean": "rimraf lib",
+    "prebuild": "npm run clean"
   },
   "engines": {
     "node": ">=10.0.0"

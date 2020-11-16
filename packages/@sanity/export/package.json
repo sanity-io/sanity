@@ -9,7 +9,9 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "test": "jest"
   },
   "keywords": [
