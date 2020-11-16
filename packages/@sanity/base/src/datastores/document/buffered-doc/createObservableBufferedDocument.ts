@@ -14,6 +14,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
+import {ListenerEvent, MutationEvent} from '../getPairListener'
 import {
   CommitFunction,
   DocumentMutationEvent,
@@ -23,8 +24,6 @@ import {
   DocumentRemoteMutationEvent,
   RemoteSnapshotEvent,
 } from './types'
-
-import {ListenerEvent, MutationEvent} from '../getPairListener'
 
 interface MutationAction {
   type: 'mutation'
@@ -108,8 +107,13 @@ export const createObservableBufferedDocument = (
       })
     }
 
-    bufferedDocument.onRebase = (edge, remoteMutations, localMutations) => {
-      rebase$.next({type: 'rebase', document: edge, remoteMutations, localMutations})
+    bufferedDocument.onRebase = (edge, nextRemoteMutations, localMutations) => {
+      rebase$.next({
+        type: 'rebase',
+        document: edge,
+        remoteMutations: nextRemoteMutations,
+        localMutations,
+      })
     }
 
     bufferedDocument.onConsistencyChanged = (isConsistent) => {
@@ -117,9 +121,9 @@ export const createObservableBufferedDocument = (
     }
 
     bufferedDocument.commitHandler = (opts: {
-      success: () => {}
-      failure: () => {}
-      cancel: (error) => {}
+      success: () => void
+      failure: () => void
+      cancel: (error) => void
       mutation: Mutation
     }) => {
       const {resultRev, ...mutation} = opts.mutation.params
