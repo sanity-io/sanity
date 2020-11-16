@@ -95,6 +95,7 @@ export function callInitializers(config) {
     }
 
     res.implementations[initPart]
+      // eslint-disable-next-line import/no-dynamic-require
       .map((part) => getDefaultModule(require(part.path)))
       .forEach((initializer) => initializer(config))
   })
