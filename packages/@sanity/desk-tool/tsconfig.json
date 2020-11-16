@@ -5,6 +5,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "strict": true,
+    "noImplicitAny": false,
     "jsx": "react",
     "plugins": [
       {

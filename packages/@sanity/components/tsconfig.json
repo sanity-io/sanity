@@ -3,6 +3,7 @@
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["test/**/*.ts"],
   "compilerOptions": {
+    "noImplicitAny": false,
     "outDir": "./lib",
     "jsx": "react",
     "plugins": [

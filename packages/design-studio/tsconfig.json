@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "noImplicitAny": false,
     "outDir": "./lib",
     "jsx": "react",
     "plugins": [

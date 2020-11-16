@@ -4,6 +4,7 @@
   "exclude": ["node_modules", "test/**/*.ts"],
   "compilerOptions": {
     "strict": true,
+    "noImplicitAny": false,
     "declaration": true,
     "jsx": "react",
     "outDir": "./lib"
