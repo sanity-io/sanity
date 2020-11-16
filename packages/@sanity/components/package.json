@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@juggle/resize-observer": "^3.2.0",
-    "@popperjs/core": "^2.4.4",
+    "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.10.5",
     "@sanity/base": "2.0.9",
     "@sanity/types": "2.0.1",
@@ -37,7 +37,7 @@
     "nano-pubsub": "^2.0.0",
     "popper-max-size-modifier": "^0.2.0",
     "react-click-outside": "^3.0.0",
-    "react-popper": "^2.2.3",
+    "react-popper": "^2.2.4",
     "react-sortable-hoc": "^1.11.0",
     "react-split-pane": "^0.1.84",
     "rxjs": "^6.5.3"

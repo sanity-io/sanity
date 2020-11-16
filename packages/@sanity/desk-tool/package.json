@@ -22,7 +22,7 @@
     "sanity-tool"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.4.4",
+    "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.10.5",
     "@sanity/base": "2.0.9",
     "@sanity/components": "2.0.9",
@@ -49,7 +49,7 @@
     "promise-latest": "^1.0.4",
     "react-click-outside": "^3.0.0",
     "react-json-inspector": "^7.1.1",
-    "react-popper": "^2.2.3",
+    "react-popper": "^2.2.4",
     "react-tiny-virtual-list": "^2.0.5",
     "rxjs": "^6.5.3",
     "scroll-into-view-if-needed": "^2.2.26",
