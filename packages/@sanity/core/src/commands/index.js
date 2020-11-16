@@ -43,7 +43,6 @@ import createDatasetAliasCommand from './alias/dataset/createDatasetAliasCommand
 import listDatasetAliasesCommand from './alias/dataset/listDatasetAliasesCommand'
 import deleteDatasetAliasCommand from './alias/dataset/deleteDatasetAliasCommand'
 import aliasDatasetGroup from './alias/dataset/aliasDatasetGroup'
-import aliasGroup from './alias/aliasGroup'
 
 export default [
   deleteDatasetAliasCommand,
@@ -52,7 +51,6 @@ export default [
   linkDatasetAliasCommand,
   unlinkDatasetAliasCommand,
   aliasDatasetGroup,
-  aliasGroup,
   buildCommand,
   checkCommand,
   configCheckCommand,
