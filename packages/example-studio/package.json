@@ -24,7 +24,6 @@
     "@sanity/code-input": "2.0.9",
     "@sanity/components": "2.0.9",
     "@sanity/core": "2.0.9",
-    "@sanity/date-input": "2.0.9",
     "@sanity/default-layout": "2.0.9",
     "@sanity/default-login": "2.0.9",
     "@sanity/desk-tool": "2.0.9",

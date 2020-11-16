@@ -1,7 +1,6 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
-import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 
 import simpleBlock from './simpleBlock'
 import simpleBlockNote from './simpleBlockNote'
@@ -30,7 +29,6 @@ import recursivePopover from './recursivePopover'
 import numbers from './numbers'
 import booleans from './booleans'
 import datetime from './datetime'
-import richDateTest from './richDate'
 import slugs from './slugs'
 import spotifyEmbed from './spotifyEmbed'
 import geopoint from './geopoint'
@@ -74,12 +72,10 @@ export default createSchema({
     numbers,
     customNumber,
     booleans,
-    richDateType,
     objects,
     fieldsets,
     datetime,
     date,
-    richDateTest,
     validationArraySuperType,
     validation,
     actions,
