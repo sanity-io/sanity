@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign, complexity, react/prop-types */
 
 import React from 'react'
-import color from 'react-color/lib/helpers/color'
+import * as color from 'react-color/lib/helpers/color'
 import {EditableInput} from 'react-color/lib/components/common'
 import styles from './ColorPickerFields.css'
 
@@ -26,15 +26,14 @@ const inputStyles = {
 
 export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
   const handleChange = (data, e) => {
-    if (data.hex) {
-      color.isValidHex(data.hex) &&
-        onChange(
-          {
-            hex: data.hex,
-            source: 'hex',
-          },
-          e
-        )
+    if (data.hex && color.isValidHex(data.hex)) {
+      onChange(
+        {
+          hex: data.hex,
+          source: 'hex',
+        },
+        e
+      )
     } else if (data.r || data.g || data.b) {
       onChange(
         {
