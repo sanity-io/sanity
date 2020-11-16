@@ -7,6 +7,10 @@ import {Type} from './types'
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
 
+type ViewOptions = {}
+
+type SelectedValue = {}
+
 export type PreparedValue = {
   title: string
   subtitle: string
@@ -178,8 +182,8 @@ function validateReturnedPreview(result: PrepareInvocationResult) {
   }
 }
 
-function defaultPrepare(value: SelectedValue): {[key: string]: any} {
-  return Object.keys(value).reduce((acc: {[key: string]: any}, fieldName: string) => {
+function defaultPrepare(value: SelectedValue) {
+  return Object.keys(value).reduce((acc: SelectedValue, fieldName: string) => {
     return {
       ...acc,
       [fieldName]: isPortableTextArray(value[fieldName])
