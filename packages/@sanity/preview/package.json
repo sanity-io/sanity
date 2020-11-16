@@ -2,7 +2,7 @@
   "name": "@sanity/preview",
   "version": "2.0.9",
   "description": "Utilities for previewing content in Sanity",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
