@@ -1,71 +1,67 @@
-import React, {useRef, useCallback} from 'react'
-import Switch from 'part:@sanity/components/toggles/switch'
-import Checkbox from 'part:@sanity/components/toggles/checkbox'
-import ValidationStatus from 'part:@sanity/components/validation/status'
+import React, {useCallback} from 'react'
+import {useId} from '@reach/auto-id'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {BooleanSchemaType} from '@sanity/types'
+import {FormFieldHeaderText} from '@sanity/base/components'
 import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import {BooleanSchemaType} from '@sanity/types'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import styles from './BooleanInput.css'
 import {Props} from './types'
 
-const BooleanInput = React.forwardRef(
-  (props: Props<boolean, BooleanSchemaType>, ref: React.MutableRefObject<HTMLDivElement>) => {
-    const {onChange} = props
-    const inputRef = useRef<any>(null)
-    const {value, type, readOnly, onFocus, markers, presence} = props
-    const layout = type.options?.layout || 'switch'
+const BooleanInput = React.forwardRef(function BooleanInput(
+  props: Props<boolean, BooleanSchemaType>,
+  ref: React.ForwardedRef<HTMLInputElement>
+) {
+  const {onChange} = props
+  const {value, type, readOnly, onFocus, markers, presence} = props
+  const layout = type.options?.layout || 'switch'
+  const inputId = useId()
 
-    const handleChange = useCallback(
-      (event: React.SyntheticEvent<HTMLInputElement>) => {
-        onChange(PatchEvent.from(set(event.currentTarget.checked)))
-      },
-      [onChange]
-    )
+  const handleChange = useCallback(
+    (event: React.SyntheticEvent<HTMLInputElement>) => {
+      onChange(PatchEvent.from(set(event.currentTarget.checked)))
+    },
+    [onChange]
+  )
 
-    return (
-      <ChangeIndicator>
-        <div className={styles.root} ref={ref}>
-          <div className={styles.inputWrapper} data-layout={layout}>
-            {layout === 'checkbox' && (
-              <Checkbox
-                ref={inputRef}
-                label={type.title}
-                readOnly={readOnly}
-                onChange={handleChange}
-                onFocus={onFocus}
-                checked={value}
-                description={type.description}
-              >
-                <ValidationStatus markers={markers} />
-              </Checkbox>
-            )}
+  const indeterminate = typeof value !== 'boolean'
+  const checked = value || false
 
-            {layout === 'switch' && (
-              <Switch
-                ref={inputRef}
-                readOnly={readOnly}
-                checked={value}
-                label={type.title}
-                description={type.description}
-                onChange={handleChange}
-                onFocus={onFocus}
-              >
-                <ValidationStatus markers={markers} />
-              </Switch>
-            )}
-          </div>
+  const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
-          <FieldStatus maxAvatars={1} position="top">
-            <FieldPresence maxAvatars={1} presence={presence} />
-          </FieldStatus>
-        </div>
-      </ChangeIndicator>
-    )
-  }
-)
-
-BooleanInput.displayName = 'BooleanInput'
-
+  return (
+    <ChangeIndicator>
+      <Card as="label" border radius={1} padding={3}>
+        <Flex>
+          <Box style={{lineHeight: 0}}>
+            <LayoutSpecificInput
+              id={inputId}
+              ref={ref}
+              label={type.title}
+              readOnly={Boolean(readOnly)}
+              onChange={handleChange}
+              onFocus={onFocus}
+              indeterminate={indeterminate}
+              checked={checked}
+              style={{margin: -4}}
+            />
+          </Box>
+          <Box marginLeft={3} flex={1}>
+            <FormFieldHeaderText
+              description={type.description}
+              __unstable_markers={markers}
+              title={type.title}
+            />
+          </Box>
+          <Box>
+            <FieldStatus maxAvatars={1} position="top">
+              <FieldPresence maxAvatars={1} presence={presence} />
+            </FieldStatus>
+          </Box>
+        </Flex>
+      </Card>
+    </ChangeIndicator>
+  )
+})
 export default BooleanInput
