@@ -23,7 +23,7 @@ export default function Warning({heading, message, values = [], children}: Props
           </>
         )}
       </h2>
-      <div className={styles.content}>
+      <div>
         <Details>
           <div>
             {message ? (
