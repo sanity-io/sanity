@@ -4,7 +4,9 @@
   "description": "Plugin loader for Sanity. Resolves parts based on a declared Sanity manifest and provides infrastructure for loading the required plugins.",
   "main": "src/PartResolverPlugin.js",
   "scripts": {
-    "clean": "rimraf lib"
+    "build": "babel src --copy-files --out-dir lib",
+    "clean": "rimraf lib",
+    "prebuild": "npm run clean"
   },
   "engines": {
     "node": ">=10.0.0"

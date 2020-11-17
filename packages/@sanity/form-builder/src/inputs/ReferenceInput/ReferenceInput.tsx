@@ -19,7 +19,7 @@ import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
-import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -100,6 +100,8 @@ export default withValuePath(
       componentDidMount() {
         this.getPreviewSnapshot(this.props.value)
       }
+
+      // eslint-disable-next-line camelcase
       UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (nextProps.value !== this.props.value) {
           this.setState(getInitialState())

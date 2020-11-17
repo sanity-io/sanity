@@ -7,10 +7,12 @@
     "sanity": "./bin/sanity"
   },
   "scripts": {
-    "build": "npm run package-yarn && npm run pack",
+    "build": "npm run build:lib && npm run package-yarn && npm run pack",
+    "build:lib": "babel src --copy-files --out-dir lib",
+    "clean": "rimraf lib",
     "pack": "node scripts/pack.js",
     "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
-    "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "prepublishOnly": "npm run build"
   },
   "engines": {

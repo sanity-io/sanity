@@ -4,8 +4,10 @@
   "description": "Resolves parts and plugins from a Sanity configuration",
   "main": "lib/resolver.js",
   "scripts": {
+    "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib coverage",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "prebuild": "npm run clean",
     "test": "#todo: mocha test/**/*.test.js"
   },
   "engines": {

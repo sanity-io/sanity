@@ -6,5 +6,5 @@ export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string | undefined,
   paths: string[]
 ): LoadableState<T> {
-  return useLoadable(documentId ? observePaths(documentId, paths) : of(undefined))
+  return useLoadable(documentId ? observePaths(documentId, paths as any[]) : of(undefined))
 }

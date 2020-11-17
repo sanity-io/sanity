@@ -3,10 +3,11 @@
   "private": true,
   "isSanityMonorepo": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap && npm run package-yarn",
+    "bootstrap": "lerna bootstrap && npm run build:cli",
     "dev": "npm start",
     "rebuild": "gulp build",
     "build": "gulp clean && gulp build && npm run package",
+    "build:cli": "lerna run --scope '@sanity/{cli,core,export,import,mutator,resolver,server,util,webpack-loader}' build",
     "clean": "gulp clean && lerna clean",
     "publish": "npm run build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",

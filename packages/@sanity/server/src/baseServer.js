@@ -23,9 +23,9 @@ const assetify = (assetPath, hashes) => ({
   hash: hashes[assetPath],
 })
 
-const getDocumentComponent = (basePath) => {
+const getDocumentComponent = (basePath, isSanityMonorepo = false) => {
   // Explicitly pass false here to not use uncompiled JSX etc
-  return resolveParts({basePath, isSanityMonorepo: false}).then((res) => {
+  return resolveParts({basePath, isSanityMonorepo}).then((res) => {
     const part = res.implementations[docPart]
     if (!part) {
       throw new Error(
@@ -41,11 +41,11 @@ export function getBaseServer() {
   return express()
 }
 
-export function getDocumentElement({project, basePath, hashes}, props = {}) {
+export function getDocumentElement({project, basePath, hashes, isSanityMonorepo}, props = {}) {
   const assetHashes = hashes || {}
 
   // Project filesystem base path
-  return getDocumentComponent(basePath).then((Document) =>
+  return getDocumentComponent(basePath, isSanityMonorepo).then((Document) =>
     React.createElement(
       Document,
       Object.assign(
