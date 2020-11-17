@@ -1,50 +1,48 @@
 import React from 'react'
-import {uniqueId} from 'lodash'
-import TextInput from 'part:@sanity/components/textinputs/default'
+import {StringSchemaType} from '@sanity/types'
+import {TextInput} from '@sanity/ui'
 import FormField from 'part:@sanity/components/formfields/default'
+import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
-export default class EmailInput extends React.Component<Props<string>> {
-  _input: TextInput | null
-  _inputId = uniqueId('EmailInput')
-  handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value
-    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
-  }
-  focus() {
-    if (this._input) {
-      this._input.focus()
-    }
-  }
-  setInput = (input: TextInput | null) => {
-    this._input = input
-  }
-  render() {
-    const {value, readOnly, type, markers, level, onFocus, presence} = this.props
-    const validation = markers.filter((marker) => marker.type === 'validation')
-    const errors = validation.filter((marker) => marker.level === 'error')
-    return (
-      <FormField
-        markers={markers}
-        level={level}
-        label={type.title}
-        description={type.description}
-        presence={presence}
-        labelFor={this._inputId}
-      >
-        <TextInput
-          inputId={this._inputId}
-          type="email"
-          customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-          value={value}
-          readOnly={readOnly}
-          placeholder={type.placeholder}
-          onChange={this.handleChange}
-          onFocus={onFocus}
-          ref={this.setInput}
-        />
-      </FormField>
-    )
-  }
-}
+const EmailInput = React.forwardRef(function StringInput(
+  props: Props<string, StringSchemaType>,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
+  const inputId = useId()
+  const validation = markers.filter((marker) => marker.type === 'validation')
+  const errors = validation.filter((marker) => marker.level === 'error')
+  return (
+    <FormField
+      markers={markers}
+      level={level}
+      label={type.title}
+      description={type.description}
+      presence={presence}
+      labelFor={inputId}
+    >
+      <TextInput
+        type="email"
+        id={inputId}
+        customValidity={errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={type.placeholder}
+        onChange={React.useCallback(
+          (event) => {
+            const inputValue = event.currentTarget.value
+            onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+          },
+          [onChange]
+        )}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={forwardedRef}
+      />
+    </FormField>
+  )
+})
+
+export default EmailInput
