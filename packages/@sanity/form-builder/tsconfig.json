@@ -2,7 +2,15 @@
   "extends": "../../../tsconfig",
   "include": ["src"],
   "compilerOptions": {
-    "strict": false,
+    // todo: we need to disable strict in a transition phase and should be removed eventually
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+
     "jsx": "react",
     "outDir": "./lib",
     "plugins": [
