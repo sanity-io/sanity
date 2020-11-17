@@ -1,52 +1,52 @@
-import React from 'react'
-import {uniqueId} from 'lodash'
+import React, {ForwardedRef} from 'react'
 import {TextSchemaType} from '@sanity/types'
 import FormField from 'part:@sanity/components/formfields/default'
-import TextArea from 'part:@sanity/components/textareas/default'
+import {TextArea} from '@sanity/ui'
+import {useId} from '@reach/auto-id'
+
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
-export default class TextInput extends React.Component<Props<string, TextSchemaType>> {
-  _input: TextArea | null
-  _inputId = uniqueId('TextInput')
-  handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value
-    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
-  }
-  focus() {
-    if (this._input) {
-      this._input.focus()
-    }
-  }
-  setInput = (input: TextArea | null) => {
-    this._input = input
-  }
-  render() {
-    const {value, markers, type, readOnly, level, onFocus, onBlur, presence} = this.props
-    const validation = markers.filter((marker) => marker.type === 'validation')
-    const errors = validation.filter((marker) => marker.level === 'error')
-    return (
-      <FormField
-        markers={markers}
-        level={level}
-        label={type.title}
-        description={type.description}
-        presence={presence}
-        labelFor={this._inputId}
-      >
-        <TextArea
-          inputId={this._inputId}
-          customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-          value={value}
-          readOnly={readOnly}
-          placeholder={type.placeholder}
-          onChange={this.handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          rows={type.rows}
-          ref={this.setInput}
-        />
-      </FormField>
-    )
-  }
-}
+const TextInput = React.forwardRef(function TextInput(
+  props: Props<string, TextSchemaType>,
+  forwardedRef: ForwardedRef<HTMLTextAreaElement>
+) {
+  const {value, markers, type, readOnly, level, onFocus, onBlur, onChange, presence} = props
+
+  const inputId = useId()
+
+  const validation = markers.filter((marker) => marker.type === 'validation')
+  const errors = validation.filter((marker) => marker.level === 'error')
+
+  return (
+    <FormField
+      markers={markers}
+      level={level}
+      label={type.title}
+      description={type.description}
+      presence={presence}
+      labelFor={inputId}
+    >
+      <TextArea
+        id={inputId}
+        customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={type.placeholder}
+        onChange={React.useCallback(
+          (event) => {
+            const inputValue = event.currentTarget.value
+            onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+          },
+          [onChange]
+        )}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        rows={type.rows}
+        ref={forwardedRef}
+      />
+    </FormField>
+  )
+})
+
+export default TextInput
