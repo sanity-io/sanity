@@ -24,7 +24,7 @@ jobs:
 
       - name: Install npm dependencies
         run: npm install
-      
+
       # Required for import lint rules to work - packages pointing to ex
       # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
       - name: Build modules
@@ -49,8 +49,11 @@ jobs:
             printf "\nThese files have changed in $GITHUB_SHA:\n$CHANGED_FILES\n"
           fi
 
-          # Exclude files that were deleted with --diff-filter
-          CHANGED_FILES_SEPARATED_BY_SPACES=$(echo "$CHANGED_FILES" | sed ':a;N;$!ba;s/\n/ /g')
+          # Don't include files like LICENSE and css files
+          CHANGED_JS_FILES=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(mjs\|tsx\|jsx\|js\|ts\)$/!d')
+
+          # Replace \n characters with a space
+          CHANGED_FILES_SEPARATED_BY_SPACES=$(echo "$CHANGED_JS_FILES" | sed ':a;N;$!ba;s/\n/ /g')
 
           echo "::set-output name=changedFiles::$( echo "$CHANGED_FILES_SEPARATED_BY_SPACES" )"
 
