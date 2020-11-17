@@ -1,6 +1,6 @@
 import {of} from 'rxjs'
-import {observePaths} from '@sanity/preview'
 import {LoadableState, useLoadable} from '../../util/useLoadable'
+import {observePaths} from '../../preview'
 
 export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string | undefined,

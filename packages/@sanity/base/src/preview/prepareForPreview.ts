@@ -194,7 +194,7 @@ function defaultPrepare(value: SelectedValue) {
 export function invokePrepare(
   type: Type,
   value: SelectedValue,
-  viewOptions: PrepareViewOptions
+  viewOptions: PrepareViewOptions = {}
 ): PrepareInvocationResult {
   const prepare = type.preview?.prepare
   try {
