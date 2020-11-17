@@ -1,21 +1,20 @@
-import React, {useRef, useCallback} from 'react'
-import Switch from 'part:@sanity/components/toggles/switch'
-import Checkbox from 'part:@sanity/components/toggles/checkbox'
-import ValidationStatus from 'part:@sanity/components/validation/status'
-import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import React, {useCallback} from 'react'
+import {useId} from '@reach/auto-id'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
+import {FormFieldHeaderText} from '@sanity/base/components'
+import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import styles from './BooleanInput.css'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(
-  (props: Props<boolean, BooleanSchemaType>, ref: React.MutableRefObject<HTMLDivElement>) => {
+  (props: Props<boolean, BooleanSchemaType>, ref: React.ForwardedRef<HTMLInputElement>) => {
     const {onChange} = props
-    const inputRef = useRef<any>(null)
     const {value, type, readOnly, onFocus, markers, presence} = props
     const layout = type.options?.layout || 'switch'
+    const inputId = useId()
 
     const handleChange = useCallback(
       (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -24,43 +23,43 @@ const BooleanInput = React.forwardRef(
       [onChange]
     )
 
+    const indeterminate = typeof value !== 'boolean'
+    const checked = value || false
+
+    const Input = layout === 'checkbox' ? Checkbox : Switch
+
     return (
       <ChangeIndicator>
-        <div className={styles.root} ref={ref}>
-          <div className={styles.inputWrapper} data-layout={layout}>
-            {layout === 'checkbox' && (
-              <Checkbox
-                ref={inputRef}
+        <Card as="label" border radius={1} padding={3}>
+          <Flex>
+            <Box style={{lineHeight: 0}}>
+              <Input
+                id={inputId}
+                ref={ref}
                 label={type.title}
-                readOnly={readOnly}
+                readOnly={Boolean(readOnly)}
                 onChange={handleChange}
                 onFocus={onFocus}
-                checked={value}
+                indeterminate={indeterminate}
+                checked={checked}
+                content={type.description}
+                style={{margin: -4}}
+              />
+            </Box>
+            <Box marginLeft={3} flex={1}>
+              <FormFieldHeaderText
                 description={type.description}
-              >
-                <ValidationStatus markers={markers} />
-              </Checkbox>
-            )}
-
-            {layout === 'switch' && (
-              <Switch
-                ref={inputRef}
-                readOnly={readOnly}
-                checked={value}
-                label={type.title}
-                description={type.description}
-                onChange={handleChange}
-                onFocus={onFocus}
-              >
-                <ValidationStatus markers={markers} />
-              </Switch>
-            )}
-          </div>
-
-          <FieldStatus maxAvatars={1} position="top">
-            <FieldPresence maxAvatars={1} presence={presence} />
-          </FieldStatus>
-        </div>
+                __unstable_markers={markers}
+                title={type.title}
+              />
+            </Box>
+            <Box>
+              <FieldStatus maxAvatars={1} position="top">
+                <FieldPresence maxAvatars={1} presence={presence} />
+              </FieldStatus>
+            </Box>
+          </Flex>
+        </Card>
       </ChangeIndicator>
     )
   }
