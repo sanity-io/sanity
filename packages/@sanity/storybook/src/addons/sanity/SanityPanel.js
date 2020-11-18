@@ -61,8 +61,8 @@ class SanityPanel extends React.PureComponent {
     return <div>{propTables}</div>
   }
 
-  normalizePath(path) {
-    const basePath = this.state.info.basePath
+  normalizePath(path = '') {
+    const basePath = this.state.info.basePath || ''
     const normalized = path.indexOf(basePath) === 0 ? path.slice(basePath.length) : path
 
     return normalized.replace(/(^\/|\/$)/g, '')
