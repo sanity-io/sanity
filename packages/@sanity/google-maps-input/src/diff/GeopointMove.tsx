@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useUserColor} from '@sanity/base/user-color'
+import {useUserColor} from '@sanity/base/__legacy/user-color'
 import {ObjectDiff} from '@sanity/field/diff'
 import {Marker} from '../map/Marker'
 import {Arrow} from '../map/Arrow'

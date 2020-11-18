@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {ConnectorContext} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {PortableTextBlock, PortableTextDiff} from '../types'

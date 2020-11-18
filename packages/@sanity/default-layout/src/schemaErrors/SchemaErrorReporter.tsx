@@ -1,6 +1,6 @@
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
-import {getTemplateErrors} from '@sanity/base/initial-value-templates'
+import {getTemplateErrors} from '@sanity/base/__legacy/initial-value-templates'
 import InitialValueTemplateError from './InitialValueTemplateError'
 import SchemaErrors from './SchemaErrors'
 

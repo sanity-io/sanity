@@ -1,5 +1,5 @@
-import {UserAvatar} from '@sanity/base/components'
-import {useUser, useTimeAgo} from '@sanity/base/hooks'
+import {UserAvatar} from '@sanity/base/__legacy/components'
+import {useUser, useTimeAgo} from '@sanity/base/__legacy/hooks'
 import {Path} from '@sanity/types'
 import React from 'react'
 import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'

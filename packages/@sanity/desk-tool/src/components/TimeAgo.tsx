@@ -1,5 +1,5 @@
 import React from 'react'
-import {useTimeAgo} from '@sanity/base/hooks'
+import {useTimeAgo} from '@sanity/base/__legacy/hooks'
 
 interface Props {
   time: string | Date

@@ -11,7 +11,7 @@ import {
   SanityDocument,
 } from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/__legacy/components/change-indicators/ChangeIndicator'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'

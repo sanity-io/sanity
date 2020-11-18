@@ -32,6 +32,7 @@ class SanityIntlProvider extends React.Component {
           .fetchLocalizedMessages(language)
           .then((localizedMessages) => {
             const languagePrefix = language.split('-')[0]
+            // eslint-disable-next-line import/no-dynamic-require
             const localeData = require(`react-intl/locale-data/${languagePrefix}`)
             addLocaleData(localeData)
 

@@ -1,7 +1,7 @@
 import schema from 'part:@sanity/base/schema'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import newDocumentStructure from 'part:@sanity/base/new-document-structure?'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import {getTemplateById} from '@sanity/base/__legacy/initial-value-templates'
 import S from '@sanity/base/structure-builder'
 
 export default function getNewDocumentModalActions() {

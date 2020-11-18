@@ -1,4 +1,4 @@
-import {UserAvatar} from '@sanity/base/components'
+import {UserAvatar} from '@sanity/base/__legacy/components'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import {ClickOutside} from 'part:@sanity/components/click-outside'

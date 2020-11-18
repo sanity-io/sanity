@@ -1,4 +1,4 @@
-import {UserAvatar} from '@sanity/base/components'
+import {UserAvatar} from '@sanity/base/__legacy/components'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'

@@ -1,6 +1,6 @@
 import React from 'react'
 import {Marker, ObjectSchemaTypeWithOptions, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
@@ -56,7 +56,7 @@ type ObjectInputProps = {
 export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
   _firstField: any
   static defaultProps = {
-    onChange() {},
+    onChange: () => undefined,
     level: 0,
     focusPath: [],
     isRoot: false,

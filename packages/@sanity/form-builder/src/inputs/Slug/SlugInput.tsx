@@ -10,7 +10,7 @@ import {
   Marker,
   isValidationErrorMarker,
 } from '@sanity/types'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/__legacy/components/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -62,7 +62,7 @@ export default withValuePath(
       static defaultProps = {
         value: {current: undefined},
         readOnly: false,
-        onChange() {},
+        onChange: () => undefined,
         markers: [],
       }
 
@@ -95,6 +95,7 @@ export default withValuePath(
         return Promise.resolve(slugify(sourceValue, type))
       }
 
+      // eslint-disable-next-line camelcase
       UNSAFE_componentWillReceiveProps(nextProps) {
         const {document} = nextProps
         // Reset state if document is changed

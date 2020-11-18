@@ -1,7 +1,7 @@
 /* eslint-disable react/no-find-dom-node */
 import React, {useState, useEffect, useMemo, useLayoutEffect} from 'react'
 import {isKeySegment, Path, Marker} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import {
   PortableTextBlock,
   PortableTextChild,

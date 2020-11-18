@@ -1,4 +1,4 @@
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import classNames from 'classnames'

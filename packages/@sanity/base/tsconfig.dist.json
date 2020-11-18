@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.dist",
-  "include": ["src"],
+  "include": ["src", "typings/*.d.ts"],
   "compilerOptions": {
     "outDir": "./lib",
     // -- strictness options we need to disable in a transition period.
@@ -21,10 +21,10 @@
     "baseUrl": "./src",
     // prettier-ignore
     "paths": {
-      "part:@sanity/base/datastore/history": ["./datastores/history"],
-      "part:@sanity/base/user": ["./datastores/user"],
-      "part:@sanity/base/presence": ["./presence"],
-      "part:@sanity/base/router": ["./router"],
+      "part:@sanity/base/datastore/history": ["./__legacy/datastores/history"],
+      "part:@sanity/base/user": ["./__legacy/datastores/user"],
+      "part:@sanity/base/presence": ["./__legacy/presence"],
+      "part:@sanity/base/router": ["./__legacy/router"],
       "part:@sanity/base/root": ["./__legacy/components/DefaultRootComponent"],
 
       // logos

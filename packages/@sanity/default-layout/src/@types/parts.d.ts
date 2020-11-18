@@ -75,7 +75,7 @@ declare module 'part:@sanity/base/login-wrapper?' {
 }
 
 declare module 'part:@sanity/base/router' {
-  export * from '@sanity/base/src/router'
+  export * from '@sanity/base/src/__legacy/router'
 }
 
 declare module 'all:part:@sanity/base/tool' {
@@ -101,8 +101,8 @@ declare module 'all:part:@sanity/base/tool' {
 }
 
 declare module 'part:@sanity/base/user' {
-  export * from '@sanity/base/src/datastores/user'
-  export {default} from '@sanity/base/src/datastores/user'
+  export * from '@sanity/base/src/__legacy/datastores/user'
+  export {default} from '@sanity/base/src/__legacy/datastores/user'
 }
 
 declare module 'part:@sanity/base/settings' {

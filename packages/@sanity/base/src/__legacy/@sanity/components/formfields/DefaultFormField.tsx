@@ -4,8 +4,11 @@ import {Marker} from '@sanity/types'
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import {FieldPresence, FormFieldPresence} from '../../../../presence'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
+import {FieldPresence, FormFieldPresence} from '../../../presence'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps,
+} from '../../../../__legacy/components/change-indicators'
 import FieldStatus from '../fieldsets/FieldStatus'
 
 const EMPTY_MARKERS = []

@@ -1,4 +1,4 @@
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import {ArraySchemaType, Marker, Path} from '@sanity/types'
 import React from 'react'
 import PatchEvent from '../../../PatchEvent'

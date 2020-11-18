@@ -13,10 +13,12 @@ export class IntlWrapper extends React.Component {
     children: PropTypes.node.isRequired,
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     intl = this.context.intl
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillUpdate() {
     intl = this.context.intl
   }

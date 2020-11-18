@@ -4,7 +4,7 @@ import semverCompare from 'semver-compare'
 import versions from 'sanity:versions'
 import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message?'
 import client from 'part:@sanity/base/client'
-import {requestIdleCallback, cancelIdleCallback} from '../../actions/utils/requestIdleCallback'
+import {requestIdleCallback, cancelIdleCallback} from '../actions/utils/requestIdleCallback'
 import FullscreenError from './FullscreenError'
 
 declare const __DEV__: boolean

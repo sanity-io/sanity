@@ -7,7 +7,7 @@ import {
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import PatchEvent from '../PatchEvent'
 
 export type Props<

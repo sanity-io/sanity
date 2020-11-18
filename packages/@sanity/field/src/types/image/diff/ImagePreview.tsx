@@ -1,5 +1,5 @@
 import React, {SyntheticEvent} from 'react'
-import {useDocumentValues} from '@sanity/base/hooks'
+import {useDocumentValues} from '@sanity/base/__legacy/hooks'
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
 import sanityClient from 'part:@sanity/base/client'

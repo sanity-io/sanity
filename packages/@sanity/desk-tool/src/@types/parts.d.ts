@@ -37,7 +37,7 @@ declare module 'part:@sanity/base/document-badges/resolver'
 declare module 'part:@sanity/base/preview'
 
 declare module 'part:@sanity/base/router' {
-  export * from '@sanity/base/src/router'
+  export * from '@sanity/base/src/__legacy/router'
 }
 
 declare module 'part:@sanity/base/schema'
@@ -47,256 +47,256 @@ declare module 'part:@sanity/base/util/draft-utils'
 
 // icons
 declare module 'part:@sanity/base/angle-down-icon' {
-  export {default} from '@sanity/base/src/components/icons/AngleDownIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/AngleDownIcon'
 }
 declare module 'part:@sanity/base/angle-up-icon' {
-  export {default} from '@sanity/base/src/components/icons/AngleUpIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/AngleUpIcon'
 }
 declare module 'part:@sanity/base/arrow-drop-down' {
-  export {default} from '@sanity/base/src/components/icons/ArrowDropDown'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ArrowDropDown'
 }
 declare module 'part:@sanity/base/arrow-right' {
-  export {default} from '@sanity/base/src/components/icons/ArrowRight'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ArrowRight'
 }
 declare module 'part:@sanity/base/bars-icon' {
-  export {default} from '@sanity/base/src/components/icons/Bars'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Bars'
 }
 declare module 'part:@sanity/base/binary-icon' {
-  export {default} from '@sanity/base/src/components/icons/Binary'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Binary'
 }
 declare module 'part:@sanity/base/block-object-icon' {
-  export {default} from '@sanity/base/src/components/icons/BlockObject'
+  export {default} from '@sanity/base/src/__legacy/components/icons/BlockObject'
 }
 declare module 'part:@sanity/base/calendar-icon' {
-  export {default} from '@sanity/base/src/components/icons/Calendar'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Calendar'
 }
 declare module 'part:@sanity/base/check-icon' {
-  export {default} from '@sanity/base/src/components/icons/Check'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Check'
 }
 declare module 'part:@sanity/base/chevron-down-icon' {
-  export {default} from '@sanity/base/src/components/icons/ChevronDown'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ChevronDown'
 }
 declare module 'part:@sanity/base/clipboard-icon' {
-  export {default} from '@sanity/base/src/components/icons/Clipboard'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Clipboard'
 }
 declare module 'part:@sanity/base/clipboard-image-icon' {
-  export {default} from '@sanity/base/src/components/icons/ClipboardImage'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ClipboardImage'
 }
 declare module 'part:@sanity/base/close-icon' {
-  export {default} from '@sanity/base/src/components/icons/CloseIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/CloseIcon'
 }
 declare module 'part:@sanity/base/circle-check-icon' {
-  export {default} from '@sanity/base/src/components/icons/CheckCircle'
+  export {default} from '@sanity/base/src/__legacy/components/icons/CheckCircle'
 }
 declare module 'part:@sanity/base/circle-thin-icon' {
-  export {default} from '@sanity/base/src/components/icons/CircleThin'
+  export {default} from '@sanity/base/src/__legacy/components/icons/CircleThin'
 }
 declare module 'part:@sanity/base/cog-icon' {
-  export {default} from '@sanity/base/src/components/icons/Cog'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Cog'
 }
 declare module 'part:@sanity/base/comment-icon' {
-  export {default} from '@sanity/base/src/components/icons/Comment'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Comment'
 }
 declare module 'part:@sanity/base/compose-icon' {
-  export {default} from '@sanity/base/src/components/icons/Compose'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Compose'
 }
 declare module 'part:@sanity/base/content-copy-icon' {
-  export {default} from '@sanity/base/src/components/icons/ContentCopy'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ContentCopy'
 }
 declare module 'part:@sanity/base/danger-icon' {
-  export {default} from '@sanity/base/src/components/icons/Danger'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Danger'
 }
 declare module 'part:@sanity/base/drag-handle-icon' {
-  export {default} from '@sanity/base/src/components/icons/DragHandle'
+  export {default} from '@sanity/base/src/__legacy/components/icons/DragHandle'
 }
 declare module 'part:@sanity/base/edit-icon' {
-  export {default} from '@sanity/base/src/components/icons/Edit'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Edit'
 }
 declare module 'part:@sanity/base/error-icon' {
-  export {default} from '@sanity/base/src/components/icons/Error'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Error'
 }
 declare module 'part:@sanity/base/error-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/ErrorOutline'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ErrorOutline'
 }
 declare module 'part:@sanity/base/warning-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/WarningOutline'
+  export {default} from '@sanity/base/src/__legacy/components/icons/WarningOutline'
 }
 declare module 'part:@sanity/base/eye-icon' {
-  export {default} from '@sanity/base/src/components/icons/Eye'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Eye'
 }
 declare module 'part:@sanity/base/file-icon' {
-  export {default} from '@sanity/base/src/components/icons/File'
+  export {default} from '@sanity/base/src/__legacy/components/icons/File'
 }
 declare module 'part:@sanity/base/folder-icon' {
-  export {default} from '@sanity/base/src/components/icons/Folder'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Folder'
 }
 declare module 'part:@sanity/base/format-bold-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatBold'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatBold'
 }
 declare module 'part:@sanity/base/format-code-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatCode'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatCode'
 }
 declare module 'part:@sanity/base/format-italic-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatItalic'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatItalic'
 }
 declare module 'part:@sanity/base/format-list-bulleted-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatListBulleted'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatListBulleted'
 }
 declare module 'part:@sanity/base/format-list-numbered-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatListNumbered'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatListNumbered'
 }
 declare module 'part:@sanity/base/format-quote-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatQuote'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatQuote'
 }
 declare module 'part:@sanity/base/format-strikethrough-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatStrikethrough'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatStrikethrough'
 }
 declare module 'part:@sanity/base/format-underlined-icon' {
-  export {default} from '@sanity/base/src/components/icons/FormatUnderlined'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FormatUnderlined'
 }
 declare module 'part:@sanity/base/fullscreen-icon' {
-  export {default} from '@sanity/base/src/components/icons/Fullscreen'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Fullscreen'
 }
 declare module 'part:@sanity/base/fullscreen-exit-icon' {
-  export {default} from '@sanity/base/src/components/icons/FullscreenExit'
+  export {default} from '@sanity/base/src/__legacy/components/icons/FullscreenExit'
 }
 declare module 'part:@sanity/base/hamburger-icon' {
-  export {default} from '@sanity/base/src/components/icons/Hamburger'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Hamburger'
 }
 declare module 'part:@sanity/base/history-icon' {
-  export {default} from '@sanity/base/src/components/icons/History'
+  export {default} from '@sanity/base/src/__legacy/components/icons/History'
 }
 declare module 'part:@sanity/base/image-area-icon' {
-  export {default} from '@sanity/base/src/components/icons/ImageArea'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ImageArea'
 }
 declare module 'part:@sanity/base/image-icon' {
-  export {default} from '@sanity/base/src/components/icons/Image'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Image'
 }
 declare module 'part:@sanity/base/images-icon' {
-  export {default} from '@sanity/base/src/components/icons/Images'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Images'
 }
 declare module 'part:@sanity/base/info-icon' {
-  export {default} from '@sanity/base/src/components/icons/Info'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Info'
 }
 declare module 'part:@sanity/base/inline-object-icon' {
-  export {default} from '@sanity/base/src/components/icons/InlineObject'
+  export {default} from '@sanity/base/src/__legacy/components/icons/InlineObject'
 }
 declare module 'part:@sanity/base/launch-icon' {
-  export {default} from '@sanity/base/src/components/icons/Launch'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Launch'
 }
 declare module 'part:@sanity/base/lightbulb-icon' {
-  export {default} from '@sanity/base/src/components/icons/Lightbulb'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Lightbulb'
 }
 declare module 'part:@sanity/base/link-icon' {
-  export {default} from '@sanity/base/src/components/icons/Link'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Link'
 }
 declare module 'part:@sanity/base/more-vert-icon' {
-  export {default} from '@sanity/base/src/components/icons/MoreVert'
+  export {default} from '@sanity/base/src/__legacy/components/icons/MoreVert'
 }
 declare module 'part:@sanity/base/package-icon' {
-  export {default} from '@sanity/base/src/components/icons/Package'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Package'
 }
 declare module 'part:@sanity/base/paste-icon' {
-  export {default} from '@sanity/base/src/components/icons/Paste'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Paste'
 }
 declare module 'part:@sanity/base/plugin-icon' {
-  export {default} from '@sanity/base/src/components/icons/Plug'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Plug'
 }
 declare module 'part:@sanity/base/plus-icon' {
-  export {default} from '@sanity/base/src/components/icons/Plus'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Plus'
 }
 declare module 'part:@sanity/base/plus-circle-icon' {
-  export {default} from '@sanity/base/src/components/icons/PlusCircle'
+  export {default} from '@sanity/base/src/__legacy/components/icons/PlusCircle'
 }
 declare module 'part:@sanity/base/plus-circle-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/PlusCircleOutline'
+  export {default} from '@sanity/base/src/__legacy/components/icons/PlusCircleOutline'
 }
 declare module 'part:@sanity/base/public-icon' {
-  export {default} from '@sanity/base/src/components/icons/Public'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Public'
 }
 declare module 'part:@sanity/base/publish-icon' {
-  export {default} from '@sanity/base/src/components/icons/Publish'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Publish'
 }
 declare module 'part:@sanity/base/question-icon' {
-  export {default} from '@sanity/base/src/components/icons/Question'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Question'
 }
 declare module 'part:@sanity/base/reset-icon' {
-  export {default} from '@sanity/base/src/components/icons/Reset'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Reset'
 }
 declare module 'part:@sanity/base/sanity-logo-icon' {
-  export {default} from '@sanity/base/src/components/icons/SanityLogo'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SanityLogo'
 }
 declare module 'part:@sanity/base/search-icon' {
-  export {default} from '@sanity/base/src/components/icons/Search'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Search'
 }
 declare module 'part:@sanity/base/sign-out-icon' {
-  export {default} from '@sanity/base/src/components/icons/SignOut'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SignOut'
 }
 declare module 'part:@sanity/base/spinner-icon' {
-  export {default} from '@sanity/base/src/components/icons/SpinnerIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SpinnerIcon'
 }
 declare module 'part:@sanity/base/split-horizontal-icon' {
-  export {default} from '@sanity/base/src/components/icons/SplitHorizontal'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SplitHorizontal'
 }
 declare module 'part:@sanity/base/sort-alpha-desc-icon' {
-  export {default} from '@sanity/base/src/components/icons/SortAlphaDesc'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SortAlphaDesc'
 }
 declare module 'part:@sanity/base/sort-icon' {
-  export {default} from '@sanity/base/src/components/icons/Sort'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Sort'
 }
 declare module 'part:@sanity/base/stack-compact-icon' {
-  export {default} from '@sanity/base/src/components/icons/StackCompact'
+  export {default} from '@sanity/base/src/__legacy/components/icons/StackCompact'
 }
 declare module 'part:@sanity/base/stack-icon' {
-  export {default} from '@sanity/base/src/components/icons/Stack'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Stack'
 }
 declare module 'part:@sanity/base/sync-icon' {
-  export {default} from '@sanity/base/src/components/icons/Sync'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Sync'
 }
 declare module 'part:@sanity/base/th-large-icon' {
-  export {default} from '@sanity/base/src/components/icons/ThLarge'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ThLarge'
 }
 declare module 'part:@sanity/base/th-list-icon' {
-  export {default} from '@sanity/base/src/components/icons/ThList'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ThList'
 }
 declare module 'part:@sanity/base/time-icon' {
-  export {default} from '@sanity/base/src/components/icons/Time'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Time'
 }
 declare module 'part:@sanity/base/trash-icon' {
-  export {default} from '@sanity/base/src/components/icons/Trash'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Trash'
 }
 declare module 'part:@sanity/base/trash-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/TrashOutline'
+  export {default} from '@sanity/base/src/__legacy/components/icons/TrashOutline'
 }
 declare module 'part:@sanity/base/truncate-icon' {
-  export {default} from '@sanity/base/src/components/icons/Truncate'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Truncate'
 }
 declare module 'part:@sanity/base/undo-icon' {
-  export {default} from '@sanity/base/src/components/icons/Undo'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Undo'
 }
 declare module 'part:@sanity/base/unpublish-icon' {
-  export {default} from '@sanity/base/src/components/icons/Unpublish'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Unpublish'
 }
 declare module 'part:@sanity/base/upload-icon' {
-  export {default} from '@sanity/base/src/components/icons/Upload'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Upload'
 }
 declare module 'part:@sanity/base/user-icon' {
-  export {default} from '@sanity/base/src/components/icons/User'
+  export {default} from '@sanity/base/src/__legacy/components/icons/User'
 }
 declare module 'part:@sanity/base/users-icon' {
-  export {default} from '@sanity/base/src/components/icons/UsersIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/UsersIcon'
 }
 declare module 'part:@sanity/base/visibility-off-icon' {
-  export {default} from '@sanity/base/src/components/icons/VisibilityOff'
+  export {default} from '@sanity/base/src/__legacy/components/icons/VisibilityOff'
 }
 declare module 'part:@sanity/base/view-column-icon' {
-  export {default} from '@sanity/base/src/components/icons/ViewColumn'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ViewColumn'
 }
 declare module 'part:@sanity/base/visibility-icon' {
-  export {default} from '@sanity/base/src/components/icons/Visibility'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Visibility'
 }
 declare module 'part:@sanity/base/warning-icon' {
-  export {default} from '@sanity/base/src/components/icons/Warning'
+  export {default} from '@sanity/base/src/__legacy/components/icons/Warning'
 }
 
 /*

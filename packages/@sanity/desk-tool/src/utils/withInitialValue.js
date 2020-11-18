@@ -23,7 +23,7 @@ import {
   getTemplateById,
   getTemplatesBySchemaType,
   resolveInitialValue,
-} from '@sanity/base/initial-value-templates'
+} from '@sanity/base/__legacy/initial-value-templates'
 
 const withInitialValue = (Pane) => {
   const WithInitialValueStream = streamingComponent((props$) =>

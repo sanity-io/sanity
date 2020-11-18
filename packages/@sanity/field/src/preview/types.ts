@@ -1,6 +1,6 @@
 import {ComponentType} from 'react'
 import {Reference} from '@sanity/types'
-import {UserColor} from '@sanity/base/user-color'
+import {UserColor} from '@sanity/base/__legacy/user-color'
 import {
   ArraySchemaType,
   BooleanSchemaType,
@@ -22,7 +22,7 @@ export type PreviewComponent<T> = ComponentType<{
     ? NumberSchemaType
     : T extends Reference
     ? ReferenceSchemaType
-    : T extends object
+    : T extends Record<string, any>
     ? ObjectSchemaType
     : any
   value: T

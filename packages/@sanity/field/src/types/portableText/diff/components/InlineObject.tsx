@@ -7,7 +7,10 @@ import {useClickOutside} from '@sanity/base/__legacy/@sanity/components'
 import {useLayer} from 'part:@sanity/components/layer'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
-import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import {
+  ConnectorContext,
+  useReportedValues,
+} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {
   ChangeList,
   DiffContext,

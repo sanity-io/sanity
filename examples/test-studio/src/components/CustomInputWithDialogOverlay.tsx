@@ -1,5 +1,5 @@
 import React from 'react'
-import {PresenceOverlay, FieldPresence} from '@sanity/base/presence'
+import {PresenceOverlay, FieldPresence} from '@sanity/base/__legacy/presence'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Button from 'part:@sanity/components/buttons/default'
 import {setIfMissing} from 'part:@sanity/form-builder/patch-event'

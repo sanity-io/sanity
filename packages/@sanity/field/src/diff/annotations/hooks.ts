@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {UserColor, useUserColorManager} from '@sanity/base/user-color'
+import {UserColor, useUserColorManager} from '@sanity/base/__legacy/user-color'
 import {Annotation, Diff} from '../../types'
 import {getAnnotationColor, getAnnotationAtPath} from './helpers'
 

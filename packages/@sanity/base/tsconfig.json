@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["src"],
+  "include": ["src", "typings/*.d.ts"],
   "compilerOptions": {
     "outDir": "./lib",
     // -- strictness options we need to disable in a transition period.

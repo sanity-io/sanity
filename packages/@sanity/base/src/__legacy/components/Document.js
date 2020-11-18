@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import uncaughtErrorHandler from '../../util/uncaughtErrorHandler'
-import generateScriptLoader from '../../util/generateScriptLoader'
+import uncaughtErrorHandler from '../util/uncaughtErrorHandler'
+import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 import NoJavascript from './NoJavascript'
 

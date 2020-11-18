@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import scrollIntoView from 'scroll-into-view-if-needed'
 
-import {useDocumentPresence} from '@sanity/base/hooks'
+import {useDocumentPresence} from '@sanity/base/__legacy/hooks'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import documentStore from 'part:@sanity/base/datastore/document'
 import React, {FormEvent, useEffect, useMemo, useRef, memo} from 'react'

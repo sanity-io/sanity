@@ -1,5 +1,5 @@
-import {useTimeAgo} from '@sanity/base/hooks'
-import {ChangeFieldWrapper} from '@sanity/base/lib/change-indicators/ChangeFieldWrapper'
+import {useTimeAgo} from '@sanity/base/__legacy/hooks'
+import {ChangeFieldWrapper} from '@sanity/base/lib/__legacy/components/change-indicators/ChangeFieldWrapper'
 import {
   ChangeList,
   Chunk,
@@ -11,7 +11,7 @@ import {
   ObjectSchemaType,
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {UserAvatar} from '@sanity/base/components'
+import {UserAvatar} from '@sanity/base/__legacy/components'
 import Button from 'part:@sanity/components/buttons/default'
 import {AvatarStack} from 'part:@sanity/components/avatar'
 import {ScrollContainer} from 'part:@sanity/components/scroll'

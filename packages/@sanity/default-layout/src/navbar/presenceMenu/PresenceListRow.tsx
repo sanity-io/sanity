@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 
-import {UserAvatar} from '@sanity/base/components'
-import {GlobalPresence} from '@sanity/base/presence'
+import {UserAvatar} from '@sanity/base/__legacy/components'
+import {GlobalPresence} from '@sanity/base/__legacy/presence'
 import * as PathUtils from '@sanity/util/paths'
 import {orderBy} from 'lodash'
 import LinkIcon from 'part:@sanity/base/link-icon'

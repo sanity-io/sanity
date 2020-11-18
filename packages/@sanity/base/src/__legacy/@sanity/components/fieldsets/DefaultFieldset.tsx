@@ -6,8 +6,11 @@ import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
-import {FieldPresence, FormFieldPresence} from '../../../../presence'
+import {
+  ChangeIndicator,
+  ChangeIndicatorContextProvidedProps,
+} from '../../../../__legacy/components/change-indicators'
+import {FieldPresence, FormFieldPresence} from '../../../presence'
 import FieldStatus from './FieldStatus'
 
 const EMPTY_ARRAY = []

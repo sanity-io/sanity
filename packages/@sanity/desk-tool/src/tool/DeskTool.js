@@ -18,7 +18,7 @@ import {calculatePanesEquality} from '../utils/calculatePanesEquality'
 import isNarrowScreen from '../utils/isNarrowScreen'
 import windowWidth$ from '../utils/windowWidth'
 import {LOADING_PANE} from '../constants'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import {getTemplateById} from '@sanity/base/__legacy/initial-value-templates'
 
 const EMPTY_PANE_KEYS = []
 
@@ -57,6 +57,7 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired,
     }
 
+    // eslint-disable-next-line react/no-unused-state
     state = {isResolving: true, hasNarrowScreen: isNarrowScreen(), panes: null}
 
     constructor(props) {
@@ -69,6 +70,7 @@ export default withRouterHOC(
       const router = this.props.router
       const paneSegments = router.state.panes || []
 
+      // eslint-disable-next-line react/no-unused-state
       this.setState({panes, isResolving: false})
 
       if (panes.length < paneSegments.length) {
@@ -85,6 +87,7 @@ export default withRouterHOC(
       // Log error for proper stacktraces
       console.error(error) // eslint-disable-line no-console
 
+      // eslint-disable-next-line react/no-unused-state
       this.setState({error, isResolving: false})
     }
 
@@ -93,6 +96,7 @@ export default withRouterHOC(
         this.paneDeriver.unsubscribe()
       }
 
+      // eslint-disable-next-line react/no-unused-state
       this.setState({isResolving: true})
       this.paneDeriver = loadStructure()
         .pipe(

@@ -48,7 +48,7 @@
       "name": "part:@sanity/base/asset-url-builder-default",
       "implements": "part:@sanity/base/asset-url-builder",
       "description": "Function that generates or modifies asset URLs for display in various contexts",
-      "path": "assets/asset-url-builder"
+      "path": "__legacy/assets/asset-url-builder"
     },
     {
       "name": "part:@sanity/base/search",
@@ -152,11 +152,11 @@
     },
     {
       "implements": "part:@sanity/base/util/document-action-utils",
-      "path": "actions/utils/legacy_documentActionUtils"
+      "path": "__legacy/actions/utils/legacy_documentActionUtils"
     },
     {
       "implements": "part:@sanity/base/actions/utils",
-      "path": "actions/utils/index"
+      "path": "__legacy/actions/utils/index"
     },
     {
       "name": "part:@sanity/base/document-actions/resolver",
@@ -272,7 +272,7 @@
     },
     {
       "implements": "part:@sanity/base/sanity-root",
-      "path": "components/SanityRoot"
+      "path": "__legacy/components/SanityRoot"
     },
     {
       "implements": "part:@sanity/base/app-loading-screen",
@@ -284,123 +284,123 @@
     },
     {
       "implements": "part:@sanity/base/schema-creator",
-      "path": "schema/createSchema"
+      "path": "__legacy/schema/createSchema"
     },
     {
       "implements": "part:@sanity/base/search",
-      "path": "search/index"
+      "path": "__legacy/search/index"
     },
     {
       "implements": "part:@sanity/base/search/weighted",
-      "path": "search/weighted/index"
+      "path": "__legacy/search/weighted/index"
     },
     {
       "implements": "part:@sanity/base/util/draft-utils",
-      "path": "util/draftUtils"
+      "path": "__legacy/util/draftUtils"
     },
     {
       "implements": "part:@sanity/base/util/search-utils",
-      "path": "util/searchUtils"
+      "path": "__legacy/util/searchUtils"
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",
-      "path": "styles/variables.css"
+      "path": "__legacy/styles/variables.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/globals-style",
-      "path": "styles/variables/globals.css"
+      "path": "__legacy/styles/variables/globals.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/override-style",
-      "path": "styles/variables/override.css"
+      "path": "__legacy/styles/variables/override.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/fonts-style",
-      "path": "styles/fonts.css"
+      "path": "__legacy/styles/fonts.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/brand-colors-style",
-      "path": "styles/variables/brand-colors.css"
+      "path": "__legacy/styles/variables/brand-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/animation-style",
-      "path": "styles/animation.css"
+      "path": "__legacy/styles/animation.css"
     },
     {
       "implements": "part:@sanity/base/theme/responsive-style",
-      "path": "styles/responsive.css"
+      "path": "__legacy/styles/responsive.css"
     },
     {
       "implements": "part:@sanity/base/theme/shadows-style",
-      "path": "styles/shadows.css"
+      "path": "__legacy/styles/shadows.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/code-style",
-      "path": "styles/variables/code.css"
+      "path": "__legacy/styles/variables/code.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/forms-style",
-      "path": "styles/variables/forms.css"
+      "path": "__legacy/styles/variables/forms.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/gray-colors-style",
-      "path": "styles/variables/gray-colors.css"
+      "path": "__legacy/styles/variables/gray-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/layers-style",
-      "path": "styles/variables/layers.css"
+      "path": "__legacy/styles/variables/layers.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/list-style",
-      "path": "styles/variables/list.css"
+      "path": "__legacy/styles/variables/list.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/progress-style",
-      "path": "styles/variables/progress.css"
+      "path": "__legacy/styles/variables/progress.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/selectable-item-style",
-      "path": "styles/variables/selectable-item.css"
+      "path": "__legacy/styles/variables/selectable-item.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/state-colors-style",
-      "path": "styles/variables/state-colors.css"
+      "path": "__legacy/styles/variables/state-colors.css"
     },
     {
       "implements": "part:@sanity/base/theme/variables/typography-style",
-      "path": "styles/variables/typography.css"
+      "path": "__legacy/styles/variables/typography.css"
     },
     {
       "name": "part:@sanity/base/location",
-      "path": "datastores/location"
+      "path": "__legacy/datastores/location"
     },
     {
       "name": "part:@sanity/base/datastore/document",
-      "path": "datastores/document"
+      "path": "__legacy/datastores/document"
     },
     {
       "name": "part:@sanity/base/datastore/history",
-      "path": "datastores/history"
+      "path": "__legacy/datastores/history"
     },
     {
       "name": "part:@sanity/base/datastore/presence",
-      "path": "datastores/presence"
+      "path": "__legacy/datastores/presence"
     },
     {
       "name": "part:@sanity/base/user",
-      "path": "datastores/user"
+      "path": "__legacy/datastores/user"
     },
     {
       "name": "part:@sanity/base/project",
-      "path": "datastores/project"
+      "path": "__legacy/datastores/project"
     },
     {
       "name": "part:@sanity/base/settings",
-      "path": "datastores/settings/settingsStore"
+      "path": "__legacy/datastores/settings/settingsStore"
     },
     {
       "name": "part:@sanity/base/router",
-      "path": "router"
+      "path": "__legacy/router"
     },
     {
       "implements": "part:@sanity/base/client",
@@ -413,15 +413,15 @@
     },
     {
       "implements": "part:@sanity/base/language-resolver",
-      "path": "locale/languageResolver"
+      "path": "__legacy/locale/languageResolver"
     },
     {
       "implements": "part:@sanity/base/locale-message-fetcher",
-      "path": "locale/messageFetcher"
+      "path": "__legacy/locale/messageFetcher"
     },
     {
       "implements": "part:@sanity/base/locale/intl",
-      "path": "locale/intl"
+      "path": "__legacy/locale/intl"
     },
     {
       "implements": "part:@sanity/base/sanity-intl-provider",
@@ -441,63 +441,63 @@
     },
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
-      "path": "styles/layout/box.css"
+      "path": "__legacy/styles/layout/box.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/selectable-style",
-      "path": "styles/layout/selectable.css"
+      "path": "__legacy/styles/layout/selectable.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/validation-style",
-      "path": "styles/forms/validation.css"
+      "path": "__legacy/styles/forms/validation.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/positioning-style",
-      "path": "styles/layout/positioning.css"
+      "path": "__legacy/styles/layout/positioning.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/scrolling-style",
-      "path": "styles/layout/scrolling.css"
+      "path": "__legacy/styles/layout/scrolling.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/helpers",
-      "path": "styles/layout/helpers.css"
+      "path": "__legacy/styles/layout/helpers.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/text-input-style",
-      "path": "styles/forms/text-input.css"
+      "path": "__legacy/styles/forms/text-input.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/textarea-style",
-      "path": "styles/forms/textarea.css"
+      "path": "__legacy/styles/forms/textarea.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/clear-button-style",
-      "path": "styles/forms/clear-button.css"
+      "path": "__legacy/styles/forms/clear-button.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/headings-style",
-      "path": "styles/typography/headings.css"
+      "path": "__legacy/styles/typography/headings.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/text-blocks-style",
-      "path": "styles/typography/text-blocks.css"
+      "path": "__legacy/styles/typography/text-blocks.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/code-style",
-      "path": "styles/typography/code.css"
+      "path": "__legacy/styles/typography/code.css"
     },
     {
       "implements": "part:@sanity/base/theme/typography/forms-style",
-      "path": "styles/typography/forms.css"
+      "path": "__legacy/styles/typography/forms.css"
     },
     {
       "implements": "part:@sanity/base/theme/body-style",
-      "path": "styles/body.css"
+      "path": "__legacy/styles/body.css"
     },
     {
       "implements": "part:@sanity/base/theme/layout/backgrounds-style",
-      "path": "styles/layout/backgrounds.css"
+      "path": "__legacy/styles/layout/backgrounds.css"
     },
     {
       "name": "part:@sanity/base/close-icon",
@@ -741,7 +741,7 @@
     },
     {
       "implements": "part:@sanity/base/preview",
-      "path": "preview/index"
+      "path": "__legacy/preview/index"
     },
     {
       "implements": "part:@sanity/base/th-list-icon",
@@ -1061,7 +1061,7 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "styles/variables/story"
+      "path": "__legacy/styles/variables/story"
     },
     {
       "implements": "part:@sanity/base/component",

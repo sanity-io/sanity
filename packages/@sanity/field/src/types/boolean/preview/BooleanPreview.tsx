@@ -1,5 +1,5 @@
 import React from 'react'
-import {UserColor} from '@sanity/base/user-color'
+import {UserColor} from '@sanity/base/__legacy/user-color'
 import {PreviewComponent} from '../../../preview/types'
 
 type BooleanProps = {

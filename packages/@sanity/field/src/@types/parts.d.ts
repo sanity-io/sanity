@@ -54,15 +54,15 @@ declare module 'part:@sanity/base/arrow-right' {
 }
 
 declare module 'part:@sanity/base/chevron-down-icon' {
-  export {default} from '@sanity/base/src/components/icons/ChevronDown'
+  export {default} from '@sanity/base/src/__legacy/components/icons/ChevronDown'
 }
 
 declare module 'part:@sanity/base/close-icon' {
-  export {default} from '@sanity/base/src/components/icons/CloseIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/CloseIcon'
 }
 
 declare module 'part:@sanity/base/warning-outline-icon' {
-  export {default} from '@sanity/base/src/components/icons/WarningOutline'
+  export {default} from '@sanity/base/src/__legacy/components/icons/WarningOutline'
 }
 
 declare module 'part:@sanity/base/file-icon' {
@@ -81,7 +81,7 @@ declare module 'part:@sanity/base/link-icon' {
 }
 
 declare module 'part:@sanity/base/spinner-icon' {
-  export {default} from '@sanity/base/src/components/icons/SpinnerIcon'
+  export {default} from '@sanity/base/src/__legacy/components/icons/SpinnerIcon'
 }
 
 declare module 'part:@sanity/base/trash-icon' {

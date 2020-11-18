@@ -2,8 +2,8 @@
 
 import React, {useState} from 'react'
 import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from 'part:@sanity/components/avatar'
-import {User} from '../../datastores/user/types'
-import {useUser, useUserColor} from '../../hooks'
+import {User} from '../datastores/user/types'
+import {useUser, useUserColor} from '../hooks'
 
 interface BaseProps {
   position?: AvatarPosition

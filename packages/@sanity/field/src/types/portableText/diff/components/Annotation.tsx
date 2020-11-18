@@ -4,7 +4,10 @@ import {isKeySegment, Path} from '@sanity/types'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
-import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import {
+  ConnectorContext,
+  useReportedValues,
+} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {useClickOutside} from '@sanity/base/__legacy/@sanity/components'
 import {
   ChangeList,

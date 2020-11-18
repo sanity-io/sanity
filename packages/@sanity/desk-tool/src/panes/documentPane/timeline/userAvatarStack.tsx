@@ -1,4 +1,4 @@
-import {UserAvatar} from '@sanity/base/components'
+import {UserAvatar} from '@sanity/base/__legacy/components'
 import {AvatarStack} from 'part:@sanity/components/avatar'
 import React from 'react'
 

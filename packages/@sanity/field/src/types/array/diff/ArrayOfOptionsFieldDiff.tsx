@@ -1,5 +1,5 @@
 import Preview from 'part:@sanity/base/preview'
-import {useUserColorManager} from '@sanity/base/user-color'
+import {useUserColorManager} from '@sanity/base/__legacy/user-color'
 import {isKeyedObject, TypedObject} from '@sanity/types'
 import React from 'react'
 import {

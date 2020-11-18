@@ -9,8 +9,8 @@ import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/pa
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/__legacy/components/change-indicators/ChangeIndicator'
+import {ChangeIndicator} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
@@ -159,12 +159,12 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     return (
       <Fieldset
         level={level}
-        legend={type.title}
+        legend={type.title || ''}
         description={type.description}
         markers={markers}
-        presence={presence}
+        presence={presence as any}
         onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
+        // onBlur={this.handleBlur}
         changeIndicator={false}
       >
         <div>
@@ -210,9 +210,9 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             <Dialog
               title="Place the marker on the map"
               onClose={this.handleCloseModal}
-              onCloseClick={this.handleCloseModal}
-              message="Select location by dragging the marker or search for a place"
-              isOpen={modalOpen}
+              // onCloseClick={this.handleCloseModal}
+              // message="Select location by dragging the marker or search for a place"
+              // isOpen={modalOpen}
               padding="none"
             >
               <div className={styles.dialogInner}>

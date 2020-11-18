@@ -1,5 +1,5 @@
 import {uuid} from '@sanity/uuid'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import {getTemplateById} from '@sanity/base/__legacy/initial-value-templates'
 import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'

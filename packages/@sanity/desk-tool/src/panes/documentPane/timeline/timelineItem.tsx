@@ -1,5 +1,5 @@
 import React, {useCallback, createElement} from 'react'
-import {useTimeAgo} from '@sanity/base/hooks'
+import {useTimeAgo} from '@sanity/base/__legacy/hooks'
 import {Chunk, ChunkType} from '@sanity/field/diff'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'

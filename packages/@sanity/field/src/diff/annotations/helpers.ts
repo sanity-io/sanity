@@ -1,4 +1,4 @@
-import {UserColorManager, UserColor} from '@sanity/base/user-color'
+import {UserColorManager, UserColor} from '@sanity/base/__legacy/user-color'
 import {isIndexSegment, isKeySegment, isIndexTuple, Path, KeyedSegment} from '@sanity/types'
 import {stringToPath, pathToString} from '../../paths/helpers'
 import {

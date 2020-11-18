@@ -1,14 +1,14 @@
 import React from 'react'
 import shallowEquals from 'shallow-equals'
 import {Marker, Path, SchemaType} from '@sanity/types'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/__legacy/components/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
+import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/__legacy/presence'
 import PatchEvent from './PatchEvent'
 import {emptyArray, emptyObject} from './utils/empty'
 
-const EMPTY_PROPS = emptyObject<{}>()
+const EMPTY_PROPS = emptyObject<Record<string, unknown>>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
@@ -27,7 +27,7 @@ interface Props {
   level: number
   isRoot?: boolean
   path: Path
-  filterField?: Function
+  filterField?: (field: any) => boolean
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
@@ -89,6 +89,7 @@ export class FormBuilderInput extends React.Component<Props> {
     return propsDiffer || pathDiffer
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)

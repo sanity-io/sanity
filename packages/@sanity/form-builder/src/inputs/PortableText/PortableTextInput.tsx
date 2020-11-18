@@ -3,7 +3,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
 import {Marker, Path} from '@sanity/types'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import {
   EditorChange,
   ErrorChange,

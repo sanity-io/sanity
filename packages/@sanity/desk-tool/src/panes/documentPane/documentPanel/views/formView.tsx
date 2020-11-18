@@ -8,7 +8,7 @@ import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import {Path} from '@sanity/types'
-import {PresenceOverlay} from '@sanity/base/presence'
+import {PresenceOverlay} from '@sanity/base/__legacy/presence'
 import {Doc} from '../../types'
 import {EditForm} from './editForm'
 

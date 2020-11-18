@@ -1,4 +1,4 @@
-const {theme: baseTheme} = require('@sanity/base')
+const {theme: baseTheme} = require('@sanity/base/__legacy')
 const {Card, ThemeProvider} = require('@sanity/ui')
 const React = require('react')
 const {css, createGlobalStyle} = require('styled-components')

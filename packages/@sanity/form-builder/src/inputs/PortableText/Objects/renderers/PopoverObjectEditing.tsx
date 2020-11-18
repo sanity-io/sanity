@@ -10,7 +10,7 @@ import {
   Type,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
+import {FormFieldPresence, PresenceOverlay} from '@sanity/base/__legacy/presence'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'

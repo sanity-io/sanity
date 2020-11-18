@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
 import React, {SyntheticEvent, useCallback} from 'react'
-import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {ConnectorContext} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {startCase} from 'lodash'
 import {DiffCard, DiffContext, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
 import styles from './Text.css'

@@ -5,7 +5,7 @@ const styles = require('./styles/FullscreenError.css')
 const FullscreenError = (props) => {
   return (
     <div className={styles.container}>
-      <button className={styles.closeButton} onClick={props.onClose}>
+      <button className={styles.closeButton} onClick={props.onClose} type="button">
         ✖
       </button>
 

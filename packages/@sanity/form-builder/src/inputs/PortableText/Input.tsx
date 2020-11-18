@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'
-import {FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/__legacy/presence'
 import {
   getPortableTextFeatures,
   OnCopyFn,
@@ -17,7 +17,7 @@ import {
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
 import {uniqueId, isEqual} from 'lodash'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/__legacy/components/change-indicators'
 import {Layer} from 'part:@sanity/components/layer'
 import PatchEvent from '../../PatchEvent'
 import {BoundaryElementProvider} from './boundaryElement'
