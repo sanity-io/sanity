@@ -1,4 +1,4 @@
-import {ButtonProps} from '@sanity/components'
+import {ButtonProps} from '@sanity/base/__legacy/@sanity/components'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuButton} from 'part:@sanity/components/menu-button'

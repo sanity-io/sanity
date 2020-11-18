@@ -1,4 +1,4 @@
-import {DialogAction} from '@sanity/components'
+import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import classNames from 'classnames'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'

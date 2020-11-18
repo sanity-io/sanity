@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types, react/no-multi-comp */
 import React, {useContext} from 'react'
 import {isEqual, pick, omit} from 'lodash'
-import {StateLink, Router} from 'part:@sanity/base/router'
+import {StateLink, HOCRouter} from 'part:@sanity/base/router'
 
-const contextCache = new WeakMap<object, Map<string, PaneRouterContextShape>>()
+const contextCache = new WeakMap<any, Map<string, PaneRouterContextShape>>()
 
 interface SetParamsOptions {
   recurseIfInherited?: boolean
@@ -105,7 +105,7 @@ type ChildLinkProps = {
   children?: React.ReactNode
 }
 
-const ChildLink = React.forwardRef(function ChildLink(props: ChildLinkProps, ref) {
+const ChildLink = React.forwardRef(function ChildLink(props: ChildLinkProps, ref: React.Ref<any>) {
   const {childId, childPayload, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
   const panes: RouterPanesState = routerPanesState
@@ -123,7 +123,7 @@ type ParameterizedLinkProps = {
 
 const ParameterizedLink = React.forwardRef(function ParameterizedLink(
   props: ParameterizedLinkProps,
-  ref
+  ref: React.Ref<any>
 ) {
   const {params: newParams, payload: newPayload, ...rest} = props
   const {routerPanesState} = useContext(PaneRouterContext)
@@ -156,7 +156,7 @@ type PaneRouterContextFactory = (options: {
 }) => PaneRouterContextShape
 
 interface DeskToolPanesProps {
-  router: Router // <{panes: RouterPanesState; payload: unknown; params: Record<string, any>}>
+  router: HOCRouter // <{panes: RouterPanesState; payload: unknown; params: Record<string, any>}>
 }
 
 export function getPaneRouterContextFactory(
@@ -318,7 +318,11 @@ export function getPaneRouterContextFactory(
 
       // Set the view for the current pane
       setView: (viewId) => {
-        const {view, ...rest} = paneParams
+        const {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          view,
+          ...rest
+        } = paneParams
         return setParams(viewId ? {...rest, view: viewId} : rest)
       },
 

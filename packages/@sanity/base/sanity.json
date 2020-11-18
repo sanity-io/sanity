@@ -1066,6 +1066,1175 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "components/story"
+    },
+
+    {
+      "name": "part:@sanity/components/utilities/arrow-key-navigation",
+      "description": "Arrow key navigation"
+    },
+    {
+      "name": "part:@sanity/components/autocomplete/default",
+      "description": "Default autocomplete"
+    },
+    {
+      "name": "part:@sanity/components/autocomplete/default-style",
+      "description": "Default autocomplete styling"
+    },
+    {
+      "name": "part:@sanity/components/buttons/default",
+      "description": "Default button"
+    },
+    {
+      "name": "part:@sanity/components/buttons/button-grid",
+      "description": "Use this to wrap buttons"
+    },
+    {
+      "name": "part:@sanity/components/buttons/button-collection",
+      "description": "Deprecated. Use button-grid"
+    },
+    {
+      "name": "part:@sanity/components/buttons/button-group",
+      "description": "Use this to group buttons with no spacing"
+    },
+    {
+      "name": "part:@sanity/components/buttons/anchor",
+      "description": "Same as default button, but with an <a>. Takes href"
+    },
+    {
+      "name": "part:@sanity/components/buttons/intent",
+      "description": "Same as default button, but takes an intent and generates an anchor"
+    },
+    {
+      "name": "part:@sanity/components/buttons/state",
+      "description": "Same as default button, but takes an state and generates an anchor"
+    },
+    {
+      "name": "part:@sanity/components/buttons/default-style",
+      "description": "Default button styling"
+    },
+    {
+      "name": "part:@sanity/components/buttons/button-grid-style",
+      "description": "Container to set buttons in grid"
+    },
+    {
+      "name": "part:@sanity/components/buttons/fab",
+      "description": "Floating Action Button"
+    },
+    {
+      "name": "part:@sanity/components/buttons/fab-style",
+      "description": "Floating Action Button styling"
+    },
+    {
+      "name": "part:@sanity/components/buttons/dropdown",
+      "description": "Drop down button with menu"
+    },
+    {
+      "name": "part:@sanity/components/buttons/dropdown-style",
+      "description": "Drop down button styling"
+    },
+    {
+      "name": "part:@sanity/components/buttons/in-input",
+      "description": "Button inside an input"
+    },
+    {
+      "name": "part:@sanity/components/buttons/in-input-style",
+      "description": "Styling for button inside an input"
+    },
+    {
+      "name": "part:@sanity/components/utilities/image-loader",
+      "description": "Image loader utility"
+    },
+    {
+      "name": "part:@sanity/components/utilities/poppable",
+      "description": "Poppable utility"
+    },
+    {
+      "name": "part:@sanity/components/utilities/stacked-escapable",
+      "description": "A stacked escapable utility"
+    },
+    {
+      "name": "part:@sanity/components/fileinput/default",
+      "description": "<Input type=file />"
+    },
+    {
+      "name": "part:@sanity/components/fileinput/button",
+      "description": "A button to upload file"
+    },
+    {
+      "name": "part:@sanity/components/loading/spinner",
+      "description": "Spinner to show activity"
+    },
+    {
+      "name": "part:@sanity/components/loading/spinner-style",
+      "description": "Spinner style"
+    },
+    {
+      "name": "part:@sanity/components/progress/bar",
+      "description": "Progress bar to show percent of a completed activity"
+    },
+    {
+      "name": "part:@sanity/components/progress/circle",
+      "description": "Progress circle to show percent of a completed activity"
+    },
+    {
+      "name": "part:@sanity/components/progress/bar-style",
+      "description": "Progress bar style"
+    },
+    {
+      "name": "part:@sanity/components/progress/circle-style",
+      "description": "Progress circle style"
+    },
+    {
+      "name": "part:@sanity/components/toggles/switch",
+      "description": "Switch toggle"
+    },
+    {
+      "name": "part:@sanity/components/toggles/switch-style",
+      "description": "Switch toggle style"
+    },
+    {
+      "name": "part:@sanity/components/toggles/checkbox",
+      "description": "Checkbox toggle"
+    },
+    {
+      "name": "part:@sanity/components/toggles/checkbox-style",
+      "description": "Checkbox toggle style"
+    },
+    {
+      "name": "part:@sanity/components/radiobutton/default",
+      "description": "Radiobutton"
+    },
+    {
+      "name": "part:@sanity/components/radiobutton/default-style",
+      "description": "Radiobutton style"
+    },
+    {
+      "name": "part:@sanity/components/toggles/buttons",
+      "description": "Toggle buttons"
+    },
+    {
+      "name": "part:@sanity/components/toggles/buttons-style",
+      "description": "Toggle buttons style"
+    },
+    {
+      "name": "part:@sanity/components/toggles/button",
+      "description": "Toggle button"
+    },
+    {
+      "name": "part:@sanity/components/toggles/button-style",
+      "description": "Toggle button style"
+    },
+
+    {
+      "name": "part:@sanity/components/formfields/default",
+      "description": "Default form field"
+    },
+    {
+      "name": "part:@sanity/components/formfield/default-style",
+      "description": "Default form field styling"
+    },
+    {
+      "name": "part:@sanity/components/labels/default",
+      "description": "Default label"
+    },
+    {
+      "name": "part:@sanity/components/labels/default-style",
+      "description": "Default label styling"
+    },
+    {
+      "name": "part:@sanity/components/textareas/default",
+      "description": "Standard text input"
+    },
+    {
+      "name": "part:@sanity/components/textareas/default-style",
+      "description": "Standard text input"
+    },
+    {
+      "name": "part:@sanity/components/textinputs/default",
+      "description": "Standard text input"
+    },
+    {
+      "name": "part:@sanity/components/textinputs/default-style",
+      "description": "Standard text styling"
+    },
+    {
+      "name": "part:@sanity/components/textfields/default",
+      "description": "Standard text field"
+    },
+    {
+      "name": "part:@sanity/components/textfields/default-style",
+      "description": "Text field styling"
+    },
+    {
+      "name": "part:@sanity/components/selects/default",
+      "description": "Standard select field"
+    },
+    {
+      "name": "part:@sanity/components/selects/default-style",
+      "description": "Standard select field styling"
+    },
+    {
+      "name": "part:@sanity/components/selects/radio",
+      "description": "Radio select fieldset"
+    },
+    {
+      "name": "part:@sanity/components/selects/searchable",
+      "description": "Searchable select field"
+    },
+    {
+      "name": "part:@sanity/components/selects/searchable-style",
+      "description": "Searchable select field styling"
+    },
+    {
+      "name": "part:@sanity/components/selects/menu",
+      "description": "Select menu"
+    },
+    {
+      "name": "part:@sanity/components/selects/custom-style",
+      "description": "Custom select field styling"
+    },
+    {
+      "name": "part:@sanity/components/textfields/search",
+      "description": "Search text field"
+    },
+    {
+      "name": "part:@sanity/components/textfields/search-style",
+      "description": "Search field styling"
+    },
+    {
+      "name": "part:@sanity/components/tags/textfield",
+      "description": "Text field to input tags"
+    },
+    {
+      "name": "part:@sanity/components/tags/textfield-style",
+      "description": "Styling for text field to input tags"
+    },
+    {
+      "name": "part:@sanity/components/fieldsets/default",
+      "description": "Default <fieldset> with label as prop"
+    },
+    {
+      "name": "part:@sanity/components/fieldsets/default-style",
+      "description": "Fieldset styling"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/fullscreen",
+      "description": "Fullscreen dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/fullscreen-message",
+      "description": "Fullscreen message dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/fullscreen-style",
+      "description": "Fullscreen dialog styling"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/default",
+      "description": "Default dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/content",
+      "description": "Used for sizing content to size the dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/default-style",
+      "description": "Default dialog styling"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/content-style",
+      "description": "Sizing content to size the dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/confirm",
+      "description": "Confirm dialog"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/popover",
+      "description": "Popover dialog. Points an arrow to parent element"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/popover-style",
+      "description": "Popover styling"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/pane-popover",
+      "description": "A pane popover dialog"
+    },
+    {
+      "name": "part:@sanity/components/snackbar/default",
+      "description": "Deprecated snackbar."
+    },
+    {
+      "name": "part:@sanity/components/snackbar/item",
+      "description": "Shows messages with an action and a timeout."
+    },
+    {
+      "name": "part:@sanity/components/snackbar/default-style",
+      "description": "Styling for the deprecated default snackbar"
+    },
+    {
+      "name": "part:@sanity/components/snackbar/provider",
+      "description": "Snackbar provider to show messages."
+    },
+    {
+      "name": "part:@sanity/components/snackbar/snackbar-style",
+      "description": "Styling for new snackbars."
+    },
+    {
+      "name": "part:@sanity/components/menus/default",
+      "description": "Standard context menu"
+    },
+    {
+      "name": "part:@sanity/components/menus/default-style",
+      "description": "Styling for standard context menu"
+    },
+    {
+      "name": "part:@sanity/components/lists/default",
+      "description": "Default list"
+    },
+    {
+      "name": "part:@sanity/components/lists/sortable",
+      "description": "Sortable list"
+    },
+    {
+      "name": "part:@sanity/components/lists/grid",
+      "description": "Grid list"
+    },
+    {
+      "name": "part:@sanity/components/lists/sortable-grid",
+      "description": "Sortable Grid list"
+    },
+    {
+      "name": "part:@sanity/components/lists/default-style",
+      "description": "Default list style"
+    },
+    {
+      "name": "part:@sanity/components/lists/create-document",
+      "description": "List of create document previews"
+    },
+
+    {
+      "implements": "part:@sanity/components/alerts/alert",
+      "path": "__legacy/@sanity/components/alerts/Alert"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-style",
+      "path": "__legacy/@sanity/components/lists/default/List.css"
+    },
+    {
+      "name": "part:@sanity/components/lists/default-item-style",
+      "description": "Default list item style"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default-item-style",
+      "path": "__legacy/@sanity/components/lists/default/ListItem.css"
+    },
+    {
+      "name": "part:@sanity/components/drag-handle-style",
+      "description": "Drag handle style for use with default list"
+    },
+    {
+      "implements": "part:@sanity/components/drag-handle-style",
+      "path": "__legacy/@sanity/components/lists/sortable/DragHandle.css"
+    },
+    {
+      "name": "part:@sanity/components/edititem/fold",
+      "description": "Edit item. Folds out and wraps around nearest relative container horizontally."
+    },
+    {
+      "name": "part:@sanity/components/previews/default",
+      "description": "Default preview item"
+    },
+    {
+      "name": "part:@sanity/components/previews/create-document",
+      "description": "Preview for creating a document"
+    },
+    {
+      "name": "part:@sanity/components/previews/detail",
+      "description": "Shows Title, subtitle, description, media and date"
+    },
+    {
+      "name": "part:@sanity/components/previews/card",
+      "description": "Card preview, shows title, subtitle, description, media and date"
+    },
+    {
+      "name": "part:@sanity/components/previews/media",
+      "description": "Shows only media, and shows details on hover"
+    },
+    {
+      "name": "part:@sanity/components/previews/inline",
+      "description": "Shows title and media inline"
+    },
+    {
+      "name": "part:@sanity/components/previews/block",
+      "description": "Shows everything in a block"
+    },
+    {
+      "name": "part:@sanity/components/previews/block-image",
+      "description": "Shows image in a block"
+    },
+    {
+      "name": "part:@sanity/components/previews/default-style",
+      "description": "Default preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/card-style",
+      "description": "Card preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/detail-style",
+      "description": "Detail preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/inline-style",
+      "description": "Inline preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/block-style",
+      "description": "Block preview styling"
+    },
+    {
+      "name": "part:@sanity/components/validation/status",
+      "description": "Show validation status icon based on markers"
+    },
+    {
+      "implements": "part:@sanity/components/validation/status",
+      "path": "__legacy/@sanity/components/validation/ValidationStatus"
+    },
+    {
+      "name": "part:@sanity/components/validation/list",
+      "description": "Show list of validation warnings and errors, based on markers"
+    },
+    {
+      "implements": "part:@sanity/components/validation/list",
+      "path": "__legacy/@sanity/components/validation/ValidationList"
+    },
+    {
+      "name": "part:@sanity/components/previews/block-image-style",
+      "description": "Block image preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/media-style",
+      "description": "Media preview styling"
+    },
+    {
+      "name": "part:@sanity/components/typography/hotkeys",
+      "description": "Display hotkeys. Takes an array of strings."
+    },
+    {
+      "implements": "part:@sanity/components/utilities/arrow-key-navigation",
+      "path": "__legacy/@sanity/components/utilities/ArrowKeyNavigation"
+    },
+    {
+      "implements": "part:@sanity/components/autocomplete/default",
+      "path": "__legacy/@sanity/components/autocomplete/DefaultAutocomplete"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/default",
+      "path": "__legacy/@sanity/components/buttons/DefaultButton"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-grid",
+      "path": "__legacy/@sanity/components/buttons/ButtonGrid"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-collection",
+      "path": "__legacy/@sanity/components/buttons/ButtonCollection"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-group",
+      "path": "__legacy/@sanity/components/buttons/ButtonGroup"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/anchor",
+      "path": "__legacy/@sanity/components/buttons/AnchorButton"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/intent",
+      "path": "__legacy/@sanity/components/buttons/IntentButton"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/state",
+      "path": "__legacy/@sanity/components/buttons/StateButton"
+    },
+    {
+      "implements": "part:@sanity/components/loading/spinner",
+      "path": "__legacy/@sanity/components/loading/Spinner"
+    },
+    {
+      "implements": "part:@sanity/components/progress/bar",
+      "path": "__legacy/@sanity/components/progress/ProgressBar"
+    },
+    {
+      "implements": "part:@sanity/components/progress/circle",
+      "path": "__legacy/@sanity/components/progress/ProgressCircle"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/dropdown",
+      "path": "__legacy/@sanity/components/buttons/DropDownButton"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/switch",
+      "path": "__legacy/@sanity/components/toggles/Switch"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/checkbox",
+      "path": "__legacy/@sanity/components/toggles/Checkbox"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/buttons",
+      "path": "__legacy/@sanity/components/toggles/Buttons"
+    },
+    {
+      "implements": "part:@sanity/components/radiobutton/default",
+      "path": "__legacy/@sanity/components/radiobutton/RadioButtonDefault"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/button",
+      "path": "__legacy/@sanity/components/toggles/ToggleButton"
+    },
+    {
+      "implements": "part:@sanity/components/formfields/default",
+      "path": "__legacy/@sanity/components/formfields/DefaultFormField"
+    },
+    {
+      "implements": "part:@sanity/components/labels/default",
+      "path": "__legacy/@sanity/components/labels/DefaultLabel"
+    },
+    {
+      "implements": "part:@sanity/components/textareas/default",
+      "path": "__legacy/@sanity/components/textareas/DefaultTextArea"
+    },
+    {
+      "implements": "part:@sanity/components/textinputs/default",
+      "path": "__legacy/@sanity/components/textinputs/DefaultTextInput"
+    },
+    {
+      "implements": "part:@sanity/components/textfields/default",
+      "path": "__legacy/@sanity/components/textfields/DefaultTextField"
+    },
+    {
+      "implements": "part:@sanity/components/textfields/search",
+      "path": "__legacy/@sanity/components/textfields/SearchField"
+    },
+    {
+      "implements": "part:@sanity/components/tags/textfield",
+      "path": "__legacy/@sanity/components/tags/TextField"
+    },
+    {
+      "implements": "part:@sanity/components/selects/default",
+      "path": "__legacy/@sanity/components/selects/DefaultSelect"
+    },
+    {
+      "implements": "part:@sanity/components/selects/default-style",
+      "path": "__legacy/@sanity/components/selects/DefaultSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/radio",
+      "path": "__legacy/@sanity/components/selects/RadioSelect"
+    },
+    {
+      "implements": "part:@sanity/components/selects/searchable",
+      "path": "__legacy/@sanity/components/selects/SearchableSelect"
+    },
+    {
+      "implements": "part:@sanity/components/selects/searchable-style",
+      "path": "__legacy/@sanity/components/selects/SearchableSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/custom",
+      "path": "__legacy/@sanity/components/selects/CustomSelect"
+    },
+    {
+      "implements": "part:@sanity/components/selects/custom-style",
+      "path": "__legacy/@sanity/components/selects/CustomSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/menu",
+      "path": "__legacy/@sanity/components/selects/SelectMenu"
+    },
+    {
+      "implements": "part:@sanity/components/selects/style-style",
+      "path": "__legacy/@sanity/components/selects/StyleSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/selects/style",
+      "path": "__legacy/@sanity/components/selects/StyleSelect"
+    },
+    {
+      "implements": "part:@sanity/components/selects/style-style",
+      "path": "__legacy/@sanity/components/selects/StyleSelect.css"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/default",
+      "path": "__legacy/@sanity/components/dialogs/DefaultDialog"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/content",
+      "path": "__legacy/@sanity/components/dialogs/DialogContent"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/confirm",
+      "path": "__legacy/@sanity/components/dialogs/ConfirmDialog"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/fullscreen",
+      "path": "__legacy/@sanity/components/dialogs/FullscreenDialog"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/fullscreen-message",
+      "path": "__legacy/@sanity/components/dialogs/FullscreenMessageDialog"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/popover",
+      "path": "__legacy/@sanity/components/dialogs/PopoverDialog"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/pane-popover",
+      "path": "__legacy/@sanity/components/dialogs/PanePopover"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/popover-style",
+      "path": "__legacy/@sanity/components/dialogs/PopoverDialog.css"
+    },
+
+    {
+      "implements": "part:@sanity/components/fieldsets/default",
+      "path": "__legacy/@sanity/components/fieldsets/DefaultFieldset"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/default",
+      "path": "__legacy/@sanity/components/snackbar/DefaultSnackbar"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/item",
+      "path": "__legacy/@sanity/components/snackbar/SnackbarItem"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/provider",
+      "path": "__legacy/@sanity/components/snackbar/SnackbarProvider"
+    },
+    {
+      "implements": "part:@sanity/components/edititem/fold",
+      "path": "__legacy/@sanity/components/edititem/EditItemFoldOut"
+    },
+    {
+      "implements": "part:@sanity/components/previews/create-document",
+      "path": "__legacy/@sanity/components/previews/CreateDocumentPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/default",
+      "path": "__legacy/@sanity/components/previews/DefaultPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/detail",
+      "path": "__legacy/@sanity/components/previews/DetailPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/card",
+      "path": "__legacy/@sanity/components/previews/CardPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/media",
+      "path": "__legacy/@sanity/components/previews/MediaPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/inline",
+      "path": "__legacy/@sanity/components/previews/InlinePreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block",
+      "path": "__legacy/@sanity/components/previews/BlockPreview"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block-image",
+      "path": "__legacy/@sanity/components/previews/BlockImagePreview"
+    },
+    {
+      "implements": "part:@sanity/components/autocomplete/default-style",
+      "path": "__legacy/@sanity/components/autocomplete/DefaultAutocomplete.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/default-style",
+      "path": "__legacy/@sanity/components/buttons/DefaultButton.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-grid-style",
+      "path": "__legacy/@sanity/components/buttons/ButtonGrid.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/dropdown-style",
+      "path": "__legacy/@sanity/components/buttons/DropDownButton.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/in-input",
+      "path": "__legacy/@sanity/components/buttons/InInput"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/in-input-style",
+      "path": "__legacy/@sanity/components/buttons/InInput.css"
+    },
+    {
+      "implements": "part:@sanity/components/fileinput/default",
+      "path": "__legacy/@sanity/components/fileinput/DefaultFileInput"
+    },
+    {
+      "implements": "part:@sanity/components/fileinput/button",
+      "path": "__legacy/@sanity/components/fileinput/FileInputButton"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/image-loader",
+      "path": "__legacy/@sanity/components/utilities/ImageLoader"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/stacked-escapable",
+      "path": "__legacy/@sanity/components/utilities/StackedEscapable"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/poppable",
+      "path": "__legacy/@sanity/components/utilities/Poppable"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/escapable",
+      "path": "__legacy/@sanity/components/utilities/Escapable"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/stacked",
+      "path": "__legacy/@sanity/components/utilities/Stacked"
+    },
+    {
+      "implements": "part:@sanity/components/loading/spinner-style",
+      "path": "__legacy/@sanity/components/loading/Spinner.css"
+    },
+    {
+      "implements": "part:@sanity/components/progress/bar-style",
+      "path": "__legacy/@sanity/components/progress/ProgressBar.css"
+    },
+    {
+      "implements": "part:@sanity/components/progress/circle-style",
+      "path": "__legacy/@sanity/components/progress/ProgressCircle.css"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/switch-style",
+      "path": "__legacy/@sanity/components/toggles/Switch.css"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/checkbox-style",
+      "path": "__legacy/@sanity/components/toggles/Checkbox.css"
+    },
+    {
+      "implements": "part:@sanity/components/radiobutton/default-style",
+      "path": "__legacy/@sanity/components/radiobutton/RadioButtonDefault.css"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/buttons-style",
+      "path": "__legacy/@sanity/components/toggles/Buttons.css"
+    },
+    {
+      "implements": "part:@sanity/components/toggles/button-style",
+      "path": "__legacy/@sanity/components/toggles/ToggleButton.css"
+    },
+    {
+      "implements": "part:@sanity/components/formfields/default-style",
+      "path": "__legacy/@sanity/components/formfields/DefaultFormField.css"
+    },
+    {
+      "implements": "part:@sanity/components/labels/default-style",
+      "path": "__legacy/@sanity/components/labels/DefaultLabel.css"
+    },
+    {
+      "implements": "part:@sanity/components/textareas/default-style",
+      "path": "__legacy/@sanity/components/textareas/DefaultTextArea.css"
+    },
+    {
+      "implements": "part:@sanity/components/textinputs/default-style",
+      "path": "__legacy/@sanity/components/textinputs/DefaultTextInput.css"
+    },
+    {
+      "implements": "part:@sanity/components/textfields/default-style",
+      "path": "__legacy/@sanity/components/textfields/DefaultTextField.css"
+    },
+    {
+      "implements": "part:@sanity/components/textfields/search-style",
+      "path": "__legacy/@sanity/components/textfields/SearchField.css"
+    },
+    {
+      "implements": "part:@sanity/components/tags/textfield-style",
+      "path": "__legacy/@sanity/components/tags/TextField.css"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/fullscreen-style",
+      "path": "__legacy/@sanity/components/dialogs/FullscreenDialog.css"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/default-style",
+      "path": "__legacy/@sanity/components/dialogs/DefaultDialog.css"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/content-style",
+      "path": "__legacy/@sanity/components/dialogs/DialogContent.css"
+    },
+    {
+      "implements": "part:@sanity/components/fieldsets/default-style",
+      "path": "__legacy/@sanity/components/fieldsets/DefaultFieldset.css"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/default-style",
+      "path": "__legacy/@sanity/components/snackbar/DefaultSnackbar.css"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/snackbar-style",
+      "path": "__legacy/@sanity/components/snackbar/SnackbarItem.css"
+    },
+    {
+      "implements": "part:@sanity/components/menus/default",
+      "path": "__legacy/@sanity/components/menus/DefaultMenu"
+    },
+    {
+      "implements": "part:@sanity/components/menus/default-style",
+      "path": "__legacy/@sanity/components/menus/DefaultMenu.css"
+    },
+    {
+      "name": "part:@sanity/components/menus/divider",
+      "description": "Menu item divider symbol",
+      "path": "__legacy/@sanity/components/menus/divider"
+    },
+    {
+      "implements": "part:@sanity/components/lists/default",
+      "path": "__legacy/@sanity/components/lists/default"
+    },
+    {
+      "implements": "part:@sanity/components/lists/sortable",
+      "path": "__legacy/@sanity/components/lists/sortable"
+    },
+    {
+      "implements": "part:@sanity/components/lists/grid",
+      "path": "__legacy/@sanity/components/lists/grid"
+    },
+    {
+      "implements": "part:@sanity/components/lists/sortable-grid",
+      "path": "__legacy/@sanity/components/lists/sortable-grid"
+    },
+    {
+      "implements": "part:@sanity/components/lists/create-document",
+      "path": "__legacy/@sanity/components/lists/CreateDocument"
+    },
+    {
+      "implements": "part:@sanity/components/edititem/fold-style",
+      "path": "__legacy/@sanity/components/edititem/EditItemFoldOut.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/default-style",
+      "path": "__legacy/@sanity/components/previews/DefaultPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/card-style",
+      "path": "__legacy/@sanity/components/previews/CardPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/detail-style",
+      "path": "__legacy/@sanity/components/previews/DetailPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/inline-style",
+      "path": "__legacy/@sanity/components/previews/InlinePreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block-style",
+      "path": "__legacy/@sanity/components/previews/BlockPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block-image-style",
+      "path": "__legacy/@sanity/components/previews/BlockImagePreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/media-style",
+      "path": "__legacy/@sanity/components/previews/MediaPreview.css"
+    },
+    {
+      "name": "part:@sanity/components/panes/default-pane-style",
+      "description": "Styling for panes"
+    },
+    {
+      "implements": "part:@sanity/components/panes/default-pane-style",
+      "path": "__legacy/@sanity/components/panes/DefaultPane.css"
+    },
+    {
+      "name": "part:@sanity/components/utilities/activate-on-focus",
+      "description": "Prevents scrolling, click and other mouseevents before the area is activated"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/activate-on-focus",
+      "path": "__legacy/@sanity/components/utilities/ActivateOnFocus"
+    },
+    {
+      "name": "part:@sanity/components/utilities/portal",
+      "description": "Portal with react 15 fallback"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/portal",
+      "path": "__legacy/@sanity/components/utilities/Portal/index"
+    },
+    {
+      "name": "part:@sanity/components/panes/default",
+      "description": "Default Pane"
+    },
+    {
+      "implements": "part:@sanity/components/panes/default",
+      "path": "__legacy/@sanity/components/panes/DefaultPane"
+    },
+    {
+      "implements": "part:@sanity/components/panes/tabbed",
+      "path": "__legacy/@sanity/components/panes/TabbedPane"
+    },
+    {
+      "name": "part:@sanity/components/panes/split-controller",
+      "description": "Resizeable split controller for panes"
+    },
+    {
+      "implements": "part:@sanity/components/panes/split-controller",
+      "path": "__legacy/@sanity/components/panes/SplitController"
+    },
+    {
+      "name": "part:@sanity/components/panes/split-pane-wrapper",
+      "description": "Resizeable split pane wrapper"
+    },
+    {
+      "implements": "part:@sanity/components/panes/split-pane-wrapper",
+      "path": "__legacy/@sanity/components/panes/SplitPaneWrapper"
+    },
+    {
+      "implements": "part:@sanity/components/typography/hotkeys",
+      "path": "__legacy/@sanity/components/typography/Hotkeys"
+    },
+    {
+      "name": "part:@sanity/components/history/list-item",
+      "description": "History list item"
+    },
+    {
+      "implements": "part:@sanity/components/history/list-item",
+      "path": "__legacy/@sanity/components/history/ListItem"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/autocomplete/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/buttons/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/dialogs/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/toggles/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/fieldsets/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/lists/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/lists/story_grid"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/snackbar/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/menus/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/icons/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/textfields/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/typography/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/loading/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/tags/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/progress/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/selects/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/textinputs/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/labels/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/formfields/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/textareas/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/edititem/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/previews/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/radiobutton/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/fileinput/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/utilities/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/panes/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/validation/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/history/story"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/badges/story"
+    },
+    {
+      "name": "part:@sanity/components/badges/default",
+      "description": "Default badge"
+    },
+    {
+      "implements": "part:@sanity/components/badges/default",
+      "path": "__legacy/@sanity/components/badges/DefaultBadge"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/tabs/story"
+    },
+    {
+      "name": "part:@sanity/components/tabs/tab",
+      "description": "Tab"
+    },
+    {
+      "implements": "part:@sanity/components/tabs/tab",
+      "path": "__legacy/@sanity/components/tabs/Tab"
+    },
+    {
+      "name": "part:@sanity/components/tabs/tab-list",
+      "description": "List of tabs"
+    },
+    {
+      "implements": "part:@sanity/components/tabs/tab-list",
+      "path": "__legacy/@sanity/components/tabs/TabList"
+    },
+    {
+      "name": "part:@sanity/components/tabs/tab-panel",
+      "description": "Panel that wraps tab content"
+    },
+    {
+      "implements": "part:@sanity/components/tabs/tab-panel",
+      "path": "__legacy/@sanity/components/tabs/TabPanel"
+    },
+    {
+      "implements": "part:@sanity/components/portal",
+      "path": "__legacy/@sanity/components/portal"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/portal/story"
+    },
+    {
+      "implements": "part:@sanity/components/popover",
+      "path": "__legacy/@sanity/components/popover"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/popover/story"
+    },
+    {
+      "implements": "part:@sanity/components/tooltip",
+      "path": "__legacy/@sanity/components/tooltip"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/tooltip/story"
+    },
+    {
+      "implements": "part:@sanity/components/click-outside",
+      "path": "__legacy/@sanity/components/clickOutside"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/clickOutside/story"
+    },
+    {
+      "implements": "part:@sanity/components/menu-button",
+      "path": "__legacy/@sanity/components/menuButton"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/menuButton/story"
+    },
+    {
+      "implements": "part:@sanity/components/avatar",
+      "path": "__legacy/@sanity/components/avatar"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/avatar/story"
+    },
+    {
+      "implements": "part:@sanity/components/container-query",
+      "path": "__legacy/@sanity/components/containerQuery"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/containerQuery/story"
+    },
+    {
+      "implements": "part:@sanity/components/scroll",
+      "path": "__legacy/@sanity/components/scroll"
+    },
+    {
+      "implements": "part:@sanity/components/layer",
+      "path": "__legacy/@sanity/components/layer"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "__legacy/@sanity/components/layer/story"
     }
   ]
 }

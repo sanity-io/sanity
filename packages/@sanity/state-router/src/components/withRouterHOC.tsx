@@ -1,6 +1,6 @@
 import React, {ComponentType} from 'react'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
-import {Router, InternalRouter} from './types'
+import {HOCRouter, InternalRouter} from './types'
 
 const NO_CONTEXT_STATE = {
   state: {},
@@ -14,7 +14,7 @@ const NO_CONTEXT_STATE = {
   },
 }
 
-type ChildProps<OuterProps> = OuterProps & {router: Router}
+type ChildProps<OuterProps> = OuterProps & {router: HOCRouter}
 
 export default function withRouterHOC<OuterProps>(
   Component: ComponentType<ChildProps<OuterProps>>
@@ -45,6 +45,7 @@ export default function withRouterHOC<OuterProps>(
       }
     }
 
+    // eslint-disable-next-line camelcase
     UNSAFE_componentWillMount() {
       if (!this.context) throw new Error('WithRouter: missing context value')
 
@@ -66,7 +67,7 @@ export default function withRouterHOC<OuterProps>(
 
       const internalRouter = this.context.__internalRouter
 
-      const router: Router = internalRouter
+      const router: HOCRouter = internalRouter
         ? {
             state: this.state.routerState,
             navigate: internalRouter.navigate,

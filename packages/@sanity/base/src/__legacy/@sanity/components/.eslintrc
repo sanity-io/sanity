@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "id-length": "off",
+    "react/require-default-props": "off"
+  }
+}

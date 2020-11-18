@@ -1,10 +1,10 @@
 import React from 'react'
 import withRouterHOC from './withRouterHOC'
-import {Router} from './types'
+import {HOCRouter} from './types'
 
 type Props = {
-  router: Router
-  children: (router: Router) => React.ReactElement
+  router: HOCRouter
+  children: (router: HOCRouter) => React.ReactElement
 }
 
 const WithRouter = withRouterHOC((props: Props) => props.children(props.router))

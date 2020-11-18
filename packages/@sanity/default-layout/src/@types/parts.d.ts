@@ -3,7 +3,11 @@
 // import {Observable} from 'rxjs'
 type Observable<T> = any
 
-type Schema = {icon?: React.ComponentType<{}>; name: string; title: string}
+type Schema = {
+  icon?: React.ComponentType<Record<string, any>>
+  name: string
+  title: string
+}
 
 declare module 'sanity:versions' {
   const versions: {[key: string]: string}
@@ -34,8 +38,8 @@ declare module 'part:@sanity/default-layout/branding-style' {
 
 declare module 'part:@sanity/default-layout/sidecar?' {
   export const isSidecarEnabled: () => boolean | undefined
-  export const SidecarLayout: React.ComponentType<{}> | undefined
-  export const SidecarToggleButton: React.ComponentType<{}> | undefined
+  export const SidecarLayout: React.ComponentType | undefined
+  export const SidecarToggleButton: React.ComponentType | undefined
 }
 
 /*
@@ -54,7 +58,7 @@ declare module 'all:part:@sanity/base/absolutes' {
 
 declare module 'part:@sanity/base/location' {
   const locationStore: {
-    actions: {navigate: (newUrl: string, options: {}) => void}
+    actions: {navigate: (newUrl: string, options: Record<string, any>) => void}
     state: Observable<any>
   }
 
@@ -76,12 +80,22 @@ declare module 'part:@sanity/base/router' {
 
 declare module 'all:part:@sanity/base/tool' {
   const tools: {
-    canHandleIntent?: (intent: {}, params: {}, state: {}) => {}
-    component?: React.ComponentType<{}>
-    getIntentState?: (intent: {}, params: {}, state: {}, payload: {}) => {}
+    canHandleIntent?: (
+      intent: Record<string, any>,
+      params: Record<string, any>,
+      state: Record<string, any>
+    ) => void
+    component?: React.ComponentType
+    icon?: React.ComponentType
+    getIntentState?: (
+      intent: Record<string, any>,
+      params: Record<string, any>,
+      state: Record<string, any>,
+      payload: Record<string, any>
+    ) => void
     name: string
     title: string
-    router?: {}
+    router?: Record<string, any>
   }[]
   export default tools
 }
@@ -92,9 +106,9 @@ declare module 'part:@sanity/base/user' {
 }
 
 declare module 'part:@sanity/base/settings' {
-  const x: {
+  const settings: {
     forNamespace: (
-      key: string
+      namespaceKey: string
     ) => {
       forKey: (
         key: string
@@ -104,76 +118,76 @@ declare module 'part:@sanity/base/settings' {
       }
     }
   }
-  export default x
+  export default settings
 }
 
 declare module 'part:@sanity/base/file-icon' {
-  const DocumentIcon: React.ComponentType<{}>
+  const DocumentIcon: React.ComponentType
   export default DocumentIcon
 }
 
 declare module 'part:@sanity/base/cog-icon' {
-  const CogIcon: React.ComponentType<{}>
+  const CogIcon: React.ComponentType
   export default CogIcon
 }
 
 declare module 'part:@sanity/base/help-circle-icon' {
-  const HelpIcon: React.ComponentType<{}>
+  const HelpIcon: React.ComponentType
   export default HelpIcon
 }
 
 declare module 'part:@sanity/base/link-icon' {
-  const LinkIcon: React.ComponentType<{}>
+  const LinkIcon: React.ComponentType
   export default LinkIcon
 }
 
 declare module 'part:@sanity/base/users-icon' {
-  const UserIcon: React.ComponentType<{}>
+  const UserIcon: React.ComponentType
   export default UserIcon
 }
 
 declare module 'part:@sanity/base/brand-logo?' {
-  const BrandLogo: React.ComponentType<{}> | undefined
+  const BrandLogo: React.ComponentType | undefined
   export default BrandLogo
 }
 
 declare module 'part:@sanity/base/plus-icon' {
-  const PlusIcon: React.ComponentType<{}>
+  const PlusIcon: React.ComponentType
   export default PlusIcon
 }
 
 declare module 'part:@sanity/base/compose-icon' {
-  const ComposeIcon: React.ComponentType<{}>
+  const ComposeIcon: React.ComponentType
   export default ComposeIcon
 }
 
 declare module 'part:@sanity/base/hamburger-icon' {
-  const MenuIcon: React.ComponentType<{}>
+  const MenuIcon: React.ComponentType
   export default MenuIcon
 }
 
 declare module 'part:@sanity/base/close-icon' {
-  const CloseIcon: React.ComponentType<{}>
+  const CloseIcon: React.ComponentType
   export default CloseIcon
 }
 
 declare module 'part:@sanity/base/sign-out-icon' {
-  const LeaveIcon: React.ComponentType<{}>
+  const LeaveIcon: React.ComponentType
   export default LeaveIcon
 }
 
 declare module 'part:@sanity/base/view-column-icon' {
-  const ViewColumnIcon: React.ComponentType<{}>
+  const ViewColumnIcon: React.ComponentType
   export default ViewColumnIcon
 }
 
 declare module 'part:@sanity/base/search-icon' {
-  const Icon: React.ComponentType<{}>
+  const Icon: React.ComponentType
   export default Icon
 }
 
 declare module 'part:@sanity/base/chevron-down-icon' {
-  const Icon: React.ComponentType<{}>
+  const Icon: React.ComponentType
   export default Icon
 }
 
@@ -189,7 +203,7 @@ declare module 'part:@sanity/base/schema' {
 }
 
 declare module 'part:@sanity/base/schema?' {
-  const schema: {_validation: {}[]; get: (name: string) => Schema} | undefined
+  const schema: {_validation: any[]; get: (name: string) => Schema} | undefined
   export default schema
 }
 
@@ -198,7 +212,7 @@ declare module 'part:@sanity/base/preview?' {
     layout: 'default'
     status: React.ReactNode
     type: Schema
-    value: {}
+    value: Record<string, any>
   }>
   export default preview
 }
@@ -208,12 +222,12 @@ declare module 'part:@sanity/base/util/draft-utils' {
 }
 
 declare module 'part:@sanity/base/search' {
-  const search: (queryStr: string) => Observable<{}>
+  const search: (queryStr: string) => Observable
   export default search
 }
 
 declare module 'part:@sanity/base/package-icon' {
-  const PackageIcon: React.ComponentType<{}>
+  const PackageIcon: React.ComponentType
   export default PackageIcon
 }
 
@@ -236,7 +250,7 @@ declare module 'part:@sanity/base/version-checker' {
 }
 
 declare module 'part:@sanity/base/plugin-icon' {
-  const PluginIcon: React.ComponentType<{}>
+  const PluginIcon: React.ComponentType
   export default PluginIcon
 }
 
@@ -245,7 +259,7 @@ declare module 'part:@sanity/base/util/document-action-utils' {
 }
 
 declare module 'part:@sanity/base/new-document-structure?' {
-  const newDocumentStructure: {} | undefined
+  const newDocumentStructure: Record<string, any> | undefined
   export default newDocumentStructure
 }
 
@@ -255,17 +269,17 @@ declare module 'part:@sanity/base/client' {
 }
 
 declare module 'part:@sanity/base/error-icon' {
-  const ErrorIcon: React.ComponentType<{}>
+  const ErrorIcon: React.ComponentType
   export default ErrorIcon
 }
 
 declare module 'part:@sanity/base/spinner-icon' {
-  const SpinnerIcon: React.ComponentType<{}>
+  const SpinnerIcon: React.ComponentType
   export default SpinnerIcon
 }
 
 declare module 'part:@sanity/base/warning-icon' {
-  const WarningIcon: React.ComponentType<{}>
+  const WarningIcon: React.ComponentType
   export default WarningIcon
 }
 
@@ -279,96 +293,96 @@ declare module 'part:@sanity/base/authentication-fetcher' {
  */
 
 declare module 'part:@sanity/components/avatar' {
-  export * from '@sanity/components/src/avatar'
+  export * from '@sanity/base/src/__legacy/@sanity/components/avatar'
 }
 
 declare module 'part:@sanity/components/click-outside' {
-  export * from '@sanity/components/src/clickOutside'
+  export * from '@sanity/base/src/__legacy/@sanity/components/clickOutside'
 }
 
 declare module 'part:@sanity/components/container-query' {
-  export * from '@sanity/components/src/containerQuery'
+  export * from '@sanity/base/src/__legacy/@sanity/components/containerQuery'
 }
 
 declare module 'part:@sanity/components/buttons/button-grid-style'
 declare module 'part:@sanity/components/buttons/button-grid' {
-  export {default} from '@sanity/components/src/buttons/ButtonGrid'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/ButtonGrid'
 }
 declare module 'part:@sanity/components/buttons/default-style'
 declare module 'part:@sanity/components/buttons/default' {
-  export {default} from '@sanity/components/src/buttons/DefaultButton'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/DefaultButton'
 }
 declare module 'part:@sanity/components/buttons/state' {
-  export {default} from '@sanity/components/src/buttons/StateButton'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/buttons/StateButton'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen-style'
 declare module 'part:@sanity/components/dialogs/fullscreen' {
-  export {default} from '@sanity/components/src/dialogs/FullscreenDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/FullscreenDialog'
 }
 
 declare module 'part:@sanity/components/dialogs/popover-style'
 
 declare module 'part:@sanity/components/lists/create-document' {
-  export {default} from '@sanity/components/src/lists/CreateDocument'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/lists/CreateDocument'
 }
 
 declare module 'part:@sanity/components/layer' {
-  export * from '@sanity/components/src/layer'
+  export * from '@sanity/base/src/__legacy/@sanity/components/layer'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  export * from '@sanity/components/src/tooltip'
+  export * from '@sanity/base/src/__legacy/@sanity/components/tooltip'
 }
 
 declare module 'part:@sanity/components/menus/default-style'
 declare module 'part:@sanity/components/menus/default' {
-  export {default} from '@sanity/components/src/menus/DefaultMenu'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/menus/DefaultMenu'
 }
 
 declare module 'part:@sanity/components/loading/spinner-style'
 declare module 'part:@sanity/components/loading/spinner' {
-  export {default} from '@sanity/components/src/loading/Spinner'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/loading/Spinner'
 }
 
 declare module 'part:@sanity/components/typography/hotkeys' {
-  export {default} from '@sanity/components/src/typography/Hotkeys'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/typography/Hotkeys'
 }
 
 declare module 'part:@sanity/components/dialogs/default-style'
 declare module 'part:@sanity/components/dialogs/default' {
-  export {default} from '@sanity/components/src/dialogs/DefaultDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/DefaultDialog'
 }
 
 declare module 'part:@sanity/components/dialogs/content-style'
 declare module 'part:@sanity/components/dialogs/content' {
-  export {default} from '@sanity/components/src/dialogs/DialogContent'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/DialogContent'
 }
 
 declare module 'part:@sanity/components/dialogs/fullscreen-message' {
-  export {default} from '@sanity/components/src/dialogs/FullscreenMessageDialog'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/dialogs/FullscreenMessageDialog'
 }
 
 declare module 'part:@sanity/components/popover' {
-  export * from '@sanity/components/src/popover'
+  export * from '@sanity/base/src/__legacy/@sanity/components/popover'
 }
 
 declare module 'part:@sanity/components/portal' {
-  export * from '@sanity/components/src/portal'
+  export * from '@sanity/base/src/__legacy/@sanity/components/portal'
 }
 
 declare module 'part:@sanity/components/previews/create-document' {
-  export {default} from '@sanity/components/src/previews/CreateDocumentPreview'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/previews/CreateDocumentPreview'
 }
 
 declare module 'part:@sanity/components/scroll' {
-  export * from '@sanity/components/src/scroll'
+  export * from '@sanity/base/src/__legacy/@sanity/components/scroll'
 }
 
 declare module 'part:@sanity/components/tooltip' {
-  export * from '@sanity/components/src/tooltip'
+  export * from '@sanity/base/src/__legacy/@sanity/components/tooltip'
 }
 
 declare module 'part:@sanity/components/utilities/escapable' {
-  export {default} from '@sanity/components/src/utilities/Escapable'
+  export {default} from '@sanity/base/src/__legacy/@sanity/components/utilities/Escapable'
 }

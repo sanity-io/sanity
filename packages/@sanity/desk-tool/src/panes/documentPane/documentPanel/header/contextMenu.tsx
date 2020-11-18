@@ -1,4 +1,4 @@
-import {MenuItem, MenuItemGroup} from '@sanity/components'
+import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import Menu from 'part:@sanity/components/menus/default'

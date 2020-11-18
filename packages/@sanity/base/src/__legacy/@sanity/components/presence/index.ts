@@ -6,4 +6,4 @@ console.warn(
   'Importing from `@sanity/components/lib/presence` is deprecated - please import from `@sanity/base/presence` instead'
 )
 
-export * from '@sanity/base/lib/presence'
+export * from '../../../../presence'

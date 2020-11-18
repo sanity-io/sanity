@@ -1,15 +1,10 @@
 {
   "name": "@sanity/components",
   "version": "2.0.9",
-  "description": "Basic UX components",
-  "main": "lib/index.js",
+  "description": "This module is deprecated. Import modules from `@sanity/base/__legacy/@sanity/components` for legacy support.",
+  "main": "index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
-  "scripts": {
-    "clean": "rimraf lib",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json",
-    "type-check:src": "tsc --noEmit"
-  },
   "keywords": [
     "sanity",
     "cms",
@@ -19,41 +14,6 @@
     "components",
     "sanity-plugin"
   ],
-  "dependencies": {
-    "@juggle/resize-observer": "^3.2.0",
-    "@popperjs/core": "^2.5.4",
-    "@reach/auto-id": "^0.10.5",
-    "@sanity/base": "2.0.9",
-    "@sanity/types": "2.0.1",
-    "@sanity/util": "2.0.9",
-    "boundless-arrow-key-navigation": "^1.1.0",
-    "chance": "^1.0.4",
-    "circular-at": "^1.0.3",
-    "classnames": "^2.2.5",
-    "date-fns": "^2.16.1",
-    "dom-scroll-into-view": "^1.2.1",
-    "element-resize-detector": "^1.1.14",
-    "lodash": "^4.17.15",
-    "nano-pubsub": "^2.0.0",
-    "popper-max-size-modifier": "^0.2.0",
-    "react-click-outside": "^3.0.0",
-    "react-popper": "^2.2.4",
-    "react-sortable-hoc": "^1.11.0",
-    "react-split-pane": "^0.1.84",
-    "rxjs": "^6.5.3"
-  },
-  "devDependencies": {
-    "@types/chance": "^1.1.0",
-    "@types/element-resize-detector": "1.1.2",
-    "prop-types": "^15.6.0",
-    "react": "17.0.1",
-    "rimraf": "^2.7.1"
-  },
-  "peerDependencies": {
-    "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17",
-    "react-dom": "^16.9 || ^17"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"

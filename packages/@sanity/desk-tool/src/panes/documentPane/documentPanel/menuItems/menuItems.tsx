@@ -1,4 +1,4 @@
-import {MenuItem} from '@sanity/components'
+import {MenuItem} from '@sanity/base/__legacy/@sanity/components'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
