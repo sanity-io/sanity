@@ -1,6 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  background-color: var(--body-bg);
-  color: var(--text-color);
-}
