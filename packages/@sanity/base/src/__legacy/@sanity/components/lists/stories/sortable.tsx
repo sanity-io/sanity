@@ -56,19 +56,19 @@ class SortableTester extends React.PureComponent<SortableTesterProps, SortableTe
     return (
       <List onSortEnd={this.handleOnSort}>
         {items.map((item, index) => (
-          <Item
-            index={index}
-            key={item.key}
-            style={{
-              background: '#fff',
-              padding: '1em',
-              display: 'flex',
-              alignItems: 'center',
-              boxShadow: '0 0 4px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            <DragHandle style={{fontSize: 25, marginRight: 16}} />
-            <div style={{flex: 1, marginTop: -1}}>{item.title}</div>
+          <Item index={index} key={item.key}>
+            <div
+              style={{
+                background: 'var(--card-bg-color)',
+                padding: '1em',
+                display: 'flex',
+                alignItems: 'center',
+                boxShadow: '0 0 0 1px var(--card-hairline-soft-color)',
+              }}
+            >
+              <DragHandle style={{fontSize: 25, marginRight: 16}} />
+              <div style={{flex: 1, marginTop: -1}}>{item.title}</div>
+            </div>
           </Item>
         ))}
       </List>
