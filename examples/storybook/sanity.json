@@ -27,6 +27,10 @@
     {
       "implements": "part:@sanity/base/document",
       "path": "./storybook"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "./themes/dev.css"
     }
   ]
 }
