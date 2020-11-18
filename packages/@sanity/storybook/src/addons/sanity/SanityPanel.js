@@ -44,6 +44,7 @@ class SanityPanel extends React.PureComponent {
   }
 
   renderPropTables() {
+    // eslint-disable-next-line react/forbid-foreign-prop-types
     const components = this.state.info.propTypes || []
     const propTables = components.map((comp, idx) => (
       <span key={idx}>
