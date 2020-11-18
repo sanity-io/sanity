@@ -38,9 +38,7 @@ export default {
     )
 
     const printRow = row => {
-      const isInvite = row[0] === '<pending>'
-      const textRow = row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
-      return isInvite ? chalk.dim(textRow) : textRow
+      return row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
     }
 
     output.print(chalk.cyan(printRow(sortFields)))
