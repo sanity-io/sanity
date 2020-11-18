@@ -44,6 +44,7 @@ class SanityPanel extends React.PureComponent {
   }
 
   renderPropTables() {
+    // eslint-disable-next-line react/forbid-foreign-prop-types
     const components = this.state.info.propTypes || []
     const propTables = components.map((comp, idx) => (
       <span key={idx}>
@@ -61,8 +62,8 @@ class SanityPanel extends React.PureComponent {
     return <div>{propTables}</div>
   }
 
-  normalizePath(path) {
-    const basePath = this.state.info.basePath
+  normalizePath(path = '') {
+    const basePath = this.state.info.basePath || ''
     const normalized = path.indexOf(basePath) === 0 ? path.slice(basePath.length) : path
 
     return normalized.replace(/(^\/|\/$)/g, '')
