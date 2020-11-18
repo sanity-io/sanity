@@ -37,38 +37,7 @@ declare module 'part:@sanity/base/document-badges/resolver'
 declare module 'part:@sanity/base/preview'
 
 declare module 'part:@sanity/base/router' {
-  // @todo: replace all of this with:
-  // export * from '@sanity/base/src/router'
-
-  export * from '@sanity/state-router'
-
-  type IntentLinkProps = any
-
-  interface StateLinkProps {
-    ref?: any
-    state?: Record<string, any>
-    toIndex?: boolean
-  }
-
-  type IntentParameters = Record<string, any> | [Record<string, any>, Record<string, any>]
-
-  type RouterState = Record<string, any>
-
-  export type Router<S = Record<any, any>> = {
-    navigate: (nextState: Record<string, any>, options?: NavigateOptions) => void
-    navigateIntent: (
-      intentName: string,
-      params?: IntentParameters,
-      options?: NavigateOptions
-    ) => void
-    state: S
-  }
-
-  export const useRouter: () => Router
-  export const IntentLink: React.ComponentType<IntentLinkProps>
-  export const StateLink: React.ComponentType<StateLinkProps>
-
-  export const withRouterHOC: (source: React.ComponentType<any>) => React.ComponentType<any>
+  export * from '@sanity/base/src/router'
 }
 
 declare module 'part:@sanity/base/schema'

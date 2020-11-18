@@ -4,13 +4,22 @@ export interface Router {
 }
 
 export interface Tool {
-  canHandleIntent?: (intent: {}, params: {}, state: {}) => {}
-  component?: React.ComponentType<{}>
-  icon?: React.ComponentType<{}>
-  getIntentState?: (intent: {}, params: {}, state: {}, payload: {}) => {}
+  canHandleIntent?: (
+    intent: Record<string, any>,
+    params: Record<string, any>,
+    state: Record<string, any>
+  ) => void
+  component?: React.ComponentType
+  icon?: React.ComponentType
+  getIntentState?: (
+    intent: Record<string, any>,
+    params: Record<string, any>,
+    state: Record<string, any>,
+    payload: Record<string, any>
+  ) => void
   name: string
   title: string
-  router?: {}
+  router?: Record<string, any>
 }
 
 export interface User {

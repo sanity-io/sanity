@@ -5,10 +5,11 @@ import {ScrollContext} from './scrollContext'
 interface ScrollContainerProps<T extends React.ElementType>
   extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
   as?: React.ElementType | keyof JSX.IntrinsicElements
-  onScroll?: (event: Event) => any
+  onScroll?: (event: Event) => () => void
 }
 
-const noop = () => {}
+const noop = () => undefined
+
 /**
  * This provides a utility function for use within Sanity Studios to create scrollable containers
  * It also provides a way for components inside a scrollable container to track onScroll on their first parent scroll container
@@ -21,24 +22,25 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
 >(props: ScrollContainerProps<T>, forwardedRef) {
   const {as = 'div', onScroll, ...rest} = props
 
-  const selfRef = React.useRef<any>(null)
+  const selfRef = React.useRef<HTMLElement | null>(null)
   const parentContext = React.useContext(ScrollContext)
   const childContext = React.useMemo(() => createPubSub<Event>(), [])
 
-  const handleScroll = React.useCallback((event: Event) => {
-    childContext.publish(event)
-  }, [])
+  const handleScroll = React.useCallback(
+    (event: Event) => {
+      childContext.publish(event)
+    },
+    [childContext]
+  )
 
-  // eslint-disable-next-line consistent-return
   React.useEffect(() => {
-    if (props.onScroll) {
+    if (onScroll) {
       // emit scroll events from children
-      return childContext.subscribe(props.onScroll)
+      return childContext.subscribe(onScroll)
     }
     return noop
-  }, [childContext, props.onScroll])
+  }, [childContext, onScroll])
 
-  // eslint-disable-next-line consistent-return
   React.useEffect(() => {
     // let events bubble up
     if (parentContext) {
@@ -48,10 +50,13 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
   }, [parentContext, childContext])
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     selfRef.current!.addEventListener('scroll', handleScroll, {
       passive: true,
     })
+
     return () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       selfRef.current!.removeEventListener('scroll', handleScroll)
     }
   }, [handleScroll])
@@ -61,6 +66,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
     if (typeof forwardedRef === 'function') forwardedRef(el)
     else if (forwardedRef && typeof forwardedRef === 'object') forwardedRef.current = el
   }
+
   return (
     <ScrollContext.Provider value={childContext}>
       {React.createElement(as, {ref: setRef, ...rest})}

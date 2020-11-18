@@ -7,3 +7,5 @@ export {RouterContext, useRouter, useRouterState} from './RouterContext'
 
 export {resolveStateFromPath}
 export {resolvePathFromState}
+
+export {HOCRouter} from './components/types'

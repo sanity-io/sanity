@@ -18,7 +18,7 @@ export type InternalRouter = {
   channel: PubSub<RouterState>
 }
 
-export type Router = {
+export type HOCRouter = {
   navigate: (nextState: Record<string, any>, options?: NavigateOptions) => void
   navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
   state: Record<any, any>
