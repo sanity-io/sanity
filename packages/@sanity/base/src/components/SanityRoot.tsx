@@ -16,6 +16,8 @@ import {GlobalStyle} from './GlobalStyle'
 import MissingProjectConfig from './MissingProjectConfig'
 import VersionChecker from './VersionChecker'
 
+import styles from './SanityRoot.css'
+
 Refractor.registerLanguage(jsx)
 
 const Root = styled(Card).attrs({tone: 'transparent'})`
@@ -39,7 +41,7 @@ function SanityRoot() {
             <LayerProvider>
               <SnackbarProvider>
                 <GlobalStyle scheme={themeMode} />
-                <Root>
+                <Root className={styles.root}>
                   <DevServerStatus />
                   <ErrorHandler />
                   <RootComponent />
