@@ -22,15 +22,15 @@ const DEST_DIR = 'lib'
 // Regexes/names of packages that doesn't follow the src/lib convention
 // or packages that does their own build (e.g. studios)
 const IGNORED_PACKAGES = [
+  'examples/storybook',
+  /examples\/.*-studio/,
+  'packages/@sanity/date-input',
+  'packages/@sanity/eventsource',
   'packages/@sanity/generate-help-url',
   'packages/@sanity/plugin-loader',
-  'packages/@sanity/eventsource',
-  'packages/@sanity/date-input',
-  'packages/eslint-config-sanity',
   'packages/create-sanity',
-  'packages/storybook',
+  'packages/eslint-config-sanity',
   'packages/sanity',
-  /packages\/.*-studio/,
 ]
 
 const PACKAGE_PATHS = getPackagePaths().filter((pkgPath) =>
