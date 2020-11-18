@@ -56,7 +56,10 @@ export default {
 
     try {
       await client.datasetAliases.create(aliasName, {datasetName})
-      output.print(`Dataset alias ${aliasName} created successfully`)
+      output.print(
+        `Dataset alias ${aliasName} created ${datasetName &&
+          `and linked to ${datasetName}`} successfully`
+      )
     } catch (err) {
       throw new Error(`Dataset alias creation failed:\n${err.message}`)
     }

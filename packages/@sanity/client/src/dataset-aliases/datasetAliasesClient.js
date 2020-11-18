@@ -10,7 +10,7 @@ assign(DatasetAliasesClient.prototype, {
     return this._modify('PUT', name, options)
   },
 
-  edit(name, options) {
+  update(name, options) {
     return this._modify('PATCH', name, options)
   },
 

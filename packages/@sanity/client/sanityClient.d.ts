@@ -879,7 +879,7 @@ export class ObservableSanityClient {
      * @param name Name of the dataset alias to edit
      * @param options New options for the dataset alias
      */
-    edit(
+    update(
       name: string,
       options?: {datasetName?: string}
     ): Observable<{aliasName: string; datasetName: string}>
@@ -889,7 +889,7 @@ export class ObservableSanityClient {
      *
      * @param name Name of the dataset alias to unlink
      */
-    unlink(name: string): Observable<{aliasName: string; datasetName: string}>
+    unlink(name: string): Observable<{aliasName: string; datasetName?: string}>
 
     /**
      * Delete a dataset alias with the given name
@@ -1553,10 +1553,10 @@ export interface SanityClient {
      * @param name Name of the dataset to edit
      * @param options New options for the dataset alias
      */
-    edit(
+    update(
       name: string,
       options?: {datasetName?: string}
-    ): Promise<{aliasName: string; datasetName: string}>
+    ): Promise<{aliasName: string; datasetName?: string}>
 
     /**
      * Delete a dataset with the given name
