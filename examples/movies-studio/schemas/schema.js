@@ -1,1 +1,1 @@
-export {default} from '@sanity/cli/templates/moviedb/schemas/schema.js'
+export {default} from '@sanity/cli/templates/moviedb/schemas/schema'

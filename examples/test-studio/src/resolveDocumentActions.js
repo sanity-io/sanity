@@ -1,11 +1,11 @@
 import React from 'react'
 import defaultResolve from 'part:@sanity/base/document-actions'
 
-import {
-  ConfirmDialogAction,
-  ModalDialogAction,
-  PopoverDialogAction,
-} from './test-action-tool/actions/DialogActions'
+// import {
+//   ConfirmDialogAction,
+//   ModalDialogAction,
+//   PopoverDialogAction,
+// } from './test-action-tool/actions/DialogActions'
 
 const useInterval = (ms) => {
   const [tick, setTick] = React.useState(0)
@@ -44,8 +44,8 @@ export default function resolveDocumentActions(props) {
     // StaticAction,
     // TestAction,
     props.published ? OnlyWhenPublishedAction : null,
-    PopoverDialogAction,
-    ModalDialogAction,
-    ConfirmDialogAction,
+    // PopoverDialogAction,
+    // ModalDialogAction,
+    // ConfirmDialogAction,
   ].filter(Boolean)
 }

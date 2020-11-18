@@ -26,6 +26,7 @@ function handlePaste(input) {
   // check if schema has the code type
   const hasCodeType = type.of.map(({name}) => name).includes('code')
   if (!hasCodeType) {
+    // eslint-disable-next-line no-console
     console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
   }
   if (html && hasCodeType) {

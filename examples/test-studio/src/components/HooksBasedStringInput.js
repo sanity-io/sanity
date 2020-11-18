@@ -5,6 +5,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 
 export const HooksBasedStringInput = React.forwardRef((props, ref) => {
   const {value, type, level, onChange} = props
+  const [isEditing, setIsEditing] = React.useState(false)
   if (typeof React.useState !== 'function') {
     return (
       <div style={{padding: 10, backgroundColor: 'salmon'}}>
@@ -13,7 +14,6 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
       </div>
     )
   }
-  const [isEditing, setIsEditing] = React.useState(false)
   return (
     <FormField label={type.title} level={level} description={type.description}>
       {isEditing ? (

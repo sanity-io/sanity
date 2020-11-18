@@ -1,3 +1,5 @@
+/examples/*/node_modules
+/examples/*/dist
 /packages/*/node_modules
 /packages/@sanity/*/node_modules
 /packages/*/dist

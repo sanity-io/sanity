@@ -29,7 +29,7 @@ function MyAvatarList(props) {
   return (
     <div>
       {props.presence.map((item) => (
-        <AnimalAvatar sessionId={item.sessionId} />
+        <AnimalAvatar key={item.sessionId} sessionId={item.sessionId} />
       ))}
     </div>
   )

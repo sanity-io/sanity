@@ -1,4 +1,4 @@
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import {FaBook as BookIcon} from 'react-icons/fa'
 
 const pickFirst = (obj, keys) => {
@@ -25,7 +25,7 @@ export default {
       author: 'authorRef.name',
     },
     prepare(value) {
-      const timeSince = distanceInWordsToNow(value.createdAt, {addSuffix: true})
+      const timeSince = formatDistanceToNow(value.createdAt, {addSuffix: true})
       return Object.assign({}, value, {
         title: value.title ? pickFirst(value.title, LANGUAGE_PRIORITY) : '',
         subtitle: value.author ? `By ${value.author}, ${timeSince}` : timeSince,
