@@ -1,0 +1,68 @@
+{
+  "name": "test-studio",
+  "private": true,
+  "version": "2.0.9",
+  "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "build": "sanity build",
+    "start": "sanity start",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "test-studio"
+  ],
+  "dependencies": {
+    "@sanity/base": "2.0.9",
+    "@sanity/cli": "2.0.9",
+    "@sanity/code-input": "2.0.9",
+    "@sanity/color-input": "2.0.9",
+    "@sanity/core": "2.0.9",
+    "@sanity/dashboard": "2.0.9",
+    "@sanity/default-layout": "2.0.9",
+    "@sanity/default-login": "2.0.9",
+    "@sanity/desk-tool": "2.0.9",
+    "@sanity/form-builder": "2.0.9",
+    "@sanity/google-maps-input": "2.0.9",
+    "@sanity/image-url": "^0.140.19",
+    "@sanity/production-preview": "2.0.5",
+    "@sanity/react-hooks": "2.0.9",
+    "@sanity/studio-hints": "2.0.9",
+    "@sanity/util": "2.0.9",
+    "@sanity/vision": "2.0.9",
+    "@turf/helpers": "^6.0.1",
+    "@turf/points-within-polygon": "^5.1.5",
+    "bio-pv": "^1.8.1",
+    "date-fns": "^2.16.1",
+    "fetch": "^1.1.0",
+    "get-video-id": "^2.1.4",
+    "humanize-list": "^1.0.1",
+    "prop-types": "^15.6.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-icons": "^3.11.0",
+    "react-json-pretty": "^2.2.0",
+    "react-visibility-sensor": "^5.1.1",
+    "sanity-plugin-dashboard-widget-cats": "^0.0.2",
+    "sanity-plugin-dashboard-widget-document-count": "^0.0.1",
+    "sanity-plugin-dashboard-widget-document-list": "^0.0.11",
+    "sanity-plugin-mux-input": "^0.1.11"
+  },
+  "devDependencies": {
+    "rimraf": "^2.7.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  }
+}

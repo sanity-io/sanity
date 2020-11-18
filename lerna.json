@@ -3,22 +3,13 @@
   "concurrency": 8,
   "ci": false,
   "npmClient": "npm",
-  "npmClientArgs": [
-    "--no-package-lock"
-  ],
+  "npmClientArgs": ["--no-package-lock"],
   "packages": [
+    "examples/*",
     "packages/@sanity/*",
-    "packages/blog-studio",
-    "packages/clean-studio",
     "packages/create-sanity",
-    "packages/ecommerce-studio",
-    "packages/example-studio",
     "packages/groq",
-    "packages/movies-studio",
-    "packages/sanity",
-    "packages/storybook",
-    "packages/test-studio",
-    "packages/design-studio"
+    "packages/sanity"
   ],
   "version": "2.0.9"
 }

@@ -1,0 +1,122 @@
+{
+  "root": true,
+  "project": {
+    "name": "Test studio"
+  },
+  "__experimental_spaces": [
+    {
+      "name": "test",
+      "title": "Test (public)",
+      "default": true,
+      "api": {
+        "dataset": "test"
+      }
+    },
+    {
+      "name": "playground",
+      "title": "Private",
+      "api": {
+        "dataset": "playground"
+      }
+    }
+  ],
+  "api": {
+    "projectId": "ppsg7ml5",
+    "dataset": "test"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/code-input",
+    "@sanity/color-input",
+    "@sanity/dashboard",
+    "@sanity/desk-tool",
+    "@sanity/google-maps-input",
+    "@sanity/vision",
+    "@sanity/production-preview",
+    "@sanity/studio-hints",
+    "dashboard-widget-cats",
+    "dashboard-widget-document-count",
+    "dashboard-widget-document-list",
+    "mux-input"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    },
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "src/components/PertEstimateSchema"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/test-intent-tool"
+    },
+    {
+      "implements": "part:@sanity/production-preview/resolve-production-url",
+      "path": "src/resolveProductionUrl"
+    },
+    {
+      "implements": "part:@sanity/base/document-actions/resolver",
+      "path": "src/resolveDocumentActions"
+    },
+    {
+      "implements": "part:@sanity/base/document-badges/resolver",
+      "path": "src/resolveDocumentBadges"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input/array/functions",
+      "path": "src/components/SearchableArrayFunctions"
+    },
+    {
+      "implements": "part:@sanity/dashboard/config",
+      "path": "src/dashboardConfig"
+    },
+    {
+      "name": "part:@sanity/desk-tool/structure",
+      "path": "src/deskStructure"
+    },
+    {
+      "implements": "part:@sanity/default-layout/studio-hints-config",
+      "path": "src/studioHintsConfig"
+    },
+    {
+      "name": "part:@sanity/base/initial-value-templates",
+      "path": "src/templates"
+    },
+    {
+      "name": "part:@sanity/base/new-document-structure",
+      "path": "src/newDocumentStructure"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget/test-dummy",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "src/widgets/DummyWidget"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/after-editor-component",
+      "path": "src/components/AfterEditorComponent"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/tools/css-variables/tool"
+    }
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "exx11uqh"
+      }
+    },
+    "development": {
+      "parts": [
+        {
+          "implements": "part:@sanity/base/tool",
+          "path": "src/tools/long"
+        }
+      ]
+    }
+  }
+}
