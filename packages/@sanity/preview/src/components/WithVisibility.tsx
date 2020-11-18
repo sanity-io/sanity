@@ -30,7 +30,7 @@ type Props = {
   // How long to wait before signalling hide
   hideDelay: number
   element?: string
-  style?: {}
+  style?: React.CSSProperties
   children: (isVisible: boolean) => React.ReactNode
 }
 
