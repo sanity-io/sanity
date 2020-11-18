@@ -1,1 +1,1 @@
-module.exports = require('../lib/__legacy/@sanity/components')
+module.exports = require('../../lib/__legacy/@sanity/components')
