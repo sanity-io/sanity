@@ -38,7 +38,9 @@ export default {
     )
 
     const printRow = row => {
-      return row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
+      const isUnlinked = row[1] === '<unlinked>'
+      const textRow = row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
+      return isUnlinked ? chalk.dim(textRow) : textRow
     }
 
     output.print(chalk.cyan(printRow(sortFields)))
