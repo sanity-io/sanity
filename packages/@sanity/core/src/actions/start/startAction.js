@@ -130,6 +130,7 @@ async function ensureProjectConfig(context) {
   // If we're still missing information, prompt the user to provide them
   const configMissing = !projectId || !dataset
   if (!configMissing) {
+    validateAllowedDataset(dataset)
     return
   }
 
@@ -299,4 +300,10 @@ function createProject(apiClient, options) {
       projectId: response.projectId || response.id,
       displayName: options.displayName || '',
     }))
+}
+
+function validateAllowedDataset(datasetName) {
+  if (datasetName.startsWith('~')) {
+    throw new Error('Dataset aliases cannot be used in a studio context')
+  }
 }
