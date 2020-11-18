@@ -1,10 +1,10 @@
-import promptForDatasetAliasName from '../../../actions/alias/datasetAliasNamePrompt'
-import validateDatasetAliasName from '../../../actions/alias/validateDatasetAliasName'
+import promptForDatasetAliasName from '../../actions/dataset-alias/datasetAliasNamePrompt'
+import validateDatasetAliasName from '../../actions/dataset-alias/validateDatasetAliasName'
 
 const helpText = `
 Examples
   sanity dataset-alias unlink
-  sanity dataset-alias unlink <name>
+  sanity dataset-alias unlink <alias-name>
 `
 
 export default {
@@ -33,8 +33,8 @@ export default {
     }
 
     try {
-      await client.datasetAliases.unlink(aliasName)
-      output.print(`Dataset alias ${aliasName} unlinked from successfully`)
+      const result = await client.datasetAliases.unlink(aliasName)
+      output.print(`Dataset alias ${aliasName} unlinked from ${result.datasetName} successfully`)
     } catch (err) {
       throw new Error(`Dataset alias link failed:\n${err.message}`)
     }

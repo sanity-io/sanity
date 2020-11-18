@@ -36,7 +36,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "1.150.7",
+    "@sanity/client": "file:../client",
     "@sanity/resolver": "1.150.1",
     "@sanity/util": "1.150.1",
     "boxen": "^4.1.0",

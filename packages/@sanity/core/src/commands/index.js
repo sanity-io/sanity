@@ -37,12 +37,12 @@ import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
-import linkDatasetAliasCommand from './alias/dataset/linkDatasetAliasCommand'
-import unlinkDatasetAliasCommand from './alias/dataset/unlinkDatasetAliasCommand'
-import createDatasetAliasCommand from './alias/dataset/createDatasetAliasCommand'
-import listDatasetAliasesCommand from './alias/dataset/listDatasetAliasesCommand'
-import deleteDatasetAliasCommand from './alias/dataset/deleteDatasetAliasCommand'
-import aliasDatasetGroup from './alias/dataset/aliasDatasetGroup'
+import linkDatasetAliasCommand from './dataset-alias/linkDatasetAliasCommand'
+import unlinkDatasetAliasCommand from './dataset-alias/unlinkDatasetAliasCommand'
+import createDatasetAliasCommand from './dataset-alias/createDatasetAliasCommand'
+import listDatasetAliasesCommand from './dataset-alias/listDatasetAliasesCommand'
+import deleteDatasetAliasCommand from './dataset-alias/deleteDatasetAliasCommand'
+import aliasDatasetGroup from './dataset-alias/aliasDatasetGroup'
 
 export default [
   deleteDatasetAliasCommand,

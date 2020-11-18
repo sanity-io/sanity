@@ -15,7 +15,8 @@ assign(DatasetAliasesClient.prototype, {
   },
 
   unlink(name) {
-    return this._modify('PATCH', `${name}/unlink`)
+    validate.dataset(name)
+    return this._modify('PATCH', `${name}/unlink`, {}, true)
   },
 
   delete(name) {
@@ -26,8 +27,10 @@ assign(DatasetAliasesClient.prototype, {
     return this.request({uri: '/aliases'})
   },
 
-  _modify(method, name, body) {
-    validate.dataset(name)
+  _modify(method, name, body, skipValidation = false) {
+    if (!skipValidation) {
+      validate.dataset(name)
+    }
     return this.request({method, uri: `/aliases/${name}`, body})
   }
 })

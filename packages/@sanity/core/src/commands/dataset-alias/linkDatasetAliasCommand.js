@@ -1,13 +1,13 @@
-import promptForDatasetName from '../../../actions/dataset/datasetNamePrompt'
-import promptForDatasetAliasName from '../../../actions/alias/datasetAliasNamePrompt'
-import validateDatasetAliasName from '../../../actions/alias/validateDatasetAliasName'
-import validateDatasetName from '../../../actions/dataset/validateDatasetName'
+import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
+import promptForDatasetAliasName from '../../actions/dataset-alias/datasetAliasNamePrompt'
+import validateDatasetAliasName from '../../actions/dataset-alias/validateDatasetAliasName'
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Examples
   sanity dataset-alias link
-  sanity dataset-alias link <name>
-  sanity dataset-alias link <name> <target-dataset>
+  sanity dataset-alias link <alias-name>
+  sanity dataset-alias link <alias-name> <target-dataset>
 `
 
 export default {
