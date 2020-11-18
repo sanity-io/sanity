@@ -42,7 +42,7 @@
     },
     {
       "implements": "part:@sanity/base/version-checker",
-      "path": "components/VersionChecker"
+      "path": "__legacy/components/VersionChecker"
     },
     {
       "name": "part:@sanity/base/asset-url-builder-default",
@@ -276,11 +276,11 @@
     },
     {
       "implements": "part:@sanity/base/app-loading-screen",
-      "path": "components/AppLoadingScreen"
+      "path": "__legacy/components/AppLoadingScreen"
     },
     {
       "implements": "part:@sanity/base/root",
-      "path": "components/DefaultRootComponent"
+      "path": "__legacy/components/DefaultRootComponent"
     },
     {
       "implements": "part:@sanity/base/schema-creator",
@@ -409,7 +409,7 @@
     {
       "name": "part:@sanity/base/document-default",
       "implements": "part:@sanity/base/document",
-      "path": "components/Document"
+      "path": "__legacy/components/Document"
     },
     {
       "implements": "part:@sanity/base/language-resolver",
@@ -425,19 +425,19 @@
     },
     {
       "implements": "part:@sanity/base/sanity-intl-provider",
-      "path": "components/SanityIntlProvider"
+      "path": "__legacy/components/SanityIntlProvider"
     },
     {
       "implements": "part:@sanity/base/query-container",
-      "path": "components/QueryContainer"
+      "path": "__legacy/components/QueryContainer"
     },
     {
       "implements": "part:@sanity/base/with-referring-documents",
-      "path": "components/WithReferringDocuments"
+      "path": "__legacy/components/WithReferringDocuments"
     },
     {
       "implements": "part:@sanity/base/locale/formatters",
-      "path": "components/IntlWrapper"
+      "path": "__legacy/components/IntlWrapper"
     },
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
@@ -505,7 +505,7 @@
     },
     {
       "implements": "part:@sanity/base/close-icon",
-      "path": "components/icons/CloseIcon"
+      "path": "__legacy/components/icons/CloseIcon"
     },
     {
       "name": "part:@sanity/base/angle-down-icon",
@@ -513,7 +513,7 @@
     },
     {
       "implements": "part:@sanity/base/angle-down-icon",
-      "path": "components/icons/AngleDownIcon"
+      "path": "__legacy/components/icons/AngleDownIcon"
     },
     {
       "name": "part:@sanity/base/angle-up-icon",
@@ -521,7 +521,7 @@
     },
     {
       "implements": "part:@sanity/base/angle-up-icon",
-      "path": "components/icons/AngleUpIcon"
+      "path": "__legacy/components/icons/AngleUpIcon"
     },
     {
       "name": "part:@sanity/base/help-circle-icon",
@@ -529,7 +529,7 @@
     },
     {
       "implements": "part:@sanity/base/help-circle-icon",
-      "path": "components/icons/HelpCircle"
+      "path": "__legacy/components/icons/HelpCircle"
     },
     {
       "name": "part:@sanity/base/spinner-icon",
@@ -537,7 +537,7 @@
     },
     {
       "implements": "part:@sanity/base/spinner-icon",
-      "path": "components/icons/SpinnerIcon"
+      "path": "__legacy/components/icons/SpinnerIcon"
     },
     {
       "name": "part:@sanity/base/sanity-logo-icon",
@@ -585,7 +585,7 @@
     },
     {
       "implements": "part:@sanity/base/visibility-off-icon",
-      "path": "components/icons/VisibilityOff"
+      "path": "__legacy/components/icons/VisibilityOff"
     },
     {
       "name": "part:@sanity/base/visibility-icon",
@@ -593,7 +593,7 @@
     },
     {
       "implements": "part:@sanity/base/visibility-icon",
-      "path": "components/icons/Visibility"
+      "path": "__legacy/components/icons/Visibility"
     },
     {
       "name": "part:@sanity/base/format-bold-icon",
@@ -697,7 +697,7 @@
     },
     {
       "implements": "part:@sanity/base/robot-icon",
-      "path": "components/icons/Robot"
+      "path": "__legacy/components/icons/Robot"
     },
     {
       "name": "part:@sanity/base/trash-icon",
@@ -705,7 +705,7 @@
     },
     {
       "implements": "part:@sanity/base/trash-icon",
-      "path": "components/icons/Trash"
+      "path": "__legacy/components/icons/Trash"
     },
     {
       "name": "part:@sanity/base/trash-outline-icon",
@@ -713,31 +713,31 @@
     },
     {
       "implements": "part:@sanity/base/trash-outline-icon",
-      "path": "components/icons/TrashOutline"
+      "path": "__legacy/components/icons/TrashOutline"
     },
     {
       "implements": "part:@sanity/base/sanity-logo-icon",
-      "path": "components/icons/SanityLogo"
+      "path": "__legacy/components/icons/SanityLogo"
     },
     {
       "implements": "part:@sanity/base/hamburger-icon",
-      "path": "components/icons/Hamburger"
+      "path": "__legacy/components/icons/Hamburger"
     },
     {
       "implements": "part:@sanity/base/undo-icon",
-      "path": "components/icons/Undo"
+      "path": "__legacy/components/icons/Undo"
     },
     {
       "implements": "part:@sanity/base/sort-alpha-desc-icon",
-      "path": "components/icons/SortAlphaDesc"
+      "path": "__legacy/components/icons/SortAlphaDesc"
     },
     {
       "implements": "part:@sanity/base/sort-icon",
-      "path": "components/icons/Sort"
+      "path": "__legacy/components/icons/Sort"
     },
     {
       "implements": "part:@sanity/base/bars-icon",
-      "path": "components/icons/Bars"
+      "path": "__legacy/components/icons/Bars"
     },
     {
       "implements": "part:@sanity/base/preview",
@@ -745,315 +745,315 @@
     },
     {
       "implements": "part:@sanity/base/th-list-icon",
-      "path": "components/icons/ThList"
+      "path": "__legacy/components/icons/ThList"
     },
     {
       "implements": "part:@sanity/base/th-large-icon",
-      "path": "components/icons/ThLarge"
+      "path": "__legacy/components/icons/ThLarge"
     },
     {
       "implements": "part:@sanity/base/cog-icon",
-      "path": "components/icons/Cog"
+      "path": "__legacy/components/icons/Cog"
     },
     {
       "implements": "part:@sanity/base/sign-out-icon",
-      "path": "components/icons/SignOut"
+      "path": "__legacy/components/icons/SignOut"
     },
     {
       "implements": "part:@sanity/base/lightbulb-icon",
-      "path": "components/icons/Lightbulb"
+      "path": "__legacy/components/icons/Lightbulb"
     },
     {
       "implements": "part:@sanity/base/link-icon",
-      "path": "components/icons/Link"
+      "path": "__legacy/components/icons/Link"
     },
     {
       "implements": "part:@sanity/base/binary-icon",
-      "path": "components/icons/Binary"
+      "path": "__legacy/components/icons/Binary"
     },
     {
       "implements": "part:@sanity/base/upload-icon",
-      "path": "components/icons/Upload"
+      "path": "__legacy/components/icons/Upload"
     },
     {
       "implements": "part:@sanity/base/format-bold-icon",
-      "path": "components/icons/FormatBold"
+      "path": "__legacy/components/icons/FormatBold"
     },
     {
       "implements": "part:@sanity/base/format-italic-icon",
-      "path": "components/icons/FormatItalic"
+      "path": "__legacy/components/icons/FormatItalic"
     },
     {
       "implements": "part:@sanity/base/format-list-bulleted-icon",
-      "path": "components/icons/FormatListBulleted"
+      "path": "__legacy/components/icons/FormatListBulleted"
     },
     {
       "implements": "part:@sanity/base/format-list-numbered-icon",
-      "path": "components/icons/FormatListNumbered"
+      "path": "__legacy/components/icons/FormatListNumbered"
     },
     {
       "implements": "part:@sanity/base/format-quote-icon",
-      "path": "components/icons/FormatQuote"
+      "path": "__legacy/components/icons/FormatQuote"
     },
     {
       "implements": "part:@sanity/base/format-strikethrough-icon",
-      "path": "components/icons/FormatStrikethrough"
+      "path": "__legacy/components/icons/FormatStrikethrough"
     },
     {
       "implements": "part:@sanity/base/format-underlined-icon",
-      "path": "components/icons/FormatUnderlined"
+      "path": "__legacy/components/icons/FormatUnderlined"
     },
     {
       "implements": "part:@sanity/base/format-code-icon",
-      "path": "components/icons/FormatCode"
+      "path": "__legacy/components/icons/FormatCode"
     },
     {
       "implements": "part:@sanity/base/fullscreen-icon",
-      "path": "components/icons/Fullscreen"
+      "path": "__legacy/components/icons/Fullscreen"
     },
     {
       "implements": "part:@sanity/base/fullscreen-exit-icon",
-      "path": "components/icons/FullscreenExit"
+      "path": "__legacy/components/icons/FullscreenExit"
     },
     {
       "implements": "part:@sanity/base/package-icon",
-      "path": "components/icons/Package"
+      "path": "__legacy/components/icons/Package"
     },
     {
       "implements": "part:@sanity/base/plus-icon",
-      "path": "components/icons/Plus"
+      "path": "__legacy/components/icons/Plus"
     },
     {
       "implements": "part:@sanity/base/split-horizontal-icon",
-      "path": "components/icons/SplitHorizontal"
+      "path": "__legacy/components/icons/SplitHorizontal"
     },
     {
       "implements": "part:@sanity/base/plus-circle-icon",
-      "path": "components/icons/PlusCircle"
+      "path": "__legacy/components/icons/PlusCircle"
     },
     {
       "implements": "part:@sanity/base/plus-circle-outline-icon",
-      "path": "components/icons/PlusCircleOutline"
+      "path": "__legacy/components/icons/PlusCircleOutline"
     },
     {
       "implements": "part:@sanity/base/public-icon",
-      "path": "components/icons/Public"
+      "path": "__legacy/components/icons/Public"
     },
     {
       "implements": "part:@sanity/base/publish-icon",
-      "path": "components/icons/Publish"
+      "path": "__legacy/components/icons/Publish"
     },
     {
       "implements": "part:@sanity/base/truncate-icon",
-      "path": "components/icons/Truncate"
+      "path": "__legacy/components/icons/Truncate"
     },
     {
       "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish"
+      "path": "__legacy/components/icons/Unpublish"
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",
-      "path": "components/icons/CheckCircle"
+      "path": "__legacy/components/icons/CheckCircle"
     },
     {
       "implements": "part:@sanity/base/check-icon",
-      "path": "components/icons/Check"
+      "path": "__legacy/components/icons/Check"
     },
     {
       "implements": "part:@sanity/base/circle-thin-icon",
-      "path": "components/icons/CircleThin"
+      "path": "__legacy/components/icons/CircleThin"
     },
     {
       "implements": "part:@sanity/base/arrow-drop-down",
-      "path": "components/icons/ArrowDropDown"
+      "path": "__legacy/components/icons/ArrowDropDown"
     },
     {
       "implements": "part:@sanity/base/arrow-right",
-      "path": "components/icons/ArrowRight"
+      "path": "__legacy/components/icons/ArrowRight"
     },
     {
       "implements": "part:@sanity/base/search-icon",
-      "path": "components/icons/Search"
+      "path": "__legacy/components/icons/Search"
     },
     {
       "implements": "part:@sanity/base/edit-icon",
-      "path": "components/icons/Edit"
+      "path": "__legacy/components/icons/Edit"
     },
     {
       "implements": "part:@sanity/base/more-vert-icon",
-      "path": "components/icons/MoreVert"
+      "path": "__legacy/components/icons/MoreVert"
     },
     {
       "implements": "part:@sanity/base/ellipsis-icon",
-      "path": "components/icons/Ellipsis"
+      "path": "__legacy/components/icons/Ellipsis"
     },
     {
       "implements": "part:@sanity/base/view-column-icon",
-      "path": "components/icons/ViewColumn"
+      "path": "__legacy/components/icons/ViewColumn"
     },
     {
       "implements": "part:@sanity/base/content-copy-icon",
-      "path": "components/icons/ContentCopy"
+      "path": "__legacy/components/icons/ContentCopy"
     },
     {
       "implements": "part:@sanity/base/question-icon",
-      "path": "components/icons/Question"
+      "path": "__legacy/components/icons/Question"
     },
     {
       "implements": "part:@sanity/base/plugin-icon",
-      "path": "components/icons/Plug"
+      "path": "__legacy/components/icons/Plug"
     },
     {
       "implements": "part:@sanity/base/image-icon",
-      "path": "components/icons/Image"
+      "path": "__legacy/components/icons/Image"
     },
     {
       "implements": "part:@sanity/base/image-area-icon",
-      "path": "components/icons/ImageArea"
+      "path": "__legacy/components/icons/ImageArea"
     },
     {
       "implements": "part:@sanity/base/images-icon",
-      "path": "components/icons/Images"
+      "path": "__legacy/components/icons/Images"
     },
     {
       "implements": "part:@sanity/base/sync-icon",
-      "path": "components/icons/Sync"
+      "path": "__legacy/components/icons/Sync"
     },
     {
       "implements": "part:@sanity/base/time-icon",
-      "path": "components/icons/Time"
+      "path": "__legacy/components/icons/Time"
     },
     {
       "implements": "part:@sanity/base/info-icon",
-      "path": "components/icons/Info"
+      "path": "__legacy/components/icons/Info"
     },
     {
       "implements": "part:@sanity/base/error-icon",
-      "path": "components/icons/Error"
+      "path": "__legacy/components/icons/Error"
     },
     {
       "implements": "part:@sanity/base/error-outline-icon",
-      "path": "components/icons/ErrorOutline"
+      "path": "__legacy/components/icons/ErrorOutline"
     },
     {
       "implements": "part:@sanity/base/warning-icon",
-      "path": "components/icons/Warning"
+      "path": "__legacy/components/icons/Warning"
     },
     {
       "implements": "part:@sanity/base/warning-outline-icon",
-      "path": "components/icons/WarningOutline"
+      "path": "__legacy/components/icons/WarningOutline"
     },
     {
       "implements": "part:@sanity/base/danger-icon",
-      "path": "components/icons/Danger"
+      "path": "__legacy/components/icons/Danger"
     },
     {
       "implements": "part:@sanity/base/file-icon",
-      "path": "components/icons/File"
+      "path": "__legacy/components/icons/File"
     },
     {
       "implements": "part:@sanity/base/paste-icon",
-      "path": "components/icons/Paste"
+      "path": "__legacy/components/icons/Paste"
     },
     {
       "implements": "part:@sanity/base/calendar-icon",
-      "path": "components/icons/Calendar"
+      "path": "__legacy/components/icons/Calendar"
     },
     {
       "implements": "part:@sanity/base/chevron-down-icon",
-      "path": "components/icons/ChevronDown"
+      "path": "__legacy/components/icons/ChevronDown"
     },
     {
       "implements": "part:@sanity/base/folder-icon",
-      "path": "components/icons/Folder"
+      "path": "__legacy/components/icons/Folder"
     },
     {
       "implements": "part:@sanity/base/block-object-icon",
-      "path": "components/icons/BlockObject"
+      "path": "__legacy/components/icons/BlockObject"
     },
     {
       "implements": "part:@sanity/base/inline-object-icon",
-      "path": "components/icons/InlineObject"
+      "path": "__legacy/components/icons/InlineObject"
     },
     {
       "implements": "part:@sanity/base/comment-icon",
-      "path": "components/icons/Comment"
+      "path": "__legacy/components/icons/Comment"
     },
     {
       "implements": "part:@sanity/base/history-icon",
-      "path": "components/icons/History"
+      "path": "__legacy/components/icons/History"
     },
     {
       "implements": "part:@sanity/base/eye-icon",
-      "path": "components/icons/Eye"
+      "path": "__legacy/components/icons/Eye"
     },
     {
       "implements": "part:@sanity/base/launch-icon",
-      "path": "components/icons/Launch"
+      "path": "__legacy/components/icons/Launch"
     },
     {
       "implements": "part:@sanity/base/users-icon",
-      "path": "components/icons/UsersIcon"
+      "path": "__legacy/components/icons/UsersIcon"
     },
     {
       "implements": "part:@sanity/base/user-icon",
-      "path": "components/icons/User"
+      "path": "__legacy/components/icons/User"
     },
     {
       "implements": "part:@sanity/base/clipboard-icon",
-      "path": "components/icons/Clipboard"
+      "path": "__legacy/components/icons/Clipboard"
     },
     {
       "implements": "part:@sanity/base/clipboard-image-icon",
-      "path": "components/icons/ClipboardImage"
+      "path": "__legacy/components/icons/ClipboardImage"
     },
     {
       "implements": "part:@sanity/base/drag-handle-icon",
-      "path": "components/icons/DragHandle"
+      "path": "__legacy/components/icons/DragHandle"
     },
     {
       "implements": "part:@sanity/base/stack-icon",
-      "path": "components/icons/Stack"
+      "path": "__legacy/components/icons/Stack"
     },
     {
       "implements": "part:@sanity/base/stack-compact-icon",
-      "path": "components/icons/StackCompact"
+      "path": "__legacy/components/icons/StackCompact"
     },
     {
       "implements": "part:@sanity/base/compose-icon",
-      "path": "components/icons/Compose"
+      "path": "__legacy/components/icons/Compose"
     },
     {
       "implements": "part:@sanity/base/publish-icon",
-      "path": "components/icons/Publish"
+      "path": "__legacy/components/icons/Publish"
     },
     {
       "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish"
+      "path": "__legacy/components/icons/Unpublish"
     },
     {
       "implements": "part:@sanity/base/truncate-icon",
-      "path": "components/icons/Truncate"
+      "path": "__legacy/components/icons/Truncate"
     },
     {
       "implements": "part:@sanity/base/reset-icon",
-      "path": "components/icons/Reset"
+      "path": "__legacy/components/icons/Reset"
     },
     {
       "implements": "part:@sanity/base/code-block-icon",
-      "path": "components/icons/CodeBlock"
+      "path": "__legacy/components/icons/CodeBlock"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
-      "path": "components/logos/SanityLogo"
+      "path": "__legacy/components/logos/SanityLogo"
     },
     {
       "implements": "part:@sanity/base/sanity-logo-alpha",
-      "path": "components/logos/SanityLogoAlpha"
+      "path": "__legacy/components/logos/SanityLogoAlpha"
     },
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
-      "path": "components/logos/SanityStudioLogo"
+      "path": "__legacy/components/logos/SanityStudioLogo"
     },
     {
       "name": "part:@sanity/base/component",
@@ -1065,7 +1065,7 @@
     },
     {
       "implements": "part:@sanity/base/component",
-      "path": "components/story"
+      "path": "__legacy/components/story"
     },
 
     {

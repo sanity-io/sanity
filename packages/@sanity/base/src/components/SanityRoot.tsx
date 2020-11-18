@@ -10,11 +10,11 @@ import jsx from 'refractor/lang/jsx'
 import styled from 'styled-components'
 import theme from '../theme'
 import {userColorManager, UserColorManagerProvider} from '../user-color'
-import ErrorHandler from './ErrorHandler'
-import DevServerStatus from './DevServerStatus'
+import ErrorHandler from '../__legacy/components/ErrorHandler'
+import DevServerStatus from '../__legacy/components/DevServerStatus'
+import MissingProjectConfig from '../__legacy/components/MissingProjectConfig'
+import VersionChecker from '../__legacy/components/VersionChecker'
 import {GlobalStyle} from './GlobalStyle'
-import MissingProjectConfig from './MissingProjectConfig'
-import VersionChecker from './VersionChecker'
 
 Refractor.registerLanguage(jsx)
 

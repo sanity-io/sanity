@@ -1,6 +1,6 @@
 import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
 import React from 'react'
-import {UserAvatar} from '../components/UserAvatar'
+import {UserAvatar} from '../__legacy/components/UserAvatar'
 import {FormFieldPresence} from './types'
 
 import styles from './PresenceTooltip.css'

@@ -1,1 +1,1 @@
-export * from './UserAvatar'
+export * from '../__legacy/components/UserAvatar'

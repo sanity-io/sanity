@@ -5,7 +5,7 @@
 import React, {useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from 'part:@sanity/components/avatar'
-import {UserAvatar} from '../components/UserAvatar'
+import {UserAvatar} from '../__legacy/components/UserAvatar'
 import {
   AVATAR_DISTANCE,
   AVATAR_SIZE,
