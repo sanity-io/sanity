@@ -3,8 +3,11 @@
   "include": ["src"],
   "compilerOptions": {
     "outDir": "./lib",
-    "strict": false,
+    // -- strictness options we need to disable in a transition period.
+    "noImplicitAny": false,
     "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    // --
     "jsx": "react",
     "plugins": [
       {

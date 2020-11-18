@@ -2,34 +2,24 @@
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_CONFIG} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
+import {PrepareViewOptions, Type} from './types'
+import {keysOf} from './utils/keysOf'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
 
-type ViewOptions = {}
+type SelectedValue = Record<string, unknown>
 
-type SelectedValue = {}
-
-type PreparedValue = {
+export type PreparedValue = {
   title: string
   subtitle: string
   description: string
 }
 
-type PreviewConfig = {
-  select: {[key: string]: string}
-  prepare?: (SelectedValue, ViewOptions) => PreparedValue
-}
-
-type Type = {
-  name: string
-  preview: PreviewConfig
-}
-
 export type PrepareInvocationResult = {
   selectedValue?: SelectedValue
   returnValue: null | PreparedValue | SelectedValue
-  errors?: Error[]
+  errors: Error[]
 }
 
 const errorCollector = (() => {
@@ -191,13 +181,12 @@ function validateReturnedPreview(result: PrepareInvocationResult) {
   }
 }
 
-function defaultPrepare(value: SelectedValue): {[key: string]: any} {
-  return Object.keys(value).reduce((acc: {[key: string]: any}, fieldName: string) => {
+function defaultPrepare(value: SelectedValue) {
+  return keysOf(value).reduce((acc: SelectedValue, fieldName: keyof SelectedValue) => {
+    const val = value[fieldName]
     return {
       ...acc,
-      [fieldName]: isPortableTextArray(value[fieldName])
-        ? extractTextFromBlocks(value[fieldName])
-        : value[fieldName],
+      [fieldName]: isPortableTextArray(val) ? extractTextFromBlocks(val) : value[fieldName],
     }
   }, {})
 }
@@ -205,12 +194,14 @@ function defaultPrepare(value: SelectedValue): {[key: string]: any} {
 export function invokePrepare(
   type: Type,
   value: SelectedValue,
-  viewOptions: ViewOptions
+  viewOptions: PrepareViewOptions
 ): PrepareInvocationResult {
-  const prepare = type.preview.prepare
+  const prepare = type.preview?.prepare
   try {
     return {
-      returnValue: prepare ? prepare(value, viewOptions) : defaultPrepare(value),
+      returnValue: prepare
+        ? (prepare(value, viewOptions) as Record<string, unknown>)
+        : defaultPrepare(value),
       errors: EMPTY,
     }
   } catch (error) {

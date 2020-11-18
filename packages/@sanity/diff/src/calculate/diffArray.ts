@@ -21,7 +21,7 @@ export function diffArray<A>(
       get items(): ItemDiff<A>[] {
         const items = diffExactByPosition(fromInput, toInput, options)
         if (!items) throw new Error('invariant broken: equivalent input, but diff detected')
-        return replaceProperty<typeof items>(this, 'items', items)
+        return replaceProperty(this, 'items', items)
       },
     }
   }
@@ -356,7 +356,7 @@ export function removedArray<A>(
         })
       }
 
-      return replaceProperty<typeof items>(this, 'items', items)
+      return replaceProperty(this, 'items', items)
     },
   }
 }
@@ -387,7 +387,7 @@ export function addedArray<A>(
         })
       }
 
-      return replaceProperty<typeof items>(this, 'items', items)
+      return replaceProperty(this, 'items', items)
     },
   }
 }

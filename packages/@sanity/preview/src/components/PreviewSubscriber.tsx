@@ -1,7 +1,7 @@
 import React from 'react'
+import {SortOrdering, Type} from '../types'
 import WithVisibility from './WithVisibility'
 import ObserveForPreview from './ObserveForPreview'
-import {Type} from '../types'
 
 const HIDE_DELAY = 20 * 1000
 
@@ -9,13 +9,13 @@ interface Props {
   type: Type
   fields: string[]
   value: any
-  ordering?: {}
+  ordering?: SortOrdering
   children: (props: any) => React.ReactElement
   layout?: string
 }
 
 export default class PreviewSubscriber extends React.Component<Props> {
-  renderChild = (isVisible) => {
+  renderChild = (isVisible: boolean) => {
     const {children, type, value, ordering, fields, ...props} = this.props
     // isVisible may be null which means undetermined
     return isVisible === null ? null : (
@@ -45,7 +45,7 @@ export default class PreviewSubscriber extends React.Component<Props> {
     // Disable visibility for 'inline' and 'block' types which is used in the block editor (for now)
     // This led to strange side effects inside the block editor, and needs to be disabled for now.
     // https://github.com/sanity-io/sanity/pull/1411
-    if (['inline', 'block'].includes(this.props.layout)) {
+    if (this.props.layout && ['inline', 'block'].includes(this.props.layout)) {
       return this.renderChild(true)
     }
     return <WithVisibility hideDelay={HIDE_DELAY}>{this.renderChild}</WithVisibility>

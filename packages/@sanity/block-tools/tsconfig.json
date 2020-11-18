@@ -2,7 +2,10 @@
   "extends": "../../../tsconfig",
   "include": ["src"],
   "compilerOptions": {
-    "strict": false,
+    // -- strictness options we need to disable in a transition period.
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    // --
     "jsx": "react",
     "outDir": "./lib"
   }

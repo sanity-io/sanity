@@ -10,6 +10,27 @@ export interface Schema {
   getTypeNames: () => string[]
 }
 
+export interface PreviewValue {
+  title?: string
+  subtitle?: string
+  description?: string
+  media?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface PrepareViewOptions {
+  ordering?: SortOrdering
+}
+
+export type SortOrdering = {
+  title: string
+  name: string
+  by: {
+    field: string
+    direction: 'asc' | 'desc'
+  }
+}
+
 export interface BaseSchemaType {
   name: string
   title?: string
@@ -17,6 +38,19 @@ export interface BaseSchemaType {
   type?: SchemaType
   readOnly?: boolean
   icon?: React.ComponentType
+
+  preview?: {
+    select?: PreviewValue
+    prepare: (
+      value: {
+        title?: unknown
+        subtitle?: unknown
+        description?: unknown
+        media?: unknown
+      },
+      viewOptions?: PrepareViewOptions
+    ) => PreviewValue
+  }
 
   /**
    * @deprecated

@@ -22,7 +22,7 @@ function isSpan(span: Span): span is Span {
   return span && span._type === 'span' && typeof span.text === 'string'
 }
 
-export function isPortableTextArray(blocks: Block[]): blocks is Block[] {
+export function isPortableTextArray(blocks: any): blocks is Block[] {
   return Array.isArray(blocks) && (blocks.length === 0 || blocks.some(isBlock))
 }
 

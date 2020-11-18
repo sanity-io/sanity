@@ -3,7 +3,7 @@ import findMatchingNodes from './findMatchingNodes'
 import {flatten} from 'lodash'
 import {debug} from './utils/debug'
 
-export default function resolvePathFromState(node: Node, state: Object): string {
+export default function resolvePathFromState(node: Node, state: Record<string, unknown>): string {
   debug('Resolving path from state %o', state)
 
   const match: MatchResult = findMatchingNodes(node, state)
@@ -20,11 +20,11 @@ export default function resolvePathFromState(node: Node, state: Object): string 
     throw new Error(`Unable to resolve path from given state: ${JSON.stringify(state)}`)
   }
 
-  let scopedState = state
+  let scopedState: Record<string, unknown> = state
   const relative = flatten(
     match.nodes.map((matchNode) => {
-      if (matchNode.scope) {
-        scopedState = scopedState[matchNode.scope]
+      if (matchNode.scope && matchNode.scope in scopedState) {
+        scopedState = scopedState[matchNode.scope] as Record<string, unknown>
       }
       return matchNode.route.segments.map((segment) => {
         if (segment.type === 'dir') {

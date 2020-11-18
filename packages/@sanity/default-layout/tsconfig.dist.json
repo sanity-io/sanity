@@ -2,7 +2,11 @@
   "extends": "../../../tsconfig.dist",
   "include": ["src"],
   "compilerOptions": {
-    "strict": false,
+    // -- strictness options we need to disable in a transition period.
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    // --
     "outDir": "./lib",
     "jsx": "react",
     "plugins": [
