@@ -376,7 +376,10 @@ test('can query for multiple documents', t => {
     .get('/v1/data/doc/foo/abc123,abc321')
     .reply(200, {
       ms: 123,
-      documents: [{_id: 'abc123', mood: 'lax'}, {_id: 'abc321', mood: 'tense'}]
+      documents: [
+        {_id: 'abc123', mood: 'lax'},
+        {_id: 'abc321', mood: 'tense'}
+      ]
     })
 
   getClient()
@@ -394,7 +397,10 @@ test('preserves the position of requested documents', t => {
     .get('/v1/data/doc/foo/abc123,abc321,abc456')
     .reply(200, {
       ms: 123,
-      documents: [{_id: 'abc456', mood: 'neutral'}, {_id: 'abc321', mood: 'tense'}]
+      documents: [
+        {_id: 'abc456', mood: 'neutral'},
+        {_id: 'abc321', mood: 'tense'}
+      ]
     })
 
   getClient()
@@ -1525,7 +1531,11 @@ test('uploads images with progress events', t => {
   getClient()
     .observable.assets.upload('image', fs.createReadStream(fixturePath))
     .pipe(filter(event => event.type === 'progress'))
-    .subscribe(event => t.equal(event.type, 'progress'), ifError(t), () => t.end())
+    .subscribe(
+      event => t.equal(event.type, 'progress'),
+      ifError(t),
+      () => t.end()
+    )
 })
 
 test('uploads images with custom label', t => {
