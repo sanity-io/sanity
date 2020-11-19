@@ -108,6 +108,14 @@ test('throws on invalid dataset names', t => {
   t.end()
 })
 
+test('accepts alias in dataset field', t => {
+  t.doesNotThrow(
+    () => sanityClient({projectId: 'abc123', dataset: '~alias'}),
+    /Datasets can only contain/i
+  )
+  t.end()
+})
+
 test('can use request() for API-relative requests', t => {
   nock(projectHost())
     .get('/v1/ping')
