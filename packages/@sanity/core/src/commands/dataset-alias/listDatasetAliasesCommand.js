@@ -1,4 +1,5 @@
 import {sortBy, size} from 'lodash'
+import * as aliasClient from './datasetAliasesClient'
 
 const sortFields = ['alias', 'dataset']
 
@@ -9,6 +10,7 @@ export default {
   description: 'List dataset aliases of your project',
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
+    const client = apiClient()
     const {sort, order} = {
       sort: 'alias',
       order: 'asc',
@@ -19,8 +21,7 @@ export default {
       throw new Error(`Can't sort by field "${sort}". Must be one of ${sortFields.join(', ')}`)
     }
 
-    const client = apiClient()
-    const aliases = await client.datasetAliases.list()
+    const aliases = await aliasClient.list(client)
 
     const ordered = sortBy(
       aliases.map(({name, datasetName}) => {

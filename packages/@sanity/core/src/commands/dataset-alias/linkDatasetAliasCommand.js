@@ -2,6 +2,7 @@ import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
 import promptForDatasetAliasName from '../../actions/dataset-alias/datasetAliasNamePrompt'
 import validateDatasetAliasName from '../../actions/dataset-alias/validateDatasetAliasName'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
+import * as aliasClient from './datasetAliasesClient'
 
 const helpText = `
 Examples
@@ -28,7 +29,7 @@ export default {
 
     const [datasets, aliases] = await Promise.all([
       client.datasets.list().then(sets => sets.map(ds => ds.name)),
-      client.datasetAliases.list().then(sets => sets.map(ds => ds.name))
+      aliasClient.list(client).then(sets => sets.map(ds => ds.name))
     ])
 
     const aliasName = await (alias || promptForDatasetAliasName(prompt))
@@ -47,7 +48,7 @@ export default {
     }
 
     try {
-      await client.datasetAliases.update(aliasName, {datasetName})
+      await aliasClient.update(client, aliasName, {datasetName})
       output.print(`Dataset alias ${aliasName} linked to ${datasetName} successfully`)
     } catch (err) {
       throw new Error(`Dataset alias link failed:\n${err.message}`)

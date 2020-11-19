@@ -1,4 +1,5 @@
 import validateDatasetAliasName from '../../actions/dataset-alias/validateDatasetAliasName'
+import * as aliasClient from './datasetAliasesClient'
 
 const helpText = `
 Examples
@@ -13,6 +14,7 @@ export default {
   action: async (args, context) => {
     const {apiClient, prompt, output} = context
     const [ds] = args.argsWithoutOptions
+    const client = apiClient()
     if (!ds) {
       throw new Error('Dataset alias name must be provided')
     }
@@ -33,10 +35,8 @@ export default {
       }
     })
 
-    return apiClient()
-      .datasetAliases.delete(alias)
-      .then(() => {
-        output.print('Dataset alias deleted successfully')
-      })
+    return aliasClient.remove(client, alias).then(() => {
+      output.print('Dataset alias deleted successfully')
+    })
   }
 }

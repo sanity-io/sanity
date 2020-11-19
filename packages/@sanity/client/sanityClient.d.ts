@@ -861,49 +861,6 @@ export class ObservableSanityClient {
     list(): Observable<{name: string; aclMode: DatasetAclMode}[]>
   }
 
-  datasetAliases: {
-    /**
-     * Create a new dataset alias with the given name
-     *
-     * @param name Name of the dataset alias to create
-     * @param options Options for the dataset alias
-     */
-    create(
-      name: string,
-      options?: {datasetName?: string}
-    ): Observable<{aliasName: string; datasetName: string}>
-
-    /**
-     * Edit a dataset alias with the given name
-     *
-     * @param name Name of the dataset alias to edit
-     * @param options New options for the dataset alias
-     */
-    update(
-      name: string,
-      options?: {datasetName?: string}
-    ): Observable<{aliasName: string; datasetName: string}>
-
-    /**
-     * Unlik a dataset from a dataset alias with the given name
-     *
-     * @param name Name of the dataset alias to unlink
-     */
-    unlink(name: string): Observable<{aliasName: string; datasetName?: string}>
-
-    /**
-     * Delete a dataset alias with the given name
-     *
-     * @param name Name of the dataset alias to delete
-     */
-    delete(name: string): Observable<{deleted: true}>
-
-    /**
-     * Fetch a list of dataset aliases for the configured project
-     */
-    list(): Observable<{name: string; datasetName: string}[]>
-  }
-
   projects: {
     /**
      * Fetch a list of projects the authenticated user has access to
@@ -1535,42 +1492,6 @@ export interface SanityClient {
     list(): Promise<{name: string; aclMode: DatasetAclMode}[]>
   }
 
-  datasetAliases: {
-    /**
-     * Create a new dataset alias with the given name
-     *
-     * @param name Name of the dataset alias to create
-     * @param options Options for the dataset alias
-     */
-    create(
-      name: string,
-      options?: {datasetName?: string}
-    ): Promise<{aliasName: string; datasetName: string}>
-
-    /**
-     * Edit a dataset alias with the given name
-     *
-     * @param name Name of the dataset to edit
-     * @param options New options for the dataset alias
-     */
-    update(
-      name: string,
-      options?: {datasetName?: string}
-    ): Promise<{aliasName: string; datasetName?: string}>
-
-    /**
-     * Delete a dataset with the given name
-     *
-     * @param name Name of the dataset alias to delete
-     */
-    delete(name: string): Promise<{deleted: true}>
-
-    /**
-     * Fetch a list of dataset aliases for the configured project
-     */
-    list(): Promise<{name: string; datasetName: string}[]>
-  }
-
   projects: {
     /**
      * Fetch a list of projects the authenticated user has access to
@@ -1595,6 +1516,8 @@ export interface SanityClient {
       id: T
     ): T extends 'me' ? Promise<CurrentSanityUser> : Promise<SanityUser>
   }
+
+  request: (option: any) => any
 
   auth: {
     /**
