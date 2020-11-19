@@ -3,6 +3,7 @@
 
 'use strict'
 
+// eslint-disable-next-line import/no-unassigned-import
 require('hard-rejection/register')
 
 const test = require('tape')
@@ -16,7 +17,9 @@ const {filter} = require('rxjs/operators')
 const sanityClient = require('../src/sanityClient')
 
 const SanityClient = sanityClient
-const noop = () => {} // eslint-disable-line no-empty-function
+const noop = () => {
+  /* intentional noop */
+}
 const bufferFrom = (content, enc) =>
   Buffer.from ? Buffer.from(content, enc) : new Buffer(content, enc) // eslint-disable-line no-buffer-constructor
 
@@ -103,6 +106,14 @@ test('throws on invalid project ids', (t) => {
 test('throws on invalid dataset names', (t) => {
   t.throws(
     () => sanityClient({projectId: 'abc123', dataset: '*foo*'}),
+    /Datasets can only contain/i
+  )
+  t.end()
+})
+
+test('accepts alias in dataset field', (t) => {
+  t.doesNotThrow(
+    () => sanityClient({projectId: 'abc123', dataset: '~alias'}),
     /Datasets can only contain/i
   )
   t.end()
