@@ -72,9 +72,6 @@ type State = {
   hits: Array<SearchHit>
   isMissing: boolean
   previewSnapshot: PreviewSnapshot | null
-  refCache: {
-    [key: string]: SearchHit
-  }
 }
 const getInitialState = (): State => {
   return {
@@ -82,7 +79,6 @@ const getInitialState = (): State => {
     hits: [],
     previewSnapshot: null,
     isMissing: false,
-    refCache: {},
   }
 }
 
