@@ -524,6 +524,8 @@ export default {
     // metadata
     title,
 
+    referenceExample,
+
     // array
     arrayOfNestedArrays,
     arrayListOfOptionsExample,
@@ -570,9 +572,6 @@ export default {
 
     // portableText
     portableTextExample,
-
-    // reference
-    referenceExample,
 
     // slug
     slugExample,

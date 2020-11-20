@@ -3,7 +3,7 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "composite": true,
-    // todo: we need to disable strict in a transition phase and should be removed eventually
+//     todo: we need to disable strict in a transition phase and should be removed eventually
     "noImplicitAny": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
