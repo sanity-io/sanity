@@ -25,6 +25,7 @@ const EmailInput = React.forwardRef(function StringInput(
     >
       <TextInput
         type="email"
+        inputMode="email"
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
         value={value || ''}
