@@ -25,6 +25,7 @@ const StringInput = React.forwardRef(function StringInput(
     >
       <TextInput
         type="tel"
+        inputMode="tel"
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
         value={value || ''}

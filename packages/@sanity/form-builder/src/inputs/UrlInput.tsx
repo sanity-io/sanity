@@ -25,6 +25,7 @@ const UrlInput = React.forwardRef(function StringInput(
     >
       <TextInput
         type="url"
+        inputMode="url"
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
         value={value || ''}

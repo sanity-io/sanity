@@ -28,9 +28,10 @@ const NumberInput = React.forwardRef(function NumberInput(
       presence={presence}
     >
       <TextInput
+        type="number"
+        inputMode="numeric"
         id={id}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-        type="number"
         value={value || ''}
         readOnly={Boolean(readOnly)}
         placeholder={type.placeholder}
