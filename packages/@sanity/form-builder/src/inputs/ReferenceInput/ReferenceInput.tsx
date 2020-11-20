@@ -1,47 +1,42 @@
-/* eslint-disable complexity */
-import React from 'react'
-import {uniqueId} from 'lodash'
-import {FormField} from '@sanity/base/components'
-import {
-  isValidationErrorMarker,
-  Marker,
-  Path,
-  Reference,
-  ReferenceFilterSearchOptions,
-  ReferenceSchemaType,
-  SanityDocument,
-} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
+/* eslint-disable max-nested-callbacks */
+import React, {ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
+import {isValidationErrorMarker, Marker, Path, Reference, ReferenceSchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {LinkIcon} from '@sanity/icons'
-import {Button, Stack, Text} from '@sanity/ui'
-import {IntentLink, SearchableSelect} from '../../legacyParts'
-import Preview from '../../Preview'
-import subscriptionManager from '../../utils/subscriptionManager'
+import {concat, Observable, of} from 'rxjs'
+import {useId} from '@reach/auto-id'
+import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {Autocomplete, Box, Card, Flex, Text, Button, Stack, useToast} from '@sanity/ui'
+import {FormField} from '@sanity/base/components'
+import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import withDocument from '../../utils/withDocument'
-import withValuePath from '../../utils/withValuePath'
+import Preview from '../../Preview'
+import {useObservableCallback} from '../../utils/useObservableCallback'
 import {Alert} from '../../components/Alert'
-import styles from './styles/ReferenceInput.css'
+import {Details} from '../../components/Details'
+import {IntentButton} from '../../transitional/IntentButton'
+import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../utils/empty'
+import {usePreviewSnapshot} from './usePreviewSnapshot'
 
-type SearchHit = {
-  _id: string
-  _type: string
+type SearchState = {
+  hits: SearchHit[]
+  isLoading: boolean
 }
+
+const INITIAL_SEARCH_STATE: SearchState = {
+  hits: [],
+  isLoading: false,
+}
+
 type PreviewSnapshot = {
+  _id: string
   _type: string
   title: string
   description: string
 }
 
-type SearchError = {
-  message: string
-  details?: {
-    type: string
-    description: string
-  }
-}
+type SearchFunction = (query: string) => Observable<SearchHit[]>
+
 export type Props = {
   value?: Reference
   compareValue?: Reference
@@ -49,288 +44,266 @@ export type Props = {
   markers: Marker[]
   focusPath: Path
   readOnly?: boolean
-  onSearch: (
-    query: string,
-    type: ReferenceSchemaType,
-    options: ReferenceFilterSearchOptions
-  ) => Observable<SearchHit[]>
-  onFocus: (path: Path) => void
-  getPreviewSnapshot: (reference, type) => Observable<PreviewSnapshot>
+  onSearch: SearchFunction
+  onFocus?: (path: Path) => void
+  onBlur?: () => void
+  getPreviewSnapshot: (reference: Reference) => Observable<PreviewSnapshot | null>
   onChange: (event: PatchEvent) => void
   level: number
-  presence: any
-
-  // From withDocument
-  document: SanityDocument
-
-  // From withValuePath
-  getValuePath: () => Path
+  presence: FormFieldPresence[]
 }
 
-type State = {
-  isFetching: boolean
-  hits: Array<SearchHit>
-  isMissing: boolean
-  previewSnapshot: PreviewSnapshot | null
-  refCache: {
-    [key: string]: SearchHit
-  }
-}
-const getInitialState = (): State => {
-  return {
-    isFetching: false,
-    hits: [],
-    previewSnapshot: null,
-    isMissing: false,
-    refCache: {},
-  }
+function getMemberTypeFor(typeName: string, ownerType: ReferenceSchemaType) {
+  return ownerType.to.find((ofType) => ofType.type?.name === typeName)
 }
 
-export default withValuePath(
-  withDocument(
-    class ReferenceInput extends React.Component<Props, State> {
-      _lastQuery = ''
-      _input: SearchableSelect
-      state = getInitialState()
-      subscriptions = subscriptionManager('search', 'previewSnapshot')
-      _inputId = uniqueId('ReferenceInput')
-      componentWillUnmount() {
-        this.subscriptions.unsubscribeAll()
-      }
-      componentDidMount() {
-        this.getPreviewSnapshot(this.props.value)
-      }
+type SearchHit = {
+  _id: string
+  _type: string
+}
 
-      // eslint-disable-next-line camelcase
-      UNSAFE_componentWillReceiveProps(nextProps: Props) {
-        if (nextProps.value !== this.props.value) {
-          this.setState(getInitialState())
-          this.getPreviewSnapshot(nextProps.value)
-        }
-      }
-      getPreviewSnapshot(value: Reference) {
-        if (!value || !value._ref) {
-          return
-        }
-        const {getPreviewSnapshot, type} = this.props
-        this.subscriptions.replace(
-          'previewSnapshot',
-          getPreviewSnapshot(value, type).subscribe((snapshot) => {
-            this.setState({previewSnapshot: snapshot, isMissing: !snapshot})
-          })
-        )
-      }
-      getMemberTypeFor(typeName: string) {
-        const {type} = this.props
-        return type.to.find((ofType) => ofType.type.name === typeName)
-      }
-      handleFocus = () => {
-        const {onFocus} = this.props
-        if (this._lastQuery) {
-          this.search(this._lastQuery)
-        }
-        if (onFocus) {
-          onFocus([FOCUS_TERMINATOR])
-        }
-      }
-      handleChange = (item: SearchHit) => {
-        const {type} = this.props
-        this.props.onChange(
-          PatchEvent.from(
-            setIfMissing({
-              _type: type.name,
-              _ref: item._id,
-            }),
-            type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-            set(item._id, ['_ref'])
-          )
-        )
-      }
-      handleFixWeak = () => {
-        const {type} = this.props
-        this.props.onChange(
-          PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak']))
-        )
-      }
-      handleClear = () => {
-        this.props.onChange(PatchEvent.from(unset()))
-      }
-      handleSearch = (query: string) => {
-        this.search(query)
-      }
-      handleOpen = () => {
-        this.search('')
-      }
+const NO_FILTER = () => true
 
-      resolveUserDefinedFilter = () => {
-        const {type, document, getValuePath} = this.props
-        const options = type.options
-        if (!options) {
-          return {}
-        }
+function nonNullable<T>(v: T): v is NonNullable<T> {
+  return v !== null
+}
 
-        const filter = options.filter
-        const params = 'filterParams' in options ? options.filterParams : undefined
-        if (typeof filter === 'function') {
-          const parentPath = getValuePath().slice(0, -1)
-          const parent = get(document, parentPath) as Record<string, unknown>
-          return filter({document, parentPath, parent})
-        }
+export const ReferenceInput = forwardRef(function ReferenceInput(
+  props: Props,
+  forwardedRef: ForwardedRef<HTMLInputElement>
+) {
+  const {
+    type,
+    value,
+    level,
+    markers,
+    readOnly,
+    onSearch,
+    onChange,
+    presence,
+    compareValue,
+    focusPath = EMPTY_ARRAY,
+    onFocus,
+    onBlur,
+    getPreviewSnapshot,
+  } = props
 
-        return {filter, params}
-      }
-      search = async (query: string) => {
-        this.setState({
-          isFetching: true,
-        })
-
-        const {type, onSearch} = this.props
-        const options = await this.resolveUserDefinedFilter()
-
-        this.subscriptions.replace(
-          'search',
-          onSearch(query, type, options).subscribe({
-            next: (items: Array<SearchHit>) => {
-              this.setState((prev) => {
-                const updatedCache = items.reduce((cache, item) => {
-                  cache[item._id] = item
-                  return cache
-                }, Object.assign({}, prev.refCache))
-
-                return {
-                  hits: items,
-                  isFetching: false,
-                  refCache: updatedCache,
-                }
-              })
-            },
-            error: (err: SearchError) => {
-              const isQueryError = err.details && err.details.type === 'queryParseError'
-              if (!isQueryError || !options.filter) {
-                throw err
-              }
-
-              err.message = 'Invalid reference filter, please check `filter`!'
-              throw err
-            },
-          })
-        )
-      }
-      renderHit = (item: SearchHit) => {
-        const type = this.getMemberTypeFor(item._type)
-        return <Preview type={type} value={item} layout="default" />
-      }
-      renderOpenItemElement = () => {
-        const {value} = this.props
-        const {isMissing, previewSnapshot} = this.state
-        if (!value || !value._ref || isMissing) {
-          return null
-        }
-        return (
-          <IntentLink
-            title={previewSnapshot && `Open ${previewSnapshot.title}`}
-            intent="edit"
-            params={{id: value._ref, type: previewSnapshot ? previewSnapshot._type : undefined}}
-            className={styles.referenceLink}
-          >
-            <LinkIcon />
-          </IntentLink>
-        )
-      }
-      focus() {
-        if (this._input) {
-          this._input.focus()
-        }
-      }
-      setInput = (input?: SearchableSelect) => {
-        this._input = input
-      }
-      render() {
-        const {type, value, level, markers, readOnly, presence, compareValue} = this.props
-        const {previewSnapshot, isFetching, isMissing, hits} = this.state
-        const valueFromHit = value && hits.find((hit) => hit._id === value._ref)
-        const weakIs = value && value._weak ? 'weak' : 'strong'
-        const weakShouldBe = type.weak === true ? 'weak' : 'strong'
-
-        const hasRef = value && value._ref
-        const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
-        const errors = markers.filter(isValidationErrorMarker)
-        let inputValue = value ? previewSnapshot && previewSnapshot.title : undefined
-        if (previewSnapshot && !previewSnapshot.title) {
-          inputValue = 'Untitled document'
-        }
-        const isLoadingSnapshot = value && value._ref && !previewSnapshot
-        const placeholder = isLoadingSnapshot ? 'Loading…' : 'Type to search…'
-        return (
-          <ChangeIndicatorCompareValueProvider
-            value={value?._ref}
-            compareValue={compareValue?._ref}
-          >
-            <FormField
-              inputId={this._inputId}
-              __unstable_markers={markers}
-              title={type.title}
-              level={level}
-              description={type.description}
-              __unstable_presence={presence}
-            >
-              <Stack space={2}>
-                {hasWeakMismatch && (
-                  <Alert
-                    suffix={
-                      <Stack padding={2}>
-                        <Button
-                          onClick={this.handleFixWeak}
-                          text={
-                            <>
-                              Convert to <em>{weakShouldBe}</em> reference
-                            </>
-                          }
-                          tone="caution"
-                        />
-                      </Stack>
-                    }
-                    title={
-                      <>
-                        Reference is not <em>{weakShouldBe}</em>
-                      </>
-                    }
-                  >
-                    <Text as="p">
-                      This reference is <em>{weakIs}</em>. According to the schema it should be{' '}
-                      <em>{weakShouldBe}</em>.
-                    </Text>
-                  </Alert>
-                )}
-
-                <SearchableSelect
-                  inputId={this._inputId}
-                  placeholder={readOnly ? '' : placeholder}
-                  title={
-                    isMissing && hasRef
-                      ? `Referencing nonexistent document (id: ${value._ref || 'unknown'})`
-                      : previewSnapshot && previewSnapshot.description
-                  }
-                  customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                  onOpen={this.handleOpen}
-                  onFocus={this.handleFocus}
-                  onSearch={this.handleSearch}
-                  onChange={this.handleChange}
-                  onClear={this.handleClear}
-                  openItemElement={this.renderOpenItemElement}
-                  value={valueFromHit || value}
-                  inputValue={isMissing ? '<nonexistent reference>' : inputValue}
-                  renderItem={this.renderHit}
-                  isLoading={isFetching || isLoadingSnapshot}
-                  items={hits}
-                  ref={this.setInput}
-                  readOnly={readOnly || isLoadingSnapshot}
-                />
-              </Stack>
-            </FormField>
-          </ChangeIndicatorCompareValueProvider>
-        )
-      }
-    }
+  const handleChange = useCallback(
+    (id: string) => {
+      const events =
+        id === ''
+          ? [unset()]
+          : [
+              setIfMissing({
+                _type: type.name,
+                _ref: id,
+              }),
+              type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+              set(id, ['_ref']),
+            ]
+      onChange(PatchEvent.from(events))
+    },
+    [onChange, type]
   )
-)
+
+  const preview = usePreviewSnapshot(value, getPreviewSnapshot)
+
+  const weakIs = value && value._weak ? 'weak' : 'strong'
+  const weakShouldBe = type.weak === true ? 'weak' : 'strong'
+  const isMissing = value?._ref && !preview.isLoading && preview.snapshot === null
+
+  const hasRef = value && value._ref
+
+  const handleFixStrengthMismatch = useCallback(() => {
+    onChange(PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak'])))
+  }, [onChange, type])
+
+  const {push} = useToast()
+
+  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+
+  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
+
+  const handleFocus = useCallback(() => {
+    if (onFocus) {
+      onFocus(['_ref'])
+    }
+  }, [onFocus])
+
+  const handleQueryChange = useObservableCallback((inputValue$: Observable<string | null>) => {
+    return inputValue$.pipe(
+      distinctUntilChanged(),
+      filter(nonNullable),
+      switchMap((searchString) =>
+        concat(
+          of({isLoading: true}),
+          onSearch(searchString).pipe(
+            map((hits) => ({hits})),
+            catchError((error) => {
+              push({
+                title: 'Reference search failed',
+                description: error.message,
+                status: 'error',
+                id: `reference-search-fail-${inputId}`,
+              })
+              return of({hits: []})
+            })
+          ),
+          of({isLoading: false})
+        )
+      ),
+      scan(
+        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+        INITIAL_SEARCH_STATE
+      ),
+      tap(setSearchState)
+    )
+  }, [])
+
+  const handleOpenButtonClick = useCallback(() => {
+    handleQueryChange('')
+  }, [handleQueryChange])
+
+  const renderValue = useCallback(
+    (autocompleteValue) => {
+      if (autocompleteValue === '') {
+        return ''
+      }
+      if (isMissing) {
+        return `<nonexistent document>`
+      }
+      return preview.isLoading ? 'Loading…' : preview.snapshot?.title || 'Untitled'
+    },
+    [isMissing, preview]
+  )
+
+  const inputId = useId()
+
+  const renderOption = useCallback(
+    (option) => {
+      const memberType = getMemberTypeFor(option.hit._type, type)
+      return (
+        <Card as="button">
+          <Box padding={1}>
+            {memberType ? (
+              <Preview type={memberType} value={option.hit} layout="default" />
+            ) : (
+              <>Reference search returned a document type that is not a valid member</>
+            )}
+          </Box>
+        </Card>
+      )
+    },
+    [type]
+  )
+
+  const placeholder = preview.isLoading ? 'Loading…' : 'Type to search…'
+  return (
+    <ChangeIndicatorCompareValueProvider value={value?._ref} compareValue={compareValue?._ref}>
+      <FormField
+        htmlFor={inputId}
+        __unstable_markers={markers}
+        __unstable_presence={presence}
+        title={type.title}
+        level={level}
+        description={type.description}
+      >
+        <div>
+          {hasRef && !isMissing && weakIs !== weakShouldBe && (
+            <Alert
+              title="Reference strength mismatch"
+              status="warning"
+              suffix={
+                <Stack padding={2}>
+                  <Button
+                    onClick={handleFixStrengthMismatch}
+                    text={<>Convert to {weakShouldBe} reference</>}
+                    tone="caution"
+                  />
+                </Stack>
+              }
+            >
+              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
+              <em>{weakShouldBe}</em>
+              <Details marginTop={4} title={<>Details</>}>
+                <Stack space={3}>
+                  <Text as="p" muted size={1}>
+                    {type.weak ? (
+                      <>
+                        This reference is currently marked as a <em>strong reference</em>. It will
+                        not be possible to delete the "{preview.snapshot?.title}"-document without
+                        first removing this reference.
+                      </>
+                    ) : (
+                      <>
+                        This reference is currently marked as a <em>weak reference</em>. This makes
+                        it possible to delete the "{preview.snapshot?.title}"-document without first
+                        deleting this reference, leaving this field referencing a nonexisting
+                        document.
+                      </>
+                    )}
+                  </Text>
+                </Stack>
+              </Details>
+            </Alert>
+          )}
+          {value && isMissing && (
+            <Alert title="Nonexistent document reference" status="warning">
+              <Text as="p" muted size={1}>
+                This field is currently referencing a document that doesn't exist (ID:{' '}
+                <code>{value._ref}</code>). You can either remove the reference or replace it with
+                an existing document.
+              </Text>
+            </Alert>
+          )}
+          <Flex>
+            <Box flex={1}>
+              <Autocomplete
+                loading={searchState.isLoading}
+                ref={forwardedRef}
+                id={inputId || ''}
+                options={searchState.hits.map((hit) => ({
+                  value: hit._id,
+                  hit: hit,
+                }))}
+                onFocus={handleFocus}
+                onBlur={onBlur}
+                radius={1}
+                readOnly={readOnly}
+                value={value?._ref}
+                placeholder={placeholder}
+                customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
+                onQueryChange={handleQueryChange}
+                onChange={handleChange}
+                filterOption={NO_FILTER}
+                renderOption={renderOption}
+                renderValue={renderValue}
+                openButton={{onClick: handleOpenButtonClick}}
+                prefix={
+                  <Box padding={1}>
+                    <IntentButton
+                      disabled={!preview.snapshot}
+                      icon={LinkIcon}
+                      title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
+                      intent="edit"
+                      mode="bleed"
+                      padding={2}
+                      params={
+                        preview.snapshot
+                          ? {
+                              id: preview.snapshot._id,
+                              type: preview.snapshot._type,
+                            }
+                          : EMPTY_OBJECT
+                      }
+                    />
+                  </Box>
+                }
+              />
+            </Box>
+          </Flex>
+        </div>
+      </FormField>
+    </ChangeIndicatorCompareValueProvider>
+  )
+})
