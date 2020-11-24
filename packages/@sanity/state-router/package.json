@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
-    "@types/react": "^16.9.49",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",

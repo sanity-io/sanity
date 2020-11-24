@@ -21,7 +21,7 @@
     "typescript"
   ],
   "dependencies": {
-    "@types/react": "^16.9.49"
+    "@types/react": "^17.0.0"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
