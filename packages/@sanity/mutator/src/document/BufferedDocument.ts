@@ -116,7 +116,7 @@ export default class BufferedDocument {
 
   // Submit all mutations in the buffer to be committed
   commit() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       // Anything to commit?
       if (!this.buffer.hasChanges()) {
         resolve()
