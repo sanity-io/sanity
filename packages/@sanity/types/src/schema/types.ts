@@ -36,6 +36,7 @@ export interface BaseSchemaType {
   description?: string
   type?: SchemaType
   readOnly?: boolean
+  liveEdit?: boolean
   icon?: React.ComponentType
 
   preview?: {

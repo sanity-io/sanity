@@ -20,20 +20,13 @@ export function getMonorepoAliases() {
     const pathEntries = Object.entries(compilerOptions.paths)
     const aliases = pathEntries.map(([key, value]) => [key, value[0]])
 
-    const aliasMap = aliases.reduce((acc, [key, relativePath]) => {
-      // ignore `part:*` paths
-      if (key.startsWith('part:')) {
-        return acc
-      }
-
+    return aliases.reduce((acc, [key, relativePath]) => {
       acc[key] = resolve(compilerOptions.baseUrl, relativePath)
       return acc
     }, {})
-
-    return aliasMap
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('WARNING: failed to load paths from tsconfig.json in monorepo', err.messagee)
+    console.warn('WARNING: failed to load paths from tsconfig.json in monorepo', err.message)
   }
 
   return {}

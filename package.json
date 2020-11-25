@@ -46,7 +46,7 @@
     "verify-format": "npm run prettier -- -c",
     "postinstall": "npm run bootstrap",
     "vercel-build": "npm run build && cd examples/test-studio && npm run build -- -y",
-    "type-check": "lerna run --parallel type-check"
+    "type-check": "tsc -b ./packages --force"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -84,10 +84,7 @@
     "gulp-changed": "^4.0.2",
     "gulp-filter": "^6.0.0",
     "gulp-newer": "^1.4.0",
-    "gulp-notify": "^3.2.0",
-    "gulp-plumber": "^1.2.1",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-typescript": "^5.0.1",
     "gulp-watch": "^5.0.1",
     "hard-rejection": "^2.1.0",
     "husky": "^2.5.0",

@@ -5,10 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "NODE_ENV=test jest",
-    "build": "tsc",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json",
-    "type-check:src": "tsc --noEmit"
+    "test": "NODE_ENV=test jest"
   },
   "keywords": [
     "sanity",

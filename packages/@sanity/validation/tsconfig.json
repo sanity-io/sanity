@@ -1,8 +1,10 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["src"],
+  "include": ["./src/**/*"],
   "compilerOptions": {
+    "jsx": "react",
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "allowJs": true
   }
 }

@@ -8,9 +8,7 @@
     "clean": "rimraf lib",
     "test": "tap -t120 test/*.test.ts",
     "perf": "node ./perf/run.js",
-    "prebuild": "npm run clean",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json",
-    "type-check:src": "tsc --noEmit"
+    "prebuild": "npm run clean"
   },
   "keywords": [
     "sanity",

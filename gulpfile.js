@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires, import/no-unassigned-import, max-nested-callbacks */
 
-const fs = require('fs')
 const path = require('path')
 const {src, dest, watch, parallel, series} = require('gulp')
 const del = require('del')
 const changed = require('gulp-changed')
-const ts = require('gulp-typescript')
 const filter = require('gulp-filter')
-const {flatten} = require('lodash')
-const notify = require('gulp-notify')
-const plumber = require('gulp-plumber')
 const chalk = require('chalk')
 const babel = require('gulp-babel')
-const {getPackagesOrderedByTopology} = require('./scripts/utils/getPackagesOrderedByTopology')
+const {runTsc} = require('./scripts/runTsc')
+const log = require('fancy-log')
+const through = require('through2')
 
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
 
@@ -46,7 +43,6 @@ const withDisplayName = (name, fn) => {
 
 const TASK_INFO = {
   babel: {title: 'Babel', color: chalk.yellowBright},
-  dts: {title: 'TypeScript (d.ts)', color: chalk.blueBright},
   assets: {title: 'Assets (copy)', color: chalk.greenBright},
   watch: {title: 'Watch', color: chalk.cyanBright},
   _unknown: {title: 'Unknown', color: chalk.white},
@@ -82,29 +78,6 @@ function copyAssets(packageDir) {
   )
 }
 
-function notifyErrors(title) {
-  return plumber({
-    errorHandler: notify.onError({
-      title,
-      error: '<%= error.message %>',
-      // Sound can be one of these: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink.
-      // See https://github.com/mikaelbr/node-notifier#all-notification-options-with-their-defaults
-      sound: process.env.TS_ERROR_SOUND === 'off' ? false : process.env.TS_ERROR_SOUND || 'Purr',
-    }),
-  })
-}
-
-function buildTypeScript(packageDir) {
-  return withDisplayName(compileTaskName('dts', packageDir), () => {
-    const project = ts.createProject(path.join(packageDir, 'tsconfig.dist.json'))
-    return project
-      .src()
-      .pipe(notifyErrors(`Error in ${path.relative('packages', packageDir)}`))
-      .pipe(project())
-      .dts.pipe(dest(project.options.outDir))
-  })
-}
-
 function buildPackage(packageDir) {
   return parallel(buildJavaScript(packageDir), copyAssets(packageDir))
 }
@@ -113,29 +86,22 @@ function watchPackage(name, packageDir, task) {
   return withDisplayName(name, () => watch([`${SRC_DIR}/**/*`], {cwd: packageDir}, task))
 }
 
-const isTSProject = (packageDir) => {
-  const tsConfigPath = path.join(packageDir, 'tsconfig.json')
-  return fs.existsSync(tsConfigPath)
-}
-
-// We the list of packages ordered by topology to make sure we compile in the correct order
-const ORDERED_PACKAGES = getPackagesOrderedByTopology().map((pkgName) =>
-  path.resolve(__dirname, `packages/${pkgName}`)
-)
-
-const TS_PROJECTS = ORDERED_PACKAGES.filter(isTSProject)
-
-const buildTS = series(TS_PROJECTS.map(buildTypeScript))
-
-const watchTS = parallel(
-  flatten(TS_PROJECTS).map((packageDir) =>
-    watchPackage(
-      compileTaskName('watch', packageDir, 'TS'),
-      packageDir,
-      buildTypeScript(packageDir)
-    )
+const watchTS = function watchTS() {
+  return runTsc(path.join(__dirname), true).pipe(
+    through((data, enc, cb) => {
+      log(data.toString())
+      cb()
+    })
   )
-)
+}
+const buildTS = function buildTS() {
+  return runTsc(path.join(__dirname)).pipe(
+    through((data, enc, cb) => {
+      log(data.toString())
+      cb()
+    })
+  )
+}
 
 const buildJSAndAssets = parallel(PACKAGE_PATHS.map(buildPackage))
 const watchJSAndAssets = parallel(
@@ -148,6 +114,7 @@ const watchJSAndAssets = parallel(
   )
 )
 
+exports.ts = buildTS
 exports.build = parallel(buildJSAndAssets, buildTS)
 exports.watch = series(parallel(buildJSAndAssets, buildTS), parallel(watchJSAndAssets, watchTS))
 exports.clean = () => del(PACKAGE_PATHS.map((pth) => path.join(pth, DEST_DIR)))
