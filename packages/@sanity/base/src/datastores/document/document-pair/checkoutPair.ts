@@ -50,9 +50,9 @@ export function checkoutPair(idPair: IdPair): Pair {
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(filter((ev) => ev.type === 'reconnect')) as Observable<
-    ReconnectEvent
-  >
+  const reconnect$ = listenerEvents$.pipe(
+    filter((ev) => ev.type === 'reconnect')
+  ) as Observable<ReconnectEvent>
 
   const draft = createBufferedDocument(
     draftId,
