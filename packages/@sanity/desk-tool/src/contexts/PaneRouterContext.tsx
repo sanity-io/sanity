@@ -156,7 +156,7 @@ type PaneRouterContextFactory = (options: {
 }) => PaneRouterContextShape
 
 interface DeskToolPanesProps {
-  router: HOCRouter // <{panes: RouterPanesState; payload: unknown; params: Record<string, any>}>
+  router: typeof HOCRouter
 }
 
 export function getPaneRouterContextFactory(
