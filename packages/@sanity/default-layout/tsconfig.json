@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.settings",
   "include": ["src"],
   "compilerOptions": {
+    "composite": true,
     // -- strictness options we need to disable in a transition period.
     "noImplicitAny": false,
     "strictNullChecks": false,
