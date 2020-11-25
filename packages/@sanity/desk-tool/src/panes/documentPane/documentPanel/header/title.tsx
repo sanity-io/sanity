@@ -19,7 +19,7 @@ export function DocumentHeaderTitle({
   }
 
   if (!value) {
-    return <>New {type.title || type.name}</>
+    return <>New {type?.title || type?.name}</>
   }
 
   return (

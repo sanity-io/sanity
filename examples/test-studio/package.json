@@ -35,6 +35,7 @@
     "@sanity/react-hooks": "2.0.9",
     "@sanity/studio-hints": "2.0.9",
     "@sanity/util": "2.0.9",
+    "@sanity/types": "2.0.1",
     "@sanity/vision": "2.0.9",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",

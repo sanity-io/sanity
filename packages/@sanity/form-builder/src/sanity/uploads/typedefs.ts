@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs'
 import {AssetSourceSpec, SchemaType} from '@sanity/types'
+import {AssetMetadataType} from '@sanity/client'
 import {Patch} from '../../typedefs/patch'
 
 export type UploadEvent = {
@@ -10,7 +11,7 @@ export type UploadEvent = {
 export type ResolvedUploader = {uploader: Uploader; type: SchemaType}
 
 export type UploadOptions = {
-  metadata?: string[]
+  metadata?: AssetMetadataType[]
   storeOriginalFilename?: boolean
   label?: string
   title?: string

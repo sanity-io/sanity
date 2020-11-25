@@ -10,6 +10,6 @@ export {LiveEditBadge} from './LiveEditBadge'
 
 export default function defaultResolveDocumentBadges(props) {
   const schemaType = schema.get(props.type)
-  const isLiveEditEnabled = schemaType.liveEdit === true
+  const isLiveEditEnabled = schemaType?.liveEdit === true
   return isLiveEditEnabled ? [LiveEditBadge] : [PublishedStatusBadge, DraftStatusBadge]
 }

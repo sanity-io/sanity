@@ -1,7 +1,7 @@
 import {isKeyHotkey} from 'is-hotkey'
 import PropTypes from 'prop-types'
 import React from 'react'
-import schema from 'part:@sanity/base/schema?'
+import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview?'
 import {concat, of, Subject, timer} from 'rxjs'
 import {

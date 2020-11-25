@@ -1,0 +1,11 @@
+export declare const ENABLED = true
+export declare const CORNER_RADIUS = 4
+export declare const INTERACTIVE_STROKE_WIDTH = 16
+export declare const CONNECTOR_MARGIN = 8
+export declare const ARROW_MARGIN_X = 8
+export declare const ARROW_MARGIN_Y = 2
+export declare const ARROW_SIZE = 4
+export declare const ARROW_THRESHOLD = 12
+export declare const STROKE_WIDTH = 2
+export declare const DEBUG = false
+export declare const DEBUG_LAYER_BOUNDS = false
