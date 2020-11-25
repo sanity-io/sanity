@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+# TypeScript incremental build information
+tsconfig.tsbuildinfo
+
 # Runtime data
 pids
 *.pid

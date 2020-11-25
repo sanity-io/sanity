@@ -1,11 +1,13 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
   "include": ["src"],
   "compilerOptions": {
+    "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
     "jsx": "react",
     "outDir": "./lib",
+    "rootDir": "./src",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
@@ -14,5 +16,10 @@
         }
       }
     ]
-  }
+  },
+  "references": [
+    {
+      "path": "../types"
+    }
+  ]
 }

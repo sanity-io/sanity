@@ -2,9 +2,11 @@
   "extends": "../../tsconfig",
   "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
+    "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
     "outDir": "./lib",
+    "rootDir": "./src",
     "jsx": "react"
   }
 }

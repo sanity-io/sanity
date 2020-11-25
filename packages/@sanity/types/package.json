@@ -8,9 +8,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "type-check": "tsc --noEmit -p tsconfig.dist.json",
-    "type-check:src": "tsc --noEmit"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
