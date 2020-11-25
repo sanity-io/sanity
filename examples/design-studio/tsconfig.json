@@ -4,7 +4,6 @@
   "compilerOptions": {
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
-    "outDir": "./lib",
     "jsx": "react"
   }
 }

@@ -1,8 +1,10 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
   "include": ["src"],
   "compilerOptions": {
+    "composite": true,
     "outDir": "./lib",
+    "rootDir": "./src",
     // -- strictness options we need to disable in a transition period.
     "noImplicitAny": false,
     "strictNullChecks": false,
@@ -17,5 +19,28 @@
         }
       }
     ]
-  }
+  },
+  "references": [
+    {
+      "path": "../preview"
+    },
+    {
+      "path": "../structure"
+    },
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../util"
+    },
+    {
+      "path": "../state-router"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../mutator"
+    }
+  ]
 }

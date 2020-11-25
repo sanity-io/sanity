@@ -1,7 +1,8 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
   "include": ["src"],
   "compilerOptions": {
+    "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
     "outDir": "./lib",
@@ -14,5 +15,13 @@
         }
       }
     ]
-  }
+  },
+  "references": [
+    {
+      "path": "../react-hooks"
+    },
+    {
+      "path": "../field"
+    }
+  ]
 }
