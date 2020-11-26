@@ -9,11 +9,13 @@ const helpText = `
 Options
   --detach Start the copy without waiting for it to finish
   --attach <job-id> Attach to the running copy process to show progress
+  --skip-history Don't preserve document history on copy
 
 Examples
   sanity dataset copy
   sanity dataset copy <source-dataset>
   sanity dataset copy <source-dataset> <target-dataset>
+  sanity dataset copy --skip-history <source-dataset> <target-dataset>
   sanity dataset copy --detach <source-dataset> <target-dataset>
   sanity dataset copy --attach <job-id>
 `
@@ -107,6 +109,7 @@ export default {
     }
 
     const [sourceDataset, targetDataset] = args.argsWithoutOptions
+    const shouldSkipHistory = Boolean(flags['skip-history'])
 
     const nameError = sourceDataset && validateDatasetName(sourceDataset)
     if (nameError) {
@@ -138,7 +141,10 @@ export default {
       const response = await client.request({
         method: 'PUT',
         uri: `/datasets/${sourceDatasetName}/copy`,
-        body: {targetDataset: targetDatasetName},
+        body: {
+          targetDataset: targetDatasetName,
+          skipHistory: shouldSkipHistory,
+        },
       })
 
       output.print(
