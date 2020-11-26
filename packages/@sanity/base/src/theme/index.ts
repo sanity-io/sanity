@@ -1,9 +1,9 @@
-import {studioTheme as defaultTheme, ThemeCardColor} from '@sanity/ui'
+import {studioTheme as defaultTheme, ThemeColorCard} from '@sanity/ui'
 import legacyTheme from 'sanity:css-custom-properties'
 
 const defaultLightScheme = defaultTheme.color.light
 
-const customCard: ThemeCardColor = {
+const customCard: ThemeColorCard = {
   tones: {
     ...defaultLightScheme.card.tones,
     default: {
