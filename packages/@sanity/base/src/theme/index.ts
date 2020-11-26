@@ -10,8 +10,8 @@ const customCard: ThemeColorCard = {
       ...defaultLightScheme.card.tones.default,
       enabled: {
         ...defaultLightScheme.card.tones.default.enabled,
-        bg: legacyTheme['--body-bg'],
-        fg: legacyTheme['--body-text'],
+        bg: legacyTheme['--component-bg'],
+        fg: legacyTheme['--component-text-color'],
       },
     },
     transparent: {
