@@ -7,12 +7,15 @@ import debug from '../../debug'
 
 const helpText = `
 Options
-  --wait Waits for the operation to finish
+  --detach Start the copy without waiting for it to finish
+  --attach <job-id> Attach to the running copy process to show progress
 
 Examples
   sanity dataset copy
   sanity dataset copy <source-dataset>
   sanity dataset copy <source-dataset> <target-dataset>
+  sanity dataset copy --detach <source-dataset> <target-dataset>
+  sanity dataset copy --attach <job-id>
 `
 
 const progress = (url) => {
@@ -54,6 +57,32 @@ const progress = (url) => {
   })
 }
 
+const followProgress = (jobId, client, output) => {
+  const spinner = output
+    .spinner({
+      text: `Copy in progress: 0%`,
+    })
+    .start()
+
+  const listenUrl = client.getUrl(`jobs/${jobId}/listen`)
+
+  debug(`Listening to ${listenUrl}`)
+
+  progress(listenUrl).subscribe({
+    next: (event) => {
+      const eventProgress = event.progress ? event.progress : 0
+
+      spinner.text = `Copy in progress: ${eventProgress}%`
+    },
+    error: () => {
+      spinner.fail('There was an error copying the dataset.')
+    },
+    complete: () => {
+      spinner.succeed(`Copy finished.`)
+    },
+  })
+}
+
 export default {
   name: 'copy',
   group: 'dataset',
@@ -62,9 +91,22 @@ export default {
   description: 'Copies a dataset including its assets to a new dataset',
   action: async (args, context) => {
     const {apiClient, output, prompt} = context
-    const [sourceDataset, targetDataset] = args.argsWithoutOptions
     const flags = args.extOptions
     const client = apiClient()
+
+    if (flags.attach) {
+      const jobId = flags.attach
+
+      if (!jobId) {
+        throw new Error('Please supply a jobId')
+      }
+
+      followProgress(jobId, client, output)
+
+      return
+    }
+
+    const [sourceDataset, targetDataset] = args.argsWithoutOptions
 
     const nameError = sourceDataset && validateDatasetName(sourceDataset)
     if (nameError) {
@@ -103,33 +145,16 @@ export default {
         `Copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(targetDatasetName)}...`
       )
 
-      if (!flags.wait) {
+      if (flags.detach) {
+        output.print(`Copy initiated.`)
+        output.print(
+          `\nRun:\n\n    sanity dataset copy --attach ${response.jobId}\n\nto watch attach`
+        )
+
         return
       }
 
-      const spinner = output
-        .spinner({
-          text: `~0% done.`,
-        })
-        .start()
-
-      const listenUrl = client.getUrl(`jobs/${response.jobId}/listen`)
-      debug(`Listening on ${listenUrl}`)
-      progress(listenUrl).subscribe({
-        next: (event) => {
-          spinner.text = `~${event.progress}% done.`
-        },
-        error: () => {
-          spinner.fail('There was an error copying the dataset.')
-        },
-        complete: () => {
-          spinner.succeed(
-            `Finished copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(
-              targetDatasetName
-            )}.`
-          )
-        },
-      })
+      followProgress(response.jobId, client, output)
     } catch (error) {
       if (error.statusCode) {
         output.print(`${chalk.red(`Dataset copying failed:\n${error.response.body.message}`)}\n`)
