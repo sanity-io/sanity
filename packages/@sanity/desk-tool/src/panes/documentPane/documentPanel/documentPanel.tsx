@@ -1,4 +1,5 @@
 import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {Card} from '@sanity/ui'
 import classNames from 'classnames'
 import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
@@ -111,7 +112,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const margins = screenIsNarrow ? narrowScreenMargins : DEFAULT_MARGINS
 
   return (
-    <div className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
+    <Card className={classNames(styles.root, props.isCollapsed && styles.isCollapsed)}>
       <div className={styles.headerContainer}>
         <DocumentPanelHeader
           activeViewId={props.activeViewId}
@@ -185,6 +186,6 @@ export function DocumentPanel(props: DocumentPanelProps) {
           </div>
         </div>
       </PortalProvider>
-    </div>
+    </Card>
   )
 }
