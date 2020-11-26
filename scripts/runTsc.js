@@ -14,11 +14,15 @@ const getProjectEnv = (projectPath) => {
   /* eslint-enable no-process-env */
 }
 exports.runTsc = function runTsc(projectPath, watch) {
-  const proc = childProcess.spawn('tsc', ['-b', ...(watch ? ['--watch'] : [])], {
-    shell: isWindows,
-    cwd: projectPath,
-    env: getProjectEnv(projectPath),
-  })
+  const proc = childProcess.spawn(
+    'tsc',
+    ['-b', './packages', '--force', ...(watch ? ['--watch'] : [])],
+    {
+      shell: isWindows,
+      cwd: projectPath,
+      env: getProjectEnv(projectPath),
+    }
+  )
 
   return mergeStream([
     proc.stdout.pipe(
