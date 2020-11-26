@@ -75,14 +75,16 @@ export default {
       .list()
       .then((datasets) => datasets.map((ds) => ds.name))
 
-    const sourceDatasetName = await (sourceDataset || promptForDatasetName(prompt))
+    const sourceDatasetName = await (sourceDataset ||
+      promptForDatasetName(prompt, {message: 'Source dataset name:'}))
     if (!existingDatasets.includes(sourceDatasetName)) {
-      throw new Error(`Dataset "${sourceDatasetName}" doesn't exist`)
+      throw new Error(`Source dataset "${sourceDatasetName}" doesn't exist`)
     }
 
-    const targetDatasetName = await (targetDataset || promptForDatasetName(prompt))
+    const targetDatasetName = await (targetDataset ||
+      promptForDatasetName(prompt, {message: 'Target dataset name:'}))
     if (existingDatasets.includes(targetDatasetName)) {
-      throw new Error(`Dataset "${targetDatasetName}" already exists`)
+      throw new Error(`Target dataset "${targetDatasetName}" already exists`)
     }
 
     const err = validateDatasetName(targetDatasetName)
