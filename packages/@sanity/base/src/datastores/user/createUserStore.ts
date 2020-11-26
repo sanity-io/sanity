@@ -115,7 +115,7 @@ function arrayify(users: User | User[]): User[] {
 }
 
 function isUser(thing: unknown): thing is User {
-  return thing && thing !== null && typeof (thing as User).id === 'string'
+  return Boolean(thing && thing !== null && typeof (thing as User).id === 'string')
 }
 
 function normalizeOwnUser(user: CurrentUser): User {
