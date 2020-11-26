@@ -52,6 +52,9 @@ jobs:
           # Don't include files like LICENSE and css files
           CHANGED_JS_FILES=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(mjs\|tsx\|jsx\|js\|ts\)$/!d')
 
+          # Don't include :parts files
+          CHANGED_JS_FILES=$(echo "$CHANGED_JS_FILES" | sed -e '/^.\+\:.*$/d')
+
           for FILE_NAME in $CHANGED_JS_FILES
           do
             npm run eslint -- $FILE_NAME
