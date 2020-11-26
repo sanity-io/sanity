@@ -9,8 +9,7 @@ import {
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
-import {TextInput, Button, Flex, Box, Card, Stack, Badge} from '@sanity/ui'
-
+import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import FormField from 'part:@sanity/components/formfields/default'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
@@ -49,7 +48,7 @@ function getNewFromSource(source, valuePath, document) {
 
 const SlugInput = React.forwardRef(function SlugInput(
   props: Props,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.Ref<HTMLInputElement>
 ) {
   const {
     value,
@@ -134,9 +133,8 @@ const SlugInput = React.forwardRef(function SlugInput(
                 type="button"
                 disabled={readOnly || isUpdating}
                 onClick={handleGenerateSlug}
-              >
-                {generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
-              </Button>
+                text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+              />
             </Box>
           </Flex>
         </Stack>
