@@ -33,6 +33,7 @@
     "@sanity/mutator": "2.0.9",
     "@sanity/react-hooks": "2.0.9",
     "@sanity/structure": "2.0.9",
+    "@sanity/types": "2.0.1",
     "@sanity/util": "2.0.9",
     "@sanity/uuid": "^3.0.1",
     "boundless-arrow-key-navigation": "^1.1.0",

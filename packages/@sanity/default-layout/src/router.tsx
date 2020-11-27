@@ -1,9 +1,9 @@
 import tools from 'all:part:@sanity/base/tool'
-import {project} from 'config:sanity'
+import config from 'config:sanity'
 import {route} from 'part:@sanity/base/router'
 import {CONFIGURED_SPACES, HAS_SPACES} from './util/spaces'
 
-const basePath = ((project && project.basePath) || '').replace(/\/+$/, '')
+const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')
 
 const toolRoute = route('/:tool', (toolParams: any) => {
   const foundTool = tools.find((current) => current.name === toolParams.tool)

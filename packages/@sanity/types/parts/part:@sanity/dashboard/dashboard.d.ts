@@ -1,0 +1,5 @@
+declare module 'part:@sanity/dashboard/config?'
+declare module 'part:@sanity/dashboard/widget'
+declare module 'part:@sanity/dashboard/widget-container'
+declare module 'part:@sanity/dashboard/widget-styles'
+declare module 'all:part:@sanity/dashboard/widget?'

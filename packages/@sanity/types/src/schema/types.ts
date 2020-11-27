@@ -17,7 +17,6 @@ export interface PreviewValue {
   media?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PrepareViewOptions {
   ordering?: SortOrdering
 }

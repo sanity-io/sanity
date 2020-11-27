@@ -1,7 +1,8 @@
 import client from 'part:@sanity/base/client'
 import {observePaths} from 'part:@sanity/base/preview'
 import {mergeMap, map, catchError} from 'rxjs/operators'
-import {from as observableFrom, of as observableOf} from 'rxjs'
+import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
+import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/typedefs'
 
@@ -68,7 +69,7 @@ export function materializeReference(id) {
     'description',
     'creditLine',
     'source',
-  ])
+  ]) as Observable<FileAsset>
 }
 
 function fetchExisting(type, hash) {
