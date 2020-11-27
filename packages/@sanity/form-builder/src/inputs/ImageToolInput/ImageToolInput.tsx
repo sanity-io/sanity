@@ -1,5 +1,4 @@
 import React from 'react'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
 import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import {ImageCrop, ImageHotspot, ObjectSchemaType} from '@sanity/types'
 import ImageTool from '@sanity/imagetool'
@@ -8,6 +7,7 @@ import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 import PatchEvent, {set} from '../../PatchEvent'
 
+import {FormField} from '../../components/FormField'
 import styles from './styles/ImageToolInput.css'
 
 interface Value {
@@ -93,20 +93,7 @@ export default class ImageToolInput extends React.Component<
         value={value?.current}
         compareValue={compareValue}
       >
-        <DefaultFormField
-          // label?: string
-          label="Hotspot &amp; crop"
-          // className?: string
-          // inline?: boolean
-          // description?: string
-          // level?: number
-          level={level}
-          // children?: React.ReactNode
-          // wrapped?: boolean
-          // labelFor?: string
-          // markers?: Marker[]
-          // presence?: FormFieldPresence[]
-        >
+        <FormField label="Hotspot &amp; crop" level={level}>
           <div className={styles.imageToolContainer}>
             <div>
               <div>
@@ -124,7 +111,7 @@ export default class ImageToolInput extends React.Component<
           <div className={styles.previewsContainer}>
             <ImageToolInputPreviewGrid imageUrl={imageUrl} value={value} />
           </div>
-        </DefaultFormField>
+        </FormField>
       </ChangeIndicatorProvider>
     )
   }
