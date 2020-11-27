@@ -10,11 +10,11 @@ import {
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
-import FormField from 'part:@sanity/components/formfields/default'
 import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {FormField} from '../../components/FormField'
 import {slugify} from './utils/slugify'
 import {useAsyncCallback} from './utils/useAsync'
 

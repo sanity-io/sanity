@@ -1,5 +1,4 @@
 import Button from 'part:@sanity/components/buttons/default'
-// import ToggleButton from 'part:@sanity/components/toggles/button'
 import React, {useCallback} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {OverflowMenu} from './OverflowMenu'

@@ -12,7 +12,6 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import FormField from 'part:@sanity/components/formfields/default'
 import styles from './styles/ReferenceInput.css'
 import Button from 'part:@sanity/components/buttons/default'
 import {get} from '@sanity/util/paths'
@@ -20,9 +19,10 @@ import {Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {tap} from 'rxjs/operators'
 import {Box, Card, Flex, Autocomplete} from '@sanity/ui'
-import Preview from '../../Preview'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import Preview from '../../Preview'
 import {IntentLink} from '../../../../state-router/src/components'
+import {FormField} from '../../components/FormField'
 
 type SearchResult = {
   _id: string
@@ -141,7 +141,7 @@ const ReferenceInput = React.forwardRef(function ReferenceInput(
   )
 
   const handleSelect = React.useCallback(
-    (option: {value: string, hit: SearchHit}) => {
+    (option: {value: string; hit: SearchHit}) => {
       onChange(
         PatchEvent.from(
           setIfMissing({
