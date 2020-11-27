@@ -19,8 +19,7 @@ import {get} from '@sanity/util/paths'
 import {Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {tap} from 'rxjs/operators'
-import {Autocomplete} from './Autocomplete'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Flex, Autocomplete} from '@sanity/ui'
 import Preview from '../../Preview'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from '../../../../state-router/src/components'
@@ -142,24 +141,24 @@ const ReferenceInput = React.forwardRef(function ReferenceInput(
   )
 
   const handleSelect = React.useCallback(
-    (item: SearchHit) => {
-      setInputValue(null)
+    (option: {value: string, hit: SearchHit}) => {
       onChange(
         PatchEvent.from(
           setIfMissing({
             _type: type.name,
-            _ref: item._id,
+            _ref: option.hit._id,
           }),
           type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-          set(item._id, ['_ref'])
+          set(option.hit._id, ['_ref'])
         )
       )
+      setInputValue(null)
     },
     [onChange, type]
   )
 
-  const handleInputChange = React.useCallback((query: string) => {
-    setInputValue(query)
+  const handleInputChange = React.useCallback((query: string | null) => {
+    setInputValue(query || '')
   }, [])
 
   const [
@@ -229,19 +228,24 @@ const ReferenceInput = React.forwardRef(function ReferenceInput(
             <Box flex={1}>
               <Autocomplete
                 ref={forwardedRef}
-                id={inputId}
-                options={hits}
-                inputValue={controlledInputValue}
+                id={inputId || ''}
+                options={hits.map((hit) => ({
+                  value: hit._id,
+                  hit: hit,
+                }))}
+                value={controlledInputValue}
                 placeholder={placeholder}
-                onInputChange={handleInputChange}
+                onQueryChange={handleInputChange}
                 onSelect={handleSelect}
-                renderOption={(option) => (
-                  <Card as="button" href={`/?id=${option._key}`}>
-                    <Box paddingX={3} paddingY={2}>
-                      <Preview type={type} value={{_ref: option._id}} layout="default" />
-                    </Box>
-                  </Card>
-                )}
+                renderOption={(option) => {
+                  return (
+                    <Card as="button" href={`/?id=${option.hit._id}`}>
+                      <Box paddingX={3} paddingY={2}>
+                        <Preview type={type} value={{_ref: option.hit._id}} layout="default" />
+                      </Box>
+                    </Card>
+                  )
+                }}
               />
             </Box>
             {previewSnapshot && (
@@ -251,7 +255,7 @@ const ReferenceInput = React.forwardRef(function ReferenceInput(
                   intent="edit"
                   params={{
                     id: value?._ref,
-                    type: previewSnapshot ? previewSnapshot._type : undefined,
+                    type: previewSnapshot ? previewSnapshot?._type : undefined,
                   }}
                   className={styles.referenceLink}
                 >
