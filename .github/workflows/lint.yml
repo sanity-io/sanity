@@ -31,7 +31,7 @@ jobs:
         id: buildModules
         run: npm run build
 
-      - name: List which files changed
+      - name: Lint changed files
         id: listChangedFiles
         run: |
           # Is this a pull request?
@@ -52,10 +52,7 @@ jobs:
           # Don't include files like LICENSE and css files
           CHANGED_JS_FILES=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(mjs\|tsx\|jsx\|js\|ts\)$/!d')
 
-          # Replace \n characters with a space
-          CHANGED_FILES_SEPARATED_BY_SPACES=$(echo "$CHANGED_JS_FILES" | sed ':a;N;$!ba;s/\n/ /g')
-
-          echo "::set-output name=changedFiles::$( echo "$CHANGED_FILES_SEPARATED_BY_SPACES" )"
-
-      - name: Run eslint for changed files
-        run: npm run eslint -- ${{ steps.listChangedFiles.outputs.changedFiles }}
+          for FILE_NAME in $CHANGED_JS_FILES
+          do
+            npm run eslint -- $FILE_NAME
+          done
