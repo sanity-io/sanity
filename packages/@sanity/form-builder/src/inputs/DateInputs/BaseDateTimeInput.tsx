@@ -6,9 +6,7 @@ import ReactDOM from 'react-dom'
 import moment, {Moment} from 'moment'
 import DatePicker from 'react-datepicker'
 import {isValidationErrorMarker, Marker} from '@sanity/types'
-import {TextInput} from '@sanity/ui'
-import Button from 'part:@sanity/components/buttons/default'
-import CalendarIcon from 'part:@sanity/base/calendar-icon'
+import {TextInput, Button, Flex, Box, Stack} from '@sanity/ui'
 import {uniqueId} from 'lodash'
 import {FormField} from '../../components/FormField'
 import styles from './styles/BaseDateTimeInput.css'
@@ -150,46 +148,43 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
         {!readOnly && (
           <div className={styles.root}>
             <div className={styles.inputWrapper} id={this._inputId}>
-              <DatePicker
-                onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
-                autoFocus={false}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-                showMonthDropdown
-                showYearDropdown
-                disabledKeyboardNavigation={!isDialogOpen}
-                selected={value || undefined}
-                placeholderText={placeholder}
-                calendarClassName={styles.datepicker}
-                popperClassName={styles.popper}
-                popperContainer={this.renderPopperContainer}
-                popperProps={{positionFixed: true}}
-                className={styles.input}
-                onClickOutside={this.handleClose}
-                onChange={this.handleDialogChange}
-                onChangeRaw={this.handleInputChange}
-                value={inputValue ? inputValue : value && value.format(format)}
-                showTimeSelect={!dateOnly}
-                dateFormat={dateFormat}
-                timeFormat={timeFormat}
-                timeIntervals={timeStep}
-                ref={this.setDatePicker}
-                dropdownMode="select"
-                todayButton={
-                  <Button color="primary" onClick={this.handleSetNow}>
-                    {todayLabel}
-                  </Button>
-                }
-              />
-            </div>
-            <div className={styles.buttonWrapper}>
-              <Button
-                bleed
-                onClick={this.handleButtonClick}
-                icon={CalendarIcon}
-                kind="simple"
-                title="Select date"
-              />
+              <Flex justify="space-between" align="center">
+                <Box flex={1}>
+                  <DatePicker
+                    onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
+                    autoFocus={false}
+                    onFocus={this.handleFocus}
+                    onBlur={this.handleBlur}
+                    showMonthDropdown
+                    showYearDropdown
+                    disabledKeyboardNavigation={!isDialogOpen}
+                    selected={value || undefined}
+                    placeholderText={placeholder}
+                    calendarClassName={styles.datepicker}
+                    popperClassName={styles.popper}
+                    popperContainer={this.renderPopperContainer}
+                    popperProps={{positionFixed: true}}
+                    className={styles.input}
+                    onClickOutside={this.handleClose}
+                    onChange={this.handleDialogChange}
+                    onChangeRaw={this.handleInputChange}
+                    value={inputValue ? inputValue : value && value.format(format)}
+                    showTimeSelect={!dateOnly}
+                    dateFormat={dateFormat}
+                    timeFormat={timeFormat}
+                    timeIntervals={timeStep}
+                    ref={this.setDatePicker}
+                    dropdownMode="select"
+                    todayButton={
+                      <Button tone="brand" onClick={this.handleSetNow} text={todayLabel} />
+                    }
+                  />
+                </Box>
+
+                <Box>
+                  <Button mode="bleed" onClick={this.handleButtonClick} icon="calendar" />
+                </Box>
+              </Flex>
             </div>
           </div>
         )}
