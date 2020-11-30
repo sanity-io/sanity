@@ -43,7 +43,7 @@
     "prettify": "lerna run clean && npm run prettier -- --write",
     "prettier": "node_modules/.bin/prettier '**/*.{ts,js,tsx,jsx}'",
     "lint-next": "npm run eslint -- `git diff --name-only next --diff-filter ACMRTUXB`",
-    "verify-format": "npm run prettier -- -c",
+    "verify-format": "lerna run clean && npm run prettier -- -c",
     "postinstall": "npm run bootstrap",
     "vercel-build": "npm run build && cd examples/test-studio && npm run build -- -y",
     "type-check": "tsc -b ./packages --force"
