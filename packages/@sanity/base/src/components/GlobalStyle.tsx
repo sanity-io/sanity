@@ -1,8 +1,8 @@
-import {ColorSchemeKey, Theme} from '@sanity/ui'
+import {ThemeColorSchemeKey, Theme} from '@sanity/ui'
 import {css, createGlobalStyle} from 'styled-components'
 
-export const GlobalStyle = createGlobalStyle<{scheme: ColorSchemeKey}>(
-  ({scheme, theme}: {scheme: ColorSchemeKey; theme: Theme}) => {
+export const GlobalStyle = createGlobalStyle<{scheme: ThemeColorSchemeKey}>(
+  ({scheme, theme}: {scheme: ThemeColorSchemeKey; theme: Theme}) => {
     const tone = theme.color[scheme].card.tones.transparent
     const text = theme.fonts.text
 
