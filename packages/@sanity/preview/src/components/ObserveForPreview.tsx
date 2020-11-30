@@ -95,17 +95,16 @@ type ReceivedProps<T = unknown> = {
   error?: Error
   children: (props: any) => React.ReactElement
 }
-export default withPropsStream<OuterProps, ReceivedProps>(
-  connect,
-  function ObserveForPreview(props: ReceivedProps) {
-    const {snapshot, type, error, isLoading, children} = props
-    return children({
-      error,
-      isLoading,
-      result: {
-        type,
-        snapshot: snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : snapshot,
-      },
-    })
-  }
-)
+export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
+  props: ReceivedProps
+) {
+  const {snapshot, type, error, isLoading, children} = props
+  return children({
+    error,
+    isLoading,
+    result: {
+      type,
+      snapshot: snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : snapshot,
+    },
+  })
+})
