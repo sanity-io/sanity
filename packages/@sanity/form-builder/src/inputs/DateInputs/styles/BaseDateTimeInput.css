@@ -83,9 +83,9 @@
   font: inherit;
   line-height: var(--input-line-height);
   box-sizing: border-box;
-  padding: calc(var(--input-padding-horizontal) - var(--input-border-size) - 2px)
+  padding: calc(var(--input-padding-horizontal) - var(--input-border-size) - 4px)
     calc(var(--input-padding-vertical) - var(--input-border-size))
-    calc(var(--input-padding-horizontal) - var(--input-border-size) - 1px);
+    calc(var(--input-padding-horizontal) - var(--input-border-size) - 3px);
   width: 100%;
   border: none;
   outline: none;
@@ -151,21 +151,21 @@
     width: 8px;
     margin-top: 8px;
   }
-  
+
   @nest & :global(.react-datepicker__navigation--previous) {
     border-width: 0 0 1px 1px;
     margin-left: 4px;
   }
-  
+
   @nest & :global(.react-datepicker__navigation--next) {
     border-width: 1px 1px 0 0;
     margin-right: 4px;
   }
-  
+
   @nest & :global(.react-datepicker__month-select) {
     font-weight: 600;
   }
-  
+
   @nest & :global(.react-datepicker__year-select) {
     font-weight: 600;
   }
@@ -183,7 +183,7 @@
     border-radius: 50%;
     background: var(--brand-primary);
   }
-  
+
   @nest & :global(.react-datepicker__day:hover) {
     border-radius: 50%;
   }
@@ -192,7 +192,7 @@
     background: transparent;
     border-top: 1px solid var(--hairline-color);
   }
-    
+
   @nest & :global(.react-datepicker-time__header) {
     color: var(--main-navigation-color);
     background: transparent;
@@ -213,7 +213,7 @@
   }
 
   @nest & :global(.react-datepicker__header--time) {
-    border-bottom:  1px solid var(--hairline-color);
+    border-bottom: 1px solid var(--hairline-color);
     background: transparent;
   }
 
