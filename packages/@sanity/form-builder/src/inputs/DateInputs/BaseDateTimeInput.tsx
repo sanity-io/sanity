@@ -3,14 +3,14 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import moment from 'moment'
 import type {Moment} from 'moment'
+import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import {isValidationErrorMarker, Marker} from '@sanity/types'
-import {TextInput, Button, Flex, Box, Stack} from '@sanity/ui'
+import {Box, Button, Flex, TextInput} from '@sanity/ui'
 import {uniqueId} from 'lodash'
 import {FormField} from '../../components/FormField'
-import styles from './styles/BaseDateTimeInput.css'
+import {Portal, Root} from './styles'
 
 type Props = {
   value: Moment | null
@@ -105,10 +105,12 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   }
   renderPopperContainer = ({children}) => {
     const {isDialogOpen} = this.state
-    return ReactDOM.createPortal(
-      <div className={isDialogOpen ? styles.portal : styles.portalClosed}>{children}</div>,
-      document.body
-    )
+
+    if (!isDialogOpen) {
+      return null
+    }
+
+    return ReactDOM.createPortal(<Portal>{children}</Portal>, document.body)
   }
   render() {
     const {
@@ -147,47 +149,45 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
           />
         )}
         {!readOnly && (
-          <div className={styles.root}>
-            <div className={styles.inputWrapper} id={this._inputId}>
-              <Flex justify="space-between" align="center">
-                <Box flex={1}>
-                  <DatePicker
-                    onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
-                    autoFocus={false}
-                    onFocus={this.handleFocus}
-                    onBlur={this.handleBlur}
-                    showMonthDropdown
-                    showYearDropdown
-                    disabledKeyboardNavigation={!isDialogOpen}
-                    selected={value || undefined}
-                    placeholderText={placeholder}
-                    calendarClassName={styles.datepicker}
-                    popperClassName={styles.popper}
-                    popperContainer={this.renderPopperContainer}
-                    popperProps={{positionFixed: true}}
-                    className={styles.input}
-                    onClickOutside={this.handleClose}
-                    onChange={this.handleDialogChange}
-                    onChangeRaw={this.handleInputChange}
-                    value={inputValue ? inputValue : value && value.format(format)}
-                    showTimeSelect={!dateOnly}
-                    dateFormat={dateFormat}
-                    timeFormat={timeFormat}
-                    timeIntervals={timeStep}
-                    ref={this.setDatePicker}
-                    dropdownMode="select"
-                    todayButton={
-                      <Button tone="brand" onClick={this.handleSetNow} text={todayLabel} />
-                    }
-                  />
-                </Box>
+          <Root id={this._inputId} tabIndex={-1} shadow={3}>
+            <Flex justify="space-between" align="center">
+              <Box flex={1}>
+                <DatePicker
+                  onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
+                  autoFocus={false}
+                  onFocus={this.handleFocus}
+                  onBlur={this.handleBlur}
+                  showMonthDropdown
+                  showYearDropdown
+                  disabledKeyboardNavigation={!isDialogOpen}
+                  selected={value || undefined}
+                  placeholderText={placeholder}
+                  calendarClassName="react-datepicker-calendar"
+                  popperClassName="react-datepicker-popper"
+                  popperContainer={this.renderPopperContainer}
+                  popperProps={{positionFixed: true}}
+                  className="react-datepicker-input"
+                  onClickOutside={this.handleClose}
+                  onChange={this.handleDialogChange}
+                  onChangeRaw={this.handleInputChange}
+                  value={inputValue ? inputValue : value && value.format(format)}
+                  showTimeSelect={!dateOnly}
+                  dateFormat={dateFormat}
+                  timeFormat={timeFormat}
+                  timeIntervals={timeStep}
+                  ref={this.setDatePicker}
+                  dropdownMode="select"
+                  todayButton={
+                    <Button tone="brand" onClick={this.handleSetNow} text={todayLabel} />
+                  }
+                />
+              </Box>
 
-                <Box>
-                  <Button mode="bleed" onClick={this.handleButtonClick} icon="calendar" />
-                </Box>
-              </Flex>
-            </div>
-          </div>
+              <Box>
+                <Button mode="bleed" onClick={this.handleButtonClick} icon="calendar" />
+              </Box>
+            </Flex>
+          </Root>
         )}
       </FormField>
     )
