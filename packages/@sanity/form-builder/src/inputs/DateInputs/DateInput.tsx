@@ -1,4 +1,5 @@
-import moment, {Moment} from 'moment'
+import moment from 'moment'
+import type {Moment} from 'moment'
 import React from 'react'
 import {Marker} from '@sanity/types'
 import PatchEvent, {set, unset} from '../../PatchEvent'
