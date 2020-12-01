@@ -57,10 +57,10 @@ export function useObservableCallbackWithLoadingState<T, U>(
   return useObservableCallback(
     (arg: U) => {
       return concat(
-        of({status: 'pending'}),
+        of({status: 'pending' as const}),
         fn(arg).pipe(
-          map((res) => ({status: 'complete', result: res})),
-          catchError((err) => of({status: 'error', error: err}))
+          map((res) => ({status: 'complete' as const, result: res})),
+          catchError((err) => of({status: 'error' as const, error: err}))
         )
       )
     },
