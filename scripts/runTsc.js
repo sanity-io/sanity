@@ -16,13 +16,21 @@ const getProjectEnv = (projectPath) => {
 exports.runTsc = function runTsc(projectPath, watch) {
   const proc = childProcess.spawn(
     'tsc',
-    ['-b', './packages', '--force', ...(watch ? ['--watch'] : [])],
+    ['-b', './packages', '--pretty', '--force', ...(watch ? ['--watch'] : [])],
     {
       shell: isWindows,
       cwd: projectPath,
       env: getProjectEnv(projectPath),
     }
   )
+
+  if (!watch) {
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        throw new Error(`Process exited with code ${code}`)
+      }
+    })
+  }
 
   return mergeStream([
     proc.stdout.pipe(

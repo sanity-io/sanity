@@ -115,6 +115,6 @@ const watchJSAndAssets = parallel(
 )
 
 exports.ts = buildTS
-exports.build = parallel(buildJSAndAssets, buildTS)
-exports.watch = series(parallel(buildJSAndAssets, buildTS), parallel(watchJSAndAssets, watchTS))
+exports.build = series(buildJSAndAssets, buildTS)
+exports.watch = series(buildJSAndAssets, parallel(watchJSAndAssets, watchTS))
 exports.clean = () => del(PACKAGE_PATHS.map((pth) => path.join(pth, DEST_DIR)))
