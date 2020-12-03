@@ -4,14 +4,28 @@ import FocusLock from 'react-focus-lock'
 import {Box, Button, Layer, Popover, TextInput, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {DatePicker} from './DatePicker'
 
+type ParseResult = {type: 'success'; date: Date} | {type: 'error'; error: Error}
+
+function tryParse(dateAsString: string, parseFn: (dateStr: string) => Date): ParseResult {
+  try {
+    return {type: 'success', date: parseFn(dateAsString)}
+  } catch (error) {
+    return {type: 'error', error}
+  }
+}
+
 type Props = {
   value: Date | null
   format: (date: Date) => string
-  parse: (dateString: string) => Date | null
+  parse: (dateString: string) => Date
   id?: string
   readOnly: boolean | null
+  selectTime?: boolean
+  customValidity?: string
+  onParseError?: (err: null | Error) => void
   placeholder?: string
   onChange: (date: Date | null) => void
+  onFocus?: () => void
 }
 
 const DateInput = React.forwardRef(function DateInput(
@@ -24,17 +38,17 @@ const DateInput = React.forwardRef(function DateInput(
 
   const [inputValue, setInputValue] = React.useState<string | null>(null)
 
-  const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputBlur = () => {
     if (inputValue === null) {
       return
     }
-    const parsed = parse(inputValue)
-    if (parsed) {
+    const result = tryParse(inputValue, parse)
+    if (result.type === 'success') {
       setInputValue(null)
-      onChange(parsed)
+      onChange(result.date)
+      props.onParseError(null)
     } else {
-      // todo: show validation error
-      setInputValue(inputValue)
+      props.onParseError(result.error)
     }
   }
 
@@ -53,11 +67,14 @@ const DateInput = React.forwardRef(function DateInput(
       id={id || ''}
       readOnly={Boolean(readOnly)}
       placeholder={placeholder}
-      value={value ? format(value) : ''}
+      value={inputValue === null ? (value && format(value)) || '' : inputValue}
       onChange={(event) => {
+        props.onParseError(null)
         setInputValue(event.currentTarget.value)
       }}
+      customValidity={props.customValidity}
       onBlur={handleInputBlur}
+      onFocus={props.onFocus}
       suffix={
         <Layer>
           <Popover
@@ -70,12 +87,12 @@ const DateInput = React.forwardRef(function DateInput(
                 }}
               >
                 <DatePicker
+                  selectTime={props.selectTime}
                   onKeyUp={(e) => {
                     if (e.key === 'Escape') {
                       setPickerOpen(false)
                     }
                   }}
-                  selectTime
                   value={value}
                   onChange={onChange}
                 />

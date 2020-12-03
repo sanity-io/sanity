@@ -35,7 +35,6 @@ type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   getDateProps: any
   getForwardProps: any
   getBackProps: any
-  offset: number
   selectedDate: Date | null
   onSelect: (date: Date) => void
   focusedDate: Date
@@ -129,7 +128,7 @@ export const Calendar = React.forwardRef(function Calendar(
   }: CalendarProps,
   forwardedRef: React.ForwardedRef<HTMLElement>
 ) {
-  const handleMonthChange = (e: React.FormEvent<HTMLSelectElement>) =>
+  const handleFocusedMonthChange = (e: React.FormEvent<HTMLSelectElement>) =>
     setFocusedDateMonth(Number(e.currentTarget.value))
 
   const moveFocusedDate = (by: number) => setFocusedDate(addMonths(focusedDate, by))
@@ -150,6 +149,10 @@ export const Calendar = React.forwardRef(function Calendar(
   const handleHoursChange = (event: React.FormEvent<HTMLSelectElement>) => {
     const m = Number(event.currentTarget.value)
     onSelect(setHours(selectedDate, m))
+  }
+
+  const handleTimeChange = (h, m) => {
+    onSelect(setHours(setMinutes(selectedDate, m), h))
   }
 
   const ref = useForwardedRef(forwardedRef)
@@ -190,22 +193,20 @@ export const Calendar = React.forwardRef(function Calendar(
   const today = new Date()
   return (
     <Card {...props} ref={ref}>
-      {/*{focusedDate.toISOString()}/!**!/*/}
       <Flex direction="column">
-        {/**/}
         <Flex justify="space-around" style={{marginBottom: 20}}>
           <Button
             text="Yesterday"
             mode="bleed"
             size={1}
-            onClick={() => onFocusedDateChange(addDays(today, -1))}
+            onClick={() => handleDateChange(addDays(today, -1))}
           />
-          <Button text="Today" mode="bleed" size={1} onClick={() => onFocusedDateChange(today)} />
+          <Button text="Today" mode="bleed" size={1} onClick={() => handleDateChange(today)} />
           <Button
             text="Tomorrow"
             mode="bleed"
             size={1}
-            onClick={() => onFocusedDateChange(addDays(today, 1))}
+            onClick={() => handleDateChange(addDays(today, 1))}
           />
         </Flex>
         <Box>
@@ -224,7 +225,7 @@ export const Calendar = React.forwardRef(function Calendar(
                         />
                       </Box>
                       <Box>
-                        <Select value={calendar.month} onChange={handleMonthChange}>
+                        <Select value={calendar.month} onChange={handleFocusedMonthChange}>
                           {monthNamesShort.map((m, i) => (
                             <option key={i} value={i}>
                               {m}
@@ -325,33 +326,55 @@ export const Calendar = React.forwardRef(function Calendar(
             })}
           </Flex>
           {selectTime && (
-            <Flex justify="center" style={{marginTop: 10}}>
-              <Box>
-                <Flex direction="row" justify="center" align="center">
-                  <Box>
-                    <Select value={selectedDate?.getHours()} onChange={handleHoursChange}>
-                      {hours.map((h) => (
-                        <option key={h} value={h}>
-                          {`${h}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
+            <>
+              <Flex direction="row" justify="center" align="center" style={{marginTop: 10}}>
+                <Box>
+                  <Select value={selectedDate?.getHours()} onChange={handleHoursChange}>
+                    {hours.map((h) => (
+                      <option key={h} value={h}>
+                        {`${h}`.padStart(2, '0')}
+                      </option>
+                    ))}
+                  </Select>
+                </Box>
+                <Box paddingX={1}>
                   <Text size={3} weight="semibold">
                     :
                   </Text>
-                  <Box>
-                    <Select value={selectedDate?.getMinutes()} onChange={handleMinutesChange}>
-                      {minutes.map((m) => (
-                        <option key={m} value={m}>
-                          {`${m}`.padStart(2, '0')}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
-                </Flex>
-              </Box>
-            </Flex>
+                </Box>
+                <Box>
+                  <Select value={selectedDate?.getMinutes()} onChange={handleMinutesChange}>
+                    {minutes.map((m) => (
+                      <option key={m} value={m}>
+                        {`${m}`.padStart(2, '0')}
+                      </option>
+                    ))}
+                  </Select>
+                </Box>
+              </Flex>
+              <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                <Button text="00:00" mode="bleed" size={1} onClick={() => handleTimeChange(0, 0)} />
+                <Button text="06:00" mode="bleed" size={1} onClick={() => handleTimeChange(6, 0)} />
+                <Button
+                  text="12:00"
+                  mode="bleed"
+                  size={1}
+                  onClick={() => handleTimeChange(12, 0)}
+                />
+                <Button
+                  text="18:00"
+                  mode="bleed"
+                  size={1}
+                  onClick={() => handleTimeChange(18, 0)}
+                />
+                <Button
+                  text="23:59"
+                  mode="bleed"
+                  size={1}
+                  onClick={() => handleTimeChange(23, 59)}
+                />
+              </Flex>
+            </>
           )}
         </Box>
       </Flex>

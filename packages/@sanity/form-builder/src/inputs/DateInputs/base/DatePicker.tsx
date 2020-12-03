@@ -23,7 +23,6 @@ export const DatePicker = React.forwardRef(function DatePicker(
       onChange(event.date)
       setFocusedDate(event.date)
     },
-    // todo: deal with focus on offset change
     onOffsetChanged: setOffset,
     offset,
   })
@@ -39,14 +38,21 @@ export const DatePicker = React.forwardRef(function DatePicker(
     [focusedDate, offset]
   )
 
+  const handleSelect = React.useCallback(
+    (nextDate) => {
+      onChange(nextDate)
+      handleFocusedDayChange(nextDate)
+    },
+    [onChange, handleFocusedDayChange]
+  )
+
   return (
     <Calendar
       {...rest}
       {...dayzedData}
       ref={ref}
-      offset={offset}
       selectedDate={value || new Date()}
-      onSelect={onChange}
+      onSelect={handleSelect}
       focusedDate={focusedDate}
       onFocusedDateChange={handleFocusedDayChange}
     />

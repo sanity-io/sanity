@@ -1,7 +1,6 @@
 import React from 'react'
 import {Marker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
-import type {Moment} from 'moment'
 import moment from 'moment'
 
 import {useForwardedRef} from '@sanity/ui'
@@ -36,6 +35,7 @@ type Props = {
   }
   readOnly: boolean | null
   onChange: (event: PatchEvent) => void
+  onParseError: (err: Error | null) => void
   level: number
   onFocus: () => void
   presence: any
@@ -57,17 +57,25 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
   const {value, markers, type, readOnly, level, presence, onChange, ...rest} = props
   const {title, description} = type
 
+  const [parseError, setParseError] = React.useState<Error | null>(null)
+
   const {dateFormat, timeFormat} = parseOptions(type.options)
 
-  const format = (date: Date) => moment(date).format(`${dateFormat} ${timeFormat}`)
+  const fullFormat = `${dateFormat} ${timeFormat}`
+
+  const format = (date: Date) => moment(date).format(fullFormat)
 
   const parse = (dateString: string) => {
-    const parsed = moment(dateString, dateFormat, true)
-    return parsed.isValid() ? parsed.toDate() : null
+    const parsed = moment(dateString, fullFormat, true)
+    if (parsed.isValid()) {
+      return parsed.toDate()
+    }
+    throw new Error(`Invalid date. Must be on the format "${fullFormat}"`)
   }
 
   const handleDatePickerChange = (nextDate: Date | null) => {
     onChange(PatchEvent.from([nextDate ? set(nextDate.toISOString()) : unset()]))
+    setParseError(null)
   }
 
   const inputRef = useForwardedRef(forwardedRef)
@@ -76,7 +84,18 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
 
   return (
     <FormField
-      markers={markers}
+      markers={
+        parseError
+          ? [
+              ...markers,
+              ({
+                type: 'validation',
+                level: 'error',
+                item: {message: parseError.message, paths: []},
+              } as unknown) as Marker, // casting to marker to avoid having to implement cloneWithMessage on item
+            ]
+          : markers
+      }
       label={title}
       level={level}
       description={description}
@@ -88,10 +107,13 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
         id={id}
         format={format}
         parse={parse}
+        selectTime
         ref={inputRef}
         value={value ? new Date(value) : null}
         readOnly={readOnly}
         onChange={handleDatePickerChange}
+        customValidity={parseError?.message}
+        onParseError={(err) => setParseError(err)}
       />
     </FormField>
   )
