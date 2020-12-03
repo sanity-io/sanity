@@ -1,41 +1,42 @@
-import {studioTheme as defaultTheme, ThemeCardColor} from '@sanity/ui'
+import {RootTheme, studioTheme as defaults, ThemeColorSchemes} from '@sanity/ui'
 import legacyTheme from 'sanity:css-custom-properties'
 
-const defaultLightScheme = defaultTheme.color.light
-
-const customCard: ThemeCardColor = {
-  tones: {
-    ...defaultLightScheme.card.tones,
+// NOTE: This mapping is needed only in a transition period between legacy CSS custom properties,
+// and the new Theme API provided by Sanity UI.
+const color: ThemeColorSchemes = {
+  ...defaults.color,
+  light: {
+    ...defaults.color.light,
     default: {
-      ...defaultLightScheme.card.tones.default,
-      enabled: {
-        ...defaultLightScheme.card.tones.default.enabled,
-        bg: legacyTheme['--body-bg'],
-        fg: legacyTheme['--body-text'],
+      ...defaults.color.light.default,
+      card: {
+        ...defaults.color.light.default.card,
+        enabled: {
+          ...defaults.color.light.default.card.enabled,
+          bg: legacyTheme['--component-bg'],
+          fg: legacyTheme['--component-text-color'],
+          border: legacyTheme['--hairline-color'],
+        },
       },
     },
     transparent: {
-      ...defaultLightScheme.card.tones.transparent,
-      enabled: {
-        ...defaultLightScheme.card.tones.transparent.enabled,
-        bg: legacyTheme['--body-bg'],
-        fg: legacyTheme['--body-text'],
+      ...defaults.color.light.transparent,
+      card: {
+        ...defaults.color.light.transparent.card,
+        enabled: {
+          ...defaults.color.light.transparent.card.enabled,
+          bg: legacyTheme['--body-bg'],
+          fg: legacyTheme['--body-text'],
+          border: legacyTheme['--hairline-color'],
+        },
       },
     },
   },
 }
 
-const lightScheme = {
-  ...defaultLightScheme,
-  card: customCard,
-}
-
-export default {
-  ...defaultTheme,
-  color: {
-    ...defaultTheme.color,
-    light: lightScheme,
-  },
+export const theme: RootTheme = {
+  ...defaults,
+  color,
   media: [
     parseInt(legacyTheme['--screen-medium-break'], 10) || 512,
     parseInt(legacyTheme['--screen-default-break'], 10) || 640,
