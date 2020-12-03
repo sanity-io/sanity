@@ -4,8 +4,7 @@ import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import classNames from 'classnames'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {isPlainObject, get} from 'lodash'
-import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
-import DefaultButton from 'part:@sanity/components/buttons/default'
+import {ArrayFunctions} from '../../legacyImports'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import React from 'react'
 import {map} from 'rxjs/operators'
@@ -20,6 +19,7 @@ import {ArrayInputItem} from './item'
 import randomKey from './randomKey'
 import resolveListComponents from './resolveListComponents'
 import {ItemValue} from './typedefs'
+import {Button} from '@sanity/ui'
 
 import styles from './ArrayInput.css'
 
@@ -336,9 +336,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                   <strong>readOnly</strong> property from the enclosing type.
                 </div>
               ) : (
-                <DefaultButton onClick={() => this.handleRemoveItem(item)} color="danger">
-                  Unset {item._type}
-                </DefaultButton>
+                <Button
+                  onClick={() => this.handleRemoveItem(item)}
+                  tone="critical"
+                  text={`Unset ${item._type}`}
+                />
               )}
             </div>
           )
@@ -372,9 +374,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             Some items in this list are not objects. We need to remove them before the list can be
             edited.
             <div className={styles.removeNonObjectsButtonWrapper}>
-              <DefaultButton onClick={this.handleRemoveNonObjectValues}>
-                Remove non-object values
-              </DefaultButton>
+              <Button onClick={this.handleRemoveNonObjectValues} text="Remove non-object values" />
             </div>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through an API client from outside the
@@ -404,7 +404,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             Some items in this list are missing their keys. We need to fix this before the list can
             be edited.
             <div className={styles.fixMissingKeysButtonWrapper}>
-              <DefaultButton onClick={this.handleFixMissingKeys}>Fix missing keys</DefaultButton>
+              <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
             </div>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through the API client from outside the

@@ -2,17 +2,11 @@ import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import Button from 'part:@sanity/components/buttons/default'
-import IntentButton from 'part:@sanity/components/buttons/intent'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
+import {LinkIcon, DragHandleIcon} from '@sanity/icons'
+import {FieldPresence, FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import React from 'react'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import PatchEvent from '../../../PatchEvent'
@@ -22,13 +16,17 @@ import ConfirmButton from '../ConfirmButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
+import {Box, Dialog, Layer, Button} from '@sanity/ui'
+import PopoverDialog from '../../../components/PopoverDialog'
+import {IntentButton} from '../../../components/IntentButton'
+import {BorderShadowGridItem, DragHandleSpan, PreviewWrapper} from './styles'
 
 import styles from './ArrayInputListItem.css'
 
 const DragHandle = createDragHandle(() => (
-  <span className={styles.dragHandle}>
-    <Button aria-hidden="true" icon={DragHandleIcon} kind="simple" padding="small" tabIndex={-1} />
-  </span>
+  <DragHandleSpan>
+    <Button aria-hidden="true" icon={DragHandleIcon} mode="bleed" padding={2} tabIndex={-1} />
+  </DragHandleSpan>
 ))
 
 interface ArrayInputListItemProps {
@@ -189,12 +187,24 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
     if (options.editModal === 'fullscreen') {
       return (
-        <FullscreenDialog title={title} onClose={this.handleEditStop} isOpen>
-          {content}
-        </FullscreenDialog>
+        <Layer>
+          <Dialog
+            width="auto"
+            id={item._key}
+            onClose={this.handleEditStop}
+            key={item._key}
+            header={title}
+            position="absolute"
+          >
+            <PresenceOverlay margins={[0, 0, 1, 0]}>
+              <Box padding={4}>{content}</Box>
+            </PresenceOverlay>
+          </Dialog>
+        </Layer>
       )
     }
 
+    // TODO(@benedicteb, 2020-12-04) Make a plan for what to do with fold
     if (options.editModal === 'fold') {
       return (
         <div>
@@ -208,13 +218,12 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     if (options.editModal === 'popover') {
       return (
         <PopoverDialog
-          depth={10}
-          title={title}
           onClose={this.handleEditStop}
           onEscape={this.handleEditStop}
           onClickOutside={this.handleEditStop}
-          placement="bottom"
           referenceElement={this.innerElement}
+          placement="auto"
+          depth={10}
         >
           <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
         </PopoverDialog>
@@ -222,9 +231,20 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     }
 
     return (
-      <DefaultDialog onClose={this.handleEditStop} key={item._key} title={title}>
-        <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
-      </DefaultDialog>
+      <Layer>
+        <Dialog
+          width={1}
+          id={item._key}
+          onClose={this.handleEditStop}
+          key={item._key}
+          header={title}
+          position="absolute"
+        >
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
+            <Box padding={4}>{content}</Box>
+          </PresenceOverlay>
+        </Dialog>
+      </Layer>
     )
   }
 
@@ -252,66 +272,67 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
       return <InvalidItem onChange={this.handleChange} type={type} value={value} />
     }
 
+    // TODO(@benedicteb, 2020-12-14) Remove alignItems: center when Box has support for it
     return (
       <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
         <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
-          <div className={styles.inner} ref={this.setInnerElement}>
-            {isSortable && <DragHandle />}
+          <BorderShadowGridItem>
+            <Box display="flex" style={{alignItems: 'center'}} ref={this.setInnerElement}>
+              {isSortable && <DragHandle />}
 
-            <div
-              tabIndex={0}
-              onClick={value._key && this.handleEditStart}
-              onKeyPress={this.handleKeyPress}
-              className={styles.previewWrapper}
-            >
-              <div
-                tabIndex={-1}
-                ref={this.setFocusArea}
-                className={styles.previewWrapperHelper}
-                onFocus={this.handleFocus}
+              <PreviewWrapper
+                tabIndex={0}
+                onClick={value._key && this.handleEditStart}
+                onKeyPress={this.handleKeyPress}
               >
-                {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
-                <Preview layout="default" value={value} type={memberType} />
-              </div>
-            </div>
-
-            <div className={styles.functions}>
-              {!readOnly && (
-                <div className={styles.presenceContainer}>
-                  <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+                <div
+                  tabIndex={-1}
+                  ref={this.setFocusArea}
+                  className={styles.previewWrapperHelper}
+                  onFocus={this.handleFocus}
+                >
+                  {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
+                  <Preview layout="default" value={value} type={memberType} />
                 </div>
-              )}
+              </PreviewWrapper>
 
-              {!readOnly && (
-                <div className={styles.validationStatusContainer}>
-                  <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
+              <div className={styles.functions}>
+                {!readOnly && (
+                  <div className={styles.presenceContainer}>
+                    <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+                  </div>
+                )}
+
+                {!readOnly && (
+                  <div className={styles.validationStatusContainer}>
+                    <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
+                  </div>
+                )}
+
+                <div className={styles.editButtonContainer}>
+                  {value._ref && (
+                    <IntentButton
+                      icon={LinkIcon}
+                      intent="edit"
+                      mode="bleed"
+                      padding={2}
+                      params={{id: value._ref}}
+                    />
+                  )}
                 </div>
-              )}
 
-              <div className={styles.editButtonContainer}>
-                {value._ref && (
-                  <IntentButton
-                    className={styles.linkToReference}
-                    icon={LinkIcon}
-                    intent="edit"
-                    kind="simple"
-                    padding="small"
-                    params={{id: value._ref}}
-                  />
+                {!readOnly && (
+                  <div className={styles.removeButtonContainer}>
+                    <ConfirmButton
+                      kind="simple"
+                      title="Remove this item"
+                      onConfirm={this.handleRemove}
+                    />
+                  </div>
                 )}
               </div>
-
-              {!readOnly && (
-                <div className={styles.removeButtonContainer}>
-                  <ConfirmButton
-                    kind="simple"
-                    title="Remove this item"
-                    onConfirm={this.handleRemove}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+            </Box>
+          </BorderShadowGridItem>
         </ContextProvidedChangeIndicator>
       </ChangeIndicatorScope>
     )
@@ -322,10 +343,10 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     const isExpanded = PathUtils.isExpanded(value, focusPath)
 
     return (
-      <div className={styles.root}>
+      <>
         {this.renderItem()}
         {isExpanded && this.renderEditItemForm(value)}
-      </div>
+      </>
     )
   }
 }
