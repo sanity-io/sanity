@@ -44,6 +44,9 @@ const TIME_PRESETS = [
   [23, 59],
 ]
 
+// @todo (2): this should somehow be measured in the DOM
+const MONTH_MIN_HEIGHT = 251
+
 const formatTime = (hours: number, minutes: number) =>
   `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`
 
@@ -91,14 +94,19 @@ export const Calendar = React.forwardRef(function Calendar(
     onSelect(setHours(selectedDate, m))
   }
 
-  const handleTimeChange = (h, m) => {
+  const handleTimeChange = (h: number, m: number) => {
     onSelect(setHours(setMinutes(selectedDate, m), h))
   }
 
   const ref = useForwardedRef(forwardedRef)
+  const scrollSnapper = React.useRef<HTMLDivElement>()
 
   const focusCurrentWeekDay = React.useCallback(() => {
     ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.focus()
+  }, [ref])
+
+  const scrollToCurrentWeekDay = React.useCallback(() => {
+    ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.scrollIntoView()
   }, [ref])
 
   const handleKeyDown = React.useCallback(
@@ -128,8 +136,10 @@ export const Calendar = React.forwardRef(function Calendar(
   )
 
   React.useEffect(() => {
-    focusCurrentWeekDay()
-  }, [focusCurrentWeekDay])
+    if (scrollSnapper.current) {
+      scrollSnapper.current.style.scrollBehavior = 'smooth'
+    }
+  }, [])
 
   React.useEffect(() => {
     const currentFocusInCalendarGrid = document.activeElement?.matches(
@@ -140,10 +150,15 @@ export const Calendar = React.forwardRef(function Calendar(
       currentFocusInCalendarGrid
     ) {
       focusCurrentWeekDay()
+    } else {
+      scrollToCurrentWeekDay()
     }
-  }, [ref, focusCurrentWeekDay, focusedDate])
+  }, [ref, scrollToCurrentWeekDay, focusCurrentWeekDay, focusedDate])
 
   const today = new Date()
+
+  const prevMonth = addMonths(focusedDate, -1)
+  const nextMonth = addMonths(focusedDate, 1)
   return (
     <Card {...props} ref={ref}>
       <Flex direction="column">
@@ -176,7 +191,7 @@ export const Calendar = React.forwardRef(function Calendar(
                 <Box flex={1}>
                   <Select
                     radius={0}
-                    value={focusedDate?.getMonth()}
+                    value={focusedDate.getMonth()}
                     onChange={handleFocusedMonthChange}
                   >
                     {MONTH_NAMES.map((m, i) => (
@@ -222,17 +237,34 @@ export const Calendar = React.forwardRef(function Calendar(
             <Box paddingTop={4} />
 
             <Flex
+              ref={scrollSnapper}
               direction="column"
               justify="space-between"
               tabIndex={0}
               onKeyDown={handleKeyDown}
               overflow="hidden"
+              style={{height: MONTH_MIN_HEIGHT, scrollSnapType: 'y mandatory', outline: 'none'}}
               data-calendar-grid
             >
               <Month
+                hidden
+                key={prevMonth.getMonth()}
+                date={prevMonth}
+                onSelect={onSelect}
+                selected={selectedDate}
+              />
+              <Month
+                key={focusedDate.getMonth()}
                 date={focusedDate}
                 focused={focusedDate}
                 onSelect={handleDateChange}
+                selected={selectedDate}
+              />
+              <Month
+                hidden
+                key={nextMonth.getMonth()}
+                date={nextMonth}
+                onSelect={onSelect}
                 selected={selectedDate}
               />
             </Flex>
@@ -318,7 +350,10 @@ type MonthProps = {
 function Month(props: MonthProps) {
   const today = new Date()
   return (
-    <Box aria-hidden={props.hidden || false}>
+    <Box
+      aria-hidden={props.hidden || false}
+      style={{minHeight: MONTH_MIN_HEIGHT, scrollSnapAlign: 'center'}}
+    >
       <Grid columns={7} gap={1}>
         {WEEK_DAY_NAMES.map((weekday) => (
           <Box key={weekday} paddingY={1}>
@@ -328,14 +363,14 @@ function Month(props: MonthProps) {
           </Box>
         ))}
 
-        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
-          week.days.map((date, dayIdx) => {
+        {getWeeksOfMonth(props.date).map((week) =>
+          week.days.map((date) => {
             const focused = props.focused && isSameDay(date, props.focused)
             const selected = props.selected && isSameDay(date, props.selected)
             const isToday = isSameDay(date, today)
             const isCurrentMonth = props.focused && isSameMonth(date, props.focused)
             return (
-              <div aria-selected={selected} key={weekIdx + dayIdx}>
+              <div aria-selected={selected} key={week.number + date.getDay()}>
                 <Card
                   aria-label={date.toDateString()}
                   aria-pressed={selected}
