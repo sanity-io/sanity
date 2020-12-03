@@ -1,12 +1,14 @@
-// eslint-disable-next-line import/no-unassigned-import
-import 'react-datepicker/dist/react-datepicker-cssmodules.css'
-
-import moment from 'moment'
-import type {Moment} from 'moment'
 import React from 'react'
 import {Marker} from '@sanity/types'
+import {useId} from '@reach/auto-id'
+import type {Moment} from 'moment'
+import moment from 'moment'
+
+import {useForwardedRef} from '@sanity/ui'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import BaseDateTimeInput from './BaseDateTimeInput'
+
+import {FormField} from '../../components/FormField'
+import BaseDateTimeInput from './base/BaseDateTimeInput'
 
 type ParsedOptions = {
   dateFormat: string
@@ -38,51 +40,61 @@ type Props = {
   onFocus: () => void
   presence: any
 }
+
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 15,
-    calendarTodayLabel: options.calendarTodayLabel || 'Now',
+    calendarTodayLabel: options.calendarTodayLabel || 'Today',
   }
 }
-export default class DateInput extends React.Component<Props> {
-  baseDateTimeInputRef: BaseDateTimeInput | null = null
-  handleChange = (nextMoment?: Moment) => {
-    const patch = nextMoment ? set(nextMoment.toDate().toJSON()) : unset()
-    this.props.onChange(PatchEvent.from([patch]))
+
+const DateTimeInput = React.forwardRef(function DateTimeInput(
+  props: Props,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {value, markers, type, readOnly, level, presence, onChange, ...rest} = props
+  const {title, description} = type
+
+  const {dateFormat, timeFormat} = parseOptions(type.options)
+
+  const format = (date: Date) => moment(date).format(`${dateFormat} ${timeFormat}`)
+
+  const parse = (dateString: string) => {
+    const parsed = moment(dateString, dateFormat, true)
+    return parsed.isValid() ? parsed.toDate() : null
   }
-  focus() {
-    if (this.baseDateTimeInputRef) {
-      this.baseDateTimeInputRef.focus()
-    }
+
+  const handleDatePickerChange = (nextDate: Date | null) => {
+    onChange(PatchEvent.from([nextDate ? set(nextDate.toISOString()) : unset()]))
   }
-  setBaseInput = (baseInput: BaseDateTimeInput | null) => {
-    this.baseDateTimeInputRef = baseInput
-  }
-  render() {
-    const {value, markers, type, readOnly, level, onFocus, presence} = this.props
-    const {title, description} = type
-    const momentValue: Moment | null = value ? moment(value) : null
-    const options = parseOptions(type.options)
-    return (
+
+  const inputRef = useForwardedRef(forwardedRef)
+
+  const id = useId()
+
+  return (
+    <FormField
+      markers={markers}
+      label={title}
+      level={level}
+      description={description}
+      presence={presence}
+      labelFor={id}
+    >
       <BaseDateTimeInput
-        ref={this.setBaseInput}
-        value={momentValue}
+        {...rest}
+        id={id}
+        format={format}
+        parse={parse}
+        ref={inputRef}
+        value={value ? new Date(value) : null}
         readOnly={readOnly}
-        level={level}
-        title={title}
-        description={description}
-        placeholder={type.placeholder}
-        markers={markers}
-        dateFormat={options.dateFormat}
-        timeFormat={options.timeFormat}
-        timeStep={options.timeStep}
-        todayLabel={options.calendarTodayLabel}
-        onChange={this.handleChange}
-        onFocus={onFocus}
-        presence={presence}
+        onChange={handleDatePickerChange}
       />
-    )
-  }
-}
+    </FormField>
+  )
+})
+
+export default DateTimeInput

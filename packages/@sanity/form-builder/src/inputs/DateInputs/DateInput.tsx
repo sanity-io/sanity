@@ -1,17 +1,14 @@
+import React from 'react'
+import {Marker} from '@sanity/types'
+import {useId} from '@reach/auto-id'
 import type {Moment} from 'moment'
 import moment from 'moment'
 
-import React from 'react'
-import {Marker} from '@sanity/types'
+import {useForwardedRef} from '@sanity/ui'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import {useDayzed} from 'dayzed'
-import FocusLock from 'react-focus-lock'
-import {differenceInCalendarMonths} from 'date-fns'
-import {useId} from '@reach/auto-id'
 
-import {Box, Button, Layer, Popover, TextInput, useClickOutside, useForwardedRef} from '@sanity/ui'
-import {Calendar} from './Calendar'
 import {FormField} from '../../components/FormField'
+import BaseDateTimeInput from './base/BaseDateTimeInput'
 
 type ParsedOptions = {
   dateFormat: string
@@ -49,90 +46,30 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   }
 }
 
-const DatePicker = React.forwardRef(function DatePicker(
-  props: Omit<React.ComponentProps<'div'>, 'onSelect'> & {
-    selected?: Date
-    onSelect: (nextDate?: Date) => void
-  },
-  ref: React.ForwardedRef<HTMLElement>
-) {
-  const {selected, onSelect, ...rest} = props
-  const [offset, setOffset] = React.useState(0)
-  const [focusedDate, setFocusedDate] = React.useState(new Date())
-  const dayzedData = useDayzed({
-    showOutsideDays: true,
-    selected: props.selected || new Date(),
-    onDateSelected: (event) => onSelect(event.date),
-    onOffsetChanged: setOffset,
-    offset,
-  })
-
-  const handleFocusedDayChange = React.useCallback(
-    (nextFocusedDate) => {
-      const diff = differenceInCalendarMonths(nextFocusedDate, focusedDate)
-      setFocusedDate(nextFocusedDate)
-      if (diff !== 0) {
-        setOffset(offset + diff)
-      }
-    },
-    [focusedDate, offset]
-  )
-
-  React.useEffect(() => {
-    handleFocusedDayChange(selected)
-  }, [selected])
-
-  return (
-    <Calendar
-      {...rest}
-      ref={ref}
-      {...dayzedData}
-      offset={offset}
-      onOffsetChange={setOffset}
-      focusedDate={focusedDate}
-      onFocusedDateChange={handleFocusedDayChange}
-    />
-  )
-})
-
 const DateInput = React.forwardRef(function DateInput(
   props: Props,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {value, markers, type, readOnly, level, onFocus, presence, onChange} = props
+  const {value, markers, type, readOnly, level, presence, onChange, ...rest} = props
   const {title, description} = type
 
   const {dateFormat} = parseOptions(type.options)
-  const handleDatePickerChange = (nextDate?: Date) => {
+
+  const format = (date: Date) => moment(date).format(dateFormat)
+  const parse = (dateString: string) => {
+    const parsed = moment(dateString, dateFormat, true)
+    return parsed.isValid() ? parsed.toDate() : null
+  }
+
+  const handleDatePickerChange = (nextDate: Date | null) => {
     onChange(PatchEvent.from([nextDate ? set(nextDate.toISOString()) : unset()]))
   }
 
-  const [datePickerRef, setDatePickerRef] = React.useState<HTMLElement>(null)
-
-  const [inputValue, setInputValue] = React.useState(null)
-
-  const handleInputBlur = (event) => {
-    const parsed = moment(inputValue, dateFormat, true)
-    if (parsed.isValid()) {
-      setInputValue(null)
-      onChange(PatchEvent.from([set(parsed.toISOString())]))
-    } else {
-      setInputValue(inputValue)
-    }
-  }
-
   const inputRef = useForwardedRef(forwardedRef)
-  const buttonRef = React.useRef(null)
 
-  const [isPickerOpen, setPickerOpen] = React.useState(false)
   const id = useId()
 
-  useClickOutside(() => {
-    setPickerOpen(false)
-  }, [datePickerRef])
-
-  const valueAsDate = value ? new Date(value) : new Date()
-
+  const now = new Date()
   return (
     <FormField
       markers={markers}
@@ -142,53 +79,15 @@ const DateInput = React.forwardRef(function DateInput(
       presence={presence}
       labelFor={id}
     >
-      <TextInput
+      <BaseDateTimeInput
+        {...rest}
+        id={id}
+        format={format}
+        parse={parse}
         ref={inputRef}
-        onFocus={onFocus}
+        value={value ? new Date(value) : now}
         readOnly={readOnly}
-        value={inputValue === null && value ? moment(value).format(dateFormat) : inputValue}
-        onChange={(event) => {
-          setInputValue(event.currentTarget.value)
-        }}
-        onBlur={handleInputBlur}
-        suffix={
-          <Layer>
-            <Popover
-              content={
-                <FocusLock
-                  onDeactivation={() => {
-                    inputRef.current.focus()
-                    inputRef.current.select()
-                  }}
-                >
-                  <DatePicker
-                    ref={setDatePickerRef}
-                    onKeyUp={(e) => {
-                      if (e.key === 'Escape') {
-                        setPickerOpen(false)
-                      }
-                    }}
-                    selected={valueAsDate}
-                    onSelect={handleDatePickerChange}
-                  />
-                </FocusLock>
-              }
-              padding={4}
-              placement="bottom"
-              open={isPickerOpen}
-            >
-              <Box padding={2}>
-                <Button
-                  ref={buttonRef}
-                  icon="calendar"
-                  mode="bleed"
-                  padding={1}
-                  onClick={() => setPickerOpen(true)}
-                />
-              </Box>
-            </Popover>
-          </Layer>
-        }
+        onChange={handleDatePickerChange}
       />
     </FormField>
   )
