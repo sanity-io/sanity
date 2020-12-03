@@ -1,10 +1,11 @@
 /* eslint-disable no-nested-ternary */
-import {Box, Button, Card, Flex, Grid, Select, Text, TextInput, useForwardedRef} from '@sanity/ui'
+import {Box, Button, Card, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {
   addDays,
   addMonths,
   isSameDay,
+  isSameMonth,
   setDate,
   setHours,
   setMinutes,
@@ -13,8 +14,10 @@ import {
 } from 'date-fns'
 import React from 'react'
 import {range} from 'lodash'
+import {getWeeksOfMonth} from './utils'
+import {YearInput} from './YearInput'
 
-const monthNamesShort = [
+const MONTH_NAMES = [
   'January',
   'February',
   'March',
@@ -28,22 +31,22 @@ const monthNamesShort = [
   'November',
   'December',
 ]
-const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const WEEK_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const HOURS = range(0, 24)
+const MINUTES = range(0, 60, 1)
 
-type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
-  selectTime?: boolean
-  calendars: any[]
-  getDateProps: any
-  getForwardProps: any
-  getBackProps: any
-  selectedDate: Date | null
-  onSelect: (date: Date) => void
-  focusedDate: Date
-  onFocusedDateChange: (index: Date) => void
-}
+const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 
-const hours = range(0, 24)
-const minutes = range(0, 60, 1)
+const TIME_PRESETS = [
+  [0, 0],
+  [6, 0],
+  [12, 0],
+  [18, 0],
+  [23, 59],
+]
+
+const formatTime = (hours: number, minutes: number) =>
+  `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`
 
 const WeekDay = styled(Button)<{today: boolean}>`
   ${({today, muted}) => {
@@ -64,62 +67,23 @@ const WeekDay = styled(Button)<{today: boolean}>`
   }}
 `
 
-const YearInput = ({value, onChange}: {value: number; onChange: (value: number) => void}) => {
-  const [inputValue, setInputValue] = React.useState<string | null>(null)
-
-  const handleChange = React.useCallback((event) => {
-    setInputValue(event.currentTarget.value)
-  }, [])
-
-  const handleBlur = (e) => {
-    maybeChange(e.currentTarget.value)
-  }
-
-  const maybeChange = (currentInputValue: string) => {
-    const inputAsNum = Number(currentInputValue)
-
-    if (!isNaN(inputAsNum)) {
-      if (inputValue !== null && inputAsNum !== value) {
-        onChange(inputAsNum)
-      }
-      setInputValue(null)
-    }
-  }
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter') {
-      return
-    }
-
-    maybeChange(e.currentTarget.value)
-  }
-
-  return (
-    <TextInput
-      value={inputValue === null ? value : inputValue}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onKeyPress={handleKeyPress}
-      style={{width: 65}}
-      inputMode="numeric"
-    />
-  )
+type Props = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
+  selectTime?: boolean
+  selectedDate?: Date
+  onSelect: (date: Date) => void
+  focusedDate: Date
+  onFocusedDateChange: (index: Date) => void
 }
-
-const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 
 export const Calendar = React.forwardRef(function Calendar(
   {
     selectTime,
-    calendars,
-    getBackProps,
-    getForwardProps,
-    getDateProps,
     onFocusedDateChange,
     focusedDate,
     selectedDate = new Date(),
     onSelect,
     ...props
-  }: CalendarProps,
+  }: Props,
   forwardedRef: React.ForwardedRef<HTMLElement>
 ) {
   const handleFocusedMonthChange = (e: React.FormEvent<HTMLSelectElement>) =>
@@ -151,12 +115,20 @@ export const Calendar = React.forwardRef(function Calendar(
 
   const ref = useForwardedRef(forwardedRef)
 
+  const focusCurrentWeekDay = React.useCallback(() => {
+    ref.current?.querySelector<HTMLElement>(`[data-weekday="focused"]`)?.focus()
+  }, [ref])
+
   const handleKeyDown = React.useCallback(
     (event) => {
       if (!ARROW_KEYS.includes(event.key)) {
         return
       }
       event.preventDefault()
+      if (event.target.hasAttribute('data-calendar-grid')) {
+        focusCurrentWeekDay()
+        return
+      }
       if (event.key === 'ArrowUp') {
         onFocusedDateChange(addDays(focusedDate, -7))
       }
@@ -170,25 +142,30 @@ export const Calendar = React.forwardRef(function Calendar(
         onFocusedDateChange(addDays(focusedDate, 1))
       }
     },
-    [onFocusedDateChange, focusedDate]
+    [focusCurrentWeekDay, onFocusedDateChange, focusedDate]
   )
 
   React.useEffect(() => {
+    focusCurrentWeekDay()
+  }, [focusCurrentWeekDay])
+
+  React.useEffect(() => {
+    const currentFocusInCalendarGrid = document.activeElement?.matches(
+      '[data-calendar-grid] [data-weekday], [data-calendar-grid]'
+    )
     if (
-      // Don't move focus it's currently in a container that takes input from the user (e.g. year input)
-      !Array.from(ref.current?.querySelectorAll('[data-input]')).some((el) =>
-        el.contains(document.activeElement)
-      )
+      // Only move focus if it's currently in the calendar grid
+      currentFocusInCalendarGrid
     ) {
-      ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.focus()
+      focusCurrentWeekDay()
     }
-  }, [ref, focusedDate])
+  }, [ref, focusCurrentWeekDay, focusedDate])
 
   const today = new Date()
   return (
     <Card {...props} ref={ref}>
       <Flex direction="column">
-        <Flex justify="space-around" style={{marginBottom: 20}} data-input>
+        <Flex justify="space-around" style={{marginBottom: 20}}>
           <Button
             text="Yesterday"
             mode="bleed"
@@ -205,126 +182,113 @@ export const Calendar = React.forwardRef(function Calendar(
         </Flex>
         <Box>
           <Flex>
-            {calendars.map((calendar, i) => {
-              return (
-                <Flex direction="column" key={i}>
-                  <Flex justify="center" data-input>
-                    <Flex>
-                      <Box marginX={1}>
-                        <Button
-                          {...getBackProps({calendars})}
-                          onClick={() => moveFocusedDate(-1)}
-                          mode="bleed"
-                          icon="chevron-left"
-                        />
-                      </Box>
-                      <Box>
-                        <Select value={calendar.month} onChange={handleFocusedMonthChange}>
-                          {monthNamesShort.map((m, i) => (
-                            <option key={i} value={i}>
-                              {m}
-                            </option>
-                          ))}
-                          {calendar.year}
-                        </Select>
-                      </Box>
-                      <Box marginX={1}>
-                        <Button
-                          {...getForwardProps({calendars})}
-                          mode="bleed"
-                          icon="chevron-right"
-                          onClick={() => moveFocusedDate(1)}
-                        />
-                      </Box>
-                    </Flex>
-                    <Flex>
-                      <Box marginX={1}>
-                        <Button
-                          {...getBackProps({calendars})}
-                          onClick={() => moveFocusedDate(-12)}
-                          mode="bleed"
-                          icon="chevron-left"
-                        />
-                      </Box>
-                      <Box>
-                        <YearInput value={Number(calendar.year)} onChange={setFocusedDateYear} />
-                      </Box>
-                      <Box marginX={1}>
-                        <Button
-                          {...getForwardProps({calendars})}
-                          onClick={() => moveFocusedDate(12)}
-                          mode="bleed"
-                          icon="chevron-right"
-                        />
-                      </Box>
-                    </Flex>
-                  </Flex>
-                  <Flex direction="column">
-                    <Box marginTop={3} padding={2}>
-                      <Grid columns={7} gap={2}>
-                        {weekdayNames.map((weekday) => (
-                          <Flex key={weekday} justify="center">
-                            <Text>{weekday}</Text>
-                          </Flex>
-                        ))}
-                      </Grid>
-                    </Box>
-                    <Box padding={2} tabIndex={0} onKeyDown={handleKeyDown}>
-                      <Flex>
-                        <Grid columns={7} gap={2}>
-                          {calendar.weeks.map((week, weekIdx) => {
-                            return week.map((dateObj, dayIdx) => {
-                              const key = `${weekIdx}${dayIdx}`
-                              if (!dateObj) {
-                                return <span key={key} />
-                              }
-                              const {
-                                date,
-                                selected,
-                                selectable,
-                                today: isToday,
-                                prevMonth,
-                                nextMonth,
-                              } = dateObj
-                              const focused = isSameDay(date, focusedDate)
-                              return (
-                                <WeekDay
-                                  {...(focused && {'data-focused': true})}
-                                  key={key}
-                                  focused={focused}
-                                  today={isToday}
-                                  selected={selected}
-                                  muted={prevMonth || nextMonth}
-                                  tabIndex={-1}
-                                  mode="ghost"
-                                  disabled={!selectable}
-                                  text={date.getDate()}
-                                  onFocus={
-                                    (!prevMonth || !nextMonth) &&
-                                    (() => {
-                                      setFocusedDate(date)
-                                    })
-                                  }
-                                  {...getDateProps({dateObj})}
-                                  onClick={() => handleDateChange(date)}
-                                />
-                              )
-                            })
-                          })}
-                        </Grid>
-                      </Flex>
-                    </Box>
-                  </Flex>
+            <Flex direction="column">
+              <Flex justify="center">
+                <Flex>
+                  <Box marginX={1}>
+                    <Button
+                      aria-label="Go to previous month"
+                      onClick={() => moveFocusedDate(-1)}
+                      mode="bleed"
+                      icon="chevron-left"
+                    />
+                  </Box>
+                  <Box>
+                    <Select value={focusedDate.getMonth()} onChange={handleFocusedMonthChange}>
+                      {MONTH_NAMES.map((m, i) => (
+                        <option key={i} value={i}>
+                          {m}
+                        </option>
+                      ))}
+                    </Select>
+                  </Box>
+                  <Box marginX={1}>
+                    <Button
+                      aria-label="Go to next month"
+                      mode="bleed"
+                      icon="chevron-right"
+                      onClick={() => moveFocusedDate(1)}
+                    />
+                  </Box>
                 </Flex>
-              )
-            })}
+                <Flex>
+                  <Box marginX={1}>
+                    <Button
+                      aria-label="Go to previous year"
+                      onClick={() => moveFocusedDate(-12)}
+                      mode="bleed"
+                      icon="chevron-left"
+                    />
+                  </Box>
+                  <Box>
+                    <YearInput
+                      value={focusedDate.getFullYear()}
+                      onChange={setFocusedDateYear}
+                      style={{width: 65}}
+                    />
+                  </Box>
+                  <Box marginX={1}>
+                    <Button
+                      aria-label="Go to next year"
+                      onClick={() => moveFocusedDate(12)}
+                      mode="bleed"
+                      icon="chevron-right"
+                    />
+                  </Box>
+                </Flex>
+              </Flex>
+              <Flex direction="column">
+                <Box marginTop={3} padding={2}>
+                  <Grid columns={7} gap={2}>
+                    {WEEK_DAY_NAMES.map((weekday) => (
+                      <Flex key={weekday} justify="center">
+                        <Text>{weekday}</Text>
+                      </Flex>
+                    ))}
+                  </Grid>
+                </Box>
+                <Box padding={2} tabIndex={0} onKeyDown={handleKeyDown} data-calendar-grid>
+                  <Flex>
+                    <Grid columns={7} gap={2}>
+                      {getWeeksOfMonth(focusedDate).map((week, weekIdx) =>
+                        week.days.map((date, dayIdx) => {
+                          const key = `${weekIdx}${dayIdx}`
+                          const focused = isSameDay(date, focusedDate)
+                          const selected = isSameDay(date, selectedDate)
+                          return (
+                            <WeekDay
+                              data-weekday={focused ? 'focused' : ''}
+                              key={key}
+                              aria-label={date.toDateString()}
+                              aria-pressed={selected}
+                              role="button"
+                              selected={selected}
+                              tabIndex={-1}
+                              mode="ghost"
+                              today={isSameDay(date, today)}
+                              muted={!isSameMonth(date, focusedDate)}
+                              text={date.getDate()}
+                              onClick={() => handleDateChange(date)}
+                            />
+                          )
+                        })
+                      )}
+                    </Grid>
+                  </Flex>
+                </Box>
+              </Flex>
+            </Flex>
           </Flex>
           {selectTime && (
-            <Box data-input>
+            <Box>
               <Flex direction="row" justify="center" align="center" style={{marginTop: 10}}>
                 <Box>
-                  <Select value={selectedDate?.getHours()} onChange={handleHoursChange}>
-                    {hours.map((h) => (
+                  <Select
+                    aria-label="Select hour"
+                    value={selectedDate?.getHours()}
+                    onChange={handleHoursChange}
+                  >
+                    {HOURS.map((h) => (
                       <option key={h} value={h}>
                         {`${h}`.padStart(2, '0')}
                       </option>
@@ -337,8 +301,12 @@ export const Calendar = React.forwardRef(function Calendar(
                   </Text>
                 </Box>
                 <Box>
-                  <Select value={selectedDate?.getMinutes()} onChange={handleMinutesChange}>
-                    {minutes.map((m) => (
+                  <Select
+                    aria-label="Select minutes"
+                    value={selectedDate?.getMinutes()}
+                    onChange={handleMinutesChange}
+                  >
+                    {MINUTES.map((m) => (
                       <option key={m} value={m}>
                         {`${m}`.padStart(2, '0')}
                       </option>
@@ -347,26 +315,19 @@ export const Calendar = React.forwardRef(function Calendar(
                 </Box>
               </Flex>
               <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-                <Button text="00:00" mode="bleed" size={1} onClick={() => handleTimeChange(0, 0)} />
-                <Button text="06:00" mode="bleed" size={1} onClick={() => handleTimeChange(6, 0)} />
-                <Button
-                  text="12:00"
-                  mode="bleed"
-                  size={1}
-                  onClick={() => handleTimeChange(12, 0)}
-                />
-                <Button
-                  text="18:00"
-                  mode="bleed"
-                  size={1}
-                  onClick={() => handleTimeChange(18, 0)}
-                />
-                <Button
-                  text="23:59"
-                  mode="bleed"
-                  size={1}
-                  onClick={() => handleTimeChange(23, 59)}
-                />
+                {TIME_PRESETS.map(([hours, minutes]) => {
+                  const formatted = formatTime(hours, minutes)
+                  return (
+                    <Button
+                      key={hours + minutes}
+                      text={formatted}
+                      aria-label={`${formatted} on ${selectedDate.toDateString()}`}
+                      mode="bleed"
+                      size={1}
+                      onClick={() => handleTimeChange(hours, minutes)}
+                    />
+                  )
+                })}
               </Flex>
             </Box>
           )}

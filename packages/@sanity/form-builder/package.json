@@ -31,7 +31,6 @@
     "attr-accept": "^1.1.0",
     "classnames": "^2.2.5",
     "date-fns": "^2.16.1",
-    "dayzed": "^3.2.1",
     "debug": "^3.1.0",
     "diff-match-patch": "^1.0.4",
     "exif-component": "^1.0.1",
