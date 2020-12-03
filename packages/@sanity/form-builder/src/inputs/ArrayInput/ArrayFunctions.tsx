@@ -24,6 +24,8 @@ interface ArrayFunctionsProps {
 }
 
 export default class ArrayFunctions extends React.Component<ArrayFunctionsProps> {
+  static __SANITY_INTERNAL_IMPLEMENTATION = true
+
   handleDropDownAction = (menuItem: {type: SchemaType}) => {
     this.handleInsertItem(menuItem.type)
   }
