@@ -188,7 +188,7 @@ export const Calendar = React.forwardRef(function Calendar(
   return (
     <Card {...props} ref={ref}>
       <Flex direction="column">
-        <Flex justify="space-around" style={{marginBottom: 20}}>
+        <Flex justify="space-around" style={{marginBottom: 20}} data-input>
           <Button
             text="Yesterday"
             mode="bleed"
@@ -320,7 +320,7 @@ export const Calendar = React.forwardRef(function Calendar(
             })}
           </Flex>
           {selectTime && (
-            <>
+            <Box data-input>
               <Flex direction="row" justify="center" align="center" style={{marginTop: 10}}>
                 <Box>
                   <Select value={selectedDate?.getHours()} onChange={handleHoursChange}>
@@ -368,7 +368,7 @@ export const Calendar = React.forwardRef(function Calendar(
                   onClick={() => handleTimeChange(23, 59)}
                 />
               </Flex>
-            </>
+            </Box>
           )}
         </Box>
       </Flex>
