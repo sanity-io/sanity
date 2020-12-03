@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {Box, Button, Card, Flex, Grid, Select, Text, TextInput, useForwardedRef} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {
@@ -44,26 +45,19 @@ type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
 const hours = range(0, 24)
 const minutes = range(0, 60, 1)
 
-const WeekDay = styled(Button)<{today: boolean; focused: boolean}>`
-  ${({today, muted, focused}) => {
+const WeekDay = styled(Button)<{today: boolean}>`
+  ${({today, muted}) => {
+    const fg = muted
+      ? '--card-muted-fg-color'
+      : today
+      ? '--card-focus-ring-color'
+      : '--card-fg-color'
     return `
+        color: var(${fg});
       ${
         muted &&
         css`
           background-color: var(--card-shadow-penumbra-color);
-          color: var(--card-muted-fg-color);
-        `
-      }
-      ${
-        today &&
-        css`
-          color: var(--card-focus-ring-color);
-        `
-      }
-      ${
-        focused &&
-        css`
-          color: var(--card-focus-ring-color);
         `
       }
     `
