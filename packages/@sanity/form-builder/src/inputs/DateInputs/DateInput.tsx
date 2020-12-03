@@ -67,7 +67,7 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
     throw new Error(`Invalid date. Must be on the format "${dateFormat}"`)
   }
 
-  const handleDatePickerChange = (nextDate: Date | null) => {
+  const handleDatePickerChange = (nextDate?: Date) => {
     onChange(PatchEvent.from([nextDate ? set(nextDate.toISOString()) : unset()]))
     setParseError(null)
   }
@@ -102,7 +102,7 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
         format={format}
         parse={parse}
         ref={inputRef}
-        value={value ? new Date(value) : null}
+        value={value ? new Date(value) : undefined}
         readOnly={readOnly}
         onChange={handleDatePickerChange}
         customValidity={parseError?.message}

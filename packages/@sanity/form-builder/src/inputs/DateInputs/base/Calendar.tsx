@@ -79,8 +79,8 @@ export const Calendar = React.forwardRef(function Calendar(
   {
     selectTime,
     onFocusedDateChange,
-    focusedDate,
     selectedDate = new Date(),
+    focusedDate,
     onSelect,
     ...props
   }: Props,
@@ -109,14 +109,19 @@ export const Calendar = React.forwardRef(function Calendar(
     onSelect(setHours(selectedDate, m))
   }
 
-  const handleTimeChange = (h, m) => {
+  const handleTimeChange = (h: number, m: number) => {
     onSelect(setHours(setMinutes(selectedDate, m), h))
   }
 
   const ref = useForwardedRef(forwardedRef)
+  const scrollSnapper = React.useRef<HTMLDivElement>()
 
   const focusCurrentWeekDay = React.useCallback(() => {
     ref.current?.querySelector<HTMLElement>(`[data-weekday="focused"]`)?.focus()
+  }, [ref])
+
+  const scrollToCurrentWeekDay = React.useCallback(() => {
+    ref.current?.querySelector<HTMLElement>(`[data-weekday="focused"]`)?.scrollIntoView()
   }, [ref])
 
   const handleKeyDown = React.useCallback(
@@ -150,6 +155,12 @@ export const Calendar = React.forwardRef(function Calendar(
   }, [focusCurrentWeekDay])
 
   React.useEffect(() => {
+    if (scrollSnapper.current) {
+      scrollSnapper.current.style.scrollBehavior = 'smooth'
+    }
+  }, [])
+
+  React.useEffect(() => {
     const currentFocusInCalendarGrid = document.activeElement?.matches(
       '[data-calendar-grid] [data-weekday], [data-calendar-grid]'
     )
@@ -158,10 +169,15 @@ export const Calendar = React.forwardRef(function Calendar(
       currentFocusInCalendarGrid
     ) {
       focusCurrentWeekDay()
+    } else {
+      scrollToCurrentWeekDay()
     }
-  }, [ref, focusCurrentWeekDay, focusedDate])
+  }, [ref, scrollToCurrentWeekDay, focusCurrentWeekDay, focusedDate])
 
   const today = new Date()
+
+  const prevMonth = addMonths(focusedDate, -1)
+  const nextMonth = addMonths(focusedDate, 1)
   return (
     <Card {...props} ref={ref}>
       <Flex direction="column">
@@ -237,45 +253,40 @@ export const Calendar = React.forwardRef(function Calendar(
                   </Box>
                 </Flex>
               </Flex>
-              <Flex direction="column">
-                <Box marginTop={3} padding={2}>
-                  <Grid columns={7} gap={2}>
-                    {WEEK_DAY_NAMES.map((weekday) => (
-                      <Flex key={weekday} justify="center">
-                        <Text>{weekday}</Text>
-                      </Flex>
-                    ))}
-                  </Grid>
-                </Box>
-                <Box padding={2} tabIndex={0} onKeyDown={handleKeyDown} data-calendar-grid>
-                  <Flex>
-                    <Grid columns={7} gap={2}>
-                      {getWeeksOfMonth(focusedDate).map((week, weekIdx) =>
-                        week.days.map((date, dayIdx) => {
-                          const key = `${weekIdx}${dayIdx}`
-                          const focused = isSameDay(date, focusedDate)
-                          const selected = isSameDay(date, selectedDate)
-                          return (
-                            <WeekDay
-                              data-weekday={focused ? 'focused' : ''}
-                              key={key}
-                              aria-label={date.toDateString()}
-                              aria-pressed={selected}
-                              role="button"
-                              selected={selected}
-                              tabIndex={-1}
-                              mode="ghost"
-                              today={isSameDay(date, today)}
-                              muted={!isSameMonth(date, focusedDate)}
-                              text={date.getDate()}
-                              onClick={() => handleDateChange(date)}
-                            />
-                          )
-                        })
-                      )}
-                    </Grid>
-                  </Flex>
-                </Box>
+              <Flex
+                ref={scrollSnapper}
+                direction="column"
+                justify="space-between"
+                style={{
+                  height: 290,
+                  scrollSnapType: 'y mandatory',
+                  overflowY: 'hidden',
+                  marginTop: 8,
+                  marginBottom: 8,
+                }}
+                tabIndex={0}
+                onKeyDown={handleKeyDown}
+                data-calendar-grid
+              >
+                <Month
+                  key={prevMonth.getMonth()}
+                  date={prevMonth}
+                  onSelect={onSelect}
+                  selected={selectedDate}
+                />
+                <Month
+                  key={focusedDate.getMonth()}
+                  date={focusedDate}
+                  focused={focusedDate}
+                  onSelect={onSelect}
+                  selected={selectedDate}
+                />
+                <Month
+                  key={nextMonth.getMonth()}
+                  date={nextMonth}
+                  onSelect={onSelect}
+                  selected={selectedDate}
+                />
               </Flex>
             </Flex>
           </Flex>
@@ -336,3 +347,53 @@ export const Calendar = React.forwardRef(function Calendar(
     </Card>
   )
 })
+
+type MonthProps = {
+  date: Date
+  focused?: Date
+  selected?: Date
+  onSelect: (date: Date) => void
+}
+function Month(props: MonthProps) {
+  const today = new Date()
+  return (
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      style={{minHeight: 290, scrollSnapAlign: 'center'}}
+    >
+      <Box marginTop={3} padding={2}>
+        <Grid columns={7} gap={2}>
+          {WEEK_DAY_NAMES.map((weekday) => (
+            <Flex key={weekday} justify="center">
+              <Text>{weekday}</Text>
+            </Flex>
+          ))}
+          {getWeeksOfMonth(props.date).map((week) =>
+            week.days.map((date) => {
+              const focused = props.focused && isSameDay(date, props.focused)
+              const selected = props.selected && isSameDay(date, props.selected)
+              return (
+                <WeekDay
+                  data-weekday={focused ? 'focused' : ''}
+                  key={week.number + date.getDay()}
+                  aria-label={date.toDateString()}
+                  aria-pressed={selected}
+                  role="button"
+                  selected={selected}
+                  tabIndex={-1}
+                  mode="ghost"
+                  today={isSameDay(date, today)}
+                  muted={props.focused && !isSameMonth(date, props.focused)}
+                  text={date.getDate()}
+                  onClick={() => props.onSelect(date)}
+                />
+              )
+            })
+          )}
+        </Grid>
+      </Box>
+    </Flex>
+  )
+}

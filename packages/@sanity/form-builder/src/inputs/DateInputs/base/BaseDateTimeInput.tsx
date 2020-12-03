@@ -15,7 +15,7 @@ function tryParse(dateAsString: string, parseFn: (dateStr: string) => Date): Par
 }
 
 type Props = {
-  value: Date | null
+  value?: Date
   format: (date: Date) => string
   parse: (dateString: string) => Date
   id?: string
@@ -24,7 +24,7 @@ type Props = {
   customValidity?: string
   onParseError?: (err: null | Error) => void
   placeholder?: string
-  onChange: (date: Date | null) => void
+  onChange: (date?: Date) => void
   onFocus?: () => void
 }
 
