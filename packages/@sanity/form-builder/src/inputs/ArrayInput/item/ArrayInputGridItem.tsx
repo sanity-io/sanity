@@ -6,7 +6,6 @@ import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import Button from 'part:@sanity/components/buttons/default'
-import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
@@ -18,9 +17,10 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import PatchEvent from '../../../PatchEvent'
 import Preview from '../../../Preview'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
-import ConfirmButton from '../ConfirmButton'
+import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
+import {IntentButton} from '../../../components/IntentButton'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
 
 import styles from './ArrayInputGridItem.css'
@@ -296,11 +296,10 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
                   )}
 
                   <div>
-                    <ConfirmButton
-                      kind="simple"
+                    <ConfirmDeleteButton
                       onConfirm={this.handleRemove}
                       placement="bottom"
-                      title="Remove this item"
+                      title="Remove item"
                     />
                   </div>
                 </div>
