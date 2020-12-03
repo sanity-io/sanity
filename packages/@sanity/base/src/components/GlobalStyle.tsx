@@ -1,5 +1,6 @@
 import {Theme} from '@sanity/ui'
 import {css, createGlobalStyle} from 'styled-components'
+import legacyTheme from 'sanity:css-custom-properties'
 
 export const GlobalStyle = createGlobalStyle(({theme}: {theme: Theme}) => {
   const color = theme.sanity.color.base
@@ -12,9 +13,13 @@ export const GlobalStyle = createGlobalStyle(({theme}: {theme: Theme}) => {
       height: 100%;
     }
 
-    /* ::selection {
-        background: var(--text-selection-color);
-      } */
+    html {
+      background-color: ${color.bg};
+    }
+
+    ::selection {
+      background: ${legacyTheme['--text-selection-color']};
+    }
 
     #sanityBody {
       background-color: ${color.bg};

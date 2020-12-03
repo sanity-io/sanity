@@ -1,6 +1,14 @@
 import {RootTheme, studioTheme as defaults, ThemeColorSchemes} from '@sanity/ui'
 import legacyTheme from 'sanity:css-custom-properties'
 
+// For debugging purposes
+declare global {
+  interface Window {
+    __sanityLegacyTheme: Record<string, string>
+  }
+}
+window.__sanityLegacyTheme = legacyTheme
+
 // NOTE: This mapping is needed only in a transition period between legacy CSS custom properties,
 // and the new Theme API provided by Sanity UI.
 const color: ThemeColorSchemes = {
@@ -9,6 +17,12 @@ const color: ThemeColorSchemes = {
     ...defaults.color.light,
     default: {
       ...defaults.color.light.default,
+      base: {
+        ...defaults.color.light.default.base,
+        bg: legacyTheme['--component-bg'],
+        fg: legacyTheme['--component-text-color'],
+        border: legacyTheme['--hairline-color'],
+      },
       card: {
         ...defaults.color.light.default.card,
         enabled: {
@@ -21,6 +35,12 @@ const color: ThemeColorSchemes = {
     },
     transparent: {
       ...defaults.color.light.transparent,
+      base: {
+        ...defaults.color.light.transparent.base,
+        bg: legacyTheme['--body-bg'],
+        fg: legacyTheme['--body-text'],
+        border: legacyTheme['--hairline-color'],
+      },
       card: {
         ...defaults.color.light.transparent.card,
         enabled: {
