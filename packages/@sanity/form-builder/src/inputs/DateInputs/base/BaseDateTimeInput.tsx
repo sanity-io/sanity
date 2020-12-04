@@ -80,7 +80,7 @@ const DateInput = React.forwardRef(function DateInput(
       onBlur={handleInputBlur}
       onFocus={props.onFocus}
       suffix={
-        <Layer>
+        <Layer depth={1000}>
           <Popover
             ref={setPopoverRef}
             content={
@@ -102,17 +102,18 @@ const DateInput = React.forwardRef(function DateInput(
                 />
               </FocusLock>
             }
-            padding={4}
-            placement="bottom"
+            padding={1}
+            placement="bottom-end"
             open={isPickerOpen}
           >
-            <Box padding={2} paddingX={4}>
+            <Box padding={1}>
               <Button
                 ref={buttonRef}
                 icon="calendar"
                 mode="bleed"
-                padding={1}
+                padding={2}
                 onClick={() => setPickerOpen(true)}
+                style={{display: 'block'}}
               />
             </Box>
           </Popover>
