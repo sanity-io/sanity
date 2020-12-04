@@ -1,9 +1,9 @@
 import React from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
-import FormField from 'part:@sanity/components/formfields/default'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const StringInput = React.forwardRef(function StringInput(
