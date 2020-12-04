@@ -100,7 +100,7 @@ export const Calendar = React.forwardRef(function Calendar(
   const ref = useForwardedRef(forwardedRef)
 
   const focusCurrentWeekDay = React.useCallback(() => {
-    ref.current?.querySelector<HTMLElement>(`[data-weekday="focused"]`)?.focus()
+    ref.current?.querySelector<HTMLElement>(`[data-focused="true"]`)?.focus()
   }, [ref])
 
   const handleKeyDown = React.useCallback(
@@ -232,7 +232,6 @@ export const Calendar = React.forwardRef(function Calendar(
               data-calendar-grid
             >
               <Month
-                key={focusedDate.getMonth()}
                 date={focusedDate}
                 focused={focusedDate}
                 onSelect={onSelect}
@@ -279,7 +278,7 @@ export const Calendar = React.forwardRef(function Calendar(
                 </Box>
               </Flex>
 
-              <Flex direction="row" justify="center" align="center">
+              <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
                 {TIME_PRESETS.map(([hours, minutes]) => {
                   const formatted = formatTime(hours, minutes)
                   return (
@@ -322,19 +321,20 @@ function Month(props: MonthProps) {
           </Box>
         ))}
 
-        {getWeeksOfMonth(props.date).map((week) =>
-          week.days.map((date) => {
+        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
+          week.days.map((date, dayIdx) => {
             const focused = props.focused && isSameDay(date, props.focused)
             const selected = props.selected && isSameDay(date, props.selected)
             const isToday = isSameDay(date, today)
             const isCurrentMonth = props.focused && isSameMonth(date, props.focused)
             return (
-              <div aria-selected={selected} key={week.number + date.getDay()}>
+              <div aria-selected={selected} key={weekIdx + dayIdx}>
                 <Card
                   aria-label={date.toDateString()}
                   aria-pressed={selected}
                   as="button"
-                  data-weekday={focused ? 'focused' : ''}
+                  data-weekday
+                  data-focused={focused ? 'true' : ''}
                   role="button"
                   tabIndex={-1}
                   onClick={() => props.onSelect(date)}
