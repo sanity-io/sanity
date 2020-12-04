@@ -72,6 +72,102 @@ export default {
       ],
     },
     {
+      name: 'arrayOfMultipleTypesPopover',
+      title: 'Array of multiple types (editModal=popover)',
+      options: {
+        editModal: 'popover',
+      },
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          icon: icon,
+        },
+        {
+          type: 'book',
+        },
+        {
+          type: 'object',
+          name: 'color',
+          title: 'Color with a long title',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'arrayOfMultipleTypesFullscreen',
+      title: 'Array of multiple types (editModal=fullscreen)',
+      options: {
+        editModal: 'fullscreen',
+      },
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          icon: icon,
+        },
+        {
+          type: 'book',
+        },
+        {
+          type: 'object',
+          name: 'color',
+          title: 'Color with a long title',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'arrayOfMultipleTypesFold',
+      title: 'Array of multiple types (editModal=fold)',
+      options: {
+        editModal: 'fold',
+      },
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          icon: icon,
+        },
+        {
+          type: 'book',
+        },
+        {
+          type: 'object',
+          name: 'color',
+          title: 'Color with a long title',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'arrayOfPredefinedOptions',
       title: 'Array of predefined options',
       description: [
