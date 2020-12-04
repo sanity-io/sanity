@@ -6,11 +6,11 @@ import ReactDOM from 'react-dom'
 import moment, {Moment} from 'moment'
 import DatePicker from 'react-datepicker'
 import {isValidationErrorMarker, Marker} from '@sanity/types'
-import FormField from 'part:@sanity/components/formfields/default'
-import TextInput from 'part:@sanity/components/textinputs/default'
+import {TextInput} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import {uniqueId} from 'lodash'
+import {FormField} from '../../components/FormField'
 import styles from './styles/BaseDateTimeInput.css'
 
 type Props = {
@@ -141,7 +141,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       >
         {readOnly && (
           <TextInput
-            inputId={this._inputId}
+            id={this._inputId}
             customValidity={errors.length > 0 ? errors[0].item.message : ''}
             readOnly
             value={value ? value.format(format) : ''}
