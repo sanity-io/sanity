@@ -1,11 +1,7 @@
-// eslint-disable-next-line import/no-unassigned-import
-import 'react-datepicker/dist/react-datepicker-cssmodules.css'
-
-import moment, {Moment} from 'moment'
 import React from 'react'
-import {Marker} from '@sanity/types'
-import PatchEvent, {set, unset} from '../../PatchEvent'
-import BaseDateTimeInput from './BaseDateTimeInput'
+
+import {CommonDateTimeInput} from './CommonDateTimeInput'
+import {CommonProps} from './types'
 
 type ParsedOptions = {
   dateFormat: string
@@ -21,9 +17,7 @@ type SchemaOptions = {
 }
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'
-type Props = {
-  value: string
-  markers: Marker[]
+type Props = CommonProps & {
   type: {
     name: string
     title: string
@@ -31,57 +25,36 @@ type Props = {
     options?: SchemaOptions
     placeholder?: string
   }
-  readOnly: boolean | null
-  onChange: (event: PatchEvent) => void
-  level: number
-  onFocus: () => void
-  presence: any
 }
+
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
-    timeStep: ('timeStep' in options && Number(options.timeStep)) || 15,
-    calendarTodayLabel: options.calendarTodayLabel || 'Now',
+    timeStep: ('timeStep' in options && Number(options.timeStep)) || 1,
+    calendarTodayLabel: options.calendarTodayLabel || 'Today',
   }
 }
-export default class DateInput extends React.Component<Props> {
-  baseDateTimeInputRef: BaseDateTimeInput | null = null
-  handleChange = (nextMoment?: Moment) => {
-    const patch = nextMoment ? set(nextMoment.toDate().toJSON()) : unset()
-    this.props.onChange(PatchEvent.from([patch]))
-  }
-  focus() {
-    if (this.baseDateTimeInputRef) {
-      this.baseDateTimeInputRef.focus()
-    }
-  }
-  setBaseInput = (baseInput: BaseDateTimeInput | null) => {
-    this.baseDateTimeInputRef = baseInput
-  }
-  render() {
-    const {value, markers, type, readOnly, level, onFocus, presence} = this.props
-    const {title, description} = type
-    const momentValue: Moment | null = value ? moment(value) : null
-    const options = parseOptions(type.options)
-    return (
-      <BaseDateTimeInput
-        ref={this.setBaseInput}
-        value={momentValue}
-        readOnly={readOnly}
-        level={level}
-        title={title}
-        description={description}
-        placeholder={type.placeholder}
-        markers={markers}
-        dateFormat={options.dateFormat}
-        timeFormat={options.timeFormat}
-        timeStep={options.timeStep}
-        todayLabel={options.calendarTodayLabel}
-        onChange={this.handleChange}
-        onFocus={onFocus}
-        presence={presence}
-      />
-    )
-  }
-}
+
+export const DateTimeInput = React.forwardRef(function DateTimeInput(
+  props: Props,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {type, ...rest} = props
+  const {title, description, placeholder} = type
+
+  const {dateFormat, timeFormat, timeStep} = parseOptions(type.options)
+
+  return (
+    <CommonDateTimeInput
+      {...rest}
+      ref={forwardedRef}
+      selectTime
+      timeStep={timeStep}
+      title={title}
+      description={description}
+      placeholder={placeholder}
+      inputFormat={`${dateFormat} ${timeFormat}`}
+    />
+  )
+})
