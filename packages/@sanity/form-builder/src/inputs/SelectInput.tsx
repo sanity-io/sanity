@@ -1,10 +1,11 @@
 import React from 'react'
 import {capitalize} from 'lodash'
 import {isTitledListValue, TitledListValue} from '@sanity/types'
-import FormField from 'part:@sanity/components/formfields/default'
+
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 function toSelectItem(
