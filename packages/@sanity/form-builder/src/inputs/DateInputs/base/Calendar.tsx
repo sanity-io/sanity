@@ -269,6 +269,7 @@ export const Calendar = React.forwardRef(function Calendar(
                 data-calendar-grid
               >
                 <Month
+                  hidden
                   key={prevMonth.getMonth()}
                   date={prevMonth}
                   onSelect={onSelect}
@@ -282,6 +283,7 @@ export const Calendar = React.forwardRef(function Calendar(
                   selected={selectedDate}
                 />
                 <Month
+                  hidden
                   key={nextMonth.getMonth()}
                   date={nextMonth}
                   onSelect={onSelect}
@@ -353,11 +355,13 @@ type MonthProps = {
   focused?: Date
   selected?: Date
   onSelect: (date: Date) => void
+  hidden?: boolean
 }
 function Month(props: MonthProps) {
   const today = new Date()
   return (
     <Flex
+      aria-hidden={props.hidden || false}
       direction="column"
       align="center"
       justify="center"
