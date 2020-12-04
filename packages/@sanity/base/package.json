@@ -43,7 +43,7 @@
     "@sanity/structure": "2.0.9",
     "@sanity/transaction-collator": "2.0.9",
     "@sanity/types": "2.0.1",
-    "@sanity/ui": "1.0.0-beta.14",
+    "@sanity/ui": "1.0.0-beta.21",
     "@sanity/util": "2.0.9",
     "@sanity/validation": "2.0.9",
     "boundless-arrow-key-navigation": "^1.1.0",
