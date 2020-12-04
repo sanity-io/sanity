@@ -1,2 +1,2 @@
-export {default as DateTimeInput} from './DateTimeInput'
-export {default as DateInput} from './DateInput'
+export {DateTimeInput} from './DateTimeInput'
+export {DateInput} from './DateInput'
