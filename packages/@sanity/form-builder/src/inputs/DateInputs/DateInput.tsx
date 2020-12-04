@@ -1,8 +1,14 @@
-import moment, {Moment} from 'moment'
 import React from 'react'
 import {Marker} from '@sanity/types'
+import {useId} from '@reach/auto-id'
+import type {Moment} from 'moment'
+import moment from 'moment'
+
+import {useForwardedRef} from '@sanity/ui'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import BaseDateTimeInput from './BaseDateTimeInput'
+
+import {FormField} from '../../components/FormField'
+import BaseDateTimeInput from './base/BaseDateTimeInput'
 
 type ParsedOptions = {
   dateFormat: string
@@ -32,48 +38,78 @@ type Props = {
   onFocus: () => void
   presence: any
 }
+
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     calendarTodayLabel: options.calendarTodayLabel || 'Today',
   }
 }
-export default class DateInput extends React.Component<Props> {
-  baseDateTimeInputRef: BaseDateTimeInput | null = null
-  handleChange = (nextMoment?: Moment) => {
-    const patch = nextMoment ? set(nextMoment.format(VALUE_FORMAT)) : unset()
-    this.props.onChange(PatchEvent.from([patch]))
-  }
-  focus() {
-    if (this.baseDateTimeInputRef) {
-      this.baseDateTimeInputRef.focus()
+
+const DateTimeInput = React.forwardRef(function DateTimeInput(
+  props: Props,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {value, markers, type, readOnly, level, presence, onChange, ...rest} = props
+  const {title, description} = type
+
+  const [parseError, setParseError] = React.useState<Error | null>(null)
+
+  const {dateFormat} = parseOptions(type.options)
+
+  const format = (date: Date) => moment(date).format(dateFormat)
+
+  const parse = (dateString: string) => {
+    const parsed = moment(dateString, dateFormat, true)
+    if (parsed.isValid()) {
+      return parsed.toDate()
     }
+    throw new Error(`Invalid date. Must be on the format "${dateFormat}"`)
   }
-  setBaseInput = (baseInput: BaseDateTimeInput | null) => {
-    this.baseDateTimeInputRef = baseInput
+
+  const handleDatePickerChange = (nextDate: Date | null) => {
+    onChange(PatchEvent.from([nextDate ? set(nextDate.toISOString()) : unset()]))
+    setParseError(null)
   }
-  render() {
-    const {value, markers, type, readOnly, level, onFocus, presence} = this.props
-    const {title, description} = type
-    const momentValue: Moment | null = value ? moment(value) : null
-    const options = parseOptions(type.options)
-    return (
+
+  const inputRef = useForwardedRef(forwardedRef)
+
+  const id = useId()
+
+  return (
+    <FormField
+      markers={
+        parseError
+          ? [
+              ...markers,
+              ({
+                type: 'validation',
+                level: 'error',
+                item: {message: parseError.message, paths: []},
+              } as unknown) as Marker, // casting to marker to avoid having to implement cloneWithMessage on item
+            ]
+          : markers
+      }
+      label={title}
+      level={level}
+      description={description}
+      presence={presence}
+      labelFor={id}
+    >
       <BaseDateTimeInput
-        dateOnly
-        ref={this.setBaseInput}
-        value={momentValue}
+        {...rest}
+        id={id}
+        format={format}
+        parse={parse}
+        ref={inputRef}
+        value={value ? new Date(value) : null}
         readOnly={readOnly}
-        level={level}
-        title={title}
-        description={description}
-        placeholder={type.placeholder}
-        markers={markers}
-        dateFormat={options.dateFormat}
-        todayLabel={options.calendarTodayLabel}
-        onChange={this.handleChange}
-        onFocus={onFocus}
-        presence={presence}
+        onChange={handleDatePickerChange}
+        customValidity={parseError?.message}
+        onParseError={(err) => setParseError(err)}
       />
-    )
-  }
-}
+    </FormField>
+  )
+})
+
+export default DateTimeInput
