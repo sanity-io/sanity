@@ -44,10 +44,6 @@ const TIME_PRESETS = [
   [23, 59],
 ]
 
-// @todo (1): use `251` instead
-// @todo (2): this should somehow be measured in the DOM
-const MONTH_MIN_HEIGHT = 210
-
 const formatTime = (hours: number, minutes: number) =>
   `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`
 
@@ -63,8 +59,8 @@ export const Calendar = React.forwardRef(function Calendar(
   {
     selectTime,
     onFocusedDateChange,
-    focusedDate,
     selectedDate = new Date(),
+    focusedDate = selectedDate,
     onSelect,
     ...props
   }: Props,
@@ -178,7 +174,7 @@ export const Calendar = React.forwardRef(function Calendar(
                 <Box flex={1}>
                   <Select
                     radius={0}
-                    value={focusedDate.getMonth()}
+                    value={focusedDate?.getMonth()}
                     onChange={handleFocusedMonthChange}
                   >
                     {MONTH_NAMES.map((m, i) => (

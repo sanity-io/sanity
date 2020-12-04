@@ -1,7 +1,6 @@
 import React from 'react'
 import {Marker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
-import type {Moment} from 'moment'
 import moment from 'moment'
 
 import {useForwardedRef} from '@sanity/ui'
@@ -53,7 +52,7 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
   const {value, markers, type, readOnly, level, presence, onChange, ...rest} = props
   const {title, description} = type
 
-  const [parseError, setParseError] = React.useState<Error | null>(null)
+  const [parseError, setParseError] = React.useState<Error>()
 
   const {dateFormat} = parseOptions(type.options)
 
@@ -102,7 +101,7 @@ const DateTimeInput = React.forwardRef(function DateTimeInput(
         format={format}
         parse={parse}
         ref={inputRef}
-        value={value ? new Date(value) : null}
+        value={value && new Date(value)}
         readOnly={readOnly}
         onChange={handleDatePickerChange}
         customValidity={parseError?.message}
