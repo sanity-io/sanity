@@ -38,6 +38,10 @@ const DateInput = React.forwardRef(function DateInput(
 
   const [inputValue, setInputValue] = React.useState<string | null>(null)
 
+  const handleDatePickerChange = (nextDate) => {
+    setInputValue(null)
+    onChange(nextDate)
+  }
   const handleInputBlur = () => {
     if (inputValue === null) {
       return
@@ -94,7 +98,7 @@ const DateInput = React.forwardRef(function DateInput(
                     }
                   }}
                   value={value}
-                  onChange={onChange}
+                  onChange={handleDatePickerChange}
                 />
               </FocusLock>
             }
