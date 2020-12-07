@@ -17,10 +17,13 @@ interface PopoverDialogProps extends PopoverDialogChildrenProps {
   hasAnimation?: boolean
   padding?: 'none' | 'small' | 'medium' | 'large'
   placement?: Placement
+  portal?: boolean
   referenceElement?: HTMLElement | null
   size?: 'small' | 'medium' | 'large' | 'auto'
+  /**
+   * @deprecated
+   */
   useOverlay?: boolean
-  portal?: boolean
 }
 declare function PopoverDialog(props: PopoverDialogProps): JSX.Element
 export default PopoverDialog

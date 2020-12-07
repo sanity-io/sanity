@@ -1,9 +1,7 @@
+import {useClickOutside, useLayer, Popover} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
-import {useLayer} from 'part:@sanity/components/layer'
-import {Popover} from 'part:@sanity/components/popover'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {ButtonProps} from '../buttons'
-import {useClickOutside} from '../hooks'
 import {Placement} from '../types'
 
 interface MenuButtonProps {
@@ -20,8 +18,7 @@ interface MenuButtonProps {
 const MenuButtonChildren = forwardRef(
   (props: {onClose: () => void} & React.HTMLProps<HTMLDivElement>, ref) => {
     const {children, onClose, ...restProps} = props
-    const layer = useLayer()
-    const isTopLayer = layer.depth === layer.size
+    const {isTopLayer} = useLayer()
     const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
     const setRef = useCallback(
@@ -33,13 +30,12 @@ const MenuButtonChildren = forwardRef(
       [ref]
     )
 
-    useClickOutside(
-      useCallback(() => {
-        if (!isTopLayer) return
-        onClose()
-      }, [isTopLayer, onClose]),
-      [rootElement]
-    )
+    const handleClickOutside = useCallback(() => {
+      if (!isTopLayer) return
+      onClose()
+    }, [isTopLayer, onClose])
+
+    useClickOutside(handleClickOutside, [rootElement])
 
     useEffect(() => {
       if (!isTopLayer) return undefined
@@ -93,8 +89,8 @@ export const MenuButton = forwardRef(
           content={<MenuButtonChildren onClose={handleClose}>{menu}</MenuButtonChildren>}
           open={open}
           placement={placement}
-          layer={portal}
           portal={portal}
+          radius={2}
         >
           <div className={buttonContainerClassName}>
             <Button {...buttonProps} onClick={handleButtonClick}>

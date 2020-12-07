@@ -1,8 +1,8 @@
+import {LayerProvider} from '@sanity/ui'
 import DropdownButton from 'part:@sanity/components/buttons/dropdown'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
-import {LayerProvider} from 'part:@sanity/components/layer'
 import React, {useCallback, useState} from 'react'
 import {DialogAction} from '../../types'
 

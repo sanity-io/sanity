@@ -1,8 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  position: fixed;
-  z-index: var(--zindex-drawer);
+  /* Override Sanity UI */
+  @nest &.root {
+    position: fixed;
+  }
+
   bottom: 0;
   right: 0;
   transform: translate3d(100vw, 0, 0);

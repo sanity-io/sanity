@@ -20,9 +20,12 @@
 }
 
 .footerContainer {
-  position: relative;
+  /* Override Sanity UI */
+  @nest &.footerContainer {
+    position: relative;
+  }
+
   background: var(--component-bg);
-  z-index: var(--zindex-pane);
 
   @nest &:before {
     content: '';
