@@ -208,11 +208,12 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
     if (options.editModal === 'popover') {
       return (
         <PopoverDialog
+          depth={10}
           title={title}
           onClose={this.handleEditStop}
           onEscape={this.handleEditStop}
           onClickOutside={this.handleEditStop}
-          placement="auto"
+          placement="bottom"
           referenceElement={this.innerElement}
         >
           <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>

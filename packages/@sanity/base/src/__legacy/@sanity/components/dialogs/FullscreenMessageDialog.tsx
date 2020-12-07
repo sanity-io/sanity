@@ -1,6 +1,8 @@
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import React from 'react'
+import {useZIndex} from '../../../../components'
 
 import styles from './FullscreenMessageDialog.css'
 
@@ -13,10 +15,11 @@ interface Props {
 }
 
 function FullscreenMessageDialog(props: Props) {
+  const zindex = useZIndex()
   const className = classNames(styles.root, props.color && styles[`color_${props.color}`])
 
   return (
-    <div className={className}>
+    <Layer className={className} zOffset={zindex.portal}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>{props.title}</h2>
@@ -31,7 +34,7 @@ function FullscreenMessageDialog(props: Props) {
         <div className={styles.cardContent}>{props.children}</div>
         {props.buttons && <div className={styles.cardButtons}>{props.buttons}</div>}
       </div>
-    </div>
+    </Layer>
   )
 }
 

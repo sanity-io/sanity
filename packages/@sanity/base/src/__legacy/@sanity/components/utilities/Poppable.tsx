@@ -1,10 +1,9 @@
 import classNames from 'classnames'
 import {Modifier} from '@popperjs/core'
+import {Layer, useClickOutside, useLayer} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
-import {Layer, useLayer} from 'part:@sanity/components/layer'
 import {Portal} from 'part:@sanity/components/portal'
-import {useClickOutside} from '../hooks'
 import {Placement} from '../types'
 
 import styles from './Poppable.css'
@@ -44,8 +43,7 @@ const PoppableChildren = forwardRef(
     ref
   ) => {
     const {children, onEscape, onClickOutside, popperClassName, ...restProps} = props
-    const layer = useLayer()
-    const isTopLayer = layer.depth === layer.size
+    const {isTopLayer} = useLayer()
     const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
     const setRef = useCallback(
@@ -57,13 +55,12 @@ const PoppableChildren = forwardRef(
       [ref]
     )
 
-    useClickOutside(
-      (event: Event) => {
-        if (!isTopLayer) return
-        if (onClickOutside) onClickOutside(event as MouseEvent)
-      },
-      [rootElement]
-    )
+    const handleClickOutside = (event: Event) => {
+      if (!isTopLayer) return
+      if (onClickOutside) onClickOutside(event as MouseEvent)
+    }
+
+    useClickOutside(handleClickOutside, [rootElement])
 
     useEffect(() => {
       if (!isTopLayer) return undefined

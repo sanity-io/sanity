@@ -11,10 +11,10 @@ export function LayerProvider({children}: {children: React.ReactNode}) {
   }, [])
 
   const layer = useMemo(() => {
-    const depth = parentLayer ? parentLayer.depth + 1 : 0
+    const zOffset = parentLayer ? parentLayer.zOffset + 1 : 0
 
     return {
-      depth,
+      zOffset,
       mount: parentLayer?.mount || mount,
       size: parentLayer?.size || size,
     }

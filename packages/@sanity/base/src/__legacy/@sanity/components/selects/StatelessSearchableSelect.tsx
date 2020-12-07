@@ -1,13 +1,12 @@
 import {Modifier} from '@popperjs/core'
+import {Layer, useClickOutside, useLayer} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import styles from 'part:@sanity/components/selects/searchable-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import {Layer, useLayer} from 'part:@sanity/components/layer'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {useClickOutside} from '../hooks'
 import SelectMenu from './SelectMenu'
 
 // @todo
@@ -69,8 +68,7 @@ const StatelessSearchableSelectResults = forwardRef(
       value,
       ...restProps
     } = props
-    const layer = useLayer()
-    const isTopLayer = layer.depth === layer.size
+    const {isTopLayer} = useLayer()
     const itemsLen = items.length
 
     const renderItem = useCallback(
@@ -91,16 +89,15 @@ const StatelessSearchableSelectResults = forwardRef(
       [ref]
     )
 
-    useClickOutside(
-      useCallback(
-        (event: Event) => {
-          if (!isTopLayer) return
-          onClose(event)
-        },
-        [isTopLayer, onClose]
-      ),
-      [rootElement]
+    const handleClickOutside = useCallback(
+      (event: Event) => {
+        if (!isTopLayer) return
+        onClose(event)
+      },
+      [isTopLayer, onClose]
     )
+
+    useClickOutside(handleClickOutside, [rootElement])
 
     useEffect(() => {
       if (!isTopLayer) return undefined

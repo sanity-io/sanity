@@ -3,9 +3,9 @@ const {Card, ThemeProvider} = require('@sanity/ui')
 const React = require('react')
 const {css, createGlobalStyle} = require('styled-components')
 
-const GlobalStyle = createGlobalStyle(({scheme, theme}) => {
-  const tone = theme.color[scheme].card.tones.transparent
-  const text = theme.fonts.text
+const GlobalStyle = createGlobalStyle(({theme}) => {
+  const base = theme.sanity.color.base
+  const text = theme.sanity.fonts.text
 
   return css`
     body,
@@ -19,8 +19,8 @@ const GlobalStyle = createGlobalStyle(({scheme, theme}) => {
     } */
 
     body {
-      background-color: ${tone.enabled.bg};
-      color: ${tone.enabled.fg};
+      background-color: ${base.bg};
+      color: ${base.fg};
       font-family: ${text.family};
       font-size: 100%;
       line-height: ${text.sizes[2].lineHeight / text.sizes[2].fontSize};
@@ -33,8 +33,8 @@ const GlobalStyle = createGlobalStyle(({scheme, theme}) => {
 
 module.exports = function RootDecorator(story) {
   return (
-    <ThemeProvider theme={baseTheme}>
-      <GlobalStyle scheme="light" />
+    <ThemeProvider scheme="light" theme={baseTheme}>
+      <GlobalStyle />
       <Card style={{height: '100%'}}>{story()}</Card>
     </ThemeProvider>
   )
