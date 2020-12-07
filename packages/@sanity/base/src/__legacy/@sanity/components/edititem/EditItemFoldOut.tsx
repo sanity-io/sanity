@@ -1,11 +1,11 @@
 import {Modifier} from '@popperjs/core'
+import {Layer, Portal, useLayer} from '@sanity/ui'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import styles from 'part:@sanity/components/edititem/fold-style'
-import {Layer, useLayer} from 'part:@sanity/components/layer'
-import {Portal} from 'part:@sanity/components/portal'
 import React, {forwardRef, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
+import {useZIndex} from '../../../../components'
 
 interface EditItemFoldOutProps {
   title?: string
@@ -34,7 +34,7 @@ const EditItemFoldOutChildren = forwardRef(
   ) => {
     const {children, onClose, title, ...restProps} = props
     const layer = useLayer()
-    const isTopLayer = layer.depth === layer.size
+    const isTopLayer = layer.zIndex === layer.size
 
     useEffect(() => {
       if (!isTopLayer) return undefined
@@ -56,12 +56,12 @@ const EditItemFoldOutChildren = forwardRef(
     return (
       <div {...restProps} className={styles.root} ref={ref as any}>
         <div className={styles.card}>
-          <div className={styles.header}>
+          <Layer className={styles.header}>
             <div className={styles.header__title}>{title}</div>
             <div className={styles.header__actions}>
               <DefaultButton icon={CloseIcon} kind="simple" onClick={onClose} padding="small" />
             </div>
-          </div>
+          </Layer>
 
           <div className={styles.content}>{children}</div>
         </div>
@@ -73,6 +73,7 @@ const EditItemFoldOutChildren = forwardRef(
 EditItemFoldOutChildren.displayName = 'EditItemFoldOutChildren'
 
 function EditItemFoldOut(props: EditItemFoldOutProps) {
+  const zindex = useZIndex()
   const {title = '', onClose, children, referenceElement: referenceElementProp, style = {}} = props
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
@@ -106,7 +107,7 @@ function EditItemFoldOut(props: EditItemFoldOutProps) {
 
   const popperNode = (
     <Portal>
-      <Layer>
+      <Layer zOffset={zindex.portal}>
         <EditItemFoldOutChildren
           onClose={onClose}
           ref={setPopperElement}

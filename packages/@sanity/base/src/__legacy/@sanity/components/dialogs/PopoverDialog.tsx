@@ -1,15 +1,13 @@
 /* eslint-disable react/no-unused-prop-types */
 
-import classNames from 'classnames'
+import {Layer, Popover, useClickOutside, useLayer} from '@sanity/ui'
 import {partition} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import {useLayer} from 'part:@sanity/components/layer'
-import {Popover} from 'part:@sanity/components/popover'
+import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {useCallback, useEffect, useState} from 'react'
-import {useClickOutside} from '../hooks'
 import {Placement} from '../types'
 import {DialogAction} from './types'
 
@@ -20,66 +18,82 @@ interface PopoverDialogChildrenProps {
   onClickOutside?: () => void
   onClose?: () => void
   onEscape?: (event: KeyboardEvent) => void
+  portal?: boolean
   title?: string
 }
 
 interface PopoverDialogProps extends PopoverDialogChildrenProps {
   boundaryElement?: HTMLElement | null
   color?: 'default' | 'danger'
+  constrainSize?: boolean
+  depth?: number
   fallbackPlacements?: Placement[]
+  /**
+   * @deprecated
+   */
   hasAnimation?: boolean
   padding?: 'none' | 'small' | 'medium' | 'large'
   placement?: Placement
+  portal?: boolean
+  preventOverflow?: boolean
   referenceElement?: HTMLElement | null
   size?: 'small' | 'medium' | 'large' | 'auto'
+  /**
+   * @deprecated
+   */
   useOverlay?: boolean
-
-  // deprecated
-  portal?: boolean
 }
 
 function PopoverDialog(props: PopoverDialogProps) {
   const {
     boundaryElement,
     children,
+    constrainSize,
     color,
+    depth,
     fallbackPlacements,
+    // eslint-disable-next-line
     hasAnimation,
     padding = 'medium',
     placement = 'auto',
+    portal = false,
+    preventOverflow,
     referenceElement: referenceElementProp,
     size = 'medium',
-    useOverlay = false,
+    // eslint-disable-next-line
+    useOverlay,
     ...restProps
   } = props
 
   const [targetElement, setTargetElement] = useState<HTMLDivElement | null>(null)
   const referenceElement = referenceElementProp || targetElement
 
+  const popover = (
+    <Popover
+      boundaryElement={boundaryElement}
+      className={styles.root}
+      constrainSize={constrainSize}
+      content={<PopoverDialogChildren {...restProps}>{children}</PopoverDialogChildren>}
+      data-color={color}
+      data-padding={padding}
+      data-size={size}
+      fallbackPlacements={fallbackPlacements}
+      open
+      placement={placement}
+      portal={portal}
+      preventOverflow={preventOverflow}
+      radius={2}
+      referenceElement={referenceElement}
+      width="auto"
+      {...({depth} as any)}
+    />
+  )
+
   return (
     <>
       {!referenceElementProp && <div ref={setTargetElement} />}
 
-      {useOverlay && <div className={styles.overlay} />}
-
-      {referenceElement && (
-        <Popover
-          arrowClassName={classNames(styles.arrow, hasAnimation && styles.popperAnimation)}
-          boundaryElement={boundaryElement}
-          cardClassName={classNames(styles.card, hasAnimation && styles.popperAnimation)}
-          className={styles.root}
-          content={<PopoverDialogChildren {...restProps}>{children}</PopoverDialogChildren>}
-          data-color={color}
-          data-padding={padding}
-          data-size={size}
-          fallbackPlacements={fallbackPlacements}
-          layer
-          open
-          placement={placement}
-          portal
-          targetElement={referenceElement}
-        />
-      )}
+      {Boolean(referenceElement) && popover}
     </>
   )
 }
@@ -89,7 +103,7 @@ export default PopoverDialog
 function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
   const {actions = [], children, onAction, onClickOutside, onClose, onEscape, title} = props
 
-  const layer = useLayer()
+  const {isTopLayer} = useLayer()
 
   const [primary, secondary] = partition(actions, (action) => action.primary)
 
@@ -102,8 +116,6 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
     // eslint-disable-next-line react/no-array-index-key
     <PopoverDialogActionButton action={action} key={actionIndex} onAction={onAction} />
   ))
-
-  const isTopLayer = layer.depth === layer.size
 
   useEffect(() => {
     if (!isTopLayer) return undefined
@@ -124,19 +136,18 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
-  useClickOutside(
-    useCallback(() => {
-      if (isTopLayer) {
-        if (onClickOutside) onClickOutside()
-      }
-    }, [isTopLayer, onClickOutside]),
-    [rootElement]
-  )
+  const handleClickOutside = useCallback(() => {
+    if (isTopLayer) {
+      if (onClickOutside) onClickOutside()
+    }
+  }, [isTopLayer, onClickOutside])
+
+  useClickOutside(handleClickOutside, [rootElement])
 
   return (
-    <div className={styles.root} ref={setRootElement}>
+    <div className={styles.card} ref={setRootElement}>
       {title && (
-        <div className={styles.header}>
+        <Layer className={styles.header}>
           <div className={styles.title}>
             <h3>{title}</h3>
           </div>
@@ -153,25 +164,25 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
               />
             </div>
           )}
-        </div>
+        </Layer>
       )}
 
       {!title && onClose && (
-        <div className={styles.floatingCloseButtonContainer}>
+        <Layer className={styles.floatingCloseButtonContainer}>
           <Button icon={CloseIcon} kind="simple" onClick={onClose} padding="small" title="Close" />
-        </div>
+        </Layer>
       )}
 
-      <div className={styles.content}>
+      <ScrollContainer className={styles.content}>
         <div className={styles.contentWrapper}>{children}</div>
-      </div>
+      </ScrollContainer>
 
       {actions.length > 0 && (
-        <div className={styles.footer}>
+        <Layer className={styles.footer}>
           <ButtonGrid align="end" secondary={primaryActionButtons}>
             {secondaryActionButtons}
           </ButtonGrid>
-        </div>
+        </Layer>
       )}
     </div>
   )

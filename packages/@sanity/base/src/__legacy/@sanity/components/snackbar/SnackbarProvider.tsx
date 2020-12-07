@@ -1,6 +1,6 @@
+import {Portal} from '@sanity/ui'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Portal} from '../utilities/Portal'
 import SnackbarItem from './SnackbarItem'
 import {SnackbarItemType} from './types'
 

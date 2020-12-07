@@ -1,9 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .svg {
-  z-index: calc(var(--zindex-portal) - 1);
+  /* Override Sanity UI */
+  @nest &.svg {
+    position: absolute;
+  }
+
   pointer-events: none;
-  position: absolute;
   left: 0;
   top: 0;
   right: 0;

@@ -30,7 +30,7 @@ function LayerChildren({
     <div
       {...restProps}
       className={classNames(styles.root, className)}
-      style={{...style, zIndex: INITIAL_Z_INDEX + layer.depth}}
+      style={{...style, zIndex: INITIAL_Z_INDEX + layer.zOffset}}
     >
       {children}
     </div>

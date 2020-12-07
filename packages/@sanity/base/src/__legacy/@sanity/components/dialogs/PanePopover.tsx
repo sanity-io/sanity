@@ -1,8 +1,10 @@
+import {Layer} from '@sanity/ui'
 import React from 'react'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import InfoIcon from 'part:@sanity/base/info-icon'
 import classNames from 'classnames'
+import {useZIndex} from '../../../../components'
 import styles from './PanePopover.css'
 
 interface PanePopoverProps {
@@ -21,41 +23,40 @@ const DEFAULT_ICONS = {
   error: <WarningIcon />,
 }
 
-// @todo: refactor to functional component
-export default class PanePopover extends React.PureComponent<PanePopoverProps> {
-  iconKind = () => {
-    const {icon, kind = 'info'} = this.props
-    if (kind && typeof icon === 'boolean' && icon) return DEFAULT_ICONS[kind]
-    if (typeof icon === 'object') return icon
-    return undefined
-  }
+const iconKind = (props: PanePopoverProps) => {
+  const {icon, kind = 'info'} = props
+  if (kind && typeof icon === 'boolean' && icon) return DEFAULT_ICONS[kind]
+  if (typeof icon === 'object') return icon
+  return undefined
+}
 
-  render() {
-    const {children, icon, id, kind = 'info', title, subtitle} = this.props
-    const iconNode = this.iconKind()
+export default function PanePopover(props: PanePopoverProps) {
+  const zindex = useZIndex()
+  const {children, icon, id, kind = 'info', title, subtitle} = props
+  const iconNode = iconKind(props)
 
-    return (
-      <div
-        aria-label={kind}
-        aria-describedby={`popoverTitle-${kind}-${id}`}
-        className={classNames(styles.root, styles.dialog)}
-        data-kind={kind}
-      >
-        <div className={styles.inner}>
-          <div className={styles.content}>
-            <div id={`popoverTitle-${kind}-${id}`} className={styles.title}>
-              {icon && (
-                <div role="img" aria-hidden className={styles.icon}>
-                  {iconNode}
-                </div>
-              )}
-              {title}
-            </div>
-            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
-            {children && <div className={styles.children}>{children}</div>}
+  return (
+    <Layer
+      aria-label={kind}
+      aria-describedby={`popoverTitle-${kind}-${id}`}
+      className={classNames(styles.root, styles.dialog)}
+      data-kind={kind}
+      zOffset={zindex.portal}
+    >
+      <div className={styles.inner}>
+        <div className={styles.content}>
+          <div id={`popoverTitle-${kind}-${id}`} className={styles.title}>
+            {icon && (
+              <div role="img" aria-hidden className={styles.icon}>
+                {iconNode}
+              </div>
+            )}
+            {title}
           </div>
+          {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
+          {children && <div className={styles.children}>{children}</div>}
         </div>
       </div>
-    )
-  }
+    </Layer>
+  )
 }

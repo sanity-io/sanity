@@ -183,6 +183,7 @@
   @nest .root.isBleeding & {
     top: 0;
     box-shadow: none;
+    padding-top: 49px;
   }
 
   @nest .root:not(.isBleeding) & {

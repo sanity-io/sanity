@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  z-index: var(--zindex-popover + 1);
   pointer-events: none;
 }
 

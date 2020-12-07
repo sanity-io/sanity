@@ -1,4 +1,4 @@
-import {Layer, LayerProvider, useLayer} from 'part:@sanity/components/layer'
+import {Layer, LayerProvider, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 
 export function DefaultStory() {
@@ -19,7 +19,7 @@ function Example() {
     <div>
       <h1>Layer example</h1>
       <pre>
-        depth={layer.depth}, size={layer.size}
+        zOffset={layer.zIndex}, size={layer.size}
       </pre>
       <button onClick={handleOpen} type="button">
         Open
@@ -50,7 +50,7 @@ function Layer1({onClose}: {onClose: () => void}) {
         </button>
       </div>
       <pre>
-        depth={layer.depth}, size={layer.size}
+        zOffset={layer.zIndex}, size={layer.size}
       </pre>
       <button onClick={handleOpen} type="button">
         Open
@@ -78,7 +78,7 @@ function Layer2({onClose}: {onClose: () => void}) {
         </button>
       </div>
       <pre>
-        depth={layer.depth}, size={layer.size}
+        zOffset={layer.zIndex}, size={layer.size}
       </pre>
     </div>
   )
