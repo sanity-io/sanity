@@ -65,8 +65,11 @@
 
 .header {
   background: var(--component-bg);
-  position: relative;
-  z-index: var(--zindex-pane);
+
+  /* Override Sanity UI */
+  @nest &.header {
+    position: relative;
+  }
 
   @nest .isCollapsed & {
     width: 100%;
@@ -105,7 +108,6 @@
 }
 
 .headerContent {
-  z-index: 1;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -263,7 +265,11 @@
   box-sizing: border-box;
   background-color: var(--component-bg);
   color: var(--text-color-secondary);
-  z-index: var(--zindex-pane);
+
+  /* Override Sanity UI */
+  @nest &.stickyFooter {
+    position: relative;
+  }
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     padding-bottom: env(safe-area-inset-bottom);

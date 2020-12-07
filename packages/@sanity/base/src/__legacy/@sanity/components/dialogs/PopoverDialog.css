@@ -1,25 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-/* @keyframes popoverDialogScaleIn {
-  0% {
-    transform: scale(0.9);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-} */
-
-@keyframes popoverDialogBackgroundFadeIn {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
 :root {
   --array--add-item-color: var(--brand-primary);
   --array--add-item-triangle-color: color(
@@ -27,71 +7,25 @@
   );
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: var(--backdrop-color);
-  opacity: 0.75;
-  z-index: var(--zindex-portal);
-  pointer-events: none;
-  animation-name: popoverDialogBackgroundFadeIn;
-  animation-duration: 0.2s;
-  animation-timing-function: cubic-bezier(0, 0, 0, 1);
-  animation-iteration-count: once;
-}
-
 .root {
-  width: calc(100% - 16px);
+  width: 100%;
 
-  @nest &:not([data-size]), &[data-size='auto'] {
-    width: auto;
-  }
-
-  @nest &[data-size='small'] {
-    max-width: 20rem;
-  }
-
-  @nest &[data-size='medium'] {
-    max-width: 35rem;
-  }
-
-  @nest &[data-size='large'] {
-    max-width: 40rem;
-  }
-
-  @nest &[data-size='large'] {
-    max-width: 50rem;
-  }
-
-  /* Hide the popover dialog when the reference element is out of bounds */
-  @nest &[data-popper-reference-hidden='true'] {
-    display: none;
-  }
-}
-
-.arrow {
-  /* Popover's arrow element */
-}
-
-.card {
-  max-height: 50vh;
-
-  @nest .root[data-color='danger'] & {
+  @nest .root[data-color='danger'] & > div {
     background-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);
   }
-}
 
-.popperAnimation {
-  /* disabled for now*/
+  @nest &[data-size='small'] {
+    max-width: 20rem !important;
+  }
 
-  /* animation-name: popoverDialogScaleIn;
-  animation-duration: 0.2s;
-  animation-timing-function: cubic-bezier(0, 0, 0, 1);
-  animation-iteration-count: once; */
+  @nest &[data-size='medium'] {
+    max-width: 35rem !important;
+  }
+
+  @nest &[data-size='large'] {
+    max-width: 50rem !important;
+  }
 }
 
 .closeButtonContainer {
@@ -105,12 +39,15 @@
 }
 
 .floatingCloseButtonContainer {
+  /* Override Sanity UI */
+  @nest &.floatingCloseButtonContainer {
+    position: absolute;
+  }
+
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  position: absolute;
   border: 0;
   top: 0;
   right: 0;
-  z-index: 1;
   background: var(--component-bg);
   transform: translate(50%, -50%);
   border-radius: 50%;
@@ -121,6 +58,8 @@
 }
 
 .content {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -139,7 +78,11 @@
 }
 
 .header {
-  position: relative;
+  /* Override Sanity UI */
+  @nest &.header {
+    position: relative;
+  }
+
   display: flex;
   line-height: 0;
 
@@ -196,4 +139,9 @@
   @nest .root[data-padding='large'] & {
     padding: var(--large-padding);
   }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
 }

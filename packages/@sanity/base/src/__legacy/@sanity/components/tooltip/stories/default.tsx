@@ -1,4 +1,4 @@
-import {PortalProvider} from 'part:@sanity/components/portal'
+import {PortalProvider} from '@sanity/ui'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import {boolean, select, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'

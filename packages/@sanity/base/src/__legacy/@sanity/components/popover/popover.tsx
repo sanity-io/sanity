@@ -1,5 +1,5 @@
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
-import {Layer} from 'part:@sanity/components/layer'
 import {Portal} from 'part:@sanity/components/portal'
 import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
