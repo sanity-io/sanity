@@ -602,7 +602,9 @@ export default async function initSanity(args, context) {
         debug('--dataset specified, creating dataset (%s)', cliFlags.dataset)
         const client = apiClient({api: {projectId: createdProject.projectId}})
         const spinner = context.output.spinner('Creating dataset').start()
-        await client.datasets.create(cliFlags.dataset)
+
+        const createBody = cliFlags.visibility && {aclMode: cliFlags.visibility}
+        await client.datasets.create(cliFlags.dataset, createBody)
         spinner.succeed()
       }
 
