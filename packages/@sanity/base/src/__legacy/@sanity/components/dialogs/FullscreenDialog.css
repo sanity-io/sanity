@@ -1,7 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  position: absolute;
+  /* Override Sanity UI */
+  @nest &.root {
+    position: absolute;
+  }
+
   top: 0;
   bottom: 0;
   left: 0;

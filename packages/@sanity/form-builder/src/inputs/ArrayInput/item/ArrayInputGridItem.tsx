@@ -9,7 +9,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Popover from 'part:@sanity/components/dialogs/popover'
+import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
@@ -205,15 +205,16 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
     if (options.editModal === 'popover') {
       return (
         <div className={styles.popupAnchor}>
-          <Popover
+          <PopoverDialog
+            depth={10}
             title={title}
             onClose={this.handleEditStop}
             onEscape={this.handleEditStop}
             onClickOutside={this.handleEditStop}
-            placement="auto"
+            placement="bottom"
           >
             <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
-          </Popover>
+          </PopoverDialog>
         </div>
       )
     }

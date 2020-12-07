@@ -1,7 +1,9 @@
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import {Portal} from 'part:@sanity/components/portal'
 import React, {useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
+import {useZIndex} from '../../../../components'
 import {TooltipArrow} from './tooltipArrow'
 import {useTooltip} from './hooks'
 import {TooltipPlacement} from './types'
@@ -21,7 +23,7 @@ export interface TooltipProps {
 }
 
 export function Tooltip(
-  props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
+  props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content'>
 ) {
   const {
     children,
@@ -33,6 +35,7 @@ export function Tooltip(
     tone,
     ...restProps
   } = props
+  const zindex = useZIndex()
   const ctx = useTooltip()
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -84,17 +87,18 @@ export function Tooltip(
   }
 
   const popperNode = (
-    <div
+    <Layer
       {...restProps}
       className={classNames(styles.root, className)}
       data-tone={tone}
+      zOffset={zindex.tooltip + 1}
       ref={setPopperElement}
       style={popper.styles.popper}
       {...popper.attributes.popper}
     >
       <div className={styles.card}>{content}</div>
       <TooltipArrow ref={setArrowElement} style={popper.styles.arrow} tone={tone} />
-    </div>
+    </Layer>
   )
 
   return (

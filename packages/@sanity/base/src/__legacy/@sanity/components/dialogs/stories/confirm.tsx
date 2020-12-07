@@ -1,9 +1,9 @@
+import {PortalProvider} from '@sanity/ui'
 import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select} from 'part:@sanity/storybook/addons/knobs'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
-import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React, {useEffect, useRef} from 'react'
 

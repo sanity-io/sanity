@@ -1,3 +1,4 @@
+import {Layer} from '@sanity/ui'
 import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
@@ -142,13 +143,13 @@ function Example({content, refStyles, ...props}) {
 
   return (
     <>
+      <Layer ref={setElement} style={refStyles}>
+        Reference element
+      </Layer>
+
       <PopoverDialog {...props} referenceElement={element}>
         {content}
       </PopoverDialog>
-
-      <div ref={setElement} style={refStyles}>
-        Reference element
-      </div>
     </>
   )
 }

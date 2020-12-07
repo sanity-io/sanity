@@ -1,3 +1,4 @@
+import {Layer} from '@sanity/ui'
 import React from 'react'
 import {sortBy} from 'lodash'
 import {Path} from '@sanity/types'
@@ -8,11 +9,12 @@ import {getElementGeometry} from '../helpers/getElementGeometry'
 import isChangeBar from '../helpers/isChangeBar'
 import scrollIntoView from '../helpers/scrollIntoView'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
+import {resizeObserver} from '../../util/resizeObserver'
+import {useZIndex} from '../../components'
 import {Connector} from './Connector'
 
 import styles from './ConnectorsOverlay.css'
 import {DebugLayers} from './DebugLayers'
-import {resizeObserver} from '../../util/resizeObserver'
 
 export interface Rect {
   height: number
@@ -34,6 +36,7 @@ function useResizeObserver(
 }
 export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Props) {
   const {rootRef, onSetFocus} = props
+  const zindex = useZIndex()
 
   const [hovered, setHovered] = React.useState<string | null>(null)
 
@@ -89,7 +92,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
 
   return (
     <ScrollMonitor onScroll={forceUpdate}>
-      <svg className={styles.svg}>
+      <Layer as="svg" className={styles.svg} zOffset={zindex.portal - 1}>
         {visibleConnectors.map(({field, change, hasFocus, hasHover, hasRevertHover}) => {
           const onConnectorClick = () => {
             scrollIntoView(field)
@@ -121,7 +124,7 @@ export const ConnectorsOverlay = React.memo(function ConnectorsOverlay(props: Pr
             </React.Fragment>
           )
         })}
-      </svg>
+      </Layer>
     </ScrollMonitor>
   )
 })

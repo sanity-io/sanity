@@ -1,9 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: var(--component-bg);
   color: var(--text-color);
-  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-base);
   line-height: var(--font-size-base);
   user-select: none;
@@ -11,7 +9,6 @@
   overflow: auto;
   overflow-x: hidden;
   padding: var(--extra-small-padding) 0;
-  border-radius: var(--border-radius-medium);
 }
 
 .list {

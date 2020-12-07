@@ -1,9 +1,9 @@
+import {LayerProvider, useLayer} from '@sanity/ui'
 import Chance from 'chance'
 import {range} from 'lodash'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import {LayerProvider, useLayer} from 'part:@sanity/components/layer'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React from 'react'
 
@@ -91,7 +91,7 @@ function DialogExampleChildren({children}: {children: React.ReactNode}) {
 
   return (
     <>
-      <pre>depth={layer.depth}</pre>
+      <pre>zOffset={layer.zIndex}</pre>
       <div>{children}</div>
     </>
   )
