@@ -3,12 +3,10 @@ const generateTypeSortings = require('./generateTypeSortings')
 const generateTypeQueries = require('./generateTypeQueries')
 
 module.exports = (extracted) => {
-  const types = [...extracted.types, extracted.interfaces.find((i) => i.name === 'Document')]
+  const filters = generateTypeFilters(extracted.types)
+  const sortings = generateTypeSortings(extracted.types)
+  const queries = generateTypeQueries(extracted.types, sortings)
+  const types = extracted.types.concat(filters).concat(sortings)
 
-  const filters = generateTypeFilters(types)
-  const sortings = generateTypeSortings(types)
-  const queries = generateTypeQueries(types, sortings)
-  const graphqlTypes = extracted.types.concat(filters).concat(sortings)
-
-  return {types: graphqlTypes, queries, interfaces: extracted.interfaces, generation: 'gen2'}
+  return {types, queries, interfaces: extracted.interfaces, generation: 'gen2'}
 }

@@ -37,9 +37,7 @@ function generateTypeSortings(types) {
       !builtInTypes.includes(type.name)
   )
   const documentTypes = types.filter(
-    (type) =>
-      type.name === 'Document' ||
-      (type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'))
+    (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
   const hasFields = (type) => type.fields.length > 0
