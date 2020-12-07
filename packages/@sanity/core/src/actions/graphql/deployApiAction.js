@@ -8,11 +8,13 @@ const SchemaError = require('./SchemaError')
 
 const gen1 = require('./gen1')
 const gen2 = require('./gen2')
+const gen3 = require('./gen3')
 
-const latestGeneration = 'gen2'
+const latestGeneration = 'gen3'
 const generations = {
   gen1,
   gen2,
+  gen3,
 }
 
 module.exports = async function deployApiActions(args, context) {
