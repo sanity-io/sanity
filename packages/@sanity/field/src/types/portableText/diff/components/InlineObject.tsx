@@ -1,10 +1,9 @@
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
+import {useClickOutside, useLayer} from '@sanity/ui'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import SanityPreview from 'part:@sanity/base/preview'
-import {useClickOutside} from '@sanity/base/__legacy/@sanity/components'
-import {useLayer} from 'part:@sanity/components/layer'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
@@ -154,16 +153,14 @@ function PopoverContent({
   schemaType: ObjectSchemaType
 }) {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  const layer = useLayer()
-  const isTopLayer = layer.depth === layer.size
+  const {isTopLayer} = useLayer()
 
-  useClickOutside(
-    useCallback(() => {
-      if (!isTopLayer) return
-      onClose()
-    }, [isTopLayer, onClose]),
-    [popoverElement]
-  )
+  const handleClickOutside = useCallback(() => {
+    if (!isTopLayer) return
+    onClose()
+  }, [isTopLayer, onClose])
+
+  useClickOutside(handleClickOutside, [popoverElement])
 
   return (
     <div className={styles.popoverContent} ref={setPopoverElement}>

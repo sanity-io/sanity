@@ -2,7 +2,7 @@ import {useContext} from 'react'
 import {LayerContext, LayerContextValue} from './LayerContext'
 
 const DEFAULT_LAYER_VALUE: LayerContextValue = {
-  depth: 0,
+  zOffset: 0,
   mount: () => () => undefined,
   size: 0,
 }

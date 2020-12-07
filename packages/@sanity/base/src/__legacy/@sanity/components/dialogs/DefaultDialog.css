@@ -25,17 +25,27 @@
 }
 
 .root {
-  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
+  right: 0;
   outline: none;
+
+  /* Override Sanity UI */
+  @nest &.root {
+    position: absolute;
+  }
 
   @media (--max-screen-medium) {
     position: fixed;
     bottom: auto;
   }
+}
+
+.containerQuery {
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  width: 100%;
+  height: 100%;
 }
 
 .overlay {
@@ -93,36 +103,36 @@
   display: flex;
   flex-direction: column;
 
-  @nest .root:not([data-dialog-size]) {
+  @nest .root:not([data-dialog-size]) & {
     width: initial;
     height: initial;
   }
 
-  @nest .root[data-dialog-size='small'][data-container-min~='medium'] & {
+  @nest .root[data-dialog-size='small'] > .containerQuery[data-container-min~='medium'] & {
     max-width: 20rem;
   }
 
-  @nest .root[data-dialog-size='medium'][data-container-min~='medium'] & {
+  @nest .root[data-dialog-size='medium'] > .containerQuery[data-container-min~='medium'] & {
     width: 27rem;
   }
 
-  @nest .root[data-dialog-size='medium'][data-container-min~='default'] & {
+  @nest .root[data-dialog-size='medium'] > .containerQuery[data-container-min~='default'] & {
     width: 33rem;
   }
 
-  @nest .root[data-dialog-size='medium'][data-container-min~='large'] & {
+  @nest .root[data-dialog-size='medium'] > .containerQuery[data-container-min~='large'] & {
     width: 35rem;
   }
 
-  @nest .root[data-dialog-size='large'][data-container-min~='medium'] & {
+  @nest .root[data-dialog-size='large'] > .containerQuery[data-container-min~='medium'] & {
     width: 28rem;
   }
 
-  @nest .root[data-dialog-size='large'][data-container-min~='default'] & {
+  @nest .root[data-dialog-size='large'] > .containerQuery[data-container-min~='default'] & {
     width: 40rem;
   }
 
-  @nest .root[data-dialog-size='large'][data-container-min~='large'] & {
+  @nest .root[data-dialog-size='large'] > .containerQuery[data-container-min~='large'] & {
     width: 50rem;
   }
 }
@@ -136,12 +146,15 @@
 }
 
 .header {
-  position: relative;
+  /* Override Sanity UI */
+  @nest &.header {
+    position: relative;
+  }
+
   background-color: var(--dialog-header-color);
   color: var(--dialog-header-color--inverted);
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   padding: var(--medium-padding);
-  z-index: 10;
   line-height: 0;
   display: flex;
   align-items: center;
@@ -247,11 +260,15 @@
 
 .floatingCloseButtonContainer {
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  position: absolute;
+
+  /* Override Sanity UI */
+  @nest &.floatingCloseButtonContainer {
+    position: absolute;
+  }
+
   border: 0;
   top: 0;
   right: 0;
-  z-index: 1;
   background-color: var(--component-bg);
   color: var(--component-text-color);
   transform: translate(50%, -50%);
@@ -263,13 +280,16 @@
 }
 
 .footer {
+  /* Override Sanity UI */
+  @nest &.footer {
+    position: relative;
+  }
+
   box-sizing: border-box;
   padding: var(--medium-padding);
   background-color: var(--component-bg);
   color: var(--component-text-color);
   border-radius: 0 0 var(--dialog-border-radius) var(--dialog-border-radius);
-  position: relative;
-  z-index: 10;
   display: flex;
   align-items: center;
   flex-shrink: 0;
