@@ -4,7 +4,7 @@ const helpText = `
 Options
   --dataset <dataset> Deploy API for the given dataset
   --tag <tag> Deploy API to given tag (defaults to 'default')
-  --generation <generation> API generation to deploy (defaults to 'gen2')
+  --generation <generation> API generation to deploy (defaults to 'gen3')
   --playground Deploy a GraphQL playground for easily testing queries (public)
   --no-playground Skip playground prompt (do not deploy a playground)
   --force Deploy API without confirming breaking changes
