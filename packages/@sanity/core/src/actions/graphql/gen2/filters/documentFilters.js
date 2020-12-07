@@ -1,6 +1,6 @@
 function createDocumentFilters() {
   return {
-    name: 'GlobalDocumentFilter',
+    name: 'DocumentFilter',
     kind: 'InputObject',
     isConstraintFilter: true,
     fields: [
