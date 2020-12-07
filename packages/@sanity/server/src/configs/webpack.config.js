@@ -6,7 +6,6 @@ import webpackIntegration from '@sanity/webpack-integration/v3'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import rxPaths from 'rxjs/_esm5/path-mapping'
 import getStaticBasePath from '../util/getStaticBasePath'
-import isSanityMonorepo from './isSanityMonorepo'
 
 const resolve = (mod) => require.resolve(mod)
 
@@ -14,12 +13,11 @@ const resolve = (mod) => require.resolve(mod)
 export default (config = {}) => {
   const staticPath = getStaticBasePath(config)
   const env = config.env || 'development'
-  const inSanityMonorepo = isSanityMonorepo(config.basePath)
   const wpIntegrationOptions = {
     basePath: config.basePath,
     env: config.env,
     webpack,
-    isSanityMonorepo: inSanityMonorepo,
+    isSanityMonorepo: config.isSanityMonorepo,
   }
 
   const basePath = config.basePath || process.cwd()
