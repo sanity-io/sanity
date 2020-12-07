@@ -1,6 +1,6 @@
 /// <reference types="react" />
 export interface LayerContextValue {
-  depth: number
+  zOffset: number
   mount: () => () => void
   size: number
 }

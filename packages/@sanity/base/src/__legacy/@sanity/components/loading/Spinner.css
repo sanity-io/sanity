@@ -20,6 +20,18 @@
   }
 }
 
+.fullscreenLayer {
+  /* Override Sanity UI */
+  @nest &.fullscreenLayer {
+    position: fixed;
+  }
+
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
 .root {
   animation-name: sanity_spinner_appear;
   animation-duration: 250ms;
@@ -35,12 +47,8 @@
 
   &.fullscreen {
     background-color: color(var(--body-bg) a(50%));
-    position: fixed;
     height: 100%;
     width: 100%;
-    top: 0;
-    left: 0;
-    z-index: var(--zindex-portal);
   }
 }
 

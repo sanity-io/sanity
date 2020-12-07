@@ -1,8 +1,8 @@
+import {PortalProvider} from '@sanity/ui'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, select, boolean} from 'part:@sanity/storybook/addons/knobs'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import {PortalProvider} from 'part:@sanity/components/portal'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React, {useEffect, useRef} from 'react'
 

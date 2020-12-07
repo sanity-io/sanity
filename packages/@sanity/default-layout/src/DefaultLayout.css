@@ -44,7 +44,11 @@
 }
 
 .navbar {
-  position: relative;
+  /* Override Sanity UI */
+  @nest &.navbar {
+    position: relative;
+  }
+
   background-color: var(--main-navigation-color);
   color: var(--main-navigation-color--inverted);
   padding-left: env(safe-area-inset-left);
@@ -62,13 +66,16 @@
 }
 
 .loadingScreen {
+  /* Override Sanity UI */
+  @nest &.loadingScreen {
+    position: fixed;
+  }
+
   display: block;
-  position: fixed;
   top: 0;
   left: 0;
   opacity: 1;
   transition: opacity 0.5s linear;
-  z-index: 5000;
   animation-name: loadingScreen;
   animation-duration: 1s;
   animation-delay: 1s;

@@ -1,3 +1,4 @@
+import {Layer} from '@sanity/ui'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
@@ -166,9 +167,12 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
       return 'alert'
     }
     return (
-      <div
+      <Layer
         aria-label={kind}
         aria-describedby={`snackbarTitle-${kind}-${id}`}
+        // @todo: Convert to functional component and change to:
+        // depth={zindex.drawer}
+        zOffset={4001}
         role={role()}
         ref={this._snackRef}
         tabIndex={-1}
@@ -223,7 +227,7 @@ export default class SnackbarItem extends React.Component<SnackbarItemProps> {
             {children && <div className={styles.children}>{children}</div>}
           </div>
         </div>
-      </div>
+      </Layer>
     )
   }
 }
