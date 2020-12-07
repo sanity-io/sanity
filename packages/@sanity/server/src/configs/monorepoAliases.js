@@ -1,14 +1,13 @@
 import path from 'path'
-import tsconfig from 'tsconfig'
 
 const MONOREPO_PATH = path.resolve(__dirname, '../../../../..')
 
 function resolve(...segments) {
   return path.resolve(MONOREPO_PATH, ...segments)
 }
-
 export function getMonorepoAliases() {
   try {
+    const tsconfig = require('tsconfig')
     // eslint-disable-next-line no-sync
     const result = tsconfig.loadSync(MONOREPO_PATH)
     const {compilerOptions} = result.config
