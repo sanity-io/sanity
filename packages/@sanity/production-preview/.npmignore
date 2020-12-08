@@ -1,3 +1,4 @@
 .babelrc
 src
 test
+tsconfig.tsbuildinfo
