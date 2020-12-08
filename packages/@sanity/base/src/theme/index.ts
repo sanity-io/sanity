@@ -63,4 +63,8 @@ export const theme: RootTheme = {
     parseInt(legacyTheme['--screen-large-break'], 10) || 960,
     parseInt(legacyTheme['--screen-xlarge-break'], 10) || 1600,
   ],
+  focusRing: {
+    offset: -1,
+    width: 2,
+  },
 }
