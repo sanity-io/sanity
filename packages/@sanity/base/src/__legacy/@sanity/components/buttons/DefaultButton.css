@@ -448,7 +448,7 @@
 
     @nest &[data-sanity-icon='true'] {
       font-size: calc(25 / 16 * 1rem); /* 25px */
-      margin: calc(4 / 25 * -1rem); /* -4px */
+      margin: calc(4 / 16 * -1rem); /* -4px */
     }
   }
 }
