@@ -1,0 +1,24 @@
+{
+  "root": true,
+  "project": {
+    "name": "UI Studio"
+  },
+  "api": {
+    "projectId": "q2r21cu7",
+    "dataset": "ui-studio"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "example-tool"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    }
+  ]
+}

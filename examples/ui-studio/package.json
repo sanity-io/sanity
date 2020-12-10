@@ -1,0 +1,44 @@
+{
+  "name": "ui-studio",
+  "private": true,
+  "version": "2.1.2",
+  "description": "An example of a Sanity studio using @sanity/ui",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "sanity start --port 3339",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "ui-studio"
+  ],
+  "dependencies": {
+    "@sanity/base": "^2.1.2",
+    "@sanity/components": "^2.1.0",
+    "@sanity/core": "^2.1.2",
+    "@sanity/default-layout": "^2.1.2",
+    "@sanity/default-login": "^2.1.0",
+    "@sanity/desk-tool": "^2.1.2",
+    "@sanity/vision": "^2.1.0",
+    "@sanity/ui": "^0.28.0",
+    "@sanity/icons": "^1.0.0",
+    "react": "^17.0",
+    "react-dom": "^17.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.7.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  }
+}
