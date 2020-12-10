@@ -61,6 +61,7 @@ export function createWeightedSearch(types, client, options = {}) {
       })
       .pipe(
         map(removeDupes),
+        map((hits) => sortBy(hits, (hit) => hit.w2)),
         map((hits) => applyWeights(searchSpec, hits, terms)),
         map((hits) => sortBy(hits, (hit) => -hit.score)),
         map((hits) => hits.slice(0, 100))
