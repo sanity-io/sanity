@@ -37,7 +37,7 @@ function SanityRoot() {
         <PortalProvider element={portalElement}>
           <LayerProvider>
             <SnackbarProvider>
-              <ThemeColorProvider variant="transparent">
+              <ThemeColorProvider tone="transparent">
                 <GlobalStyle />
               </ThemeColorProvider>
               <Root scheme={colorScheme}>
