@@ -99,9 +99,8 @@ export default class SelectLanguage extends React.Component {
                       onChange={this.handleLangCheckboxChange}
                       data-lang-id={lang.id}
                       checked={selected.includes(lang.id)}
-                    >
-                      {lang.title}
-                    </Checkbox>
+                      label={lang.title}
+                    />
                   </li>
                 ))}
               </ul>
