@@ -9,10 +9,7 @@ import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
-import EditIcon from 'part:@sanity/base/edit-icon'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-import FileIcon from 'part:@sanity/base/file-icon'
-import UploadIcon from 'part:@sanity/base/upload-icon'
+import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
@@ -174,7 +171,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return (
       <div className={styles.previewAsset}>
         <div className={styles.fileIcon}>
-          <FileIcon />
+          <BinaryDocumentIcon />
         </div>
         <div>
           <div className={styles.fileLabel}>{assetDocument.originalFilename} </div>
@@ -411,7 +408,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               {/* {!readOnly && this.renderSelectFileButton()} */}
               {value && otherFields.length > 0 && (
                 <Button
-                  icon={readOnly ? VisibilityIcon : EditIcon}
+                  icon={readOnly ? EyeOpenIcon : EditIcon}
                   inverted
                   title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
