@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useEffect, useRef, useState} from 'react'
 
@@ -114,7 +114,7 @@ export function OverflowMenu(props: Props) {
             'aria-haspopup': 'menu',
             'aria-expanded': open,
             'aria-controls': 'insertmenu',
-            icon: EllipsisIcon,
+            icon: EllipsisHorizontalIcon,
             kind: 'simple',
             padding: 'small',
             selected: open,

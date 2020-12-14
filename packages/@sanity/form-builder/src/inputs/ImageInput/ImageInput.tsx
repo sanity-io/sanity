@@ -5,6 +5,7 @@ import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import {EditIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon, EyeOpenIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
@@ -26,17 +27,11 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import EditIcon from 'part:@sanity/base/edit-icon'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import ImageIcon from 'part:@sanity/base/image-icon'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
-import SearchIcon from 'part:@sanity/base/search-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import UploadIcon from 'part:@sanity/base/upload-icon'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Package files
@@ -661,7 +656,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               {!readOnly && this.renderSelectImageButton()}
               {showAdvancedEditButton && (
                 <Button
-                  icon={readOnly ? VisibilityIcon : EditIcon}
+                  icon={readOnly ? EyeOpenIcon : EditIcon}
                   inverted
                   title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
