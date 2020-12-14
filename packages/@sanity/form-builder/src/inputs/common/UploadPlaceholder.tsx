@@ -1,6 +1,5 @@
 import React from 'react'
-import ClipboardImageIcon from 'part:@sanity/base/clipboard-image-icon'
-import UploadIcon from 'part:@sanity/base/upload-icon'
+import {ClipboardImageIcon, UploadIcon} from '@sanity/icons'
 
 import styles from './UploadPlaceholder.css'
 

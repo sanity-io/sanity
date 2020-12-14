@@ -1,6 +1,6 @@
 import {Layer, Popover, useClickOutside, useLayer} from '@sanity/ui'
 import {partition} from 'lodash'
-import CloseIcon from 'part:@sanity/base/close-icon'
+import {CloseIcon} from '@sanity/icons'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
