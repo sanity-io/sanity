@@ -5,9 +5,7 @@
 }
 
 .searchableSelect {
-  composes: spacing from 'part:@sanity/components/buttons/default-style';
-  grid-column: span 2;
-  width: stretch;
+  padding-left: 4px;
 }
 
 .searchableSelectInput {

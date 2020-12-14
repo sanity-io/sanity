@@ -4,10 +4,11 @@ import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import classNames from 'classnames'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {isPlainObject, get} from 'lodash'
-import {ArrayFunctions} from '../../legacyImports'
+import {Box, Button} from '@sanity/ui'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import React from 'react'
 import {map} from 'rxjs/operators'
+import {ArrayFunctions} from '../../legacyImports'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
 import {Subscription} from '../../typedefs/observable'
@@ -19,7 +20,6 @@ import {ArrayInputItem} from './item'
 import randomKey from './randomKey'
 import resolveListComponents from './resolveListComponents'
 import {ItemValue} from './typedefs'
-import {Button} from '@sanity/ui'
 
 import styles from './ArrayInput.css'
 
@@ -445,17 +445,19 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           {value && value.length > 0 && this.renderList()}
           {this.renderUnknownValueTypes()}
 
-          <ArrayFunctions
-            className={styles.functions}
-            type={type}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
-            onCreateValue={createProtoValue}
-            onChange={onChange}
-          />
+          <Box marginTop={1}>
+            <ArrayFunctions
+              className={styles.functions}
+              type={type}
+              value={value}
+              readOnly={readOnly}
+              onAppendItem={this.handleAppend}
+              onPrependItem={this.handlePrepend}
+              onFocusItem={this.handleFocusItem}
+              onCreateValue={createProtoValue}
+              onChange={onChange}
+            />
+          </Box>
         </div>
       </FieldSetComponent>
     )
