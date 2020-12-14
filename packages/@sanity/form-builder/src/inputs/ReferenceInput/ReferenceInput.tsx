@@ -12,7 +12,7 @@ import {
 } from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import LinkIcon from 'part:@sanity/base/link-icon'
+import {LinkIcon} from '@sanity/icons'
 import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
