@@ -1,5 +1,4 @@
-import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
-import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
+import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import Button from 'part:@sanity/components/buttons/default'
 import React from 'react'
 
@@ -16,7 +15,7 @@ export function ExpandCollapseButton(props: Props) {
 
   return (
     <Button
-      icon={isFullscreen ? FullscreenExitIcon : FullscreenIcon}
+      icon={isFullscreen ? CollapseIcon : ExpandIcon}
       kind="simple"
       onClick={onToggleFullscreen}
       padding="small"

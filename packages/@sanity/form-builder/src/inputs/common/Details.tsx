@@ -1,4 +1,4 @@
-import ChevronDownIcon from 'part:@sanity/base/angle-down-icon'
+import {ChevronDownIcon} from '@sanity/icons'
 import React from 'react'
 
 import styles from './Details.css'
