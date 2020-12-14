@@ -1,5 +1,5 @@
 import React from 'react'
-import ImageIcon from 'part:@sanity/base/image-icon'
+import { ImageIcon } from '@sanity/icons'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
