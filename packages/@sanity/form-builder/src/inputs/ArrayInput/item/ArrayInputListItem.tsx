@@ -8,6 +8,7 @@ import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
+import {Box, Dialog, Layer, Button} from '@sanity/ui'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import PatchEvent from '../../../PatchEvent'
 import Preview from '../../../Preview'
@@ -15,10 +16,9 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
-import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
-import {Box, Dialog, Layer, Button} from '@sanity/ui'
-import PopoverDialog from '../../../components/PopoverDialog'
+import {PopoverDialog} from '../../../components/PopoverDialog'
 import {IntentButton} from '../../../components/IntentButton'
+import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
 import {BorderShadowGridItem, DragHandleSpan, PreviewWrapper} from './styles'
 
 import styles from './ArrayInputListItem.css'
@@ -219,8 +219,6 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
       return (
         <PopoverDialog
           onClose={this.handleEditStop}
-          onEscape={this.handleEditStop}
-          onClickOutside={this.handleEditStop}
           referenceElement={this.innerElement}
           placement="auto"
           depth={10}
