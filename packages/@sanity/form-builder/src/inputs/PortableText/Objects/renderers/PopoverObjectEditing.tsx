@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, useEffect, useState} from 'react'
 
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
-
 import {
   PortableTextBlock,
   PortableTextChild,
@@ -15,6 +13,7 @@ import {Path, Marker, SchemaType} from '@sanity/types'
 import {useBoundaryElement} from '@sanity/base/__legacy/@sanity/components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
+import {PopoverDialog} from '../../../../components/PopoverDialog'
 
 interface Props {
   editorPath: Path
@@ -62,8 +61,6 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
       fallbackPlacements={['top', 'bottom']}
       placement="bottom"
       referenceElement={refElement}
-      onClickOutside={onClose}
-      onEscape={onClose}
       onClose={onClose}
       preventOverflow
       portal
