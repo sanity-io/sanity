@@ -18,7 +18,7 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import PatchEvent from '../../../PatchEvent'
 import Preview from '../../../Preview'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
-import ConfirmButton from '../ConfirmButton'
+import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
@@ -296,11 +296,10 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
                   )}
 
                   <div>
-                    <ConfirmButton
-                      kind="simple"
+                    <ConfirmDeleteButton
                       onConfirm={this.handleRemove}
                       placement="bottom"
-                      title="Remove this item"
+                      title="Remove item"
                     />
                   </div>
                 </div>
