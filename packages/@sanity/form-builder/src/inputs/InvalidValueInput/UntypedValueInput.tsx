@@ -1,9 +1,9 @@
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
-import DefaultButton from 'part:@sanity/components/buttons/default'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import styles from '../ObjectInput/styles/UnknownFields.css'
 import Warning from '../Warning'
+import {Button} from '@sanity/ui'
 
 type Props = {
   validTypes?: string[]
@@ -22,12 +22,11 @@ function SetMissingTypeButton({
 }) {
   const itemValue = {...value, _type: targetType}
   return (
-    <DefaultButton
+    <Button
       onClick={() => onChange(PatchEvent.from(setIfMissing(targetType, ['_type'])), itemValue)}
-      color="primary"
-    >
-      Set <code>_type</code> to <code>{targetType}</code>
-    </DefaultButton>
+      tone="primary"
+      text={`Set <code>_type</code> to <code>${targetType}</code>`}
+    />
   )
 }
 
@@ -43,9 +42,11 @@ function UnsetItemButton({
   // Doesn't matter which `_type` we use as long as it's allowed by the array
   const itemValue = {...value, _type: validTypes[0]}
   return (
-    <DefaultButton onClick={() => onChange(PatchEvent.from(unset()), itemValue)} color="danger">
-      Remove value
-    </DefaultButton>
+    <Button
+      onClick={() => onChange(PatchEvent.from(unset()), itemValue)}
+      tone="critical"
+      text="Remove value"
+    />
   )
 }
 

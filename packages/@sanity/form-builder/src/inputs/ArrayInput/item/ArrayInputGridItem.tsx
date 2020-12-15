@@ -4,7 +4,6 @@ import {ArraySchemaType, isValidationMarker, Marker, Path, SchemaType} from '@sa
 import * as PathUtils from '@sanity/util/paths'
 import {LinkIcon, DragHandleIcon} from '@sanity/icons'
 import {FormFieldPresence, FieldPresence, PresenceOverlay} from '@sanity/base/presence'
-import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
@@ -21,6 +20,7 @@ import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
 import {IntentButton} from '../../../components/IntentButton'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
+import {Button} from '@sanity/ui'
 
 import styles from './ArrayInputGridItem.css'
 
@@ -44,7 +44,7 @@ interface ArrayInputGridItemProps {
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <Button aria-hidden="true" icon={DragHandleIcon} kind="simple" padding="small" tabIndex={-1} />
+    <Button aria-hidden="true" icon={DragHandleIcon} mode="bleed" padding={2} tabIndex={-1} />
   </span>
 ))
 

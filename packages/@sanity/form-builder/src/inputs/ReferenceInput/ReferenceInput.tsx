@@ -14,7 +14,6 @@ import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {LinkIcon} from '@sanity/icons'
 import {IntentLink} from 'part:@sanity/base/router'
-import Button from 'part:@sanity/components/buttons/default'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
@@ -24,6 +23,7 @@ import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/ReferenceInput.css'
+import {Button} from '@sanity/ui'
 
 type SearchHit = {
   _id: string
@@ -279,7 +279,7 @@ export default withValuePath(
                     Warning: This reference is <em>{weakIs}</em>, but should be{' '}
                     <em>{weakShouldBe}</em> according to schema.
                     <div>
-                      <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
+                      <Button onClick={this.handleFixWeak} text={`Convert to ${weakShouldBe}`} />
                     </div>
                   </div>
                 )}

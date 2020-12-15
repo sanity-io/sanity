@@ -1,6 +1,6 @@
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
-import Button from 'part:@sanity/components/buttons/default'
 import React from 'react'
+import {Button} from '@sanity/ui'
 
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -16,9 +16,9 @@ export function ExpandCollapseButton(props: Props) {
   return (
     <Button
       icon={isFullscreen ? CollapseIcon : ExpandIcon}
-      kind="simple"
+      mode="bleed"
       onClick={onToggleFullscreen}
-      padding="small"
+      padding={2}
       title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
     />
   )
