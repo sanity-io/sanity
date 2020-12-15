@@ -1,6 +1,5 @@
 import React from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import Button from 'part:@sanity/components/buttons/default'
 import {TrashIcon, DragHandleIcon} from '@sanity/icons'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
@@ -8,12 +7,13 @@ import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import getEmptyValue from './getEmptyValue'
+import {Button} from '@sanity/ui'
 
 import styles from './Item.css'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
-    <Button icon={DragHandleIcon} kind="simple" padding="small" />
+    <Button icon={DragHandleIcon} mode="bleed" padding={2} />
   </span>
 ))
 
@@ -120,9 +120,9 @@ export default class Item extends React.PureComponent<Props> {
               <div className={styles.removeButtonContainer}>
                 <Button
                   icon={TrashIcon}
-                  kind="simple"
+                  mode="bleed"
                   onClick={this.handleRemove}
-                  padding="small"
+                  padding={2}
                   title="Delete"
                 />
               </div>
