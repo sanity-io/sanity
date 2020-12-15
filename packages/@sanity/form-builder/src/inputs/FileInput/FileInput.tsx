@@ -6,13 +6,11 @@ import classNames from 'classnames'
 import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
@@ -21,6 +19,7 @@ import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import styles from './FileInput.css'
+import {Button} from '@sanity/ui'
 
 type FieldT = {
   name: string
@@ -174,10 +173,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           <BinaryDocumentIcon />
         </div>
         <div>
-          <div className={styles.fileLabel}>{assetDocument.originalFilename} </div>
-          <AnchorButton href={`${assetDocument.url}?dl`} inverted size="small">
+          <div className={styles.fileLabel}>{assetDocument.originalFilename}</div>
+          <Button as="a" href={`${assetDocument.url}?dl`} mode="bleed" padding={2}>
             Download
-          </AnchorButton>
+          </Button>
         </div>
       </div>
     )
@@ -201,9 +200,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           </div>
           <div className={styles.cancelButton}>
             {isUploading && (
-              <Button kind="simple" color="danger" onClick={this.handleCancelUpload}>
-                Cancel
-              </Button>
+              <Button mode="bleed" color="danger" onClick={this.handleCancelUpload} text="Cancel" />
             )}
           </div>
         </div>
@@ -246,7 +243,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   renderSelectFileButton() {
     // Single asset source (just a normal button)
     // @todo add select handling here
-    return <Button inverted>Select</Button>
+    return <Button mode="bleed" text="Select" />
   }
 
   renderFields(fields: Array<FieldT>) {
@@ -409,17 +406,19 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               {value && otherFields.length > 0 && (
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
-                  inverted
+                  mode="bleed"
                   title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
-                >
-                  {readOnly ? 'View details' : 'Edit'}
-                </Button>
+                  text={readOnly ? 'View details' : 'Edit'}
+                />
               )}
               {!readOnly && hasAsset && (
-                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
-                  Remove
-                </Button>
+                <Button
+                  tone="critical"
+                  mode="bleed"
+                  onClick={this.handleRemoveButtonClick}
+                  text="Remove"
+                />
               )}
               {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
             </ButtonGrid>
