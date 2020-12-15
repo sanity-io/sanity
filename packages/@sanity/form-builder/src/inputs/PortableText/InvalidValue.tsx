@@ -1,8 +1,8 @@
 import React from 'react'
-import DefaultButton from 'part:@sanity/components/buttons/default'
 import {InvalidValueResolution, PortableTextBlock} from '@sanity/portable-text-editor'
 import Warning from '../Warning'
 import styles from '../ObjectInput/styles/UnknownFields.css'
+import {Button} from '@sanity/ui'
 
 type InvalidValueProps = {
   resolution: InvalidValueResolution
@@ -33,12 +33,8 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps>
         {resolution.action && (
           <>
             <div className={styles.buttonWrapper}>
-              <DefaultButton color="primary" onClick={this.handleAction}>
-                {resolution.action}
-              </DefaultButton>
-              <DefaultButton kind="secondary" onClick={this.handleIgnore}>
-                Ignore
-              </DefaultButton>
+              <Button tone="primary" onClick={this.handleAction} text={resolution.action} />
+              <Button mode="ghost" onClick={this.handleIgnore} text="Ignore" />
             </div>
             <p>
               It’s generally safe to perform the action above, but if you are in doubt, get in touch

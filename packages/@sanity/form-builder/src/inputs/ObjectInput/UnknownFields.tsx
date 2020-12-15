@@ -1,9 +1,9 @@
 import React from 'react'
 import Details from '../common/Details'
-import DefaultButton from 'part:@sanity/components/buttons/default'
 import PatchEvent, {unset} from '../../PatchEvent'
 import styles from './styles/UnknownFields.css'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import {Button} from '@sanity/ui'
 
 type Props = {
   fieldNames: string[]
@@ -48,9 +48,11 @@ export default class UnknownFields extends React.PureComponent<Props, {}> {
                       <strong>readOnly</strong> property from the enclosing type
                     </div>
                   ) : (
-                    <DefaultButton onClick={() => this.handleUnsetClick(fieldName)} color="danger">
-                      Unset {fieldName}
-                    </DefaultButton>
+                    <Button
+                      onClick={() => this.handleUnsetClick(fieldName)}
+                      tone="critical"
+                      text={`Unset ${fieldName}`}
+                    />
                   )}
                 </div>
               )
