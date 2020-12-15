@@ -74,12 +74,6 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
       isCollapsed: !prevState.isCollapsed,
       hasBeenToggled: true,
     }))
-
-    // Let parent know field has been toggled
-    const {onFocus} = this.props
-    if (onFocus) {
-      onFocus([FOCUS_TERMINATOR])
-    }
   }
 
   handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
