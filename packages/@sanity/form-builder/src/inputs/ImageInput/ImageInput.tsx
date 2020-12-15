@@ -19,10 +19,10 @@ import {
 } from '@sanity/types'
 import React, {createElement} from 'react'
 import PropTypes from 'prop-types'
+import {Button} from '@sanity/ui'
 
 // Parts
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
-import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
@@ -467,9 +467,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             />
           </div>
           {isUploading && (
-            <Button kind="simple" color="danger" onClick={this.handleCancelUpload}>
-              Cancel
-            </Button>
+            <Button mode="bleed" tone="critical" onClick={this.handleCancelUpload} text="Cancel" />
           )}
         </div>
       </div>
@@ -514,10 +512,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <Button
         icon={SearchIcon}
         onClick={this.handleSelectImageFromAssetSource.bind(this, this.assetSources[0])}
-        inverted
-      >
-        Select
-      </Button>
+        mode="bleed"
+        text="Select"
+      />
     )
   }
 
@@ -657,22 +654,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               {showAdvancedEditButton && (
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
-                  inverted
+                  mode="bleed"
                   title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
-                >
-                  {readOnly ? 'View details' : 'Edit'}
-                </Button>
+                  text={readOnly ? 'View details' : 'Edit'}
+                />
               )}
               {hasAsset && !readOnly && (
                 <Button
                   color="danger"
                   icon={TrashIcon}
-                  inverted
+                  mode="bleed"
                   onClick={this.handleRemoveButtonClick}
-                >
-                  Remove
-                </Button>
+                  text="Remove"
+                />
               )}
             </ButtonGrid>
           </div>
