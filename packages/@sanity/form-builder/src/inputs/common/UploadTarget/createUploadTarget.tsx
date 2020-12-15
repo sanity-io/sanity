@@ -4,12 +4,12 @@ import {Path, SchemaType} from '@sanity/types'
 import humanize from 'humanize-list'
 import {sortBy} from 'lodash'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import styles from '../../../styles/UploadTarget.css'
 import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
 import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
 import {imageUrlToBlob} from './imageUrlToBlob'
+import {Button} from '@sanity/ui'
 
 type Props = {
   type: SchemaType
@@ -217,9 +217,8 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
                               ambiguous: ambiguous.filter((t) => t !== task),
                             })
                           }}
-                        >
-                          Represent as {uploaderCandidate.type.name}
-                        </Button>
+                          text={`Represent as ${uploaderCandidate.type.name}`}
+                        />
                       </li>
                     ))}
                   </ul>

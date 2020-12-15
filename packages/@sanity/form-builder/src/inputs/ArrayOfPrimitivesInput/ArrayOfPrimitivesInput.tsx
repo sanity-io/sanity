@@ -6,12 +6,12 @@ import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import DefaultButton from 'part:@sanity/components/buttons/default'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Warning from '../Warning'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
+import {Button} from '@sanity/ui'
 
 import styles from './ArrayOfPrimitivesInput.css'
 
@@ -229,12 +229,11 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                 <strong>readOnly</strong> property from the enclosing type.
               </div>
             ) : (
-              <DefaultButton
+              <Button
                 onClick={() => this.handleRemoveItem(value.findIndex((v) => v === item.value))}
-                color="danger"
-              >
-                Unset {item.value}
-              </DefaultButton>
+                tone="critical"
+                text={`Unset ${item.value}`}
+              />
             )}
           </div>
         ))}

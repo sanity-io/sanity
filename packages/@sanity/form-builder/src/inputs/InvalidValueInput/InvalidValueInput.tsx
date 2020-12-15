@@ -1,5 +1,5 @@
 import React from 'react'
-import DefaultButton from 'part:@sanity/components/buttons/default'
+import {Button} from '@sanity/ui'
 import styles from '../ObjectInput/styles/UnknownFields.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {ItemValue} from '../ArrayInput/typedefs'
@@ -81,18 +81,15 @@ export default class InvalidValueInput extends React.PureComponent<InvalidValueP
         <h4>{actualType}</h4>
         <pre className={styles.inspectValue}>{JSON.stringify(value, null, 2)}</pre>
         {converters.map((converter) => (
-          <DefaultButton
+          <Button
             key={`${converter.from}-${converter.to}`}
             onClick={() => this.handleConvertTo(converter.convert(value))}
-            color="primary"
-          >
-            Convert value to {converter.to}
-          </DefaultButton>
+            tone="primary"
+            text={`Convert value to ${converter.to}`}
+          />
         ))}
         <div className={styles.buttonWrapper}>
-          <DefaultButton onClick={this.handleClearClick} color="danger">
-            Remove value
-          </DefaultButton>
+          <Button onClick={this.handleClearClick} tone="critical" text="Remove value" />
         </div>
       </>
     )
