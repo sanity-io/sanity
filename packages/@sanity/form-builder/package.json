@@ -21,12 +21,12 @@
     "@sanity/base": "2.1.6",
     "@sanity/block-tools": "2.1.4",
     "@sanity/generate-help-url": "2.1.4",
-    "@sanity/icons": "^1.0.0",
+    "@sanity/icons": "^1.0.1",
     "@sanity/imagetool": "2.1.4",
     "@sanity/mutator": "2.1.4",
     "@sanity/portable-text-editor": "0.1.25",
     "@sanity/types": "2.1.4",
-    "@sanity/ui": "^0.28.0",
+    "@sanity/ui": "^0.32.8",
     "@sanity/util": "2.1.4",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
@@ -52,7 +52,8 @@
     "react-measure": "^2.3.0",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0",
-    "speakingurl": "^13.0.0"
+    "speakingurl": "^13.0.0",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.32",

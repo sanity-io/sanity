@@ -33,6 +33,7 @@
     "@sanity/structure": "2.1.4",
     "@sanity/types": "2.1.4",
     "@sanity/util": "2.1.4",
+    "@sanity/ui": "^0.32.8",
     "@sanity/uuid": "^3.0.1",
     "boundless-arrow-key-navigation": "^1.1.0",
     "classnames": "^2.2.5",
@@ -52,6 +53,7 @@
     "rxjs": "^6.5.3",
     "scroll-into-view-if-needed": "^2.2.26",
     "shallow-equals": "^1.0.0",
+    "styled-components": "^5.2.1",
     "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
