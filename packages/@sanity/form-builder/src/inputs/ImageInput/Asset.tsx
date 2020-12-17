@@ -1,10 +1,10 @@
 import classNames from 'classnames'
 import React from 'react'
 import client from 'part:@sanity/base/client'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import AssetDialog from './AssetDialog'
 import AssetMenu from './AssetMenu'
 import {AssetAction, AssetRecord} from './types'
+import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 
 import styles from './Asset.css'
 
@@ -95,11 +95,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
             data-id={asset._id}
           />
 
-          {isDeleting && (
-            <div className={styles.spinnerContainer}>
-              <Spinner center />
-            </div>
-          )}
+          {isDeleting && <FullscreenSpinner />}
         </div>
 
         <div className={styles.menuContainer}>
