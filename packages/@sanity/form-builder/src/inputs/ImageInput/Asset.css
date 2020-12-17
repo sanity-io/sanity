@@ -46,17 +46,6 @@
   object-fit: contain;
 }
 
-.spinnerContainer {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: color(var(--component-bg) a(50%));
-  color: var(--text-color);
-}
-
 .menuContainer {
   box-sizing: border-box;
   position: absolute;
