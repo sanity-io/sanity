@@ -51,6 +51,7 @@
     "react-click-outside": "^3.0.0",
     "react-container-query": "^0.11.0",
     "react-measure": "^2.3.0",
+    "react-sortable-hoc": "^1.11.0",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^13.0.0"
