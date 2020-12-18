@@ -5,11 +5,12 @@ import schema from 'part:@sanity/base/schema'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import Preview from '../../Preview'
 import {AssetAction, AssetRecord} from './types'
+import {Spinner} from '@sanity/ui'
 
 import styles from './AssetDialog.css'
+import {SpinnerWithText} from '../../components/SpinnerWithText'
 
 interface Props {
   asset: AssetRecord
@@ -66,7 +67,7 @@ export default function AssetDialog({asset, dialogType, onAction, onClose}: Prop
             const filteredDocuments = referringDocuments.filter((doc) => !drafts.includes(doc._id))
 
             if (isLoading) {
-              return <Spinner>Loading…</Spinner>
+              return <SpinnerWithText text={'Loading...'} />
             }
 
             return (
