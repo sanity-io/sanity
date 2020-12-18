@@ -328,7 +328,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           return (
             <div key={item._type}>
               <h4>{item._type}</h4>
-              <pre className={styles.inspectValue}>{JSON.stringify(item, null, 2)}</pre>
+              <pre>{JSON.stringify(item, null, 2)}</pre>
               {readOnly ? (
                 <div>
                   This array is <em>read only</em> according to its enclosing schema type and values
@@ -349,7 +349,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     )
 
     return (
-      <div className={styles.unknownValueTypes}>
+      <div>
         <Warning message={message} values={unknownValues} />
       </div>
     )
