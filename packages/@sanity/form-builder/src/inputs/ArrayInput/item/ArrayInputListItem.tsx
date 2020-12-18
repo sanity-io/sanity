@@ -5,7 +5,6 @@ import * as PathUtils from '@sanity/util/paths'
 import {LinkIcon, DragHandleIcon} from '@sanity/icons'
 import {FieldPresence, FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {Box, Dialog, Layer, Button} from '@sanity/ui'
@@ -19,15 +18,12 @@ import InvalidItem from '../InvalidItem'
 import {PopoverDialog} from '../../../components/PopoverDialog'
 import {IntentButton} from '../../../components/IntentButton'
 import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
-import {BorderShadowGridItem, DragHandleSpan, PreviewWrapper} from './styles'
+import {BorderShadowGridItem, PreviewWrapper} from './styles'
 
 import styles from './ArrayInputListItem.css'
+import {DragHandle} from './DragHandle'
 
-const DragHandle = createDragHandle(() => (
-  <DragHandleSpan>
-    <Button aria-hidden="true" icon={DragHandleIcon} mode="bleed" padding={2} tabIndex={-1} />
-  </DragHandleSpan>
-))
+const dragHandle = <DragHandle />
 
 interface ArrayInputListItemProps {
   type: ArraySchemaType
@@ -276,7 +272,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
         <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
           <BorderShadowGridItem>
             <Box display="flex" style={{alignItems: 'center'}} ref={this.setInnerElement}>
-              {isSortable && <DragHandle />}
+              {isSortable && dragHandle}
 
               <PreviewWrapper
                 tabIndex={0}
