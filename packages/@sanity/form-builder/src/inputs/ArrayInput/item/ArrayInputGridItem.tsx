@@ -8,7 +8,6 @@ import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -23,6 +22,7 @@ import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
 import {Button} from '@sanity/ui'
 
 import styles from './ArrayInputGridItem.css'
+import {DragHandle} from './DragHandle'
 
 interface ArrayInputGridItemProps {
   type: ArraySchemaType
@@ -41,12 +41,6 @@ interface ArrayInputGridItemProps {
   focusPath: Path
   presence: FormFieldPresence[]
 }
-
-const DragHandle = createDragHandle(() => (
-  <span className={styles.dragHandle}>
-    <Button aria-hidden="true" icon={DragHandleIcon} mode="bleed" padding={2} tabIndex={-1} />
-  </span>
-))
 
 export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemProps> {
   _focusArea: HTMLDivElement | null

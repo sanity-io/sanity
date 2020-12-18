@@ -1,7 +1,6 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
-import classNames from 'classnames'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {isPlainObject, get} from 'lodash'
 import {Box, Button} from '@sanity/ui'
@@ -18,10 +17,10 @@ import Details from '../common/Details'
 import Warning from '../Warning'
 import {ArrayInputItem} from './item'
 import randomKey from './randomKey'
-import resolveListComponents from './resolveListComponents'
-import {ItemValue} from './typedefs'
+import {ArrayMember} from './types'
 
 import styles from './ArrayInput.css'
+import {List, Item} from './list'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
@@ -53,24 +52,16 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-type ArrayInputState = {
-  isMoving: boolean
-}
-
-export default class ArrayInput extends React.Component<Props, ArrayInputState> {
+export default class ArrayInput extends React.Component<Props> {
   static defaultProps = {
     focusPath: [],
-  }
-
-  state = {
-    isMoving: false,
   }
 
   _element: any
 
   uploadSubscriptions: Record<string, Subscription> = {}
 
-  insert = (itemValue: ItemValue, position: 'before' | 'after', atIndex: number) => {
+  insert = (itemValue: ArrayMember, position: 'before' | 'after', atIndex: number) => {
     const {onChange} = this.props
 
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
@@ -133,14 +124,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       event.prefixAll({_key: key}).prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
     )
   }
-
-  handleSortStart = () => {
-    this.setState({isMoving: true})
-  }
-
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
-    this.setState({isMoving: false})
-
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
     const refItem = value[event.newIndex]
@@ -187,30 +171,13 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       presence,
     } = this.props
 
-    const {isMoving} = this.state
     const options = type.options || {}
     const hasMissingKeys = value.some((item) => !item._key)
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
-    const {List, Item} = resolveListComponents(isSortable, isGrid)
-    const listProps = isSortable
-      ? {
-          helperClass: 'ArrayInput__moving',
-          onSortEnd: this.handleSortEnd,
-          onSortStart: this.handleSortStart,
-          lockToContainerEdges: true,
-          useDragHandle: true,
-        }
-      : {}
-
-    const listClassName = classNames(
-      isGrid ? styles.grid : styles.list,
-      readOnly && styles.readOnly,
-      isMoving && styles.moving
-    )
 
     return (
-      <List className={listClassName} {...listProps}>
+      <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
         {value.map((item, index) => {
           const isChildMarker = (marker) =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
@@ -218,14 +185,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const isChildPresence = (pItem) =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = presence.filter(isChildPresence)
-          const itemProps = isSortable ? {index} : {}
-
           return (
-            <Item
-              className={isGrid ? styles.gridItem : styles.listItem}
-              key={item._key || index}
-              {...itemProps}
-            >
+            <Item key={item._key || index} isSortable={isSortable} isGrid={isGrid} index={index}>
               <ArrayInputItem
                 compareValue={compareValue}
                 filterField={filterField}
