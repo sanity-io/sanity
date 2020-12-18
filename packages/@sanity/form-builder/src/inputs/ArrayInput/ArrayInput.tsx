@@ -2,8 +2,8 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import {isPlainObject, get} from 'lodash'
-import {Box, Button} from '@sanity/ui'
+import {get, isPlainObject} from 'lodash'
+import {Box, Button, Card} from '@sanity/ui'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import React from 'react'
 import {map} from 'rxjs/operators'
@@ -19,8 +19,7 @@ import {ArrayInputItem} from './item'
 import randomKey from './randomKey'
 import {ArrayMember} from './types'
 
-import styles from './ArrayInput.css'
-import {List, Item} from './list'
+import {Item, List} from './list'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
@@ -282,9 +281,9 @@ export default class ArrayInput extends React.Component<Props> {
 
     const message = (
       <>
-        These are not defined in the current schema as valid types for this array. This could mean
-        that the type has been removed, or that someone else has added it to their own local schema
-        that is not yet deployed.
+        These values are not defined in the current schema as valid types for this array. This could
+        mean that the type has been removed, or that someone else has added it to their own local
+        schema that is not yet deployed.
         {unknownValues.map((item) => {
           return (
             <div key={item._type}>
@@ -309,11 +308,7 @@ export default class ArrayInput extends React.Component<Props> {
       </>
     )
 
-    return (
-      <div>
-        <Warning message={message} values={unknownValues} />
-      </div>
-    )
+    return <Warning message={message} values={unknownValues} />
   }
 
   render() {
@@ -331,18 +326,22 @@ export default class ArrayInput extends React.Component<Props> {
           ref={this.setElement}
           markers={markers}
         >
-          <div className={styles.nonObjectsWarning}>
+          <Card padding={2} shadow={1}>
             Some items in this list are not objects. We need to remove them before the list can be
             edited.
-            <div className={styles.removeNonObjectsButtonWrapper}>
-              <Button onClick={this.handleRemoveNonObjectValues} text="Remove non-object values" />
-            </div>
+            <Box paddingY={2}>
+              <Button
+                onClick={this.handleRemoveNonObjectValues}
+                text="Remove non-object values"
+                tone="critical"
+              />
+            </Box>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through an API client from outside the
               Content Studio and sets invalid data, or a custom input component have inserted
               incorrect values into the list.
             </Details>
-          </div>
+          </Card>
         </Fieldset>
       )
     }
@@ -361,12 +360,12 @@ export default class ArrayInput extends React.Component<Props> {
           markers={markers}
           changeIndicator={false}
         >
-          <div className={styles.missingKeysWarning}>
+          <Card tone="caution" padding={2} shadow={1}>
             Some items in this list are missing their keys. We need to fix this before the list can
             be edited.
-            <div className={styles.fixMissingKeysButtonWrapper}>
+            <Box paddingY={2}>
               <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
-            </div>
+            </Box>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through the API client from outside the
               Content Studio and someone forgets to set the <code>_key</code>-property of list
@@ -376,7 +375,7 @@ export default class ArrayInput extends React.Component<Props> {
                 <b>unique</b> for each element within the array.
               </p>
             </Details>
-          </div>
+          </Card>
           {this.renderList()}
         </Fieldset>
       )
@@ -394,7 +393,6 @@ export default class ArrayInput extends React.Component<Props> {
         legend={type.title}
         description={type.description}
         level={level - 1}
-        className={styles.root}
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
@@ -402,23 +400,21 @@ export default class ArrayInput extends React.Component<Props> {
         changeIndicator={false}
         {...uploadProps}
       >
-        <div className={styles.inner}>
-          {value && value.length > 0 && this.renderList()}
-          {this.renderUnknownValueTypes()}
+        {value && value.length > 0 && this.renderList()}
+        {this.renderUnknownValueTypes()}
 
-          <Box marginTop={1}>
-            <ArrayFunctions
-              type={type}
-              value={value}
-              readOnly={readOnly}
-              onAppendItem={this.handleAppend}
-              onPrependItem={this.handlePrepend}
-              onFocusItem={this.handleFocusItem}
-              onCreateValue={createProtoValue}
-              onChange={onChange}
-            />
-          </Box>
-        </div>
+        <Box marginTop={1}>
+          <ArrayFunctions
+            type={type}
+            value={value}
+            readOnly={readOnly}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
+            onCreateValue={createProtoValue}
+            onChange={onChange}
+          />
+        </Box>
       </FieldSetComponent>
     )
   }
