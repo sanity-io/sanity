@@ -1,32 +1,29 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
-import classNames from 'classnames'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import {isPlainObject, get} from 'lodash'
-import {Box, Button} from '@sanity/ui'
+import {get, isPlainObject} from 'lodash'
+import {Box, Button, Card} from '@sanity/ui'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {ArrayFunctions} from '../../legacyImports'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
-import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
+import {ResolvedUploader, Uploader, UploadEvent} from '../../sanity/uploads/typedefs'
 import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Details from '../common/Details'
-import Warning from '../Warning'
-import {ArrayInputItem} from './item'
+import {ArrayItem} from './item'
 import randomKey from './randomKey'
-import resolveListComponents from './resolveListComponents'
-import {ItemValue} from './typedefs'
+import {ArrayMember} from './types'
 
-import styles from './ArrayInput.css'
+import {Item, List} from './list'
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
-function createProtoValue(type: SchemaType): ItemValue {
+function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
     throw new Error(
       `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
@@ -39,8 +36,8 @@ function createProtoValue(type: SchemaType): ItemValue {
 
 export type Props = {
   type: ArraySchemaType
-  value: ItemValue[]
-  compareValue: ItemValue[]
+  value: ArrayMember[]
+  compareValue: ArrayMember[]
   markers: Marker[]
   level: number
   onChange: (event: PatchEvent) => void
@@ -53,40 +50,32 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-type ArrayInputState = {
-  isMoving: boolean
-}
-
-export default class ArrayInput extends React.Component<Props, ArrayInputState> {
+export class ArrayInput extends React.Component<Props> {
   static defaultProps = {
     focusPath: [],
-  }
-
-  state = {
-    isMoving: false,
   }
 
   _element: any
 
   uploadSubscriptions: Record<string, Subscription> = {}
 
-  insert = (itemValue: ItemValue, position: 'before' | 'after', atIndex: number) => {
+  insert = (itemValue: ArrayMember, position: 'before' | 'after', atIndex: number) => {
     const {onChange} = this.props
 
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
   }
 
-  handlePrepend = (value: ItemValue) => {
+  handlePrepend = (value: ArrayMember) => {
     this.insert(value, 'before', 0)
     this.handleFocusItem(value)
   }
 
-  handleAppend = (value: ItemValue) => {
+  handleAppend = (value: ArrayMember) => {
     this.insert(value, 'after', -1)
     this.handleFocusItem(value)
   }
 
-  handleRemoveItem = (item: ItemValue) => {
+  handleRemoveItem = (item: ArrayMember) => {
     this.removeItem(item)
   }
 
@@ -94,11 +83,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     this.props.onFocus([FOCUS_TERMINATOR])
   }
 
-  handleFocusItem = (item: ItemValue) => {
+  handleFocusItem = (item: ArrayMember) => {
     this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
   }
 
-  removeItem(item: ItemValue) {
+  removeItem(item: ArrayMember) {
     const {onChange, onFocus, value} = this.props
 
     onChange(PatchEvent.from(unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])))
@@ -113,7 +102,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
   }
 
-  handleItemChange = (event: PatchEvent, item: ItemValue) => {
+  handleItemChange = (event: PatchEvent, item: ArrayMember) => {
     const {onChange, value} = this.props
     const memberType = this.getMemberTypeOfItem(item)
 
@@ -133,14 +122,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       event.prefixAll({_key: key}).prepend(item._key ? [] : set(key, [value.indexOf(item), '_key']))
     )
   }
-
-  handleSortStart = () => {
-    this.setState({isMoving: true})
-  }
-
   handleSortEnd = (event: {newIndex: number; oldIndex: number}) => {
-    this.setState({isMoving: false})
-
     const {value, onChange} = this.props
     const item = value[event.oldIndex]
     const refItem = value[event.newIndex]
@@ -165,88 +147,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     )
   }
 
-  getMemberTypeOfItem(item: ItemValue): SchemaType {
+  getMemberTypeOfItem(item: ArrayMember): SchemaType {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
 
     return type.of.find((memberType) => memberType.name === itemTypeName) as SchemaType
-  }
-
-  renderList = () => {
-    const {
-      type,
-      markers,
-      readOnly,
-      value,
-      focusPath,
-      onBlur,
-      onFocus,
-      level,
-      compareValue,
-      filterField,
-      presence,
-    } = this.props
-
-    const {isMoving} = this.state
-    const options = type.options || {}
-    const hasMissingKeys = value.some((item) => !item._key)
-    const isSortable = options.sortable !== false && !hasMissingKeys
-    const isGrid = options.layout === 'grid'
-    const {List, Item} = resolveListComponents(isSortable, isGrid)
-    const listProps = isSortable
-      ? {
-          helperClass: 'ArrayInput__moving',
-          onSortEnd: this.handleSortEnd,
-          onSortStart: this.handleSortStart,
-          lockToContainerEdges: true,
-          useDragHandle: true,
-        }
-      : {}
-
-    const listClassName = classNames(
-      isGrid ? styles.grid : styles.list,
-      readOnly && styles.readOnly,
-      isMoving && styles.moving
-    )
-
-    return (
-      <List className={listClassName} {...listProps}>
-        {value.map((item, index) => {
-          const isChildMarker = (marker) =>
-            startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
-          const childMarkers = markers.filter(isChildMarker)
-          const isChildPresence = (pItem) =>
-            startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
-          const childPresence = presence.filter(isChildPresence)
-          const itemProps = isSortable ? {index} : {}
-
-          return (
-            <Item
-              className={isGrid ? styles.gridItem : styles.listItem}
-              key={item._key || index}
-              {...itemProps}
-            >
-              <ArrayInputItem
-                compareValue={compareValue}
-                filterField={filterField}
-                focusPath={focusPath}
-                index={index}
-                level={level}
-                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                onBlur={onBlur}
-                onChange={this.handleItemChange}
-                onFocus={onFocus}
-                onRemove={this.handleRemoveItem}
-                presence={childPresence}
-                readOnly={readOnly || hasMissingKeys}
-                type={type}
-                value={item}
-              />
-            </Item>
-          )
-        })}
-      </List>
-    )
   }
 
   focus() {
@@ -255,7 +160,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     }
   }
 
-  setElement = (el) => {
+  setElement = (el: HTMLElement | null) => {
     this._element = el
   }
 
@@ -284,14 +189,14 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
     const nonObjects = value
-      .reduce((acc, val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
+      .reduce((acc: number[], val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
       .reverse()
     const patches = nonObjects.map((index) => unset([index]))
 
     onChange(PatchEvent.from(...patches))
   }
 
-  handleUpload = ({file, type, uploader}) => {
+  handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
     const {onChange} = this.props
     const item = createProtoValue(type)
     const key = item._key
@@ -300,7 +205,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
 
     const events$ = uploader
       .upload(file, type)
-      .pipe(map((uploadEvent: any) => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key})))
+      .pipe(
+        map((uploadEvent: UploadEvent) =>
+          PatchEvent.from(uploadEvent.patches || []).prefixAll({_key: key})
+        )
+      )
 
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,
@@ -308,55 +217,22 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     }
   }
 
-  renderUnknownValueTypes = () => {
-    const {value, type, readOnly} = this.props
-    const knownTypes = (type.of || [])
-      .map((t) => t.name)
-      .filter((typeName) => typeName !== 'object')
-    const unknownValues = (value || []).filter((v) => v._type && !knownTypes.includes(v._type))
-
-    if (!unknownValues || unknownValues.length < 1) {
-      return null
-    }
-
-    const message = (
-      <>
-        These are not defined in the current schema as valid types for this array. This could mean
-        that the type has been removed, or that someone else has added it to their own local schema
-        that is not yet deployed.
-        {unknownValues.map((item) => {
-          return (
-            <div key={item._type}>
-              <h4>{item._type}</h4>
-              <pre className={styles.inspectValue}>{JSON.stringify(item, null, 2)}</pre>
-              {readOnly ? (
-                <div>
-                  This array is <em>read only</em> according to its enclosing schema type and values
-                  cannot be unset. If you want to unset a value, make sure you remove the{' '}
-                  <strong>readOnly</strong> property from the enclosing type.
-                </div>
-              ) : (
-                <Button
-                  onClick={() => this.handleRemoveItem(item)}
-                  tone="critical"
-                  text={`Unset ${item._type}`}
-                />
-              )}
-            </div>
-          )
-        })}
-      </>
-    )
-
-    return (
-      <div className={styles.unknownValueTypes}>
-        <Warning message={message} values={unknownValues} />
-      </div>
-    )
-  }
-
   render() {
-    const {type, level = 1, markers, readOnly, onChange, value, presence} = this.props
+    const {
+      type,
+      level = 1,
+      markers,
+      readOnly,
+      onChange,
+      value = [],
+      presence,
+      focusPath,
+      onBlur,
+      onFocus,
+      compareValue,
+      filterField,
+    } = this.props
+
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
 
     if (hasNonObjectValues) {
@@ -370,56 +246,30 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           ref={this.setElement}
           markers={markers}
         >
-          <div className={styles.nonObjectsWarning}>
+          <Card padding={2} shadow={1} tone="caution">
             Some items in this list are not objects. We need to remove them before the list can be
             edited.
-            <div className={styles.removeNonObjectsButtonWrapper}>
-              <Button onClick={this.handleRemoveNonObjectValues} text="Remove non-object values" />
-            </div>
+            <Box paddingY={2}>
+              <Button
+                onClick={this.handleRemoveNonObjectValues}
+                text="Remove non-object values"
+                tone="critical"
+              />
+            </Box>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through an API client from outside the
               Content Studio and sets invalid data, or a custom input component have inserted
               incorrect values into the list.
             </Details>
-          </div>
+          </Card>
         </Fieldset>
       )
     }
 
-    const hasMissingKeys = (value || []).some((item) => !item._key)
-
-    if (hasMissingKeys) {
-      return (
-        <Fieldset
-          legend={type.title}
-          description={type.description}
-          level={level - 1}
-          tabIndex={0}
-          onFocus={this.handleFocus}
-          ref={this.setElement}
-          markers={markers}
-          changeIndicator={false}
-        >
-          <div className={styles.missingKeysWarning}>
-            Some items in this list are missing their keys. We need to fix this before the list can
-            be edited.
-            <div className={styles.fixMissingKeysButtonWrapper}>
-              <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
-            </div>
-            <Details title={<b>Why is this happening?</b>}>
-              This usually happens when items are created through the API client from outside the
-              Content Studio and someone forgets to set the <code>_key</code>-property of list
-              items.
-              <p>
-                The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
-                <b>unique</b> for each element within the array.
-              </p>
-            </Details>
-          </div>
-          {this.renderList()}
-        </Fieldset>
-      )
-    }
+    const options = type.options || {}
+    const hasMissingKeys = value.some((item) => !item._key)
+    const isSortable = options.sortable !== false && !hasMissingKeys
+    const isGrid = options.layout === 'grid'
 
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
     const uploadProps = SUPPORT_DIRECT_UPLOADS
@@ -433,7 +283,6 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         legend={type.title}
         description={type.description}
         level={level - 1}
-        className={styles.root}
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
@@ -441,24 +290,75 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         changeIndicator={false}
         {...uploadProps}
       >
-        <div className={styles.inner}>
-          {value && value.length > 0 && this.renderList()}
-          {this.renderUnknownValueTypes()}
-
-          <Box marginTop={1}>
-            <ArrayFunctions
-              className={styles.functions}
-              type={type}
-              value={value}
-              readOnly={readOnly}
-              onAppendItem={this.handleAppend}
-              onPrependItem={this.handlePrepend}
-              onFocusItem={this.handleFocusItem}
-              onCreateValue={createProtoValue}
-              onChange={onChange}
-            />
-          </Box>
-        </div>
+        <Box>
+          {hasMissingKeys && (
+            <Card tone="caution" padding={2} shadow={1}>
+              Some items in this list are missing their keys. We need to fix this before the list
+              can be edited.
+              <Box paddingY={2}>
+                <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
+              </Box>
+              <Details title={<b>Why is this happening?</b>}>
+                This usually happens when items are created through the API client from outside the
+                Content Studio and someone forgets to set the <code>_key</code>-property of list
+                items.
+                <p>
+                  The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
+                  <b>unique</b> for each element within the array.
+                </p>
+              </Details>
+            </Card>
+          )}
+          {value && value.length > 0 && (
+            <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+              {value.map((item, index) => {
+                const isChildMarker = (marker: Marker) =>
+                  startsWith([index], marker.path) ||
+                  startsWith([{_key: item && item._key}], marker.path)
+                const childMarkers = markers.filter(isChildMarker)
+                const isChildPresence = (pItem: FormFieldPresence) =>
+                  startsWith([index], pItem.path) ||
+                  startsWith([{_key: item && item._key}], pItem.path)
+                const childPresence = presence.filter(isChildPresence)
+                return (
+                  <Item
+                    key={item._key || index}
+                    isSortable={isSortable}
+                    isGrid={isGrid}
+                    index={index}
+                  >
+                    <ArrayItem
+                      compareValue={compareValue}
+                      filterField={filterField}
+                      focusPath={focusPath}
+                      index={index}
+                      level={level}
+                      markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                      onBlur={onBlur}
+                      onChange={this.handleItemChange}
+                      onFocus={onFocus}
+                      onRemove={this.handleRemoveItem}
+                      presence={childPresence}
+                      readOnly={readOnly || hasMissingKeys}
+                      type={type}
+                      value={item}
+                    />
+                  </Item>
+                )
+              })}
+            </List>
+          )}
+          <ArrayFunctions
+            type={type}
+            value={value}
+            readOnly={readOnly}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
+            onCreateValue={createProtoValue}
+            onChange={onChange}
+          />
+        </Box>
       </FieldSetComponent>
     )
   }

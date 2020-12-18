@@ -4,7 +4,7 @@ import React from 'react'
 import {Box, Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent from '../../PatchEvent'
-import {ItemValue} from './typedefs'
+import {ArrayMember} from './types'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 interface ArrayFunctionsProps {
@@ -12,12 +12,12 @@ interface ArrayFunctionsProps {
   className?: string
   type: ArraySchemaType
   children: Node | null
-  value: ItemValue[]
+  value: ArrayMember[]
   readOnly: boolean | null
-  onAppendItem: (itemValue: ItemValue) => void
-  onPrependItem: (itemValue: ItemValue) => void
-  onFocusItem: (item: ItemValue) => void
-  onCreateValue: (type: SchemaType) => ItemValue
+  onAppendItem: (itemValue: ArrayMember) => void
+  onPrependItem: (itemValue: ArrayMember) => void
+  onFocusItem: (item: ArrayMember) => void
+  onCreateValue: (type: SchemaType) => ArrayMember
   onChange: (event: PatchEvent) => void
   /* eslint-enable react/no-unused-prop-types */
 }
@@ -52,7 +52,7 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
       ) : (
         <Box flex={1}>
           <MenuButton
-            id={menuButtonId}
+            id={menuButtonId || ''}
             button={<Button mode="ghost" text="Add…" icon={AddIcon} />}
             menu={
               <Menu>
@@ -63,11 +63,11 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
                     (memberDef.to || []).length === 1 &&
                     memberDef.to[0].icon
 
-                  const icon = memberDef.icon || memberDef.type.icon || referenceIcon
+                  const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                   return (
                     <MenuItem
-                      key={memberDef.type.name}
-                      text={memberDef.title || memberDef.type.name}
+                      key={memberDef.type?.name}
+                      text={memberDef.title || memberDef.type?.name}
                       onClick={() => insertItem(memberDef)}
                       icon={icon}
                     />

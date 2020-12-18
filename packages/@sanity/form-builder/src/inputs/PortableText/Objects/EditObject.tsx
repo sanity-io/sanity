@@ -13,7 +13,7 @@ import {
 import {get, debounce} from 'lodash'
 
 import {applyAll} from '../../../simplePatch'
-import {ModalType} from '../../ArrayInput/typedefs'
+import {ModalType} from '../../ArrayInput/types'
 import {Patch} from '../../../typedefs/patch'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
