@@ -408,7 +408,6 @@ export default class ArrayInput extends React.Component<Props> {
 
           <Box marginTop={1}>
             <ArrayFunctions
-              className={styles.functions}
               type={type}
               value={value}
               readOnly={readOnly}
