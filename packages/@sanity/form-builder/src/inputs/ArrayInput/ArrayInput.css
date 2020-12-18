@@ -23,20 +23,6 @@
   }
 }
 
-.functions {
-  @nest .list + & {
-    margin-top: calc(var(--medium-padding) - var(--extra-small-padding));
-  }
-
-  @nest .grid + & {
-    margin-top: var(--medium-padding);
-  }
-
-  &:empty {
-    display: none;
-  }
-}
-
 .popupAnchor {
   position: absolute;
   top: 75%;
