@@ -12,11 +12,6 @@
   border-radius: var(--border-radius-small);
   padding: calc(var(--extra-small-padding) - 1px);
   transition: box-shadow 100ms;
-
-  @nest :global(.ArrayInput__moving) & {
-    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
-      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
-  }
 }
 
 .innerWithError {
@@ -46,16 +41,6 @@
   z-index: 200;
   padding: var(--extra-small-padding) var(--small-padding);
   background-color: var(--input-bg);
-}
-
-.dragHandle {
-  display: block;
-  flex-grow: 0;
-  margin-right: var(--extra-small-padding);
-
-  @nest & > button {
-    cursor: move;
-  }
 }
 
 .previewWrapper {
@@ -92,32 +77,6 @@
   align-items: center;
   margin-top: var(--extra-small-padding);
   padding: var(--extra-small-padding);
-}
-
-.dragHandleContainer {
-  flex: 1;
-  min-width: 0;
-}
-
-.functions {
-  display: flex;
-  align-items: center;
-  top: var(--extra-small-padding);
-  right: var(--extra-small-padding);
-
-  @nest &:empty {
-    display: none;
-  }
-
-  @nest & > div {
-    @nest &:empty {
-      display: none;
-    }
-  }
-
-  @nest & > div:not(:empty) + div {
-    margin-left: var(--extra-small-padding);
-  }
 }
 
 .validationIconError {
