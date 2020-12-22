@@ -15,7 +15,7 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Details from '../common/Details'
 import Warning from '../Warning'
-import {ArrayInputItem} from './item'
+import {ArrayItem} from './item'
 import randomKey from './randomKey'
 import {ArrayMember} from './types'
 
@@ -51,7 +51,7 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-export default class ArrayInput extends React.Component<Props> {
+export class ArrayInput extends React.Component<Props> {
   static defaultProps = {
     focusPath: [],
   }
@@ -186,7 +186,7 @@ export default class ArrayInput extends React.Component<Props> {
           const childPresence = presence.filter(isChildPresence)
           return (
             <Item key={item._key || index} isSortable={isSortable} isGrid={isGrid} index={index}>
-              <ArrayInputItem
+              <ArrayItem
                 compareValue={compareValue}
                 filterField={filterField}
                 focusPath={focusPath}
@@ -326,7 +326,7 @@ export default class ArrayInput extends React.Component<Props> {
           ref={this.setElement}
           markers={markers}
         >
-          <Card padding={2} shadow={1}>
+          <Card padding={2} shadow={1} tone="caution">
             Some items in this list are not objects. We need to remove them before the list can be
             edited.
             <Box paddingY={2}>
