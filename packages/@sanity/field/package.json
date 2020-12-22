@@ -35,8 +35,7 @@
   },
   "devDependencies": {
     "react": "17.0.1",
-    "rimraf": "^2.7.1",
-    "typescript": "^4.0.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "react": "^16.2.0 || ^17"

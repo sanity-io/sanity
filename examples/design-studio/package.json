@@ -30,7 +30,6 @@
     "sanity-plugin-asset-source-unsplash": "^0.1.3"
   },
   "devDependencies": {
-    "typescript": "^4.0.2",
     "typescript-plugin-css-modules": "^2.4.0"
   }
 }
