@@ -11,7 +11,7 @@ interface MapProps {
   mapTypeControl?: boolean
   scrollWheel?: boolean
   controlSize?: number
-  onClick?: (event: google.maps.MouseEvent) => void
+  onClick?: (event: google.maps.MapMouseEvent) => void
   children?: (map: google.maps.Map) => React.ReactElement
 }
 

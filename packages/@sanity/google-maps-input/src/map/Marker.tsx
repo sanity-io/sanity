@@ -8,10 +8,10 @@ const markerPath =
 interface Props {
   api: typeof window.google.maps
   map: google.maps.Map
-  onMove?: (event: google.maps.MouseEvent) => void
-  onClick?: (event: google.maps.MouseEvent) => void
-  onMouseOver?: (event: google.maps.MouseEvent) => void
-  onMouseOut?: (event: google.maps.MouseEvent) => void
+  onMove?: (event: google.maps.MapMouseEvent) => void
+  onClick?: (event: google.maps.MapMouseEvent) => void
+  onMouseOver?: (event: google.maps.MapMouseEvent) => void
+  onMouseOut?: (event: google.maps.MapMouseEvent) => void
   position: LatLng | google.maps.LatLng
   zIndex?: number
   opacity?: number

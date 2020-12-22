@@ -37,11 +37,11 @@ export class GeopointSelect extends React.PureComponent<SelectProps> {
     this.setValue(place.geometry.location)
   }
 
-  handleMarkerDragEnd = (event: google.maps.MouseEvent) => {
+  handleMarkerDragEnd = (event: google.maps.MapMouseEvent) => {
     this.setValue(event.latLng)
   }
 
-  handleMapClick = (event: google.maps.MouseEvent) => {
+  handleMapClick = (event: google.maps.MapMouseEvent) => {
     this.setValue(event.latLng)
   }
 
