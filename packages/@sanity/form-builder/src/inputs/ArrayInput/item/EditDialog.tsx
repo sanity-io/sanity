@@ -1,4 +1,3 @@
-import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import React from 'react'
 import {Box, Dialog, Layer} from '@sanity/ui'
@@ -7,6 +6,7 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import {PopoverDialog} from '../../../transitional/PopoverDialog'
 import {ArrayMember} from '../types'
 import PatchEvent from '../../../PatchEvent'
+import {EditItemFold} from '../../../transitional/EditItemFold'
 import {isEmpty} from './helpers'
 
 type Props = {
