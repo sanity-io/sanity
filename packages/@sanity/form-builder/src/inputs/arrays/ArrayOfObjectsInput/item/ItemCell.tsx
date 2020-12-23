@@ -7,7 +7,7 @@ import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../../transitional/IntentButton'
 
 import {ValidationStatus} from '../../../../transitional/ValidationStatus'
-import {DragHandle} from './DragHandle'
+import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
