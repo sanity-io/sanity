@@ -222,7 +222,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         {unknownValues.map((item) => (
           <div key={item.type}>
             <h4>{item.type}</h4>
-            <pre className={styles.inspectValue}>{JSON.stringify(item.value, null, 2)}</pre>
+            <pre>{JSON.stringify(item.value, null, 2)}</pre>
             {readOnly ? (
               <div>
                 This array is <em>read only</em> according to its enclosing schema type and values
@@ -241,11 +241,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       </>
     )
 
-    return (
-      <div className={styles.unknownValueTypes}>
-        <Warning values={unknownValues} message={message} />
-      </div>
-    )
+    return <Warning values={unknownValues} message={message} />
   }
 
   render() {

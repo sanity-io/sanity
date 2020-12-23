@@ -21,8 +21,8 @@ const SortableGrid = sortableGrid(Grid)
 const SortableGridItem = SortableListItem
 
 type ListProps = {
-  isSortable: boolean
-  isGrid: boolean
+  isSortable?: boolean
+  isGrid?: boolean
   onSortEnd: (event: {newIndex: number; oldIndex: number}) => void
   children?: React.ReactNode
 }
@@ -41,7 +41,7 @@ export function List(props: ListProps) {
   return isSortable ? <SortableList onSortEnd={onSortEnd} {...rest} /> : <Grid {...rest} />
 }
 
-type ItemProps = {isSortable: boolean; isGrid: boolean; children?: React.ReactNode; index: number}
+type ItemProps = {isSortable?: boolean; isGrid?: boolean; children?: React.ReactNode; index: number}
 
 export function Item(props: ItemProps) {
   const {isSortable, isGrid, ...rest} = props

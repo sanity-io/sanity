@@ -6,8 +6,7 @@ import {FormFieldValidationStatus} from '@sanity/base/components'
 import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../../transitional/IntentButton'
-
-import {DragHandle} from './DragHandle'
+import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
