@@ -2,7 +2,7 @@ import React from 'react'
 import {Button} from '@sanity/ui'
 import styles from '../ObjectInput/styles/UnknownFields.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import {ItemValue} from '../ArrayInput/typedefs'
+import {ArrayMember} from '../ArrayInput/types'
 import Warning from '../Warning'
 import CONVERTERS from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
@@ -26,7 +26,7 @@ type InvalidValueProps = {
   actualType?: string
   validTypes?: string[]
   value?: unknown
-  onChange?: (event: PatchEvent, valueOverride?: ItemValue) => void
+  onChange?: (event: PatchEvent, valueOverride?: ArrayMember) => void
 }
 export default class InvalidValueInput extends React.PureComponent<InvalidValueProps, {}> {
   handleClearClick = () => {
