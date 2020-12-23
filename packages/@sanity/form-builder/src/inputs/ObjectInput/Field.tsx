@@ -2,7 +2,7 @@ import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Fieldset} from '../../components/Fieldset'
+import {Fieldset} from '../../transitional/Fieldset'
 import styles from './styles/Field.css'
 
 type FieldProps = {

@@ -5,7 +5,7 @@ import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../components/FormField'
+import {FormField} from '../transitional/FormField'
 import {Props} from './types'
 
 function toSelectItem(

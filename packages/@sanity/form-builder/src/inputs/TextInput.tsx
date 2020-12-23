@@ -4,7 +4,7 @@ import {TextArea} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../components/FormField'
+import {FormField} from '../transitional/FormField'
 import {Props} from './types'
 
 const TextInput = React.forwardRef(function TextInput(

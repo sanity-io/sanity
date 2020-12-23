@@ -4,7 +4,7 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../components/FormField'
+import {FormField} from '../transitional/FormField'
 import {Props} from './types'
 
 const NumberInput = React.forwardRef(function NumberInput(
