@@ -23,7 +23,7 @@ import {Item, List} from './list'
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
-function createProtoValue(type: SchemaType): ItemValue {
+function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
     throw new Error(
       `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
@@ -36,8 +36,8 @@ function createProtoValue(type: SchemaType): ItemValue {
 
 export type Props = {
   type: ArraySchemaType
-  value: ItemValue[]
-  compareValue: ItemValue[]
+  value: ArrayMember[]
+  compareValue: ArrayMember[]
   markers: Marker[]
   level: number
   onChange: (event: PatchEvent) => void
@@ -65,17 +65,17 @@ export class ArrayInput extends React.Component<Props> {
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
   }
 
-  handlePrepend = (value: ItemValue) => {
+  handlePrepend = (value: ArrayMember) => {
     this.insert(value, 'before', 0)
     this.handleFocusItem(value)
   }
 
-  handleAppend = (value: ItemValue) => {
+  handleAppend = (value: ArrayMember) => {
     this.insert(value, 'after', -1)
     this.handleFocusItem(value)
   }
 
-  handleRemoveItem = (item: ItemValue) => {
+  handleRemoveItem = (item: ArrayMember) => {
     this.removeItem(item)
   }
 
@@ -83,11 +83,11 @@ export class ArrayInput extends React.Component<Props> {
     this.props.onFocus([FOCUS_TERMINATOR])
   }
 
-  handleFocusItem = (item: ItemValue) => {
+  handleFocusItem = (item: ArrayMember) => {
     this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
   }
 
-  removeItem(item: ItemValue) {
+  removeItem(item: ArrayMember) {
     const {onChange, onFocus, value} = this.props
 
     onChange(PatchEvent.from(unset(item._key ? [{_key: item._key}] : [value.indexOf(item)])))
@@ -102,7 +102,7 @@ export class ArrayInput extends React.Component<Props> {
     onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
   }
 
-  handleItemChange = (event: PatchEvent, item: ItemValue) => {
+  handleItemChange = (event: PatchEvent, item: ArrayMember) => {
     const {onChange, value} = this.props
     const memberType = this.getMemberTypeOfItem(item)
 
@@ -147,7 +147,7 @@ export class ArrayInput extends React.Component<Props> {
     )
   }
 
-  getMemberTypeOfItem(item: ItemValue): SchemaType {
+  getMemberTypeOfItem(item: ArrayMember): SchemaType {
     const {type} = this.props
     const itemTypeName = resolveTypeName(item)
 
