@@ -5,11 +5,11 @@ import humanize from 'humanize-list'
 import {sortBy} from 'lodash'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
+import {Button} from '@sanity/ui'
+import {ResolvedUploader} from '../../../sanity/uploads/types'
 import styles from './UploadTarget.css'
-import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
 import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
 import {imageUrlToBlob} from './imageUrlToBlob'
-import {Button} from '@sanity/ui'
 
 type Props = {
   type: SchemaType

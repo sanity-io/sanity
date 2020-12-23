@@ -1,6 +1,6 @@
 // This exports the public api of 'part:@sanity/form-builder'
 
-import * as patches from '../utils/patches'
+import * as patches from '../patch/patches'
 
 export {default} from './SanityFormBuilder'
 export {default as FormBuilder} from './SanityFormBuilder'

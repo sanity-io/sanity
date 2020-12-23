@@ -1,9 +1,9 @@
 import {SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
-import {set} from '../../utils/patches'
+import {set} from '../../patch/patches'
 import uploadImage from './uploadImage'
 import uploadFile from './uploadFile'
-import {Uploader, UploaderDef, UploadOptions} from './typedefs'
+import {Uploader, UploaderDef, UploadOptions} from './types'
 
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',
