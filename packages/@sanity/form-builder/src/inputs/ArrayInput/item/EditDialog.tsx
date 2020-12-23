@@ -59,7 +59,7 @@ export function EditDialog(props: Props) {
       onBlur={onBlur}
       compareValue={compareValue}
       focusPath={focusPath}
-      readOnly={readOnly || type.readOnly}
+      readOnly={readOnly || type.readOnly || false}
       markers={childMarkers}
       path={[{_key: value._key}]}
       filterField={filterField}

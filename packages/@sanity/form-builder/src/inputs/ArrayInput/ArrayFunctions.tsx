@@ -52,7 +52,7 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
       ) : (
         <Box flex={1}>
           <MenuButton
-            id={menuButtonId}
+            id={menuButtonId || ''}
             button={<Button mode="ghost" text="Add…" icon={AddIcon} />}
             menu={
               <Menu>
@@ -63,11 +63,11 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
                     (memberDef.to || []).length === 1 &&
                     memberDef.to[0].icon
 
-                  const icon = memberDef.icon || memberDef.type.icon || referenceIcon
+                  const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                   return (
                     <MenuItem
-                      key={memberDef.type.name}
-                      text={memberDef.title || memberDef.type.name}
+                      key={memberDef.type?.name}
+                      text={memberDef.title || memberDef.type?.name}
                       onClick={() => insertItem(memberDef)}
                       icon={icon}
                     />

@@ -1,6 +1,5 @@
-import {Marker, SchemaType} from '@sanity/types'
 import {LinkIcon} from '@sanity/icons'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
+import {FieldPresence} from '@sanity/base/presence'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {Badge, Box, Card, Flex} from '@sanity/ui'
@@ -9,24 +8,12 @@ import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../components/IntentButton'
 
 import {DragHandle} from './DragHandle'
+import {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle />
 
-interface Props {
-  isSortable: boolean
-  readOnly: boolean
-  value: {_key?: string; _ref?: string}
-  type: SchemaType
-  onClick: () => void
-  onFocus: () => void
-  onRemove: () => void
-  onKeyPress: (event: React.KeyboardEvent<any>) => void
-  presence: FormFieldPresence[]
-  validation: Marker[]
-}
-
 export const ItemRow = React.forwardRef(function RegularItem(
-  props: Props,
+  props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
   const focusRef = React.useRef()
@@ -56,7 +43,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
           onKeyPress={onKeyPress}
           onFocus={onFocus}
         >
-          <Preview layout="default" value={value} type={type} />
+          {type && <Preview layout="default" value={value} type={type} />}
         </Card>
 
         <Flex>
@@ -78,7 +65,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
             </Box>
           )}
 
-          {!readOnly && (
+          {!readOnly && onRemove && (
             <Box marginLeft={1}>
               <ConfirmDeleteButton placement="left" title="Remove item" onConfirm={onRemove} />
             </Box>
