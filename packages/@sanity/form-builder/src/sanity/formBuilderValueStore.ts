@@ -1,7 +1,7 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 import {map, scan} from 'rxjs/operators'
-import {Patch} from '../typedefs/patch'
+import type {Patch} from '../patch/types'
+import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 function prepareMutationEvent(event) {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)

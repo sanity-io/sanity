@@ -1,7 +1,5 @@
 import {Path} from '@sanity/types'
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 export type JSONValue = number | string | boolean | {[key: string]: JSONValue} | JSONValue[]
 
 export type Origin = 'remote' | 'local' | 'internal'
