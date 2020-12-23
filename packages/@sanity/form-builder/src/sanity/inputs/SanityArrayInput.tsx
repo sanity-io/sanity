@@ -1,6 +1,6 @@
 import React from 'react'
 import resolveUploader from '../uploads/resolveUploader'
-import ArrayInput, {Props} from '../../inputs/ArrayInput'
+import ArrayInput, {Props} from '../../inputs/arrays/ArrayOfObjectsInput'
 export default class SanityArray extends React.Component<Props> {
   input: any
   setInput = (input) => {
