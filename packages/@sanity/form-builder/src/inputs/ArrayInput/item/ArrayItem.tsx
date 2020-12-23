@@ -24,15 +24,15 @@ interface ArrayInputListItemProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   filterField: () => any
-  readOnly: boolean | null
+  readOnly: boolean
   focusPath: Path
   presence: FormFieldPresence[]
 }
 
 export class ArrayItem extends React.PureComponent<ArrayInputListItemProps> {
-  _focusArea: HTMLDivElement | null
+  _focusArea: HTMLDivElement | null = null
 
-  innerElement: HTMLDivElement | null
+  innerElement: HTMLDivElement | null = null
 
   static defaultProps = {
     level: 0,
@@ -94,6 +94,9 @@ export class ArrayItem extends React.PureComponent<ArrayInputListItemProps> {
   setFocus(path: Path = []) {
     const {value, onFocus} = this.props
 
+    if (!value._key) {
+      return
+    }
     onFocus([{_key: value._key}, ...path])
   }
 
@@ -153,7 +156,7 @@ export class ArrayItem extends React.PureComponent<ArrayInputListItemProps> {
               validation={scopedValidation}
               isSortable={isSortable}
               onFocus={this.handleFocus}
-              onClick={this.handleEditStart}
+              onClick={itemType && this.handleEditStart}
               onRemove={this.handleRemove}
               onKeyPress={this.handleKeyPress}
               ref={this.setInnerElement}
@@ -161,7 +164,7 @@ export class ArrayItem extends React.PureComponent<ArrayInputListItemProps> {
           </ContextProvidedChangeIndicator>
         </ChangeIndicatorScope>
 
-        {isOpen && (
+        {isOpen && itemType && (
           <EditDialog
             onChange={this.handleChange}
             onClose={this.handleEditStop}
@@ -174,7 +177,7 @@ export class ArrayItem extends React.PureComponent<ArrayInputListItemProps> {
             type={itemType}
             dialogType={type?.options?.editModal || 'dialog'}
             value={value}
-            readOnly={readOnly || itemType.readOnly}
+            readOnly={readOnly || itemType.readOnly || false}
             presence={presence}
             compareValue={compareValue}
           />
