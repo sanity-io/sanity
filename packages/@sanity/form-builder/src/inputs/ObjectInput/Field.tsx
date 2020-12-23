@@ -1,8 +1,8 @@
 import React from 'react'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import {Fieldset} from '../../components/Fieldset'
 import styles from './styles/Field.css'
 
 type FieldProps = {
@@ -16,7 +16,7 @@ type FieldProps = {
   filterField?: (...args: any[]) => any
   readOnly?: boolean
   markers?: any[]
-  level?: number
+  level: number
   presence: any
 }
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
