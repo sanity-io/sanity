@@ -5,6 +5,7 @@ import {MOVING_ITEM_CLASS_NAME, sortableGrid, sortableItem, sortableList} from '
 
 const ListItem = styled(Card)`
   &.${MOVING_ITEM_CLASS_NAME} {
+    z-index: 10000;
     box-shadow: 0 0 0 1px var(--card-shadow-outline-color),
       0 8px 17px 2px var(--card-shadow-umbra-color),
       0 3px 14px 2px var(--card-shadow-penumbra-color),
