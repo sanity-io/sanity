@@ -29,14 +29,14 @@ function sortableContainer<Props>(
   Component: React.ComponentType<Props>,
   options: SortableContainerProps
 ) {
-  const Container = SortableContainer(
+  const Container = (SortableContainer(
     React.forwardRef(function Sortable(
       props: Props & ExposedSortableProps,
       forwardedRef: React.ForwardedRef<React.ComponentType<Props>>
     ) {
       return <Component {...props} ref={forwardedRef} />
     })
-  ) as React.ComponentType<SortableContainerProps> // there are some wonky typings from react-sortable-hoc
+  ) as any) as React.ComponentType<SortableContainerProps> // there are some wonky typings from react-sortable-hoc
 
   return React.forwardRef(function SortableList(
     props: Props & ExposedSortableProps,
@@ -88,8 +88,8 @@ export function sortableList<Props>(Component: React.ComponentType<Props>) {
 }
 
 // Cancel sorting if the event target is not drag handle
-function shouldCancelStart(event) {
-  return !isDragHandle(event.target)
+function shouldCancelStart(event: React.UIEvent<HTMLElement>) {
+  return !isDragHandle(event.target as HTMLElement)
 }
 
 function isDragHandle(element: HTMLElement) {

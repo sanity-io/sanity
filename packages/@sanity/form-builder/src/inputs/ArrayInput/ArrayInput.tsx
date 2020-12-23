@@ -9,7 +9,7 @@ import React from 'react'
 import {map} from 'rxjs/operators'
 import {ArrayFunctions} from '../../legacyImports'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
-import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
+import {ResolvedUploader, Uploader, UploadEvent} from '../../sanity/uploads/typedefs'
 import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
@@ -178,10 +178,10 @@ export class ArrayInput extends React.Component<Props> {
     return (
       <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
         {value.map((item, index) => {
-          const isChildMarker = (marker) =>
+          const isChildMarker = (marker: Marker) =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
           const childMarkers = markers.filter(isChildMarker)
-          const isChildPresence = (pItem) =>
+          const isChildPresence = (pItem: FormFieldPresence) =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
           const childPresence = presence.filter(isChildPresence)
           return (
@@ -215,7 +215,7 @@ export class ArrayInput extends React.Component<Props> {
     }
   }
 
-  setElement = (el) => {
+  setElement = (el: HTMLElement | null) => {
     this._element = el
   }
 
@@ -244,14 +244,14 @@ export class ArrayInput extends React.Component<Props> {
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
     const nonObjects = value
-      .reduce((acc, val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
+      .reduce((acc: number[], val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
       .reverse()
     const patches = nonObjects.map((index) => unset([index]))
 
     onChange(PatchEvent.from(...patches))
   }
 
-  handleUpload = ({file, type, uploader}) => {
+  handleUpload = ({file, type, uploader}: {file: File; type: SchemaType; uploader: Uploader}) => {
     const {onChange} = this.props
     const item = createProtoValue(type)
     const key = item._key
@@ -260,7 +260,11 @@ export class ArrayInput extends React.Component<Props> {
 
     const events$ = uploader
       .upload(file, type)
-      .pipe(map((uploadEvent: any) => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key})))
+      .pipe(
+        map((uploadEvent: UploadEvent) =>
+          PatchEvent.from(uploadEvent.patches || []).prefixAll({_key: key})
+        )
+      )
 
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,
