@@ -1,21 +1,16 @@
 import React from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import {TrashIcon, DragHandleIcon} from '@sanity/icons'
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
+import {TrashIcon} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
 import {Button} from '@sanity/ui'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ValidationStatus} from '../../../transitional/ValidationStatus'
+import {DragHandle} from '../common/DragHandle'
 import getEmptyValue from './getEmptyValue'
 
-import styles from './Item.css'
-
-const DragHandle = createDragHandle(() => (
-  <span className={styles.dragHandle}>
-    <Button icon={DragHandleIcon} mode="bleed" padding={2} />
-  </span>
-))
+// import styles from './Item.css'
+const styles = {} // todo: take it from here
 
 type Props = {
   type: SchemaType
@@ -36,7 +31,7 @@ type Props = {
   presence: any
 }
 
-export default class Item extends React.PureComponent<Props> {
+export default class ArrayItem extends React.PureComponent<Props> {
   handleRemove = () => {
     const {index, onRemove} = this.props
     onRemove(index)
@@ -84,7 +79,7 @@ export default class Item extends React.PureComponent<Props> {
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
-          {isSortable && !readOnly && <DragHandle className={styles.dragHandle} />}
+          {isSortable && !readOnly && <DragHandle />}
           <div className={styles.input}>
             <FormBuilderInput
               value={value}
