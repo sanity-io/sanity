@@ -4,7 +4,6 @@ import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {get, isPlainObject} from 'lodash'
 import {Box, Button, Card} from '@sanity/ui'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {ArrayFunctions} from '../../legacyImports'
@@ -14,6 +13,7 @@ import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Details from '../common/Details'
+import {Fieldset} from '../../components/Fieldset'
 import {ArrayItem} from './item'
 import randomKey from './randomKey'
 import {ArrayMember} from './types'
@@ -284,7 +284,6 @@ export class ArrayInput extends React.Component<Props> {
         description={type.description}
         level={level - 1}
         onFocus={this.handleFocus}
-        type={type}
         ref={this.setElement}
         presence={presence.filter((item) => item.path[0] === '$')}
         changeIndicator={false}
