@@ -53,7 +53,7 @@ export const EditForm = memo((props: Props) => {
   useEffect(() => {
     const el = document.querySelector(`[data-focus-path="${startSegment}"]`)
     if (el) {
-      scrollIntoView(el, {scrollMode: 'if-needed', block: 'start'})
+      scrollIntoView(el, {scrollMode: 'if-needed', block: 'nearest'})
     }
   }, [startSegment])
 
