@@ -2,13 +2,15 @@ import React from 'react'
 import {get} from 'lodash'
 import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Warning from '../Warning'
+import {Fieldset} from '../../components/Fieldset'
 import Item from './Item'
 import styles from './styles/OptionsArrayInput.css'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
+
+type Focusable = {focus: () => void}
 
 const changeIndicatorOptions = {compareDeep: true}
 
@@ -59,7 +61,7 @@ type OptionsArrayInputProps = {
 }
 
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps> {
-  _element: Fieldset | null
+  _element: Focusable | null
 
   handleChange = (isChecked, optionValue) => {
     const {type, value = []} = this.props
@@ -86,7 +88,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     )
   }
 
-  setElement = (el: Fieldset | null) => {
+  setElement = (el: Focusable | null) => {
     this._element = el
   }
 
