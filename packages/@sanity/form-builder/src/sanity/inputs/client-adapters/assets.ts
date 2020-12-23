@@ -4,7 +4,7 @@ import {mergeMap, map, catchError} from 'rxjs/operators'
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
-import {UploadOptions} from '../../uploads/typedefs'
+import {UploadOptions} from '../../uploads/types'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

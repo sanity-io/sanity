@@ -1,7 +1,7 @@
-import {arrayToJSONMatchPath} from '@sanity/mutator'
 import assert from 'assert'
+import {arrayToJSONMatchPath} from '@sanity/mutator'
 import {flatten} from 'lodash'
-import {Origin, Patch} from '../../typedefs/patch'
+import type {Origin, Patch} from '../../patch/types'
 import * as convertPath from './convertPath'
 
 type GradientPatch = Record<string, any>
