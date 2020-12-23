@@ -106,22 +106,22 @@
     {
       "name": "part:@sanity/form-builder/input/array/functions-default",
       "implements": "part:@sanity/form-builder/input/array/functions",
-      "path": "inputs/ArrayInput/ArrayFunctions"
+      "path": "inputs/arrays/common/ArrayFunctions"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers",
-      "path": "inputs/PortableText/Markers"
+      "path": "inputs/arrays/PortableText/Markers"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
-      "path": "inputs/PortableText/BlockExtras"
+      "path": "inputs/arrays/PortableText/BlockExtras"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
-      "path": "inputs/PortableText/CustomMarkers"
+      "path": "inputs/arrays/PortableText/CustomMarkers"
     },
     {
       "name": "part:@sanity/form-builder/input/image/asset-source-default",
