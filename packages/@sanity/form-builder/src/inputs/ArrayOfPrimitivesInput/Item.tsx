@@ -1,13 +1,13 @@
 import React from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {TrashIcon, DragHandleIcon} from '@sanity/icons'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import {FieldPresence} from '@sanity/base/presence'
+import {Button} from '@sanity/ui'
 import PatchEvent, {set} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
+import {ValidationStatus} from '../../transitional/ValidationStatus'
 import getEmptyValue from './getEmptyValue'
-import {Button} from '@sanity/ui'
 
 import styles from './Item.css'
 
