@@ -1,13 +1,14 @@
-import {LinkIcon} from '@sanity/icons'
+import {LinkIcon, WarningOutlineIcon} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
-import {Badge, Box, Card, Flex} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
 import Preview from '../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../components/IntentButton'
 
 import {DragHandle} from './DragHandle'
+import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle />
@@ -29,22 +30,31 @@ export const ItemRow = React.forwardRef(function RegularItem(
     onRemove,
     validation,
   } = props
+
   return (
     <Card radius={2} shadow={1} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
-        <Card
-          as="button"
-          radius={2}
-          flex={1}
-          tabIndex={0}
-          onClick={onClick}
-          ref={focusRef}
-          onKeyPress={onKeyPress}
-          onFocus={onFocus}
-        >
-          {type && <Preview layout="default" value={value} type={type} />}
-        </Card>
+
+        {type ? (
+          <Card
+            as="button"
+            radius={2}
+            padding={1}
+            flex={1}
+            tabIndex={0}
+            onClick={onClick}
+            ref={focusRef}
+            onKeyPress={onKeyPress}
+            onFocus={onFocus}
+          >
+            <Preview layout="default" value={value} type={type} />
+          </Card>
+        ) : (
+          <Box flex={1}>
+            <ItemWithMissingType value={value} onFocus={onFocus} />
+          </Box>
+        )}
 
         <Flex>
           {!readOnly && presence.length > 0 && (
@@ -72,9 +82,19 @@ export const ItemRow = React.forwardRef(function RegularItem(
           )}
           {!value._key && (
             <Box marginLeft={1}>
-              <Badge mode="outline" tone="caution" padding={2} fontSize={1}>
-                Missing key
-              </Badge>
+              <Tooltip
+                content={
+                  <Card padding={2}>
+                    <Text size={1}>
+                      This item is missing a required <code>_key</code> property.
+                    </Text>
+                  </Card>
+                }
+              >
+                <Badge mode="outline" tone="caution" margin={1} padding={2} fontSize={1}>
+                  <WarningOutlineIcon /> Missing key
+                </Badge>
+              </Tooltip>
             </Box>
           )}
         </Flex>
