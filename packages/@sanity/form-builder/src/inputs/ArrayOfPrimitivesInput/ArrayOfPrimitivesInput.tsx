@@ -5,13 +5,13 @@ import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/lists/default'
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {Button} from '@sanity/ui'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Warning from '../Warning'
+import {Fieldset} from '../../components/Fieldset'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
-import {Button} from '@sanity/ui'
 
 import styles from './ArrayOfPrimitivesInput.css'
 
@@ -46,9 +46,10 @@ type Props = {
   markers: Marker[]
   presence: any
 }
+type Focusable = {focus: () => void}
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
-  _element: Fieldset | null
+  _element: Focusable | null
   _lastAddedIndex = -1
 
   set(nextValue: Primitive[]) {
@@ -180,7 +181,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     )
   }
 
-  setElement = (el: Fieldset | null) => {
+  setElement = (el: Focusable | null) => {
     this._element = el
   }
 
