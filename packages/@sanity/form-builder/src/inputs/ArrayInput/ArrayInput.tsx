@@ -14,7 +14,6 @@ import {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Details from '../common/Details'
-import Warning from '../Warning'
 import {ArrayItem} from './item'
 import randomKey from './randomKey'
 import {ArrayMember} from './types'
@@ -155,60 +154,6 @@ export class ArrayInput extends React.Component<Props> {
     return type.of.find((memberType) => memberType.name === itemTypeName) as SchemaType
   }
 
-  renderList = () => {
-    const {
-      type,
-      markers,
-      readOnly,
-      value,
-      focusPath,
-      onBlur,
-      onFocus,
-      level,
-      compareValue,
-      filterField,
-      presence,
-    } = this.props
-
-    const options = type.options || {}
-    const hasMissingKeys = value.some((item) => !item._key)
-    const isSortable = options.sortable !== false && !hasMissingKeys
-    const isGrid = options.layout === 'grid'
-
-    return (
-      <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-        {value.map((item, index) => {
-          const isChildMarker = (marker: Marker) =>
-            startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
-          const childMarkers = markers.filter(isChildMarker)
-          const isChildPresence = (pItem: FormFieldPresence) =>
-            startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
-          const childPresence = presence.filter(isChildPresence)
-          return (
-            <Item key={item._key || index} isSortable={isSortable} isGrid={isGrid} index={index}>
-              <ArrayItem
-                compareValue={compareValue}
-                filterField={filterField}
-                focusPath={focusPath}
-                index={index}
-                level={level}
-                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                onBlur={onBlur}
-                onChange={this.handleItemChange}
-                onFocus={onFocus}
-                onRemove={this.handleRemoveItem}
-                presence={childPresence}
-                readOnly={readOnly || hasMissingKeys}
-                type={type}
-                value={item}
-              />
-            </Item>
-          )
-        })}
-      </List>
-    )
-  }
-
   focus() {
     if (this._element) {
       this._element.focus()
@@ -272,51 +217,22 @@ export class ArrayInput extends React.Component<Props> {
     }
   }
 
-  renderUnknownValueTypes = () => {
-    const {value, type, readOnly} = this.props
-    const knownTypes = (type.of || [])
-      .map((t) => t.name)
-      .filter((typeName) => typeName !== 'object')
-    const unknownValues = (value || []).filter((v) => v._type && !knownTypes.includes(v._type))
-
-    if (!unknownValues || unknownValues.length < 1) {
-      return null
-    }
-
-    const message = (
-      <>
-        These values are not defined in the current schema as valid types for this array. This could
-        mean that the type has been removed, or that someone else has added it to their own local
-        schema that is not yet deployed.
-        {unknownValues.map((item) => {
-          return (
-            <div key={item._type}>
-              <h4>{item._type}</h4>
-              <pre>{JSON.stringify(item, null, 2)}</pre>
-              {readOnly ? (
-                <div>
-                  This array is <em>read only</em> according to its enclosing schema type and values
-                  cannot be unset. If you want to unset a value, make sure you remove the{' '}
-                  <strong>readOnly</strong> property from the enclosing type.
-                </div>
-              ) : (
-                <Button
-                  onClick={() => this.handleRemoveItem(item)}
-                  tone="critical"
-                  text={`Unset ${item._type}`}
-                />
-              )}
-            </div>
-          )
-        })}
-      </>
-    )
-
-    return <Warning message={message} values={unknownValues} />
-  }
-
   render() {
-    const {type, level = 1, markers, readOnly, onChange, value, presence} = this.props
+    const {
+      type,
+      level = 1,
+      markers,
+      readOnly,
+      onChange,
+      value = [],
+      presence,
+      focusPath,
+      onBlur,
+      onFocus,
+      compareValue,
+      filterField,
+    } = this.props
+
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
 
     if (hasNonObjectValues) {
@@ -350,40 +266,10 @@ export class ArrayInput extends React.Component<Props> {
       )
     }
 
-    const hasMissingKeys = (value || []).some((item) => !item._key)
-
-    if (hasMissingKeys) {
-      return (
-        <Fieldset
-          legend={type.title}
-          description={type.description}
-          level={level - 1}
-          tabIndex={0}
-          onFocus={this.handleFocus}
-          ref={this.setElement}
-          markers={markers}
-          changeIndicator={false}
-        >
-          <Card tone="caution" padding={2} shadow={1}>
-            Some items in this list are missing their keys. We need to fix this before the list can
-            be edited.
-            <Box paddingY={2}>
-              <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
-            </Box>
-            <Details title={<b>Why is this happening?</b>}>
-              This usually happens when items are created through the API client from outside the
-              Content Studio and someone forgets to set the <code>_key</code>-property of list
-              items.
-              <p>
-                The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
-                <b>unique</b> for each element within the array.
-              </p>
-            </Details>
-          </Card>
-          {this.renderList()}
-        </Fieldset>
-      )
-    }
+    const options = type.options || {}
+    const hasMissingKeys = value.some((item) => !item._key)
+    const isSortable = options.sortable !== false && !hasMissingKeys
+    const isGrid = options.layout === 'grid'
 
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
     const uploadProps = SUPPORT_DIRECT_UPLOADS
@@ -404,10 +290,64 @@ export class ArrayInput extends React.Component<Props> {
         changeIndicator={false}
         {...uploadProps}
       >
-        {value && value.length > 0 && this.renderList()}
-        {this.renderUnknownValueTypes()}
-
-        <Box marginTop={1}>
+        <Box>
+          {hasMissingKeys && (
+            <Card tone="caution" padding={2} shadow={1}>
+              Some items in this list are missing their keys. We need to fix this before the list
+              can be edited.
+              <Box paddingY={2}>
+                <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
+              </Box>
+              <Details title={<b>Why is this happening?</b>}>
+                This usually happens when items are created through the API client from outside the
+                Content Studio and someone forgets to set the <code>_key</code>-property of list
+                items.
+                <p>
+                  The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
+                  <b>unique</b> for each element within the array.
+                </p>
+              </Details>
+            </Card>
+          )}
+          {value && value.length > 0 && (
+            <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+              {value.map((item, index) => {
+                const isChildMarker = (marker: Marker) =>
+                  startsWith([index], marker.path) ||
+                  startsWith([{_key: item && item._key}], marker.path)
+                const childMarkers = markers.filter(isChildMarker)
+                const isChildPresence = (pItem: FormFieldPresence) =>
+                  startsWith([index], pItem.path) ||
+                  startsWith([{_key: item && item._key}], pItem.path)
+                const childPresence = presence.filter(isChildPresence)
+                return (
+                  <Item
+                    key={item._key || index}
+                    isSortable={isSortable}
+                    isGrid={isGrid}
+                    index={index}
+                  >
+                    <ArrayItem
+                      compareValue={compareValue}
+                      filterField={filterField}
+                      focusPath={focusPath}
+                      index={index}
+                      level={level}
+                      markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                      onBlur={onBlur}
+                      onChange={this.handleItemChange}
+                      onFocus={onFocus}
+                      onRemove={this.handleRemoveItem}
+                      presence={childPresence}
+                      readOnly={readOnly || hasMissingKeys}
+                      type={type}
+                      value={item}
+                    />
+                  </Item>
+                )
+              })}
+            </List>
+          )}
           <ArrayFunctions
             type={type}
             value={value}
