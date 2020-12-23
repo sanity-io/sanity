@@ -1,9 +1,8 @@
-import {of as observableOf} from 'rxjs'
-import {Observable} from 'rxjs'
+import {of as observableOf, Observable} from 'rxjs'
 import {map, concat} from 'rxjs/operators'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
-import {set} from '../../utils/patches'
-import {UploadEvent, UploadOptions} from './typedefs'
+import {set} from '../../patch/patches'
+import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
