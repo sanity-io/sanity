@@ -1,14 +1,13 @@
 import {from as observableFrom, of as observableOf, Observable} from 'rxjs'
 import {catchError, concat, filter, map, merge, mergeMap} from 'rxjs/operators'
+import {set} from '../../patch/patches'
+import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION, Orientation} from './image/orient'
-import {set} from '../../utils/patches'
-import {UploadEvent, UploadOptions} from './typedefs'
+import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {CLEANUP_EVENT, createInitialUploadEvent, createUploadEvent} from './utils'
-
-import {uploadImageAsset} from '../inputs/client-adapters/assets'
 
 type Exif = {
   orientation: Orientation

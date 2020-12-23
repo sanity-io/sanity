@@ -12,14 +12,14 @@ import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/ico
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import {Button} from '@sanity/ui'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import styles from './FileInput.css'
-import {Button} from '@sanity/ui'
 
 type FieldT = {
   name: string

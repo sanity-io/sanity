@@ -14,7 +14,7 @@ import {get, debounce} from 'lodash'
 
 import {applyAll} from '../../../simplePatch'
 import {ModalType} from '../../ArrayInput/types'
-import {Patch} from '../../../typedefs/patch'
+import type {Patch} from '../../../patch/types'
 import {PatchEvent} from '../../../PatchEvent'
 import {ObjectEditData} from '../types'
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
