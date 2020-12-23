@@ -13,7 +13,7 @@ import {Path, Marker, SchemaType} from '@sanity/types'
 import {useBoundaryElement} from '@sanity/base/__legacy/@sanity/components'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../PatchEvent'
-import {PopoverDialog} from '../../../../components/PopoverDialog'
+import {PopoverDialog} from '../../../../transitional/PopoverDialog'
 
 interface Props {
   editorPath: Path

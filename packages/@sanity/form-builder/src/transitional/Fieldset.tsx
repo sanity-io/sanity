@@ -1,8 +1,10 @@
+// This is transitional in order to track usage of the Fieldset part from within the form-builder package
+// in order to ease migration towards a part-less studio
+
 import FieldsetPart from 'part:@sanity/components/fieldsets/default'
 import {FormFieldPresence} from '@sanity/base/presence'
 import React from 'react'
 import {Marker, Path} from '@sanity/types'
-import {ChangeIndicatorContextProvidedProps} from '@sanity/base/lib/change-indicators'
 
 interface Props {
   description?: string
@@ -15,13 +17,10 @@ interface Props {
   isCollapsed?: boolean
   children?: React.ReactNode
   level?: number
-  className?: string
   tabIndex?: number
-  transparent?: boolean
-  styles?: Record<string, string>
   markers?: Marker[]
   presence?: FormFieldPresence[]
-  changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
+  changeIndicator?: {compareDeep: boolean} | boolean
 }
 
 export const Fieldset = React.forwardRef(function Fieldset(

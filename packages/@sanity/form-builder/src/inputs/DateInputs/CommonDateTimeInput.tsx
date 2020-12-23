@@ -6,7 +6,7 @@ import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
-import {FormField} from '../../components/FormField'
+import {FormField} from '../../transitional/FormField'
 import {DateTimeInput} from './base/DateTimeInput'
 import {format, parse} from './legacy'
 import {CommonProps} from './types'

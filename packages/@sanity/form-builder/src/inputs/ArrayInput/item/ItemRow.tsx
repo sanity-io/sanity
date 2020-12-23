@@ -5,7 +5,7 @@ import React from 'react'
 import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
 import Preview from '../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
-import {IntentButton} from '../../../components/IntentButton'
+import {IntentButton} from '../../../transitional/IntentButton'
 
 import {DragHandle} from './DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
