@@ -40,7 +40,7 @@ import {
   Uploader,
   UploaderResolver,
   UploadOptions,
-} from '../../sanity/uploads/typedefs'
+} from '../../sanity/uploads/types'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
