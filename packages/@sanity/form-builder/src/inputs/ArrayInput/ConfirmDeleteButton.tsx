@@ -7,13 +7,14 @@ export function ConfirmDeleteButton(props: {
   title: string
   onConfirm: () => void
   placement?: Placement
+  disabled?: boolean
 }) {
-  const {onConfirm, placement = 'left'} = props
+  const {onConfirm, placement = 'left', disabled} = props
   const id = useId()
   return (
     <MenuButton
       id={id || ''}
-      button={<Button mode="bleed" icon={TrashIcon} />}
+      button={<Button mode="bleed" icon={TrashIcon} disabled={disabled} />}
       placement={placement}
       portal={false}
       menu={
