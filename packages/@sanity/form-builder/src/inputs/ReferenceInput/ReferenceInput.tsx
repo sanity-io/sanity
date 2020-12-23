@@ -16,14 +16,14 @@ import {LinkIcon} from '@sanity/icons'
 import {IntentLink} from 'part:@sanity/base/router'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import FormField from 'part:@sanity/components/formfields/default'
+import {Button} from '@sanity/ui'
+import {Observable} from 'rxjs'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import styles from './styles/ReferenceInput.css'
-import {Button} from '@sanity/ui'
 
 type SearchHit = {
   _id: string
@@ -53,9 +53,9 @@ export type Props = {
     query: string,
     type: ReferenceSchemaType,
     options: ReferenceFilterSearchOptions
-  ) => ObservableI<Array<SearchHit>>
+  ) => Observable<SearchHit[]>
   onFocus: (path: Path) => void
-  getPreviewSnapshot: (reference, type) => ObservableI<PreviewSnapshot>
+  getPreviewSnapshot: (reference, type) => Observable<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
   presence: any
