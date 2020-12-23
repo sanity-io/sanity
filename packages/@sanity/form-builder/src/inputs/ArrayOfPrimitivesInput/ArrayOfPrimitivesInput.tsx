@@ -9,7 +9,7 @@ import {Button} from '@sanity/ui'
 import {PatchEvent, set, unset} from '../../PatchEvent'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Warning from '../Warning'
-import {Fieldset} from '../../components/Fieldset'
+import {Fieldset} from '../../transitional/Fieldset'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
 

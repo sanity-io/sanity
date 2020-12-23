@@ -46,7 +46,7 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {Fieldset} from '../../components/Fieldset'
+import {Fieldset} from '../../transitional/Fieldset'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
