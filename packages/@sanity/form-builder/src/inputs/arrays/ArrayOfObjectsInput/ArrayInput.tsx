@@ -346,16 +346,18 @@ export class ArrayInput extends React.Component<Props> {
               })}
             </List>
           )}
-          <ArrayFunctions
-            type={type}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
-            onCreateValue={createProtoValue}
-            onChange={onChange}
-          />
+          <Box marginTop={1}>
+            <ArrayFunctions
+              type={type}
+              value={value}
+              readOnly={readOnly}
+              onAppendItem={this.handleAppend}
+              onPrependItem={this.handlePrepend}
+              onFocusItem={this.handleFocusItem}
+              onCreateValue={createProtoValue}
+              onChange={onChange}
+            />
+          </Box>
         </Box>
       </FieldSetComponent>
     )
