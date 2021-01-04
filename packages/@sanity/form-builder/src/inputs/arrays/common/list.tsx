@@ -32,13 +32,17 @@ export function List(props: ListProps) {
 
   if (isGrid) {
     return isSortable ? (
-      <SortableGrid columns={[2, 3, 4]} gap={2} onSortEnd={onSortEnd} {...rest} />
+      <SortableGrid columns={[2, 3, 4]} gap={1} onSortEnd={onSortEnd} {...rest} />
     ) : (
-      <Grid columns={[2, 3, 4]} gap={2} {...rest} />
+      <Grid columns={[2, 3, 4]} gap={1} {...rest} />
     )
   }
 
-  return isSortable ? <SortableList onSortEnd={onSortEnd} {...rest} /> : <Grid {...rest} />
+  return isSortable ? (
+    <SortableList gap={1} onSortEnd={onSortEnd} {...rest} />
+  ) : (
+    <Grid gap={1} {...rest} />
+  )
 }
 
 type ItemProps = {isSortable?: boolean; isGrid?: boolean; children?: React.ReactNode; index: number}
@@ -50,5 +54,5 @@ export function Item(props: ItemProps) {
     return <ItemComponent {...rest} />
   }
   const ItemComponent = isSortable ? SortableListItem : ListItem
-  return <ItemComponent {...rest} marginY={1} />
+  return <ItemComponent {...rest} />
 }
