@@ -4,6 +4,7 @@ import {Portal} from 'part:@sanity/components/portal'
 import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import maxSize from 'popper-max-size-modifier'
+import {useBoundaryElement} from '../boundaryElement'
 import {Placement} from '../types'
 import {PopoverArrow} from './popoverArrow'
 
@@ -40,7 +41,7 @@ export const Popover = forwardRef(
     const {
       allowedAutoPlacements,
       arrowClassName,
-      boundaryElement,
+      boundaryElement: boundaryElementProp,
       cardClassName,
       children,
       className,
@@ -55,6 +56,8 @@ export const Popover = forwardRef(
       targetElement,
       ...restProps
     } = props
+    const boundaryElementCtx = useBoundaryElement()
+    const boundaryElement = boundaryElementProp || boundaryElementCtx
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
     const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
