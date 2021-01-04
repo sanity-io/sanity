@@ -4,6 +4,7 @@ import createSchema from 'part:@sanity/base/schema-creator'
 // document types
 // NOTE: keep this alphabetized
 import allInputs from './allInputs'
+import arrayInArray from './arrayInArray'
 import author from './author'
 import complexArrays from './complexArrays'
 import live from './live'
@@ -15,6 +16,7 @@ export default createSchema({
   types: schemaTypes.concat([
     // NOTE: keep this alphabetized
     allInputs,
+    arrayInArray,
     author,
     complexArrays,
     live,
