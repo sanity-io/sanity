@@ -1,8 +1,8 @@
-import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {MenuItemGroup, BoundaryElementProvider} from '@sanity/base/__legacy/@sanity/components'
 import classNames from 'classnames'
 import {PortalProvider, usePortal} from 'part:@sanity/components/portal'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
-import React, {createElement, useCallback, useMemo, useRef} from 'react'
+import React, {createElement, useCallback, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
@@ -58,6 +58,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
 
   const parentPortal = usePortal()
   const features = useDeskToolFeatures()
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
   const activeView = views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'}
@@ -148,42 +149,44 @@ export function DocumentPanel(props: DocumentPanelProps) {
       </div>
 
       <PortalProvider element={portalElement}>
-        <div className={styles.documentViewerContainer}>
-          <ScrollContainer className={styles.documentScroller}>
-            {activeView.type === 'form' && (
-              <FormView
-                id={props.documentId}
-                initialValue={props.initialValue}
-                focusPath={props.formInputFocusPath}
-                onFocus={props.onFormInputFocus}
-                markers={props.markers}
-                onChange={props.onChange}
-                readOnly={revTime !== null}
-                schemaType={props.schemaType}
-                value={displayed}
-                margins={margins}
-                compareValue={props.compareValue}
-              />
-            )}
+        <BoundaryElementProvider element={scrollElement}>
+          <div className={styles.documentViewerContainer}>
+            <ScrollContainer className={styles.documentScroller} ref={setScrollElement}>
+              {activeView.type === 'form' && (
+                <FormView
+                  id={props.documentId}
+                  initialValue={props.initialValue}
+                  focusPath={props.formInputFocusPath}
+                  onFocus={props.onFormInputFocus}
+                  markers={props.markers}
+                  onChange={props.onChange}
+                  readOnly={revTime !== null}
+                  schemaType={props.schemaType}
+                  value={displayed}
+                  margins={margins}
+                  compareValue={props.compareValue}
+                />
+              )}
 
-            {activeView.type === 'component' &&
-              createElement((activeView as any).component, {
-                document: {
-                  draft: props.draft,
-                  displayed: displayed || props.value || props.initialValue,
-                  historical: displayed,
-                  published: props.published,
-                },
-                documentId: props.documentId,
-                options: (activeView as any).options,
-                schemaType: props.schemaType,
-              })}
-          </ScrollContainer>
+              {activeView.type === 'component' &&
+                createElement((activeView as any).component, {
+                  document: {
+                    draft: props.draft,
+                    displayed: displayed || props.value || props.initialValue,
+                    historical: displayed,
+                    published: props.published,
+                  },
+                  documentId: props.documentId,
+                  options: (activeView as any).options,
+                  schemaType: props.schemaType,
+                })}
+            </ScrollContainer>
 
-          <div className={styles.portalContainer}>
-            <div className={styles.portal} ref={portalRef} />
+            <div className={styles.portalContainer}>
+              <div className={styles.portal} ref={portalRef} />
+            </div>
           </div>
-        </div>
+        </BoundaryElementProvider>
       </PortalProvider>
     </div>
   )
