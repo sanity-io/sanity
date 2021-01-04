@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
+import {resolveTypeName} from '../../../../utils/resolveTypeName'
 
 type Props = {value: any; onFocus?: () => void}
 export function ItemWithMissingType(props: Props) {
@@ -16,7 +17,7 @@ export function ItemWithMissingType(props: Props) {
     }
   }, [])
 
-  const typeName = value?._type || 'object'
+  const typeName = resolveTypeName(value)
   return (
     <Popover
       open={showDetails}
@@ -65,7 +66,7 @@ export function ItemWithMissingType(props: Props) {
           </Text>
           <Box marginLeft={2} flex={1}>
             <Text size={1}>
-              Item type <code>{value?._type || 'object'}</code> not defined for this list
+              Item type <code>{typeName}</code> not defined for this list
             </Text>
           </Box>
         </Flex>
