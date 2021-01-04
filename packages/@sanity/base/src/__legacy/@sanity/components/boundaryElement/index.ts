@@ -1,2 +1,2 @@
 export * from './BoundaryElementProvider'
-export * from './hooks'
+export * from './useBoundaryElement'
