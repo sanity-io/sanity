@@ -51,7 +51,9 @@ module.exports = async function validateAssetDocuments(docs, options) {
     })
   }
 
-  await pMap(assetDocs, ensureAssetUrlExists, {concurrency})
+  if (!options.allowFailingAssets) {
+    await pMap(assetDocs, ensureAssetUrlExists, {concurrency})
+  }
 }
 
 function getLocationFromDocument(doc) {
