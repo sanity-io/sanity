@@ -14,7 +14,7 @@ import getEmptyValue from './getEmptyValue'
 const dragHandle = <DragHandle />
 
 type Props = {
-  type: SchemaType
+  type?: SchemaType
   onChange: (event: PatchEvent) => void
   onRemove: (item: number) => void
   onEnterKey: (item: number) => void
@@ -36,7 +36,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   props: Props,
   ref: React.ForwardedRef<HTMLElement>
 ) {
-  const focusRef = React.useRef()
+  const focusRef = React.useRef<FormBuilderInput>(null)
   const {
     isSortable,
     value,
@@ -59,7 +59,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   const handleRemove = () => {
     onRemove(index)
   }
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       onEnterKey(index)
     }
@@ -79,7 +79,11 @@ export const ItemRow = React.forwardRef(function ItemRow(
       PatchEvent.from(
         patchEvent.patches.map((
           patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
-        ) => (patch.path.length === 0 && patch.type === 'unset' ? set(getEmptyValue(type)) : patch))
+        ) =>
+          patch.path.length === 0 && patch.type === 'unset' && type
+            ? set(getEmptyValue(type))
+            : patch
+        )
       ).prefixAll(index)
     )
   }
@@ -101,7 +105,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
               onFocus={onFocus}
               onBlur={onBlur}
               type={type}
-              readOnly={readOnly || type.readOnly}
+              readOnly={Boolean(readOnly || type.readOnly)}
               level={level}
               presence={presence}
               onKeyUp={handleKeyUp}
