@@ -1,9 +1,9 @@
 import React from 'react'
+import {Button} from '@sanity/ui'
 import Details from '../common/Details'
 import PatchEvent, {unset} from '../../PatchEvent'
+import {ActivateOnFocus} from '../../transitional/ActivateOnFocus'
 import styles from './styles/UnknownFields.css'
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
-import {Button} from '@sanity/ui'
 
 type Props = {
   fieldNames: string[]
@@ -27,38 +27,36 @@ export default class UnknownFields extends React.PureComponent<Props, {}> {
           Found {len === 1 ? <>an</> : len} unknown {len === 1 ? <>field</> : <>fields</>}
         </h2>
 
-        <div className={styles.content}>
-          <Details>
-            These are not defined in the current schema as valid fields for this value. This could
-            mean that the field has been removed, or that someone else has added it to their own
-            local schema that is not yet deployed.
-            {fieldNames.map((fieldName) => {
-              return (
-                <div key={fieldName}>
-                  <h4>{fieldName}</h4>
-                  <ActivateOnFocus>
-                    <pre className={styles.inspectValue}>
-                      {JSON.stringify(value[fieldName], null, 2)}
-                    </pre>
-                  </ActivateOnFocus>
-                  {readOnly ? (
-                    <div>
-                      This value is <em>read only</em> according to its enclosing schema type and
-                      cannot be unset. If you want to unset, make sure you remove the{' '}
-                      <strong>readOnly</strong> property from the enclosing type
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={() => this.handleUnsetClick(fieldName)}
-                      tone="critical"
-                      text={`Unset ${fieldName}`}
-                    />
-                  )}
-                </div>
-              )
-            })}
-          </Details>
-        </div>
+        <Details>
+          These are not defined in the current schema as valid fields for this value. This could
+          mean that the field has been removed, or that someone else has added it to their own local
+          schema that is not yet deployed.
+          {fieldNames.map((fieldName) => {
+            return (
+              <div key={fieldName}>
+                <h4>{fieldName}</h4>
+                <ActivateOnFocus>
+                  <pre className={styles.inspectValue}>
+                    {JSON.stringify(value[fieldName], null, 2)}
+                  </pre>
+                </ActivateOnFocus>
+                {readOnly ? (
+                  <div>
+                    This value is <em>read only</em> according to its enclosing schema type and
+                    cannot be unset. If you want to unset, make sure you remove the{' '}
+                    <strong>readOnly</strong> property from the enclosing type
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => this.handleUnsetClick(fieldName)}
+                    tone="critical"
+                    text={`Unset ${fieldName}`}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </Details>
       </div>
     )
   }
