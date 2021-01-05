@@ -2,11 +2,13 @@ import React, {useCallback} from 'react'
 import {Box, Card, Checkbox, Flex, Grid, Stack, Switch, Text} from '@sanity/ui'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {BooleanSchemaType} from '@sanity/types'
-import PatchEvent, {set} from '../PatchEvent'
-import {Props} from './types'
 import {useId} from '@reach/auto-id'
+import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
+import {FieldPresence} from '@sanity/base/presence'
+import PatchEvent, {set} from '../PatchEvent'
+import {ValidationStatus} from '../transitional/ValidationStatus'
+import {Props} from './types'
 
-// Todo: display validation and field status
 const BooleanInput = React.forwardRef(
   (props: Props<boolean, BooleanSchemaType>, ref: React.ForwardedRef<HTMLInputElement>) => {
     const {onChange} = props
@@ -28,35 +30,41 @@ const BooleanInput = React.forwardRef(
 
     return (
       <ChangeIndicator>
-        <Grid gap={6}>
-          <Card as="label" border radius={1} padding={4}>
-            <Flex align="center">
-              <Input
-                id={inputId}
-                ref={ref}
-                label={type.title}
-                readOnly={Boolean(readOnly)}
-                onChange={handleChange}
-                onFocus={onFocus}
-                indeterminate={indeterminate}
-                checked={checked}
-                content={type.description}
-              />
-              <Box marginLeft={4}>
-                <Stack space={2}>
-                  <Text size={1} weight="semibold">
-                    {type.title}
+        <Card as="label" border radius={1} padding={4}>
+          <Flex align="center">
+            <Input
+              id={inputId}
+              ref={ref}
+              label={type.title}
+              readOnly={Boolean(readOnly)}
+              onChange={handleChange}
+              onFocus={onFocus}
+              indeterminate={indeterminate}
+              checked={checked}
+              content={type.description}
+            />
+            <Box marginLeft={4} flex={1}>
+              <Stack space={2}>
+                <Text size={1} weight="semibold">
+                  {type.title}
+                </Text>
+                {type.description && (
+                  <Text muted size={1}>
+                    {type.description}
                   </Text>
-                  {type.description && (
-                    <Text muted size={1}>
-                      {type.description}
-                    </Text>
-                  )}
-                </Stack>
-              </Box>
-            </Flex>
-          </Card>
-        </Grid>
+                )}
+              </Stack>
+            </Box>
+            <Box>
+              <ValidationStatus markers={markers} />
+            </Box>
+            <Box>
+              <FieldStatus maxAvatars={1} position="top">
+                <FieldPresence maxAvatars={1} presence={presence} />
+              </FieldStatus>
+            </Box>
+          </Flex>
+        </Card>
       </ChangeIndicator>
     )
   }
