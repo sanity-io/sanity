@@ -9,8 +9,8 @@ import {
 } from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import * as PathUtils from '@sanity/util/paths'
-import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
-import FormField from 'part:@sanity/components/formfields/default'
+import {TextInput, Button, Box, Card} from '@sanity/ui'
+import {GenerateIcon} from '@sanity/icons'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
@@ -108,37 +108,35 @@ const SlugInput = React.forwardRef(function SlugInput(
         __unstable_presence={presence}
         inputId={inputId}
       >
-        <Stack space={3}>
-          <Flex>
-            <Box flex={1}>
-              <TextInput
-                id={inputId}
-                ref={forwardedRef}
-                customValidity={errors.length > 0 ? errors[0].item.message : ''}
-                disabled={isUpdating}
-                onChange={React.useCallback((event) => updateSlug(event.currentTarget.value), [
-                  updateSlug,
-                ])}
-                value={value?.current || ''}
-                readOnly={readOnly}
-              />
-              {generateState?.status === 'error' && (
-                <Card padding={2} tone="critical">
-                  {generateState.error.message}
-                </Card>
-              )}
-            </Box>
-            <Box marginLeft={1}>
+        <TextInput
+          id={inputId}
+          ref={forwardedRef}
+          customValidity={errors.length > 0 ? errors[0].item.message : ''}
+          disabled={isUpdating}
+          onChange={React.useCallback((event) => updateSlug(event.currentTarget.value), [
+            updateSlug,
+          ])}
+          suffix={
+            <Box padding={1} style={{lineHeight: 0}}>
               <Button
-                mode="ghost"
+                icon={GenerateIcon}
+                mode="bleed"
+                padding={2}
                 type="button"
                 disabled={readOnly || isUpdating}
                 onClick={handleGenerateSlug}
-                text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+                title="Generate"
               />
             </Box>
-          </Flex>
-        </Stack>
+          }
+          value={value?.current || ''}
+          readOnly={readOnly}
+        />
+        {generateState?.status === 'error' && (
+          <Card padding={2} tone="critical">
+            {generateState.error.message}
+          </Card>
+        )}
       </FormField>
     </ChangeIndicatorCompareValueProvider>
   )
