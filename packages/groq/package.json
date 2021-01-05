@@ -16,19 +16,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/groq"
   },
   "keywords": [
-    "groq",
-    "tagged",
-    "template",
-    "literal",
-    "string",
     "sanity",
     "cms",
     "headless",
     "realtime",
-    "content"
+    "content",
+    "groq",
+    "tagged",
+    "template",
+    "literal",
+    "string"
   ],
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

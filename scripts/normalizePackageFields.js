@@ -12,7 +12,8 @@ transformPkgs((pkgManifest) => {
     engines.node = supportedNodeVersionRange
   }
 
-  return Object.assign({}, pkgManifest, {
+  return {
+    ...pkgManifest,
     engines,
     author: 'Sanity.io <hello@sanity.io>',
     bugs: {
@@ -24,6 +25,7 @@ transformPkgs((pkgManifest) => {
     repository: {
       type: 'git',
       url: 'git+https://github.com/sanity-io/sanity.git',
+      directory: `packages/${pkgManifest.name}`,
     },
-  })
+  }
 })

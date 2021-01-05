@@ -10,7 +10,12 @@
     "start": "sanity start --port 4000"
   },
   "keywords": [
-    "sanity"
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "design-studio"
   ],
   "dependencies": {
     "@sanity/base": "2.1.3",
@@ -31,5 +36,14 @@
   },
   "devDependencies": {
     "typescript-plugin-css-modules": "^2.4.0"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/design-studio"
   }
 }
