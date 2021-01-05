@@ -1,7 +1,6 @@
+import {Flex, Layer, Spinner} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-
-import {Layer, Flex, Spinner} from '@sanity/ui'
 
 const FullscreenLayer = styled(Layer)`
   position: absolute;
@@ -9,12 +8,12 @@ const FullscreenLayer = styled(Layer)`
   height: 100%;
 `
 
-const FullscreenSpinner = () => (
-  <FullscreenLayer>
-    <Flex height="fill" align="center" justify="center">
-      <Spinner />
-    </Flex>
-  </FullscreenLayer>
-)
-
-export {FullscreenSpinner}
+export function FullscreenSpinner() {
+  return (
+    <FullscreenLayer>
+      <Flex height="fill" align="center" justify="center">
+        <Spinner />
+      </Flex>
+    </FullscreenLayer>
+  )
+}
