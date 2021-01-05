@@ -111,19 +111,17 @@ export function EditDialog(props: Props) {
   }
 
   return (
-    <Layer>
-      <Dialog
-        width={1}
-        id={value._key}
-        onClose={onClose}
-        key={value._key}
-        header={title}
-        position="absolute"
-      >
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box padding={4}>{content}</Box>
-        </PresenceOverlay>
-      </Dialog>
-    </Layer>
+    <Dialog
+      width={1}
+      id={value._key}
+      onClose={onClose}
+      key={value._key}
+      header={title}
+      position="absolute"
+    >
+      <PresenceOverlay margins={[0, 0, 1, 0]}>
+        <Box padding={4}>{content}</Box>
+      </PresenceOverlay>
+    </Dialog>
   )
 }

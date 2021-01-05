@@ -12,13 +12,14 @@ import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/ico
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {Button} from '@sanity/ui'
-import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/types'
-import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
-import {FormBuilderInput} from '../../FormBuilderInput'
-import UploadPlaceholder from '../common/UploadPlaceholder'
+import {Box, Button} from '@sanity/ui'
+import {PresenceOverlay} from '@sanity/base/presence'
+import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import WithMaterializedReference from '../../../utils/WithMaterializedReference'
+import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
+import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
+import {FormBuilderInput} from '../../../FormBuilderInput'
+import UploadPlaceholder from '../../common/UploadPlaceholder'
 import styles from './FileInput.css'
 
 type FieldT = {
@@ -233,8 +234,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderAdvancedEdit(fields: Array<FieldT>) {
     return (
-      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        <div>{this.renderFields(fields)}</div>
+      <Dialog title={<>Edit details</>} width={1} onClose={this.handleStopAdvancedEdit}>
+        <PresenceOverlay margins={[0, 0, 1, 0]}>
+          <Box padding={4}>{this.renderFields(fields)}</Box>
+        </PresenceOverlay>
       </Dialog>
     )
   }
