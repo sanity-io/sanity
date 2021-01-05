@@ -1,8 +1,6 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["src/**/*"],
+  "extends": "./tsconfig.strict",
   "compilerOptions": {
-    "composite": true,
     // todo: we need to disable strict in a transition phase and should be removed eventually
     "noImplicitAny": false,
     "strictNullChecks": false,
@@ -10,20 +8,6 @@
 
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
-    "noImplicitThis": false,
-
-    "jsx": "react",
-
-    "rootDir": "./src",
-    "outDir": "./lib",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "customMatcher": "\\.css$"
-        }
-      }
-    ]
-  },
-  "references": [{"path": "../imagetool"}, {"path": "../types"}, {"path": "../base"}]
+    "noImplicitThis": false
+  }
 }
