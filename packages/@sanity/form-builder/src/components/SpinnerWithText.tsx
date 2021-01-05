@@ -1,15 +1,15 @@
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
 import React from 'react'
 
-import {Flex, Spinner, Text, Box} from '@sanity/ui'
+export function SpinnerWithText(props: {text: string}) {
+  const {text} = props
 
-const SpinnerWithText: React.FC<{text: string}> = ({text}) => (
-  <Flex direction="row" justify="center" align="center">
-    <Spinner />
-
-    <Box padding={2}>
-      <Text>{text}</Text>
-    </Box>
-  </Flex>
-)
-
-export {SpinnerWithText}
+  return (
+    <Flex direction="row" justify="center" align="center">
+      <Spinner />
+      <Box marginLeft={2}>
+        <Text>{text}</Text>
+      </Box>
+    </Flex>
+  )
+}
