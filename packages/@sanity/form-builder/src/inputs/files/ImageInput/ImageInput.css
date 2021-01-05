@@ -58,7 +58,7 @@
 }
 
 .field {
-  composes: root from '../ObjectInput/styles/Field.css';
+  composes: root from '../../ObjectInput/styles/Field.css';
 }
 
 .progress {

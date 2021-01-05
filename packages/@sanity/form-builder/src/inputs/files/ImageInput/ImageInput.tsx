@@ -34,19 +34,19 @@ import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset
 import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Package files
-import {FormBuilderInput} from '../../FormBuilderInput'
+import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
   Uploader,
   UploaderResolver,
   UploadOptions,
-} from '../../sanity/uploads/types'
+} from '../../../sanity/uploads/types'
 import ImageToolInput from '../ImageToolInput'
-import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import UploadPlaceholder from '../common/UploadPlaceholder'
-import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {FormFieldSet} from '../../components/FormField'
+import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import UploadPlaceholder from '../../common/UploadPlaceholder'
+import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import WithMaterializedReference from '../../../utils/WithMaterializedReference'
+import {FormFieldSet} from '../../../components/FormField'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
