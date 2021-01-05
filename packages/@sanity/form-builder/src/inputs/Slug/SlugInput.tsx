@@ -14,7 +14,7 @@ import {useId} from '@reach/auto-id'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
-import {FormField} from '../../transitional/FormField'
+import {FormField} from '../../components/FormField'
 import {slugify} from './utils/slugify'
 import {useAsyncCallback} from './utils/useAsync'
 
@@ -100,12 +100,12 @@ const SlugInput = React.forwardRef(function SlugInput(
       compareValue={compareValue?.current}
     >
       <FormField
-        label={type.title}
+        title={type.title}
         description={type.description}
         level={level}
         markers={markers}
         presence={presence}
-        labelFor={inputId}
+        htmlFor={inputId}
       >
         <Stack space={3}>
           <Flex>

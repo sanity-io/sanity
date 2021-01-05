@@ -1,4 +1,4 @@
-import {Fieldset} from '../transitional/Fieldset'
+import {FormFieldSet} from '../components/FormField'
 import {createUploadTarget} from '../inputs/common/UploadTarget/createUploadTarget'
 
-export default createUploadTarget(Fieldset)
+export default createUploadTarget(FormFieldSet)

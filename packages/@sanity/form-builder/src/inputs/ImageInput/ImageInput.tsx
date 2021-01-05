@@ -46,7 +46,7 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import {Fieldset} from '../../transitional/Fieldset'
+import {FormFieldSet} from '../../components/FormField'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
@@ -565,7 +565,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
-    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
@@ -582,7 +582,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         presence={presence.filter(
           (item) => item.path[0] === '$' || isInside.includes(item.identity)
         )}
-        legend={type.title}
+        title={type.title}
         description={type.description}
         level={level}
         onFocus={this.handleFocus}
