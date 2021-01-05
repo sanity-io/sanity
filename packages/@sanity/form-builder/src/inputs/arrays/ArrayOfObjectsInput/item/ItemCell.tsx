@@ -13,7 +13,7 @@ import {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle grid />
 
-export const ItemCell = React.forwardRef(function RegularItem(
+export const ItemCell = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
