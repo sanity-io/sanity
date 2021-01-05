@@ -1,5 +1,5 @@
 import React from 'react'
-import ImageInput, {Props} from '../../inputs/ImageInput'
+import ImageInput, {Props} from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
 import withDocument from '../../utils/withDocument'
 import {materializeReference} from './client-adapters/assets'

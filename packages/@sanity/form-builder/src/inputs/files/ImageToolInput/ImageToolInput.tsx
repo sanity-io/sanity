@@ -5,9 +5,9 @@ import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
-import PatchEvent, {set} from '../../PatchEvent'
 
-import {FormField} from '../../components/FormField'
+import {FormField} from '../../../components/FormField'
+import PatchEvent, {set} from '../../../PatchEvent'
 import styles from './styles/ImageToolInput.css'
 
 interface Value {
