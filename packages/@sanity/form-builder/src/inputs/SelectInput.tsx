@@ -5,7 +5,7 @@ import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../transitional/FormField'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 function toSelectItem(
@@ -38,11 +38,11 @@ const SelectInput = React.forwardRef(function SelectInput(
   )
   return (
     <FormField
-      labelFor={inputId}
-      markers={markers}
+      htmlFor={inputId}
       level={level}
-      label={type.title}
+      title={type.title}
       description={type.description}
+      markers={markers}
       presence={presence}
     >
       {isRadio ? (

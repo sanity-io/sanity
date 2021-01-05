@@ -7,7 +7,7 @@ import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 import PatchEvent, {set} from '../../PatchEvent'
 
-import {FormField} from '../../transitional/FormField'
+import {FormField} from '../../components/FormField'
 import styles from './styles/ImageToolInput.css'
 
 interface Value {
@@ -93,7 +93,7 @@ export default class ImageToolInput extends React.Component<
         value={value?.current}
         compareValue={compareValue}
       >
-        <FormField label="Hotspot &amp; crop" level={level}>
+        <FormField title="Hotspot &amp; crop" level={level}>
           <div className={styles.imageToolContainer}>
             <div>
               <div>

@@ -3,7 +3,7 @@ import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../transitional/FormField'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const UrlInput = React.forwardRef(function StringInput(
@@ -16,12 +16,12 @@ const UrlInput = React.forwardRef(function StringInput(
   const errors = validation.filter((marker) => marker.level === 'error')
   return (
     <FormField
-      markers={markers}
       level={level}
-      label={type.title}
+      markers={markers}
+      title={type.title}
       description={type.description}
       presence={presence}
-      labelFor={inputId}
+      htmlFor={inputId}
     >
       <TextInput
         type="url"

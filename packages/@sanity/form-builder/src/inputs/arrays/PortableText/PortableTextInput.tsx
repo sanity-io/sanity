@@ -17,7 +17,7 @@ import {
 import {Subject} from 'rxjs'
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
-import {FormField} from '../../../transitional/FormField'
+import {FormField} from '../../../components/FormField'
 import type {Patch} from '../../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
@@ -274,7 +274,7 @@ export default withPatchSubscriber(
       return (
         <FormField
           description={type.description}
-          label={type.title}
+          title={type.title}
           level={level}
           markers={markers}
           presence={presence}

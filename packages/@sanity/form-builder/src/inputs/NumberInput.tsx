@@ -4,7 +4,7 @@ import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../transitional/FormField'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const NumberInput = React.forwardRef(function NumberInput(
@@ -20,11 +20,11 @@ const NumberInput = React.forwardRef(function NumberInput(
   const onlyPositiveNumber = minRule && minRule.constraint >= 0
   return (
     <FormField
-      markers={markers}
       level={level}
-      label={type.title}
+      markers={markers}
+      title={type.title}
       description={type.description}
-      labelFor={id}
+      htmlFor={id}
       presence={presence}
     >
       <TextInput
