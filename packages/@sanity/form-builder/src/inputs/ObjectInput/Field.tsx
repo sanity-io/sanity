@@ -2,7 +2,7 @@ import React from 'react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {Fieldset} from '../../transitional/Fieldset'
+import {FormFieldSet} from '../../components/FormField'
 import styles from './styles/Field.css'
 
 type FieldProps = {
@@ -64,7 +64,7 @@ export default class Field extends React.PureComponent<FieldProps> {
       if (expectedType !== actualType && !isCompatible) {
         return (
           <div className={styles.root}>
-            <Fieldset legend={field.type.title} level={level} presence={presence}>
+            <FormFieldSet title={field.type.title} level={level} presence={presence}>
               <InvalidValue
                 value={value}
                 onChange={this.handleChange}
@@ -72,7 +72,7 @@ export default class Field extends React.PureComponent<FieldProps> {
                 actualType={actualType}
                 ref={this.setInput}
               />
-            </Fieldset>
+            </FormFieldSet>
           </div>
         )
       }

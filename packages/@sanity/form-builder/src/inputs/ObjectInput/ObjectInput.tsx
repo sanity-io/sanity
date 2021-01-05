@@ -3,7 +3,7 @@ import {Marker, ObjectSchemaTypeWithOptions, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
-import {Fieldset} from '../../transitional/Fieldset'
+import {FormFieldSet} from '../../components/FormField'
 import Field from './Field'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
@@ -145,13 +145,13 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
-        <Fieldset
-          legend={fieldset.title}
+        <FormFieldSet
+          title={fieldset.title}
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={isCollapsed}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
           presence={childPresence}
           onFocus={onFocus}
           changeIndicator={false}
@@ -160,7 +160,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
           })}
-        </Fieldset>
+        </FormFieldSet>
       </div>
     )
   }
@@ -235,21 +235,21 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div className={styles.root}>
-        <Fieldset
+        <FormFieldSet
           level={level}
-          legend={type.title}
+          title={type.title}
           description={type.description}
           columns={columns}
-          isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={isCollapsed}
-          markers={markers}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
           presence={presence}
           onFocus={onFocus}
           changeIndicator={false}
+          markers={markers}
         >
           {renderedFields}
           {renderedUnknownFields}
-        </Fieldset>
+        </FormFieldSet>
       </div>
     )
   }

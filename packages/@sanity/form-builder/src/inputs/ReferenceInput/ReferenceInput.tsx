@@ -15,7 +15,6 @@ import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indic
 import {LinkIcon} from '@sanity/icons'
 import {IntentLink} from 'part:@sanity/base/router'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
-import FormField from 'part:@sanity/components/formfields/default'
 import {Button} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import Preview from '../../Preview'
@@ -23,6 +22,7 @@ import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {FormField} from '../../components/FormField'
 import styles from './styles/ReferenceInput.css'
 
 type SearchHit = {
@@ -266,9 +266,9 @@ export default withValuePath(
             compareValue={compareValue?._ref}
           >
             <FormField
-              labelFor={this._inputId}
+              htmlFor={this._inputId}
               markers={markers}
-              label={type.title}
+              title={type.title}
               level={level}
               description={type.description}
               presence={presence}

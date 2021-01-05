@@ -6,7 +6,7 @@ import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
-import {FormField} from '../../transitional/FormField'
+import {FormField} from '../../components/FormField'
 import {DateTimeInput} from './base/DateTimeInput'
 import {format, parse} from './legacy'
 import {CommonProps} from './types'
@@ -100,11 +100,11 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
             ]
           : markers
       }
-      label={title}
+      title={title}
       level={level}
       description={description}
       presence={presence}
-      labelFor={id}
+      htmlFor={id}
     >
       {readOnly ? (
         <TextInput value={textInputValue} disabled />

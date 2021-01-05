@@ -5,7 +5,7 @@ import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
-import {Fieldset} from '../../../transitional/Fieldset'
+import {FormFieldSet} from '../../../components/FormField'
 import {Item, List} from '../common/list'
 import {ArrayFunctions} from '../../../legacyImports'
 import getEmptyValue from './getEmptyValue'
@@ -144,16 +144,16 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     const isSortable = get(type, 'options.sortable') !== false
 
     return (
-      <Fieldset
-        legend={type?.title}
+      <FormFieldSet
+        title={type?.title}
         description={type?.description}
         level={level - 1}
         tabIndex={0}
         onFocus={onFocus}
         ref={this.setElement}
-        markers={markers}
         presence={presence.filter((item) => item.path[0] === '$' || item.path.length === 0)}
         changeIndicator={false}
+        markers={markers}
       >
         <Box>
           {value && value.length > 0 && (
@@ -200,7 +200,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
             />
           </Box>
         </Box>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 }

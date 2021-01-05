@@ -6,7 +6,7 @@ import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../../transitional/IntentButton'
 
-import {ValidationStatus} from '../../../../transitional/ValidationStatus'
+import {FormFieldValidationStatus} from '../../../../components/FormField'
 import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
@@ -61,7 +61,11 @@ export const ItemCell = React.forwardRef(function RegularItem(
         <Box flex={1}>{(!readOnly && isSortable && dragHandle) || ' '}</Box>
         {value._key && (
           <Box>
-            <ValidationStatus markers={validation} placement="bottom" showSummary={!value._ref} />
+            <FormFieldValidationStatus
+              markers={validation}
+              placement="bottom"
+              showSummary={!value._ref}
+            />
           </Box>
         )}
         {value._ref && (
