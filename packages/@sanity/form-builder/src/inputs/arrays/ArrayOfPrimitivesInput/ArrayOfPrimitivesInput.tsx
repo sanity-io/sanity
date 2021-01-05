@@ -3,6 +3,7 @@ import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {FormFieldSet} from '../../../components/FormField'
@@ -40,12 +41,12 @@ type Props = {
   focusPath: Path
   readOnly: boolean | null
   markers: Marker[]
-  presence: any
+  presence: FormFieldPresence[]
 }
 type Focusable = {focus: () => void}
 
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
-  _element: Focusable | null
+  _element: Focusable | null = null
   _lastAddedIndex = -1
 
   set(nextValue: Primitive[]) {
@@ -74,7 +75,11 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   insertAt(index: number, type: SchemaType) {
     const {value = [], onFocus} = this.props
-    this.set(insertAt(value, index, getEmptyValue(type)))
+    const emptyValue = getEmptyValue(type)
+    if (emptyValue === undefined) {
+      throw new Error(`Cannot create empty primitive value from ${type.name}`)
+    }
+    this.set(insertAt(value, index, emptyValue))
     onFocus([index + 1])
   }
 
@@ -88,8 +93,11 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   handleItemEnterKey = (index: number) => {
-    this.insertAt(index, this.props.type.of[0])
-    this._lastAddedIndex = index + 1
+    const firstType = this.props.type?.of[0]
+    if (firstType) {
+      this.insertAt(index, firstType)
+      this._lastAddedIndex = index + 1
+    }
   }
 
   handleItemEscapeKey = (index: number) => {
@@ -107,7 +115,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   getMemberType(typeName: string) {
     const {type} = this.props
-    return type.of.find(
+    return type?.of.find(
       (memberType) => memberType.name === typeName || memberType.jsonType === typeName
     )
   }

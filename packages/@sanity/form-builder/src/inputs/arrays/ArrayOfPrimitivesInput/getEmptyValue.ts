@@ -1,4 +1,6 @@
-export default function getEmptyValue(type) {
+import {SchemaType} from '@sanity/types'
+
+export default function getEmptyValue(type: SchemaType) {
   switch (type.jsonType) {
     case 'string': {
       return ''
