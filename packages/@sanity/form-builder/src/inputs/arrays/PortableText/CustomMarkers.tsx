@@ -1,6 +1,6 @@
 import React from 'react'
-import {Tooltip} from 'part:@sanity/components/tooltip'
 import {CommentIcon} from '@sanity/icons'
+import {Box, Text, Tooltip} from '@sanity/ui'
 import {Marker} from '@sanity/types'
 
 type Props = {
@@ -27,7 +27,13 @@ export default class Markers extends React.Component<Props> {
     }, click to log to console.`
 
     return (
-      <Tooltip content={text}>
+      <Tooltip
+        content={
+          <Box padding={3}>
+            <Text size={1}>{text}</Text>
+          </Box>
+        }
+      >
         <CommentIcon onClick={this.handleCustomMarkerClick} />
       </Tooltip>
     )
