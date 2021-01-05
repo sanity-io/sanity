@@ -1,13 +1,15 @@
 import React from 'react'
 import {get} from 'lodash'
 import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import {Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
 import PatchEvent, {set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import Warning from '../../Warning'
 import {Fieldset} from '../../../transitional/Fieldset'
-import Item from './Item'
-import styles from './styles/OptionsArrayInput.css'
+import Preview from '../../../Preview'
+import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
+import {Item, List} from '../common/list'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 
 type Focusable = {focus: () => void}
@@ -55,7 +57,7 @@ type OptionsArrayInputProps = {
   level?: number
   readOnly?: boolean
   onChange?: (...args: any[]) => any
-  presence: any
+  presence: FormFieldPresence[]
   onFocus: (path: Path) => void
   onBlur: () => void
 }
@@ -98,8 +100,8 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     }
   }
 
-  handleFocus = () => {
-    this.props.onFocus([FOCUS_TERMINATOR])
+  handleFocus = (index: number) => {
+    this.props.onFocus([index])
   }
 
   renderInvalidOptions = (options) => {
@@ -121,7 +123,10 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
   render() {
     const {type, markers, value, level, readOnly, presence, onFocus, onBlur} = this.props
     const options = type.options?.list || []
-    const direction = type.options?.direction // vertical and horizontal
+
+    // note: direction was never documented and makes more sense to use "grid" for it too
+    const isGrid = type.options?.direction === 'horizontal' || type.options?.layout === 'grid'
+
     return (
       <Fieldset
         ref={this.setElement}
@@ -130,41 +135,43 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         markers={markers}
         presence={presence}
         level={level}
-        onClick={this.handleFocus}
         changeIndicator={changeIndicatorOptions}
       >
-        <div>
-          <div
-            className={
-              direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
-            }
-          >
-            {options.map((option, index) => {
-              const optionType = this.getMemberTypeOfItem(option)
-              if (!optionType) {
-                return null
-              }
-              const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
-              return (
-                <div
-                  className={direction === 'vertical' ? styles.itemVertical : undefined}
-                  key={isTitledListValue(option) ? option._key || index : index}
-                >
-                  <Item
-                    type={optionType}
-                    readOnly={readOnly}
-                    value={option}
+        <List isGrid={isGrid} isSortable>
+          {options.map((option, index) => {
+            const optionType = this.getMemberTypeOfItem(option)
+            const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
+            const disabled = !optionType || readOnly || optionType?.readOnly
+            return (
+              <Item index={index} isGrid={isGrid} key={index}>
+                <Flex align="center" as="label" muted={disabled}>
+                  <Checkbox
+                    disabled={disabled}
                     checked={checked}
-                    onChange={this.handleChange}
+                    onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
+                    onFocus={() => this.handleFocus(index)}
                     onBlur={onBlur}
-                    onFocus={onFocus}
                   />
-                </div>
-              )
-            })}
-          </div>
-          {this.renderInvalidOptions(options)}
-        </div>
+                  <Box marginLeft={2}>
+                    {optionType &&
+                      (isTitledListValue(optionType) ? (
+                        <Text>{option.title}</Text>
+                      ) : (
+                        <Preview
+                          layout="grid"
+                          type={optionType}
+                          value={resolveValueWithLegacyOptionsSupport(option)}
+                        />
+                      ))}
+                    {!optionType && (
+                      <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
+                    )}
+                  </Box>
+                </Flex>
+              </Item>
+            )
+          })}
+        </List>
       </Fieldset>
     )
   }
