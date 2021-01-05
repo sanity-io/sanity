@@ -25,6 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/create-sanity"
   }
 }
