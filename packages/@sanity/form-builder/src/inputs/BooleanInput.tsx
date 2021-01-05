@@ -1,12 +1,12 @@
 import React, {useCallback} from 'react'
-import {Box, Card, Checkbox, Flex, Grid, Stack, Switch, Text} from '@sanity/ui'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {BooleanSchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import {ValidationStatus} from '../transitional/ValidationStatus'
+import {FormFieldHeaderText} from '../components/FormField/FormFieldHeaderText'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(
@@ -30,33 +30,28 @@ const BooleanInput = React.forwardRef(
 
     return (
       <ChangeIndicator>
-        <Card as="label" border radius={1} padding={4}>
-          <Flex align="center">
-            <Input
-              id={inputId}
-              ref={ref}
-              label={type.title}
-              readOnly={Boolean(readOnly)}
-              onChange={handleChange}
-              onFocus={onFocus}
-              indeterminate={indeterminate}
-              checked={checked}
-              content={type.description}
-            />
-            <Box marginLeft={4} flex={1}>
-              <Stack space={2}>
-                <Text size={1} weight="semibold">
-                  {type.title}
-                </Text>
-                {type.description && (
-                  <Text muted size={1}>
-                    {type.description}
-                  </Text>
-                )}
-              </Stack>
+        <Card as="label" border radius={1} padding={3}>
+          <Flex>
+            <Box style={{lineHeight: 0}}>
+              <Input
+                id={inputId}
+                ref={ref}
+                label={type.title}
+                readOnly={Boolean(readOnly)}
+                onChange={handleChange}
+                onFocus={onFocus}
+                indeterminate={indeterminate}
+                checked={checked}
+                content={type.description}
+                style={{margin: -4}}
+              />
             </Box>
-            <Box>
-              <ValidationStatus markers={markers} />
+            <Box marginLeft={3} flex={1}>
+              <FormFieldHeaderText
+                description={type.description}
+                markers={markers}
+                title={type.title}
+              />
             </Box>
             <Box>
               <FieldStatus maxAvatars={1} position="top">
