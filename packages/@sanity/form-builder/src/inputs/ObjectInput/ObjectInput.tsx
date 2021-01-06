@@ -156,6 +156,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           onFocus={onFocus}
           changeIndicator={false}
           markers={markers}
+          tabIndex={0}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -246,6 +247,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           onFocus={onFocus}
           changeIndicator={false}
           markers={markers}
+          tabIndex={0}
         >
           {renderedFields}
           {renderedUnknownFields}
