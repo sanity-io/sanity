@@ -49,7 +49,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
-      <div data-ui="FormFieldValidationStatus">
+      <div>
         <Text muted size={fontSize} weight="semibold" style={{color: statusColor}}>
           {createElement(statusIcon)}
         </Text>
@@ -67,7 +67,7 @@ function FormFieldValidationStatusItem(props: {
   const statusColor = item.type === 'error' ? color.red[500].hex : color.yellow[500].hex
 
   return (
-    <Flex data-ui="FormFieldValidationStatusItem">
+    <Flex>
       <Box marginRight={2}>
         <Text size={fontSize} style={{color: statusColor}}>
           {createElement(statusIcon)}
@@ -104,7 +104,7 @@ function FormFieldValidationSummary({
   const hasBoth = hasErrors && hasWarnings
 
   return (
-    <Text data-ui="FormFieldValidationSummary" size={fontSize}>
+    <Text size={fontSize}>
       {errorText || ''}
       {hasBoth && <> and </>}
       {warningText || ''}

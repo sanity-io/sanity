@@ -39,12 +39,7 @@ export function FormField(props: FormFieldProps) {
   }
 
   return (
-    <Stack
-      data-level={level}
-      data-ui="FormField"
-      space={1}
-      // style={{outline: '1px solid red'}}
-    >
+    <Stack data-level={level} space={1}>
       <FormFieldHeader
         description={description}
         htmlFor={htmlFor}

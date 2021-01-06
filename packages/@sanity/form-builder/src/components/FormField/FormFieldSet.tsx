@@ -95,7 +95,12 @@ export const FormFieldSet = forwardRef(
     }, [collapsedProp])
 
     return (
-      <Box data-level={level} data-ui="FormFieldSet" {...restProps}>
+      <Box
+        // @todo
+        // as="fieldset"
+        data-level={level}
+        {...restProps}
+      >
         <Box paddingY={2}>
           <Stack space={2}>
             <Flex>
