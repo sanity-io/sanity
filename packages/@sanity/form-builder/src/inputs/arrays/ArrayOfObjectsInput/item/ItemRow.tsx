@@ -63,8 +63,8 @@ export const ItemRow = React.forwardRef(function RegularItem(
             </Box>
           )}
 
-          {!readOnly && (
-            <Box marginLeft={1}>
+          {!readOnly && validation.length > 0 && (
+            <Box marginLeft={1} paddingX={1} paddingY={3}>
               <FormFieldValidationStatus markers={validation} showSummary={!value._ref} />
             </Box>
           )}
@@ -80,6 +80,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
               <ConfirmDeleteButton placement="left" title="Remove item" onConfirm={onRemove} />
             </Box>
           )}
+
           {!value._key && (
             <Box marginLeft={1}>
               <Tooltip

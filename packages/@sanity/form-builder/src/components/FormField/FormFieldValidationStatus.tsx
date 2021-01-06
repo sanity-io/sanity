@@ -32,15 +32,13 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     <Tooltip
       content={
         <Stack padding={3} space={3}>
-          {showSummary && (
-            <FormFieldValidationSummary fontSize={fontSize} markers={validationMarkers} />
-          )}
+          {showSummary && <FormFieldValidationSummary markers={validationMarkers} />}
 
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem fontSize={fontSize} item={item} key={itemIndex} />
+                <FormFieldValidationStatusItem item={item} key={itemIndex} />
               ))}
             </>
           )}
@@ -58,23 +56,20 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   )
 }
 
-function FormFieldValidationStatusItem(props: {
-  fontSize?: number | number[]
-  item: FormFieldValidation
-}) {
-  const {fontSize, item} = props
+function FormFieldValidationStatusItem(props: {item: FormFieldValidation}) {
+  const {item} = props
   const statusIcon = item.type === 'error' ? ErrorOutlineIcon : WarningOutlineIcon
   const statusColor = item.type === 'error' ? color.red[500].hex : color.yellow[500].hex
 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={fontSize} style={{color: statusColor}}>
+        <Text size={1} style={{color: statusColor}}>
           {createElement(statusIcon)}
         </Text>
       </Box>
       <Box flex={1}>
-        <Text muted size={fontSize}>
+        <Text muted size={1}>
           {item.label}
         </Text>
       </Box>
@@ -82,13 +77,7 @@ function FormFieldValidationStatusItem(props: {
   )
 }
 
-function FormFieldValidationSummary({
-  fontSize,
-  markers,
-}: {
-  fontSize?: number | number[]
-  markers: ValidationMarker[]
-}) {
+function FormFieldValidationSummary({markers}: {markers: ValidationMarker[]}) {
   const errorMarkers = markers.filter(isValidationErrorMarker)
   const warningMarkers = markers.filter(isValidationWarningMarker)
   const errorLen = errorMarkers.length
@@ -104,7 +93,7 @@ function FormFieldValidationSummary({
   const hasBoth = hasErrors && hasWarnings
 
   return (
-    <Text size={fontSize}>
+    <Text muted size={1}>
       {errorText || ''}
       {hasBoth && <> and </>}
       {warningText || ''}
