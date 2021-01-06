@@ -1,7 +1,7 @@
 import client from 'part:@sanity/base/client'
 import {observePaths} from 'part:@sanity/base/preview'
 import {mergeMap, map, catchError} from 'rxjs/operators'
-import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
+import {Observable, of as observableOf} from 'rxjs'
 import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/types'
@@ -12,11 +12,13 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
   const {label, title, description, creditLine, source} = options
-  return observableFrom(hashFile(file)).pipe(
-    catchError((
-      error // ignore if hashing fails for some reason
-    ) => observableOf(null)),
+  return hashFile(file).pipe(
+    catchError(() =>
+      // ignore if hashing fails for some reason
+      observableOf(null)
+    ),
     mergeMap((hash) =>
+      // note: the sanity api will still dedupe unique files, but this saves us from uploading the asset file entirely
       hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null)
     ),
     mergeMap((existing: any) => {
@@ -39,7 +41,7 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
           source,
         })
         .pipe(
-          map((event: any) =>
+          map((event) =>
             event.type === 'response'
               ? {
                   // rewrite to a 'complete' event
@@ -79,22 +81,31 @@ function fetchExisting(type, hash) {
   })
 }
 
-function readFile(file): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
+function readFile(file): Observable<ArrayBuffer> {
+  return new Observable((subscriber) => {
     const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as ArrayBuffer)
-    reader.onerror = reject
+    reader.onload = () => {
+      subscriber.next(reader.result as ArrayBuffer)
+      subscriber.complete()
+    }
+    reader.onerror = (err) => {
+      subscriber.error(err)
+    }
     reader.readAsArrayBuffer(file)
+    return () => {
+      reader.abort()
+    }
   })
 }
 
 function hashFile(file) {
   if (!window.crypto || !window.crypto.subtle || !window.FileReader) {
-    return Promise.resolve(null)
+    return observableOf(null)
   }
-  return readFile(file)
-    .then((arrayBuffer) => crypto.subtle.digest('SHA-1', arrayBuffer))
-    .then(hexFromBuffer)
+  return readFile(file).pipe(
+    mergeMap((arrayBuffer) => crypto.subtle.digest('SHA-1', arrayBuffer)),
+    map(hexFromBuffer)
+  )
 }
 
 function hexFromBuffer(buffer: ArrayBuffer) {
