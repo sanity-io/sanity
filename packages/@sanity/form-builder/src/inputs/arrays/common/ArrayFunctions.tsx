@@ -1,7 +1,7 @@
 import {ArraySchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React from 'react'
-import {Box, Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent from '../../../PatchEvent'
 import {ArrayMember} from '../ArrayOfObjectsInput/types'
@@ -44,43 +44,39 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
   }
 
   return (
-    <Flex align="center">
+    <Grid autoCols="auto" gap={1}>
       {type.of.length === 1 ? (
-        <Box>
-          <Button mode="ghost" text="Add" icon={AddIcon} onClick={handleAddBtnClick} />
-        </Box>
+        <Button mode="ghost" text="Add" icon={AddIcon} onClick={handleAddBtnClick} />
       ) : (
-        <Box flex={1}>
-          <MenuButton
-            id={menuButtonId || ''}
-            button={<Button mode="ghost" text="Add…" icon={AddIcon} />}
-            menu={
-              <Menu>
-                {type.of.map((memberDef) => {
-                  // Use reference icon if reference is to one type only
-                  const referenceIcon =
-                    isReferenceSchemaType(memberDef) &&
-                    (memberDef.to || []).length === 1 &&
-                    memberDef.to[0].icon
+        <MenuButton
+          id={menuButtonId || ''}
+          button={<Button mode="ghost" text="Add…" icon={AddIcon} />}
+          menu={
+            <Menu>
+              {type.of.map((memberDef) => {
+                // Use reference icon if reference is to one type only
+                const referenceIcon =
+                  isReferenceSchemaType(memberDef) &&
+                  (memberDef.to || []).length === 1 &&
+                  memberDef.to[0].icon
 
-                  const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
-                  return (
-                    <MenuItem
-                      key={memberDef.type?.name}
-                      text={memberDef.title || memberDef.type?.name}
-                      onClick={() => insertItem(memberDef)}
-                      icon={icon}
-                    />
-                  )
-                })}
-              </Menu>
-            }
-          />
-        </Box>
+                const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
+                return (
+                  <MenuItem
+                    key={memberDef.type?.name}
+                    text={memberDef.title || memberDef.type?.name}
+                    onClick={() => insertItem(memberDef)}
+                    icon={icon}
+                  />
+                )
+              })}
+            </Menu>
+          }
+        />
       )}
 
-      {children && <Box flex={1}>{children}</Box>}
-    </Flex>
+      {children}
+    </Grid>
   )
 }
 
