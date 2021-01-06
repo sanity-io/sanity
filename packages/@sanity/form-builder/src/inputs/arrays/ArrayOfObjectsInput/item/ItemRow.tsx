@@ -11,7 +11,7 @@ import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
-const dragHandle = <DragHandle />
+const dragHandle = <DragHandle paddingX={2} paddingY={3} />
 
 export const ItemRow = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
@@ -32,7 +32,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
   } = props
 
   return (
-    <Card radius={2} shadow={1} padding={1} ref={ref}>
+    <Card border radius={2} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
@@ -40,9 +40,9 @@ export const ItemRow = React.forwardRef(function RegularItem(
           <Card
             as="button"
             radius={2}
-            padding={1}
+            // padding={1}
             flex={1}
-            tabIndex={0}
+            // tabIndex={0}
             onClick={onClick}
             ref={focusRef}
             onKeyPress={onKeyPress}
