@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {markersToValidationList} from './helpers'
 
-interface FormFieldSetProps {
+export type FormFieldSetProps = {
   changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   children: React.ReactNode
   collapsed?: boolean

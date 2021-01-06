@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom'
 import {Path, SchemaType} from '@sanity/types'
 import humanize from 'humanize-list'
 import {sortBy} from 'lodash'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import {Button} from '@sanity/ui'
 import {ResolvedUploader} from '../../../sanity/uploads/types'
+import {Snackbar} from '../../../transitional/Snackbar'
 import styles from './UploadTarget.css'
 import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
 import {imageUrlToBlob} from './imageUrlToBlob'
@@ -63,8 +63,8 @@ function select(el) {
   sel.addRange(range)
 }
 
-export function createUploadTarget<T>(Component: any): React.ComponentType<any> {
-  return class UploadTargetFieldset extends React.Component<Props & T, State> {
+export function createUploadTarget<ComponentProps>(Component: React.ComponentType<ComponentProps>) {
+  return class UploadTarget extends React.Component<ComponentProps & Props, State> {
     _pasteInput: HTMLInputElement | null
     _element: any
     dragEnteredEls: Array<Element> = []

@@ -1,5 +1,4 @@
 import {uniqueId} from 'lodash'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
 import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
@@ -15,6 +14,7 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
+import {Snackbar} from '../../../transitional/Snackbar'
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
 import {FormField} from '../../../components/FormField'

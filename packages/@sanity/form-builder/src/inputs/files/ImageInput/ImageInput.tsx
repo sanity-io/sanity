@@ -27,11 +27,10 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
-import Snackbar from 'part:@sanity/components/snackbar/default'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
+import {Snackbar} from '../../../transitional/Snackbar'
 
 // Package files
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -44,9 +43,11 @@ import {
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../../common/UploadPlaceholder'
-import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import {UploadTargetFieldset} from '../../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FormFieldSet} from '../../../components/FormField'
+import {FileInputButton} from '../common/FileInputButton'
+import {ProgressCircle} from '../../../transitional/ProgressCircle'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
@@ -81,7 +82,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   markers: Marker[]
-  presence: any
+  presence: FormFieldPresence[]
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -362,30 +363,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
-  // handleDialogAction = action => {
-  //   if (action.name === 'done') {
-  //     this.handleStopAdvancedEdit()
-  //   }
-  // }
-
   renderAdvancedEdit(fields: ObjectField[]) {
     const {value, level, type, onChange, readOnly, materialize} = this.props
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
     return (
-      <DefaultDialog
-        // actions={[
-        //   {
-        //     name: 'done',
-        //     title: 'Done',
-        //     inverted: true
-        //   }
-        // ]}
-        isOpen
-        title="Edit details"
-        // onAction={this.handleDialogAction}
-        onClose={this.handleStopAdvancedEdit}
-      >
+      <DefaultDialog isOpen title="Edit details" onClose={this.handleStopAdvancedEdit}>
         <PresenceOverlay>
           <div className={styles.fieldWrapper}>
             {withImageTool && (
@@ -461,9 +444,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             <ProgressCircle
               percent={status === 'complete' ? 100 : uploadState.progress}
               text={isComplete ? 'Please wait…' : 'Uploading…'}
-              completed={isComplete}
+              isComplete={isComplete}
               showPercent
-              animation
             />
           </div>
           {isUploading && (
@@ -643,12 +625,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               {!readOnly && SUPPORT_DIRECT_UPLOADS && (
                 <FileInputButton
                   icon={UploadIcon}
-                  inverted
+                  mode="ghost"
                   onSelect={this.handleSelectFile}
                   accept={accept}
-                >
-                  Upload
-                </FileInputButton>
+                  text="Upload"
+                />
               )}
               {!readOnly && this.renderSelectImageButton()}
               {showAdvancedEditButton && (

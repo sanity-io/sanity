@@ -6,21 +6,23 @@ import classNames from 'classnames'
 import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import {Box, Button} from '@sanity/ui'
+import {Box, Button, Grid, Dialog} from '@sanity/ui'
 import {PresenceOverlay} from '@sanity/base/presence'
-import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
+
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../../common/UploadPlaceholder'
+import {FileInputButton} from '../common/FileInputButton'
+import {ProgressCircle} from '../../../transitional/ProgressCircle'
+import {Snackbar} from '../../../transitional/Snackbar'
+import {UploadTargetFieldset} from '../../../utils/UploadTargetFieldset'
+import {Checkerboard} from '../common/Checkerboard'
 import styles from './FileInput.css'
+// const styles = {}
 
 type FieldT = {
   name: string
@@ -48,7 +50,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   markers: Marker[]
-  presence: any
+  presence: FormFieldPresence[]
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -194,9 +196,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             <ProgressCircle
               percent={status === 'complete' ? 100 : uploadState.progress}
               text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
-              completed={isComplete}
+              isComplete={isComplete}
               showPercent
-              animation
             />
           </div>
           <div className={styles.cancelButton}>
@@ -279,7 +280,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         path={[field.name]}
         onFocus={onFocus}
         onBlur={onBlur}
-        readOnly={readOnly || field.type.readOnly}
+        readOnly={Boolean(readOnly || field.type.readOnly)}
         focusPath={focusPath}
         level={level}
         presence={presence}
@@ -323,6 +324,10 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.uploadWith(uploader, file)
   }
 
+  _render() {
+    return <Checkerboard>Test</Checkerboard>
+  }
+
   render() {
     const {type, value, compareValue, level, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, uploadError, hasFocus} = this.state
@@ -343,7 +348,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return (
       <UploadTargetFieldset
         markers={markers}
-        legend={type.title}
+        title={type.title}
         description={type.description}
         level={level}
         onFocus={this.handleFocus}
@@ -393,23 +398,22 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           </ChangeIndicatorCompareValueProvider>
 
           <div className={styles.functions}>
-            <ButtonGrid>
+            <Grid gap={1} columns={3}>
               {!readOnly && (
                 <FileInputButton
-                  inverted
-                  icon={UploadIcon}
                   onSelect={this.handleSelectFile}
+                  mode="ghost"
+                  icon={UploadIcon}
                   accept={accept}
-                >
-                  Upload
-                </FileInputButton>
+                  text="Upload"
+                />
               )}
               {/* Enable when selecting already uploaded files is possible */}
               {/* {!readOnly && this.renderSelectFileButton()} */}
               {value && otherFields.length > 0 && (
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
-                  mode="bleed"
+                  mode="ghost"
                   title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
                   text={readOnly ? 'View details' : 'Edit'}
@@ -418,13 +422,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               {!readOnly && hasAsset && (
                 <Button
                   tone="critical"
-                  mode="bleed"
+                  mode="ghost"
                   onClick={this.handleRemoveButtonClick}
                   text="Remove"
                 />
               )}
               {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-            </ButtonGrid>
+            </Grid>
           </div>
         </div>
         {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
