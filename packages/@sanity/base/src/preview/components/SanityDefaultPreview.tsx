@@ -1,23 +1,27 @@
 import React from 'react'
+import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
+
+// parts
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
-import PreviewComponentCard from 'part:@sanity/components/previews/card'
-import PreviewComponentDefault from 'part:@sanity/components/previews/default'
-import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
-import PreviewComponentInline from 'part:@sanity/components/previews/inline'
-import PreviewComponentMedia from 'part:@sanity/components/previews/media'
-import PreviewComponentBlock from 'part:@sanity/components/previews/block'
-import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-image'
 import sanityClient from 'part:@sanity/base/client'
-import fileIcon from 'part:@sanity/base/file-icon'
+import {
+  BlockPreview,
+  BlockImagePreview,
+  CardPreview,
+  DefaultPreview,
+  DetailPreview,
+  InlinePreview,
+  MediaPreview,
+} from '../../components'
 
 const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
-  default: PreviewComponentDefault,
-  card: PreviewComponentCard,
-  media: PreviewComponentMedia,
-  detail: PreviewComponentDetail,
-  inline: PreviewComponentInline,
-  block: PreviewComponentBlock,
+  block: BlockPreview,
+  card: CardPreview,
+  default: DefaultPreview,
+  media: MediaPreview,
+  detail: DetailPreview,
+  inline: InlinePreview,
 }
 
 function extractUploadState(value) {
@@ -73,9 +77,9 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
     return undefined
   }
 
-  renderIcon = (options) => {
+  renderIcon = () => {
     const {icon} = this.props
-    const Icon = icon || fileIcon
+    const Icon = icon || DocumentIcon
     return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
   }
 
@@ -119,7 +123,7 @@ export default class SanityDefaultPreview extends React.PureComponent<Props> {
       : previewComponentMap.default
 
     if (_renderAsBlockImage) {
-      PreviewComponent = PreviewComponentBlockImage
+      PreviewComponent = BlockImagePreview
     }
 
     const {_upload, value} = extractUploadState(this.props.value)
