@@ -1,6 +1,6 @@
 {
   "name": "@sanity/resolver",
-  "version": "2.1.0",
+  "version": "2.1.4",
   "description": "Resolves parts and plugins from a Sanity configuration",
   "main": "lib/resolver.js",
   "scripts": {
@@ -43,8 +43,8 @@
     "rimraf": "^2.7.1"
   },
   "dependencies": {
-    "@sanity/generate-help-url": "2.0.9",
-    "@sanity/util": "2.1.0",
+    "@sanity/generate-help-url": "2.1.4",
+    "@sanity/util": "2.1.4",
     "fs-extra": "^6.0.1",
     "lodash": "^4.17.15",
     "path-exists": "^3.0.0",

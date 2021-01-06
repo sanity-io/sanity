@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client",
-  "version": "2.1.0",
+  "version": "2.1.4",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/sanityClient.js",
   "umd": "umd/sanityClient.min.js",
@@ -22,8 +22,8 @@
     "./lib/http/nodeMiddleware.js": "./lib/http/browserMiddleware.js"
   },
   "dependencies": {
-    "@sanity/eventsource": "2.0.1",
-    "@sanity/generate-help-url": "2.0.9",
+    "@sanity/eventsource": "2.1.4",
+    "@sanity/generate-help-url": "2.1.4",
     "@sanity/observable": "2.0.9",
     "deep-assign": "^2.0.0",
     "get-it": "^5.0.3",

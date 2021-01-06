@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "2.1.0",
+  "version": "2.1.4",
   "description": "Lets the user log in to Sanity.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,7 +18,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/generate-help-url": "2.0.9",
+    "@sanity/generate-help-url": "2.1.4",
     "prop-types": "^15.6.0",
     "rxjs": "^6.5.3"
   },

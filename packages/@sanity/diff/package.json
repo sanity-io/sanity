@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "2.1.0",
+  "version": "2.1.4",
   "description": "Generates diffs between documents and primitive types",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
