@@ -9,23 +9,6 @@ import styled from 'styled-components'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {markersToValidationList} from './helpers'
 
-// interface Props {
-//   description?: string
-//   legend?: string
-//   columns?: number
-//   isCollapsible?: boolean
-//   onFocus?: (path: Path) => void
-//   onBlur?: (e: React.FocusEvent<unknown>) => void
-//   onClick?: (e: React.MouseEvent<unknown>) => void
-//   isCollapsed?: boolean
-//   children?: React.ReactNode
-//   level?: number
-//   tabIndex?: number
-//   markers?: Marker[]
-//   presence?: FormFieldPresence[]
-//   changeIndicator?: {compareDeep: boolean} | boolean
-// }
-
 interface FormFieldSetProps {
   changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   children: React.ReactNode
@@ -36,10 +19,12 @@ interface FormFieldSetProps {
   level?: number
   markers?: Marker[]
   onFocus?: (path: Path) => void
-  // @todo: Turn `presence` into a React.ReactNode property
+  // @todo: Turn `presence` into a React.ReactNode property?
   // presence?: React.ReactNode
   presence?: FormFieldPresence[]
   title?: React.ReactNode
+  // @todo: Take list of validation items instead of raw markers?
+  // validation?: FormFieldValidation[]
 }
 
 const FOCUS_PATH = [FOCUS_TERMINATOR]

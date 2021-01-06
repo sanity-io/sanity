@@ -5,17 +5,6 @@ import {Stack} from '@sanity/ui'
 import React from 'react'
 import {FormFieldHeader} from './FormFieldHeader'
 
-// interface Props {
-//   label?: string
-//   description?: string
-//   level?: number
-//   children?: React.ReactNode
-//   labelFor?: string
-//   markers?: Marker[]
-//   presence?: FormFieldPresence[]
-//   changeIndicator?: boolean
-// }
-
 interface FormFieldProps {
   changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
   children: React.ReactNode
@@ -24,10 +13,10 @@ interface FormFieldProps {
   level?: number
   markers?: Marker[]
   title?: React.ReactNode
-  // @todo: Turn `presence` into a React.ReactNode property
+  // @todo: Turn `presence` into a React.ReactNode property?
   // presence?: React.ReactNode
   presence?: FormFieldPresence[]
-  // @todo: Take list of validation items instead of raw markers
+  // @todo: Take list of validation items instead of raw markers?
   // validation?: FormFieldValidation[]
 }
 
