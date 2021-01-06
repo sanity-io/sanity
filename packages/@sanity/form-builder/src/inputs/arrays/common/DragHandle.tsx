@@ -10,13 +10,18 @@ const DragHandleButton = styled(Button)<{grid?: boolean}>`
 
 const DRAG_HANDLE_PROPS = {[DRAG_HANDLE_ATTRIBUTE]: true}
 
-export const DragHandle = sortableHandle(function DragHandle(props: {grid?: boolean}) {
+export const DragHandle = sortableHandle(function DragHandle(props: {
+  grid?: boolean
+  padding?: number | number[]
+  paddingX?: number | number[]
+  paddingY?: number | number[]
+}) {
   return (
     <DragHandleButton
       icon={DragHandleIcon}
       mode="bleed"
       tabIndex={0}
-      grid={props.grid}
+      {...props}
       {...DRAG_HANDLE_PROPS}
     />
   )
