@@ -3,7 +3,7 @@ import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sa
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {get, isPlainObject} from 'lodash'
-import {Box, Button, Card} from '@sanity/ui'
+import {Box, Button, Card, Stack} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -288,7 +288,7 @@ export class ArrayInput extends React.Component<Props> {
         markers={markers}
         {...uploadProps}
       >
-        <Box>
+        <div>
           {hasMissingKeys && (
             <Card tone="caution" padding={2} shadow={1}>
               Some items in this list are missing their keys. We need to fix this before the list
@@ -307,46 +307,48 @@ export class ArrayInput extends React.Component<Props> {
               </Details>
             </Card>
           )}
-          {value && value.length > 0 && (
-            <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-              {value.map((item, index) => {
-                const isChildMarker = (marker: Marker) =>
-                  startsWith([index], marker.path) ||
-                  startsWith([{_key: item && item._key}], marker.path)
-                const childMarkers = markers.filter(isChildMarker)
-                const isChildPresence = (pItem: FormFieldPresence) =>
-                  startsWith([index], pItem.path) ||
-                  startsWith([{_key: item && item._key}], pItem.path)
-                const childPresence = presence.filter(isChildPresence)
-                return (
-                  <Item
-                    key={item._key || index}
-                    isSortable={isSortable}
-                    isGrid={isGrid}
-                    index={index}
-                  >
-                    <ArrayItem
-                      compareValue={compareValue}
-                      filterField={filterField}
-                      focusPath={focusPath}
+
+          <Stack space={1}>
+            {value && value.length > 0 && (
+              <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+                {value.map((item, index) => {
+                  const isChildMarker = (marker: Marker) =>
+                    startsWith([index], marker.path) ||
+                    startsWith([{_key: item && item._key}], marker.path)
+                  const childMarkers = markers.filter(isChildMarker)
+                  const isChildPresence = (pItem: FormFieldPresence) =>
+                    startsWith([index], pItem.path) ||
+                    startsWith([{_key: item && item._key}], pItem.path)
+                  const childPresence = presence.filter(isChildPresence)
+                  return (
+                    <Item
+                      key={item._key || index}
+                      isSortable={isSortable}
+                      isGrid={isGrid}
                       index={index}
-                      level={level}
-                      markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                      onBlur={onBlur}
-                      onChange={this.handleItemChange}
-                      onFocus={onFocus}
-                      onRemove={this.handleRemoveItem}
-                      presence={childPresence}
-                      readOnly={readOnly || hasMissingKeys}
-                      type={type}
-                      value={item}
-                    />
-                  </Item>
-                )
-              })}
-            </List>
-          )}
-          <Box marginTop={1}>
+                    >
+                      <ArrayItem
+                        compareValue={compareValue}
+                        filterField={filterField}
+                        focusPath={focusPath}
+                        index={index}
+                        level={level}
+                        markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                        onBlur={onBlur}
+                        onChange={this.handleItemChange}
+                        onFocus={onFocus}
+                        onRemove={this.handleRemoveItem}
+                        presence={childPresence}
+                        readOnly={readOnly || hasMissingKeys}
+                        type={type}
+                        value={item}
+                      />
+                    </Item>
+                  )
+                })}
+              </List>
+            )}
+
             <ArrayFunctions
               type={type}
               value={value}
@@ -357,8 +359,8 @@ export class ArrayInput extends React.Component<Props> {
               onCreateValue={createProtoValue}
               onChange={onChange}
             />
-          </Box>
-        </Box>
+          </Stack>
+        </div>
       </FieldSetComponent>
     )
   }
