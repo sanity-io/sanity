@@ -1,8 +1,9 @@
 import React from 'react'
+import {DefaultPreview} from '@sanity/base/components'
 import imageUrlBuilder from '@sanity/image-url'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
-import PreviewComponentDefault from 'part:@sanity/components/previews/default'
+// import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
@@ -12,7 +13,8 @@ import sanityClient from 'part:@sanity/base/client'
 import fileIcon from 'part:@sanity/base/file-icon'
 
 const previewComponentMap: {[key: string]: React.ComponentType<any>} = {
-  default: PreviewComponentDefault,
+  default: DefaultPreview,
+  // default: PreviewComponentDefault,
   card: PreviewComponentCard,
   media: PreviewComponentMedia,
   detail: PreviewComponentDetail,
