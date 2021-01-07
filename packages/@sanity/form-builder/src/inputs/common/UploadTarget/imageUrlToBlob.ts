@@ -1,8 +1,4 @@
 // Loads an image, inserts it into a canvas and loads the canvas contents into a blob
-import {polyfillCanvasToBlob} from './canvasToBlob'
-
-polyfillCanvasToBlob()
-
 export function imageUrlToBlob(imageUrl, format = 'image/jpeg', quality = 1): Promise<Blob> {
   if (imageUrl.match(/^webkit-fake-url:\/\//)) {
     return Promise.reject(new Error('Cannot read image contents from webkit fake url'))
