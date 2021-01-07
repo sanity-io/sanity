@@ -1,11 +1,9 @@
 import {uniqueId} from 'lodash'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useEffect, useState, useMemo} from 'react'
 import {Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
-  ErrorChange,
   OnCopyFn,
   OnPasteFn,
   Patch as EditorPatch,
@@ -16,6 +14,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
 import {FormField} from '@sanity/base/components'
+import {useToast} from '@sanity/ui'
 
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
@@ -78,6 +77,8 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
     value,
   } = props
 
+  const toast = useToast()
+
   // The PortableTextEditor will not re-render unless the value is changed (which is good).
   // But, we want to re-render it when the markers changes too,
   // (we render error indicators directly in the editor nodes for inline objects and annotations)
@@ -92,10 +93,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   }
   const [valueTouchedByMarkers, setValueTouchedByMarkers] = useState(props.value)
   useEffect(forceUpdate, [validationHash, value])
-
-  const [editorErrorNotification, setEditorErrorNotification]: [ErrorChange, any] = useState(
-    undefined
-  )
 
   // Reset invalidValue if new value is coming in from props
   const [invalidValue, setInvalidValue] = useState(null)
@@ -155,7 +152,10 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
         setInvalidValue(change)
         break
       case 'error':
-        setEditorErrorNotification(change)
+        toast.push({
+          status: change.level,
+          description: change.description,
+        })
         break
       default:
     }
@@ -240,15 +240,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   )
   return (
     <>
-      {editorErrorNotification && (
-        // Display intended editor errors to the user
-        <Snackbar
-          kind={editorErrorNotification.level}
-          isPersisted
-          onAction={() => setEditorErrorNotification(undefined)}
-          subtitle={<div>{editorErrorNotification.description}</div>}
-        />
-      )}
       {invalidValue && !ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && editorInput}
     </>

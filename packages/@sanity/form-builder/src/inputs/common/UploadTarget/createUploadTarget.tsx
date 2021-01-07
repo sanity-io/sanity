@@ -1,11 +1,11 @@
+import {ImperativeToast} from '@sanity/base/components'
+import {Button, ToastParams} from '@sanity/ui'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {Path, SchemaType} from '@sanity/types'
 import humanize from 'humanize-list'
 import {sortBy} from 'lodash'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import {Button} from '@sanity/ui'
 import {ResolvedUploader} from '../../../sanity/uploads/types'
 import styles from './UploadTarget.css'
 import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
@@ -68,6 +68,9 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
     _pasteInput: HTMLInputElement | null
     _element: any
     dragEnteredEls: Array<Element> = []
+
+    toast: {push: (params: ToastParams) => void}
+
     static defaultProps = {
       tabIndex: 0,
     }
@@ -145,7 +148,16 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
       }))
       const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
       const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
-      this.setState({rejected})
+
+      if (rejected.length > 0) {
+        this.toast.push({
+          closable: true,
+          status: 'warning',
+          title: 'File(s) not accepted',
+          description: humanize(rejected.map((task) => task.file.name)),
+        })
+      }
+
       // todo: consider if we need to ask the user
       // the list of candidates is sorted by their priority and the first one is selected
       // const ambiguous = tasks
@@ -226,53 +238,50 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
               ))}
             </Dialog>
           )}
-          {rejected.length > 0 && (
-            <Snackbar
-              kind="warning"
-              isPersisted
-              actionTitle="OK"
-              onAction={() => this.setState({rejected: []})}
-              title="File(s) not accepted:"
-              subtitle={humanize(rejected.map((task) => task.file.name))}
-            />
-          )}
         </div>
       )
+    }
+
+    setToast = (toast: {push: (params: ToastParams) => void}) => {
+      this.toast = toast
     }
 
     render() {
       const {children, type, onUpload, getUploadOptions, ...rest} = this.props
       const {isDraggingOver, showPasteInput} = this.state
       return (
-        <Component
-          {...rest}
-          ref={this.setElement}
-          onFocus={this.handleFocus}
-          onKeyDown={this.handleKeyPress}
-          onDragOver={this.handleDragOver}
-          onDragEnter={this.handleDragEnter}
-          onDragLeave={this.handleDragLeave}
-          onDrop={this.handleDrop}
-        >
-          {isDraggingOver && (
-            <div className={styles.dragStatus}>
-              <h2 className={styles.dragStatusInner}>Drop to upload</h2>
-            </div>
-          )}
-          {showPasteInput && (
-            <div className={styles.dragStatus}>
-              <div
-                contentEditable
-                onPaste={this.handlePaste}
-                className={styles.pasteInput}
-                ref={this.setPasteInput}
-              />
-              <h2 className={styles.dragStatusInner}>Paste (Ctrl+V or ⌘+V) to upload</h2>
-            </div>
-          )}
-          {children}
-          {this.renderSnacks()}
-        </Component>
+        <>
+          <ImperativeToast ref={this.setToast} />
+          <Component
+            {...rest}
+            ref={this.setElement}
+            onFocus={this.handleFocus}
+            onKeyDown={this.handleKeyPress}
+            onDragOver={this.handleDragOver}
+            onDragEnter={this.handleDragEnter}
+            onDragLeave={this.handleDragLeave}
+            onDrop={this.handleDrop}
+          >
+            {isDraggingOver && (
+              <div className={styles.dragStatus}>
+                <h2 className={styles.dragStatusInner}>Drop to upload</h2>
+              </div>
+            )}
+            {showPasteInput && (
+              <div className={styles.dragStatus}>
+                <div
+                  contentEditable
+                  onPaste={this.handlePaste}
+                  className={styles.pasteInput}
+                  ref={this.setPasteInput}
+                />
+                <h2 className={styles.dragStatusInner}>Paste (Ctrl+V or ⌘+V) to upload</h2>
+              </div>
+            )}
+            {children}
+            {this.renderSnacks()}
+          </Component>
+        </>
       )
     }
   }
