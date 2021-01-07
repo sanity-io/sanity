@@ -33,6 +33,21 @@ export default function ImageToolWrapper(props) {
 
 ImageToolWrapper.propTypes = {
   src: PropTypes.string.isRequired,
+  value: PropTypes.shape({
+    hotspot: PropTypes.shape({
+      x: PropTypes.number,
+      y: PropTypes.number,
+      height: PropTypes.number,
+      width: PropTypes.number,
+    }),
+  }),
+  image: PropTypes.shape({
+    height: PropTypes.number,
+    width: PropTypes.number,
+  }),
+  onChange: PropTypes.func,
+  onChangeEnd: PropTypes.func,
+  readOnly: PropTypes.bool,
 }
 
 ImageToolWrapper.maxHeight = 500
