@@ -1,7 +1,13 @@
-import {Card, ThemeColorProvider, ThemeProvider, PortalProvider, LayerProvider} from '@sanity/ui'
+import {
+  Card,
+  ThemeColorProvider,
+  ThemeProvider,
+  PortalProvider,
+  LayerProvider,
+  ToastProvider,
+} from '@sanity/ui'
 import config from 'config:sanity'
 import RootComponent from 'part:@sanity/base/root'
-import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 import React, {useState} from 'react'
 import Refractor from 'react-refractor'
 import jsx from 'refractor/lang/jsx'
@@ -31,10 +37,10 @@ function SanityRoot() {
 
   return (
     <ThemeProvider theme={theme}>
-      <UserColorManagerProvider manager={userColorManager}>
-        <PortalProvider element={portalElement}>
-          <LayerProvider>
-            <SnackbarProvider>
+      <ToastProvider paddingY={7} zOffset={10000}>
+        <UserColorManagerProvider manager={userColorManager}>
+          <PortalProvider element={portalElement}>
+            <LayerProvider>
               <ThemeColorProvider tone="transparent">
                 <GlobalStyle />
               </ThemeColorProvider>
@@ -45,10 +51,10 @@ function SanityRoot() {
                 <VersionChecker />
               </Root>
               <div data-portal="" ref={setPortalElement} />
-            </SnackbarProvider>
-          </LayerProvider>
-        </PortalProvider>
-      </UserColorManagerProvider>
+            </LayerProvider>
+          </PortalProvider>
+        </UserColorManagerProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }
