@@ -1,9 +1,8 @@
 import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {Layer} from '@sanity/ui'
+import {Layer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {ChangeConnectorRoot} from '@sanity/base/lib/change-indicators/overlay/ChangeConnectorRoot'
 import {setLocation} from 'part:@sanity/base/datastore/presence'
@@ -71,6 +70,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     compareValue,
     views = [],
   } = props
+  const {push} = useToast()
   const zindex = useZIndex()
   const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
@@ -164,6 +164,15 @@ export function DocumentPane(props: DocumentPaneProps) {
   const isChangesOpen = historyController.changesPanelActive()
   const isTimelineOpen = timelineMode !== 'closed'
 
+  useEffect(() => {
+    if (connectionState === 'reconnecting') {
+      push({
+        status: 'warning',
+        title: 'Connection lost. Reconnecting…',
+      })
+    }
+  }, [connectionState, push])
+
   return (
     <DocumentActionShortcuts
       id={documentIdRaw}
@@ -245,10 +254,6 @@ export function DocumentPane(props: DocumentPaneProps) {
           lastUpdated={value && value._updatedAt}
         />
       </Layer>
-
-      {connectionState === 'reconnecting' && (
-        <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-      )}
 
       <DocumentOperationResults id={documentId} type={documentType} />
 
