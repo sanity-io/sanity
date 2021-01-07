@@ -1,74 +1,61 @@
-import React from 'react'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import styles from './styles/ErrorHandler.css'
+import {useToast} from '@sanity/ui'
+import {useCallback, useEffect} from 'react'
 
 const SANITY_ERROR_HANDLER = Symbol.for('SANITY_ERROR_HANDLER')
 
-export default class ErrorHandler extends React.PureComponent {
-  state = {error: null}
+function ErrorHandler() {
+  const {push} = useToast()
 
-  constructor(props) {
-    super(props)
+  const handleGlobalError = useCallback(
+    (msg, url, lineNo, columnNo, err) => {
+      // Certain events (ResizeObserver max loop threshold, for instance)
+      // only gives a _message_. We choose to ignore these events since
+      // they are usually not _fatal_
+      if (!err) {
+        return
+      }
 
-    this.handleGlobalError = this.handleGlobalError.bind(this)
-    this.handleGlobalError.identity = SANITY_ERROR_HANDLER
-  }
+      // Certain errors should be ignored
+      if (
+        [
+          /unexpected token <$/i, // Trying to load HTML as JS
+        ].some((item) => item.test(err.message))
+      ) {
+        return
+      }
 
-  componentDidMount() {
+      // eslint-disable-next-line no-console
+      console.error(err)
+
+      push({
+        closable: true,
+        status: 'error',
+        title: __DEV__ ? `Error: ${err.message}` : 'An error occured',
+        description: "Check your browser's JavaScript console for details.",
+        timeout: 8000,
+      })
+    },
+    [push]
+  )
+
+  handleGlobalError.identity = SANITY_ERROR_HANDLER
+
+  useEffect(() => {
+    let originalErrorHandler
+
     // Only store the original error handler if it wasn't a copy of _this_ error handler
     if (window.onerror && window.onerror.identity !== SANITY_ERROR_HANDLER) {
-      this.originalErrorHandler = window.onerror
+      originalErrorHandler = window.onerror
     }
 
-    window.onerror = this.handleGlobalError
-  }
+    window.onerror = handleGlobalError
 
-  componentWillUnmount() {
-    window.onerror = this.originalErrorHandler || window.onerror
-  }
-
-  handleGlobalError = (msg, url, lineNo, columnNo, err) => {
-    // Certain events (ResizeObserver max loop threshold, for instance)
-    // only gives a _message_. We choose to ignore these events since
-    // they are usually not _fatal_
-    if (!err) {
-      return
+    return () => {
+      window.onerror = originalErrorHandler || window.onerror
     }
+  }, [handleGlobalError])
 
-    // Certain errors should be ignored
-    if (
-      [
-        /unexpected token <$/i, // Trying to load HTML as JS
-      ].some((item) => item.test(err.message))
-    ) {
-      return
-    }
-
-    // eslint-disable-next-line no-console
-    console.error(err)
-    this.setState({error: err})
-  }
-
-  handleClose = () => {
-    this.setState({error: null})
-  }
-
-  render() {
-    const {error} = this.state
-    if (!error) {
-      return null
-    }
-
-    const message = __DEV__ ? `An error occured: ${error.message}` : 'An error occured'
-
-    return (
-      <Snackbar
-        kind="error"
-        onAction={this.handleClose}
-        title={<strong>{message}</strong>}
-        timeout={8000}
-        subtitle="Check your browser's JavaScript console for details."
-      />
-    )
-  }
+  return null
 }
+
+export default ErrorHandler
