@@ -4,6 +4,8 @@
   "compilerOptions": {
     "composite": true,
     "strict": false,
+    "allowJs": true,
+    "emitDeclarationOnly": true,
     "jsx": "react",
     "rootDir": "./src",
     "outDir": "./lib"
