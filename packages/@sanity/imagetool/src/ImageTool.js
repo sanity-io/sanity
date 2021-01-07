@@ -100,6 +100,7 @@ export default class ImageTool extends React.PureComponent {
     }),
     onChange: PropTypes.func,
     onChangeEnd: PropTypes.func,
+    readOnly: PropTypes.bool,
   }
 
   static defaultProps = {
