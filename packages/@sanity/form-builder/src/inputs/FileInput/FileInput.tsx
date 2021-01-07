@@ -1,3 +1,4 @@
+import {Box, Button, Text} from '@sanity/ui'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
@@ -7,12 +8,11 @@ import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} f
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import {EditIcon, EyeOpenIcon, BinaryDocumentIcon, UploadIcon} from '@sanity/icons'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {Button} from '@sanity/ui'
+import {CircularProgress} from '../../components/progress'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/types'
@@ -184,26 +184,38 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const isComplete = uploadState.progress === 100
+    const completed = status === 'complete'
     const filename = get(uploadState, 'file.name')
+
     return (
       <div className={styles.uploadState}>
-        <div>
-          <div>
-            <ProgressCircle
-              percent={status === 'complete' ? 100 : uploadState.progress}
-              text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
-              completed={isComplete}
-              showPercent
-              animation
-            />
-          </div>
-          <div className={styles.cancelButton}>
+        <Box padding={4}>
+          <CircularProgress value={completed ? 100 : uploadState.progress} />
+          <Box marginTop={3}>
+            <Text muted size={1}>
+              {completed && <>Complete</>}
+              {!completed && (
+                <>
+                  Uploading
+                  {filename ? (
+                    <>
+                      {' '}
+                      <code>{filename}</code>
+                    </>
+                  ) : (
+                    <>…</>
+                  )}
+                </>
+              )}
+            </Text>
+          </Box>
+
+          <Box marginTop={3}>
             {isUploading && (
-              <Button mode="bleed" color="danger" onClick={this.handleCancelUpload} text="Cancel" />
+              <Button mode="ghost" color="danger" onClick={this.handleCancelUpload} text="Cancel" />
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </div>
     )
   }
