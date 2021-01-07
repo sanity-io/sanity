@@ -1,8 +1,8 @@
 import {ButtonColor, DialogAction} from '@sanity/base/__legacy/@sanity/components'
-import React, {useCallback} from 'react'
+import {useToast} from '@sanity/ui'
+import React, {useCallback, useEffect} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Todo: move these to action spec/core types
 interface ConfirmDialogProps {
@@ -61,6 +61,7 @@ interface Props {
 
 export function ActionStateDialog(props: Props) {
   const {dialog, referenceElement} = props
+  const {push} = useToast()
 
   const handleDialogAction = useCallback(
     (action: DialogAction) => {
@@ -76,6 +77,28 @@ export function ActionStateDialog(props: Props) {
     },
     [dialog]
   )
+
+  useEffect(() => {
+    if (dialog.type === 'success') {
+      push({
+        closable: true,
+        status: 'success',
+        title: dialog.title,
+        description: dialog.content,
+        onClose: dialog.onClose,
+      })
+    }
+
+    if (dialog.type === 'error') {
+      push({
+        closable: true,
+        status: 'error',
+        onClose: dialog.onClose,
+        title: dialog.title,
+        description: dialog.content,
+      })
+    }
+  }, [dialog, push])
 
   if (dialog.type === 'legacy') {
     return <>{dialog.content}</>
@@ -140,26 +163,11 @@ export function ActionStateDialog(props: Props) {
   }
 
   if (dialog.type === 'success') {
-    return (
-      <Snackbar
-        kind="success"
-        isPersisted={false}
-        isCloseable
-        timeout={2000}
-        onClose={dialog.onClose}
-        title={dialog.title}
-      >
-        {dialog.content}
-      </Snackbar>
-    )
+    return null
   }
 
   if (dialog.type === 'error') {
-    return (
-      <Snackbar isCloseable kind="error" onClose={dialog.onClose} title={dialog.title}>
-        {dialog.content}
-      </Snackbar>
-    )
+    return null
   }
 
   const unknownDialog: any = dialog
