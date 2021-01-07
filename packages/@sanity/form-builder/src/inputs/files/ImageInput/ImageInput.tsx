@@ -1,5 +1,7 @@
 // Modules
 
+import {ImperativeToast} from '@sanity/base/components'
+import {Button, ToastParams} from '@sanity/ui'
 import classNames from 'classnames'
 import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
@@ -19,7 +21,6 @@ import {
 } from '@sanity/types'
 import React, {createElement} from 'react'
 import PropTypes from 'prop-types'
-import {Button} from '@sanity/ui'
 
 // Parts
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
@@ -31,7 +32,6 @@ import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 
 // Package files
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -93,7 +93,6 @@ const getDevicePixelRatio = () => {
 }
 type ImageInputState = {
   isUploading: boolean
-  uploadError: Error | null
   isAdvancedEditOpen: boolean
   selectedAssetSource?: any
   hasFocus: boolean
@@ -109,12 +108,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   uploadSubscription: any
   state = {
     isUploading: false,
-    uploadError: null,
     isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hasFocus: false,
   }
   assetSources = globalAssetSources
+
+  toast: {push: (params: ToastParams) => void}
 
   constructor(props: Props) {
     super(props)
@@ -208,12 +208,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       error: (err) => {
         // eslint-disable-next-line no-console
         console.error(err)
-        this.setState({uploadError: err})
+        this.toast.push({
+          status: 'error',
+          description: 'The upload could not be completed at this time.',
+          title: 'Upload failed',
+        })
         this.clearUploadStatus()
       },
       complete: () => {
         onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
         this.setState({isUploading: false})
+        // this.toast.push({
+        //   status: 'success',
+        //   title: 'Upload completed',
+        // })
       },
     })
   }
@@ -264,10 +272,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
-  }
-
-  handleClearUploadError = () => {
-    this.setState({uploadError: null})
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
@@ -553,10 +557,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
+  setToast = (toast: {push: (params: ToastParams) => void}) => {
+    this.toast = toast
+  }
+
   // eslint-disable-next-line complexity
   render() {
     const {type, value, compareValue, level, materialize, markers, readOnly, presence} = this.props
-    const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
+    const {isAdvancedEditOpen, selectedAssetSource, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -577,106 +585,99 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       })
       .filter(String)
     return (
-      <FieldSetComponent
-        markers={markers}
-        presence={presence.filter(
-          (item) => item.path[0] === '$' || isInside.includes(item.identity)
-        )}
-        title={type.title}
-        description={type.description}
-        level={level}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        ref={this.setFocusArea}
-        changeIndicator={false}
-        {...uploadProps}
-      >
-        <div
-          className={classNames(
-            styles.root,
-            readOnly && styles.readOnly,
-            hasFocus && styles.focused
+      <>
+        <ImperativeToast ref={this.setToast} />
+
+        <FieldSetComponent
+          markers={markers}
+          presence={presence.filter(
+            (item) => item.path[0] === '$' || isInside.includes(item.identity)
           )}
+          title={type.title}
+          description={type.description}
+          level={level}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          ref={this.setFocusArea}
+          changeIndicator={false}
+          {...uploadProps}
         >
-          {uploadError && (
-            <Snackbar
-              kind="error"
-              isPersisted
-              actionTitle="OK"
-              onAction={this.handleClearUploadError}
-              title="Upload error"
-              subtitle={<div>We're really sorry, but the upload could not be completed.</div>}
-            />
-          )}
-
-          <ChangeIndicatorCompareValueProvider
-            value={value?.asset?._ref}
-            compareValue={compareValue?.asset?._ref}
+          <div
+            className={classNames(
+              styles.root,
+              readOnly && styles.readOnly,
+              hasFocus && styles.focused
+            )}
           >
-            <ChangeIndicator>
-              <div className={styles.content}>
-                <div className={styles.assetWrapper}>
-                  {value && value._upload && (
-                    <div className={styles.uploadState}>
-                      {this.renderUploadState(value._upload)}
-                    </div>
-                  )}
-                  {/* eslint-disable-next-line no-nested-ternary */}
-                  {hasAsset ? (
-                    <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                      {this.renderMaterializedAsset}
-                    </WithMaterializedReference>
-                  ) : readOnly ? (
-                    <span>Field is read only</span>
-                  ) : (
-                    SUPPORT_DIRECT_UPLOADS && (
-                      <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
-                    )
-                  )}
+            <ChangeIndicatorCompareValueProvider
+              value={value?.asset?._ref}
+              compareValue={compareValue?.asset?._ref}
+            >
+              <ChangeIndicator>
+                <div className={styles.content}>
+                  <div className={styles.assetWrapper}>
+                    {value && value._upload && (
+                      <div className={styles.uploadState}>
+                        {this.renderUploadState(value._upload)}
+                      </div>
+                    )}
+                    {/* eslint-disable-next-line no-nested-ternary */}
+                    {hasAsset ? (
+                      <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                        {this.renderMaterializedAsset}
+                      </WithMaterializedReference>
+                    ) : readOnly ? (
+                      <span>Field is read only</span>
+                    ) : (
+                      SUPPORT_DIRECT_UPLOADS && (
+                        <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
-            </ChangeIndicator>
-          </ChangeIndicatorCompareValueProvider>
+              </ChangeIndicator>
+            </ChangeIndicatorCompareValueProvider>
 
-          <div className={styles.functions}>
-            <ButtonGrid>
-              {!readOnly && SUPPORT_DIRECT_UPLOADS && (
-                <FileInputButton
-                  icon={UploadIcon}
-                  inverted
-                  onSelect={this.handleSelectFile}
-                  accept={accept}
-                >
-                  Upload
-                </FileInputButton>
-              )}
-              {!readOnly && this.renderSelectImageButton()}
-              {showAdvancedEditButton && (
-                <Button
-                  icon={readOnly ? EyeOpenIcon : EditIcon}
-                  mode="bleed"
-                  title={readOnly ? 'View details' : 'Edit details'}
-                  onClick={this.handleStartAdvancedEdit}
-                  text={readOnly ? 'View details' : 'Edit'}
-                />
-              )}
-              {hasAsset && !readOnly && (
-                <Button
-                  color="danger"
-                  icon={TrashIcon}
-                  mode="bleed"
-                  onClick={this.handleRemoveButtonClick}
-                  text="Remove"
-                />
-              )}
-            </ButtonGrid>
+            <div className={styles.functions}>
+              <ButtonGrid>
+                {!readOnly && SUPPORT_DIRECT_UPLOADS && (
+                  <FileInputButton
+                    icon={UploadIcon}
+                    inverted
+                    onSelect={this.handleSelectFile}
+                    accept={accept}
+                  >
+                    Upload
+                  </FileInputButton>
+                )}
+                {!readOnly && this.renderSelectImageButton()}
+                {showAdvancedEditButton && (
+                  <Button
+                    icon={readOnly ? EyeOpenIcon : EditIcon}
+                    mode="bleed"
+                    title={readOnly ? 'View details' : 'Edit details'}
+                    onClick={this.handleStartAdvancedEdit}
+                    text={readOnly ? 'View details' : 'Edit'}
+                  />
+                )}
+                {hasAsset && !readOnly && (
+                  <Button
+                    color="danger"
+                    icon={TrashIcon}
+                    mode="bleed"
+                    onClick={this.handleRemoveButtonClick}
+                    text="Remove"
+                  />
+                )}
+              </ButtonGrid>
+            </div>
           </div>
-        </div>
 
-        {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-        {selectedAssetSource && this.renderAssetSource()}
-      </FieldSetComponent>
+          {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
+          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          {selectedAssetSource && this.renderAssetSource()}
+        </FieldSetComponent>
+      </>
     )
   }
 }
