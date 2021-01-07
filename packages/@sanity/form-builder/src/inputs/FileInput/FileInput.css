@@ -41,15 +41,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-sizing: border-box;
-
-  @nest & > div {
-    width: 90%;
-  }
-}
-
-.cancelButton {
-  margin-top: var(--medium-padding);
+  z-index: 10;
 }
 
 .assetWrapper {
