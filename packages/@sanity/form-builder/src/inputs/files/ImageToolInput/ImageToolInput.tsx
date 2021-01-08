@@ -100,7 +100,7 @@ export default class ImageToolInput extends React.Component<
                 <ImageTool
                   value={value}
                   src={imageUrl}
-                  readOnly={readOnly}
+                  readOnly={Boolean(readOnly)}
                   onChangeEnd={this.handleChangeEnd}
                   onChange={this.handleChange}
                 />
