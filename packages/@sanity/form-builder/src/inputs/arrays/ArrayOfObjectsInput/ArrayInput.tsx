@@ -11,13 +11,15 @@ import {ArrayFunctions} from '../../../legacyImports'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
 import {ResolvedUploader, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
-import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
 import Details from '../../common/Details'
 import {FormFieldSet} from '../../../components/FormField'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
+import {fileTarget} from '../../common/fileTarget'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
+
+const UploadTargetFieldset = fileTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')

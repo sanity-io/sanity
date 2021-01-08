@@ -1,44 +1,53 @@
-import {ImperativeToast} from '@sanity/base/components'
-import {Box, Button, Text, ToastParams} from '@sanity/ui'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
-import {get, partition} from 'lodash'
-import classNames from 'classnames'
-import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
+import {get, partition, uniqueId} from 'lodash'
+import {ImperativeToast, ToastParams} from '@sanity/base/components'
+import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
-import {BinaryDocumentIcon, EditIcon, EyeOpenIcon, UploadIcon} from '@sanity/icons'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
+import {
+  CloseIcon,
+  EditIcon,
+  EyeOpenIcon,
+  BinaryDocumentIcon,
+  UploadIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
+import {Box, Button, Grid, Dialog, Flex, Text, Inline} from '@sanity/ui'
 import {PresenceOverlay} from '@sanity/base/presence'
-import {CircularProgress} from '../../../components/progress'
-import UploadPlaceholder from '../../common/UploadPlaceholder'
-import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
+
+import prettyMs from 'pretty-ms'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
+import UploadPlaceholder from '../common/UploadPlaceholder'
+import {FileInputButton} from '../common/FileInputButton/FileInputButton'
+import {CircularProgress} from '../../../components/progress'
+import {FormFieldSet} from '../../../components/FormField'
+import {AssetBackground, FileTarget, Overlay} from './styles'
 
-import styles from './FileInput.css'
-
-type FieldT = {
+type Field = {
   name: string
   type: SchemaType
 }
 
 interface UploadState {
   progress: number
+  initiated: string
+  updated: string
+  file: {name: string; type: string}
 }
 
-interface File extends Partial<BaseFile> {
+interface FileValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
 export type Props = {
-  value?: File
-  compareValue?: File
+  value?: FileValue
+  compareValue?: FileValue
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
@@ -49,14 +58,22 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   markers: Marker[]
-  presence: any
+  presence: FormFieldPresence[]
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
+
+// If it's more than this amount of milliseconds since last time _upload state was reported
+// the upload will be marked as stale/interrupted
+const STALE_UPLOAD_MS = 1000 * 60 * 2
+
+const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
+
 type FileInputState = {
   isUploading: boolean
   isAdvancedEditOpen: boolean
-  hasFocus: boolean
+  hasFileTargetFocus: boolean
+  isDraggingOver: boolean
 }
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
@@ -64,13 +81,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     getValuePath: PropTypes.func,
   }
 
+  dialogId = uniqueId('fileinput-dialog')
+
   _focusArea: any
-  uploadSubscription: Subscription
+  uploadSubscription: Subscription = null
 
   state: FileInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
-    hasFocus: false,
+    hasFileTargetFocus: false,
+    isDraggingOver: false,
   }
 
   toast: {push: (params: ToastParams) => void}
@@ -119,17 +139,25 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.cancelUpload()
   }
 
-  handleSelectFile = (files: FileList) => {
+  handleClearUploadState = () => {
+    this.clearUploadStatus()
+  }
+
+  handleSelectFileList = (fileList: FileList) => {
+    this.uploadFirstAccepted(Array.from(fileList))
+  }
+
+  handleSelectFiles = (files: File[]) => {
     this.uploadFirstAccepted(files)
   }
 
-  uploadFirstAccepted(fileList: FileList) {
+  uploadFirstAccepted(files: File[]) {
     const {resolveUploader, type} = this.props
     let match: {
       uploader: Uploader
       file: globalThis.File
-    } | null
-    Array.from(fileList).some((file) => {
+    } | null = null
+    files.some((file) => {
       const uploader = resolveUploader(type, file)
       if (uploader) {
         match = {file, uploader}
@@ -176,59 +204,102 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderMaterializedAsset = (assetDocument: FileAsset) => {
     return (
-      <div className={styles.previewAsset}>
-        <div className={styles.fileIcon}>
-          <BinaryDocumentIcon />
-        </div>
-        <div>
-          <div className={styles.fileLabel}>{assetDocument.originalFilename}</div>
-          <Button as="a" href={`${assetDocument.url}?dl`} mode="bleed" padding={2}>
-            Download
-          </Button>
-        </div>
-      </div>
+      <Flex align="center" justify="center">
+        <Box>
+          <BinaryDocumentIcon fontSize="3em" />
+        </Box>
+        <Box>
+          <Box padding={1}>
+            <Text size={1} weight="bold">
+              {assetDocument.originalFilename}
+            </Text>
+          </Box>
+          <Box padding={1}>
+            <Button as="a" href={`${assetDocument.url}?dl`} mode="ghost" text="Download" />
+          </Box>
+        </Box>
+      </Flex>
     )
   }
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const completed = status === 'complete'
+    const completed = uploadState.progress === 100
     const filename = get(uploadState, 'file.name')
 
-    return (
-      <div className={styles.uploadState}>
-        <Box padding={4}>
-          <CircularProgress value={completed ? 100 : uploadState.progress} />
-          <Box marginTop={3}>
-            <Text muted size={1}>
-              {completed && <>Complete</>}
-              {!completed && (
-                <>
-                  Uploading
-                  {filename ? (
-                    <>
-                      {' '}
-                      <code>{filename}</code>
-                    </>
-                  ) : (
-                    <>…</>
-                  )}
-                </>
-              )}
-            </Text>
-          </Box>
+    const stalled = elapsedMs(uploadState.updated) > STALE_UPLOAD_MS
 
-          <Box marginTop={3}>
-            {isUploading && (
-              <Button mode="ghost" color="danger" onClick={this.handleCancelUpload} text="Cancel" />
+    return (
+      <Flex>
+        <Box padding={4}>
+          <Flex direction="column" align="center">
+            <CircularProgress value={completed ? 100 : uploadState.progress} />
+            {stalled && (
+              <>
+                <Inline padding={2} flex={1} marginTop={3}>
+                  <Text size={1}>
+                    <WarningOutlineIcon />
+                  </Text>{' '}
+                  <Box marginLeft={2}>
+                    <Text size={1}>Upload stalled</Text>
+                  </Box>
+                </Inline>
+                <Box padding={2}>
+                  <Text muted size={1}>
+                    This upload didn't make any progress in the last{' '}
+                    {prettyMs(elapsedMs(uploadState.updated), {compact: true})} and likely got
+                    interrupted.
+                  </Text>
+                </Box>
+              </>
             )}
-          </Box>
+            {!stalled && (
+              <Box flex={1}>
+                <Text muted size={1}>
+                  {completed && !stalled && <>Complete</>}
+                  {!completed && !stalled && (
+                    <>
+                      Uploading
+                      {filename ? (
+                        <>
+                          {' '}
+                          <code>{filename}</code>
+                        </>
+                      ) : (
+                        <>…</>
+                      )}
+                    </>
+                  )}
+                </Text>
+              </Box>
+            )}
+
+            <Box marginTop={1}>
+              {isUploading && (
+                <Button
+                  mode="bleed"
+                  color="danger"
+                  onClick={this.handleCancelUpload}
+                  text="Cancel"
+                />
+              )}
+              {!isUploading && stalled && (
+                <Button
+                  fontSize={1}
+                  mode="bleed"
+                  onClick={this.handleClearUploadState}
+                  icon={CloseIcon}
+                  text="Reset"
+                />
+              )}
+            </Box>
+          </Flex>
         </Box>
-      </div>
+      </Flex>
     )
   }
 
-  handleFieldChange = (event: PatchEvent, field: FieldT) => {
+  handleFieldChange = (event: PatchEvent, field: Field) => {
     const {onChange, type} = this.props
     onChange(
       event.prefixAll(field.name).prepend(
@@ -247,9 +318,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.setState({isAdvancedEditOpen: false})
   }
 
-  renderAdvancedEdit(fields: Array<FieldT>) {
+  renderAdvancedEdit(fields: Field[]) {
     return (
-      <Dialog title={<>Edit details</>} width={1} onClose={this.handleStopAdvancedEdit}>
+      <Dialog
+        id={this.dialogId}
+        header={<>Edit details</>}
+        width={1}
+        onClose={this.handleStopAdvancedEdit}
+      >
         <PresenceOverlay margins={[0, 0, 1, 0]}>
           <Box padding={4}>{this.renderFields(fields)}</Box>
         </PresenceOverlay>
@@ -264,25 +340,34 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return <Button mode="bleed" text="Select" />
   }
 
-  renderFields(fields: Array<FieldT>) {
+  renderFields(fields: Field[]) {
     return fields.map((field) => this.renderField(field))
   }
 
-  handleFocus = (event) => {
+  handleFileTargetFocus = () => {
     this.setState({
-      hasFocus: true,
+      hasFileTargetFocus: true,
     })
-    this.props.onFocus(event)
+    this.props.onFocus(['asset'])
   }
-
-  handleBlur = () => {
+  handleFileTargetBlur = () => {
     this.setState({
-      hasFocus: false,
+      hasFileTargetFocus: false,
     })
     this.props.onBlur()
   }
+  handleFileTargetDragEnter = () => {
+    this.setState({
+      isDraggingOver: true,
+    })
+  }
+  handleFileTargetDragLeave = () => {
+    this.setState({
+      isDraggingOver: false,
+    })
+  }
 
-  renderField(field: FieldT) {
+  renderField(field: Field) {
     const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (
@@ -294,7 +379,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         path={[field.name]}
         onFocus={onFocus}
         onBlur={onBlur}
-        readOnly={readOnly || field.type.readOnly}
+        readOnly={Boolean(readOnly || field.type.readOnly)}
         focusPath={focusPath}
         level={level}
         presence={presence}
@@ -303,18 +388,22 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderAsset() {
-    const {value, materialize, readOnly} = this.props
-    if (value && value.asset) {
-      return (
-        <WithMaterializedReference reference={value.asset} materialize={materialize}>
-          {this.renderMaterializedAsset}
-        </WithMaterializedReference>
-      )
-    }
+    const {value, materialize} = this.props
+    return (
+      <WithMaterializedReference reference={value!.asset} materialize={materialize}>
+        {this.renderMaterializedAsset}
+      </WithMaterializedReference>
+    )
+  }
+
+  renderUploadPlaceholder() {
+    const {readOnly} = this.props
+    const {hasFileTargetFocus} = this.state
+
     return readOnly ? (
       <span>Field is read only</span>
     ) : (
-      <UploadPlaceholder hasFocus={this.state.hasFocus} />
+      <UploadPlaceholder canPaste={hasFileTargetFocus} />
     )
   }
 
@@ -328,7 +417,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this._focusArea = el
   }
 
-  getUploadOptions = (file: globalThis.File): Array<ResolvedUploader> => {
+  getUploadOptions = (file: globalThis.File): ResolvedUploader[] => {
     const {type, resolveUploader} = this.props
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
@@ -344,7 +433,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   render() {
     const {type, value, compareValue, level, markers, readOnly, presence} = this.props
-    const {isAdvancedEditOpen, hasFocus} = this.state
+    const {isAdvancedEditOpen, isDraggingOver} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -352,94 +441,90 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const accept = get(type, 'options.accept', '')
     const hasAsset = value && value.asset
 
-    const isInside = presence
-      .map((item) => {
-        const otherFieldsPath = otherFields.map((field) => field.name)
-        return item.path.some((path) => otherFieldsPath.includes(path)) ? item.identity : null
-      })
-      .filter(String)
+    // Whoever is present at the asset field is who we show on the field itself
+    const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
 
     return (
       <>
         <ImperativeToast ref={this.setToast} />
 
-        <UploadTargetFieldset
+        <FormFieldSet
           markers={markers}
-          legend={type.title}
+          title={type.title}
           description={type.description}
           level={level}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          onUpload={this.handleUpload}
-          getUploadOptions={this.getUploadOptions}
-          ref={this.setFocusArea}
-          presence={presence.filter(
-            (item) => item.path[0] === '$' || isInside.includes(item.identity)
-          )}
+          presence={assetFieldPresence}
           changeIndicator={false}
         >
-          <div
-            className={classNames(
-              styles.root,
-              readOnly && styles.readOnly,
-              hasFocus && styles.focused
-            )}
-          >
-            <ChangeIndicatorCompareValueProvider
-              value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
-            >
-              <ChangeIndicator>
-                <div className={styles.content}>
-                  <div className={styles.assetWrapper}>
-                    {value && value._upload && (
-                      <div className={styles.uploadState}>
-                        {this.renderUploadState(value._upload)}
-                      </div>
-                    )}
-                    {this.renderAsset()}
-                  </div>
-                </div>
-              </ChangeIndicator>
-            </ChangeIndicatorCompareValueProvider>
-
-            <div className={styles.functions}>
-              <ButtonGrid>
-                {!readOnly && (
-                  <FileInputButton
-                    inverted
-                    icon={UploadIcon}
-                    onSelect={this.handleSelectFile}
-                    accept={accept}
+          <div>
+            <Box>
+              <ChangeIndicatorCompareValueProvider
+                value={value?.asset?._ref}
+                compareValue={compareValue?.asset?._ref}
+              >
+                <ChangeIndicatorWithProvidedFullPath
+                  path={['asset']}
+                  hasFocus={this.state.hasFileTargetFocus}
+                  value={value?.asset}
+                  compareValue={compareValue?.asset}
+                >
+                  <FileTarget
+                    border
+                    tabIndex={0}
+                    disabled={Boolean(readOnly)}
+                    ref={this.setFocusArea}
+                    onFiles={this.handleSelectFiles}
+                    onFocus={this.handleFileTargetFocus}
+                    onBlur={this.handleFileTargetBlur}
+                    onDragEnter={this.handleFileTargetDragEnter}
+                    onDragLeave={this.handleFileTargetDragLeave}
                   >
-                    Upload
-                  </FileInputButton>
-                )}
-                {/* Enable when selecting already uploaded files is possible */}
-                {/* {!readOnly && this.renderSelectFileButton()} */}
-                {value && otherFields.length > 0 && (
-                  <Button
-                    icon={readOnly ? EyeOpenIcon : EditIcon}
-                    mode="bleed"
-                    title={readOnly ? 'View details' : 'Edit details'}
-                    onClick={this.handleStartAdvancedEdit}
-                    text={readOnly ? 'View details' : 'Edit'}
-                  />
-                )}
-                {!readOnly && hasAsset && (
-                  <Button
-                    tone="critical"
-                    mode="bleed"
-                    onClick={this.handleRemoveButtonClick}
-                    text="Remove"
-                  />
-                )}
-                {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-              </ButtonGrid>
-            </div>
+                    <AssetBackground align="center" justify="center">
+                      {!readOnly && isDraggingOver && <Overlay>Drop top upload</Overlay>}
+                      {value?._upload
+                        ? this.renderUploadState(value._upload)
+                        : value?.asset
+                        ? this.renderAsset()
+                        : this.renderUploadPlaceholder()}
+                    </AssetBackground>
+                  </FileTarget>
+                </ChangeIndicatorWithProvidedFullPath>
+              </ChangeIndicatorCompareValueProvider>
+            </Box>
+            <Grid gap={1} columns={3} marginTop={3}>
+              {!readOnly && (
+                <FileInputButton
+                  onSelect={this.handleSelectFileList}
+                  mode="ghost"
+                  icon={UploadIcon}
+                  accept={accept}
+                  text="Upload"
+                />
+              )}
+              {/* Enable when selecting already uploaded files is possible */}
+              {/* {!readOnly && this.renderSelectFileButton()} */}
+              {value && otherFields.length > 0 && (
+                <Button
+                  icon={readOnly ? EyeOpenIcon : EditIcon}
+                  mode="ghost"
+                  title={readOnly ? 'View details' : 'Edit details'}
+                  onClick={this.handleStartAdvancedEdit}
+                  text={readOnly ? 'View details' : 'Edit'}
+                />
+              )}
+              {!readOnly && hasAsset && (
+                <Button
+                  tone="critical"
+                  mode="ghost"
+                  onClick={this.handleRemoveButtonClick}
+                  text="Remove"
+                />
+              )}
+              {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+            </Grid>
           </div>
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-        </UploadTargetFieldset>
+        </FormFieldSet>
       </>
     )
   }
