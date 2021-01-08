@@ -1,31 +1,30 @@
-import {ImperativeToast, FormFieldSet} from '@sanity/base/components'
-import {Button, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
-import classNames from 'classnames'
+import {
+  ChangeIndicatorWithProvidedFullPath,
+  FormFieldSet,
+  ImperativeToast,
+} from '@sanity/base/components'
+import {Box, Button, Dialog, Grid, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import {get, partition, uniqueId} from 'lodash'
 import {Observable} from 'rxjs'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {EditIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon, EyeOpenIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
+  AssetSource,
   Image as BaseImage,
   ImageAsset,
   ImageSchemaType,
   Marker,
   ObjectField,
   Path,
-  AssetSource,
   SanityDocument,
+  AssetFromSource,
+  Asset as AssetDocument,
 } from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
-
-// Parts
-import {PresenceOverlay} from '@sanity/base/presence'
-import {FormFieldPresence} from '@sanity/base/lib/presence'
-
-// Package files
+import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
@@ -38,21 +37,10 @@ import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {CircularProgress} from '../../../components/progress'
-import {ButtonGrid, DefaultDialog} from '../../../legacyParts'
+import {AssetBackground, FileTarget, Overlay} from '../common/styles'
+import {UploadState} from '../types'
+import {UploadProgress} from '../common/UploadProgress'
 import {urlToFile, base64ToFile} from './utils/image'
-
-import styles from './ImageInput.css'
-
-export type AssetFromSource = {
-  kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
-  value: string | File
-  assetDocumentProps?: ImageAsset
-}
-
-interface UploadState {
-  progress: number
-}
 
 interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -61,7 +49,6 @@ interface Image extends Partial<BaseImage> {
 export type Props = {
   value?: Image
   compareValue?: Image
-  document?: Image
   type: ImageSchemaType
   level: number
   onChange: (event: PatchEvent) => void
@@ -72,12 +59,11 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   directUploads?: boolean
+  document: SanityDocument
   assetSources?: AssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
 }
-
-type TODO = any
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
 const getDevicePixelRatio = () => {
@@ -86,11 +72,23 @@ const getDevicePixelRatio = () => {
   }
   return Math.round(Math.max(1, window.devicePixelRatio))
 }
+
+type FileInfo = {
+  type: string // mime type
+  kind: string // 'file' or 'string'
+}
+
 type ImageInputState = {
   isUploading: boolean
   isAdvancedEditOpen: boolean
-  selectedAssetSource?: any
-  hasFocus: boolean
+  selectedAssetSource: AssetSource | null
+  hasFileTargetFocus: boolean
+  // Metadata about files currently over the drop area
+  hoveringFiles: FileInfo[]
+}
+
+type Focusable = {
+  focus: () => void
 }
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
@@ -100,25 +98,27 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   _inputId = uniqueId('ImageInput')
 
-  _focusArea: any
+  _focusRef: null | Focusable = null
+
   uploadSubscription: any
   state: ImageInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
     selectedAssetSource: null,
-    hasFocus: false,
+    hasFileTargetFocus: false,
+    hoveringFiles: [],
   }
 
   toast: {push: (params: ToastParams) => void} | null = null
 
   focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
+    if (this._focusRef) {
+      this._focusRef.focus()
     }
   }
 
-  setFocusArea = (el: any | null) => {
-    this._focusArea = el
+  setFocusElement = (el: any | null) => {
+    this._focusRef = el
   }
 
   isImageToolEnabled() {
@@ -321,17 +321,26 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
-  handleFocus = (path: Path) => {
+  handleFileTargetFocus = () => {
     this.setState({
-      hasFocus: true,
+      hasFileTargetFocus: true,
     })
-    this.props.onFocus(path)
+    this.props.onFocus(['asset'])
   }
-
-  handleBlur = () => {
+  handleFileTargetBlur = () => {
     this.props.onBlur()
     this.setState({
-      hasFocus: false,
+      hasFileTargetFocus: false,
+    })
+  }
+  handleFilesOver = (hoveringFiles: FileInfo[]) => {
+    this.setState({
+      hoveringFiles,
+    })
+  }
+  handleFilesOut = () => {
+    this.setState({
+      hoveringFiles: [],
     })
   }
 
@@ -339,13 +348,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.cancelUpload()
   }
 
-  handleSelectFile = (files: FileList) => {
-    this.uploadFirstAccepted(Array.from(files))
+  handleClearUploadState = () => {
+    this.clearUploadStatus()
   }
 
-  handleUpload = ({file, uploader}: TODO) => {
-    this.uploadWith(uploader, file)
-  }
+  handleSelectFiles = (files: File[]) => this.uploadFirstAccepted(files)
 
   handleSelectImageFromAssetSource = (source: AssetSource) => {
     this.setState({selectedAssetSource: source})
@@ -360,28 +367,35 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
     return (
-      <DefaultDialog isOpen title="Edit details" onClose={this.handleStopAdvancedEdit}>
+      <Dialog
+        header="Edit details"
+        position="absolute"
+        width="auto"
+        id={`${this._inputId}_dialog`}
+        onClose={this.handleStopAdvancedEdit}
+      >
         <PresenceOverlay>
-          <div className={styles.fieldWrapper}>
-            {withImageTool && (
-              <WithMaterializedReference materialize={materialize} reference={value.asset}>
-                {(imageAsset) => (
-                  <ImageToolInput
-                    type={type}
-                    level={level}
-                    readOnly={readOnly}
-                    imageUrl={this.getConstrainedImageSrc(imageAsset)}
-                    value={value}
-                    onChange={onChange}
-                  />
-                )}
-              </WithMaterializedReference>
-            )}
-
-            {this.renderFields(fields)}
-          </div>
+          <Box padding={4}>
+            <Grid gap={2} columns={2}>
+              {withImageTool && (
+                <WithMaterializedReference materialize={materialize} reference={value?.asset}>
+                  {(imageAsset) => (
+                    <ImageToolInput
+                      type={type}
+                      level={level}
+                      readOnly={Boolean(readOnly)}
+                      imageUrl={this.getConstrainedImageSrc(imageAsset)}
+                      value={value}
+                      onChange={onChange}
+                    />
+                  )}
+                </WithMaterializedReference>
+              )}
+              {this.renderFields(fields)}
+            </Grid>
+          </Box>
         </PresenceOverlay>
-      </DefaultDialog>
+      </Dialog>
     )
   }
 
@@ -408,37 +422,50 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (
-      <div className={styles.field} key={field.name}>
-        <FormBuilderInput
-          value={fieldValue}
-          type={field.type}
-          onChange={(ev) => this.handleFieldChange(ev, field)}
-          path={[field.name]}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          readOnly={Boolean(readOnly || field.type.readOnly)}
-          focusPath={focusPath}
-          level={level}
-          presence={presence}
-        />
-      </div>
+      <FormBuilderInput
+        value={fieldValue}
+        type={field.type}
+        onChange={(ev) => this.handleFieldChange(ev, field)}
+        path={[field.name]}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        readOnly={Boolean(readOnly || field.type.readOnly)}
+        focusPath={focusPath}
+        level={level}
+        presence={presence}
+      />
+    )
+  }
+
+  renderAsset() {
+    const {value, materialize} = this.props
+    return (
+      <WithMaterializedReference reference={value!.asset} materialize={materialize}>
+        {this.renderMaterializedAsset}
+      </WithMaterializedReference>
+    )
+  }
+
+  renderUploadPlaceholder() {
+    const {readOnly} = this.props
+    const {hasFileTargetFocus} = this.state
+
+    return readOnly ? (
+      <span>Field is read only</span>
+    ) : (
+      <UploadPlaceholder canPaste={hasFileTargetFocus} />
     )
   }
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const completed = uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
+
     return (
-      <div className={styles.progress}>
-        <div>
-          <div>
-            <CircularProgress value={completed ? 100 : uploadState.progress} />
-          </div>
-          {isUploading && (
-            <Button mode="bleed" tone="critical" onClick={this.handleCancelUpload} text="Cancel" />
-          )}
-        </div>
-      </div>
+      <UploadProgress
+        uploadState={uploadState}
+        onCancel={isUploading ? this.handleCancelUpload : undefined}
+        onClearStale={this.handleClearUploadState}
+      />
     )
   }
 
@@ -496,7 +523,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             return (
               <Component
                 document={document}
-                selectedAssets={[imageAsset]}
+                selectedAssets={[imageAsset as AssetDocument]}
                 selectionType="single"
                 onClose={this.handleAssetSourceClosed}
                 onSelect={this.handleSelectAssetFromSource}
@@ -521,130 +548,113 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.toast = toast
   }
 
-  // eslint-disable-next-line complexity
   render() {
     const {
       type,
       value,
       compareValue,
       level,
-      materialize,
       markers,
       readOnly,
       presence,
       directUploads,
     } = this.props
-    const {isAdvancedEditOpen, selectedAssetSource, hasFocus} = this.state
+    const {isAdvancedEditOpen, hoveringFiles, hasFileTargetFocus, selectedAssetSource} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
+
     const accept = get(type, 'options.accept', 'image/*')
-    const hasAsset = value && value.asset
+
+    // Whoever is present at the asset field is who we show on the field itself
+    const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
+
     const showAdvancedEditButton =
-      value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
+      value && (otherFields.length > 0 || (value?.asset && this.isImageToolEnabled()))
 
-    const FieldSetComponent = FormFieldSet
-    const uploadProps = directUploads
-      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
-      : {}
-
-    const isInside = presence
-      .map((item) => {
-        const otherFieldsPath = otherFields.map((field) => field.name)
-        return item.path.some((path) => otherFieldsPath.includes(path)) ? item.identity : null
-      })
-      .filter(String)
     return (
       <>
         <ImperativeToast ref={this.setToast} />
 
-        <FieldSetComponent
-          markers={markers}
-          presence={presence.filter(
-            (item) => item.path[0] === '$' || isInside.includes(item.identity)
-          )}
+        <FormFieldSet
+          __unstable_markers={markers}
+          __unstable_presence={assetFieldPresence}
           title={type.title}
           description={type.description}
           level={level}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          ref={this.setFocusArea}
           __unstable_changeIndicator={false}
-          {...uploadProps}
         >
-          <div
-            className={classNames(
-              styles.root,
-              readOnly && styles.readOnly,
-              hasFocus && styles.focused
-            )}
-          >
+          <Box>
             <ChangeIndicatorCompareValueProvider
               value={value?.asset?._ref}
               compareValue={compareValue?.asset?._ref}
             >
-              <ChangeIndicator>
-                <div className={styles.content}>
-                  <div className={styles.assetWrapper}>
-                    {value && value._upload && (
-                      <div className={styles.uploadState}>
-                        {this.renderUploadState(value._upload)}
-                      </div>
+              <ChangeIndicatorWithProvidedFullPath
+                path={['asset']}
+                hasFocus={hasFileTargetFocus}
+                value={value?.asset}
+                compareValue={compareValue?.asset}
+              >
+                <FileTarget
+                  shadow={1}
+                  tabIndex={0}
+                  disabled={readOnly === true}
+                  ref={this.setFocusElement}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
+                >
+                  <AssetBackground align="center" justify="center">
+                    {value?._upload && this.renderUploadState(value._upload)}
+                    {!value?._upload && value?.asset && this.renderAsset()}
+                    {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                    {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                      <Overlay>Drop top upload</Overlay>
                     )}
-                    {/* eslint-disable-next-line no-nested-ternary */}
-                    {value?.asset ? (
-                      <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                        {this.renderMaterializedAsset}
-                      </WithMaterializedReference>
-                    ) : readOnly ? (
-                      <span>Field is read only</span>
-                    ) : (
-                      directUploads && <UploadPlaceholder fileType="image" />
-                    )}
-                  </div>
-                </div>
-              </ChangeIndicator>
+                  </AssetBackground>
+                </FileTarget>
+              </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
+          </Box>
 
-            <div className={styles.functions}>
-              <ButtonGrid>
-                {!readOnly && directUploads && (
-                  <FileInputButton
-                    icon={UploadIcon}
-                    mode="ghost"
-                    onSelect={this.handleSelectFile}
-                    accept={accept}
-                    text="Upload"
-                  />
-                )}
-                {!readOnly && this.renderSelectImageButton()}
-                {showAdvancedEditButton && (
-                  <Button
-                    icon={readOnly ? EyeOpenIcon : EditIcon}
-                    mode="bleed"
-                    title={readOnly ? 'View details' : 'Edit details'}
-                    onClick={this.handleStartAdvancedEdit}
-                    text={readOnly ? 'View details' : 'Edit'}
-                  />
-                )}
-                {hasAsset && !readOnly && (
-                  <Button
-                    color="danger"
-                    icon={TrashIcon}
-                    mode="bleed"
-                    onClick={this.handleRemoveButtonClick}
-                    text="Remove"
-                  />
-                )}
-              </ButtonGrid>
-            </div>
-          </div>
+          <Grid gap={1} columns={4}>
+            {!readOnly && directUploads && (
+              <FileInputButton
+                icon={UploadIcon}
+                mode="ghost"
+                onSelect={this.handleSelectFiles}
+                accept={accept}
+                text="Upload"
+              />
+            )}
+            {!readOnly && this.renderSelectImageButton()}
+            {showAdvancedEditButton && (
+              <Button
+                icon={readOnly ? EyeOpenIcon : EditIcon}
+                mode="bleed"
+                title={readOnly ? 'View details' : 'Edit details'}
+                onClick={this.handleStartAdvancedEdit}
+                text={readOnly ? 'View details' : 'Edit'}
+              />
+            )}
+            {value?.asset && !readOnly && (
+              <Button
+                color="danger"
+                icon={TrashIcon}
+                mode="bleed"
+                onClick={this.handleRemoveButtonClick}
+                text="Remove"
+              />
+            )}
+          </Grid>
 
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
           {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
           {selectedAssetSource && this.renderAssetSource()}
-        </FieldSetComponent>
+        </FormFieldSet>
       </>
     )
   }
