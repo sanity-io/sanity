@@ -12,7 +12,7 @@ type DetailsState = {
   isOpen: any
 }
 
-export default class Details extends React.Component<DetailsProps, DetailsState> {
+export class Details extends React.Component<DetailsProps, DetailsState> {
   static defaultProps = {
     title: 'Details',
     isOpen: false,
