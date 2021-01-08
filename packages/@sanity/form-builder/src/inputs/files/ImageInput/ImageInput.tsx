@@ -28,10 +28,9 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import {FormFieldPresence} from '@sanity/base/lib/presence'
 
 // Package files
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -43,11 +42,12 @@ import {
 } from '../../../sanity/uploads/types'
 import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
-import UploadPlaceholder from '../../common/UploadPlaceholder'
-import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
+import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FormFieldSet} from '../../../components/FormField'
+import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {urlToFile, base64ToFile} from './utils/image'
+import {CircularProgress} from '../../../components/progress'
 
 import styles from './ImageInput.css'
 
@@ -81,7 +81,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Path
   markers: Marker[]
-  presence: any
+  presence: FormFieldPresence[]
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -366,30 +366,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
-  // handleDialogAction = action => {
-  //   if (action.name === 'done') {
-  //     this.handleStopAdvancedEdit()
-  //   }
-  // }
-
   renderAdvancedEdit(fields: ObjectField[]) {
     const {value, level, type, onChange, readOnly, materialize} = this.props
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
     return (
-      <DefaultDialog
-        // actions={[
-        //   {
-        //     name: 'done',
-        //     title: 'Done',
-        //     inverted: true
-        //   }
-        // ]}
-        isOpen
-        title="Edit details"
-        // onAction={this.handleDialogAction}
-        onClose={this.handleStopAdvancedEdit}
-      >
+      <DefaultDialog isOpen title="Edit details" onClose={this.handleStopAdvancedEdit}>
         <PresenceOverlay>
           <div className={styles.fieldWrapper}>
             {withImageTool && (
@@ -456,19 +438,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const isComplete =
-      uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
+    const completed = uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
     return (
       <div className={styles.progress}>
         <div>
           <div>
-            <ProgressCircle
-              percent={status === 'complete' ? 100 : uploadState.progress}
-              text={isComplete ? 'Please wait…' : 'Uploading…'}
-              completed={isComplete}
-              showPercent
-              animation
-            />
+            <CircularProgress value={completed ? 100 : uploadState.progress} />
           </div>
           {isUploading && (
             <Button mode="bleed" tone="critical" onClick={this.handleCancelUpload} text="Cancel" />
@@ -573,7 +548,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
-    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
+
+    // todo: use FileTarget instead of UploadTargetFieldset
+    // const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
+    const FieldSetComponent = FormFieldSet
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
@@ -629,9 +607,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     ) : readOnly ? (
                       <span>Field is read only</span>
                     ) : (
-                      SUPPORT_DIRECT_UPLOADS && (
-                        <UploadPlaceholder hasFocus={hasFocus} fileType="image" />
-                      )
+                      SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder fileType="image" />
                     )}
                   </div>
                 </div>
@@ -643,12 +619,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 {!readOnly && SUPPORT_DIRECT_UPLOADS && (
                   <FileInputButton
                     icon={UploadIcon}
-                    inverted
+                    mode="ghost"
                     onSelect={this.handleSelectFile}
                     accept={accept}
-                  >
-                    Upload
-                  </FileInputButton>
+                    text="Upload"
+                  />
                 )}
                 {!readOnly && this.renderSelectImageButton()}
                 {showAdvancedEditButton && (

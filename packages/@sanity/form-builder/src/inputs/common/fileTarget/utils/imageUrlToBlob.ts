@@ -1,5 +1,8 @@
-// Loads an image, inserts it into a canvas and loads the canvas contents into a blob
-export function imageUrlToBlob(imageUrl, format = 'image/jpeg', quality = 1): Promise<Blob> {
+export function imageUrlToBlob(
+  imageUrl: string,
+  format = 'image/jpeg',
+  quality = 1
+): Promise<Blob> {
   if (imageUrl.match(/^webkit-fake-url:\/\//)) {
     return Promise.reject(new Error('Cannot read image contents from webkit fake url'))
   }
