@@ -20,14 +20,18 @@ export default function uploadImage(file: File, options?: UploadOptions): Observ
       ...event,
       progress: 2 + (event.percent / 100) * 98,
     })),
-    map((event) => {
+    map((event: any) => {
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
           set(100, [UPLOAD_STATUS_KEY, 'progress']),
+          set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
         ])
       }
-      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
+      return createUploadEvent([
+        set(event.percent, [UPLOAD_STATUS_KEY, 'progress']),
+        set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
+      ])
     })
   )
 
