@@ -375,12 +375,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <PresenceOverlay>
           <div className={styles.fieldWrapper}>
             {withImageTool && (
-              <WithMaterializedReference materialize={materialize} reference={value.asset}>
+              <WithMaterializedReference materialize={materialize} reference={value?.asset}>
                 {(imageAsset) => (
                   <ImageToolInput
                     type={type}
                     level={level}
-                    readOnly={readOnly}
+                    readOnly={Boolean(readOnly)}
                     imageUrl={this.getConstrainedImageSrc(imageAsset)}
                     value={value}
                     onChange={onChange}
@@ -556,21 +556,16 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
 
-    const isInside = presence
-      .map((item) => {
-        const otherFieldsPath = otherFields.map((field) => field.name)
-        return item.path.some((path) => otherFieldsPath.includes(path)) ? item.identity : null
-      })
-      .filter(String)
+    // Whoever is present at the asset field is who we show on the field itself
+    const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
+
     return (
       <>
         <ImperativeToast ref={this.setToast} />
 
         <FieldSetComponent
           markers={markers}
-          presence={presence.filter(
-            (item) => item.path[0] === '$' || isInside.includes(item.identity)
-          )}
+          presence={assetFieldPresence}
           title={type.title}
           description={type.description}
           level={level}
