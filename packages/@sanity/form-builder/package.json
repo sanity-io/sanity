@@ -47,6 +47,7 @@
     "nano-pubsub": "^2.0.0",
     "object-inspect": "^1.6.0",
     "popper.js": "1.16.1",
+    "pretty-ms": "^7.0.1",
     "react-focus-lock": "^2.5.0",
     "react-click-outside": "^3.0.0",
     "react-container-query": "^0.11.0",

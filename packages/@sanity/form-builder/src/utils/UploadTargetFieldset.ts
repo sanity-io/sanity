@@ -1,4 +1,4 @@
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {createUploadTarget} from '../inputs/common/UploadTarget/createUploadTarget'
+import {FormFieldSet} from '@sanity/base/components'
+import {fileTarget} from '../inputs/common/fileTarget'
 
-export default createUploadTarget(Fieldset)
+export default fileTarget(FormFieldSet)

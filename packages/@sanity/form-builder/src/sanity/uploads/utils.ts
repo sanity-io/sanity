@@ -14,9 +14,11 @@ export function createUploadEvent(patches = []): UploadEvent {
 export const CLEANUP_EVENT = createUploadEvent([UNSET_UPLOAD_PATCH])
 
 export function createInitialUploadEvent(file: File) {
+  const now = new Date().toISOString()
   const value = {
     progress: 2,
-    initiated: new Date().toISOString(),
+    initiated: now,
+    updated: now,
     file: {name: file.name, type: file.type},
   }
   return createUploadEvent([
