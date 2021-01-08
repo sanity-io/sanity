@@ -1,5 +1,5 @@
 import React from 'react'
-import Details from './common/Details'
+import {Details} from '../components/Details'
 import styles from './Warning.css'
 
 type Props = {
