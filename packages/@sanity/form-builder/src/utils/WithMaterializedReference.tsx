@@ -4,12 +4,12 @@ import {Reference} from '@sanity/types'
 import WithMaterializedDocument from './WithMaterializedDocument'
 
 type Props = {
-  reference: Reference
+  reference?: Reference
   materialize: (string: string) => Observable<any>
   children: (arg: any) => null | React.ReactNode
 }
 
-function getRefId(reference: Reference | null): string | null {
+function getRefId(reference?: Reference): string | undefined {
   return reference && reference._ref
 }
 
