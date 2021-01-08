@@ -1,6 +1,6 @@
 import React from 'react'
 import {Button} from '@sanity/ui'
-import Details from '../common/Details'
+import {Details} from '../../components/Details'
 import PatchEvent, {unset} from '../../PatchEvent'
 import {ActivateOnFocus} from '../../transitional/ActivateOnFocus'
 import styles from './styles/UnknownFields.css'
