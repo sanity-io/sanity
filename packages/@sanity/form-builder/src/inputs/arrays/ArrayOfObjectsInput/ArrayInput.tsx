@@ -15,13 +15,13 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
-import {uploadTarget} from './uploadTarget/uploadTarget'
+import {fileTarget} from '../../common/fileTarget'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 
 declare const __DEV__: boolean
 
-const UploadTargetFieldset = uploadTarget(FormFieldSet)
+const UploadTargetFieldset = fileTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
 
