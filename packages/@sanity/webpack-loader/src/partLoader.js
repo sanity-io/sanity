@@ -35,7 +35,7 @@ function sanityPartLoader(input) {
   const basePath = this._compiler.sanity.basePath
 
   if (request.indexOf('config:') === 0) {
-    const config = JSON.parse(input)
+    const config = JSON.parse(input.replace(/^module\.exports\s?=\s?/, ''))
     const indent = buildEnv === 'production' ? 0 : 2
     const reduced = reduceConfig(config, buildEnv, {studioRootPath: basePath})
     return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`

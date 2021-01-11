@@ -152,6 +152,10 @@ export default (config = {}) => {
           },
         },
         webpackIntegration.getPartLoader(wpIntegrationOptions),
+        {
+          test: /\.json$/,
+          loader: 'json-loader',
+        },
       ],
     },
     profile: config.profile || false,
