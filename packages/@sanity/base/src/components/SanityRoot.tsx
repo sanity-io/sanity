@@ -8,7 +8,7 @@ import React, {useState} from 'react'
 import Refractor from 'react-refractor'
 import jsx from 'refractor/lang/jsx'
 import styled from 'styled-components'
-import pkg from '../../package.json'
+import {REQUIRED_UI_VERSION} from '../requiredSanityUiVersion'
 import {theme} from '../theme'
 import {userColorManager, UserColorManagerProvider} from '../user-color'
 import ErrorHandler from './ErrorHandler'
@@ -44,7 +44,7 @@ function AppProvider() {
         </p>
 
         <pre style={{padding: 20, background: '#000', color: '#fff'}}>
-          <code>npm install @sanity/ui@{pkg.dependencies['@sanity/ui']}</code>
+          <code>npm install @sanity/ui@"{REQUIRED_UI_VERSION}"</code>
         </pre>
       </div>
     )

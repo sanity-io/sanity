@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
+    "prepublishOnly": "node scripts/writeRequiredUIVersion.js",
     "test": "jest"
   },
   "repository": {
