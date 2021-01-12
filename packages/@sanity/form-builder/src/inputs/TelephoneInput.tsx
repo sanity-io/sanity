@@ -6,7 +6,7 @@ import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormField} from '../components/FormField'
 import {Props} from './types'
 
-const StringInput = React.forwardRef(function StringInput(
+const TelephoneInput = React.forwardRef(function TelephoneInput(
   props: Props<string, StringSchemaType>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -46,4 +46,4 @@ const StringInput = React.forwardRef(function StringInput(
   )
 })
 
-export default StringInput
+export default TelephoneInput

@@ -6,7 +6,7 @@ import PatchEvent, {set, unset} from '../PatchEvent'
 import {FormField} from '../components/FormField'
 import {Props} from './types'
 
-const UrlInput = React.forwardRef(function StringInput(
+const UrlInput = React.forwardRef(function UrlInput(
   props: Props<string, StringSchemaType>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
