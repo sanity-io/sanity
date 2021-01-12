@@ -12,7 +12,7 @@ import {
   tap,
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
-import observeForPreview from '../observeForPreview'
+import {observeForPreview} from '../'
 import {INVALID_PREVIEW_CONFIG} from '../constants'
 import {FieldName, SortOrdering, Type} from '../types'
 

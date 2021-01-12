@@ -13,7 +13,6 @@
     {"path": "./@sanity/imagetool"},
     {"path": "./@sanity/initial-value-templates"},
     {"path": "./@sanity/mutator"},
-    {"path": "./@sanity/preview"},
     {"path": "./@sanity/react-hooks"},
     {"path": "./@sanity/schema"},
     {"path": "./@sanity/state-router"},

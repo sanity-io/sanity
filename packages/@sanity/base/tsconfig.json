@@ -22,9 +22,6 @@
   },
   "references": [
     {
-      "path": "../preview"
-    },
-    {
       "path": "../structure"
     },
     {

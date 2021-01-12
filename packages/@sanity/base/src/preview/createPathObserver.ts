@@ -105,7 +105,7 @@ function normalizeValue(value: Value | Id): Value {
   return typeof value === 'string' ? {_id: value} : value
 }
 
-export default function createPathObserver(observeFields: ObserveFieldsFn) {
+export function createPathObserver(observeFields: ObserveFieldsFn) {
   return (value: Value, paths: (FieldName | Path)[]): Observable<Record<string, unknown> | null> =>
     observePaths(normalizeValue(value), normalizePaths(paths), observeFields)
 }

@@ -38,8 +38,6 @@
       "@sanity/imagetool": ["./@sanity/imagetool/src"],
       "@sanity/initial-value-templates": ["./@sanity/initial-value-templates/src"],
       "@sanity/mutator": ["./@sanity/mutator/src"],
-      "@sanity/preview/components": ["./@sanity/preview/src/components"],
-      "@sanity/preview": ["./@sanity/preview/src"],
       "@sanity/react-hooks": ["./@sanity/react-hooks/src"],
       "@sanity/schema/lib": ["./@sanity/schema/src"],
       "@sanity/schema": ["./@sanity/schema/src/legacy"],
