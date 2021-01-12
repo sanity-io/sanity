@@ -7,7 +7,7 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {Item, List} from '../common/list'
-import {ArrayFunctions} from '../../../legacyImports'
+import {ArrayFunctions} from '../../../legacyPluginParts'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 
