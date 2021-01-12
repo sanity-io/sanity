@@ -6,7 +6,7 @@ import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
-const EmailInput = React.forwardRef(function StringInput(
+const EmailInput = React.forwardRef(function EmailInput(
   props: Props<string, StringSchemaType>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
