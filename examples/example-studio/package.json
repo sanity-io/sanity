@@ -30,6 +30,7 @@
     "@sanity/language-filter": "2.1.4",
     "@sanity/storybook": "2.1.4",
     "@sanity/vision": "2.1.4",
+    "@sanity/ui": "^0.28",
     "bio-pv": "^1.8.1",
     "date-fns": "^2.16.1",
     "fetch": "^1.1.0",
@@ -39,7 +40,8 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-icons": "^3.11.0",
-    "react-tooltip": "^3.5.0"
+    "react-tooltip": "^3.5.0",
+    "styled-components": "^5.2"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"

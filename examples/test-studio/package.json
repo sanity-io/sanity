@@ -35,6 +35,7 @@
     "@sanity/react-hooks": "2.1.4",
     "@sanity/studio-hints": "2.1.4",
     "@sanity/types": "2.1.4",
+    "@sanity/ui": "^0.28",
     "@sanity/util": "2.1.4",
     "@sanity/vision": "2.1.4",
     "@turf/helpers": "^6.0.1",
@@ -53,7 +54,8 @@
     "sanity-plugin-dashboard-widget-cats": "^0.0.2",
     "sanity-plugin-dashboard-widget-document-count": "^0.0.1",
     "sanity-plugin-dashboard-widget-document-list": "^0.0.11",
-    "sanity-plugin-mux-input": "^0.1.11"
+    "sanity-plugin-mux-input": "^0.1.11",
+    "styled-components": "^5.2"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
