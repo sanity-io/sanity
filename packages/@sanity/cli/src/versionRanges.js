@@ -8,9 +8,11 @@ export default {
     '@sanity/default-login': 'latest',
     '@sanity/desk-tool': 'latest',
     '@sanity/vision': 'latest',
+    '@sanity/ui': '^0.32',
     react: '^17.0',
     'react-dom': '^17.0',
     'prop-types': '^15.7',
+    'styled-components': '^5.2',
   },
 
   // Only used for Sanity-style plugins (eg, the ones we build at Sanity.io)
