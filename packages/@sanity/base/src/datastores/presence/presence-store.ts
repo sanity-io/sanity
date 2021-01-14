@@ -35,7 +35,7 @@ import {nanoid} from 'nanoid'
 import userStore, {User} from '../user'
 
 import {bifur} from '../../client/bifur'
-import {connectionStatus$} from '../../connection-status/connection-status-store'
+import {connectionStatus$} from '../connection-status/connection-status-store'
 import {
   DisconnectEvent,
   RollCallEvent,
