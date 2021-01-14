@@ -2,7 +2,7 @@
  * This is the beginning of what should be the data store tracking connection status in the Sanity studio.
  */
 
-import {bifur} from '../client/bifur'
+import {bifur} from '../../client/bifur'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
 import {concat, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
 import {catchWithCount} from './utils/catchWithCount'
