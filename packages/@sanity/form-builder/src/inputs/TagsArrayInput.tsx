@@ -1,51 +1,50 @@
+import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
-import {uniqueId} from 'lodash'
-import React from 'react'
+import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 import {TagInput} from '../components/tagInput'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
-export default class TagsArrayInput extends React.PureComponent<Props<string[]>> {
-  _input: HTMLInputElement
-  _inputId = uniqueId('TagsArrayInput')
-  set(nextValue: string[]) {
-    const patch = nextValue.length === 0 ? unset() : set(nextValue)
-    this.props.onChange(PatchEvent.from(patch))
-  }
-  handleChange = (nextValue: {value: string}[]) => {
-    this.set(nextValue.map((v) => v.value))
-  }
-  focus() {
-    if (this._input) {
-      this._input.focus()
-    }
-  }
-  setInput = (el: HTMLInputElement | null) => {
-    this._input = el
-  }
-  render() {
-    const {type, value, readOnly, level, markers, onFocus, presence} = this.props
+export const TagsArrayInput = forwardRef(
+  (props: Props<string[]>, ref: React.Ref<{focus: () => void}>) => {
+    const {level, markers, onChange, onFocus, presence, readOnly, type, value = []} = props
+    const id = useId()
+    const tagInputValue = useMemo(() => value.map((v) => ({value: v})), [value])
+    const inputRef = useRef<HTMLInputElement | null>(null)
 
-    const tagInputValue = value.map((v) => ({value: v}))
+    const handleChange = useCallback(
+      (nextValue: {value: string}[]) => {
+        const patch = nextValue.length === 0 ? unset() : set(nextValue.map((v) => v.value))
+
+        onChange(PatchEvent.from(patch))
+      },
+      [onChange]
+    )
+
+    useImperativeHandle(ref, () => ({
+      focus: () => inputRef.current?.focus(),
+    }))
 
     return (
       <FormField
-        level={level}
-        title={type.title}
         description={type.description}
-        presence={presence}
-        htmlFor={this._inputId}
+        htmlFor={id}
+        level={level}
         markers={markers}
+        presence={presence}
+        title={type.title}
       >
         <TagInput
-          id={this._inputId}
-          readOnly={readOnly}
-          value={tagInputValue}
-          onChange={this.handleChange}
+          id={id}
+          onChange={handleChange}
           onFocus={onFocus}
-          ref={this.setInput}
+          readOnly={readOnly}
+          ref={inputRef}
+          value={tagInputValue}
         />
       </FormField>
     )
   }
-}
+)
+
+TagsArrayInput.displayName = 'TagsArrayInput'
