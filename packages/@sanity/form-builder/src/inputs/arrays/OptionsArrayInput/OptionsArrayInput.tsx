@@ -1,5 +1,6 @@
 import React from 'react'
 import {get} from 'lodash'
+import {FormFieldSet} from '@sanity/base/components'
 import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {FormFieldPresence} from '@sanity/base/lib/presence'

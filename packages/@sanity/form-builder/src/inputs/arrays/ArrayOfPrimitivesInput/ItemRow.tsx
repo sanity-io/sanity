@@ -1,6 +1,7 @@
 import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
 import {Box, Card, Flex} from '@sanity/ui'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import {DragHandle} from '../common/DragHandle'

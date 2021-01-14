@@ -3,6 +3,7 @@ import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sa
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import {get, isPlainObject} from 'lodash'
+import {FormFieldSet} from '@sanity/base/components'
 import {Box, Button, Card, Stack} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
