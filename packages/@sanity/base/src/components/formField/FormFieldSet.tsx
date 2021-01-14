@@ -2,11 +2,11 @@ import {Path, Marker} from '@sanity/types'
 import {Box, Card, Flex, Grid, Stack, Text, useForwardedRef} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {forwardRef, useState, useCallback, useEffect} from 'react'
-import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
 import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {markersToValidationList} from './helpers'
 
 interface FormFieldSetProps {
@@ -28,6 +28,15 @@ interface FormFieldSetProps {
 }
 
 const FOCUS_PATH = [FOCUS_TERMINATOR]
+
+const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
+  border: none;
+
+  /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
+  body:not(:-moz-handler-blocked) & {
+    display: table-cell;
+  }
+`
 
 const Content = styled(Card)`
   outline: none;
@@ -97,18 +106,13 @@ export const FormFieldSet = forwardRef(
     }, [collapsedProp])
 
     return (
-      <Box
-        // @todo
-        // as="fieldset"
-        data-level={level}
-        {...restProps}
-      >
+      <Root data-level={level} {...restProps}>
         <Box paddingY={2}>
           <Flex align="flex-end">
             <Box flex={1} paddingY={2}>
               <Stack space={2}>
                 <Flex>
-                  <FormFieldSetTitle
+                  <FormFieldSetLegend
                     collapsed={collapsed}
                     collapsible={collapsible}
                     onClick={collapsible ? handleToggleCollapse : undefined}
@@ -149,81 +153,9 @@ export const FormFieldSet = forwardRef(
         >
           {!collapsed && content}
         </Content>
-      </Box>
+      </Root>
     )
   }
 )
 
 FormFieldSet.displayName = 'FormFieldSet'
-
-const FormFieldSetTitleButton = styled(Flex).attrs({forwardedAs: 'button'})`
-  appearance: none;
-  border: 0;
-  background: none;
-  color: inherit;
-  -webkit-font-smoothing: inherit;
-  font: inherit;
-  outline: none;
-
-  &:not([hidden]) {
-    display: flex;
-  }
-
-  &:focus {
-    /* @todo: prettify */
-    box-shadow: 0 0 0 2px #06f;
-  }
-
-  &:focus:not(:focus-visible) {
-    box-shadow: none;
-  }
-`
-
-const FormFieldSetTitleToggleIconBox = styled(Box)`
-  width: 9px;
-  height: 9px;
-  margin-right: 3px;
-
-  & svg {
-    transition: transform 100ms;
-  }
-`
-
-function FormFieldSetTitle(props: {
-  collapsed: boolean
-  collapsible?: boolean
-  onClick?: () => void
-  title: React.ReactNode
-}) {
-  const {collapsed, collapsible, onClick, title} = props
-
-  const text = (
-    <Text
-      // @todo
-      // as="legend"
-      weight="semibold"
-      size={1}
-    >
-      {title || <em>Untitled</em>}
-    </Text>
-  )
-
-  if (!collapsible) {
-    return text
-  }
-
-  return (
-    <FormFieldSetTitleButton onClick={onClick}>
-      <FormFieldSetTitleToggleIconBox>
-        <Text muted size={1}>
-          <ToggleArrowRightIcon
-            style={{
-              transform: `rotate(${collapsed ? '0' : '90deg'}) translate3d(0, 0, 0)`,
-            }}
-          />
-        </Text>
-      </FormFieldSetTitleToggleIconBox>
-      {text}
-    </FormFieldSetTitleButton>
-  )
-}
