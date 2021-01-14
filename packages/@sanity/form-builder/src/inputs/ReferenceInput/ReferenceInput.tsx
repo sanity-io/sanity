@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import {uniqueId} from 'lodash'
+import {FormField} from '@sanity/base/components'
 import {
   isValidationErrorMarker,
   Marker,
