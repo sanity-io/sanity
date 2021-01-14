@@ -1,6 +1,7 @@
 import {uniqueId} from 'lodash'
 import React, {useEffect, useState, useMemo} from 'react'
 import {Marker, Path} from '@sanity/types'
+import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
@@ -16,7 +17,6 @@ import {Subject} from 'rxjs'
 import {useToast} from '@sanity/ui'
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
-import {FormField} from '../../../components/FormField'
 import type {Patch} from '../../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'

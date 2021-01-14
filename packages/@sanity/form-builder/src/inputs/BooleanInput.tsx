@@ -1,12 +1,11 @@
 import React, {useCallback} from 'react'
-import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
-import {BooleanSchemaType} from '@sanity/types'
 import {useId} from '@reach/auto-id'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {BooleanSchemaType} from '@sanity/types'
+import {ChangeIndicator, FormFieldHeaderText} from '@sanity/base/components'
 import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
-import {FormFieldHeaderText} from '../components/FormField/FormFieldHeaderText'
 import {Props} from './types'
 
 const BooleanInput = React.forwardRef(

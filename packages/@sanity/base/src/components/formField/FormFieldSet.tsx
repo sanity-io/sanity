@@ -1,11 +1,11 @@
-import {FormFieldPresence} from '@sanity/base/presence'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '@sanity/base/components'
 import {Path, Marker} from '@sanity/types'
 import {Box, Card, Flex, Grid, Stack, Text, useForwardedRef} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {forwardRef, useState, useCallback, useEffect} from 'react'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {markersToValidationList} from './helpers'
 
@@ -55,7 +55,7 @@ export const FormFieldSet = forwardRef(
       collapsible,
       columns,
       description,
-      level,
+      level = 0,
       markers = [],
       onFocus,
       tabIndex,
@@ -179,8 +179,8 @@ const FormFieldSetTitleToggleIconBox = styled(Box)`
 
 function FormFieldSetTitle(props: {
   collapsed: boolean
-  collapsible: boolean
-  onClick: () => void
+  collapsible?: boolean
+  onClick?: () => void
   title: React.ReactNode
 }) {
   const {collapsed, collapsible, onClick, title} = props

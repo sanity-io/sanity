@@ -1,8 +1,8 @@
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '@sanity/base/components'
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import {Marker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React from 'react'
+import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
+import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
 
 interface FormFieldProps {

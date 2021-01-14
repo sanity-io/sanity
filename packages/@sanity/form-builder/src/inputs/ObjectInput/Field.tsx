@@ -1,8 +1,8 @@
 import React from 'react'
+import {FormFieldSet} from '@sanity/base/components'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {FormFieldSet} from '../../components/FormField'
 import styles from './styles/Field.css'
 
 type FieldProps = {

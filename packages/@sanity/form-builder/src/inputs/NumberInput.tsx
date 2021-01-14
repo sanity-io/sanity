@@ -1,10 +1,10 @@
 import React from 'react'
+import {FormField} from '@sanity/base/components'
 import {NumberSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const NumberInput = React.forwardRef(function NumberInput(
