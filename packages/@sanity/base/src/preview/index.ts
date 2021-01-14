@@ -3,7 +3,7 @@ import resolveRefType from './utils/resolveRefType'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 
-export {default} from './components/SanityDefaultPreview'
+export {default} from './components/SanityPreview'
 export {default as SanityDefaultPreview} from './components/SanityDefaultPreview'
 export {default as PreviewFields} from './components/PreviewFields'
 export {default as SanityPreview} from './components/SanityPreview'
