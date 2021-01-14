@@ -7,7 +7,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
-import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {ScrollContainer} from '../../../../components/scroll'
 import React, {createElement, useCallback, useEffect, useState} from 'react'
 import {DialogAction} from './types'
 
