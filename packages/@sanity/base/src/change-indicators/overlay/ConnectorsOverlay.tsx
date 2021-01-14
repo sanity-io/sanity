@@ -1,7 +1,7 @@
 import React from 'react'
 import {sortBy} from 'lodash'
 import {Path} from '@sanity/types'
-import {ScrollMonitor} from 'part:@sanity/components/scroll'
+import {ScrollMonitor} from '../../components/scroll'
 import {useReportedValues, Reported, TrackedChange} from '../'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getElementGeometry} from '../helpers/getElementGeometry'

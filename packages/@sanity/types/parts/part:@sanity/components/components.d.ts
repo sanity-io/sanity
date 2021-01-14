@@ -192,15 +192,6 @@ declare module 'part:@sanity/components/menu-button' {
 declare module 'part:@sanity/components/radiobutton/default' {
   export {default} from './build-snapshot/__legacy/@sanity/components/radiobutton/RadioButtonDefault'
 }
-declare module 'part:@sanity/components/scroll' {
-  export {
-    ScrollContainer,
-    ScrollMonitor,
-    ScrollContextValue,
-    ScrollEventHandler,
-    useOnScroll,
-  } from './build-snapshot/__legacy/@sanity/components/scroll'
-}
 declare module 'part:@sanity/components/selects/custom' {
   export {default} from './build-snapshot/__legacy/@sanity/components/selects/CustomSelect'
 }
