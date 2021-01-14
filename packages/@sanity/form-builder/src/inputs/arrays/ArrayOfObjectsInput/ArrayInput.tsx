@@ -1,8 +1,7 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
-import formBuilderConfig from 'config:@sanity/form-builder'
-import {get, isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash'
 import {FormFieldSet} from '@sanity/base/components'
 import {Box, Button, Card, Stack} from '@sanity/ui'
 import React from 'react'
@@ -23,7 +22,6 @@ import {ArrayMember} from './types'
 const UploadTargetFieldset = fileTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
-const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
@@ -47,6 +45,7 @@ export type Props = {
   onBlur: () => void
   focusPath: Path
   readOnly: boolean
+  directUploads?: boolean
   filterField: () => any
   resolveUploader?: (type: SchemaType, file: File) => Uploader
   presence: FormFieldPresence[]
@@ -233,6 +232,7 @@ export class ArrayInput extends React.Component<Props> {
       onFocus,
       compareValue,
       filterField,
+      directUploads,
     } = this.props
 
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
@@ -273,8 +273,8 @@ export class ArrayInput extends React.Component<Props> {
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
 
-    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
-    const uploadProps = SUPPORT_DIRECT_UPLOADS
+    const FieldSetComponent = directUploads ? UploadTargetFieldset : FormFieldSet
+    const uploadProps = directUploads
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
 
