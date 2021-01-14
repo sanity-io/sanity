@@ -5,7 +5,7 @@ import React, {forwardRef, useState, useCallback, useEffect} from 'react'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
-import {FormFieldPresence} from '../../presence'
+import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {markersToValidationList} from './helpers'
 
@@ -58,6 +58,7 @@ export const FormFieldSet = forwardRef(
       level = 0,
       markers = [],
       onFocus,
+      presence,
       tabIndex,
       title,
       ...restProps
@@ -66,6 +67,7 @@ export const FormFieldSet = forwardRef(
     const validation = markersToValidationList(markers)
     const hasValidations = validation.length > 0
     const forwardedRef = useForwardedRef(ref)
+    const fieldSetPresence = collapsible && collapsed ? presence : []
 
     const handleFocus = useCallback(
       (event: React.FocusEvent<HTMLDivElement>) => {
@@ -102,28 +104,38 @@ export const FormFieldSet = forwardRef(
         {...restProps}
       >
         <Box paddingY={2}>
-          <Stack space={2}>
-            <Flex>
-              <FormFieldSetTitle
-                collapsed={collapsed}
-                collapsible={collapsible}
-                onClick={collapsible ? handleToggleCollapse : undefined}
-                title={title}
-              />
+          <Flex align="flex-end">
+            <Box flex={1} paddingY={2}>
+              <Stack space={2}>
+                <Flex>
+                  <FormFieldSetTitle
+                    collapsed={collapsed}
+                    collapsible={collapsible}
+                    onClick={collapsible ? handleToggleCollapse : undefined}
+                    title={title}
+                  />
 
-              {hasValidations && (
-                <Box marginLeft={2}>
-                  <FormFieldValidationStatus fontSize={1} markers={markers} />
-                </Box>
-              )}
-            </Flex>
+                  {hasValidations && (
+                    <Box marginLeft={2}>
+                      <FormFieldValidationStatus fontSize={1} markers={markers} />
+                    </Box>
+                  )}
+                </Flex>
 
-            {description && (
-              <Text muted size={1}>
-                {description}
-              </Text>
+                {description && (
+                  <Text muted size={1}>
+                    {description}
+                  </Text>
+                )}
+              </Stack>
+            </Box>
+
+            {fieldSetPresence.length > 0 && (
+              <Box>
+                <FieldPresence maxAvatars={4} presence={fieldSetPresence} />
+              </Box>
             )}
-          </Stack>
+          </Flex>
         </Box>
 
         <Content
