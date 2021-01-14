@@ -1,4 +1,5 @@
 import React from 'react'
+import {FormField} from '@sanity/base/components'
 import {
   Path,
   SanityDocument,
@@ -15,7 +16,6 @@ import {GenerateIcon} from '@sanity/icons'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
-import {FormField} from '../../components/FormField'
 import {slugify} from './utils/slugify'
 import {useAsyncCallback} from './utils/useAsync'
 

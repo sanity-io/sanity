@@ -2,8 +2,8 @@ import React from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const EmailInput = React.forwardRef(function EmailInput(

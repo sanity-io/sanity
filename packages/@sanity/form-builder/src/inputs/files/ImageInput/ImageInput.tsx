@@ -1,6 +1,6 @@
 // Modules
 
-import {ImperativeToast} from '@sanity/base/components'
+import {ImperativeToast, FormFieldSet} from '@sanity/base/components'
 import {Button, ToastParams} from '@sanity/ui'
 import classNames from 'classnames'
 import {get, partition} from 'lodash'
@@ -44,10 +44,9 @@ import ImageToolInput from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {FormFieldSet} from '../../../components/FormField'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {urlToFile, base64ToFile} from './utils/image'
 import {CircularProgress} from '../../../components/progress'
+import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
 

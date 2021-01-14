@@ -1,4 +1,4 @@
-import {FormFieldSet} from '../components/FormField'
+import {FormFieldSet} from '@sanity/base/components'
 // import {createUploadTarget} from '../inputs/common/UploadTarget/createUploadTarget'
 import {fileTarget} from '../inputs/common/fileTarget'
 

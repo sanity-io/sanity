@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import {uniqueId} from 'lodash'
+import {FormField} from '@sanity/base/components'
 import {
   isValidationErrorMarker,
   Marker,
@@ -22,7 +23,6 @@ import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
-import {FormField} from '../../components/FormField'
 import styles from './styles/ReferenceInput.css'
 
 type SearchHit = {
