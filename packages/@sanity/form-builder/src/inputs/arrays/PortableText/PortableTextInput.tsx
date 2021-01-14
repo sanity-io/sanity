@@ -1,6 +1,7 @@
 import {uniqueId} from 'lodash'
 import React, {useEffect, useState, useMemo} from 'react'
 import {Marker, Path} from '@sanity/types'
+import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {
   EditorChange,
