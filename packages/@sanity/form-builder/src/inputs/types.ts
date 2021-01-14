@@ -11,7 +11,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent from '../PatchEvent'
 
 export type Props<
-  T,
+  T = any,
   S = T extends Array<any>
     ? ArraySchemaType
     : T extends boolean
