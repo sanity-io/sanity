@@ -24,7 +24,7 @@ export const AssetBackground: Workaround = styled(Flex)((props: {theme: Theme}) 
   `
 })
 
-export const Overlay = styled.div`
+export const Overlay: React.ComponentType = styled.div`
   position: absolute;
   display: flex;
   align-items: center;

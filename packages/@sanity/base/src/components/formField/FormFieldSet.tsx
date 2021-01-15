@@ -134,7 +134,7 @@ export const FormFieldSet = forwardRef(
               </Stack>
             </Box>
 
-            {fieldSetPresence.length > 0 && (
+            {fieldSetPresence && fieldSetPresence.length > 0 && (
               <Box>
                 <FieldPresence maxAvatars={4} presence={fieldSetPresence} />
               </Box>
