@@ -93,6 +93,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Todo>)
         })
     }
     const handleDrop = (event: React.DragEvent) => {
+      enteredElements.current = []
       event.preventDefault()
       event.stopPropagation()
       if (onFiles) {
