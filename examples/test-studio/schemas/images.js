@@ -1,4 +1,6 @@
 import icon from 'part:@sanity/base/image-icon'
+import petsAssetSource from '../src/assetSources/pets'
+import noopAssetSource from '../src/assetSources/noop'
 
 export const myImage = {
   name: 'myImage',
@@ -155,6 +157,20 @@ export default {
           title: 'Image in image behind edit',
         },
       ],
+    },
+    {
+      name: 'customAssetSource',
+      type: 'image',
+      title: 'Custom asset source',
+      options: {
+        sources: [petsAssetSource, noopAssetSource],
+      },
+    },
+    {
+      name: 'noAssetSource',
+      type: 'image',
+      title: 'No asset source',
+      options: {sources: []},
     },
   ],
 }
