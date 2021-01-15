@@ -67,7 +67,7 @@ export const FormFieldSet = forwardRef(
       level = 0,
       markers = [],
       onFocus,
-      presence,
+      presence = [],
       tabIndex,
       title,
       ...restProps
@@ -107,40 +107,38 @@ export const FormFieldSet = forwardRef(
 
     return (
       <Root data-level={level} {...restProps}>
-        <Box paddingY={2}>
-          <Flex align="flex-end">
-            <Box flex={1} paddingY={2}>
-              <Stack space={2}>
-                <Flex>
-                  <FormFieldSetLegend
-                    collapsed={collapsed}
-                    collapsible={collapsible}
-                    onClick={collapsible ? handleToggleCollapse : undefined}
-                    title={title}
-                  />
+        <Flex align="flex-end">
+          <Box flex={1} paddingY={2}>
+            <Stack space={2}>
+              <Flex>
+                <FormFieldSetLegend
+                  collapsed={collapsed}
+                  collapsible={collapsible}
+                  onClick={collapsible ? handleToggleCollapse : undefined}
+                  title={title}
+                />
 
-                  {hasValidations && (
-                    <Box marginLeft={2}>
-                      <FormFieldValidationStatus fontSize={1} markers={markers} />
-                    </Box>
-                  )}
-                </Flex>
-
-                {description && (
-                  <Text muted size={1}>
-                    {description}
-                  </Text>
+                {hasValidations && (
+                  <Box marginLeft={2}>
+                    <FormFieldValidationStatus fontSize={1} markers={markers} />
+                  </Box>
                 )}
-              </Stack>
-            </Box>
+              </Flex>
 
-            {fieldSetPresence && fieldSetPresence.length > 0 && (
-              <Box>
-                <FieldPresence maxAvatars={4} presence={fieldSetPresence} />
-              </Box>
-            )}
-          </Flex>
-        </Box>
+              {description && (
+                <Text muted size={1}>
+                  {description}
+                </Text>
+              )}
+            </Stack>
+          </Box>
+
+          {fieldSetPresence.length > 0 && (
+            <Box>
+              <FieldPresence maxAvatars={4} presence={fieldSetPresence} />
+            </Box>
+          )}
+        </Flex>
 
         <Content
           borderLeft={level > 0}
