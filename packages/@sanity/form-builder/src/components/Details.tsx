@@ -1,6 +1,6 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 
 interface DetailsProps {
@@ -32,7 +32,6 @@ const HeaderButton = styled.button`
 
 const Header = styled(Flex)`
   cursor: default;
-  user-select: none;
 `
 
 const IconBox = styled(Box)`
@@ -40,6 +39,7 @@ const IconBox = styled(Box)`
     transform: rotate(0);
     transition: transform 100ms;
   }
+
   &[data-open] > div > svg {
     transform: rotate(90deg);
   }
@@ -47,10 +47,11 @@ const IconBox = styled(Box)`
 
 export function Details(props: DetailsProps) {
   const {children, open: openProp, title = 'Details', ...restProps} = props
-
   const [open, setOpen] = useState(openProp || false)
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
+
+  useEffect(() => setOpen(openProp || false), [openProp])
 
   return (
     <Box {...restProps}>
