@@ -73,7 +73,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 }
 
 function inferForFields(typeDef, schema, visited) {
-  if (!typeDef.fields) {
+  if (typeDef.jsonType !== 'object' || !typeDef.fields) {
     return
   }
 
@@ -98,7 +98,7 @@ function inferForMemberTypes(typeDef, schema, visited) {
 }
 
 function extractValueFromListOption(option) {
-  return option.value !== undefined ? option.value : option
+  return option.value === undefined ? option : option.value
 }
 
 function inferValidation(field, baseRule) {
