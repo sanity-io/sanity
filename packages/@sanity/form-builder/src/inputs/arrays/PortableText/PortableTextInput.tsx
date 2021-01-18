@@ -182,8 +182,6 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
           onChange={handleEditorChange}
           onIgnore={handleIgnoreValidation}
           resolution={invalidValue.resolution}
-          // @todo: removed this (unused)
-          value={value}
         />
       </Box>
     )

@@ -1,5 +1,4 @@
 import isValidDate from 'date-fns/isValid'
-// import parseDate from 'date-fns/parse'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
 const FALSEY_STRINGS = ['false', 'no', 'false', '0', 'null']
