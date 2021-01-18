@@ -1,14 +1,14 @@
 import isValidDate from 'date-fns/isValid'
-import parseDate from 'date-fns/parse'
+// import parseDate from 'date-fns/parse'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
 const FALSEY_STRINGS = ['false', 'no', 'false', '0', 'null']
 const BOOL_STRINGS = TRUTHY_STRINGS.concat(FALSEY_STRINGS)
 
-const TRUE = () => true
+const TRUE = (): true => true
 
-const has = (prop) => (val) => val && val[prop]
-const is = (typeName) => (val) => (val && val._type) === typeName
+const has = (prop: string) => (val?: Record<string, any>) => val && val[prop]
+const is = (typeName: string) => (val?: Record<string, any>) => (val && val._type) === typeName
 
 function toLocalDate(input) {
   const newDate = new Date(input.getTime() + input.getTimezoneOffset() * 60 * 1000)
@@ -25,21 +25,29 @@ function getTZName() {
   return null
 }
 
-export default {
+export interface ValueConverter {
+  test: NumberConstructor | ((value: any) => boolean)
+  convert:
+    | NumberConstructor
+    | StringConstructor
+    | ((value: any) => boolean | Record<string, any> | string)
+}
+
+const converters: {[fromType: string]: {[toType: string]: ValueConverter}} = {
   string: {
     number: {
       test: Number,
       convert: Number,
     },
     boolean: {
-      test: (value) => BOOL_STRINGS.includes(value.toLowerCase()),
-      convert: (value) =>
+      test: (value: any) => BOOL_STRINGS.includes(value.toLowerCase()),
+      convert: (value: any) =>
         TRUTHY_STRINGS.includes(value.toLowerCase()) ||
         !FALSEY_STRINGS.includes(value.toLowerCase()),
     },
     richDate: {
-      test: (val) => isValidDate(val),
-      convert: (value) => {
+      test: (value: any) => isValidDate(value),
+      convert: (value: any): Record<string, any> => {
         return {
           _type: 'richDate',
           local: toLocalDate(new Date(value)).toJSON(),
@@ -53,13 +61,13 @@ export default {
   date: {
     richDate: {
       test: is('date'),
-      convert: (value) => Object.assign({}, value, {_type: 'richDate'}),
+      convert: (value: any) => Object.assign({}, value, {_type: 'richDate'}),
     },
   },
   richDate: {
     datetime: {
       test: has('utc'),
-      convert: (value) => value.utc,
+      convert: (value: any) => value.utc,
     },
   },
   number: {
@@ -75,7 +83,7 @@ export default {
   boolean: {
     string: {
       test: TRUE,
-      convert: (value) => (value ? 'Yes' : 'No'),
+      convert: (value: any) => (value ? 'Yes' : 'No'),
     },
     number: {
       test: TRUE,
@@ -83,3 +91,5 @@ export default {
     },
   },
 }
+
+export default converters
