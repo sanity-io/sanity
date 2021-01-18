@@ -56,7 +56,7 @@ type ObjectInputProps = {
 export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
   _firstField: any
   static defaultProps = {
-    onChange() {},
+    onChange: () => undefined,
     level: 0,
     focusPath: [],
     isRoot: false,
