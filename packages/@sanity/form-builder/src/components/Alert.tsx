@@ -1,6 +1,6 @@
 import React from 'react'
 import {Details} from '../components/Details'
-import styles from './Warning.css'
+import styles from './Alert.css'
 
 type Props = {
   heading?: any
@@ -9,7 +9,7 @@ type Props = {
   children?: any
 }
 
-export default function Warning({heading, message, values = [], children}: Props) {
+export function Alert({heading, message, values = [], children}: Props) {
   const len = values.length
   return (
     <div className={styles.root}>
