@@ -1,4 +1,4 @@
-import {LinkIcon, WarningOutlineIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
@@ -55,7 +55,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
           </Box>
         )}
 
-        <Flex>
+        <Flex align="center">
           {!readOnly && presence.length > 0 && (
             <Box marginLeft={1}>
               <FieldPresence presence={presence} maxAvatars={1} />
@@ -84,15 +84,16 @@ export const ItemRow = React.forwardRef(function RegularItem(
             <Box marginLeft={1}>
               <Tooltip
                 content={
-                  <Card padding={2}>
-                    <Text size={1}>
-                      This item is missing a required <code>_key</code> property.
+                  <Box padding={2}>
+                    <Text muted size={1}>
+                      This item is missing the required <code>_key</code> property.
                     </Text>
-                  </Card>
+                  </Box>
                 }
+                placement="top"
               >
-                <Badge mode="outline" tone="caution" margin={1} padding={2} fontSize={1}>
-                  <WarningOutlineIcon /> Missing key
+                <Badge mode="outline" tone="caution">
+                  Missing key
                 </Badge>
               </Tooltip>
             </Box>
