@@ -1,10 +1,9 @@
 import React from 'react'
-import {ImageIcon} from '@sanity/icons'
 import client from 'part:@sanity/base/client'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import Asset from './Asset'
-import {AssetFromSource} from './ImageInput'
 import {Button} from '@sanity/ui'
+import {AssetFromSource} from '@sanity/types'
+import Asset from './Asset'
 
 import styles from './DefaultSource.css'
 
@@ -36,7 +35,7 @@ type State = {
   isLoading: boolean
 }
 
-class DefaultSource extends React.Component<Props, State> {
+export class DefaultSource extends React.Component<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
@@ -133,11 +132,4 @@ class DefaultSource extends React.Component<Props, State> {
       </DefaultDialog>
     )
   }
-}
-
-export default {
-  name: 'sanity-default',
-  title: 'Uploaded images',
-  component: DefaultSource,
-  icon: ImageIcon,
 }
