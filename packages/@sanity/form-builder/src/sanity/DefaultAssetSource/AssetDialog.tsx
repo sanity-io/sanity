@@ -5,12 +5,11 @@ import schema from 'part:@sanity/base/schema'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
-import Preview from '../../../Preview'
-import {AssetAction, AssetRecord} from './types'
-import {Spinner} from '@sanity/ui'
+import Preview from '../../Preview'
+import {AssetAction, AssetRecord} from '../../inputs/files/ImageInput/types'
 
+import {SpinnerWithText} from '../../components/SpinnerWithText'
 import styles from './AssetDialog.css'
-import {SpinnerWithText} from '../../../components/SpinnerWithText'
 
 interface Props {
   asset: AssetRecord

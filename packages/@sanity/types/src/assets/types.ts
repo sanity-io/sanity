@@ -105,9 +105,23 @@ export interface AssetSourceSpec {
   url?: string
 }
 
+export type AssetFromSource = {
+  kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
+  value: string | File
+  assetDocumentProps?: ImageAsset
+}
+
+export interface AssetSourceComponentProps {
+  document: SanityDocument
+  selectedAssets: Asset[]
+  selectionType: 'single' | 'multiple'
+  onClose: () => void
+  onSelect: (assetFromSource: AssetFromSource) => void
+}
+
 export interface AssetSource {
   name: string
   title: string
-  component: React.ComponentType
-  icon?: React.ComponentType
+  component: React.ComponentType<AssetSourceComponentProps>
+  icon?: React.ComponentType<void>
 }

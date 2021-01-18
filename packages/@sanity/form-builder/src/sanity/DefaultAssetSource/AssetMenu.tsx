@@ -2,7 +2,7 @@ import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import React from 'react'
-import {AssetAction} from './types'
+import {AssetAction} from '../../inputs/files/ImageInput/types'
 
 const menuItems: AssetAction[] = [
   {

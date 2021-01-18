@@ -48,7 +48,9 @@ function SelectCatOrDog(props) {
           </div>
         )
       })}
-      <button onClick={props.onClose}>Close</button>
+      <button type="button" onClick={props.onClose}>
+        Close
+      </button>
     </div>
   )
 }
