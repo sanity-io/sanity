@@ -1,4 +1,4 @@
-import {InvalidValueResolution, PortableTextBlock} from '@sanity/portable-text-editor'
+import {InvalidValueResolution} from '@sanity/portable-text-editor'
 import {Box, Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Alert} from '../../../components/Alert'
@@ -7,8 +7,6 @@ interface InvalidValueProps {
   onChange: (...args: any[]) => any
   onIgnore: () => void
   resolution: InvalidValueResolution
-  // eslint-disable-next-line react/no-unused-prop-types
-  value: PortableTextBlock[]
 }
 
 export function InvalidValue(props: InvalidValueProps) {
