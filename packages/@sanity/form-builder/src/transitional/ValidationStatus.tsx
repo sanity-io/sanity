@@ -1,9 +1,8 @@
 // This is transitional in order to track usage of the ValidationStatus part from within the form-builder package
 // and to ease migration towards a part-less studio
-
-import ValidationStatusPart from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {Marker} from '@sanity/types'
+import {ValidationStatusPart} from '../legacyParts'
 
 // Note: these are the props currently in use
 interface Props {

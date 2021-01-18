@@ -1,10 +1,9 @@
 // This is transitional in order to track usage of the Fieldset part from within the form-builder package
 // in order to ease migration towards a part-less studio
-
-import FieldsetPart from 'part:@sanity/components/fieldsets/default'
-import {FormFieldPresence} from '@sanity/base/presence'
 import React from 'react'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {Marker, Path} from '@sanity/types'
+import {FieldsetPart} from '../legacyParts'
 
 interface Props {
   description?: string

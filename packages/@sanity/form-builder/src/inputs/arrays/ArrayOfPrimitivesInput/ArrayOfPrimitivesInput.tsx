@@ -8,7 +8,7 @@ import {FormFieldPresence} from '@sanity/base/lib/presence'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {Item, List} from '../common/list'
-import {ArrayFunctions} from '../../../legacyPluginParts'
+import {ArrayFunctions} from '../../../legacyParts'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 

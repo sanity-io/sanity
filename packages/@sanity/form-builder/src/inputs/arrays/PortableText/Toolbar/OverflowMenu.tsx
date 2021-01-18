@@ -1,7 +1,7 @@
+import React, {useEffect, useRef, useState} from 'react'
 import classNames from 'classnames'
 import {EllipsisHorizontalIcon} from '@sanity/icons'
-import {MenuButton} from 'part:@sanity/components/menu-button'
-import React, {useEffect, useRef, useState} from 'react'
+import {MenuButton} from '../../../../legacyParts'
 
 import styles from './OverflowMenu.css'
 

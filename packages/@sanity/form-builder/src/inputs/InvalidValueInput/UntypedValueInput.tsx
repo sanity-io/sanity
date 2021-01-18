@@ -1,8 +1,8 @@
-import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
-import schema from 'part:@sanity/base/schema'
 import React, {useCallback, useMemo} from 'react'
+import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
+import {schema} from '../../legacyParts'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
 
 declare const __DEV__: boolean

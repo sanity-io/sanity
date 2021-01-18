@@ -1,6 +1,6 @@
-import documentStore from 'part:@sanity/base/datastore/document'
 import {map, scan} from 'rxjs/operators'
 import type {Patch} from '../patch/types'
+import {documentStore} from '../legacyParts'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 function prepareMutationEvent(event) {

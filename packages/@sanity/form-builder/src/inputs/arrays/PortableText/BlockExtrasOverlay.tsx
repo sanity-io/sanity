@@ -1,5 +1,4 @@
-import React, {useMemo} from 'react'
-import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
+import React from 'react'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
@@ -7,6 +6,7 @@ import {
   PortableTextFeatures,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {BlockExtras} from '../../../legacyParts'
 import PatchEvent from '../../../../PatchEvent'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 import {RenderBlockActions, RenderCustomMarkers} from './types'

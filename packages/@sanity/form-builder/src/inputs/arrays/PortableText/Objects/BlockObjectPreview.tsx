@@ -2,9 +2,9 @@
 import React, {FunctionComponent} from 'react'
 import {Path} from '@sanity/types'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon} from '@sanity/icons'
 
+import {DropDownButton} from '../../../../legacyParts'
 import Preview from '../../../../Preview'
 import {MenuItem, DropDownMenuItemProps} from './BlockObjectMenuItem'
 

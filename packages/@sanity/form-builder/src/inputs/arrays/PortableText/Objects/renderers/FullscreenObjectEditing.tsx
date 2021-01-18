@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
-
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {Path, Marker, SchemaType} from '@sanity/types'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import React, {useCallback} from 'react'
 import {FormBuilderInput} from '../../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../../PatchEvent'
+import {FullscreenDialog} from '../../../../../legacyParts'
 
 interface FullscreenObjectEditingProps {
   focusPath: Path

@@ -1,8 +1,8 @@
-import {AddIcon} from '@sanity/icons'
-import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useCallback} from 'react'
-import {BlockItem} from './types'
 import {Button} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons'
+import {MenuButton} from '../../../../legacyParts'
+import {BlockItem} from './types'
 
 import styles from './InsertMenu.css'
 
