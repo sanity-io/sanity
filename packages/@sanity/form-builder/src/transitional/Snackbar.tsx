@@ -1,6 +1,6 @@
 // This is transitional in order to track usage of the Snackbar part from within the form-builder package
-import SnackbarPart from 'part:@sanity/components/snackbar/default'
 import React from 'react'
+import {SnackbarPart} from '../legacyParts'
 
 interface Props {
   kind?: 'info' | 'warning' | 'error' | 'success'

@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
-
 import React from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {FormBuilderInput} from '../../../../../FormBuilderInput'
 import {PatchEvent} from '../../../../../PatchEvent'
+import {DefaultDialog} from '../../../../../legacyParts'
 
 type Props = {
   focusPath: Path

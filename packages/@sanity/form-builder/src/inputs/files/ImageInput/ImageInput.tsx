@@ -1,5 +1,3 @@
-// Modules
-
 import {ImperativeToast, FormFieldSet} from '@sanity/base/components'
 import {Button, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import classNames from 'classnames'
@@ -24,8 +22,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 // Parts
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 
@@ -43,6 +39,7 @@ import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {CircularProgress} from '../../../components/progress'
+import {ButtonGrid, DefaultDialog} from '../../../legacyParts'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
