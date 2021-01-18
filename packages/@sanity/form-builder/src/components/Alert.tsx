@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text, ThemeColorToneKey} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
@@ -10,10 +10,10 @@ interface AlertProps {
   suffix?: React.ReactNode
 }
 
-const STATUS_TONES: {[key: string]: ThemeColorToneKey} = {
+const STATUS_TONES = {
   warning: 'caution',
   error: 'critical',
-}
+} as const
 
 const SuffixBox = styled(Box)`
   border-top: 1px solid var(--card-border-color);
