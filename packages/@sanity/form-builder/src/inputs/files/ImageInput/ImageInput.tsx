@@ -1,9 +1,9 @@
 // Modules
 
 import {ImperativeToast, FormFieldSet} from '@sanity/base/components'
-import {Button, ToastParams} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
 import classNames from 'classnames'
-import {get, partition} from 'lodash'
+import {get, partition, uniqueId} from 'lodash'
 import {Observable} from 'rxjs'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
@@ -17,19 +17,16 @@ import {
   Marker,
   ObjectField,
   Path,
+  AssetSource,
   SanityDocument,
 } from '@sanity/types'
-import React, {createElement} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 // Parts
-import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import formBuilderConfig from 'config:@sanity/form-builder'
-import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 
 // Package files
@@ -49,8 +46,6 @@ import {CircularProgress} from '../../../components/progress'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
-
-const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
@@ -79,9 +74,13 @@ export type Props = {
   onFocus: (path: Path) => void
   readOnly: boolean | null
   focusPath: Path
+  directUploads?: boolean
+  assetSources?: AssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
 }
+
+type TODO = any
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
 const getDevicePixelRatio = () => {
@@ -96,35 +95,24 @@ type ImageInputState = {
   selectedAssetSource?: any
   hasFocus: boolean
 }
-const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   static contextTypes = {
     getValuePath: PropTypes.func,
   }
 
+  _inputId = uniqueId('ImageInput')
+
   _focusArea: any
   uploadSubscription: any
-  state = {
+  state: ImageInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hasFocus: false,
   }
-  assetSources = globalAssetSources
 
-  toast: {push: (params: ToastParams) => void}
-
-  constructor(props: Props) {
-    super(props)
-    // Allow overriding sources set directly on type.options
-    const sourcesFromType = get(props.type, 'options.sources')
-    if (Array.isArray(sourcesFromType) && sourcesFromType.length > 0) {
-      this.assetSources = sourcesFromType
-    } else if (sourcesFromType) {
-      this.assetSources = null
-    }
-  }
+  toast: {push: (params: ToastParams) => void} | null = null
 
   focus() {
     if (this._focusArea) {
@@ -164,22 +152,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return uploader ? [{type: type, uploader}] : []
   }
 
-  uploadFirstAccepted(fileList: FileList) {
+  uploadFirstAccepted(files: File[]) {
     const {resolveUploader, type} = this.props
-    let match: {
-      uploader: Uploader
-      file: File
-    } | null
-    Array.from(fileList).some((file) => {
-      const uploader = resolveUploader(type, file)
-      if (uploader) {
-        match = {file, uploader}
-        return true
-      }
-      return false
-    })
+
+    const match = files
+      .map((file) => ({file, uploader: resolveUploader(type, file)}))
+      .find((result) => result.uploader)
+
     if (match) {
-      this.uploadWith(match.uploader, match.file)
+      this.uploadWith(match.uploader!, match.file)
     }
   }
 
@@ -207,7 +188,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       error: (err) => {
         // eslint-disable-next-line no-console
         console.error(err)
-        this.toast.push({
+        this.toast?.push({
           status: 'error',
           description: 'The upload could not be completed at this time.',
           title: 'Upload failed',
@@ -241,7 +222,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     // only if we're not an array element, as removing the array element
     // will close the selection dialog. Instead, when closing the dialog,
     // the array logic will check for an "empty" value and remove it for us
-    const allKeys = Object.keys(value)
+    const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
       (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key)
     )
@@ -309,19 +290,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         break
       case 'file': {
         const uploader = resolveUploader(type, firstAsset.value)
-        this.uploadWith(uploader, firstAsset.value, {label, title, description, creditLine, source})
+        if (uploader) {
+          this.uploadWith(uploader, firstAsset.value, {
+            label,
+            title,
+            description,
+            creditLine,
+            source,
+          })
+        }
         break
       }
       case 'base64':
         base64ToFile(firstAsset.value, originalFilename).then((file) => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+          if (uploader) {
+            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+          }
         })
         break
       case 'url':
         urlToFile(firstAsset.value, originalFilename).then((file) => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+          if (uploader) {
+            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+          }
         })
         break
       default: {
@@ -338,7 +331,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onFocus(path)
   }
 
-  handleBlur = (event) => {
+  handleBlur = () => {
     this.props.onBlur()
     this.setState({
       hasFocus: false,
@@ -350,14 +343,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleSelectFile = (files: FileList) => {
-    this.uploadFirstAccepted(files)
+    this.uploadFirstAccepted(Array.from(files))
   }
 
-  handleUpload = ({file, uploader}) => {
+  handleUpload = ({file, uploader}: TODO) => {
     this.uploadWith(uploader, file)
   }
 
-  handleSelectImageFromAssetSource = (source) => {
+  handleSelectImageFromAssetSource = (source: AssetSource) => {
     this.setState({selectedAssetSource: source})
   }
 
@@ -426,7 +419,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           path={[field.name]}
           onFocus={onFocus}
           onBlur={onBlur}
-          readOnly={readOnly || field.type.readOnly}
+          readOnly={Boolean(readOnly || field.type.readOnly)}
           focusPath={focusPath}
           level={level}
           presence={presence}
@@ -452,36 +445,32 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  renderDropDownMenuItem = (item) => {
-    if (!item) {
+  renderSelectImageButton() {
+    const {assetSources} = this.props
+    if (!assetSources?.length) {
       return null
     }
-
-    return (
-      <div className={styles.selectDropDownAssetSourceItem}>
-        <div className={styles.selectDropDownAssetSourceItem__inner}>
-          <div className={styles.selectDropDownAssetSourceItem__iconContainer}>
-            {createElement(item.icon || ImageIcon)}
-          </div>
-          <div className={styles.selectDropDownAssetSourceItem__label}>{item.title}</div>
-        </div>
-      </div>
-    )
-  }
-
-  renderSelectImageButton() {
-    // If there are multiple asset sources render a dropdown
-    if (this.assetSources.length > 1) {
+    // If multiple asset sources render a dropdown
+    if (assetSources.length > 1) {
       return (
-        <DropDownButton
-          items={this.assetSources}
-          renderItem={this.renderDropDownMenuItem}
-          onAction={this.handleSelectImageFromAssetSource}
-          inverted
-          showArrow
-        >
-          Select
-        </DropDownButton>
+        <MenuButton
+          id={`${this._inputId}_assetImageButton`}
+          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
+          menu={
+            <Menu>
+              {assetSources.map((assetSource) => {
+                return (
+                  <MenuItem
+                    key={assetSource.name}
+                    text={assetSource.title}
+                    onClick={() => this.handleSelectImageFromAssetSource(assetSource)}
+                    icon={assetSource.icon || ImageIcon}
+                  />
+                )
+              })}
+            </Menu>
+          }
+        />
       )
     }
 
@@ -489,7 +478,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <Button
         icon={SearchIcon}
-        onClick={this.handleSelectImageFromAssetSource.bind(this, this.assetSources[0])}
+        onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
         mode="bleed"
         text="Select"
       />
@@ -537,7 +526,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   // eslint-disable-next-line complexity
   render() {
-    const {type, value, compareValue, level, materialize, markers, readOnly, presence} = this.props
+    const {
+      type,
+      value,
+      compareValue,
+      level,
+      materialize,
+      markers,
+      readOnly,
+      presence,
+      directUploads,
+    } = this.props
     const {isAdvancedEditOpen, selectedAssetSource, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
@@ -548,10 +547,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
 
-    // todo: use FileTarget instead of UploadTargetFieldset
-    // const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
     const FieldSetComponent = FormFieldSet
-    const uploadProps = SUPPORT_DIRECT_UPLOADS
+    const uploadProps = directUploads
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
 
@@ -594,14 +591,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                       </div>
                     )}
                     {/* eslint-disable-next-line no-nested-ternary */}
-                    {hasAsset ? (
+                    {value?.asset ? (
                       <WithMaterializedReference reference={value.asset} materialize={materialize}>
                         {this.renderMaterializedAsset}
                       </WithMaterializedReference>
                     ) : readOnly ? (
                       <span>Field is read only</span>
                     ) : (
-                      SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder fileType="image" />
+                      directUploads && <UploadPlaceholder fileType="image" />
                     )}
                   </div>
                 </div>
@@ -610,7 +607,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
             <div className={styles.functions}>
               <ButtonGrid>
-                {!readOnly && SUPPORT_DIRECT_UPLOADS && (
+                {!readOnly && directUploads && (
                   <FileInputButton
                     icon={UploadIcon}
                     mode="ghost"

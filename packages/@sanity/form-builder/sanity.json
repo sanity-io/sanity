@@ -126,7 +126,7 @@
     {
       "name": "part:@sanity/form-builder/input/image/asset-source-default",
       "implements": "part:@sanity/form-builder/input/image/asset-source",
-      "path": "inputs/files/ImageInput/DefaultSource"
+      "path": "sanity/DefaultAssetSource"
     },
     {
       "implements": "part:@sanity/base/component",
