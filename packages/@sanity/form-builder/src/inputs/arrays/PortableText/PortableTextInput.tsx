@@ -12,15 +12,16 @@ import {
   PortableTextEditor,
   Type,
   HotkeyOptions,
+  InvalidValue,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
-import {useToast} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui'
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
 import type {Patch} from '../../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
-import RespondToInvalidContent from './InvalidValue'
+import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import styles from './PortableTextInput.css'
 
 export type PatchWithOrigin = Patch & {
@@ -94,7 +95,7 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   useEffect(forceUpdate, [validationHash, value])
 
   // Reset invalidValue if new value is coming in from props
-  const [invalidValue, setInvalidValue] = useState(null)
+  const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   useEffect(() => {
     if (invalidValue && value !== invalidValue.value) {
       setInvalidValue(null)
@@ -175,14 +176,15 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   let respondToInvalidContent = null
   if (invalidValue) {
     respondToInvalidContent = (
-      <>
+      <Box marginBottom={2}>
         <RespondToInvalidContent
           onChange={handleEditorChange}
           onIgnore={handleIgnoreValidation}
           resolution={invalidValue.resolution}
+          // @todo: removed this (unused)
           value={value}
         />
-      </>
+      </Box>
     )
   }
 
