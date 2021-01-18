@@ -3,7 +3,7 @@ import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sa
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet} from '@sanity/base/components'
-import {Box, Button, Card, Stack, Text} from '@sanity/ui'
+import {Button, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -12,6 +12,7 @@ import {ArrayFunctions} from '../../../legacyPluginParts'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
 import {ResolvedUploader, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
+import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
@@ -19,7 +20,9 @@ import {fileTarget} from '../../common/fileTarget'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 
-const UploadTargetFieldset = uploadTarget(FormFieldSet)
+declare const __DEV__: boolean
+
+const UploadTargetFieldset = fileTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
 
@@ -248,22 +251,32 @@ export class ArrayInput extends React.Component<Props> {
           ref={this.setFocusArea}
           __unstable_markers={markers}
         >
-          <Card padding={2} shadow={1} tone="caution">
-            Some items in this list are not objects. We need to remove them before the list can be
-            edited.
-            <Box paddingY={2}>
-              <Button
-                onClick={this.handleRemoveNonObjectValues}
-                text="Remove non-object values"
-                tone="critical"
-              />
-            </Box>
-            <Details title={<b>Why is this happening?</b>}>
-              This usually happens when items are created through an API client from outside the
-              Content Studio and sets invalid data, or a custom input component have inserted
-              incorrect values into the list.
+          <Alert
+            status="error"
+            suffix={
+              <Stack padding={2}>
+                <Button
+                  onClick={this.handleRemoveNonObjectValues}
+                  text="Remove non-object values"
+                  tone="critical"
+                />
+              </Stack>
+            }
+            title={<>Invalid list values</>}
+          >
+            <Text as="p" muted size={1}>
+              Some items in this list are not objects. This must be fixed in order to edit the list.
+            </Text>
+
+            <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+              <Stack space={3}>
+                <Text as="p" muted size={1}>
+                  This usually happens when items are created using an API client, or when a custom
+                  input component has added invalid data to the list.
+                </Text>
+              </Stack>
             </Details>
-          </Card>
+          </Alert>
         </FormFieldSet>
       )
     }
@@ -296,24 +309,39 @@ export class ArrayInput extends React.Component<Props> {
         __unstable_markers={markers}
         {...fileTargetProps}
       >
-        <div>
+        <Stack space={2}>
           {hasMissingKeys && (
-            <Card tone="caution" padding={2} shadow={1}>
-              Some items in this list are missing their keys. We need to fix this before the list
-              can be edited.
-              <Box paddingY={2}>
-                <Button onClick={this.handleFixMissingKeys} text="Fix missing keys" />
-              </Box>
-              <Details title={<b>Why is this happening?</b>}>
-                This usually happens when items are created through the API client from outside the
-                Content Studio and someone forgets to set the <code>_key</code>-property of list
-                items.
-                <p>
-                  The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
-                  <b>unique</b> for each element within the array.
-                </p>
+            <Alert
+              status="warning"
+              suffix={
+                <Stack padding={2}>
+                  <Button
+                    onClick={this.handleFixMissingKeys}
+                    text="Add missing keys"
+                    tone="caution"
+                  />
+                </Stack>
+              }
+              title={<>Missing keys</>}
+            >
+              <Text as="p" muted size={1}>
+                Some items in the list are missing their keys. This must be fixed in order to edit
+                the list.
+              </Text>
+
+              <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+                <Stack space={3}>
+                  <Text as="p" muted size={1}>
+                    This usually happens when items are created using an API client, and the{' '}
+                    <code>_key</code> property has not been included.
+                  </Text>
+
+                  <Text as="p" muted size={1}>
+                    The value of the <code>_key</code> property must be a unique string.
+                  </Text>
+                </Stack>
               </Details>
-            </Card>
+            </Alert>
           )}
 
           <Stack space={1}>
@@ -366,7 +394,7 @@ export class ArrayInput extends React.Component<Props> {
               onChange={onChange}
             />
           </Stack>
-        </div>
+        </Stack>
       </FieldSetComponent>
     )
   }
