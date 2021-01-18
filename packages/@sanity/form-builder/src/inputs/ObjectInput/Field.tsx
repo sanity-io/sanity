@@ -2,7 +2,7 @@ import React from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 
 import {FormBuilderInput} from '../../FormBuilderInput'
-import InvalidValue from '../InvalidValueInput'
+import {InvalidValueInput} from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
 
@@ -23,7 +23,7 @@ type FieldProps = {
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
 export default class Field extends React.PureComponent<FieldProps> {
-  _input: any
+  _input: {focus: () => void} | null = null
   static defaultProps = {
     level: 0,
     focusPath: [],
@@ -39,7 +39,7 @@ export default class Field extends React.PureComponent<FieldProps> {
       this._input.focus()
     }
   }
-  setInput = (input) => {
+  setInput = (input: {focus: () => void} | null) => {
     this._input = input
   }
   render() {
@@ -65,8 +65,8 @@ export default class Field extends React.PureComponent<FieldProps> {
       if (expectedType !== actualType && !isCompatible) {
         return (
           <div className={styles.root}>
-            <FormFieldSet title={field.type.title} level={level} presence={presence}>
-              <InvalidValue
+            <FormFieldSet title={field.type.title} level={level} __unstable_presence={presence}>
+              <InvalidValueInput
                 value={value}
                 onChange={this.handleChange}
                 validTypes={[field.type.name]}
