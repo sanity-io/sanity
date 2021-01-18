@@ -11,18 +11,19 @@ import {
   ReferenceSchemaType,
   SanityDocument,
 } from '@sanity/types'
+import {Button, Stack, Text} from '@sanity/ui'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {LinkIcon} from '@sanity/icons'
 import {IntentLink} from 'part:@sanity/base/router'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
-import {Button} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {Alert} from '../../components/Alert'
 import styles from './styles/ReferenceInput.css'
 
 type SearchHit = {
@@ -273,16 +274,35 @@ export default withValuePath(
               description={type.description}
               presence={presence}
             >
-              <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
+              <Stack space={2}>
                 {hasWeakMismatch && (
-                  <div className={styles.weakRefMismatchWarning}>
-                    Warning: This reference is <em>{weakIs}</em>, but should be{' '}
-                    <em>{weakShouldBe}</em> according to schema.
-                    <div>
-                      <Button onClick={this.handleFixWeak} text={`Convert to ${weakShouldBe}`} />
-                    </div>
-                  </div>
+                  <Alert
+                    suffix={
+                      <Stack padding={2}>
+                        <Button
+                          onClick={this.handleFixWeak}
+                          text={
+                            <>
+                              Convert to <em>{weakShouldBe}</em> reference
+                            </>
+                          }
+                          tone="caution"
+                        />
+                      </Stack>
+                    }
+                    title={
+                      <>
+                        Reference is not <em>{weakShouldBe}</em>
+                      </>
+                    }
+                  >
+                    <Text as="p">
+                      This reference is <em>{weakIs}</em>. According to the schema it should be{' '}
+                      <em>{weakShouldBe}</em>.
+                    </Text>
+                  </Alert>
                 )}
+
                 <SearchableSelect
                   inputId={this._inputId}
                   placeholder={readOnly ? '' : placeholder}
@@ -306,7 +326,7 @@ export default withValuePath(
                   ref={this.setInput}
                   readOnly={readOnly || isLoadingSnapshot}
                 />
-              </div>
+              </Stack>
             </FormField>
           </ChangeIndicatorCompareValueProvider>
         )
