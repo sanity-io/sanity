@@ -1,8 +1,7 @@
 import React from 'react'
-import client from 'part:@sanity/base/client'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {Button} from '@sanity/ui'
 import {AssetFromSource} from '@sanity/types'
+import {client, DefaultDialog} from '../../legacyParts'
 import Asset from './Asset'
 
 import styles from './DefaultSource.css'

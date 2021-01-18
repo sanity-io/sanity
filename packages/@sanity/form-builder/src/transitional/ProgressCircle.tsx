@@ -1,5 +1,5 @@
-import ProgressCirclePart from 'part:@sanity/components/progress/circle'
 import React from 'react'
+import {ProgressCirclePart} from '../legacyParts'
 
 interface Props {
   percent?: number

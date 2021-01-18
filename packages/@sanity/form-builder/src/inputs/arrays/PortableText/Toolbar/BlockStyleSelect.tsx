@@ -1,13 +1,12 @@
 /* eslint-disable react/no-multi-comp */
-
 import React, {useEffect, useState} from 'react'
-import StyleSelect from 'part:@sanity/components/selects/style'
 import {
   EditorSelection,
   PortableTextEditor,
   RenderBlockFunction,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {StyleSelect} from '../../../../legacyParts'
 import {BlockStyleItem} from './types'
 
 type Props = {
