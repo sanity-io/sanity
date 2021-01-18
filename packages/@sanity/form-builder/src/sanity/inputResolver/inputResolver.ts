@@ -1,10 +1,34 @@
-import customInputs from './customInputs'
 import defaultInputs from './defaultInputs'
 import * as is from '../../utils/is'
 import resolveReferenceInput from './resolveReferenceInput'
 import resolveArrayInput from './resolveArrayInput'
 import resolveStringInput from './resolveStringInput'
 import resolveNumberInput from './resolveNumberInput'
+import {
+  BooleanInput,
+  DateTimeInput,
+  EmailInput,
+  GeoPointInput,
+  NumberInput,
+  ObjectInput,
+  ReferenceInput,
+  StringInput,
+  TextInput,
+  UrlInput,
+} from '../../legacyParts'
+
+const CUSTOM_INPUT_MAP = {
+  object: ObjectInput,
+  boolean: BooleanInput,
+  number: NumberInput,
+  string: StringInput,
+  text: TextInput,
+  reference: ReferenceInput,
+  datetime: DateTimeInput,
+  email: EmailInput,
+  geopoint: GeoPointInput,
+  url: UrlInput,
+}
 
 function getExport(obj) {
   return obj && obj.__esModule ? obj.default : obj
@@ -14,6 +38,7 @@ function getExport(obj) {
 // this can happen if a custom input component imports and tries
 // to access something from the form-builder immediately (top-level)
 let getCustomResolver = () => {
+  // TODO(@benedicteb, 2021-01-18) How can we move this to legacyParts.ts?
   const resolver = getExport(require('part:@sanity/form-builder/input-resolver?'))
   getCustomResolver = () => resolver
   return resolver
@@ -52,5 +77,5 @@ export default function resolveInputComponent(type) {
     return type.inputComponent
   }
 
-  return resolveTypeVariants(type) || customInputs[type.name] || defaultInputs[type.name]
+  return resolveTypeVariants(type) || CUSTOM_INPUT_MAP[type.name] || defaultInputs[type.name]
 }

@@ -1,7 +1,5 @@
 import {map} from 'rxjs/operators'
-import client from 'part:@sanity/base/client'
-import {createWeightedSearch} from 'part:@sanity/base/search/weighted'
-import {observeForPreview} from 'part:@sanity/base/preview'
+import {client, createWeightedSearch, observeForPreview} from '../../../legacyParts'
 
 export function getPreviewSnapshot(value, referenceType) {
   return observeForPreview(value, referenceType).pipe(map((result: any) => result.snapshot))

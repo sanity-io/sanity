@@ -3,13 +3,13 @@ import {Layer} from '@sanity/ui'
 import React from 'react'
 import classNames from 'classnames'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {
   PortableTextBlock,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {Markers} from '../../../legacyParts'
 import {RenderCustomMarkers} from './types'
 import styles from './BlockExtras.css'
 

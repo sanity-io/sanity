@@ -1,5 +1,4 @@
 import React from 'react'
-import ImageLoader from 'part:@sanity/components/utilities/image-loader'
 import {FormField} from '@sanity/base/components'
 import {ImageCrop, ImageHotspot, ObjectSchemaType} from '@sanity/types'
 import ImageTool from '@sanity/imagetool'
@@ -8,6 +7,8 @@ import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 
 import PatchEvent, {set} from '../../../PatchEvent'
+import {ImageLoader} from '../../../legacyParts'
+
 import styles from './styles/ImageToolInput.css'
 
 interface Value {
