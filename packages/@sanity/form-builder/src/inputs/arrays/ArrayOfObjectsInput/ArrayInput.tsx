@@ -3,7 +3,7 @@ import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sa
 import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet} from '@sanity/base/components'
-import {Box, Button, Card, Stack} from '@sanity/ui'
+import {Box, Button, Card, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -19,7 +19,7 @@ import {fileTarget} from '../../common/fileTarget'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 
-const UploadTargetFieldset = fileTarget(FormFieldSet)
+const UploadTargetFieldset = uploadTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
 
@@ -56,7 +56,7 @@ export class ArrayInput extends React.Component<Props> {
     focusPath: [],
   }
 
-  _element: any
+  _focusArea: HTMLElement | null = null
 
   uploadSubscriptions: Record<string, Subscription> = {}
 
@@ -81,7 +81,7 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   handleFocus = () => {
-    this.props.onFocus([FOCUS_TERMINATOR])
+    this.props.onFocus([])
   }
 
   handleFocusItem = (item: ArrayMember) => {
@@ -156,13 +156,13 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   focus() {
-    if (this._element) {
-      this._element.focus()
+    if (this._focusArea) {
+      this._focusArea.focus()
     }
   }
 
-  setElement = (el: HTMLElement | null) => {
-    this._element = el
+  setFocusArea = (el: HTMLElement | null) => {
+    this._focusArea = el
   }
 
   getUploadOptions = (file: File): ResolvedUploader[] => {
@@ -245,8 +245,8 @@ export class ArrayInput extends React.Component<Props> {
           level={level - 1}
           tabIndex={0}
           onFocus={this.handleFocus}
-          ref={this.setElement}
-          markers={markers}
+          ref={this.setFocusArea}
+          __unstable_markers={markers}
         >
           <Card padding={2} shadow={1} tone="caution">
             Some items in this list are not objects. We need to remove them before the list can be
@@ -274,8 +274,13 @@ export class ArrayInput extends React.Component<Props> {
     const isGrid = options.layout === 'grid'
 
     const FieldSetComponent = directUploads ? UploadTargetFieldset : FormFieldSet
-    const uploadProps = directUploads
-      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
+    const fileTargetProps = directUploads
+      ? {
+          disabled: Boolean(readOnly),
+          ref: this.setFocusArea,
+          getUploadOptions: this.getUploadOptions,
+          onUpload: this.handleUpload,
+        }
       : {}
 
     return (
@@ -284,13 +289,12 @@ export class ArrayInput extends React.Component<Props> {
         tabIndex={0}
         title={type.title}
         description={type.description}
-        level={level - 1}
         onFocus={this.handleFocus}
-        type={type}
-        ref={this.setElement}
-        presence={presence.filter((item) => item.path[0] === '$')}
-        markers={markers}
-        {...uploadProps}
+        onBlur={onBlur}
+        level={level - 1}
+        __unstable_presence={presence.filter((item) => item.path[0] === '$')}
+        __unstable_markers={markers}
+        {...fileTargetProps}
       >
         <div>
           {hasMissingKeys && (
