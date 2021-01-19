@@ -7,6 +7,7 @@ import allInputs from './allInputs'
 import arrayInArray from './arrayInArray'
 import author from './author'
 import complexArrays from './complexArrays'
+import custom from './custom'
 import live from './live'
 import pt from './pt'
 import settings from './settings'
@@ -19,6 +20,7 @@ export default createSchema({
     arrayInArray,
     author,
     complexArrays,
+    custom,
     live,
     pt,
     settings,

@@ -1,8 +1,9 @@
 import {MdExtension as icon} from 'react-icons/md'
-import CustomStringInput from '../src/components/CustomStringInput'
+import {CustomStringInput} from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
 import AuthorReferenceInput from '../src/components/AuthorReferenceInput'
+import {CustomCounterInput} from '../src/components/CustomCounterInput'
 
 export default {
   name: 'customInputsTest',
@@ -11,6 +12,14 @@ export default {
   icon,
   fields: [
     {
+      name: 'title',
+      title: 'A custom input',
+      description: 'A custom input defined by "field.inputComponent"',
+      type: 'string',
+      placeholder: 'This is the placeholder',
+      inputComponent: CustomStringInput,
+    },
+    {
       name: 'author',
       title: 'Author',
       type: 'reference',
@@ -18,12 +27,10 @@ export default {
       inputComponent: AuthorReferenceInput,
     },
     {
-      name: 'title',
-      title: 'A custom input',
-      description: 'A custom input defined by "field.inputComponent"',
-      type: 'string',
-      placeholder: 'This is the placeholder',
-      inputComponent: CustomStringInput,
+      name: 'count',
+      title: 'Count',
+      type: 'number',
+      inputComponent: CustomCounterInput,
     },
     {
       name: 'myObject',

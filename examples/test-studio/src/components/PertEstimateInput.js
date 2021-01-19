@@ -1,7 +1,7 @@
+import {FormField} from '@sanity/base/components'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
-import './PertEstimate.css?raw' // eslint-disable-line
 
 const calculateEstimate = (estimates) => {
   const {optimistic, nominal, pessimistic} = estimates || {}
@@ -38,12 +38,17 @@ export default class PertEstimateInput extends React.Component {
   }
 
   render() {
-    const {value, type} = this.props
+    const {markers, presence, onBlur, onFocus, type, value} = this.props
+
     return (
-      <div className="pert-global">
-        <h3>{type.title}</h3>
-        <p>{type.description}</p>
-        <table>
+      <FormField
+        __unstable_changeIndicator
+        __unstable_markers={markers}
+        __unstable_presence={presence}
+        description={type.description}
+        title={type.title}
+      >
+        <table style={{backgroundColor: '#eee'}}>
           <tbody>
             {type.fields
               .filter((field) => !field.type.readOnly)
@@ -55,7 +60,9 @@ export default class PertEstimateInput extends React.Component {
                       type="number"
                       value={(value && value[field.name]) || ''}
                       placeholder={type.placeholder}
+                      onBlur={onBlur}
                       onChange={(event) => this.handleChange(field, event)}
+                      onFocus={() => onFocus([field.name])}
                     />
                   </td>
                 </tr>
@@ -63,8 +70,10 @@ export default class PertEstimateInput extends React.Component {
           </tbody>
         </table>
 
-        {value && value.calculated && <p>PERT-estimate: {value.calculated}</p>}
-      </div>
+        {value && value.calculated && (
+          <p style={{backgroundColor: '#eee'}}>PERT-estimate: {value.calculated}</p>
+        )}
+      </FormField>
     )
   }
 }

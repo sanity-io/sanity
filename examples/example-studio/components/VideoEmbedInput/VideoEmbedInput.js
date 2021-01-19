@@ -1,6 +1,6 @@
+import {FormField} from '@sanity/base/components'
 import PropTypes from 'prop-types'
 import React from 'react'
-import FormField from 'part:@sanity/components/formfields/default'
 import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 import Preview from 'part:@sanity/base/preview'
 import getVideoId from 'get-video-id'
@@ -10,10 +10,6 @@ import styles from './VideoEmbedInput.css'
 
 const ERROR_UNKNOWN_VIDEO_SERVICE = 'Could not find any video service from the given value 😢'
 const ERROR_UNKNOWN_VIDEO_ID = 'Could not find any video from the given value 😢'
-
-function select(ev) {
-  ev.target.select()
-}
 
 export default class VideoEmbedInput extends React.Component {
   static propTypes = {
@@ -78,17 +74,28 @@ export default class VideoEmbedInput extends React.Component {
 
   render() {
     const {errorMessage, result} = this.state
-    const {type, value, level} = this.props
+    const {level, markers, onBlur, onFocus, presence, type, value} = this.props
     const placeholder = `Paste URL or embed code from ${humanizeList(
       SUPPORTED_SERVICES.map((s) => s.title),
       {conjunction: 'or'}
     )}…`
+
     return (
-      <FormField label={type.title} level={level} description={type.description}>
+      <FormField
+        __unstable_markers={markers}
+        __unstable_presence={presence}
+        description={type.description}
+        level={level}
+        title={type.title}
+      >
         <textarea
           className={styles.pasteBox}
           type="text"
-          onFocus={select}
+          onBlur={onBlur}
+          onFocus={(event) => {
+            event.currentTarget.select()
+            onFocus()
+          }}
           placeholder={placeholder}
           onChange={this.handleSourceChange}
         />
