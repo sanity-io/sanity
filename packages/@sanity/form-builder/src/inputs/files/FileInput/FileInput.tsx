@@ -2,51 +2,40 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {FormFieldSet, ImperativeToast, ToastParams} from '@sanity/base/components'
-import {Marker, Path, File as BaseFile, FileAsset, SchemaType, FileSchemaType} from '@sanity/types'
+import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import {
-  CloseIcon,
-  EditIcon,
-  EyeOpenIcon,
-  BinaryDocumentIcon,
-  UploadIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
-import {Box, Button, Grid, Dialog, Flex, Text, Inline} from '@sanity/ui'
+import {BinaryDocumentIcon, EditIcon, EyeOpenIcon, UploadIcon} from '@sanity/icons'
+import {Box, Button, Dialog, Flex, Grid, Text, ToastParams} from '@sanity/ui'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 
-import prettyMs from 'pretty-ms'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {CircularProgress} from '../../../components/progress'
-import {AssetBackground, FileTarget, Overlay} from './styles'
+import {AssetBackground, FileTarget, FileInfo, Overlay} from '../common/styles'
+import {UploadState} from '../types'
+import {UploadProgress} from '../common/UploadProgress'
 
 type Field = {
   name: string
   type: SchemaType
 }
 
-interface UploadState {
-  progress: number
-  initiated: string
-  updated: string
-  file: {name: string; type: string}
-}
+// We alias DOM File type here to distinguish it from the type of the File value
+type DOMFile = globalThis.File
 
-interface FileValue extends Partial<BaseFile> {
+interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
 export type Props = {
-  value?: FileValue
-  compareValue?: FileValue
+  value?: File
+  compareValue?: File
   type: FileSchemaType
   level: number
   onChange: (event: PatchEvent) => void
@@ -62,17 +51,15 @@ export type Props = {
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
 
-// If it's more than this amount of milliseconds since last time _upload state was reported
-// the upload will be marked as stale/interrupted
-const STALE_UPLOAD_MS = 1000 * 60 * 2
-
-const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
-
 type FileInputState = {
   isUploading: boolean
   isAdvancedEditOpen: boolean
   hasFileTargetFocus: boolean
-  isDraggingOver: boolean
+  hoveringFiles: FileInfo[]
+}
+
+type Focusable = {
+  focus: () => void
 }
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
@@ -82,17 +69,17 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   dialogId = uniqueId('fileinput-dialog')
 
-  _focusArea: any
-  uploadSubscription: Subscription = null
+  _focusRef: Focusable | null = null
+  uploadSubscription: Subscription | null = null
 
   state: FileInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
     hasFileTargetFocus: false,
-    isDraggingOver: false,
+    hoveringFiles: [],
   }
 
-  toast: {push: (params: ToastParams) => void}
+  toast: {push: (params: ToastParams) => void} | null = null
 
   handleRemoveButtonClick = () => {
     const {getValuePath} = this.context
@@ -110,7 +97,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     // removing the array element will close the selection dialog. Instead,
     // when closing the dialog, the array logic will check for an "empty"
     // value and remove it for us
-    const allKeys = Object.keys(value)
+    const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
       (key) => !['_type', '_key', '_upload', 'asset'].includes(key)
     )
@@ -142,30 +129,23 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.clearUploadStatus()
   }
 
-  handleSelectFiles = (files: File[]) => {
+  handleSelectFiles = (files: DOMFile[]) => {
     this.uploadFirstAccepted(files)
   }
 
-  uploadFirstAccepted(files: File[]) {
+  uploadFirstAccepted(files: DOMFile[]) {
     const {resolveUploader, type} = this.props
-    let match: {
-      uploader: Uploader
-      file: globalThis.File
-    } | null = null
-    files.some((file) => {
-      const uploader = resolveUploader(type, file)
-      if (uploader) {
-        match = {file, uploader}
-        return true
-      }
-      return false
-    })
+
+    const match = files
+      .map((file) => ({file, uploader: resolveUploader(type, file)}))
+      .find((result) => result.uploader)
+
     if (match) {
-      this.uploadWith(match.uploader, match.file)
+      this.uploadWith(match.uploader!, match.file)
     }
   }
 
-  uploadWith(uploader: Uploader, file: globalThis.File) {
+  uploadWith(uploader: Uploader, file: DOMFile) {
     const {type, onChange} = this.props
     const options = {
       metadata: get(type, 'options.metadata'),
@@ -183,7 +163,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       error: (err) => {
         // eslint-disable-next-line no-console
         console.error(err)
-        this.toast.push({
+        this.toast?.push({
           status: 'error',
           description: 'The upload could not be completed at this time.',
           title: 'Upload failed',
@@ -219,78 +199,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const completed = uploadState.progress === 100
-    const filename = get(uploadState, 'file.name')
-
-    const stalled = elapsedMs(uploadState.updated) > STALE_UPLOAD_MS
 
     return (
-      <Flex>
-        <Box padding={4}>
-          <Flex direction="column" align="center">
-            <CircularProgress value={completed ? 100 : uploadState.progress} />
-            {stalled && (
-              <>
-                <Inline padding={2} flex={1} marginTop={3}>
-                  <Text size={1}>
-                    <WarningOutlineIcon />
-                  </Text>{' '}
-                  <Box marginLeft={2}>
-                    <Text size={1}>Upload stalled</Text>
-                  </Box>
-                </Inline>
-                <Box padding={2}>
-                  <Text muted size={1}>
-                    This upload didn't make any progress in the last{' '}
-                    {prettyMs(elapsedMs(uploadState.updated), {compact: true})} and likely got
-                    interrupted.
-                  </Text>
-                </Box>
-              </>
-            )}
-            {!stalled && (
-              <Box flex={1}>
-                <Text muted size={1}>
-                  {completed && !stalled && <>Complete</>}
-                  {!completed && !stalled && (
-                    <>
-                      Uploading
-                      {filename ? (
-                        <>
-                          {' '}
-                          <code>{filename}</code>
-                        </>
-                      ) : (
-                        <>…</>
-                      )}
-                    </>
-                  )}
-                </Text>
-              </Box>
-            )}
-
-            <Box marginTop={1}>
-              {isUploading && (
-                <Button
-                  mode="bleed"
-                  color="danger"
-                  onClick={this.handleCancelUpload}
-                  text="Cancel"
-                />
-              )}
-              {!isUploading && stalled && (
-                <Button
-                  fontSize={1}
-                  mode="bleed"
-                  onClick={this.handleClearUploadState}
-                  icon={CloseIcon}
-                  text="Reset"
-                />
-              )}
-            </Box>
-          </Flex>
-        </Box>
-      </Flex>
+      <UploadProgress
+        uploadState={uploadState}
+        onCancel={isUploading ? this.handleCancelUpload : undefined}
+        onClearStale={this.handleClearUploadState}
+      />
     )
   }
 
@@ -351,14 +266,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     })
     this.props.onBlur()
   }
-  handleFileTargetDragEnter = () => {
+  handleFilesOver = (fileInfo: FileInfo[]) => {
     this.setState({
-      isDraggingOver: true,
+      hoveringFiles: fileInfo,
     })
   }
-  handleFileTargetDragLeave = () => {
+  handleFilesOut = () => {
     this.setState({
-      isDraggingOver: false,
+      hoveringFiles: [],
     })
   }
 
@@ -403,13 +318,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
+    if (this._focusRef) {
+      this._focusRef.focus()
     }
   }
 
-  setFocusArea = (el: any | null) => {
-    this._focusArea = el
+  setFocusInput = (ref: Focusable | null) => {
+    this._focusRef = ref
   }
 
   getUploadOptions = (file: globalThis.File): ResolvedUploader[] => {
@@ -418,9 +333,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return uploader ? [{type: type, uploader}] : []
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore (will be dealt with shortly)
-  handleUpload = ({file, uploader}) => {
+  handleUpload = ({file, uploader}: {file: DOMFile; uploader: Uploader}) => {
     this.uploadWith(uploader, file)
   }
 
@@ -430,13 +343,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   render() {
     const {type, value, compareValue, level, markers, readOnly, presence} = this.props
-    const {isAdvancedEditOpen, isDraggingOver} = this.state
+    const {isAdvancedEditOpen, hoveringFiles} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
     const accept = get(type, 'options.accept', '')
-    const hasAsset = value && value.asset
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
@@ -468,19 +380,21 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   <FileTarget
                     border
                     tabIndex={0}
-                    disabled={Boolean(readOnly)}
-                    ref={this.setFocusArea}
+                    disabled={readOnly === true}
+                    ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}
+                    onFilesOver={this.handleFilesOver}
+                    onFilesOut={this.handleFilesOut}
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                   >
                     <AssetBackground align="center" justify="center">
-                      {!readOnly && isDraggingOver && <Overlay>Drop top upload</Overlay>}
-                      {value?._upload
-                        ? this.renderUploadState(value._upload)
-                        : value?.asset
-                        ? this.renderAsset()
-                        : this.renderUploadPlaceholder()}
+                      {value?._upload && this.renderUploadState(value._upload)}
+                      {!value?._upload && value?.asset && this.renderAsset()}
+                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                        <Overlay>Drop top upload</Overlay>
+                      )}
                     </AssetBackground>
                   </FileTarget>
                 </ChangeIndicatorWithProvidedFullPath>
@@ -507,7 +421,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   text={readOnly ? 'View details' : 'Edit'}
                 />
               )}
-              {!readOnly && hasAsset && (
+              {!readOnly && value?.asset && (
                 <Button
                   tone="critical"
                   mode="ghost"

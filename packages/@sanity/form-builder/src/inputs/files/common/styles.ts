@@ -2,6 +2,7 @@ import styled, {css} from 'styled-components'
 import {Card, Flex, Theme} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
 
+export type {FileInfo} from '../../common/fileTarget'
 export const FileTarget = fileTarget(Card)
 
 // todo:
@@ -35,4 +36,5 @@ export const Overlay: React.ComponentType = styled.div`
   bottom: 0;
   background-color: var(--card-bg-color);
   z-index: 3;
+  pointer-events: none;
 `
