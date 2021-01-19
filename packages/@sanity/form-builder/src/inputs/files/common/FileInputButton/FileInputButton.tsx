@@ -11,7 +11,7 @@ type Props = Omit<React.ComponentProps<typeof Button>, 'type' | 'value' | 'onSel
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
-  onSelect?: (files: FileList) => void
+  onSelect?: (files: File[]) => void
   children?: React.ReactNode
 }
 
@@ -62,7 +62,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (onSelect && event.target.files) {
-        onSelect(event.target.files)
+        onSelect(Array.from(event.target.files))
       }
     },
     [onSelect]
