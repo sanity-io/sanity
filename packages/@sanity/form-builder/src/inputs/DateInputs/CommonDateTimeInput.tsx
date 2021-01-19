@@ -98,11 +98,11 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
             ]
           : markers
       }
-      label={title}
+      title={title}
       level={level}
       description={description}
-      presence={presence}
-      labelFor={id}
+      __unstable_presence={presence}
+      inputId={id}
     >
       {readOnly ? (
         <TextInput value={textInputValue} disabled />

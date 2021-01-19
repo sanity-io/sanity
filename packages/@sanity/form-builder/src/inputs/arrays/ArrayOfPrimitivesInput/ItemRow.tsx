@@ -5,7 +5,6 @@ import {FormFieldPresence} from '@sanity/base/lib/presence'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import {DragHandle} from '../common/DragHandle'
 import PatchEvent, {set} from '../../../PatchEvent'
-import {ValidationStatus} from '../../../transitional/ValidationStatus'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConfirmDeleteButton} from '../ArrayOfObjectsInput/ConfirmDeleteButton'
@@ -122,7 +121,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
         <Flex align="center">
           {!readOnly && (
             <Box>
-              <ValidationStatus markers={markers} />
+              <FormFieldValidationStatus __unstable_markers={markers} />
             </Box>
           )}
 

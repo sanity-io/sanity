@@ -151,16 +151,18 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     const isSortable = get(type, 'options.sortable') !== false
 
     return (
-      <Fieldset
-        legend={type?.title}
+      <FormFieldSet
+        title={type?.title}
         description={type?.description}
         level={level - 1}
         tabIndex={0}
         onFocus={onFocus}
         ref={this.setElement}
-        markers={markers}
-        presence={presence.filter((item) => item.path[0] === '$' || item.path.length === 0)}
-        changeIndicator={false}
+        __unstable_presence={presence.filter(
+          (item) => item.path[0] === '$' || item.path.length === 0
+        )}
+        __unstable_changeIndicator={false}
+        __unstable_markers={markers}
       >
         <Box>
           {value && value.length > 0 && (
@@ -207,7 +209,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
             />
           </Box>
         </Box>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 }

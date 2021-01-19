@@ -1,7 +1,8 @@
 import React from 'react'
 import {Marker, ObjectSchemaTypeWithOptions, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {FormFieldSet} from '@sanity/base/components'
+
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import Field from './Field'
@@ -145,14 +146,14 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
-        <Fieldset
-          legend={fieldset.title}
+        <FormFieldSet
+          title={fieldset.title}
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={isCollapsed}
-          presence={childPresence}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
+          __unstable_presence={childPresence}
           onFocus={onFocus}
           changeIndicator={false}
           markers={markers}
@@ -160,7 +161,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
           })}
-        </Fieldset>
+        </FormFieldSet>
       </div>
     )
   }
@@ -235,21 +236,21 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div className={styles.root}>
-        <Fieldset
+        <FormFieldSet
           level={level}
-          legend={type.title}
+          title={type.title}
           description={type.description}
           columns={columns}
-          isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={isCollapsed}
-          markers={markers}
-          presence={presence}
+          collapsible={collapsibleOpts.collapsible}
+          collapsed={isCollapsed}
+          __unstable_presence={presence}
           onFocus={onFocus}
-          changeIndicator={false}
+          __unstable_changeIndicator={false}
+          markers={markers}
         >
           {renderedFields}
           {renderedUnknownFields}
-        </Fieldset>
+        </FormFieldSet>
       </div>
     )
   }

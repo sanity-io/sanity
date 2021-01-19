@@ -12,6 +12,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import FormField from 'part:@sanity/components/formfields/default'
 import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -100,12 +101,12 @@ const SlugInput = React.forwardRef(function SlugInput(
       compareValue={compareValue?.current}
     >
       <FormField
-        label={type.title}
+        title={type.title}
         description={type.description}
         level={level}
-        markers={markers}
-        presence={presence}
-        labelFor={inputId}
+        __unstable_markers={markers}
+        __unstable_presence={presence}
+        inputId={inputId}
       >
         <Stack space={3}>
           <Flex>
