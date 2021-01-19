@@ -57,6 +57,10 @@ const color: ThemeColorSchemes = {
 export const theme: RootTheme = {
   ...defaults,
   color,
+  focusRing: {
+    offset: -1,
+    width: 2,
+  },
   media: [
     parseInt(legacyTheme['--screen-medium-break'], 10) || 512,
     parseInt(legacyTheme['--screen-default-break'], 10) || 640,
