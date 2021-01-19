@@ -1,11 +1,11 @@
 import {LinkIcon, WarningOutlineIcon} from '@sanity/icons'
 import {FieldPresence} from '@sanity/base/presence'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import React from 'react'
 import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import Preview from '../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
-import {IntentButton} from '../../../components/IntentButton'
+import {IntentButton} from '../../../transitional/IntentButton'
 
 import {DragHandle} from './DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
@@ -61,7 +61,11 @@ export const ItemCell = React.forwardRef(function RegularItem(
         <Box flex={1}>{(!readOnly && isSortable && dragHandle) || ' '}</Box>
         {value._key && (
           <Box>
-            <ValidationStatus markers={validation} placement="bottom" showSummary={!value._ref} />
+            <FormFieldValidationStatus
+              __unstable_markers={validation}
+              placement="bottom"
+              __unstable_showSummary={!value._ref}
+            />
           </Box>
         )}
         {value._ref && (

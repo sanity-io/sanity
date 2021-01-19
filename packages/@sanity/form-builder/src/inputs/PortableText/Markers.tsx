@@ -1,7 +1,7 @@
 import React from 'react'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
 import {Path, Marker, isValidationMarker} from '@sanity/types'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import {RenderCustomMarkers} from './types'
 import styles from './Markers.css'
 
@@ -37,7 +37,7 @@ export default class Markers extends React.PureComponent<Props> {
       <div onClick={this.handleCancelEvent} className={styles.root}>
         {validationMarkers.length > 0 && (
           <div className={styles.markerGroup} onClick={this.handleValidationMarkerClick}>
-            <ValidationStatus markers={validationMarkers} />
+            <FormFieldValidationStatus __unstable_markers={validationMarkers} />
           </div>
         )}
         {customMarkers.length > 0 && (

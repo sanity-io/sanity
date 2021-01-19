@@ -1,13 +1,13 @@
 import React from 'react'
 import {Path, Marker, SchemaType} from '@sanity/types'
 import {TrashIcon, DragHandleIcon} from '@sanity/icons'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import {FieldPresence} from '@sanity/base/presence'
+import {Button} from '@sanity/ui'
+import {FormFieldValidationStatus} from '@sanity/base/components'
 import PatchEvent, {set} from '../../PatchEvent'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import getEmptyValue from './getEmptyValue'
-import {Button} from '@sanity/ui'
 
 import styles from './Item.css'
 
@@ -106,7 +106,7 @@ export default class Item extends React.PureComponent<Props> {
           <div className={styles.functions}>
             {markers.length > 0 && (
               <div className={styles.validationStatusContainer}>
-                <ValidationStatus markers={markers} />
+                <FormFieldValidationStatus __unstable_markers={markers} />
               </div>
             )}
 
