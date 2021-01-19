@@ -16,7 +16,7 @@ type FieldProps = {
   filterField?: (...args: any[]) => any
   readOnly?: boolean
   markers?: any[]
-  level?: number
+  level: number
   presence: any
 }
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
