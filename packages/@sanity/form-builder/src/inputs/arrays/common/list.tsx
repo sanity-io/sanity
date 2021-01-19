@@ -23,7 +23,7 @@ const SortableGridItem = SortableListItem
 type ListProps = {
   isSortable?: boolean
   isGrid?: boolean
-  onSortEnd: (event: {newIndex: number; oldIndex: number}) => void
+  onSortEnd?: (event: {newIndex: number; oldIndex: number}) => void
   children?: React.ReactNode
 }
 
