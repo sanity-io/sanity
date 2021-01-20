@@ -2,6 +2,7 @@ import React from 'react'
 import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
+import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -24,14 +25,15 @@ export default class TagsArrayInput extends React.PureComponent<Props<string[]>>
     this._input = el
   }
   render() {
-    const {type, value, readOnly, level, onFocus, presence} = this.props
+    const {type, value, readOnly, level, markers, onFocus, presence} = this.props
     return (
       <FormField
         level={level}
-        label={type.title}
+        title={type.title}
         description={type.description}
         presence={presence}
-        labelFor={this._inputId}
+        htmlFor={this._inputId}
+        markers={markers}
       >
         <TagInput
           inputId={this._inputId}
