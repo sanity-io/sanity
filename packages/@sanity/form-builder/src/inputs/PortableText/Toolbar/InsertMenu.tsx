@@ -1,5 +1,5 @@
 import {ButtonProps} from '@sanity/base/__legacy/@sanity/components'
-import PlusIcon from 'part:@sanity/base/plus-icon'
+import {AddIcon} from '@sanity/icons'
 import Button from 'part:@sanity/components/buttons/default'
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import React, {useCallback} from 'react'
@@ -38,7 +38,7 @@ export default function InsertMenu(props: InsertMenuProps) {
           'aria-expanded': open,
           'aria-controls': 'insertmenu',
           disabled: disabled || readOnly,
-          icon: PlusIcon,
+          icon: AddIcon,
           kind: 'simple',
           padding: 'small',
           selected: open,
