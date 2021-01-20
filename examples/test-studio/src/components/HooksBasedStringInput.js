@@ -1,11 +1,12 @@
+import {FormField} from '@sanity/base/components'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {PatchEvent, set} from 'part:@sanity/form-builder/patch-event'
-import FormField from 'part:@sanity/components/formfields/default'
 
 export const HooksBasedStringInput = React.forwardRef((props, ref) => {
-  const {value, type, level, onChange} = props
+  const {level = 0, markers, onBlur, onChange, onFocus, presence, type, value} = props
   const [isEditing, setIsEditing] = React.useState(false)
+
   if (typeof React.useState !== 'function') {
     return (
       <div style={{padding: 10, backgroundColor: 'salmon'}}>
@@ -14,14 +15,23 @@ export const HooksBasedStringInput = React.forwardRef((props, ref) => {
       </div>
     )
   }
+
   return (
-    <FormField label={type.title} level={level} description={type.description}>
+    <FormField
+      __unstable_markers={markers}
+      __unstable_presence={presence}
+      description={type.description}
+      level={level}
+      title={type.title}
+    >
       {isEditing ? (
         <input
-          type="text"
-          ref={ref}
-          placeholder={type.placeholder}
+          onBlur={onBlur}
           onChange={(event) => onChange(PatchEvent.from(set(event.target.value)))}
+          onFocus={onFocus}
+          placeholder={type.placeholder}
+          ref={ref}
+          type="text"
           value={value}
         />
       ) : (

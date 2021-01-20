@@ -4,9 +4,11 @@ import {TextSchemaType} from '@sanity/types'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {InputComponentProps} from '../typedefs'
 
-export default class TextInput extends React.Component<Props<string, TextSchemaType>> {
+export default class TextInput extends React.Component<
+  InputComponentProps<string, TextSchemaType>
+> {
   _input: TextArea | null
   _inputId = uniqueId('TextInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {

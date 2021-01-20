@@ -1,9 +1,9 @@
+import {FormField} from '@sanity/base/components'
+import imageUrlBuilder from '@sanity/image-url'
 import React from 'react'
 import PropTypes from 'prop-types'
-import imageUrlBuilder from '@sanity/image-url'
 import client from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import FormField from 'part:@sanity/components/formfields/default'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import styles from './AuthorReferenceInput.css'
 
@@ -96,25 +96,35 @@ export default class AuthorReferenceInput extends React.Component {
   }
 
   render() {
-    const {type, value, level, readOnly} = this.props
+    const {level, markers, onFocus, presence, readOnly, type, value} = this.props
     const {loading, authors} = this.state
 
     // What is the currently selected reference?
     const current = value && value._ref
 
     return (
-      <FormField label={type.title} level={level} description={type.description} labelFor="foo">
+      <FormField
+        __unstable_changeIndicator
+        __unstable_markers={markers}
+        __unstable_presence={presence}
+        description={type.description}
+        inputId="foo"
+        level={level}
+        title={type.title}
+      >
         <div className={styles.authorGroup}>
           {loading ? (
             <Spinner inline message="Loading authors..." />
           ) : (
             authors.map((author, i) => (
               <button
+                disabled={readOnly}
                 ref={i === 0 ? this.setFirstInputRef : undefined}
                 key={author._id}
                 type="button"
                 className={current === author._id ? styles.activeButton : styles.button}
                 onClick={readOnly ? noop : () => this.handleChange(author)}
+                onFocus={onFocus}
               >
                 <img
                   className={styles.authorImage}

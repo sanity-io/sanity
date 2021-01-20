@@ -7,11 +7,14 @@ import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {BooleanSchemaType} from '@sanity/types'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
+import {InputComponentProps} from '../typedefs'
 import styles from './BooleanInput.css'
-import {Props} from './types'
 
 const BooleanInput = React.forwardRef(
-  (props: Props<boolean, BooleanSchemaType>, ref: React.MutableRefObject<HTMLDivElement>) => {
+  (
+    props: InputComponentProps<boolean, BooleanSchemaType>,
+    ref: React.MutableRefObject<HTMLDivElement>
+  ) => {
     const {onChange} = props
     const inputRef = useRef<any>(null)
     const {value, type, readOnly, onFocus, markers, presence} = props
