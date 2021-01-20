@@ -339,7 +339,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.cancelUpload()
   }
 
-  handleSelectFile = (files: FileList) => {
+  handleSelectFile = (files: File[]) => {
     this.uploadFirstAccepted(Array.from(files))
   }
 
