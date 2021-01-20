@@ -142,7 +142,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.clearUploadStatus()
   }
 
-  handleSelectFileList = (fileList: FileList) => {
+  handleSelectFileList = (fileList: File[]) => {
     this.uploadFirstAccepted(Array.from(fileList))
   }
 
@@ -480,11 +480,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   >
                     <AssetBackground align="center" justify="center">
                       {!readOnly && isDraggingOver && <Overlay>Drop top upload</Overlay>}
-                      {value?._upload
-                        ? this.renderUploadState(value._upload)
-                        : value?.asset
-                        ? this.renderAsset()
-                        : this.renderUploadPlaceholder()}
+
+                      {value?._upload ? (
+                        this.renderUploadPlaceholder()
+                      ) : (
+                        <>{value?.asset ? this.renderAsset() : this.renderUploadPlaceholder()}</>
+                      )}
                     </AssetBackground>
                   </FileTarget>
                 </ChangeIndicatorWithProvidedFullPath>
