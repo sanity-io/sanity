@@ -5,7 +5,6 @@ import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 import PatchEvent, {set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
-import {Fieldset} from '../../../transitional/Fieldset'
 import Preview from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
@@ -105,20 +104,20 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
 
   render() {
     const {type, markers, value, level, readOnly, presence, onFocus, onBlur} = this.props
-    const options = type.options?.list || []
+    const options: any[] = type.options?.list || []
 
     // note: direction was never documented and makes more sense to use "grid" for it too
     const isGrid = type.options?.direction === 'horizontal' || type.options?.layout === 'grid'
 
     return (
-      <Fieldset
+      <FormFieldSet
         ref={this.setElement}
-        legend={type.title}
+        title={type.title}
         description={type.description}
-        markers={markers}
-        presence={presence}
+        __unstable_presence={presence}
         level={level}
-        changeIndicator={changeIndicatorOptions}
+        __unstable_changeIndicator={changeIndicatorOptions}
+        __unstable_markers={markers}
       >
         <List isGrid={isGrid} isSortable>
           {options.map((option, index) => {
@@ -155,7 +154,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
             )
           })}
         </List>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 }

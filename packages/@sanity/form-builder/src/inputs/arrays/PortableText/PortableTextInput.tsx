@@ -19,7 +19,6 @@ import {FormField} from '@sanity/base/components'
 
 import PatchEvent from '../../../PatchEvent'
 import withPatchSubscriber from '../../../utils/withPatchSubscriber'
-import {FormField} from '../../../transitional/FormField'
 import type {Patch} from '../../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
@@ -276,7 +275,7 @@ export default withPatchSubscriber(
       return (
         <FormField
           description={type.description}
-          label={type.title}
+          title={type.title}
           level={level}
           __unstable_markers={markers}
           __unstable_presence={presence}

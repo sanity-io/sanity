@@ -7,13 +7,13 @@ import {Box, Button, Card} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
+import {FormFieldSet} from '@sanity/base/components'
 import {ArrayFunctions} from '../../../legacyImports'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
 import {ResolvedUploader, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import UploadTargetFieldset from '../../../utils/UploadTargetFieldset'
 import Details from '../../common/Details'
-import {Fieldset} from '../../../transitional/Fieldset'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
 import {ArrayItem} from './item'
@@ -236,8 +236,8 @@ export class ArrayInput extends React.Component<Props> {
 
     if (hasNonObjectValues) {
       return (
-        <Fieldset
-          legend={type.title}
+        <FormFieldSet
+          title={type.title}
           description={type.description}
           level={level - 1}
           tabIndex={0}
@@ -261,7 +261,7 @@ export class ArrayInput extends React.Component<Props> {
               incorrect values into the list.
             </Details>
           </Card>
-        </Fieldset>
+        </FormFieldSet>
       )
     }
 
@@ -270,23 +270,23 @@ export class ArrayInput extends React.Component<Props> {
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
 
-    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
 
     return (
       <FieldSetComponent
-        markers={markers}
+        __unstable_changeIndicator={false}
         tabIndex={0}
-        legend={type.title}
+        title={type.title}
         description={type.description}
         level={level - 1}
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
         presence={presence.filter((item) => item.path[0] === '$')}
-        changeIndicator={false}
+        markers={markers}
         {...uploadProps}
       >
         <Box>
