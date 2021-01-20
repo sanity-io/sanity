@@ -9,7 +9,7 @@ import PatchEvent from './PatchEvent'
 import {emptyArray, emptyObject} from './utils/empty'
 import {InputComponentProps} from './typedefs'
 
-const EMPTY_PROPS = emptyObject<{}>()
+const EMPTY_PROPS = emptyObject<Record<string, unknown>>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
@@ -28,7 +28,7 @@ interface Props {
   level: number
   isRoot?: boolean
   path: Path
-  filterField?: Function
+  filterField?: (type: unknown, field: unknown) => boolean
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
@@ -90,6 +90,7 @@ export class FormBuilderInput extends React.Component<Props> {
     return propsDiffer || pathDiffer
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
