@@ -20,6 +20,8 @@ import {
 import React, {createElement} from 'react'
 import PropTypes from 'prop-types'
 import {Button} from '@sanity/ui'
+import {FormFieldSet} from '@sanity/base/components'
+
 
 // Parts
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
@@ -27,7 +29,6 @@ import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import {PresenceOverlay} from '@sanity/base/presence'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
@@ -565,7 +566,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
-    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : FormFieldSet
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
@@ -582,7 +583,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         presence={presence.filter(
           (item) => item.path[0] === '$' || isInside.includes(item.identity)
         )}
-        legend={type.title}
+        title={type.title}
         description={type.description}
         level={level}
         onFocus={this.handleFocus}
