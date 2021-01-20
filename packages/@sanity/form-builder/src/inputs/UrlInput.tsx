@@ -4,9 +4,9 @@ import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {InputComponentProps} from '../typedefs'
 
-export default class UrlInput extends React.Component<Props<string>> {
+export default class UrlInput extends React.Component<InputComponentProps<string>> {
   _input: TextInput | null
   _inputId = uniqueId('UrlInput')
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {

@@ -7,6 +7,7 @@ import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
 import {emptyArray, emptyObject} from './utils/empty'
+import {InputComponentProps} from './typedefs'
 
 const EMPTY_PROPS = emptyObject<{}>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
@@ -103,7 +104,9 @@ export class FormBuilderInput extends React.Component<Props> {
     }
   }
 
-  resolveInputComponent(type: SchemaType) {
+  resolveInputComponent(
+    type: SchemaType
+  ): React.ComponentType<InputComponentProps & {ref: React.Ref<any>}> | undefined {
     return this.context.formBuilder.resolveInputComponent(type)
   }
 
@@ -246,8 +249,8 @@ export class FormBuilderInput extends React.Component<Props> {
             compareValue={childCompareValue}
           >
             <InputComponent
-              {...rest}
-              {...leafProps}
+              {...(rest as any)}
+              {...(leafProps as any)}
               isRoot={isRoot}
               value={value}
               compareValue={childCompareValue}

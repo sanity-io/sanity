@@ -1,1 +1,1 @@
-export type Foo = {}
+export * from './input'

@@ -3,9 +3,9 @@ import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {InputComponentProps} from '../typedefs'
 
-export default class TagsArrayInput extends React.PureComponent<Props<string[]>> {
+export default class TagsArrayInput extends React.PureComponent<InputComponentProps<string[]>> {
   _input: TagInput
   _inputId = uniqueId('TagsArrayInput')
   set(nextValue: string[]) {

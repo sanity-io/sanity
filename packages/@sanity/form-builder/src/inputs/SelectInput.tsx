@@ -5,7 +5,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Select from 'part:@sanity/components/selects/default'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Props} from './types'
+import {InputComponentProps} from '../typedefs'
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
@@ -15,7 +15,7 @@ function toSelectItem(
   return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }
 
-export default class SelectInput extends React.Component<Props<string | number>> {
+export default class SelectInput extends React.Component<InputComponentProps<string | number>> {
   _input: (RadioSelect | Select) | null
   name = uniqueId('RadioName')
   static defaultProps = {
