@@ -31,3 +31,13 @@ jobs:
 
       - name: Verify format
         run: npm run verify-format
+
+      - name: Notify Slack about build failure
+        if: failure() && github.ref == 'refs/heads/ui/main'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: prj-components
+          status: FAILED
+          color: danger
