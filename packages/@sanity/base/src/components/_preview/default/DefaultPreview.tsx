@@ -115,7 +115,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
       <Stack flex={1} space={2}>
         {title && (
-          <Text weight="medium">
+          <Text>
             <CappedSpan>{title}</CappedSpan>
           </Text>
         )}
