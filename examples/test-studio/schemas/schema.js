@@ -12,6 +12,8 @@ import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
 import strings from './strings'
+import emails from './emails'
+import urls from './urls'
 import texts from './texts'
 import objects, {myObject} from './objects'
 import recursiveObjectTest, {recursiveObject} from './recursiveObject'
@@ -68,6 +70,8 @@ export default createSchema({
     spotifyEmbed,
     focus,
     strings,
+    emails,
+    urls,
     texts,
     numbers,
     customNumber,
