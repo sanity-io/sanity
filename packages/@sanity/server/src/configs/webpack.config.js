@@ -6,6 +6,7 @@ import webpackIntegration from '@sanity/webpack-integration/v3'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import rxPaths from 'rxjs/_esm5/path-mapping'
 import getStaticBasePath from '../util/getStaticBasePath'
+import {getModulePath} from './getModulePath'
 
 const resolve = (mod) => require.resolve(mod)
 
@@ -78,8 +79,8 @@ export default (config = {}) => {
     },
     resolve: {
       alias: {
-        react: path.dirname(reactPath),
-        'react-dom': path.dirname(reactDomPath),
+        react: getModulePath('react'),
+        'react-dom': getModulePath('react-dom'),
         moment$: 'moment/moment.js',
         ...rxPaths(),
       },
