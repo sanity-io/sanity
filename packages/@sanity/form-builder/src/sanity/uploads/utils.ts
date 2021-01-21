@@ -1,6 +1,6 @@
-import {UploadEvent} from './typedefs'
+import {set, unset, setIfMissing} from '../../patch/patches'
+import {UploadEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
-import {set, unset, setIfMissing} from '../../utils/patches'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 
@@ -14,9 +14,11 @@ export function createUploadEvent(patches = []): UploadEvent {
 export const CLEANUP_EVENT = createUploadEvent([UNSET_UPLOAD_PATCH])
 
 export function createInitialUploadEvent(file: File) {
+  const now = new Date().toISOString()
   const value = {
     progress: 2,
-    initiated: new Date().toISOString(),
+    initiated: now,
+    updated: now,
     file: {name: file.name, type: file.type},
   }
   return createUploadEvent([

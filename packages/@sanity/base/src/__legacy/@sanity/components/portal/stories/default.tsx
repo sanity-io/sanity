@@ -1,4 +1,4 @@
-import {Portal, PortalProvider} from 'part:@sanity/components/portal'
+import {Portal, PortalProvider} from '@sanity/ui'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React, {useRef, useEffect} from 'react'
 

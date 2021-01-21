@@ -1,11 +1,13 @@
-import React from 'react'
-import schema from 'part:@sanity/base/schema'
-import DefaultButton from 'part:@sanity/components/buttons/default'
+import React, {useCallback, useMemo} from 'react'
+import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Alert} from '../../components/Alert'
+import {Details} from '../../components/Details'
+import {schema} from '../../legacyParts'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
-import styles from '../ObjectInput/styles/UnknownFields.css'
-import Warning from '../Warning'
 
-type Props = {
+declare const __DEV__: boolean
+
+interface UntypedValueInputProps {
   validTypes?: string[]
   value?: Record<string, unknown>
   onChange?: (event: PatchEvent, value?: Record<string, unknown>) => void
@@ -18,16 +20,24 @@ function SetMissingTypeButton({
 }: {
   value: Record<string, unknown>
   targetType: string
-  onChange: Props['onChange']
+  onChange: UntypedValueInputProps['onChange']
 }) {
-  const itemValue = {...value, _type: targetType}
+  const itemValue = useMemo(() => ({...value, _type: targetType}), [targetType, value])
+
+  const handleClick = useCallback(
+    () => onChange(PatchEvent.from(setIfMissing(targetType, ['_type'])), itemValue),
+    [itemValue, onChange, targetType]
+  )
+
   return (
-    <DefaultButton
-      onClick={() => onChange(PatchEvent.from(setIfMissing(targetType, ['_type'])), itemValue)}
-      color="primary"
-    >
-      Set <code>_type</code> to <code>{targetType}</code>
-    </DefaultButton>
+    <Button
+      onClick={handleClick}
+      text={
+        <>
+          Convert to <code>{targetType}</code>
+        </>
+      }
+    />
   )
 }
 
@@ -38,56 +48,84 @@ function UnsetItemButton({
 }: {
   value: Record<string, unknown>
   validTypes: string[]
-  onChange: Props['onChange']
+  onChange: UntypedValueInputProps['onChange']
 }) {
   // Doesn't matter which `_type` we use as long as it's allowed by the array
-  const itemValue = {...value, _type: validTypes[0]}
-  return (
-    <DefaultButton onClick={() => onChange(PatchEvent.from(unset()), itemValue)} color="danger">
-      Remove value
-    </DefaultButton>
-  )
+  const itemValue = useMemo(() => ({...value, _type: validTypes[0]}), [validTypes, value])
+
+  const handleClick = useCallback(() => onChange(PatchEvent.from(unset()), itemValue), [
+    itemValue,
+    onChange,
+  ])
+
+  return <Button onClick={handleClick} tone="critical" text="Unset value" />
 }
 
 /**
  * When the value does not have an `_type` property,
  * but the schema has a named type
  */
-export function UntypedValueInput({validTypes, value, onChange}: Props) {
+export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) {
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])
-  const fix = isSingleValidType ? (
-    <SetMissingTypeButton onChange={onChange} targetType={validTypes[0]} value={value} />
-  ) : null
 
-  const message = (
-    <>
-      Encountered an object value without a <code>_type</code> property.
-      {isSingleValidType && !isHoistedType && (
-        <div>
-          Either remove the <code>name</code> property of the object declaration, or set{' '}
-          <code>_type</code> property on items.
-        </div>
-      )}
-      {!isSingleValidType && (
-        <div>
-          The following types are valid here according to schema:{' '}
-          <ul>
-            {validTypes.map((validType) => (
-              <li key={validType}>
-                <code>{validType}</code>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <h4>object</h4>
-      <pre className={styles.inspectValue}>{JSON.stringify(value, null, 2)}</pre>
-      {fix}
-      {fix && ' '}
-      <UnsetItemButton onChange={onChange} validTypes={validTypes} value={value} />
-    </>
+  return (
+    <Alert
+      status="warning"
+      title={
+        <>
+          Property value missing <code>_type</code>
+        </>
+      }
+    >
+      <Details open={__DEV__} title={<>Developer info</>}>
+        <Stack space={3}>
+          <Text as="p" muted size={1}>
+            Encountered an object value without a <code>_type</code> property.
+          </Text>
+
+          {isSingleValidType && !isHoistedType && (
+            <Text as="p" muted size={1}>
+              Either remove the <code>name</code> property of the object declaration, or set{' '}
+              <code>_type</code> property on items.
+            </Text>
+          )}
+
+          {!isSingleValidType && (
+            <Text as="p" muted size={1}>
+              The following types are valid here according to schema:
+            </Text>
+          )}
+
+          {!isSingleValidType && (
+            <ul>
+              {validTypes.map((validType) => (
+                <Text as="li" key={validType} muted size={1}>
+                  <code>{validType}</code>
+                </Text>
+              ))}
+            </ul>
+          )}
+
+          <Stack space={2}>
+            <Text as="h4" weight="semibold" size={1}>
+              Current value (<code>object</code>):
+            </Text>
+
+            <Card border overflow="auto" padding={2} radius={2} tone="inherit">
+              <Code language="json">{JSON.stringify(value, null, 2)}</Code>
+            </Card>
+          </Stack>
+
+          <Grid columns={[1, 2, 2]} gap={1}>
+            {isSingleValidType && (
+              <SetMissingTypeButton onChange={onChange} targetType={validTypes[0]} value={value} />
+            )}
+
+            <UnsetItemButton onChange={onChange} validTypes={validTypes} value={value} />
+          </Grid>
+        </Stack>
+      </Details>
+    </Alert>
   )
-
-  return <Warning heading="Content is missing _type" message={message} />
 }

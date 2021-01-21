@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
 import {Schema, SchemaType} from '@sanity/types'
-import {Patch} from './typedefs/patch'
+import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
 
 const RESOLVE_NULL = (arg: any) => null

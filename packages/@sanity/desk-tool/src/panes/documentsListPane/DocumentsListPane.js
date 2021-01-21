@@ -1,9 +1,9 @@
+import {Box, Button, Container, Heading, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import {getQueryResults} from 'part:@sanity/base/query-container'
-import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {isEqual} from 'lodash'
@@ -297,6 +297,10 @@ export default class DocumentsListPane extends React.PureComponent {
     return `*[${filter}] | order(${toOrderClause(sort)}) [0...${limit}] {${finalProjection}}`
   }
 
+  setToast = (toast) => {
+    this.toast = toast
+  }
+
   renderResults() {
     const {queryResult, isLoadingMore} = this.state
     const {result} = queryResult
@@ -348,14 +352,19 @@ export default class DocumentsListPane extends React.PureComponent {
 
     if (error) {
       return (
-        <Snackbar
-          kind="error"
-          isPersisted
-          actionTitle="Retry"
-          onAction={onRetry}
-          title="An error occurred while loading items:"
-          subtitle={<div>{error.message}</div>}
-        />
+        <div className={styles[`layout__${layout}`]}>
+          <Container width={1}>
+            <Stack paddingX={4} paddingY={5} space={4}>
+              <Heading>Could not fetch list items</Heading>
+              <Text>
+                Error: <code>{error.message}</code>
+              </Text>
+              <Box>
+                <Button onClick={onRetry} text="Retry" tone="primary" />
+              </Box>
+            </Stack>
+          </Container>
+        </div>
       )
     }
 

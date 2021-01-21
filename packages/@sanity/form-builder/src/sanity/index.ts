@@ -1,6 +1,6 @@
 // This exports the public api of 'part:@sanity/form-builder'
 
-import * as patches from '../utils/patches'
+import * as patches from '../patch/patches'
 
 export {default} from './SanityFormBuilder'
 export {default as FormBuilder} from './SanityFormBuilder'
@@ -13,4 +13,4 @@ export {default as PatchEvent} from '../PatchEvent'
 export {default as HashFocusManager} from './focusManagers/HashFocusManager'
 export {default as SimpleFocusManager} from './focusManagers/SimpleFocusManager'
 export {patches}
-export {default as BlockEditor} from '../inputs/PortableText/PortableTextInput'
+export {default as BlockEditor} from '../inputs/arrays/PortableText/PortableTextInput'

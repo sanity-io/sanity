@@ -12,8 +12,11 @@
 }
 
 .headerContainer {
-  z-index: var(--zindex-pane);
-  position: relative;
+  /* Override Sanity UI */
+  @nest &.headerContainer {
+    position: relative;
+  }
+
   background: var(--component-bg);
 
   @nest .root:not(.isCollapsed) &::after {
@@ -58,7 +61,6 @@
 }
 
 .portalContainer {
-  z-index: calc(var(--zindex-pane) - 1);
   position: absolute;
   top: 0;
   left: 0;

@@ -5,6 +5,7 @@ import {MenuButton} from 'part:@sanity/components/menu-button'
 import ChevronDownIcon from 'part:@sanity/base/angle-down-icon'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import React, {createElement, forwardRef, useCallback, useEffect, useRef, useState} from 'react'
+import {useBoundaryElement} from '../boundaryElement'
 import {Placement} from '../types'
 import {ButtonProps} from './types'
 
@@ -15,6 +16,7 @@ interface DropdownItem {
 }
 
 interface DropdownButtonProps {
+  boundaryElement?: HTMLElement | null
   items: DropdownItem[]
   onAction: (item: DropdownItem) => void
   loading?: boolean
@@ -85,6 +87,7 @@ DropdownMenuItem.displayName = 'DropdownMenuItem'
 
 function DropdownButton(props: DropdownButtonProps & ButtonProps) {
   const {
+    boundaryElement,
     children,
     className,
     items,
@@ -95,6 +98,7 @@ function DropdownButton(props: DropdownButtonProps & ButtonProps) {
     showArrow = true,
     ...restProps
   } = props
+  const contextBoundaryElement = useBoundaryElement()
 
   const firstItemElementRef = useRef<HTMLLIElement | null>(null)
   const [open, setOpen] = useState(false)
@@ -128,6 +132,7 @@ function DropdownButton(props: DropdownButtonProps & ButtonProps) {
 
   return (
     <MenuButton
+      boundaryElement={boundaryElement || contextBoundaryElement}
       buttonContainerClassName={styles.buttonContainer}
       buttonProps={{
         ...restProps,

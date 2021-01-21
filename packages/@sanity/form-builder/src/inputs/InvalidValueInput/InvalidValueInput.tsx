@@ -1,13 +1,19 @@
-import React from 'react'
-import DefaultButton from 'part:@sanity/components/buttons/default'
-import styles from '../ObjectInput/styles/UnknownFields.css'
+import {Button, Card, Code, Stack, Text} from '@sanity/ui'
+import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
+import {Alert} from '../../components/Alert'
+import {Details} from '../../components/Details'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import {ItemValue} from '../ArrayInput/typedefs'
-import Warning from '../Warning'
-import CONVERTERS from './converters'
+import CONVERTERS, {ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 
-function getConverters(value, actualType, validTypes) {
+declare const __DEV__: boolean
+
+interface Converter extends ValueConverter {
+  from: string
+  to: string
+}
+
+function getConverters(value: unknown, actualType: string, validTypes: string[]): Converter[] {
   if (!(actualType in CONVERTERS)) {
     return []
   }
@@ -22,47 +28,38 @@ function getConverters(value, actualType, validTypes) {
     .filter((converter) => converter.test(value))
 }
 
-type InvalidValueProps = {
+interface InvalidValueProps {
   actualType?: string
   validTypes?: string[]
   value?: unknown
-  onChange?: (event: PatchEvent, valueOverride?: ItemValue) => void
+  onChange?: (event: PatchEvent) => void
 }
-export default class InvalidValueInput extends React.PureComponent<InvalidValueProps, {}> {
-  handleClearClick = () => {
-    this.props.onChange(PatchEvent.from(unset()))
-  }
 
-  handleConvertTo = (converted) => {
-    this.props.onChange(PatchEvent.from(set(converted)))
-  }
+export const InvalidValueInput = forwardRef(
+  (props: InvalidValueProps, ref: React.Ref<{focus: () => void}>) => {
+    const {value, actualType, validTypes, onChange} = props
 
-  renderValidTypes() {
-    const {validTypes} = this.props
-    if (validTypes.length === 1) {
-      return (
-        <div>
-          Only content of type <code>{validTypes[0]}</code> are valid here according to the schema.
-          This could mean that the type has changed, or that someone else has added it to their own
-          local schema that is not yet deployed.
-        </div>
-      )
-    }
+    useImperativeHandle(ref, () => ({
+      // @todo
+      focus: () => undefined,
+    }))
 
-    return (
-      <div>
-        Only the following types are valid here according to schema:{' '}
-        {validTypes.map((validType) => (
-          <li key={validType}>
-            <code>{validType}</code>
-          </li>
-        ))}
-      </div>
+    const handleClearClick = useCallback(() => {
+      onChange(PatchEvent.from(unset()))
+    }, [onChange])
+
+    const handleConvertTo = useCallback(
+      (converted) => {
+        onChange(PatchEvent.from(set(converted)))
+      },
+      [onChange]
     )
-  }
 
-  render() {
-    const {value, actualType, validTypes, onChange} = this.props
+    const converters = useMemo(() => getConverters(value, actualType, validTypes), [
+      value,
+      actualType,
+      validTypes,
+    ])
 
     if (typeof value === 'object' && value !== null && !('_type' in value)) {
       return (
@@ -74,29 +71,107 @@ export default class InvalidValueInput extends React.PureComponent<InvalidValueP
       )
     }
 
-    const converters = getConverters(value, actualType, validTypes)
-    const message = (
-      <>
-        Encountered a value of type <code>{actualType}</code>.{this.renderValidTypes()}
-        <h4>{actualType}</h4>
-        <pre className={styles.inspectValue}>{JSON.stringify(value, null, 2)}</pre>
-        {converters.map((converter) => (
-          <DefaultButton
-            key={`${converter.from}-${converter.to}`}
-            onClick={() => this.handleConvertTo(converter.convert(value))}
-            color="primary"
-          >
-            Convert value to {converter.to}
-          </DefaultButton>
-        ))}
-        <div className={styles.buttonWrapper}>
-          <DefaultButton onClick={this.handleClearClick} color="danger">
-            Remove value
-          </DefaultButton>
-        </div>
-      </>
+    const suffix = (
+      <Stack padding={2}>
+        <Button onClick={handleClearClick} tone="critical" text="Reset value" />
+      </Stack>
     )
 
-    return <Warning heading="Content has invalid type" message={message} />
+    return (
+      <Alert status="error" suffix={suffix} title={<>Invalid property value</>}>
+        <Text as="p" muted size={1}>
+          The property value is stored as a value type that does not match the expected type.
+        </Text>
+
+        <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
+          <Stack space={3}>
+            {validTypes.length === 1 && (
+              <Text as="p" muted size={1}>
+                The value of this property must be of type <code>{validTypes[0]}</code> according to
+                the schema.
+              </Text>
+            )}
+
+            {validTypes.length === 1 && (
+              <Text as="p" muted size={1}>
+                Mismatching value types typically occur when the schema has recently been changed.
+              </Text>
+            )}
+
+            {validTypes.length !== 1 && (
+              <Text as="p" muted size={1}>
+                Only the following types are valid here according to schema:
+              </Text>
+            )}
+
+            {validTypes.length !== 1 && (
+              <ul>
+                {validTypes.map((validType) => (
+                  <Text as="li" key={validType}>
+                    <code>{validType}</code>
+                  </Text>
+                ))}
+              </ul>
+            )}
+
+            <Stack marginTop={2} space={2}>
+              <Text size={1} weight="semibold">
+                The current value (<code>{actualType}</code>)
+              </Text>
+
+              <Card border padding={2} radius={2} tone="inherit">
+                <Code language="json" size={1}>
+                  {JSON.stringify(value, null, 2)}
+                </Code>
+              </Card>
+            </Stack>
+
+            {converters.length > 0 && (
+              <Stack space={1}>
+                {converters.map((converter, converterIndex) => (
+                  <ConvertButton
+                    converter={converter}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={converterIndex}
+                    onConvert={handleConvertTo}
+                    value={value}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </Details>
+      </Alert>
+    )
   }
+)
+
+InvalidValueInput.displayName = 'InvalidValueInput'
+
+function ConvertButton({
+  converter,
+  onConvert,
+  value,
+}: {
+  converter: Converter
+  onConvert: (v: string | number | boolean | Record<string, unknown>) => void
+  value: unknown
+}) {
+  const handleClick = useCallback(() => onConvert(converter.convert(value)), [
+    converter,
+    onConvert,
+    value,
+  ])
+
+  return (
+    <Button
+      key={`${converter.from}-${converter.to}`}
+      onClick={handleClick}
+      text={
+        <>
+          Convert to <code>{converter.to}</code>
+        </>
+      }
+    />
+  )
 }

@@ -1,14 +1,13 @@
 import {from as observableFrom, of as observableOf, Observable} from 'rxjs'
 import {catchError, concat, filter, map, merge, mergeMap} from 'rxjs/operators'
+import {set} from '../../patch/patches'
+import {uploadImageAsset} from '../inputs/client-adapters/assets'
 import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION, Orientation} from './image/orient'
-import {set} from '../../utils/patches'
-import {UploadEvent, UploadOptions} from './typedefs'
+import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {CLEANUP_EVENT, createInitialUploadEvent, createUploadEvent} from './utils'
-
-import {uploadImageAsset} from '../inputs/client-adapters/assets'
 
 type Exif = {
   orientation: Orientation
@@ -21,14 +20,18 @@ export default function uploadImage(file: File, options?: UploadOptions): Observ
       ...event,
       progress: 2 + (event.percent / 100) * 98,
     })),
-    map((event) => {
+    map((event: any) => {
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
           set(100, [UPLOAD_STATUS_KEY, 'progress']),
+          set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
         ])
       }
-      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
+      return createUploadEvent([
+        set(event.percent, [UPLOAD_STATUS_KEY, 'progress']),
+        set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
+      ])
     })
   )
 
