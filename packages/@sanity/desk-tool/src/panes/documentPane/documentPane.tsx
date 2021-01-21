@@ -1,10 +1,13 @@
 import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
+import {Layer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import React, {useCallback, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {ChangeConnectorRoot} from '@sanity/base/lib/change-indicators/overlay/ChangeConnectorRoot'
+import {setLocation} from 'part:@sanity/base/datastore/presence'
+import {useZIndex} from '@sanity/base/components'
 import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
@@ -16,7 +19,6 @@ import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keybo
 import {DocumentStatusBar} from './statusBar'
 import {TimelinePopover} from './timeline'
 import {Doc, DocumentViewType} from './types'
-import {setLocation} from 'part:@sanity/base/datastore/presence'
 
 import styles from './documentPane.css'
 
@@ -69,6 +71,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     compareValue,
     views = [],
   } = props
+  const zindex = useZIndex()
   const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
   const {historyController, setTimelineMode, timelineMode, open} = useDocumentHistory()
@@ -235,13 +238,13 @@ export function DocumentPane(props: DocumentPaneProps) {
         )}
       </ChangeConnectorRoot>
 
-      <div className={styles.footerContainer}>
+      <Layer className={styles.footerContainer} zOffset={zindex.pane}>
         <DocumentStatusBar
           id={documentId}
           type={documentType}
           lastUpdated={value && value._updatedAt}
         />
-      </div>
+      </Layer>
 
       {connectionState === 'reconnecting' && (
         <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />

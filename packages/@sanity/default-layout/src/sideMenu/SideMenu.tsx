@@ -1,4 +1,5 @@
-import {UserAvatar} from '@sanity/base/components'
+import {UserAvatar, useZIndex} from '@sanity/base/components'
+import {Layer} from '@sanity/ui'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SignOutIcon from 'part:@sanity/base/sign-out-icon'
@@ -23,12 +24,13 @@ interface Props {
 
 function SideMenu(props: Props) {
   const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, router, tools, user} = props
+  const zindex = useZIndex()
   let className = styles.root
   if (isOpen) className += ` ${styles.isOpen}`
   const tabIndex = isOpen ? 0 : -1
 
   return (
-    <div className={className}>
+    <Layer className={className} zOffset={zindex.drawer}>
       <div>
         <div className={styles.header}>
           <div className={styles.headerMain}>
@@ -77,7 +79,7 @@ function SideMenu(props: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </Layer>
   )
 }
 

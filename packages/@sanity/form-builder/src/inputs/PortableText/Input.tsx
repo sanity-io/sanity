@@ -15,11 +15,11 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Path, isKeySegment, Marker, isKeyedObject} from '@sanity/types'
+import {BoundaryElementProvider, Layer, Portal, PortalProvider} from '@sanity/ui'
 import {uniqueId, isEqual} from 'lodash'
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import {useZIndex} from '@sanity/base/components'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import {Layer} from 'part:@sanity/components/layer'
-import {BoundaryElementProvider} from '@sanity/base/__legacy/@sanity/components'
+import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
@@ -74,6 +74,8 @@ export default function PortableTextInput(props: Props) {
     renderCustomMarkers,
     value,
   } = props
+
+  const zindex = useZIndex()
 
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
@@ -329,6 +331,7 @@ export default function PortableTextInput(props: Props) {
 
   const activationId = useMemo(() => uniqueId('PortableTextInput'), [])
 
+  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [scrollContainerElement, setScrollContainerElement] = useState<HTMLElement | null>(null)
 
   const ptEditor = useMemo(
@@ -352,6 +355,7 @@ export default function PortableTextInput(props: Props) {
         renderBlockActions={renderBlockActions}
         renderChild={renderChild}
         renderCustomMarkers={renderCustomMarkers}
+        setPortalElement={setPortalElement}
         setScrollContainerElement={setScrollContainerElement}
         value={value}
       />
@@ -363,41 +367,46 @@ export default function PortableTextInput(props: Props) {
     return renderEditObject()
   }, [isFullscreen, focusPath, markers, objectEditData, presence, value])
 
-  const fullscreenToggledEditor = (
+  return (
     <div className={classNames(styles.root, hasFocus && styles.focus, readOnly && styles.readOnly)}>
-      <BoundaryElementProvider element={scrollContainerElement}>
-        {isFullscreen ? (
-          <Layer key={`portal-${activationId}`}>
-            <div className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}>
-              {ptEditor}
-            </div>
-
-            {editObject}
-          </Layer>
-        ) : (
-          <>
-            <ActivateOnFocus
-              inputId={activationId}
-              html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
-              isActive={isActive}
-              onActivate={handleActivate}
-              overlayClassName={styles.activateOnFocusOverlay}
-            >
-              <ChangeIndicatorWithProvidedFullPath
-                compareDeep
-                value={value}
-                hasFocus={hasFocus && objectEditData === null}
-                path={[]}
+      {isFullscreen && (
+        <Portal key={`portal-${activationId}`}>
+          <PortalProvider element={portalElement}>
+            <BoundaryElementProvider element={scrollContainerElement}>
+              <Layer
+                className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}
+                zOffset={zindex.pane - 2}
               >
                 {ptEditor}
-              </ChangeIndicatorWithProvidedFullPath>
-            </ActivateOnFocus>
-            {editObject}
-          </>
-        )}
-      </BoundaryElementProvider>
+              </Layer>
+
+              {editObject}
+            </BoundaryElementProvider>
+          </PortalProvider>
+        </Portal>
+      )}
+
+      {!isFullscreen && (
+        <>
+          <ActivateOnFocus
+            inputId={activationId}
+            html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+            isActive={isActive}
+            onActivate={handleActivate}
+            overlayClassName={styles.activateOnFocusOverlay}
+          >
+            <ChangeIndicatorWithProvidedFullPath
+              compareDeep
+              value={value}
+              hasFocus={hasFocus && objectEditData === null}
+              path={[]}
+            >
+              {ptEditor}
+            </ChangeIndicatorWithProvidedFullPath>
+          </ActivateOnFocus>
+          {editObject}
+        </>
+      )}
     </div>
   )
-
-  return <>{fullscreenToggledEditor}</>
 }
