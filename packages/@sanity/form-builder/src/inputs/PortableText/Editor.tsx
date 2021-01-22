@@ -14,8 +14,8 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {Marker} from '@sanity/types'
+import {useLayer} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {useLayer} from 'part:@sanity/components/layer'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
@@ -44,6 +44,7 @@ type Props = {
   renderBlockActions?: RenderBlockActions
   renderChild: RenderChildFunction
   renderCustomMarkers?: RenderCustomMarkers
+  setPortalElement?: (el: HTMLDivElement | null) => void
   setScrollContainerElement: (el: HTMLElement | null) => void
   value: PortableTextBlock[] | undefined
 }
@@ -68,14 +69,14 @@ function PortableTextSanityEditor(props: Props) {
     renderBlockActions,
     renderChild,
     renderCustomMarkers,
+    setPortalElement,
     setScrollContainerElement,
     value,
   } = props
 
   const editor = usePortableTextEditor()
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [])
-  const layer = useLayer()
-  const isTopLayer = layer.depth === layer.size
+  const {isTopLayer} = useLayer()
 
   const handleOpenObjectHotkey = (
     event: React.BaseSyntheticEvent,
@@ -215,25 +216,28 @@ function PortableTextSanityEditor(props: Props) {
           </div>
         </div>
 
-        <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
-          <div className={editorWrapperClassNames}>
-            <div className={styles.blockExtras}>{blockExtras()}</div>
-            <div className={editorClassNames}>
-              <PortableTextEditable
-                hotkeys={hotkeys}
-                onCopy={onCopy}
-                onPaste={onPaste}
-                placeholderText={value ? undefined : 'Empty'}
-                renderAnnotation={renderAnnotation}
-                renderBlock={renderBlock}
-                renderChild={renderChild}
-                renderDecorator={renderDecorator}
-                selection={initialSelection}
-                spellCheck
-              />
+        <div className={styles.editorBoxContent}>
+          <ScrollContainer className={scClassNames} ref={setScrollContainerElement}>
+            <div className={editorWrapperClassNames}>
+              <div className={styles.blockExtras}>{blockExtras()}</div>
+              <div className={editorClassNames}>
+                <PortableTextEditable
+                  hotkeys={hotkeys}
+                  onCopy={onCopy}
+                  onPaste={onPaste}
+                  placeholderText={value ? undefined : 'Empty'}
+                  renderAnnotation={renderAnnotation}
+                  renderBlock={renderBlock}
+                  renderChild={renderChild}
+                  renderDecorator={renderDecorator}
+                  selection={initialSelection}
+                  spellCheck
+                />
+              </div>
             </div>
-          </div>
-        </ScrollContainer>
+          </ScrollContainer>
+          <div data-portal="" ref={setPortalElement} />
+        </div>
       </div>
     ),
     [initialSelection, isFullscreen, value, readOnly, forceUpdate]
