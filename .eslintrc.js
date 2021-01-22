@@ -17,6 +17,7 @@ module.exports = {
     './packages/eslint-config-sanity/import.js',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:cypress/recommended',
     'prettier/@typescript-eslint',
     'prettier',
     'prettier/react',
