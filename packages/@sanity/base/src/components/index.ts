@@ -1,7 +1,6 @@
 export * from './_preview'
 export * from './formField'
 export * from './transitional'
-export * from './formField'
 export * from './UserAvatar'
 export * from './ZIndexProvider'
 export * from './scroll'
