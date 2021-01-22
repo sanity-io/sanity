@@ -35,6 +35,11 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   fit: 'crop',
 }
 
+const Root = styled(Flex)`
+  --card-fg-color: currentColor;
+  --card-muted-fg-color: currentColor;
+`
+
 const MediaBox = styled(Box)`
   position: relative;
   width: ${PREVIEW_SIZE}px;
@@ -67,11 +72,21 @@ const MediaBox = styled(Box)`
   }
 `
 
+const SubtitleText = styled(Text)`
+  color: var(--card-fg-color);
+  opacity: 0.7;
+`
+
 const CappedSpan = styled.span`
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const SkeletonCard = styled(Card)`
+  background: var(--card-fg-color);
+  opacity: 0.1;
 `
 
 export function DefaultPreview(props: DefaultPreviewProps) {
@@ -87,11 +102,11 @@ export function DefaultPreview(props: DefaultPreviewProps) {
     return (
       <Flex align="center" style={{height: PREVIEW_SIZE}}>
         <MediaBox display="flex" marginRight={2} overflow="hidden">
-          <Card radius={2} tone="transparent" style={{width: '100%', height: '100%'}} />
+          <SkeletonCard radius={2} tone="transparent" style={{width: '100%', height: '100%'}} />
         </MediaBox>
         <Stack flex={1} space={2}>
-          <Card radius={1} style={{height: 11, width: '50%'}} tone="transparent" />
-          <Card radius={1} style={{height: 9, width: '40%'}} tone="transparent" />
+          <SkeletonCard radius={1} style={{height: 11, width: '50%'}} tone="transparent" />
+          <SkeletonCard radius={1} style={{height: 9, width: '40%'}} tone="transparent" />
         </Stack>
       </Flex>
     )
@@ -106,7 +121,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   const status = renderPreviewNode(statusNode, {layout: 'default'})
 
   return (
-    <Flex align="center" style={{height: PREVIEW_SIZE}}>
+    <Root align="center" style={{height: PREVIEW_SIZE}}>
       {media && (
         <MediaBox display="flex" marginRight={2} overflow="hidden">
           {media}
@@ -123,13 +138,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         {!title && <Text muted>Untitled</Text>}
 
         {subtitle && (
-          <Text muted size={1}>
+          <SubtitleText muted size={1}>
             <CappedSpan>{subtitle}</CappedSpan>
-          </Text>
+          </SubtitleText>
         )}
       </Stack>
 
       {status && <Box marginLeft={3}>{status}</Box>}
-    </Flex>
+    </Root>
   )
 }

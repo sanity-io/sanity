@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {renderPreviewNode} from '../helpers'
@@ -35,6 +35,11 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   fit: 'crop',
 }
 
+const Root = styled(Flex)`
+  --card-fg-color: currentColor;
+  --card-muted-fg-color: currentColor;
+`
+
 const MediaBox = styled(Box)`
   position: relative;
   width: ${PREVIEW_SIZE}px;
@@ -67,6 +72,11 @@ const MediaBox = styled(Box)`
   }
 `
 
+const SubtitleText = styled(Text)`
+  color: var(--card-fg-color);
+  opacity: 0.7;
+`
+
 const CappedSpan = styled.span`
   display: block;
   white-space: nowrap;
@@ -74,9 +84,15 @@ const CappedSpan = styled.span`
   text-overflow: ellipsis;
 `
 
+const SkeletonCard = styled(Card)`
+  background: var(--card-fg-color);
+  opacity: 0.1;
+`
+
 export function DetailPreview(props: DetailPreviewProps) {
   const {
     description: descriptionNode,
+    isPlaceholder,
     media: mediaNode,
     title: titleNode,
     status: statusNode,
@@ -91,8 +107,22 @@ export function DetailPreview(props: DetailPreviewProps) {
   const subtitle = renderPreviewNode(subtitleNode, {layout: 'detail'})
   const status = renderPreviewNode(statusNode, {layout: 'detail'})
 
+  if (isPlaceholder) {
+    return (
+      <Flex align="center" style={{height: PREVIEW_SIZE}}>
+        <MediaBox display="flex" marginRight={2} overflow="hidden">
+          <SkeletonCard radius={2} tone="transparent" style={{width: '100%', height: '100%'}} />
+        </MediaBox>
+        <Stack flex={1} space={2}>
+          <SkeletonCard radius={1} style={{height: 11, width: '50%'}} tone="transparent" />
+          <SkeletonCard radius={1} style={{height: 9, width: '40%'}} tone="transparent" />
+        </Stack>
+      </Flex>
+    )
+  }
+
   return (
-    <Flex align="center" style={{height: PREVIEW_SIZE}}>
+    <Root align="center" style={{height: PREVIEW_SIZE}}>
       {media && (
         <MediaBox display="flex" marginRight={2} overflow="hidden">
           {media}
@@ -109,19 +139,19 @@ export function DetailPreview(props: DetailPreviewProps) {
         {!title && <Text muted>Untitled</Text>}
 
         {subtitle && (
-          <Text muted size={1}>
+          <SubtitleText muted size={1}>
             <CappedSpan>{subtitle}</CappedSpan>
-          </Text>
+          </SubtitleText>
         )}
 
         {description && (
-          <Text muted size={1}>
+          <SubtitleText muted size={1}>
             {description}
-          </Text>
+          </SubtitleText>
         )}
       </Stack>
 
       {status && <Box marginLeft={3}>{status}</Box>}
-    </Flex>
+    </Root>
   )
 }
