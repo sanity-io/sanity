@@ -1,4 +1,6 @@
 const {get} = require('lodash')
+const yargs = require('yargs/yargs')
+const {hideBin} = require('yargs/helpers')
 const debug = require('../../debug').default
 const getUrlHeaders = require('../../util/getUrlHeaders')
 const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
@@ -18,13 +20,21 @@ const generations = {
 }
 
 module.exports = async function deployApiActions(args, context) {
+  // Reparsing CLI flags for better control of binary flags
+  const flags = yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('dataset', {type: 'string'})
+    .option('tag', {type: 'string', default: 'default'})
+    .option('generation', {type: 'string'})
+    .option('non-null-document-fields', {type: 'boolean', default: false})
+    .option('playground', {type: 'boolean'})
+    .option('force', {type: 'boolean'}).argv
+
   const {apiClient, workDir, output, prompt, chalk} = context
 
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   let spinner
-  const flags = args.extOptions
-  const {force, playground} = flags
+  const {force, tag, playground, nonNullDocumentFields} = flags
 
   const client = apiClient({
     requireUser: true,
@@ -32,7 +42,6 @@ module.exports = async function deployApiActions(args, context) {
   })
 
   const dataset = flags.dataset || client.config().dataset
-  const tag = flags.tag || 'default'
   let generation = flags.generation
   if (generation && !generations.hasOwnProperty(generation)) {
     throw new Error(`Unknown API generation "${generation}"`)
@@ -77,7 +86,9 @@ module.exports = async function deployApiActions(args, context) {
   try {
     const generateSchema = generations[generation]
     const sanitySchema = getSanitySchema(workDir)
-    const extracted = extractFromSanitySchema(sanitySchema)
+    const extracted = extractFromSanitySchema(sanitySchema, {
+      nonNullDocumentFields,
+    })
 
     schema = generateSchema(extracted)
   } catch (err) {
