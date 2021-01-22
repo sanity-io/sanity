@@ -1,7 +1,8 @@
 import React from 'react'
-import {Button} from '@sanity/ui'
+import {Button, Dialog} from '@sanity/ui'
 import {AssetFromSource} from '@sanity/types'
-import {client, DefaultDialog} from '../../legacyParts'
+import {uniqueId} from 'lodash'
+import {client} from '../../legacyParts'
 import Asset from './Asset'
 
 import styles from './DefaultSource.css'
@@ -40,6 +41,8 @@ export class DefaultSource extends React.Component<Props, State> {
     isLastPage: false,
     isLoading: false,
   }
+
+  _elementId = `default-asset-source-${uniqueId()}`
 
   pageNo = 0
 
@@ -105,7 +108,7 @@ export class DefaultSource extends React.Component<Props, State> {
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <DefaultDialog isOpen onClose={this.handleClose} size="large" title="Select image">
+      <Dialog id={this._elementId} header="Select image" width={1} position="absolute">
         <div className={styles.imageGrid}>
           {assets.map((asset) => (
             <Asset
@@ -128,7 +131,7 @@ export class DefaultSource extends React.Component<Props, State> {
             <Button mode={'ghost'} onClick={this.handleFetchNextPage} text={'Load more'} />
           )}
         </div>
-      </DefaultDialog>
+      </Dialog>
     )
   }
 }
