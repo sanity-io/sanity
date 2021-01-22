@@ -62,7 +62,8 @@ function isReference(typeDef) {
   return false
 }
 
-function extractFromSanitySchema(sanitySchema) {
+function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
+  const {nonNullDocumentFields} = extractOptions
   const unionRecursionGuards = []
   const hasErrors =
     sanitySchema._validation &&
@@ -374,35 +375,36 @@ function extractFromSanitySchema(sanitySchema) {
   }
 
   function getDocumentInterfaceFields() {
+    const isNullable = typeof nonNullDocumentFields === 'boolean' ? !nonNullDocumentFields : true
     return [
       {
         fieldName: '_id',
         type: 'ID',
-        isNullable: true,
+        isNullable,
         description: 'Document ID',
       },
       {
         fieldName: '_type',
         type: 'String',
-        isNullable: true,
+        isNullable,
         description: 'Document type',
       },
       {
         fieldName: '_createdAt',
         type: 'Datetime',
-        isNullable: true,
+        isNullable,
         description: 'Date the document was created',
       },
       {
         fieldName: '_updatedAt',
         type: 'Datetime',
-        isNullable: true,
+        isNullable,
         description: 'Date the document was last modified',
       },
       {
         fieldName: '_rev',
         type: 'String',
-        isNullable: true,
+        isNullable,
         description: 'Current document revision',
       },
     ]
