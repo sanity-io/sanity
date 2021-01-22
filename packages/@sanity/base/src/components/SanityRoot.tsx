@@ -60,22 +60,18 @@ function AppProvider() {
       <PortalProvider element={portalElement}>
         <LayerProvider>
           <ToastProvider paddingY={7} zOffset={10000}>
-            <UserColorManagerProvider manager={userColorManager}>
-              <PortalProvider element={portalElement}>
-                <LayerProvider>
-                  <ThemeColorProvider tone="transparent">
-                    <GlobalStyle />
-                  </ThemeColorProvider>
-                  <Root>
-                    <DevServerStatus />
-                    <ErrorHandler />
-                    <RootComponent />
-                    <VersionChecker />
-                  </Root>
-                  <div data-portal="" ref={setPortalElement} />
-                </LayerProvider>
-              </PortalProvider>
-            </UserColorManagerProvider>
+            <LayerProvider>
+              <ThemeColorProvider tone="transparent">
+                <GlobalStyle />
+              </ThemeColorProvider>
+              <Root>
+                <DevServerStatus />
+                <ErrorHandler />
+                <RootComponent />
+                <VersionChecker />
+              </Root>
+              <div data-portal="" ref={setPortalElement} />
+            </LayerProvider>
           </ToastProvider>
         </LayerProvider>
       </PortalProvider>
