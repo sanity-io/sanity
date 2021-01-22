@@ -60,6 +60,37 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
 }
 ```
 
+## Example usage in frontend (React)
+
+```jsx
+import React from "react";
+import Prism from "prismjs";
+import './highlightstyle.css';
+import { useRef } from "react";
+
+export function Code(props) {
+  const ref = useRef(null);
+  
+  useEffect(() => Prism.highlightElement(ref.current), []);
+  
+  return (
+    <div>
+      <div>{props.language}</div>
+      <pre>
+        <code ref={ref} className={"language-" + props.language}>
+          {props.code}
+        </code>
+      </pre>
+    </div>
+  );
+}
+
+export default Code;
+
+```
+
+Optional code-highlighting with prismjs (you have to [download](https://prismjs.com/download) or create your own stylesheet)
+
 ## License
 
 MIT-licensed. See LICENSE.
