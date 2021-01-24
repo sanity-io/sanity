@@ -11,11 +11,5 @@ export function isReferenceSchemaType(
 }
 
 export function isTitledListValue(item: unknown): item is TitledListValue {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    'title' in item &&
-    'value' in item &&
-    Object.keys(item).length === 2
-  )
+  return typeof item === 'object' && item !== null && 'title' in item && 'value' in item
 }
