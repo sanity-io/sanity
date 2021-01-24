@@ -61,8 +61,10 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
     typeDef.annotations.forEach((annotation) => inferFromSchemaType(annotation))
   }
 
-  if (typeDef.options && typeDef.options.list) {
-    base = base.valid(typeDef.options.list.map(extractValueFromListOption))
+  if (typeDef.options && typeDef.options.list && Array.isArray(typeDef.options.list)) {
+    base = base.valid(
+      typeDef.options.list.map((option) => extractValueFromListOption(option, typeDef))
+    )
   }
 
   typeDef.validation = inferValidation(typeDef, base)
@@ -97,8 +99,31 @@ function inferForMemberTypes(typeDef, schema, visited) {
   }
 }
 
-function extractValueFromListOption(option) {
+function extractValueFromListOption(option, typeDef) {
+  // If you define a `list` option with object items, where the item has a `value` field,
+  // we don't want to treat that as the value but rather the surrounding object
+  // This differs from the case where you have a title/value pair setup for a string/number, for instance
+  if (typeDef.jsonType === 'object' && hasValueField(typeDef)) {
+    return option
+  }
+
   return option.value === undefined ? option : option.value
+}
+
+function hasValueField(typeDef) {
+  while (!typeDef.fields && typeDef.type) {
+    return hasValueField(typeDef.type)
+  }
+
+  if (!Array.isArray(typeDef.fields)) {
+    return false
+  }
+
+  if (typeDef.fields.some((field) => field.name === 'value')) {
+    return true
+  }
+
+  return false
 }
 
 function inferValidation(field, baseRule) {
