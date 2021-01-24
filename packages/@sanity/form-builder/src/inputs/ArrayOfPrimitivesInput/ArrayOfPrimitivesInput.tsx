@@ -233,7 +233,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                 onClick={() => this.handleRemoveItem(value.findIndex((v) => v === item.value))}
                 color="danger"
               >
-                Unset {item.value}
+                Unset {['string', 'number'].includes(typeof item.value) ? item.value : ''}
               </DefaultButton>
             )}
           </div>
