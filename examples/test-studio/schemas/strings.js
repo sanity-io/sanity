@@ -1,3 +1,4 @@
+import React from 'react'
 import {MdTextFormat as icon} from 'react-icons/md'
 import {HooksBasedStringInput} from '../src/components/HooksBasedStringInput'
 
@@ -106,6 +107,35 @@ export default {
           {
             title: 'Three (3)',
             value: 'three',
+          },
+        ],
+      },
+    },
+    {
+      name: 'listWithKeys',
+      title: 'Select (with `_key`)',
+      type: 'string',
+      options: {
+        list: [
+          // Note: "icon" is not used for anything, but was brought up as an example
+          // of a regression on the community slack (it was used in a custom input)
+          {
+            _key: 'red',
+            title: 'Red',
+            value: 'red',
+            icon: <div style={{width: '1em', height: '1em', background: 'red'}} />,
+          },
+          {
+            _key: 'green',
+            title: 'Green',
+            value: 'green',
+            icon: <div style={{width: '1em', height: '1em', background: 'green'}} />,
+          },
+          {
+            _key: 'blue',
+            title: 'Blue',
+            value: 'blue',
+            icon: <div style={{width: '1em', height: '1em', background: 'blue'}} />,
           },
         ],
       },
