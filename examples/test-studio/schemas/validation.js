@@ -1,6 +1,7 @@
 import client from 'part:@sanity/base/client'
 import {points, featureCollection} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
+import {CustomObjectSelectInput} from '../src/components/CustomObjectSelectInput'
 import norway from '../data/norway'
 
 export const validationArraySuperType = {
@@ -505,6 +506,30 @@ export default {
           ],
         },
       ],
+    },
+    {
+      name: 'objectList',
+      title: 'Object field with custom input supporting `list` option',
+      type: 'object',
+      validation: (Rule) => Rule.required(),
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+        },
+        {
+          name: 'value',
+          type: 'string',
+        },
+      ],
+      options: {
+        list: [
+          {title: 'Red', value: '#f00'},
+          {title: 'Green', value: '#0f0'},
+          {title: 'Blue', value: '#00f'},
+        ],
+      },
+      inputComponent: CustomObjectSelectInput,
     },
   ],
 }
