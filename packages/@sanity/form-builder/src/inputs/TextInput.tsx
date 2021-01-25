@@ -1,9 +1,8 @@
 import React, {ForwardedRef} from 'react'
+import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
 import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
-import {useId} from '@reach/auto-id'
-
-import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -43,7 +42,7 @@ const TextInput = React.forwardRef(function TextInput(
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
-        rows={type.rows}
+        rows={type.rows || 10}
         ref={forwardedRef}
       />
     </FormField>
