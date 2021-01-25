@@ -4,6 +4,7 @@ import {
   Marker,
   NumberSchemaType,
   ObjectSchemaType,
+  Path,
   SchemaType,
   StringSchemaType,
 } from '@sanity/types'
@@ -29,7 +30,9 @@ export type Props<
   value: T | null | undefined
   readOnly: boolean | null
   onChange: (patchEvent: PatchEvent) => void
-  onFocus: () => void
+  // Note: we should allow implementors of custom inputs to forward the passed onFocus to native element's onFocus handler,
+  // but use Path consistently on internal inputs
+  onFocus: (path?: Path | React.FocusEvent<any>) => void
   onBlur?: () => void
   markers: Marker[]
   presence: FormFieldPresence[]

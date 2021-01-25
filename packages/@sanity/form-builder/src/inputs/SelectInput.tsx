@@ -19,7 +19,7 @@ const SelectInput = React.forwardRef(function SelectInput(
   props: Props<string | number>,
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
-  const {value, readOnly, markers, type, level, onChange, presence} = props
+  const {value, readOnly, markers, type, level, onChange, onFocus, presence} = props
   const items = ((type.options?.list || []) as unknown[]).map(toSelectItem)
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
@@ -57,6 +57,10 @@ const SelectInput = React.forwardRef(function SelectInput(
     handleChange(nextItem)
   }
 
+  const handleFocus = React.useCallback(() => {
+    onFocus()
+  }, [onFocus])
+
   return (
     <FormField
       inputId={inputId}
@@ -75,11 +79,13 @@ const SelectInput = React.forwardRef(function SelectInput(
           direction={type.options.direction || 'vertical'}
           ref={forwardedRef as React.ForwardedRef<HTMLInputElement>}
           readOnly={readOnly}
+          onFocus={handleFocus}
           customValidity={errors?.[0]?.item.message}
         />
       ) : (
         <Select
           onChange={handleSelectChange}
+          onFocus={handleFocus}
           id={inputId}
           ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
           readOnly={readOnly}
@@ -106,12 +112,13 @@ const RadioSelect = React.forwardRef(function RadioSelect(
     direction: 'horizontal' | 'vertical'
     readOnly: boolean
     onChange: (value: TitledListValue<string | number> | null) => void
+    onFocus: (event: React.FocusEvent<HTMLElement>) => void
     customValidity?: string
     inputId?: string
   },
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {items, value, onChange, readOnly, customValidity, direction, inputId} = props
+  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
 
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
@@ -123,6 +130,7 @@ const RadioSelect = React.forwardRef(function RadioSelect(
               ref={index === 0 ? forwardedRef : null}
               checked={value === item}
               onChange={() => onChange(item)}
+              onFocus={onFocus}
               readOnly={readOnly}
               customValidity={customValidity}
               name={inputId}
