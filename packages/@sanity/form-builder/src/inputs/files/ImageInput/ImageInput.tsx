@@ -503,7 +503,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <Button
         icon={SearchIcon}
         onClick={() => this.handleSelectImageFromAssetSource(assetSources[0])}
-        mode="bleed"
+        mode="ghost"
         text="Select"
       />
     )
