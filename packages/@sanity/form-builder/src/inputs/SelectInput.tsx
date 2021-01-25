@@ -120,7 +120,7 @@ const RadioSelect = React.forwardRef(function RadioSelect(
             <Radio
               ref={index === 0 ? forwardedRef : null}
               checked={value === item}
-              onClick={() => onChange(item)}
+              onChange={() => onChange(item)}
               readOnly={readOnly}
               customValidity={customValidity}
             />
