@@ -59,8 +59,8 @@ const valid = (allowedValues, actual, message) => {
   const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
 
   const defaultMessage = value
-    ? `Value "${strValue}" did not match any of allowed values`
-    : 'Value did not match any of allowed values'
+    ? `Value "${strValue}" did not match any allowed values`
+    : 'Value did not match any allowed values'
 
   return allowedValues.some((expected) => deepEquals(expected, actual))
     ? true
