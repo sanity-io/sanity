@@ -33,7 +33,7 @@ const SelectInput = React.forwardRef(function SelectInput(
   }
 
   const optionValueFromItem = (item) => {
-    return items.indexOf(item)
+    return String(items.indexOf(item))
   }
 
   const inputId = useId()
