@@ -585,72 +585,73 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           level={level}
           __unstable_changeIndicator={false}
         >
-          <Box>
-            <ChangeIndicatorCompareValueProvider
-              value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
-            >
-              <ChangeIndicatorWithProvidedFullPath
-                path={['asset']}
-                hasFocus={hasFileTargetFocus}
-                value={value?.asset}
-                compareValue={compareValue?.asset}
+          <div>
+            <Box>
+              <ChangeIndicatorCompareValueProvider
+                value={value?.asset?._ref}
+                compareValue={compareValue?.asset?._ref}
               >
-                <FileTarget
-                  shadow={1}
-                  tabIndex={0}
-                  disabled={readOnly === true}
-                  ref={this.setFocusElement}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
+                <ChangeIndicatorWithProvidedFullPath
+                  path={['asset']}
+                  hasFocus={hasFileTargetFocus}
+                  value={value?.asset}
+                  compareValue={compareValue?.asset}
                 >
-                  <AssetBackground align="center" justify="center">
-                    {value?._upload && this.renderUploadState(value._upload)}
-                    {!value?._upload && value?.asset && this.renderAsset()}
-                    {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                    {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                      <Overlay>Drop top upload</Overlay>
-                    )}
-                  </AssetBackground>
-                </FileTarget>
-              </ChangeIndicatorWithProvidedFullPath>
-            </ChangeIndicatorCompareValueProvider>
-          </Box>
+                  <FileTarget
+                    border
+                    tabIndex={0}
+                    disabled={readOnly === true}
+                    ref={this.setFocusElement}
+                    onFiles={this.handleSelectFiles}
+                    onFilesOver={this.handleFilesOver}
+                    onFilesOut={this.handleFilesOut}
+                    onFocus={this.handleFileTargetFocus}
+                    onBlur={this.handleFileTargetBlur}
+                  >
+                    <AssetBackground align="center" justify="center">
+                      {value?._upload && this.renderUploadState(value._upload)}
+                      {!value?._upload && value?.asset && this.renderAsset()}
+                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                        <Overlay>Drop top upload</Overlay>
+                      )}
+                    </AssetBackground>
+                  </FileTarget>
+                </ChangeIndicatorWithProvidedFullPath>
+              </ChangeIndicatorCompareValueProvider>
+            </Box>
 
-          <Grid gap={1} columns={4}>
-            {!readOnly && directUploads && (
-              <FileInputButton
-                icon={UploadIcon}
-                mode="ghost"
-                onSelect={this.handleSelectFiles}
-                accept={accept}
-                text="Upload"
-              />
-            )}
-            {!readOnly && this.renderSelectImageButton()}
-            {showAdvancedEditButton && (
-              <Button
-                icon={readOnly ? EyeOpenIcon : EditIcon}
-                mode="bleed"
-                title={readOnly ? 'View details' : 'Edit details'}
-                onClick={this.handleStartAdvancedEdit}
-                text={readOnly ? 'View details' : 'Edit'}
-              />
-            )}
-            {value?.asset && !readOnly && (
-              <Button
-                color="danger"
-                icon={TrashIcon}
-                mode="bleed"
-                onClick={this.handleRemoveButtonClick}
-                text="Remove"
-              />
-            )}
-          </Grid>
-
+            <Grid gap={1} columns={3} marginTop={3}>
+              {!readOnly && directUploads && (
+                <FileInputButton
+                  icon={UploadIcon}
+                  mode="ghost"
+                  onSelect={this.handleSelectFiles}
+                  accept={accept}
+                  text="Upload"
+                />
+              )}
+              {!readOnly && this.renderSelectImageButton()}
+              {showAdvancedEditButton && (
+                <Button
+                  icon={readOnly ? EyeOpenIcon : EditIcon}
+                  mode="ghost"
+                  title={readOnly ? 'View details' : 'Edit details'}
+                  onClick={this.handleStartAdvancedEdit}
+                  text={readOnly ? 'View details' : 'Edit'}
+                />
+              )}
+              {value?.asset && !readOnly && (
+                <Button
+                  tone="critical"
+                  mode="ghost"
+                  icon={TrashIcon}
+                  onClick={this.handleRemoveButtonClick}
+                  text="Remove"
+                />
+              )}
+            </Grid>
+          </div>
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
           {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
           {selectedAssetSource && this.renderAssetSource()}
