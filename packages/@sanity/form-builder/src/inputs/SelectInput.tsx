@@ -49,9 +49,12 @@ const SelectInput = React.forwardRef(function SelectInput(
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nextItem = itemFromOptionValue(event.currentTarget.value)
 
-    if (nextItem) {
-      handleChange(nextItem)
+    if (!nextItem) {
+      handleChange(EMPTY_ITEM)
+      return
     }
+
+    handleChange(nextItem)
   }
 
   return (
