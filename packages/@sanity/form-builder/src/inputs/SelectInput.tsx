@@ -46,6 +46,7 @@ const SelectInput = React.forwardRef(function SelectInput(
     >
       {isRadio ? (
         <RadioSelect
+          inputId={inputId}
           items={items}
           value={currentItem}
           onChange={handleChange}
@@ -83,10 +84,11 @@ const RadioSelect = React.forwardRef(function RadioSelect(
     readOnly: boolean
     onChange: (value: TitledListValue<string | number> | null) => void
     customValidity?: string
+    inputId?: string
   },
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {items, value, onChange, readOnly, customValidity, direction} = props
+  const {items, value, onChange, readOnly, customValidity, direction, inputId} = props
 
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
@@ -100,6 +102,7 @@ const RadioSelect = React.forwardRef(function RadioSelect(
               onChange={() => onChange(item)}
               readOnly={readOnly}
               customValidity={customValidity}
+              name={inputId}
             />
             <Box marginLeft={3}>
               <Text>{item.title}</Text>
