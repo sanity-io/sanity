@@ -24,10 +24,12 @@ export function Tooltip(
   props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
 ) {
   const {
+    allowedAutoPlacements,
     children,
     className,
     content,
     disabled,
+    fallbackPlacements,
     placement = 'bottom',
     portal: portalProp,
     tone,
@@ -62,8 +64,8 @@ export function Tooltip(
       {
         name: 'flip',
         options: {
-          allowedAutoPlacements: props.allowedAutoPlacements,
-          fallbackPlacements: props.fallbackPlacements,
+          allowedAutoPlacements,
+          fallbackPlacements,
         },
       },
     ],
