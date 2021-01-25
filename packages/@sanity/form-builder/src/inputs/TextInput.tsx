@@ -3,8 +3,15 @@ import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
+import styled from 'styled-components'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
+
+const StyledTextArea = styled(TextArea)`
+  &[data-as='textarea'] {
+    resize: vertical;
+  }
+`
 
 const TextInput = React.forwardRef(function TextInput(
   props: Props<string, TextSchemaType>,
@@ -33,7 +40,7 @@ const TextInput = React.forwardRef(function TextInput(
       __unstable_presence={presence}
       inputId={inputId}
     >
-      <TextArea
+      <StyledTextArea
         id={inputId}
         customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
         value={value || ''}
