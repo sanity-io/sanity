@@ -12,7 +12,7 @@ const getFormattedDate = (type = '', value, options) => {
   }
   if (type === 'date') {
     // If the type is date only
-    return formatDate(value, format)
+    return formatDate(parseDate(value), format)
   }
   // If the type is datetime
   if (options && options.timeFormat) {
@@ -20,7 +20,7 @@ const getFormattedDate = (type = '', value, options) => {
   } else {
     format += ' HH:mm'
   }
-  return formatDate(value, format)
+  return formatDate(parseDate(value), format)
 }
 
 const type = (unused, value, message) => {
