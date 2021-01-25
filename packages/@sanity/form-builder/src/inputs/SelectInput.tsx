@@ -26,15 +26,34 @@ const SelectInput = React.forwardRef(function SelectInput(
   const validation = markers.filter((marker) => marker.type === 'validation')
   const errors = validation.filter((marker) => marker.level === 'error')
 
+  const itemFromOptionValue = (optionValue) => {
+    const index = Number(optionValue)
+
+    return items[index]
+  }
+
+  const optionValueFromItem = (item) => {
+    return items.indexOf(item)
+  }
+
   const inputId = useId()
   const handleChange = React.useCallback(
-    (nextItem) => {
+    (nextItem: TitledListValue<string | number>) => {
       onChange(
         PatchEvent.from(typeof nextItem.value === 'undefined' ? unset() : set(nextItem.value))
       )
     },
     [onChange]
   )
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextItem = itemFromOptionValue(event.currentTarget.value)
+
+    if (nextItem) {
+      handleChange(nextItem)
+    }
+  }
+
   return (
     <FormField
       inputId={inputId}
@@ -56,14 +75,15 @@ const SelectInput = React.forwardRef(function SelectInput(
         />
       ) : (
         <Select
-          onChange={handleChange}
+          onChange={handleSelectChange}
           id={inputId}
           ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
           readOnly={readOnly}
           customValidity={errors?.[0]?.item.message}
+          value={optionValueFromItem(currentItem)}
         >
           {[EMPTY_ITEM, ...items].map((item, i) => (
-            <option key={i} value={item.value}>
+            <option key={`${i - 1}`} value={i - 1}>
               {item.title}
             </option>
           ))}
