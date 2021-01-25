@@ -31,6 +31,7 @@ type Props = {
   readOnly?: boolean
   document: SanityDocument
   onChange: (ev: PatchEvent) => void
+  onFocus: (pathOrEvent?: Path | React.FocusEvent<any>) => void
   getValuePath: () => Path
   markers: Marker[]
   presence: any
@@ -57,6 +58,7 @@ const SlugInput = React.forwardRef(function SlugInput(
     level,
     markers,
     onChange,
+    onFocus,
     getValuePath,
     document,
     readOnly,
@@ -97,6 +99,9 @@ const SlugInput = React.forwardRef(function SlugInput(
   const handleChange = React.useCallback((event) => updateSlug(event.currentTarget.value), [
     updateSlug,
   ])
+
+  const handleFocus = React.useCallback(() => onFocus(), [onFocus])
+
   return (
     <ChangeIndicatorCompareValueProvider
       value={value?.current}
@@ -119,6 +124,7 @@ const SlugInput = React.forwardRef(function SlugInput(
                 customValidity={errors.length > 0 ? errors[0].item.message : ''}
                 disabled={isUpdating}
                 onChange={handleChange}
+                onFocus={handleFocus}
                 value={value?.current || ''}
                 readOnly={readOnly}
               />
@@ -134,6 +140,7 @@ const SlugInput = React.forwardRef(function SlugInput(
                 type="button"
                 disabled={readOnly || isUpdating}
                 onClick={handleGenerateSlug}
+                onFocus={handleFocus}
                 text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
               />
             </Box>
