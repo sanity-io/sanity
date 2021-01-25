@@ -9,6 +9,8 @@ import author from './author'
 import complexArrays from './complexArrays'
 import live from './live'
 import pt from './pt'
+import radioInputs from './radioInputs'
+import selectInputs from './selectInputs'
 import settings from './settings'
 
 export default createSchema({
@@ -21,6 +23,8 @@ export default createSchema({
     complexArrays,
     live,
     pt,
+    radioInputs,
+    selectInputs,
     settings,
   ]),
 })

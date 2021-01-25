@@ -12,6 +12,8 @@ import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
 import strings from './strings'
+import radio from './radio'
+import select from './select'
 import emails from './emails'
 import urls from './urls'
 import texts from './texts'
@@ -70,6 +72,8 @@ export default createSchema({
     spotifyEmbed,
     focus,
     strings,
+    radio,
+    select,
     emails,
     urls,
     texts,
