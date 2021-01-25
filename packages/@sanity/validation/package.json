@@ -31,6 +31,7 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
+    "@sanity/schema": "2.2.0",
     "jest": "^26.4.2"
   },
   "dependencies": {
