@@ -58,13 +58,20 @@ export function FormField(
 
   return (
     <Stack {...restProps} data-level={level} space={1}>
-      <FormFieldHeader
-        __unstable_markers={markers}
-        __unstable_presence={presence}
-        description={description}
-        inputId={inputId}
-        title={title}
-      />
+      {/*
+        NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
+        So we might want to separate the concerns of input vs formfield components later on.
+      */}
+      {title && (
+        <FormFieldHeader
+          __unstable_markers={markers}
+          __unstable_presence={presence}
+          description={description}
+          inputId={inputId}
+          title={title}
+        />
+      )}
+
       <div>{content}</div>
     </Stack>
   )
