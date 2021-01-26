@@ -254,6 +254,13 @@ export default {
       ],
     },
     {
+      name: 'arrayOfStrings',
+      title: 'Array of strings',
+      description: 'This array contains only strings, with no title',
+      type: 'array',
+      of: [{type: 'string'}],
+    },
+    {
       name: 'arrayOfPrimitives',
       title: 'Array with primitive types',
       description: 'This array contains only strings, values and booleans',
