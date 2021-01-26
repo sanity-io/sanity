@@ -49,7 +49,7 @@ const TextInput = React.forwardRef(function TextInput(
         onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
-        rows={type.rows || 10}
+        rows={typeof type.rows === 'number' ? type.rows : 10}
         ref={forwardedRef}
       />
     </FormField>
