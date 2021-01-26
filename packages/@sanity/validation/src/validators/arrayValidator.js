@@ -53,7 +53,7 @@ const valid = (allowedValues, values, message) => {
 
   return paths.length === 0
     ? true
-    : new ValidationError(message || 'Value did not match any of allowed values', {paths})
+    : new ValidationError(message || 'Value did not match any allowed values', {paths})
 }
 
 const unique = (flag, value, message) => {
