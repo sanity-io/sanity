@@ -1,3 +1,4 @@
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import React from 'react'
 import enhanceWithClickOutside from 'react-click-outside'
@@ -62,7 +63,7 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
     const overlayClassName = classNames(styles.overlay, overlayClassNameProp)
 
     return (
-      <div className={className} id={inputId}>
+      <Layer className={className} id={inputId}>
         {!isActive && (
           <div className={styles.eventHandler} onClick={this.handleClick}>
             <div className={overlayClassName}>
@@ -72,7 +73,7 @@ class ActivateOnFocus extends React.Component<ActivateOnFocusProps> {
           </div>
         )}
         <div className={styles.content}>{children}</div>
-      </div>
+      </Layer>
     )
   }
 }

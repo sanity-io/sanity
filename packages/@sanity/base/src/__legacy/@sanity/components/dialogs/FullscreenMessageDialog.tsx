@@ -1,6 +1,8 @@
+import {Portal, useLayer} from '@sanity/ui'
 import classNames from 'classnames'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import React from 'react'
+import {LegacyLayerProvider} from '../../../../components'
 
 import styles from './FullscreenMessageDialog.css'
 
@@ -13,10 +15,21 @@ interface Props {
 }
 
 function FullscreenMessageDialog(props: Props) {
+  return (
+    <Portal>
+      <LegacyLayerProvider zOffset="portal">
+        <FullscreenMessageDialogChildren {...props} />
+      </LegacyLayerProvider>
+    </Portal>
+  )
+}
+
+function FullscreenMessageDialogChildren(props: Props) {
+  const {zIndex} = useLayer()
   const className = classNames(styles.root, props.color && styles[`color_${props.color}`])
 
   return (
-    <div className={className}>
+    <div className={className} style={{zIndex}}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>{props.title}</h2>

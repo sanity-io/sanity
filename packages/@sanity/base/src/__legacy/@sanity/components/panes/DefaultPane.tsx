@@ -1,3 +1,4 @@
+import {Layer} from '@sanity/ui'
 import {StructureBuilder as S} from '@sanity/structure'
 import {InitialValueTemplateItem} from '@sanity/structure/lib/InitialValueTemplateItem'
 import classNames from 'classnames'
@@ -15,6 +16,7 @@ import {childrenToElementArray} from '../helpers'
 import {MenuItem, MenuItemGroup} from '../menus/types'
 import Styleable from '../utilities/Styleable'
 
+import {LegacyLayerProvider} from '../../../../components'
 import defaultStyles from './DefaultPane.css'
 
 interface DefaultPaneProps {
@@ -352,15 +354,25 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
       title,
       children,
       hasTabs,
+      index,
+      initialValueTemplates,
       isCollapsed,
       isLoading,
       isScrollable,
       isSelected,
       hasSiblings,
+      menuItems,
+      menuItemGroups,
+      onAction,
+      onCollapse,
+      onExpand,
+      renderActions,
+      renderHeaderViewMenu,
       styles = {},
       footer,
       tabIdPrefix,
       viewId,
+      ...restProps
     } = this.props
 
     const mainChildren = isScrollable ? (
@@ -374,49 +386,54 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     const headerViewMenuNode = this.props.renderHeaderViewMenu && this.props.renderHeaderViewMenu()
 
     return (
-      <div
-        className={classNames(
-          styles.root,
-          isCollapsed && styles.isCollapsed,
-          isSelected ? styles.isActive : styles.isDisabled
-        )}
-        data-pane-color={color}
-        data-pane-loading={isLoading}
-        onClick={this.handleRootClick}
-        ref={this.setRootElement}
-      >
-        <div className={styles.header}>
-          <div className={styles.headerContent}>
-            <div className={styles.titleContainer}>
-              <h2 className={styles.title} onClick={this.handleTitleClick}>
-                {title}
-              </h2>
+      <LegacyLayerProvider zOffset="pane">
+        <div
+          {...restProps}
+          className={classNames(
+            styles.root,
+            isCollapsed && styles.isCollapsed,
+            isSelected ? styles.isActive : styles.isDisabled
+          )}
+          data-pane-color={color}
+          data-pane-loading={isLoading}
+          onClick={this.handleRootClick}
+          ref={this.setRootElement}
+        >
+          <Layer className={styles.header} data-test="components-default-pane-header">
+            <div className={styles.headerContent}>
+              <div className={styles.titleContainer}>
+                <h2 className={styles.title} onClick={this.handleTitleClick}>
+                  {title}
+                </h2>
+              </div>
+              <div className={styles.headerTools}>{this.renderHeaderTools()}</div>
             </div>
-            <div className={styles.headerTools}>{this.renderHeaderTools()}</div>
-          </div>
 
-          {/* To render tabs and similar */}
-          {headerViewMenuNode && <div className={styles.headerViewMenu}>{headerViewMenuNode}</div>}
+            {/* To render tabs and similar */}
+            {headerViewMenuNode && (
+              <div className={styles.headerViewMenu}>{headerViewMenuNode}</div>
+            )}
+          </Layer>
+
+          {hasTabs ? (
+            <TabPanel
+              aria-labelledby={`${tabIdPrefix}tab-${viewId}`}
+              className={styles.main}
+              id={`${tabIdPrefix}tabpanel`}
+            >
+              {mainChildren}
+            </TabPanel>
+          ) : (
+            <div className={styles.main}>{mainChildren}</div>
+          )}
+
+          {footer && (
+            <Layer className={hasTabs && hasSiblings ? styles.hoverFooter : styles.stickyFooter}>
+              {footer}
+            </Layer>
+          )}
         </div>
-
-        {hasTabs ? (
-          <TabPanel
-            aria-labelledby={`${tabIdPrefix}tab-${viewId}`}
-            className={styles.main}
-            id={`${tabIdPrefix}tabpanel`}
-          >
-            {mainChildren}
-          </TabPanel>
-        ) : (
-          <div className={styles.main}>{mainChildren}</div>
-        )}
-
-        {footer && (
-          <div className={hasTabs && hasSiblings ? styles.hoverFooter : styles.stickyFooter}>
-            {footer}
-          </div>
-        )}
-      </div>
+      </LegacyLayerProvider>
     )
   }
 }

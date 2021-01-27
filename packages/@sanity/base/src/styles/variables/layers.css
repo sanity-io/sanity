@@ -1,17 +1,32 @@
+/*
+  NOTE: most browsers operate with a max. z-index of 2147483647
+  – the maximum positive value for a 32-bit signed binary integer.
+  NOTE: Safari 0–3 operate with a max. z-index of 16777271
+*/
+
 :root {
-  --zindex-pane: 900;
-  --zindex-navbar: 1000;
+  --zindex-navbar: 200;
+  --zindex-navbar-popover: 500000;
+  --zindex-navbar-dialog: 500001;
+
+  --zindex-pane: 100;
+  --zindex-pane-resizer: 150;
+
+  --zindex-portal: 200;
+  --zindex-popover: 200;
+  --zindex-modal: 200;
+
+  --zindex-moving-item: 10000;
+
+  --zindex-drawershade: 1000000;
+  --zindex-drawer: 1000001;
+
+  /* NOT IN USE */
+  --zindex-dropdown: 200;
   --zindex-navbar-fixed: 1010;
-  --zindex-dropdown: 1010;
   --zindex-fullscreen-edit: 1050;
-  --zindex-portal: 1060;
   --zindex-popover-background: 1060;
-  --zindex-popover: 1070;
-  --zindex-tooltip: 1100;
+  --zindex-tooltip: 200;
   --zindex-modal-background: 2000;
-  --zindex-modal: 2010;
-  --zindex-moving-item: 3000;
   --zindex-spinner: 3000;
-  --zindex-drawershade: 4000;
-  --zindex-drawer: 4001;
 }

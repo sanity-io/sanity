@@ -1,7 +1,9 @@
+import {useLayer} from '@sanity/ui'
 import classNames from 'classnames'
 import {Portal} from 'part:@sanity/components/portal'
 import React, {useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
+import {LegacyLayerProvider} from '../../../../components'
 import {TooltipArrow} from './tooltipArrow'
 import {useTooltip} from './hooks'
 import {TooltipPlacement} from './types'
@@ -23,6 +25,25 @@ export interface TooltipProps {
 export function Tooltip(
   props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
 ) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  if (!isOpen || props.disabled) {
+    return props.children || <></>
+  }
+
+  return (
+    <LegacyLayerProvider zOffset="tooltip">
+      <TooltipChildren {...props} setIsOpen={setIsOpen} />
+    </LegacyLayerProvider>
+  )
+}
+
+function TooltipChildren(
+  props: TooltipProps &
+    Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'> & {
+      setIsOpen: (flag: boolean) => void
+    }
+) {
   const {
     allowedAutoPlacements,
     children,
@@ -32,9 +53,11 @@ export function Tooltip(
     fallbackPlacements,
     placement = 'bottom',
     portal: portalProp,
+    setIsOpen,
     tone,
     ...restProps
   } = props
+  const {zIndex} = useLayer()
   const ctx = useTooltip()
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -71,11 +94,10 @@ export function Tooltip(
     ],
   })
   const {forceUpdate} = popper
-  const [isOpen, setIsOpen] = useState(false)
-  const handleBlur = useCallback(() => setIsOpen(false), [])
-  const handleFocus = useCallback(() => setIsOpen(true), [])
-  const handleMouseEnter = useCallback(() => setIsOpen(true), [])
-  const handleMouseLeave = useCallback(() => setIsOpen(false), [])
+  const handleBlur = useCallback(() => setIsOpen(false), [setIsOpen])
+  const handleFocus = useCallback(() => setIsOpen(true), [setIsOpen])
+  const handleMouseEnter = useCallback(() => setIsOpen(true), [setIsOpen])
+  const handleMouseLeave = useCallback(() => setIsOpen(false), [setIsOpen])
 
   useEffect(() => {
     if (forceUpdate) forceUpdate()
@@ -91,7 +113,7 @@ export function Tooltip(
       className={classNames(styles.root, className)}
       data-tone={tone}
       ref={setPopperElement}
-      style={popper.styles.popper}
+      style={{...popper.styles.popper, zIndex}}
       {...popper.attributes.popper}
     >
       <div className={styles.card}>{content}</div>
@@ -110,12 +132,8 @@ export function Tooltip(
           ref: setReferenceElement,
         })}
 
-      {isOpen && (
-        <>
-          {portalProp && <Portal>{popperNode}</Portal>}
-          {!portalProp && popperNode}
-        </>
-      )}
+      {portalProp && <Portal>{popperNode}</Portal>}
+      {!portalProp && popperNode}
     </>
   )
 }

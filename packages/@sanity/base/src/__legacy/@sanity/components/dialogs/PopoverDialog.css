@@ -35,7 +35,6 @@
   width: 100%;
   background-color: var(--backdrop-color);
   opacity: 0.75;
-  z-index: var(--zindex-portal);
   pointer-events: none;
   animation-name: popoverDialogBackgroundFadeIn;
   animation-duration: 0.2s;
@@ -45,6 +44,9 @@
 
 .root {
   width: calc(100% - 16px);
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
 
   @nest &:not([data-size]), &[data-size='auto'] {
     width: auto;
@@ -77,8 +79,6 @@
 }
 
 .card {
-  max-height: 50vh;
-
   @nest .root[data-color='danger'] & {
     background-color: var(--state-danger-color);
     color: var(--state-danger-color--inverted);
@@ -122,6 +122,8 @@
 
 .content {
   overflow: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .contentWrapper {
