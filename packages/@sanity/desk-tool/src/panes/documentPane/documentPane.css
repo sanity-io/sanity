@@ -20,9 +20,22 @@
 }
 
 .footerContainer {
-  position: relative;
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.footerContainer {
+    position: relative;
+
+    @media (--max-screen-medium) {
+      position: sticky;
+      bottom: 0;
+    }
+  }
+
   background: var(--component-bg);
-  z-index: var(--zindex-pane);
 
   @nest &:before {
     content: '';
@@ -40,11 +53,6 @@
 
   @nest .isCollapsed & {
     display: none;
-  }
-
-  @media (--max-screen-medium) {
-    position: sticky;
-    bottom: 0;
   }
 }
 
@@ -73,7 +81,6 @@
 .documentContainer {
   flex: 3;
   min-width: 334px;
-  position: relative;
 }
 
 .changesContainer {

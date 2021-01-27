@@ -59,6 +59,7 @@ export function DocumentPanelContextMenu(props: DocumentPanelContextMenuProps) {
       }
       open={open}
       placement="bottom"
+      portal
       setOpen={setOpen}
     />
   )

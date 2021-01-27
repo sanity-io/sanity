@@ -2,6 +2,7 @@ import {useTimeAgo} from '@sanity/base/hooks'
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Chunk} from '@sanity/field/diff'
 import {Path} from '@sanity/types'
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import {negate, upperFirst} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -97,7 +98,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const menuOpen = isTimelineOpen && timelineMode === 'rev'
 
   return (
-    <div className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
+    <Layer className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
       <div className={styles.mainNav}>
         <div className={styles.title} onClick={handleTitleClick}>
           <strong>{title}</strong>
@@ -198,7 +199,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           )}
         </div>
       )}
-    </div>
+    </Layer>
   )
 }
 

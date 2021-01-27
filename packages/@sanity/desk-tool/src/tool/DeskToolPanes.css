@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  position: relative;
   height: 100%;
 
   @media (--screen-medium) {
