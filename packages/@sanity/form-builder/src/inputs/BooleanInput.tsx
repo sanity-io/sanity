@@ -41,7 +41,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
 
   return (
     <ChangeIndicator>
-      <Card as="label" border radius={1}>
+      <Card border radius={1}>
         <Flex>
           <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
@@ -56,9 +56,10 @@ const BooleanInput = React.forwardRef(function BooleanInput(
               style={{margin: -4}}
             />
           </ZeroLineHeightBox>
-          <Box marginLeft={3} flex={1} padding={3}>
+          <Box flex={1} paddingY={3}>
             <FormFieldHeaderText
               description={type.description}
+              inputId={inputId}
               __unstable_markers={markers}
               title={type.title}
             />
