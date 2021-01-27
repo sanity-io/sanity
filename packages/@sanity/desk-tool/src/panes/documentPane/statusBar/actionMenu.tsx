@@ -105,7 +105,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
 
   return (
     <div className={styles.actionsDropDown} ref={clickOutsideRef} onKeyDown={handleKeyDown}>
-      <Popover content={popoverContent} open={isOpen} placement="top-end">
+      <Popover content={popoverContent} open={isOpen} placement="top-end" portal>
         <div>
           <Button
             aria-controls={`${idPrefix}-menu`}

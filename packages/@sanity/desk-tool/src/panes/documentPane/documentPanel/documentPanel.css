@@ -5,15 +5,28 @@
   height: 100%;
   flex-direction: column;
 
-  /* override @sanity/ui */
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
   @nest &.root:not([hidden]) {
     display: flex;
   }
 }
 
 .headerContainer {
-  z-index: var(--zindex-pane);
-  position: relative;
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.headerContainer {
+    position: relative;
+  }
+
   background: var(--component-bg);
 
   @nest .root:not(.isCollapsed) &::after {
@@ -58,7 +71,6 @@
 }
 
 .portalContainer {
-  z-index: calc(var(--zindex-pane) - 1);
   position: absolute;
   top: 0;
   left: 0;

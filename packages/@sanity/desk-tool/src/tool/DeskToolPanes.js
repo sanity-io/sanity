@@ -8,6 +8,7 @@ import {mapTo, delay, distinctUntilChanged} from 'rxjs/operators'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import {resizeObserver} from '@sanity/base/lib/util/resizeObserver'
+import {PortalProvider} from '@sanity/ui'
 import {DeskToolPane, LoadingPane} from '../panes'
 import windowWidth$ from '../utils/windowWidth'
 import isNarrowScreen from '../utils/isNarrowScreen'
@@ -259,18 +260,25 @@ export default class DeskToolPanes extends React.Component {
     }, [])
   }
 
+  setPortalElement = (portalElement) => {
+    this.portalElement = portalElement
+  }
+
   render() {
     const {hasNarrowScreen} = this.state
     return (
       <div ref={this._rootElement} className={styles.root}>
-        <SplitController
-          isMobile={hasNarrowScreen}
-          autoCollapse={this.props.autoCollapse}
-          collapsedWidth={COLLAPSED_WIDTH}
-          onCheckCollapse={this.handleCheckCollapse}
-        >
-          {this.renderPanes()}
-        </SplitController>
+        <PortalProvider element={this.portalElement || null}>
+          <SplitController
+            isMobile={hasNarrowScreen}
+            autoCollapse={this.props.autoCollapse}
+            collapsedWidth={COLLAPSED_WIDTH}
+            onCheckCollapse={this.handleCheckCollapse}
+          >
+            {this.renderPanes()}
+          </SplitController>
+          <div data-portal="" ref={this.setPortalElement} />
+        </PortalProvider>
       </div>
     )
   }
