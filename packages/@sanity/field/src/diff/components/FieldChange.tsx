@@ -1,4 +1,5 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import classNames from 'classnames'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
@@ -92,7 +93,6 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
 
               {confirmRevertOpen && (
                 <PopoverDialog
-                  portal
                   actions={[
                     {
                       color: 'danger',
@@ -106,7 +106,8 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
                     },
                   ]}
                   onAction={handleConfirmDialogAction}
-                  // portal
+                  onClickOutside={closeRevertChangesConfirmDialog}
+                  portal
                   referenceElement={revertButtonElement}
                   size="small"
                 >
