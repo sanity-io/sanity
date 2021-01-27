@@ -1,4 +1,4 @@
-import {UserAvatar} from '@sanity/base/components'
+import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import {ClickOutside} from 'part:@sanity/components/click-outside'
@@ -68,15 +68,17 @@ export default class LoginStatus extends React.PureComponent<LoginStatusProps, L
             type="button"
           >
             <div className={styles.inner} tabIndex={-1}>
-              <Popover
-                content={popoverContent as any}
-                open={this.state.isOpen}
-                placement="bottom-end"
-              >
-                <div className={styles.avatarContainer}>
-                  <UserAvatar size="medium" tone="navbar" userId="me" />
-                </div>
-              </Popover>
+              <LegacyLayerProvider zOffset="navbarPopover">
+                <Popover
+                  content={popoverContent as any}
+                  open={this.state.isOpen}
+                  placement="bottom-end"
+                >
+                  <div className={styles.avatarContainer}>
+                    <UserAvatar size="medium" tone="navbar" userId="me" />
+                  </div>
+                </Popover>
+              </LegacyLayerProvider>
 
               <div className={styles.iconContainer}>
                 <ChevronDownIcon />

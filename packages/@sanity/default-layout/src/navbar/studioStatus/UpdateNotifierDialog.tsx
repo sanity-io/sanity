@@ -1,5 +1,6 @@
 import React from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {Package} from './types'
 
 import styles from './UpdateNotifierDialog.css'
@@ -91,26 +92,28 @@ class UpdateNotifierDialog extends React.PureComponent<Props> {
     const {severity, onClose} = this.props
 
     return (
-      <Dialog
-        onClose={onClose}
-        onClickOutside={onClose}
-        title={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
-      >
-        {__DEV__ && (
-          <>
-            <div className={styles.textContent}>
-              <p>
-                This Studio is no longer up to date{' '}
-                {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
-              </p>
-            </div>
+      <LegacyLayerProvider zOffset="navbarDialog">
+        <DefaultDialog
+          onClose={onClose}
+          onClickOutside={onClose}
+          title={severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
+        >
+          {__DEV__ && (
+            <>
+              <div className={styles.textContent}>
+                <p>
+                  This Studio is no longer up to date{' '}
+                  {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
+                </p>
+              </div>
 
-            {this.renderTable()}
-          </>
-        )}
+              {this.renderTable()}
+            </>
+          )}
 
-        {!__DEV__ && this.renderContactDeveloper()}
-      </Dialog>
+          {!__DEV__ && this.renderContactDeveloper()}
+        </DefaultDialog>
+      </LegacyLayerProvider>
     )
   }
 }
