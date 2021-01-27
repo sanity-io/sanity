@@ -7,6 +7,7 @@ import {Layer, useLayer} from 'part:@sanity/components/layer'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import {useBoundaryElement} from '../boundaryElement'
 import {useClickOutside} from '../hooks'
 import SelectMenu from './SelectMenu'
 
@@ -173,23 +174,38 @@ const StatelessSearchableSelect = forwardRef(
     } = props
 
     const itemsLen = items.length
-
+    const boundaryElement = useBoundaryElement()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+
     const popper = usePopper(referenceElement, popperElement, {
       placement: dropdownPosition as any,
       modifiers: [
         {
           name: 'preventOverflow',
           options: {
-            altAxis: true,
+            rootBoundary: boundaryElement ? undefined : 'viewport',
+            boundary: boundaryElement || 'clippingParents',
             padding: 8,
-            tether: false,
+          },
+        },
+        {
+          name: 'flip',
+          options: {
+            rootBoundary: boundaryElement ? undefined : 'viewport',
+            boundary: boundaryElement || 'clippingParents',
+            fallbackPlacements: ['top-start', 'bottom-start'],
           },
         },
         sameWidthModifier,
       ],
     })
+
+    const {forceUpdate} = popper
+
+    useEffect(() => {
+      if (forceUpdate) setTimeout(forceUpdate, 0)
+    }, [itemsLen, forceUpdate])
 
     const handleSelect = useCallback(
       (item: Item) => {
