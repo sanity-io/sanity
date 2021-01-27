@@ -2,16 +2,19 @@
 
 /* The fullscreen editor renders in a portal element */
 .fullscreenPortal {
-  position: absolute;
+  /* Override Sanity UI */
+  &.fullscreenPortal {
+    position: absolute;
+
+    @media (--max-screen-medium) {
+      position: fixed;
+    }
+  }
+
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-
-  @media (--max-screen-medium) {
-    position: fixed;
-    z-index: var(--zindex-portal);
-  }
 }
 
 .root {
@@ -101,21 +104,28 @@
   }
 }
 
-.scrollContainer {
-  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
-  background-color: var(--body-bg);
-  display: block;
+.editorBoxContent {
   height: 15rem;
-  box-sizing: border-box;
-  overflow-y: overlay;
-  flex-direction: column;
-  flex-grow: 1;
   position: relative;
 
   @nest .fullscreenPortal & {
     min-height: 0;
     flex: 1;
     height: 100%;
+  }
+}
+
+.scrollContainer {
+  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
+  background-color: var(--body-bg);
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: overlay;
+  flex-direction: column;
+  flex-grow: 1;
+
+  @nest .fullscreenPortal & {
     overflow: auto;
 
     @media (--screen-medium) {
