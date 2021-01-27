@@ -2,19 +2,24 @@
 
 /* The fullscreen editor renders in a portal element */
 .fullscreenPortal {
-  /* Override Sanity UI */
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
   &.fullscreenPortal {
     position: absolute;
+    top: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     @media (--max-screen-medium) {
       position: fixed;
+      top: 0;
     }
   }
-
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .root {
@@ -282,9 +287,9 @@
   @nest .fullscreenPortal & {
     width: calc(100% - var(--block-extras-width));
     /* This is needed for the change connectors to render properly in fullscreen mode */
-    border: 1px solid transparent;
     box-sizing: border-box;
   }
+
   @nest .fullscreenPortal .hasNoBlockExtras & {
     width: 100%;
   }

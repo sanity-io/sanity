@@ -47,6 +47,10 @@
   padding-bottom: var(--extra-small-padding);
 }
 
+:global(.ArrayInput__moving) {
+  z-index: var(--zindex-moving-item);
+}
+
 .gridItem {
 }
 

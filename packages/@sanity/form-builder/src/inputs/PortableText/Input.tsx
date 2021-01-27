@@ -375,7 +375,7 @@ export default function PortableTextInput(props: Props) {
             <BoundaryElementProvider element={scrollContainerElement}>
               <Layer
                 className={classNames(styles.fullscreenPortal, readOnly && styles.readOnly)}
-                zOffset={zindex.pane - 2}
+                zOffset={zindex.portal}
               >
                 {ptEditor}
               </Layer>
