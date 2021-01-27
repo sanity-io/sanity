@@ -27,6 +27,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/server": "2.2.3",
+    "@sanity/ui": "^0.33.0",
     "@sanity/webpack-integration": "2.2.3",
     "@storybook/addon-actions": "^3.4.11",
     "@storybook/addon-knobs": "^3.2.8",
@@ -36,6 +37,7 @@
     "normalize.css": "^5.0.0",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6",
+    "styled-components": "^5.2.1",
     "webpack": "^3.8.1"
   }
 }
