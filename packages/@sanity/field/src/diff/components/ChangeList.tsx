@@ -1,4 +1,5 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -119,6 +120,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
                 },
               ]}
               onAction={handleConfirmDialogAction}
+              onClickOutside={closeRevertAllChangesConfirmDialog}
               referenceElement={revertAllContainerElement}
               size="small"
             >
