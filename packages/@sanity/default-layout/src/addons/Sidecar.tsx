@@ -1,8 +1,11 @@
+import {LegacyLayerProvider} from '@sanity/base/components'
+import {Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import React from 'react'
 import {Subscription} from 'rxjs'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
+
 import styles from './Sidecar.css'
 
 let isSidecarEnabled: () => boolean | null = null
@@ -17,6 +20,7 @@ interface State {
   isVisible: boolean
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 class Sidecar extends React.PureComponent<{}, State> {
   state = {
     isOpen: true,
@@ -68,9 +72,11 @@ class Sidecar extends React.PureComponent<{}, State> {
     }
 
     return (
-      <div className={classNames(styles.root, isOpen && styles.isOpen)}>
-        {isVisible && <SidecarLayout />}
-      </div>
+      <LegacyLayerProvider zOffset="pane">
+        <Layer className={classNames(styles.root, isOpen && styles.isOpen)}>
+          {isVisible && <SidecarLayout />}
+        </Layer>
+      </LegacyLayerProvider>
     )
   }
 }

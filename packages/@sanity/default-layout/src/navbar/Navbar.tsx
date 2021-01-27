@@ -9,6 +9,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {DatasetSelect} from '../components'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
@@ -86,25 +87,30 @@ export default function Navbar(props: Props) {
         </div>
       )}
       <div className={styles.createButton}>
-        <Tooltip
-          disabled={TOUCH_DEVICE}
-          content={
-            (<span className={styles.createButtonTooltipContent}>Create new document</span>) as any
-          }
-          tone="navbar"
-        >
-          <div>
-            <Button
-              aria-label="Create"
-              icon={ComposeIcon}
-              kind="simple"
-              onClick={onCreateButtonClick}
-              padding="small"
-              selected={createMenuIsOpen}
-              tone="navbar"
-            />
-          </div>
-        </Tooltip>
+        <LegacyLayerProvider zOffset="navbarPopover">
+          <Tooltip
+            disabled={TOUCH_DEVICE}
+            content={
+              (
+                <span className={styles.createButtonTooltipContent}>Create new document</span>
+              ) as any
+            }
+            tone="navbar"
+          >
+            <div>
+              <Button
+                aria-label="Create"
+                data-test="default-layout-global-create-button"
+                icon={ComposeIcon}
+                kind="simple"
+                onClick={onCreateButtonClick}
+                padding="small"
+                selected={createMenuIsOpen}
+                tone="navbar"
+              />
+            </div>
+          </Tooltip>
+        </LegacyLayerProvider>
       </div>
       <div className={searchClassName} ref={onSetSearchElement}>
         <div>

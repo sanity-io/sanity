@@ -1,9 +1,12 @@
+import {Layer} from '@sanity/ui'
+import classNames from 'classnames'
 import React from 'react'
 import {Subscription} from 'rxjs'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import Sidecar from './addons/Sidecar'
 import RenderTool from './main/RenderTool'
 import ActionModal from './actionModal/ActionModal'
@@ -134,41 +137,44 @@ class DefaultLayout extends React.PureComponent<Props, State> {
   renderContent = () => {
     const {tools, router} = this.props
     const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
-
     const isOverlayVisible = menuIsOpen || searchIsOpen
-    let className = styles.root
-    if (isOverlayVisible) className += ` ${styles.isOverlayVisible}`
 
     return (
-      <div className={className} onClickCapture={this.handleClickCapture}>
+      <div
+        className={classNames(styles.root, isOverlayVisible && styles.isOverlayVisible)}
+        onClickCapture={this.handleClickCapture}
+      >
         {this.state.showLoadingScreen && (
-          <div
+          <Layer
             className={
               this.state.loaded || document.visibilityState == 'hidden'
                 ? styles.loadingScreenLoaded
                 : styles.loadingScreen
             }
+            zOffset={5000}
             ref={this.setLoadingScreenElement}
           >
             <AppLoadingScreen text="Restoring Sanity" />
-          </div>
+          </Layer>
         )}
 
-        <div className={styles.navbar}>
-          <NavbarContainer
-            tools={tools}
-            createMenuIsOpen={createMenuIsOpen}
-            onCreateButtonClick={this.handleCreateButtonClick}
-            onToggleMenu={this.handleToggleMenu}
-            onSwitchTool={this.handleSwitchTool}
-            router={router}
-            searchIsOpen={searchIsOpen}
-            /* eslint-disable-next-line react/jsx-handler-names */
-            onUserLogout={userStore.actions.logout}
-            onSearchOpen={this.handleSearchOpen}
-            onSearchClose={this.handleSearchClose}
-          />
-        </div>
+        <LegacyLayerProvider zOffset="navbar">
+          <div className={styles.navbar}>
+            <NavbarContainer
+              tools={tools}
+              createMenuIsOpen={createMenuIsOpen}
+              onCreateButtonClick={this.handleCreateButtonClick}
+              onToggleMenu={this.handleToggleMenu}
+              onSwitchTool={this.handleSwitchTool}
+              router={router}
+              searchIsOpen={searchIsOpen}
+              /* eslint-disable-next-line react/jsx-handler-names */
+              onUserLogout={userStore.actions.logout}
+              onSearchOpen={this.handleSearchOpen}
+              onSearchClose={this.handleSearchClose}
+            />
+          </div>
+        </LegacyLayerProvider>
 
         <div className={styles.sideMenuContainer}>
           <SideMenu
@@ -197,10 +203,12 @@ class DefaultLayout extends React.PureComponent<Props, State> {
         </div>
 
         {createMenuIsOpen && (
-          <ActionModal
-            onClose={this.handleActionModalClose}
-            actions={getNewDocumentModalActions()}
-          />
+          <LegacyLayerProvider zOffset="navbar">
+            <ActionModal
+              onClose={this.handleActionModalClose}
+              actions={getNewDocumentModalActions()}
+            />
+          </LegacyLayerProvider>
         )}
 
         {absolutes.map((Abs, i) => (

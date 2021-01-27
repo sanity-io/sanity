@@ -1,5 +1,5 @@
 import client from 'part:@sanity/base/client'
-import {UserAvatar} from '@sanity/base/components'
+import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useGlobalPresence} from '@sanity/base/hooks'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
@@ -61,39 +61,41 @@ export function PresenceMenu() {
     <ClickOutside onClickOutside={handleClose}>
       {(ref) => (
         <div className={styles.root} ref={ref as React.Ref<HTMLDivElement>}>
-          <Popover content={popoverContent as any} open={open}>
-            <div>
-              <Button
-                className={styles.narrowButton}
-                icon={UsersIcon}
-                iconStatus={presence.length > 0 ? 'success' : undefined}
-                kind="simple"
-                onClick={handleToggle}
-                padding="small"
-                selected={open}
-                tone="navbar"
-              />
+          <LegacyLayerProvider zOffset="navbarPopover">
+            <Popover content={popoverContent as any} open={open}>
+              <div>
+                <Button
+                  className={styles.narrowButton}
+                  icon={UsersIcon}
+                  iconStatus={presence.length > 0 ? 'success' : undefined}
+                  kind="simple"
+                  onClick={handleToggle}
+                  padding="small"
+                  selected={open}
+                  tone="navbar"
+                />
 
-              <Button
-                className={styles.wideButton}
-                kind="simple"
-                onClick={handleToggle}
-                padding="small"
-                selected={open}
-                tone="navbar"
-              >
-                <AvatarStack
-                  className={styles.avatarStack}
-                  maxLength={MAX_AVATARS_GLOBAL}
+                <Button
+                  className={styles.wideButton}
+                  kind="simple"
+                  onClick={handleToggle}
+                  padding="small"
+                  selected={open}
                   tone="navbar"
                 >
-                  {presence.map((item) => (
-                    <UserAvatar key={item.user.id} user={item.user} />
-                  ))}
-                </AvatarStack>
-              </Button>
-            </div>
-          </Popover>
+                  <AvatarStack
+                    className={styles.avatarStack}
+                    maxLength={MAX_AVATARS_GLOBAL}
+                    tone="navbar"
+                  >
+                    {presence.map((item) => (
+                      <UserAvatar key={item.user.id} user={item.user} />
+                    ))}
+                  </AvatarStack>
+                </Button>
+              </div>
+            </Popover>
+          </LegacyLayerProvider>
 
           {open && <Escapable onEscape={handleClose} />}
         </div>

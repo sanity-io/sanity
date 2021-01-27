@@ -16,26 +16,6 @@
   display: flex;
   flex-direction: column;
 
-  @nest &::before {
-    content: '';
-    display: block;
-    z-index: var(--zindex-drawershade);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--backdrop-color);
-    pointer-events: none;
-    opacity: 0;
-    transition: 150ms opacity ease-in-out;
-  }
-
-  @nest &.isOverlayVisible::before {
-    pointer-events: all;
-    opacity: 1;
-  }
-
   @media (--screen-medium) {
     overflow: hidden;
     width: 100%;
@@ -43,32 +23,22 @@
   }
 }
 
-.navbar {
-  position: relative;
-  background-color: var(--main-navigation-color);
-  color: var(--main-navigation-color--inverted);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-
-  @nest &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-bottom: 1px solid var(--hairline-color);
-  }
-}
-
 .loadingScreen {
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.loadingScreen {
+    position: fixed;
+  }
+
   display: block;
-  position: fixed;
   top: 0;
   left: 0;
   opacity: 1;
   transition: opacity 0.5s linear;
-  z-index: 5000;
   animation-name: loadingScreen;
   animation-duration: 1s;
   animation-delay: 1s;
@@ -90,9 +60,9 @@
 }
 
 .toolContainer {
+  position: relative;
   flex: 1;
   min-width: 0;
-  position: relative;
   height: 100%;
   margin-top: 0;
   margin-left: env(safe-area-inset-left);

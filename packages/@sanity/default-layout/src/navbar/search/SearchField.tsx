@@ -3,6 +3,8 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 
+import {Layer} from '@sanity/ui'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import styles from './SearchField.css'
 
 interface Props {
@@ -66,37 +68,39 @@ class SearchField extends React.PureComponent<Props> {
     if (value.length) className += ` ${styles.hasValue}`
 
     return (
-      <div className={className} onMouseDown={onMouseDown}>
-        <div className={styles.inputField}>
-          <label className={styles.label}>
-            <SearchIcon />
-          </label>
-          <input
-            className={styles.input}
-            type="text"
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onKeyDown={onKeyDown}
-            placeholder={placeholder}
-            ref={this.setInputElement}
-          />
-          {hotkeys && (
-            <div className={styles.hotkeys}>
-              <Hotkeys keys={hotkeys} />
+      <LegacyLayerProvider zOffset="navbarDialog">
+        <div className={className} onMouseDown={onMouseDown}>
+          <Layer className={styles.inputField}>
+            <label className={styles.label}>
+              <SearchIcon />
+            </label>
+            <input
+              className={styles.input}
+              type="text"
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              onKeyDown={onKeyDown}
+              placeholder={placeholder}
+              ref={this.setInputElement}
+            />
+            {hotkeys && (
+              <div className={styles.hotkeys}>
+                <Hotkeys keys={hotkeys} />
+              </div>
+            )}
+            <div
+              className={value ? styles.clearButtonWithValue : styles.clearButton}
+              onClick={onClear}
+              title="Clear search"
+            >
+              <CloseIcon />
             </div>
-          )}
-          <div
-            className={value ? styles.clearButtonWithValue : styles.clearButton}
-            onClick={onClear}
-            title="Clear search"
-          >
-            <CloseIcon />
-          </div>
+          </Layer>
+          <div className={styles.results}>{results}</div>
         </div>
-        <div className={styles.results}>{results}</div>
-      </div>
+      </LegacyLayerProvider>
     )
   }
 }

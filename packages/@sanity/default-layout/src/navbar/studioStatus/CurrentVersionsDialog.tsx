@@ -1,6 +1,7 @@
 import React from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 
+import {LegacyLayerProvider} from '@sanity/base/components'
 import styles from './UpdateNotifierDialog.css'
 
 interface Props {
@@ -39,17 +40,20 @@ class CurrentVersionsDialog extends React.PureComponent<Props> {
 
   render() {
     const {onClose} = this.props
+
     return (
-      <Dialog onClose={onClose} onClickOutside={onClose} size="medium">
-        <div className={styles.content}>
-          <h2 className={styles.dialogHeading}>This Studio is up to date</h2>
-          <p>It was built using the latest versions of all packages.</p>
-          <details className={styles.details}>
-            <summary className={styles.summary}>List all installed packages</summary>
-            {this.renderTable()}
-          </details>
-        </div>
-      </Dialog>
+      <LegacyLayerProvider zOffset="navbarDialog">
+        <DefaultDialog onClose={onClose} onClickOutside={onClose} size="medium">
+          <div className={styles.content}>
+            <h2 className={styles.dialogHeading}>This Studio is up to date</h2>
+            <p>It was built using the latest versions of all packages.</p>
+            <details className={styles.details}>
+              <summary className={styles.summary}>List all installed packages</summary>
+              {this.renderTable()}
+            </details>
+          </div>
+        </DefaultDialog>
+      </LegacyLayerProvider>
     )
   }
 }

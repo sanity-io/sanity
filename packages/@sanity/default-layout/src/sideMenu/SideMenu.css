@@ -7,8 +7,16 @@
 }
 
 .root {
-  position: fixed;
-  z-index: var(--zindex-drawer);
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.root {
+    position: fixed;
+  }
+
   top: 0;
   left: 0;
   width: 100%;
@@ -16,7 +24,22 @@
   pointer-events: none;
 }
 
-.root > div {
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--backdrop-color);
+  opacity: 0;
+  transition: 200ms opacity ease-in-out;
+
+  @nest .root.isOpen & {
+    opacity: 1;
+  }
+}
+
+.inner {
   position: relative;
   min-width: 200px;
   max-width: 280px;
@@ -30,10 +53,8 @@
   pointer-events: all;
   padding-left: env(safe-area-inset-left);
   margin-right: var(--side-menu-margin-right);
-}
 
-.root.isOpen {
-  @nest & > div {
+  @nest .root.isOpen & {
     transform: translate(0);
   }
 }
