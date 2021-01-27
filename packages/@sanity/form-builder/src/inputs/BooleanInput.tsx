@@ -14,6 +14,10 @@ const CenterAlignedBox = styled(Box)`
   align-self: center;
 `
 
+const ZeroLineHeightBox = styled(Box)`
+  line-height: 0;
+`
+
 const BooleanInput = React.forwardRef(function BooleanInput(
   props: Props<boolean, BooleanSchemaType>,
   ref: React.ForwardedRef<HTMLInputElement>
@@ -39,7 +43,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
     <ChangeIndicator>
       <Card as="label" border radius={1}>
         <Flex>
-          <Box style={{lineHeight: 0}}>
+          <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
               id={inputId}
               ref={ref}
@@ -51,7 +55,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
               checked={checked}
               style={{margin: -4}}
             />
-          </Box>
+          </ZeroLineHeightBox>
           <Box marginLeft={3} flex={1} padding={3}>
             <FormFieldHeaderText
               description={type.description}
