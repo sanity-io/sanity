@@ -26,7 +26,7 @@
     "@sanity/mutator": "2.1.4",
     "@sanity/portable-text-editor": "0.1.25",
     "@sanity/types": "2.2.3",
-    "@sanity/ui": "^0.32.8",
+    "@sanity/ui": "^0.33.0",
     "@sanity/util": "2.2.3",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
