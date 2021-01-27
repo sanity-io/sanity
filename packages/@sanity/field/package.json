@@ -30,9 +30,11 @@
     "@sanity/diff": "2.2.6",
     "@sanity/react-hooks": "2.2.6",
     "@sanity/types": "2.2.6",
+    "@sanity/ui": "^0.33.0",
     "@sanity/util": "2.2.6",
     "date-fns": "^2.16.1",
-    "sanity-diff-patch": "^1.0.9"
+    "sanity-diff-patch": "^1.0.9",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "react": "17.0.1",
