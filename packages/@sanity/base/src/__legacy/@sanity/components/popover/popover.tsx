@@ -1,11 +1,11 @@
+import {Portal, useLayer} from '@sanity/ui'
 import classNames from 'classnames'
-import {Layer} from 'part:@sanity/components/layer'
-import {Portal} from 'part:@sanity/components/portal'
 import React, {cloneElement, forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import maxSize from 'popper-max-size-modifier'
 import {useBoundaryElement} from '../boundaryElement'
 import {Placement} from '../types'
+import {LegacyLayerProvider} from '../../../../components'
 import {PopoverArrow} from './popoverArrow'
 
 import styles from './popover.css'
@@ -25,6 +25,9 @@ interface PopoverProps {
   content?: React.ReactNode
   disabled?: boolean
   fallbackPlacements?: Placement[]
+  /**
+   * @deprecated
+   */
   layer?: boolean
   open?: boolean
   placement?: Placement
@@ -33,9 +36,9 @@ interface PopoverProps {
   tone?: 'navbar'
 }
 
-export const Popover = forwardRef(
+const PopoverChildren = forwardRef(
   (
-    props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>,
+    props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content'>,
     ref
   ): React.ReactElement => {
     const {
@@ -48,7 +51,6 @@ export const Popover = forwardRef(
       content,
       disabled,
       fallbackPlacements,
-      layer,
       open,
       placement = 'bottom',
       portal,
@@ -56,6 +58,7 @@ export const Popover = forwardRef(
       targetElement,
       ...restProps
     } = props
+    const {zIndex} = useLayer()
     const boundaryElementCtx = useBoundaryElement()
     const boundaryElement = boundaryElementProp || boundaryElementCtx
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
@@ -76,7 +79,6 @@ export const Popover = forwardRef(
         {
           name: 'preventOverflow',
           options: {
-            // altAxis: true,
             rootBoundary: boundaryElement ? undefined : 'viewport',
             boundary: boundaryElement || 'clippingParents',
             padding: 8,
@@ -133,7 +135,7 @@ export const Popover = forwardRef(
           {...restProps}
           className={classNames(styles.root, className)}
           ref={setReference}
-          style={{...popper.styles.popper, ...(style || {})}}
+          style={{...popper.styles.popper, ...(style || {}), zIndex}}
           {...popper.attributes.popper}
         >
           <div className={classNames(styles.card, cardClassName)}>{content}</div>
@@ -144,10 +146,6 @@ export const Popover = forwardRef(
           />
         </div>
       )
-
-      if (layer) {
-        popperNode = <Layer className={styles.layer}>{popperNode}</Layer>
-      }
 
       if (portal) {
         popperNode = <Portal>{popperNode}</Portal>
@@ -161,6 +159,25 @@ export const Popover = forwardRef(
           : children || <></>}
         {popperNode}
       </>
+    )
+  }
+)
+
+PopoverChildren.displayName = 'Popover'
+
+export const Popover = forwardRef(
+  (
+    props: PopoverProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content'>,
+    ref
+  ) => {
+    if (!props.open) {
+      return <PopoverChildren {...props} ref={ref} />
+    }
+
+    return (
+      <LegacyLayerProvider zOffset="popover">
+        <PopoverChildren {...props} ref={ref} />
+      </LegacyLayerProvider>
     )
   }
 )

@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .svg {
-  z-index: calc(var(--zindex-portal) - 1);
   pointer-events: none;
   position: absolute;
   left: 0;

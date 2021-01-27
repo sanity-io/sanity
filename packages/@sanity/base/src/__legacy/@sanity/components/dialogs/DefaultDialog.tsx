@@ -1,13 +1,14 @@
 /* eslint-disable react/no-unused-prop-types */
 
+import {Portal, useLayer} from '@sanity/ui'
 import classNames from 'classnames'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import {ContainerQuery} from 'part:@sanity/components/container-query'
 import styles from 'part:@sanity/components/dialogs/default-style'
-import {Layer, useLayer} from 'part:@sanity/components/layer'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
-import React, {createElement, useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
+import {LegacyLayerProvider} from '../../../../components'
 import {useClickOutside} from '../hooks'
 import {DefaultDialogActions} from './DefaultDialogActions'
 import {DialogAction, DialogColor} from './types'
@@ -29,7 +30,13 @@ interface DefaultDialogProps {
 }
 
 function DefaultDialog(props: DefaultDialogProps) {
-  return <Layer>{createElement(DefaultDialogChildren, props)}</Layer>
+  return (
+    <Portal>
+      <LegacyLayerProvider zOffset="portal">
+        <DefaultDialogChildren {...props} />
+      </LegacyLayerProvider>
+    </Portal>
+  )
 }
 
 export default DefaultDialog
@@ -51,8 +58,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
     title,
   } = props
 
-  const layer = useLayer()
-  const isTopLayer = layer.depth === layer.size
+  const {isTopLayer, zIndex} = useLayer()
   const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null)
   const renderCloseButton = onClose && showCloseButton
   const renderFloatingCloseButton = !title && renderCloseButton
@@ -96,6 +102,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
       data-dialog-color={color}
       data-dialog-padding={padding}
       data-dialog-size={size}
+      style={{zIndex}}
     >
       <div className={styles.overlay} />
 

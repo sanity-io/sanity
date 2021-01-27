@@ -1,14 +1,15 @@
 /* eslint-disable react/no-unused-prop-types */
 
+import {Portal, useLayer} from '@sanity/ui'
 import classNames from 'classnames'
 import {partition} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
-import {Layer, useLayer} from 'part:@sanity/components/layer'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
-import React, {createElement, useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
+import {LegacyLayerProvider} from '../../../../components'
 import {useClickOutside} from '../hooks'
 import {DialogAction} from './types'
 
@@ -30,7 +31,13 @@ interface FullScreenDialogProps {
 }
 
 function FullscreenDialog(props: FullScreenDialogProps) {
-  return <Layer>{createElement(FullscreenDialogChildren, props)}</Layer>
+  return (
+    <Portal>
+      <LegacyLayerProvider zOffset="portal">
+        <FullscreenDialogChildren {...props} />
+      </LegacyLayerProvider>
+    </Portal>
+  )
 }
 
 export default FullscreenDialog
@@ -47,10 +54,7 @@ function FullscreenDialogChildren(props: FullScreenDialogProps) {
     isOpen = true,
     actions,
   } = props
-
-  const layer = useLayer()
-  const isTopLayer = layer.depth === layer.size
-
+  const {isTopLayer, zIndex} = useLayer()
   const [secondary, primary] = partition(actions, (action) => action.secondary)
 
   useEffect(() => {
@@ -80,7 +84,10 @@ function FullscreenDialogChildren(props: FullScreenDialogProps) {
   )
 
   return (
-    <div className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}>
+    <div
+      className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}
+      style={{zIndex}}
+    >
       <div className={classNames(styles.card, cardClassName)} ref={setCardElement}>
         {(title || onClose) && (
           <header className={styles.header}>

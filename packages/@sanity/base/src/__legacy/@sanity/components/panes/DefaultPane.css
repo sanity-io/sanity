@@ -66,7 +66,6 @@
 .header {
   background: var(--component-bg);
   position: relative;
-  z-index: var(--zindex-pane);
 
   @nest .isCollapsed & {
     width: 100%;
@@ -263,7 +262,6 @@
   box-sizing: border-box;
   background-color: var(--component-bg);
   color: var(--text-color-secondary);
-  z-index: var(--zindex-pane);
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     padding-bottom: env(safe-area-inset-bottom);

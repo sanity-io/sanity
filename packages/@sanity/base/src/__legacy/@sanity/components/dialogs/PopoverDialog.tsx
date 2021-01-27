@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unused-prop-types */
 
+import {useLayer} from '@sanity/ui'
 import classNames from 'classnames'
 import {partition} from 'lodash'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import {useLayer} from 'part:@sanity/components/layer'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useClickOutside} from '../hooks'
@@ -89,7 +89,7 @@ export default PopoverDialog
 function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
   const {actions = [], children, onAction, onClickOutside, onClose, onEscape, title} = props
 
-  const layer = useLayer()
+  const {isTopLayer} = useLayer()
 
   const [primary, secondary] = partition(actions, (action) => action.primary)
 
@@ -102,8 +102,6 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
     // eslint-disable-next-line react/no-array-index-key
     <PopoverDialogActionButton action={action} key={actionIndex} onAction={onAction} />
   ))
-
-  const isTopLayer = layer.depth === layer.size
 
   useEffect(() => {
     if (!isTopLayer) return undefined

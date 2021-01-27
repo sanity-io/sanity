@@ -1,3 +1,4 @@
+import {useLayer} from '@sanity/ui'
 import React from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
@@ -33,6 +34,7 @@ const ChangeBarWrapper = (
     children: React.ReactNode
   }
 ) => {
+  const layer = useLayer()
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
   const onMouseLeave = React.useCallback(() => setHover(false), [])
@@ -46,6 +48,7 @@ const ChangeBarWrapper = (
       isChanged: props.isChanged,
       hasFocus: props.hasFocus,
       hasHover: hasHover,
+      zIndex: layer.zIndex,
     }),
     // note: deepCompare should be ok here since we're not comparing deep values
     deepCompare

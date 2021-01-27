@@ -8,7 +8,6 @@
   position: absolute;
   top: 0;
   box-shadow: 0 0 0 9999px var(--broken-backdrop);
-  z-index: var(--zindex-portal);
   max-width: 100%;
   line-height: 1.3125;
   outline: 0;

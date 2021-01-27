@@ -1,5 +1,5 @@
+import {useLayer} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
-import {useLayer} from 'part:@sanity/components/layer'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {ButtonProps} from '../buttons'
@@ -20,8 +20,7 @@ interface MenuButtonProps {
 const MenuButtonChildren = forwardRef(
   (props: {onClose: () => void} & React.HTMLProps<HTMLDivElement>, ref) => {
     const {children, onClose, ...restProps} = props
-    const layer = useLayer()
-    const isTopLayer = layer.depth === layer.size
+    const {isTopLayer} = useLayer()
     const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
     const setRef = useCallback(
@@ -82,7 +81,6 @@ export const MenuButton = forwardRef(
       setOpen,
       ...restProps
     } = props
-
     const handleClose = useCallback(() => setOpen(false), [setOpen])
     const handleButtonClick = useCallback(() => setOpen(!open), [open, setOpen])
 

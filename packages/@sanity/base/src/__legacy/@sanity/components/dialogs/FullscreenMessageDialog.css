@@ -2,7 +2,6 @@
 
 .root {
   position: fixed;
-  z-index: var(--zindex-portal);
   top: 0;
   left: 0;
   right: 0;
