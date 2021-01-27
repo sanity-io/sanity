@@ -1,4 +1,5 @@
 import React, {useCallback} from 'react'
+import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
@@ -8,6 +9,10 @@ import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
 import {Props} from './types'
+
+const CenterAlignedBox = styled(Box)`
+  align-self: center;
+`
 
 const BooleanInput = React.forwardRef(function BooleanInput(
   props: Props<boolean, BooleanSchemaType>,
@@ -32,7 +37,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
 
   return (
     <ChangeIndicator>
-      <Card as="label" border radius={1} padding={3}>
+      <Card as="label" border radius={1}>
         <Flex>
           <Box style={{lineHeight: 0}}>
             <LayoutSpecificInput
@@ -47,18 +52,18 @@ const BooleanInput = React.forwardRef(function BooleanInput(
               style={{margin: -4}}
             />
           </Box>
-          <Box marginLeft={3} flex={1}>
+          <Box marginLeft={3} flex={1} padding={3}>
             <FormFieldHeaderText
               description={type.description}
               __unstable_markers={markers}
               title={type.title}
             />
           </Box>
-          <Box>
+          <CenterAlignedBox paddingX={3} paddingY={1}>
             <FieldStatus maxAvatars={1} position="top">
               <FieldPresence maxAvatars={1} presence={presence} />
             </FieldStatus>
-          </Box>
+          </CenterAlignedBox>
         </Flex>
       </Card>
     </ChangeIndicator>
