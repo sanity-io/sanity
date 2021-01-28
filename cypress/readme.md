@@ -8,9 +8,10 @@ would normally). Open the "Developer Console", navigate to
 
 1. Open test studio in a browser (by running `npm start` as you
    normally would)
-2. Open "Developer console" and find the value of the `sanitySession`
+2. Navigate to a document
+3. Open "Developer console" and find the value of the `sanitySession`
    cookie
-3. Set the environment variable by running
+4. Set the environment variable by running
    ```shell
    export CYPRESS_SANITY_SESSION_TOKEN='<...>'
    ```
@@ -25,5 +26,5 @@ $ npm run test-e2e
 Or open cypress for interactivity:
 
 ```
-$ cypress open
+$ cypress open --config-file ./cypress/cypress.json
 ```
