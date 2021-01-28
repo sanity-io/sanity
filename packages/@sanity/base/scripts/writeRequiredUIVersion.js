@@ -1,6 +1,6 @@
 // This overwrites the compiled ./lib/requiredSanityUiVersion.js with a the actual version we currently depend on in @sanity/base
-const pkg = require('../package.json')
 const fs = require('fs')
+const pkg = require('../package.json')
 
 const template = (version) => `exports.REQUIRED_UI_VERSION = '${version}'`
 
@@ -15,4 +15,10 @@ try {
   process.exit(1)
 }
 
-fs.writeFileSync(builtFile, template(pkg.dependencies['@sanity/ui'] || 'latest'))
+let version = pkg.dependencies['@sanity/ui']
+
+if (typeof version === 'string' && version.startsWith('^')) {
+  version = version.slice(1)
+}
+
+fs.writeFileSync(builtFile, template(version || 'latest'))
