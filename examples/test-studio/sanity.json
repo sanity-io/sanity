@@ -102,6 +102,10 @@
     {
       "implements": "part:@sanity/base/tool",
       "path": "src/tools/css-variables/tool"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/tools/test-ui-error/tool"
     }
   ],
   "env": {
