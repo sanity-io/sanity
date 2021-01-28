@@ -5,7 +5,9 @@ function errHandler(msg, url, lineNo, columnNo, err) {
   // Certain events (ResizeObserver max loop threshold, for instance)
   // only gives a _message_. We choose to ignore these events since
   // they are usually not _fatal_
-  if (!err) {
+  // NOTE: This checks if the error is the common "missing theme content value"
+  // error thrown by `@sanity/ui`, in order to take steps to render a helpful error message.
+  if (!err || err.message.includes('useRootTheme():')) {
     return
   }
 
@@ -62,4 +64,4 @@ export default () => `window.onerror = ${errHandler.toString()}`
 */
 
 export default () =>
-  '/* Global error handler */ window.onerror = function(e,t,n,o,r){if(r){var a=document.getElementById("sanity"),l=document.createElement("div");l.style.position="absolute",l.style.top="50%",l.style.left="50%",l.style.transform="translate(-50%, -50%)";var s=document.createElement("h1");s.innerText="Uncaught error";var d=document.createElement("pre"),i=document.createElement("code");d.style.fontSize="0.8em",d.style.opacity="0.7",d.style.overflow="auto",d.style.whiteSpace="pre-wrap",d.style.maxHeight="70vh";var c=r.stack&&r.stack.replace(r.message,"").replace(/^error: *\\n?/i,""),m=(r.stack?r.message:r.toString())+(r.stack?"\\n\\nStack:\\n\\n"+c:"")+"\\n\\n(Your browsers Developer Tools may contain more info)";i.textContent=m;var p=document.createElement("button");for(p.style.padding="0.8em 1em",p.style.marginTop="1em",p.style.border="none",p.style.backgroundColor="#303030",p.style.color="#fff",p.style.borderRadius="4px",p.onclick=function(){window.location.reload()},p.textContent="Reload",d.appendChild(i),l.appendChild(s),l.appendChild(d),l.appendChild(p);a.firstChild;)a.removeChild(a.firstChild);a.appendChild(l)}}'
+  '/* Global error handler */ window.onerror = function(e,t,n,o,r){if(r&&!r.message.includes("useRootTheme():")){var a=document.getElementById("sanity"),l=document.createElement("div");l.style.position="absolute",l.style.top="50%",l.style.left="50%",l.style.transform="translate(-50%, -50%)";var s=document.createElement("h1");s.innerText="Uncaught error";var d=document.createElement("pre"),i=document.createElement("code");d.style.fontSize="0.8em",d.style.opacity="0.7",d.style.overflow="auto",d.style.whiteSpace="pre-wrap",d.style.maxHeight="70vh";var c=r.stack&&r.stack.replace(r.message,"").replace(/^error: *\\n?/i,""),m=(r.stack?r.message:r.toString())+(r.stack?"\\n\\nStack:\\n\\n"+c:"")+"\\n\\n(Your browsers Developer Tools may contain more info)";i.textContent=m;var p=document.createElement("button");for(p.style.padding="0.8em 1em",p.style.marginTop="1em",p.style.border="none",p.style.backgroundColor="#303030",p.style.color="#fff",p.style.borderRadius="4px",p.onclick=function(){window.location.reload()},p.textContent="Reload",d.appendChild(i),l.appendChild(s),l.appendChild(d),l.appendChild(p);a.firstChild;)a.removeChild(a.firstChild);a.appendChild(l)}}'

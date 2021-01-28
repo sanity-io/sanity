@@ -44,6 +44,13 @@ export default class ErrorHandler extends React.PureComponent {
       return
     }
 
+    // NOTE: This checks if the error is the common "missing theme content value"
+    // error thrown by `@sanity/ui`, in order to take steps to render a helpful error message.
+    if (err.message.includes('useRootTheme():')) {
+      this.props.onUIError(err)
+      return
+    }
+
     // eslint-disable-next-line no-console
     console.error(err)
     this.setState({error: err})
