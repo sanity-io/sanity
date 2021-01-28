@@ -35,7 +35,7 @@
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
     "test-all": "npm run type-check && lerna run test --concurrency=2 --stream",
-    "test-e2e": "start-server-and-test start http://localhost:3333 'npm run cypress -- run'",
+    "test-e2e": "start-server-and-test start http://localhost:3333 'npm run cypress -- run --config-file ./cypress/cypress.json'",
     "updated": "lerna updated",
     "watch": "gulp watch",
     "release-notes": "node scripts/printReleaseNotesTemplate.js",
