@@ -1,5 +1,9 @@
 Cypress.Commands.add('login', (sanitySessionToken) => {
-  const token = sanitySessionToken ? sanitySessionToken : Cypress.env('SANITY_SESSION_TOKEN')
+  const token = sanitySessionToken || Cypress.env('SANITY_SESSION_TOKEN')
+
+  if (!token) {
+    throw new Error('Missing sanity token')
+  }
 
   cy.intercept({url: 'v1/users/me', method: 'GET'}).as('getUser')
 
