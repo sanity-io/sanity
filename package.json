@@ -28,6 +28,7 @@
     "test-studio": "cd examples/test-studio && npm start",
     "clean-studio": "cd examples/clean-studio && npm start",
     "design-studio": "cd examples/design-studio && npm start",
+    "perf-studio": "cd examples/perf-studio && npm start",
     "example-studio": "cd examples/example-studio && npm start",
     "movies-studio": "cd examples/movies-studio && npm start",
     "blog-studio": "cd examples/blog-studio && npm start",

@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "project": {
+    "name": "Perf studio"
+  },
+  "api": {
+    "projectId": "ppsg7ml5",
+    "dataset": "perf"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "@sanity/vision"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    }
+  ]
+}
