@@ -56,6 +56,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
     showCloseButton = true,
     size = 'medium',
     title,
+    ...restProps
   } = props
 
   const {isTopLayer, zIndex} = useLayer()
@@ -98,6 +99,7 @@ function DefaultDialogChildren(props: DefaultDialogProps) {
 
   return (
     <ContainerQuery
+      {...restProps}
       className={classNames(styles.root, hasActions && styles.hasFunctions, classNameProp)}
       data-dialog-color={color}
       data-dialog-padding={padding}
