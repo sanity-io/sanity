@@ -44,15 +44,19 @@ export default FullscreenDialog
 
 function FullscreenDialogChildren(props: FullScreenDialogProps) {
   const {
+    children,
+    color,
     title,
     cardClassName,
     className,
+    isOpen = true,
     onAction,
     onClickOutside,
     onClose,
     onEscape,
-    isOpen = true,
+    padding,
     actions,
+    ...restProps
   } = props
   const {isTopLayer, zIndex} = useLayer()
   const [secondary, primary] = partition(actions, (action) => action.secondary)
@@ -85,6 +89,7 @@ function FullscreenDialogChildren(props: FullScreenDialogProps) {
 
   return (
     <div
+      {...restProps}
       className={classNames(styles.root, isOpen ? styles.isOpen : styles.isClosed, className)}
       style={{zIndex}}
     >
@@ -107,9 +112,7 @@ function FullscreenDialogChildren(props: FullScreenDialogProps) {
           </header>
         )}
 
-        {props.children && (
-          <ScrollContainer className={styles.content}>{props.children}</ScrollContainer>
-        )}
+        {children && <ScrollContainer className={styles.content}>{children}</ScrollContainer>}
 
         {actions && actions.length > 0 && (
           <div className={styles.actionsWrapper}>
