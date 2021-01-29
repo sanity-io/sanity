@@ -32,5 +32,5 @@ jobs:
       - name: Run perf tests
         run: npm run test-perf
         env:
-          SANITY_PERF_STUDIO_USER_TOKEN: ${{ secrets.SANITY_PERF_STUDIO_USER_TOKEN }}
-          SANITY_PERF_STUDIO_WRITE_TOKEN: ${{ secrets.SANITY_PERF_STUDIO_WRITE_TOKEN }}
+          PERF_STUDIO_SANITY_WRITE_TOKEN: ${{ secrets.PERF_STUDIO_SANITY_WRITE_TOKEN }}
+          PERF_TEST_SANITY_SESSION_TOKEN: ${{ secrets.PERF_TEST_SANITY_SESSION_TOKEN }}

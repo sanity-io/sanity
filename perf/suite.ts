@@ -5,8 +5,15 @@ import {omit} from 'lodash'
 import createClient from '@sanity/client'
 import {testTypingSpeed} from './typingSpeed'
 
-const writeToken = process.env.SANITY_PERF_STUDIO_WRITE_TOKEN
-const userToken = process.env.SANITY_PERF_STUDIO_USER_TOKEN
+function getEnv(varName: string) {
+  if (!(varName in process.env)) {
+    throw new Error(`Missing environment variable "${varName}"`)
+  }
+  return process.env[varName]
+}
+
+const writeToken = getEnv('PERF_STUDIO_SANITY_WRITE_TOKEN')
+const userToken = getEnv('PERF_TEST_SANITY_SESSION_TOKEN')
 
 export const sanity = createClient({
   token: writeToken,
