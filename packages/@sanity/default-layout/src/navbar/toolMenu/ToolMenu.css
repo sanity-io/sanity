@@ -32,3 +32,11 @@
     }
   }
 }
+
+.tooltipContent {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  display: block;
+  padding: calc(var(--small-padding) - 2px) var(--small-padding);
+}
