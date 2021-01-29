@@ -23,6 +23,8 @@
 }
 
 .jsonInspectorContainer {
+  overflow: auto;
+
   @nest & :global .json-inspector, & :global .json-inspector .json-inspector__selection {
     font-family: var(--font-family-monospace);
   }
