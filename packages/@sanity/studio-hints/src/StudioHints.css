@@ -9,5 +9,4 @@
   overflow-x: auto;
   min-width: 420px;
   display: flex;
-  border-top: 1px solid var(--hairline-color);
 }
