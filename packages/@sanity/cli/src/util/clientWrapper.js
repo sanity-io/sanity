@@ -63,7 +63,7 @@ export default function clientWrapper(manifest, configPath) {
 
     return client({
       ...apiConfig,
-      dataset: apiConfig.dataset || '_dummy_',
+      dataset: apiConfig.dataset || '~dummy-placeholder-dataset-',
       token: token,
       useProjectHostname: requireProject,
       requester: requester,

@@ -113,10 +113,10 @@ async function ensureProjectConfig(context) {
   // which means it could potentially hold any missing project ID / dataset
   let {projectId, dataset} = context.apiClient({requireProject: false, requireUser: false}).config()
 
-  // The client wrapper returns `_dummy_` in the case where no dataset is configured,
-  // to be able to do non-dataset requests without having the client complain.
-  // We obviously don't want to use this as an actual value
-  dataset = dataset === '_dummy_' ? undefined : dataset
+  // The client wrapper returns `~dummy-placeholder-dataset-` in the case where
+  // no dataset is configured, to be able to do non-dataset requests without
+  // having the client complain. We don't want to use this as an _actual_ value.
+  dataset = dataset === '~dummy-placeholder-dataset-' ? undefined : dataset
 
   // Let the user know why these values are being used
   if (projectId && projectId !== apiConfig.projectId) {
