@@ -12,6 +12,7 @@ import clientWrapper from '../../util/clientWrapper'
 import getUserConfig from '../../util/getUserConfig'
 import getProjectDefaults from '../../util/getProjectDefaults'
 import createProject from '../project/createProject'
+import moveToOrganization from '../project/moveToOrganization'
 import login from '../login/login'
 import dynamicRequire from '../../util/dynamicRequire'
 import promptForDatasetName from './promptForDatasetName'
@@ -44,6 +45,12 @@ export default async function initSanity(args, context) {
     inProjectContext = Boolean(projectManifest.root)
   } catch (err) {
     // Intentional noop
+  }
+
+  if (cliFlags.project && cliFlags.organization) {
+    throw new Error(
+      'You have specified both a project and an organization. To move a project to an organization please visit https://manage.sanity.io'
+    )
   }
 
   const toDifferentPath = specifiedOutputPath && absolutify(specifiedOutputPath) !== workDir
@@ -360,7 +367,7 @@ export default async function initSanity(args, context) {
 
     if (selected === 'new') {
       debug('User wants to create a new project, prompting for name')
-      return createProject(apiClient, {
+      const project = await createProject(apiClient, {
         displayName: await prompt.single({
           message: 'Your project name:',
           default: 'My Sanity Project',
@@ -369,6 +376,48 @@ export default async function initSanity(args, context) {
         ...response,
         isFirstProject: isUsersFirstProject,
       }))
+
+      let selectedOrg = cliFlags.organization
+      let organizations
+
+      if (!selectedOrg) {
+        try {
+          organizations = await apiClient({requireProject: false}).request({
+            method: 'GET',
+            uri: '/organizations',
+          })
+        } catch (err) {
+          throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+        }
+        if (organizations.length > 0) {
+          debug(`User has ${organizations.length} organization(s), showing list of choices`)
+
+          const orgChoices = organizations.map((org) => ({
+            value: org.id,
+            name: `${org.name} [${org.id}]`,
+          }))
+
+          selectedOrg = await prompt.single({
+            message: 'Choose organization',
+            type: 'list',
+            choices: [{value: 'none', name: 'None'}, new prompt.Separator(), ...orgChoices],
+          })
+        }
+      }
+
+      if (selectedOrg && selectedOrg !== 'none') {
+        try {
+          await moveToOrganization(apiClient, project.projectId, selectedOrg)
+        } catch (err) {
+          throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+        }
+      }
+
+      return project
+    }
+
+    if (projects.length === 0 && unattended) {
+      throw new Error('No projects found for current user')
     }
 
     debug(`Returning selected project (${selected})`)
