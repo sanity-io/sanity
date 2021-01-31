@@ -29,6 +29,10 @@ function getFormatIcon(
   type: string,
   schemaIcon?: React.ComponentType | string
 ): React.ComponentType {
+  if (schemaIcon) {
+    return schemaIcon as React.ComponentType
+  }
+
   switch (type) {
     case 'strong':
       return FormatBoldIcon
@@ -41,7 +45,7 @@ function getFormatIcon(
     case 'code':
       return FormatCodeIcon
     default:
-      return schemaIcon || SanityLogoIcon
+      return SanityLogoIcon
   }
 }
 
