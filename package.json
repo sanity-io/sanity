@@ -97,6 +97,7 @@
     "gulp-newer": "^1.4.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-watch": "^5.0.1",
+    "hashids": "^2.2.8",
     "hard-rejection": "^2.1.0",
     "husky": "^2.5.0",
     "lerna": "^3.16.4",

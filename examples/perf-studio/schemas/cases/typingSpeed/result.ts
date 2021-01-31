@@ -27,7 +27,7 @@ export const typingPerfRun = {
       ],
     },
     {type: 'string', name: 'baseVersion'},
-    {type: 'instance', name: 'instance'},
+    {name: 'instance', type: 'instance'},
     {
       type: 'object',
       name: 'git',
@@ -63,4 +63,32 @@ export const typingPerfRun = {
       }
     },
   },
+}
+
+export const typingPerfSummary = {
+  type: 'document',
+  name: 'typingSpeedSummary',
+  fields: [
+    {
+      name: 'hardwareProfile',
+      type: 'reference',
+      to: [{type: 'hardwareProfile'}],
+    },
+    {
+      name: 'runs',
+      type: 'array',
+      of: [{type: 'reference', to: {type: 'typingPerfRun'}}],
+    },
+  ],
+}
+export const summary = {
+  type: 'document',
+  name: 'summary',
+  fields: [
+    {
+      name: 'hardwareProfile',
+      type: 'reference',
+      to: [{type: 'hardwareProfile'}],
+    },
+  ],
 }
