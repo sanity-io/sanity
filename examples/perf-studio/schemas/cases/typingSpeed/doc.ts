@@ -1,6 +1,10 @@
+import {TerminalIcon} from '@sanity/icons'
+
 export const typingPerf = {
   type: 'document',
   name: 'typingPerfTest',
+  title: 'Typing perf test document',
+  icon: TerminalIcon,
   fields: [
     {
       name: 'rootStringField',
@@ -33,10 +37,12 @@ export const deeplyNestedObject = {
   ],
 }
 
+// Todo add a case for typing speed on deeply nested objects
 export const deeplyNestedObjectTest = {
   name: 'deeplyNestedObjectTest',
   type: 'document',
   title: 'Deeply nested Objects test',
+  icon: TerminalIcon,
   preview: {
     select: {
       title: 'deeplyNestedObject.first',

@@ -1,4 +1,5 @@
 import prettyBytes from 'pretty-bytes'
+import {PlugIcon} from '@sanity/icons'
 
 export const cpu = {
   name: 'cpu',
@@ -13,6 +14,7 @@ export const cpu = {
 export const hardwareProfile = {
   name: 'hardwareProfile',
   type: 'document',
+  icon: PlugIcon,
   fields: [
     {name: 'cpus', type: 'array', of: [{type: 'cpu'}], readOnly: true},
     {name: 'memory', type: 'number'},
