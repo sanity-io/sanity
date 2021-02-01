@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "2.1.4",
+  "version": "2.2.6",
   "description": "Ace editor for editing code",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
