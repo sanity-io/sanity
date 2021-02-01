@@ -14,20 +14,19 @@ Then make sure you have _Node.js version 10 or newer_ and _npm version 6 or newe
 git clone git@github.com:sanity-io/sanity.git
 cd sanity
 npm install
-npm run init
 npm start
 ```
 
 # Release/workflow guidelines
 
-- Anything in the `current` branch can be released
-- Anything in the `next` branch is scheduled for the next release
+- `current` always points to the last released version
+- Anything in the `next` branch is scheduled for the next release and should always be ready to released
 - To work on something new, create a descriptively named branch off of `next` (ie: feature/new-oauth2-scopes)
-- Commit to that branch locally and regularly push your work to the same named branch on the server.
-- Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging.
+- Commit to that branch locally and regularly push your work to the same named branch on the server
+- Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging
 - Once its done, open a pull request to merge your feature branch into `next`
-- After someone else has reviewed and signed off on the pull request, you can merge it into `next`.
-- Everything except minor _trivial_ changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure.
+- After someone else has reviewed and signed off on the pull request, you can merge it into `next`
+- Everything except minor _trivial_ changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
 
   - The changes/feature are reviewed and tested by you
