@@ -1,10 +1,10 @@
 import {useId} from '@reach/auto-id'
+import {useClickOutside} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
 import {Popover} from 'part:@sanity/components/popover'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import React, {createElement, useCallback, useEffect, useRef, useState} from 'react'
-import useOnClickOutside from 'use-onclickoutside'
 import {ActionStateDialog} from './actionStateDialog'
 
 import styles from './actionMenu.css'
@@ -25,9 +25,10 @@ interface Props {
 }
 
 export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Props) {
-  const clickOutsideRef = useRef(null)
   const listRef = useRef<HTMLUListElement>(null)
   const idPrefix = useId()
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const handleCloseMenu = useCallback(() => {
     if (!isOpen) {
@@ -42,7 +43,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
     }
   }, [actionStates, isOpen, onClose])
 
-  useOnClickOutside(clickOutsideRef, handleCloseMenu)
+  useClickOutside(handleCloseMenu, [rootElement, popoverElement])
 
   const [activeAction, setActiveAction] = useState(actionStates.find((s) => !s.disabled))
 
@@ -82,7 +83,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
   )
 
   const popoverContent = (
-    <div className={styles.popoverContent}>
+    <div className={styles.popoverContent} ref={setPopoverElement}>
       <ul
         aria-labelledby={`${idPrefix}-button`}
         className={styles.menu}
@@ -104,7 +105,7 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
   )
 
   return (
-    <div className={styles.actionsDropDown} ref={clickOutsideRef} onKeyDown={handleKeyDown}>
+    <div className={styles.actionsDropDown} onKeyDown={handleKeyDown} ref={setRootElement}>
       <Popover content={popoverContent} open={isOpen} placement="top-end" portal>
         <div>
           <Button

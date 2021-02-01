@@ -53,8 +53,7 @@
     "rxjs": "^6.5.3",
     "scroll-into-view-if-needed": "^2.2.26",
     "shallow-equals": "^1.0.0",
-    "styled-components": "^5.2.1",
-    "use-onclickoutside": "^0.3.1"
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.10",
