@@ -9,6 +9,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
+import {ScrollContainer} from '../../../../components/scroll'
 import {useClickOutside} from '../hooks'
 import {Placement} from '../types'
 import {DialogAction} from './types'
@@ -160,9 +161,9 @@ function PopoverDialogChildren(props: PopoverDialogChildrenProps) {
         </div>
       )}
 
-      <div className={styles.content}>
+      <ScrollContainer className={styles.content}>
         <div className={styles.contentWrapper}>{children}</div>
-      </div>
+      </ScrollContainer>
 
       {actions.length > 0 && (
         <div className={styles.footer}>

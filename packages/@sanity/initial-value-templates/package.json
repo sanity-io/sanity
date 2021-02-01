@@ -30,7 +30,6 @@
     "@sanity/util": "2.4.0",
     "@types/lodash": "^4.14.149",
     "@types/memoize-one": "^3.1.1",
-    "@types/node": "^8.0.0",
     "lodash": "^4.17.15",
     "memoize-one": "^3.1.1",
     "oneline": "^1.0.3"

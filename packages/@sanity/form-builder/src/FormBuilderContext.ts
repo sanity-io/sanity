@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
 import {Schema, SchemaType} from '@sanity/types'
-import {Patch} from './typedefs/patch'
+import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
 
 const RESOLVE_NULL = (arg: any) => null
@@ -105,7 +105,9 @@ export default class FormBuilderContext extends React.Component<Props> {
               console.warn(
                 'No patch channel provided to form-builder. If you need input based patch updates, please provide one'
               )
-              return () => {}
+              return () => {
+                // no-op
+              }
             },
         schema,
         resolveInputComponent: this.resolveInputComponent,

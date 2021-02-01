@@ -170,8 +170,7 @@ export default {
       name: 'noAssetSource',
       type: 'image',
       title: 'No asset source',
-      // Note: this makes the image input crash at the moment
-      // options: {sources: []},
+      options: {sources: []},
     },
   ],
 }

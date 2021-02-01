@@ -2,7 +2,7 @@ import {ImageSchemaType, FileSchemaType} from '@sanity/types'
 import accept from 'attr-accept'
 import * as is from '../../utils/is'
 import uploaders from './uploaders'
-import {Uploader} from './typedefs'
+import {Uploader} from './types'
 
 export default function resolveUploader(
   type: ImageSchemaType | FileSchemaType,
