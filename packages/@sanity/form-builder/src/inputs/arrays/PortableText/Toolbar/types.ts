@@ -13,7 +13,7 @@ export interface BlockStyleItem {
   active: boolean
   key: string
   style: string
-  styleComponent: React.ComponentType<{}> | null
+  styleComponent: React.ComponentType | null
   title: string
 }
 
