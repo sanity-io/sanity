@@ -2,17 +2,22 @@
 
 import React, {useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {ScrollContainer} from '../../components/scroll'
 import {Tracker, ConnectorContext} from '../'
 import {ENABLED} from '../constants'
 import {ConnectorsOverlay} from './ConnectorsOverlay'
 
-interface Props {
+interface DisabledProps {
+  className?: string
+  children: React.ReactNode
+}
+
+interface EnabledProps {
+  className?: string
+  children: React.ReactNode
   isReviewChangesOpen: boolean
   onOpenReviewChanges: () => void
   onSetFocus: (path: Path) => void
-  className?: string
-  children: React.ReactNode
 }
 
 function EnabledChangeConnectorRoot({
@@ -21,7 +26,7 @@ function EnabledChangeConnectorRoot({
   onSetFocus,
   isReviewChangesOpen,
   onOpenReviewChanges,
-}: Props) {
+}: EnabledProps) {
   const [rootRef, setRootRef] = React.useState<HTMLDivElement | null>()
 
   const contextValue = useMemo(
@@ -45,7 +50,7 @@ function EnabledChangeConnectorRoot({
   )
 }
 
-function DisabledChangeConnectorRoot({children, className}: Props) {
+function DisabledChangeConnectorRoot({children, className}: DisabledProps) {
   return <ScrollContainer className={className}>{children}</ScrollContainer>
 }
 

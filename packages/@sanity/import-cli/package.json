@@ -29,7 +29,7 @@
     "@sanity/import": "2.2.6",
     "meow": "^3.7.0",
     "ora": "^2.1.0",
-    "pretty-ms": "^3.2.0",
+    "pretty-ms": "^7.0.1",
     "simple-get": "^4.0.0"
   },
   "devDependencies": {

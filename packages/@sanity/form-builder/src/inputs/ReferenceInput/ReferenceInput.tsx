@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import {uniqueId} from 'lodash'
+import {FormField} from '@sanity/base/components'
 import {
   isValidationErrorMarker,
   Marker,
@@ -12,17 +13,16 @@ import {
 } from '@sanity/types'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import {IntentLink} from 'part:@sanity/base/router'
-import Button from 'part:@sanity/components/buttons/default'
-import SearchableSelect from 'part:@sanity/components/selects/searchable'
-import FormField from 'part:@sanity/components/formfields/default'
+import {LinkIcon} from '@sanity/icons'
+import {Button, Stack, Text} from '@sanity/ui'
+import {Observable} from 'rxjs'
+import {IntentLink, SearchableSelect} from '../../legacyParts'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {Alert} from '../../components/Alert'
 import styles from './styles/ReferenceInput.css'
 
 type SearchHit = {
@@ -53,9 +53,9 @@ export type Props = {
     query: string,
     type: ReferenceSchemaType,
     options: ReferenceFilterSearchOptions
-  ) => ObservableI<Array<SearchHit>>
+  ) => Observable<SearchHit[]>
   onFocus: (path: Path) => void
-  getPreviewSnapshot: (reference, type) => ObservableI<PreviewSnapshot>
+  getPreviewSnapshot: (reference, type) => Observable<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
   presence: any
@@ -267,23 +267,42 @@ export default withValuePath(
             compareValue={compareValue?._ref}
           >
             <FormField
-              labelFor={this._inputId}
-              markers={markers}
-              label={type.title}
+              inputId={this._inputId}
+              __unstable_markers={markers}
+              title={type.title}
               level={level}
               description={type.description}
-              presence={presence}
+              __unstable_presence={presence}
             >
-              <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
+              <Stack space={2}>
                 {hasWeakMismatch && (
-                  <div className={styles.weakRefMismatchWarning}>
-                    Warning: This reference is <em>{weakIs}</em>, but should be{' '}
-                    <em>{weakShouldBe}</em> according to schema.
-                    <div>
-                      <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
-                    </div>
-                  </div>
+                  <Alert
+                    suffix={
+                      <Stack padding={2}>
+                        <Button
+                          onClick={this.handleFixWeak}
+                          text={
+                            <>
+                              Convert to <em>{weakShouldBe}</em> reference
+                            </>
+                          }
+                          tone="caution"
+                        />
+                      </Stack>
+                    }
+                    title={
+                      <>
+                        Reference is not <em>{weakShouldBe}</em>
+                      </>
+                    }
+                  >
+                    <Text as="p">
+                      This reference is <em>{weakIs}</em>. According to the schema it should be{' '}
+                      <em>{weakShouldBe}</em>.
+                    </Text>
+                  </Alert>
                 )}
+
                 <SearchableSelect
                   inputId={this._inputId}
                   placeholder={readOnly ? '' : placeholder}
@@ -307,7 +326,7 @@ export default withValuePath(
                   ref={this.setInput}
                   readOnly={readOnly || isLoadingSnapshot}
                 />
-              </div>
+              </Stack>
             </FormField>
           </ChangeIndicatorCompareValueProvider>
         )

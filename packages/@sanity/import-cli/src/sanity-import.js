@@ -121,7 +121,7 @@ getStream()
     })
   )
   .then(({numDocs, warnings}) => {
-    const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
+    const timeSpent = prettyMs(Date.now() - stepStart, {secondsDecimalDigits: 2})
     currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
     currentProgress.succeed()
 

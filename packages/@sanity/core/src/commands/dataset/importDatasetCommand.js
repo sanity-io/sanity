@@ -113,7 +113,7 @@ export default {
 
       if (currentProgress && currentProgress.succeed) {
         const timeSpent = prettyMs(Date.now() - prevStepStart, {
-          secDecimalDigits: 2,
+          secondsDecimalDigits: 2,
         })
         currentProgress.text = `[100%] ${prevStep} (${timeSpent})`
         currentProgress.succeed()
@@ -128,7 +128,7 @@ export default {
 
       spinInterval = setInterval(() => {
         const timeSpent = prettyMs(Date.now() - prevStepStart, {
-          secDecimalDigits: 2,
+          secondsDecimalDigits: 2,
         })
         currentProgress.text = `${percent}${opts.step} (${timeSpent})`
       }, 60)
@@ -140,7 +140,7 @@ export default {
 
       if (success) {
         const timeSpent = prettyMs(Date.now() - stepStart, {
-          secDecimalDigits: 2,
+          secondsDecimalDigits: 2,
         })
         currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
         currentProgress.succeed()
