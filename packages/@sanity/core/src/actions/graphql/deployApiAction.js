@@ -1,6 +1,8 @@
+/* eslint-disable no-process-env, no-process-exit, max-statements */
 const {get} = require('lodash')
 const yargs = require('yargs/yargs')
 const {hideBin} = require('yargs/helpers')
+const oneline = require('oneline')
 const debug = require('../../debug').default
 const getUrlHeaders = require('../../util/getUrlHeaders')
 const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
@@ -19,15 +21,11 @@ const generations = {
   gen3,
 }
 
+const isInteractive = process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
+
 module.exports = async function deployApiActions(args, context) {
   // Reparsing CLI flags for better control of binary flags
-  const flags = yargs(hideBin(args.argv || process.argv).slice(2))
-    .option('dataset', {type: 'string'})
-    .option('tag', {type: 'string', default: 'default'})
-    .option('generation', {type: 'string'})
-    .option('non-null-document-fields', {type: 'boolean', default: false})
-    .option('playground', {type: 'boolean'})
-    .option('force', {type: 'boolean'}).argv
+  const flags = parseCliFlags(args)
 
   const {apiClient, workDir, output, prompt, chalk} = context
 
@@ -51,18 +49,11 @@ module.exports = async function deployApiActions(args, context) {
   context.output.print(`Tag: ${tag}\n`)
 
   spinner = output.spinner('Checking for deployed API').start()
-  const currentGeneration = await getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
-    Authorization: `Bearer ${client.config().token}`,
+  const {currentGeneration, playgroundEnabled = true} = await getCurrentSchemaProps({
+    client,
+    dataset,
+    tag,
   })
-    .then((res) => res['x-sanity-graphql-generation'])
-    .catch((err) => {
-      if (err.statusCode === 404) {
-        return null
-      }
-
-      throw err
-    })
-
   spinner.succeed()
 
   generation = await resolveApiGeneration({currentGeneration, flags, output, prompt, chalk})
@@ -71,14 +62,16 @@ module.exports = async function deployApiActions(args, context) {
     return
   }
 
-  const enablePlayground =
-    typeof playground === 'undefined'
-      ? await prompt.single({
-          type: 'confirm',
-          message: 'Do you want to enable a GraphQL playground?',
-          default: true,
-        })
-      : playground
+  let enablePlayground = playground
+  if (typeof playground === 'undefined' && !isInteractive) {
+    enablePlayground = playgroundEnabled
+  } else if (typeof playground === 'undefined') {
+    enablePlayground = await prompt.single({
+      type: 'confirm',
+      message: 'Do you want to enable a GraphQL playground?',
+      default: playgroundEnabled,
+    })
+  }
 
   spinner = output.spinner('Generating GraphQL schema').start()
 
@@ -142,6 +135,33 @@ module.exports = async function deployApiActions(args, context) {
   }
 }
 
+function getCurrentSchemaProps({client, dataset, tag}) {
+  return getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
+    Authorization: `Bearer ${client.config().token}`,
+  })
+    .then((res) => ({
+      currentGeneration: res['x-sanity-graphql-generation'],
+      playgroundEnabled: res['x-sanity-graphql-playground'] === 'true',
+    }))
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        return {}
+      }
+
+      throw err
+    })
+}
+
+function parseCliFlags(args) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('dataset', {type: 'string'})
+    .option('tag', {type: 'string', default: 'default'})
+    .option('generation', {type: 'string'})
+    .option('non-null-document-fields', {type: 'boolean', default: false})
+    .option('playground', {type: 'boolean'})
+    .option('force', {type: 'boolean'}).argv
+}
+
 async function confirmValidationResult(valid, {spinner, output, prompt, force}) {
   const {validationError, breakingChanges, dangerousChanges} = valid
   if (validationError) {
@@ -173,6 +193,12 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
 
   output.print('')
 
+  if (!isInteractive) {
+    throw new Error(
+      'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
+    )
+  }
+
   const shouldDeploy = await prompt.single({
     type: 'confirm',
     message: 'Do you want to deploy a new API despite the dangerous changes?',
@@ -183,7 +209,7 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
 }
 
 async function resolveApiGeneration({currentGeneration, flags, output, prompt, chalk}) {
-  // a) If no API is currently disabled:
+  // a) If no API is currently deployed:
   //    use the specificed one, or use whichever generation is the latest
   // b) If an API generation is specified explicitly:
   //    use the given one, but _prompt_ if it differs from the current one
@@ -200,6 +226,13 @@ async function resolveApiGeneration({currentGeneration, flags, output, prompt, c
   }
 
   if (flags.generation && flags.generation !== currentGeneration) {
+    if (!flags.force && !isInteractive) {
+      throw new Error(oneline`
+        Specified generation (${flags.generation}) differs from the one currently deployed (${currentGeneration}).
+        Re-run the command with \`--force\` to force deployment.
+      `)
+    }
+
     output.warn(
       `Specified generation (${flags.generation}) differs from the one currently deployed (${currentGeneration}).`
     )
