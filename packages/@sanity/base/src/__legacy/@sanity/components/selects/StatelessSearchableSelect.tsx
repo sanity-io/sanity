@@ -1,5 +1,5 @@
 import {Modifier} from '@popperjs/core'
-import {Layer, useLayer} from '@sanity/ui'
+import {Layer, Portal, useLayer} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'
 import {usePopper} from 'react-popper'
 import styles from 'part:@sanity/components/selects/searchable-style'
@@ -347,18 +347,20 @@ const StatelessSearchableSelect = forwardRef(
         </div>
 
         {isOpen && (
-          <Layer className={styles.layer}>
-            <StatelessSearchableSelectResults
-              highlightIndex={highlightIndex}
-              items={items}
-              onClose={handleClose}
-              onSelect={handleSelect}
-              ref={setPopperElement}
-              renderItem={renderItemProp}
-              style={popper.styles.popper}
-              {...popper.attributes.popper}
-            />
-          </Layer>
+          <Portal>
+            <Layer className={styles.layer}>
+              <StatelessSearchableSelectResults
+                highlightIndex={highlightIndex}
+                items={items}
+                onClose={handleClose}
+                onSelect={handleSelect}
+                ref={setPopperElement}
+                renderItem={renderItemProp}
+                style={popper.styles.popper}
+                {...popper.attributes.popper}
+              />
+            </Layer>
+          </Portal>
         )}
       </>
     )
