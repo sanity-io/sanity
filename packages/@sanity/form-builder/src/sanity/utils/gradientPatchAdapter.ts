@@ -74,6 +74,7 @@ function toFormBuilderPatches(origin: Origin, patch: GradientPatch): Patch[] {
                 origin,
               }
             }
+            // eslint-disable-next-line no-console
             console.warn(new Error(`Unsupported patch type: ${type}`))
             return null
           })
