@@ -370,7 +370,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 compareValue={compareValue?.asset?._ref}
               >
                 <ChangeIndicatorWithProvidedFullPath
-                  path={['asset']}
+                  path={[]}
                   hasFocus={this.hasFileTargetFocus()}
                   value={value?.asset}
                   compareValue={compareValue?.asset}
