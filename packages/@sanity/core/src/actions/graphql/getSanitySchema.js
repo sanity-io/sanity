@@ -30,6 +30,7 @@ function provideFakeGlobals() {
 
 function getSanitySchema(basePath) {
   const domCleanup = jsdomGlobal()
+  const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals()
   const contextCleanup = requireContext.register()
   const cleanupFileLoader = pirates.addHook(
@@ -49,6 +50,7 @@ function getSanitySchema(basePath) {
   cleanupFileLoader()
   contextCleanup()
   globalCleanup()
+  windowCleanup()
   domCleanup()
 
   return schema
