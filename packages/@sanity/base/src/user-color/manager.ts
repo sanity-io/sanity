@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
-import {color as SanityColor, ColorHueKey, COLOR_HUES} from '@sanity/color'
+import {hues as sanityHues, ColorHueKey, COLOR_HUES} from '@sanity/color'
 import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 export interface UserColorManagerOptions {
@@ -20,19 +20,19 @@ const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
 
 const defaultColors = defaultHues.reduce((colors, hue) => {
   colors[hue] = {
-    background: SanityColor[hue][100].hex,
-    border: SanityColor[hue][300].hex,
-    text: SanityColor[hue][700].hex,
-    tints: SanityColor[hue],
+    background: sanityHues[hue][100].hex,
+    border: sanityHues[hue][300].hex,
+    text: sanityHues[hue][700].hex,
+    tints: sanityHues[hue],
   }
   return colors
 }, {} as Record<ColorHueKey, UserColor>)
 
 const defaultAnonymousColor: UserColor = {
-  background: SanityColor.gray[100].hex,
-  border: SanityColor.gray[300].hex,
-  text: SanityColor.gray[700].hex,
-  tints: SanityColor.gray,
+  background: sanityHues.gray[100].hex,
+  border: sanityHues.gray[300].hex,
+  text: sanityHues.gray[700].hex,
+  tints: sanityHues.gray,
 }
 
 export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {

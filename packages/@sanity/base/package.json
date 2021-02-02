@@ -33,7 +33,7 @@
     "@reach/auto-id": "^0.10.5",
     "@sanity/bifur-client": "^0.0.7",
     "@sanity/client": "2.2.6",
-    "@sanity/color": "^1.0.0",
+    "@sanity/color": "^2.0.12",
     "@sanity/generate-help-url": "2.2.6",
     "@sanity/icons": "^1.0.1",
     "@sanity/image-url": "^0.140.19",
