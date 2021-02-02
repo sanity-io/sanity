@@ -27,6 +27,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Install npm dependencies
+        env:
+         PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: npm install
 
       - name: Run cypress
