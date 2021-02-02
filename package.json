@@ -36,7 +36,7 @@
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
     "test-all": "npm run type-check && lerna run test --concurrency=2 --stream",
-    "test-e2e": "start-server-and-test start http://localhost:3333 'npm run cypress -- run --config-file ./cypress/cypress.json'",
+    "test-e2e": "start-server-and-test test-studio http://localhost:3333 'npm run cypress:run'",
     "test-perf": "start-server-and-test perf-studio http://localhost:3344 'ts-node -r dotenv/config perf/suite'",
     "updated": "lerna updated",
     "watch": "gulp watch",
@@ -50,8 +50,8 @@
     "postinstall": "npm run bootstrap",
     "vercel-build": "npm run build && cd examples/test-studio && npm run build -- -y",
     "type-check": "tsc -b ./packages --force",
-    "cypress": "cypress",
-    "cypress:open": "cypress open --config-file cypress/cypress.json"
+    "cypress:open": "cypress open --config-file cypress/cypress.json",
+    "cypress:run": "cypress run --config-file cypress/cypress.json"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
