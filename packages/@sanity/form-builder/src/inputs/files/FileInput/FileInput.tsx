@@ -254,16 +254,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     return fields.map((field) => this.renderField(field))
   }
 
+  hasFileTargetFocus() {
+    return this.props.focusPath?.[0] === 'asset'
+  }
+
   handleFileTargetFocus = () => {
-    this.setState({
-      hasFileTargetFocus: true,
-    })
     this.props.onFocus(['asset'])
   }
   handleFileTargetBlur = () => {
-    this.setState({
-      hasFileTargetFocus: false,
-    })
     this.props.onBlur()
   }
   handleFilesOver = (fileInfo: FileInfo[]) => {
@@ -342,7 +340,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   render() {
-    const {type, value, compareValue, level, markers, readOnly, presence} = this.props
+    const {type, value, focusPath, compareValue, level, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, hoveringFiles} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
@@ -373,7 +371,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               >
                 <ChangeIndicatorWithProvidedFullPath
                   path={['asset']}
-                  hasFocus={this.state.hasFileTargetFocus}
+                  hasFocus={this.hasFileTargetFocus()}
                   value={value?.asset}
                   compareValue={compareValue?.asset}
                 >
