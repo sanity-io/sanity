@@ -1,7 +1,7 @@
 describe('BooleanInput', () => {
   it('should have a height of 35px if no description', () => {
-    cy.visit('/test/desk/booleansTest;bd99e58a-845f-4d52-b54a-56a9b7af3be1')
+    cy.visit('/desk/booleans;6e1a054a-04c1-4901-9a76-5bc669c1eb4e')
 
-    cy.getField('switchIndeterminate2').invoke('outerHeight').should('be.eq', 35)
+    cy.getField('on').invoke('outerHeight').should('be.eq', 35)
   })
 })

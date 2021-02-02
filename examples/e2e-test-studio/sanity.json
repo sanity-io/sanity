@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "project": {
+    "name": "E2E Tests"
+  },
+  "api": {
+    "projectId": "ppsg7ml5",
+    "dataset": "e2e-tests"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/components",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool"
+  ],
+  "env": {
+    "development": {
+      "plugins": ["@sanity/vision"]
+    }
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "schemas"
+    }
+  ]
+}
