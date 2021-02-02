@@ -312,6 +312,7 @@ const StatelessSearchableSelect = forwardRef(
             selected={isInputSelected}
             disabled={disabled}
             ref={ref as any}
+            autoComplete="off"
             spellCheck="false"
             readOnly={readOnly}
           />
