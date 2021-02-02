@@ -378,9 +378,8 @@ export default async function initSanity(args, context) {
       }))
 
       let selectedOrg = cliFlags.organization
-      let organizations
-
       if (!selectedOrg) {
+        let organizations = []
         try {
           organizations = await apiClient({requireProject: false}).request({
             method: 'GET',
@@ -414,10 +413,6 @@ export default async function initSanity(args, context) {
       }
 
       return project
-    }
-
-    if (projects.length === 0 && unattended) {
-      throw new Error('No projects found for current user')
     }
 
     debug(`Returning selected project (${selected})`)
