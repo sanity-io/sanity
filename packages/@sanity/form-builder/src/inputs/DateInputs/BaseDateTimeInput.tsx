@@ -12,6 +12,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import {uniqueId} from 'lodash'
 import styles from './styles/BaseDateTimeInput.css'
+import {Layer} from '@sanity/ui'
 
 type Props = {
   value: Moment | null
@@ -106,9 +107,11 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   }
   renderPopperContainer = ({children}) => {
     const {isDialogOpen} = this.state
-    return ReactDOM.createPortal(
-      <div className={isDialogOpen ? styles.portal : styles.portalClosed}>{children}</div>,
-      document.body
+
+    return (
+      <Layer>
+        <div className={isDialogOpen ? styles.portal : styles.portalClosed}>{children}</div>
+      </Layer>
     )
   }
   render() {
