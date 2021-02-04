@@ -1,9 +1,11 @@
+import {get} from 'lodash'
 import React from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import {getValidationRule} from '../utils/getValidationRule'
 import {Props} from './types'
 
 const UrlInput = React.forwardRef(function UrlInput(
@@ -21,6 +23,8 @@ const UrlInput = React.forwardRef(function UrlInput(
     },
     [onChange]
   )
+  const uriRule = getValidationRule(type, 'uri')
+  const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
   return (
     <FormField
       level={level}
@@ -31,7 +35,7 @@ const UrlInput = React.forwardRef(function UrlInput(
       inputId={inputId}
     >
       <TextInput
-        type="url"
+        type={inputType}
         inputMode="url"
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
