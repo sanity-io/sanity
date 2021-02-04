@@ -122,8 +122,8 @@ const RadioSelect = React.forwardRef(function RadioSelect(
 
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
-    <Card border padding={4} radius={1}>
-      <Layout space={4} role="group">
+    <Card border padding={3} radius={1}>
+      <Layout space={3} role="group">
         {items.map((item, index) => (
           <Flex key={index} as="label" align="center">
             <Radio
@@ -135,8 +135,10 @@ const RadioSelect = React.forwardRef(function RadioSelect(
               customValidity={customValidity}
               name={inputId}
             />
-            <Box marginLeft={3}>
-              <Text>{item.title}</Text>
+            <Box marginLeft={2}>
+              <Text size={1} weight="semibold">
+                {item.title}
+              </Text>
             </Box>
           </Flex>
         ))}
