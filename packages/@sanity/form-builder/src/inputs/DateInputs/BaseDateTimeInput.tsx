@@ -2,7 +2,6 @@
 import 'react-datepicker/dist/react-datepicker-cssmodules.css'
 
 import React from 'react'
-import ReactDOM from 'react-dom'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import {isValidationErrorMarker, Marker} from '@sanity/types'
@@ -11,8 +10,9 @@ import TextInput from 'part:@sanity/components/textinputs/default'
 import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import {uniqueId} from 'lodash'
-import styles from './styles/BaseDateTimeInput.css'
 import {Layer} from '@sanity/ui'
+
+import styles from './styles/BaseDateTimeInput.css'
 
 type Props = {
   value: moment.Moment | null
@@ -26,11 +26,11 @@ type Props = {
   description: string | null
   placeholder: string | null
   readOnly: boolean | null
-  onFocus?: (event: any) => void
-  onBlur?: (event: any) => void
   onChange: (event: moment.Moment) => void
+  onFocus?: (event: unknown) => void
+  onBlur?: (event: unknown) => void
   level: number
-  presence: any
+  presence: unknown
 }
 
 const getFormat = (dateFormat, timeFormat) => dateFormat + (timeFormat ? ` ${timeFormat}` : '')
@@ -62,7 +62,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     onChange(nextMoment)
     this.setState({inputValue: null})
   }
-  handleSetNow = (event) => {
+  handleSetNow = () => {
     this.handleDialogChange(moment())
   }
   focus() {
@@ -79,7 +79,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     }
     return event
   }
-  handleButtonClick = (event) => {
+  handleButtonClick = () => {
     this.focus()
     this.handleOpen()
   }
