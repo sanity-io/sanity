@@ -5,6 +5,7 @@
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
+  z-index: var(--zindex-portal);
 }
 
 .content {
