@@ -1,5 +1,3 @@
-import {useZIndex} from '@sanity/base/components'
-import {Layer} from '@sanity/ui'
 import React from 'react'
 import classNames from 'classnames'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -24,7 +22,6 @@ type Props = {
 }
 export default function BlockExtras(props: Props) {
   const editor = usePortableTextEditor()
-  const zindex = useZIndex()
   const {block, blockActions, height, isFullscreen, markers, onFocus, renderCustomMarkers} = props
   const blockValidation = getValidationMarkers(markers)
   const errors = blockValidation.filter((mrkr) => mrkr.level === 'error')
@@ -65,7 +62,7 @@ export default function BlockExtras(props: Props) {
       content
     )
   return (
-    <Layer
+    <div
       className={classNames([
         styles.root,
         hasFocus && styles.hasFocus,
@@ -73,10 +70,9 @@ export default function BlockExtras(props: Props) {
         errors.length > 0 && styles.withError,
         warnings.length > 0 && !errors.length && styles.withWarning,
       ])}
-      zOffset={zindex.portal}
     >
       {returned}
-    </Layer>
+    </div>
   )
 }
 
