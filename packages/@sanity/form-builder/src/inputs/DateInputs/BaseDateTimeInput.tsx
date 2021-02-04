@@ -3,7 +3,7 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import moment, {Moment} from 'moment'
+import moment from 'moment'
 import DatePicker from 'react-datepicker'
 import {isValidationErrorMarker, Marker} from '@sanity/types'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -15,7 +15,7 @@ import styles from './styles/BaseDateTimeInput.css'
 import {Layer} from '@sanity/ui'
 
 type Props = {
-  value: Moment | null
+  value: moment.Moment | null
   markers: Array<Marker>
   dateOnly?: boolean
   dateFormat: string
@@ -26,9 +26,9 @@ type Props = {
   description: string | null
   placeholder: string | null
   readOnly: boolean | null
-  onChange: (event: Moment) => void
   onFocus?: (event: any) => void
   onBlur?: (event: any) => void
+  onChange: (event: moment.Moment) => void
   level: number
   presence: any
 }
@@ -57,7 +57,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       this.setState({inputValue: inputValue})
     }
   }
-  handleDialogChange = (nextMoment?: Moment) => {
+  handleDialogChange = (nextMoment?: moment.Moment) => {
     const {onChange} = this.props
     onChange(nextMoment)
     this.setState({inputValue: null})
