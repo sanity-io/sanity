@@ -1,10 +1,20 @@
+import {range} from 'lodash'
+
 const puppeteer = require('puppeteer')
 
 type Options = {
   userToken: string
 }
 
-export async function testTypingSpeed({userToken}: Options) {
+async function sampleAvg(samples: number, sampler: () => Promise<number>) {
+  const total = await range(0, samples).reduce(async (acc) => {
+    return (await acc) + (await sampler())
+  }, Promise.resolve(0))
+
+  return total / samples
+}
+
+export async function sampleTypingSpeed({userToken}: Options) {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
@@ -24,17 +34,17 @@ export async function testTypingSpeed({userToken}: Options) {
 
   const input = await page.waitForSelector('[data-focus-path="rootStringField"] input')
 
-  // clear the input value first
-  await input.evaluate((el: HTMLInputElement) => {
-    el.value = ''
+  const avg = await sampleAvg(10, async () => {
+    const startTime = new Date().getTime()
+    // clear the input value first
+    await input.evaluate((el: HTMLInputElement) => {
+      el.value = ''
+    })
+    await input.type('abcdefghijklmnopqrstuvwxyz')
+    return new Date().getTime() - startTime
   })
-
-  const startTime = new Date().getTime()
-  await input.type('abcdefghijklmnopqrstuvwxyz')
-
-  const elapsedTime = new Date().getTime() - startTime
 
   await browser.close()
 
-  return elapsedTime
+  return avg
 }

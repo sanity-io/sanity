@@ -6,7 +6,7 @@ import {omit} from 'lodash'
 import createClient from '@sanity/client'
 import {nanoid} from 'nanoid'
 import {uuid} from '@sanity/uuid'
-import {testTypingSpeed} from './typingSpeed'
+import {sampleTypingSpeed} from './typingSpeed'
 
 const hashIds = new Hashids()
 
@@ -89,7 +89,7 @@ const repoInfo = getRepoInfo()
 const workflowInfo = getWorkflowInfo()
 
 export async function runTypingSpeedTest() {
-  const result = await testTypingSpeed({userToken})
+  const result = await sampleTypingSpeed({userToken})
 
   const perfRunDoc = {
     _type: 'typingPerfRun',
