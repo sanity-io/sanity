@@ -589,8 +589,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   compareValue={compareValue?.asset?._ref}
                 >
                   <FileTarget
-                    border
                     tabIndex={0}
+                    shadow={1}
                     disabled={readOnly === true}
                     ref={this.setFocusElement}
                     onFiles={this.handleSelectFiles}
