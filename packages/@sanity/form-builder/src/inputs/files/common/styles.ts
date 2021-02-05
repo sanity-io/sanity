@@ -1,9 +1,26 @@
 import styled, {css} from 'styled-components'
 import {Card, Flex, Theme} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
+import {focusRingStyle} from './focusringUtils'
 
 export type {FileInfo} from '../../common/fileTarget'
-export const FileTarget = fileTarget(Card)
+
+const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
+  const border = {width: 1, color: 'var(--card-border-color)'}
+
+  return css`
+    outline: none;
+    &:focus {
+      box-shadow: ${focusRingStyle({
+        base: theme.sanity.color.base,
+        border,
+        focusRing: theme.sanity.focusRing,
+      })};
+    }
+  `
+})
+
+export const FileTarget = fileTarget(CardWithFocusRing)
 
 // todo:
 //  This is a workaround for TS4023: Exported variable 'AssetBackground' has or is using name 'FlexProps'
