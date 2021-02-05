@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Dialog} from '@sanity/ui'
+import {Box, Button, Dialog} from '@sanity/ui'
 import {AssetFromSource} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import {client} from '../../legacyParts'
@@ -109,28 +109,30 @@ export class DefaultSource extends React.Component<Props, State> {
 
     return (
       <Dialog id={this._elementId} header="Select image" width={1} position="absolute">
-        <div className={styles.imageGrid}>
-          {assets.map((asset) => (
-            <Asset
-              key={asset._id}
-              asset={asset}
-              isSelected={selectedAssets.some((selected) => selected._id === asset._id)}
-              onClick={this.handleItemClick}
-              onKeyPress={this.handleItemKeyPress}
-              onDeleteFinished={this.handleDeleteFinished}
-            />
-          ))}
-        </div>
+        <Box padding={2}>
+          <div className={styles.imageGrid}>
+            {assets.map((asset) => (
+              <Asset
+                key={asset._id}
+                asset={asset}
+                isSelected={selectedAssets.some((selected) => selected._id === asset._id)}
+                onClick={this.handleItemClick}
+                onKeyPress={this.handleItemKeyPress}
+                onDeleteFinished={this.handleDeleteFinished}
+              />
+            ))}
+          </div>
 
-        {!isLoading && assets.length === 0 && (
-          <div className={styles.noAssets}>No images found</div>
-        )}
-
-        <div className={styles.loadMore}>
-          {!isLastPage && (
-            <Button mode={'ghost'} onClick={this.handleFetchNextPage} text={'Load more'} />
+          {!isLoading && assets.length === 0 && (
+            <div className={styles.noAssets}>No images found</div>
           )}
-        </div>
+
+          <div className={styles.loadMore}>
+            {!isLastPage && (
+              <Button mode={'ghost'} onClick={this.handleFetchNextPage} text={'Load more'} />
+            )}
+          </div>
+        </Box>
       </Dialog>
     )
   }
