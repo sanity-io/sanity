@@ -12,15 +12,15 @@ module.exports = {
     react: {version: '16.9.0'},
   },
   extends: [
-    './packages/eslint-config-sanity/index.js',
-    './packages/eslint-config-sanity/react.js',
-    './packages/eslint-config-sanity/import.js',
+    'sanity',
+    'sanity/react',
+    'sanity/import',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
     'prettier/@typescript-eslint',
     'prettier',
     'prettier/react',
-    './packages/eslint-config-sanity/typescript.js',
+    'sanity/typescript',
   ],
   rules: {
     'import/no-extraneous-dependencies': 'off', // because of parts

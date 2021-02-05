@@ -26,7 +26,6 @@ const IGNORED_PACKAGES = [
   'packages/@sanity/generate-help-url',
   'packages/@sanity/plugin-loader',
   'packages/create-sanity',
-  'packages/eslint-config-sanity',
   'packages/sanity',
 ]
 
