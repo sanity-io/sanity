@@ -385,7 +385,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                   >
-                    <AssetBackground align="center" justify="center">
+                    <AssetBackground align="center" justify="center" padding={3}>
                       {value?._upload && this.renderUploadState(value._upload)}
                       {!value?._upload && value?.asset && this.renderAsset()}
                       {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
