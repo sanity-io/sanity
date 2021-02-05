@@ -108,7 +108,13 @@ export class DefaultSource extends React.Component<Props, State> {
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <Dialog id={this._elementId} header="Select image" width={1} position="absolute">
+      <Dialog
+        id={this._elementId}
+        header="Select image"
+        width={1}
+        position="absolute"
+        onClose={this.handleClose}
+      >
         <Box padding={2}>
           <div className={styles.imageGrid}>
             {assets.map((asset) => (
