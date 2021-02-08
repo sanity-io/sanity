@@ -17,10 +17,10 @@ module.exports = {
     'sanity/import',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'sanity/typescript',
     'prettier/@typescript-eslint',
     'prettier',
     'prettier/react',
-    'sanity/typescript',
   ],
   rules: {
     'import/no-extraneous-dependencies': 'off', // because of parts
