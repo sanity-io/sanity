@@ -54,6 +54,7 @@ export default {
           title: 'Twitter',
           type: 'string',
           fieldset: 'social',
+          validation: (Rule) => Rule.required(),
         },
         {
           name: 'instagram',

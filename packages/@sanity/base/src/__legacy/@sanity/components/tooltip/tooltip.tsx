@@ -22,28 +22,7 @@ export interface TooltipProps {
   fallbackPlacements?: TooltipPlacement[]
 }
 
-export function Tooltip(
-  props: TooltipProps & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'>
-) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  if (!isOpen || props.disabled) {
-    return props.children || <></>
-  }
-
-  return (
-    <LegacyLayerProvider zOffset="tooltip">
-      <TooltipChildren {...props} setIsOpen={setIsOpen} />
-    </LegacyLayerProvider>
-  )
-}
-
-function TooltipChildren(
-  props: TooltipProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'content'> & {
-      setIsOpen: (flag: boolean) => void
-    }
-) {
+export function Tooltip(props: TooltipProps & React.HTMLProps<HTMLDivElement>) {
   const {
     allowedAutoPlacements,
     children,
@@ -53,12 +32,12 @@ function TooltipChildren(
     fallbackPlacements,
     placement = 'bottom',
     portal: portalProp,
-    setIsOpen,
     tone,
     ...restProps
   } = props
-  const {zIndex} = useLayer()
+
   const ctx = useTooltip()
+  const [isOpen, setIsOpen] = useState(false)
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
@@ -107,18 +86,20 @@ function TooltipChildren(
     return children || <></>
   }
 
-  const popperNode = (
-    <div
-      {...restProps}
-      className={classNames(styles.root, className)}
-      data-tone={tone}
-      ref={setPopperElement}
-      style={{...popper.styles.popper, zIndex}}
-      {...popper.attributes.popper}
-    >
-      <div className={styles.card}>{content}</div>
-      <TooltipArrow ref={setArrowElement} style={popper.styles.arrow} tone={tone} />
-    </div>
+  const popperNode = isOpen && (
+    <LegacyLayerProvider zOffset="tooltip">
+      <TooltipPopper
+        {...restProps}
+        {...popper.attributes.popper}
+        arrowStyle={popper.styles.arrow}
+        className={className}
+        content={content}
+        setArrowElement={setArrowElement}
+        setPopperElement={setPopperElement}
+        style={popper.styles.popper}
+        tone={tone}
+      />
+    </LegacyLayerProvider>
   )
 
   return (
@@ -135,5 +116,41 @@ function TooltipChildren(
       {portalProp && <Portal>{popperNode}</Portal>}
       {!portalProp && popperNode}
     </>
+  )
+}
+
+function TooltipPopper(
+  props: React.HTMLProps<HTMLDivElement> & {
+    arrowStyle: React.CSSProperties
+    content: React.ReactNode
+    setArrowElement: (el: HTMLDivElement | null) => void
+    setPopperElement: (el: HTMLDivElement | null) => void
+    tone?: 'navbar'
+  }
+) {
+  const {
+    arrowStyle,
+    className,
+    content,
+    setArrowElement,
+    setPopperElement,
+    style,
+    tone,
+    ...restProps
+  } = props
+
+  const {zIndex} = useLayer()
+
+  return (
+    <div
+      {...restProps}
+      className={classNames(styles.root, className)}
+      data-tone={tone}
+      ref={setPopperElement}
+      style={{...style, zIndex}}
+    >
+      <div className={styles.card}>{content}</div>
+      <TooltipArrow ref={setArrowElement} style={arrowStyle} tone={tone} />
+    </div>
   )
 }
