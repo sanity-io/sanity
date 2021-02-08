@@ -33,9 +33,6 @@
   --brand-secondary: var(--sanity-color-red-500);
   --brand-secondary--inverted: var(--sanity-color-white);
 
-  /* Focus */
-  --focus-color: var(--sanity-color-blue-500);
-
   /* Navbar */
   --main-navigation-color: var(--sanity-color-black);
   --main-navigation-color--inverted: var(--sanity-color-white);

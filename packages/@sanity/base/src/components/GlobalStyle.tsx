@@ -1,6 +1,6 @@
 import {Theme} from '@sanity/ui'
 import {css, createGlobalStyle} from 'styled-components'
-import legacyTheme from 'sanity:css-custom-properties'
+import cssCustomProperties from 'sanity:css-custom-properties'
 
 export const GlobalStyle = createGlobalStyle(({theme}: {theme: Theme}) => {
   const color = theme.sanity.color.base
@@ -18,7 +18,7 @@ export const GlobalStyle = createGlobalStyle(({theme}: {theme: Theme}) => {
     }
 
     ::selection {
-      background: ${legacyTheme['--text-selection-color']};
+      background: ${cssCustomProperties['--text-selection-color']};
     }
 
     #sanityBody {

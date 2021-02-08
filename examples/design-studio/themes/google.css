@@ -1,0 +1,26 @@
+:root {
+  --google-white: #fff;
+  --google-black: #1a1a1a;
+  --google-blue: #4285f4;
+  --google-red: #db4437;
+  --google-yellow: #f4b400;
+  --google-green: #0f9d58;
+
+  /* Base theme colors */
+  --black: var(--google-black);
+  --white: var(--google-white);
+  --gray-base: #666;
+
+  /* Brand */
+  --brand-primary: var(--google-blue);
+
+  /* State */
+  --state-success-color: var(--google-green);
+  --state-info-color: var(--google-blue);
+  --state-warning-color: var(--google-yellow);
+  --state-danger-color: var(--google-red);
+
+  /* Navbar */
+  --main-navigation-color: var(--google-blue);
+  --main-navigation-color--inverted: var(--google-white);
+}
