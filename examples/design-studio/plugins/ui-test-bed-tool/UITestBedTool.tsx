@@ -15,12 +15,20 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
-
 import React from 'react'
 
 const TONE_KEYS = ['default', 'primary', 'positive', 'caution', 'critical']
-const RENDER_PALETTES = true
-const RENDER_TONES = false
+
+// NOTE: As of v2.3.3, these are the rendering times of each section on this screen.
+// No sections (only the wrapping <Card> and heading box): 100ms
+const RENDER_PALETTES = false // 250ms (- 100ms)
+const RENDER_TONES = false // 240ms (- 100ms)
+const RENDER_NAVBAR_EXAMPLE = false // 270ms (- 100ms)
+const RENDER_TOAST_PUSH_BUTTON = false // 135 ks (- 100ms)
+const RENDER_EXAMPLES = true // 675ms (- 100ms)
+const UI_EXAMPLE_RENDER_BADGES = false // 1800ms (- 675ms)
+const UI_EXAMPLE_RENDER_CODE = false // 5250ms (- 675ms)
+const UI_EXAMPLE_RENDER_BUTTONS = true // 15500ms (- 675ms)
 
 export function UITestBedTool() {
   const toast = useToast()
@@ -135,42 +143,48 @@ export function UITestBedTool() {
         </details>
       )}
 
-      <Box padding={4}>
-        <Button
-          onClick={() => toast.push({status: 'error', title: 'Error'})}
-          text="Push error toast"
-        />
-      </Box>
+      {RENDER_TOAST_PUSH_BUTTON && (
+        <Box padding={4}>
+          <Button
+            onClick={() => toast.push({status: 'error', title: 'Error'})}
+            text="Push error toast"
+          />
+        </Box>
+      )}
 
-      <Box padding={4}>
-        <Card scheme="dark">
-          <Flex align="center">
-            <Box flex={1} padding={2}>
-              <Inline space={2}>
-                <Button mode="bleed" text="Sanity.io" />
-                <Button mode="bleed" icon={ComposeIcon} />
-                <TextInput />
-                <Button icon={PlugIcon} mode="bleed" text="UI Test Bed" selected />
-                <Button icon={MasterDetailIcon} mode="bleed" text="Desk" />
-                <Button icon={EyeOpenIcon} mode="bleed" text="Vision" />
-              </Inline>
-            </Box>
-            <Box padding={2}>
-              <Avatar />
-            </Box>
-          </Flex>
-        </Card>
-      </Box>
+      {RENDER_NAVBAR_EXAMPLE && (
+        <Box padding={4}>
+          <Card scheme="dark">
+            <Flex align="center">
+              <Box flex={1} padding={2}>
+                <Inline space={2}>
+                  <Button mode="bleed" text="Sanity.io" />
+                  <Button mode="bleed" icon={ComposeIcon} />
+                  <TextInput />
+                  <Button icon={PlugIcon} mode="bleed" text="UI Test Bed" selected />
+                  <Button icon={MasterDetailIcon} mode="bleed" text="Desk" />
+                  <Button icon={EyeOpenIcon} mode="bleed" text="Vision" />
+                </Inline>
+              </Box>
+              <Box padding={2}>
+                <Avatar />
+              </Box>
+            </Flex>
+          </Card>
+        </Box>
+      )}
 
-      <Flex>
-        <Card borderTop flex={1} padding={4}>
-          <ThemeExample />
-        </Card>
+      {RENDER_EXAMPLES && (
+        <Flex>
+          <Card borderTop flex={1} padding={4}>
+            <ThemeExample />
+          </Card>
 
-        <Card borderTop flex={1} padding={4} scheme="dark">
-          <ThemeExample />
-        </Card>
-      </Flex>
+          <Card borderTop flex={1} padding={4} scheme="dark">
+            <ThemeExample />
+          </Card>
+        </Flex>
+      )}
     </Card>
   )
 }
@@ -209,68 +223,68 @@ function ThemeExample() {
 
 function UIExample() {
   return (
-    <>
-      <Stack space={2}>
-        <Inline space={2}>
-          <Badge>Default</Badge>
-          <Badge tone="primary">Primary</Badge>
-          <Badge tone="positive">Positive</Badge>
-          <Badge tone="caution">Caution</Badge>
-          <Badge tone="critical">Critical</Badge>
-        </Inline>
+    <Stack space={4}>
+      {UI_EXAMPLE_RENDER_BADGES && (
+        <Stack space={2}>
+          <Inline space={2}>
+            <Badge>Default</Badge>
+            <Badge tone="primary">Primary</Badge>
+            <Badge tone="positive">Positive</Badge>
+            <Badge tone="caution">Caution</Badge>
+            <Badge tone="critical">Critical</Badge>
+          </Inline>
 
-        <Inline space={2}>
-          <Badge mode="outline">Default</Badge>
-          <Badge mode="outline" tone="primary">
-            Primary
-          </Badge>
-          <Badge mode="outline" tone="positive">
-            Positive
-          </Badge>
-          <Badge mode="outline" tone="caution">
-            Caution
-          </Badge>
-          <Badge mode="outline" tone="critical">
-            Critical
-          </Badge>
-        </Inline>
-      </Stack>
+          <Inline space={2}>
+            <Badge mode="outline">Default</Badge>
+            <Badge mode="outline" tone="primary">
+              Primary
+            </Badge>
+            <Badge mode="outline" tone="positive">
+              Positive
+            </Badge>
+            <Badge mode="outline" tone="caution">
+              Caution
+            </Badge>
+            <Badge mode="outline" tone="critical">
+              Critical
+            </Badge>
+          </Inline>
+        </Stack>
+      )}
 
-      <Box marginTop={4}>
+      {UI_EXAMPLE_RENDER_CODE && (
         <Card padding={4} shadow={1} tone="inherit">
           <Code language="ts">{`console.log('hello, world')`}</Code>
         </Card>
-      </Box>
+      )}
 
-      <Box marginTop={4}>
-        <Inline space={2}>
-          <Button text="Label" />
-          <Button text="Label" tone="primary" />
-          <Button text="Label" tone="positive" />
-          <Button text="Label" tone="caution" />
-          <Button text="Label" tone="critical" />
-        </Inline>
-      </Box>
+      {UI_EXAMPLE_RENDER_BUTTONS && (
+        <Stack space={3}>
+          <Inline space={2}>
+            <Button text="Label" />
+            <Button text="Label" tone="primary" />
+            <Button text="Label" tone="positive" />
+            <Button text="Label" tone="caution" />
+            <Button text="Label" tone="critical" />
+          </Inline>
 
-      <Box marginTop={4}>
-        <Inline space={2}>
-          <Button mode="bleed" text="Label" />
-          <Button mode="bleed" text="Label" tone="primary" />
-          <Button mode="bleed" text="Label" tone="positive" />
-          <Button mode="bleed" text="Label" tone="caution" />
-          <Button mode="bleed" text="Label" tone="critical" />
-        </Inline>
-      </Box>
+          <Inline space={2}>
+            <Button mode="bleed" text="Label" />
+            <Button mode="bleed" text="Label" tone="primary" />
+            <Button mode="bleed" text="Label" tone="positive" />
+            <Button mode="bleed" text="Label" tone="caution" />
+            <Button mode="bleed" text="Label" tone="critical" />
+          </Inline>
 
-      <Box marginTop={4}>
-        <Inline space={2}>
-          <Button mode="ghost" text="Label" />
-          <Button mode="ghost" text="Label" tone="primary" />
-          <Button mode="ghost" text="Label" tone="positive" />
-          <Button mode="ghost" text="Label" tone="caution" />
-          <Button mode="ghost" text="Label" tone="critical" />
-        </Inline>
-      </Box>
-    </>
+          <Inline space={2}>
+            <Button mode="ghost" text="Label" />
+            <Button mode="ghost" text="Label" tone="primary" />
+            <Button mode="ghost" text="Label" tone="positive" />
+            <Button mode="ghost" text="Label" tone="caution" />
+            <Button mode="ghost" text="Label" tone="critical" />
+          </Inline>
+        </Stack>
+      )}
+    </Stack>
   )
 }
