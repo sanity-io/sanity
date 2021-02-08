@@ -121,14 +121,14 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
         <Flex align="center">
           {!readOnly && (
-            <Box>
+            <Box marginLeft={2}>
               <FormFieldValidationStatus __unstable_markers={markers} />
             </Box>
           )}
 
           {!type?.title && (
             // if title is set on type, presence avatars will be shown in the input' formfield instead
-            <Box marginLeft={1} style={{minWidth: '1.5em'}}>
+            <Box marginLeft={3} style={{minWidth: '1.5em'}}>
               {!readOnly && presence.length > 0 && (
                 <FieldPresence presence={presence} maxAvatars={1} />
               )}
