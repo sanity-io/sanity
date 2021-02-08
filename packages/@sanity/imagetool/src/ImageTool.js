@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
+// eslint-disable-next-line no-use-before-define
 import React from 'react'
 import {memoize} from 'lodash'
 import getBackingStoreRatio from './getBackingStoreRatio'
@@ -104,7 +105,9 @@ export default class ImageTool extends React.PureComponent {
   }
 
   static defaultProps = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange() {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChangeEnd() {},
   }
 
