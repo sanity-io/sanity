@@ -120,11 +120,12 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         __unstable_changeIndicator={changeIndicatorOptions}
         __unstable_markers={markers}
       >
-        <List isGrid={isGrid} isSortable>
+        <List isGrid={isGrid}>
           {options.map((option, index) => {
             const optionType = this.getMemberTypeOfItem(option)
             const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
             const disabled = !optionType || readOnly || optionType?.readOnly
+            const isTitled = isTitledListValue(option)
             return (
               <Item index={index} isGrid={isGrid} key={index}>
                 <Flex align="center" as="label" muted={disabled}>
@@ -135,21 +136,23 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
                     onFocus={() => this.handleFocus(index)}
                     onBlur={onBlur}
                   />
-                  <Box marginLeft={2}>
-                    {optionType &&
-                      (isTitledListValue(optionType) ? (
+                  {optionType &&
+                    (isTitled ? (
+                      <Box padding={2}>
                         <Text>{option.title}</Text>
-                      ) : (
+                      </Box>
+                    ) : (
+                      <Box marginLeft={2}>
                         <Preview
                           layout="grid"
                           type={optionType}
                           value={resolveValueWithLegacyOptionsSupport(option)}
                         />
-                      ))}
-                    {!optionType && (
-                      <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
-                    )}
-                  </Box>
+                      </Box>
+                    ))}
+                  {!optionType && (
+                    <ItemWithMissingType value={option} onFocus={() => onFocus([])} />
+                  )}
                 </Flex>
               </Item>
             )
