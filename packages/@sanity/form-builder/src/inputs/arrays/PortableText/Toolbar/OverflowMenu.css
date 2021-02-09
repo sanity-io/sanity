@@ -3,17 +3,20 @@
 .root {
   display: flex;
   display: -webkit-box;
+  height: 100%;
 }
 
 .actionBar {
   flex: 1;
   min-width: 0;
   white-space: nowrap;
+  height: 100%;
 }
 
 .actionButton {
   display: inline-flex;
   vertical-align: top;
+  height: 100%;
 
   @nest &:not(:first-child).firstInGroup {
     @nest &:before {
@@ -37,7 +40,6 @@
 .overflowButton {
   position: relative;
   padding-left: var(--extra-small-padding);
-
   @nest & > div {
     display: inline-block !important;
   }

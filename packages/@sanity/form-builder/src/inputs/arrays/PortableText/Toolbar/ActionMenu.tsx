@@ -27,7 +27,8 @@ function ActionButton(props: {action: PTEToolbarAction; disabled: boolean; visib
       disabled={disabled}
       icon={action.icon}
       mode="bleed"
-      padding={2}
+      paddingY={2}
+      paddingX={3}
       onClick={handleClick}
       tabIndex={visible ? 0 : -1}
       selected={action.active}
