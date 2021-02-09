@@ -1,19 +1,23 @@
-import {getPairListener, ListenerEvent} from '../getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {filter, map, share} from 'rxjs/operators'
-import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {merge, Observable} from 'rxjs'
+import {filter, map, share} from 'rxjs/operators'
 import client from 'part:@sanity/base/client'
-import {RemoteSnapshotEvent} from '../buffered-doc/types'
+import {getPairListener, ListenerEvent} from '../getPairListener'
+import {RemoteSnapshotEvent, CommitFunction} from '../buffered-doc/types'
+import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
+import {IdPair, Mutation, ReconnectEvent} from '../types'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
 
-function commitMutations(mutations) {
-  return client.dataRequest('mutate', mutations, {
-    visibility: 'async',
-    returnDocuments: false,
-  })
+const commitMutations: CommitFunction = ({mutations, transactionId}) => {
+  return client.mutate(
+    mutations as any,
+    {
+      visibility: 'async',
+      returnDocuments: false,
+      transactionId,
+    } as any
+  )
 }
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}

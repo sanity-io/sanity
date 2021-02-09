@@ -517,6 +517,7 @@ type BaseMutationOptions = RequestOptions & {
   visibility?: 'sync' | 'async' | 'defer'
   returnDocuments?: boolean
   returnFirst?: boolean
+  transactionId?: string
 }
 
 export type MutationEvent<R = any> = {
