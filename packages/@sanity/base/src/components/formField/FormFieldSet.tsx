@@ -141,38 +141,40 @@ export const FormFieldSet = forwardRef(
 
     return (
       <Root data-level={level} {...restProps}>
-        <Flex align="flex-end">
-          <Box flex={1} paddingY={2}>
-            <Stack space={2}>
-              <Flex>
-                <FormFieldSetLegend
-                  collapsed={collapsed}
-                  collapsible={collapsible}
-                  onClick={collapsible ? handleToggleCollapse : undefined}
-                  title={title}
-                />
+        {title && (
+          <Flex align="flex-end">
+            <Box flex={1} paddingY={2}>
+              <Stack space={2}>
+                <Flex>
+                  <FormFieldSetLegend
+                    collapsed={collapsed}
+                    collapsible={collapsible}
+                    onClick={collapsible ? handleToggleCollapse : undefined}
+                    title={title}
+                  />
 
-                {hasValidations && (
-                  <Box marginLeft={2}>
-                    <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
-                  </Box>
+                  {hasValidations && (
+                    <Box marginLeft={2}>
+                      <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
+                    </Box>
+                  )}
+                </Flex>
+
+                {description && (
+                  <Text muted size={1}>
+                    {description}
+                  </Text>
                 )}
-              </Flex>
-
-              {description && (
-                <Text muted size={1}>
-                  {description}
-                </Text>
-              )}
-            </Stack>
-          </Box>
-
-          {presence.length > 0 && (
-            <Box>
-              <FieldPresence maxAvatars={4} presence={presence} />
+              </Stack>
             </Box>
-          )}
-        </Flex>
+
+            {presence.length > 0 && (
+              <Box>
+                <FieldPresence maxAvatars={4} presence={presence} />
+              </Box>
+            )}
+          </Flex>
+        )}
 
         <Content
           $borderLeft={level > 0}
