@@ -9,9 +9,9 @@ const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
+    border-radius: ${rem(theme.sanity.radius[1])};
     outline: none;
     &:focus {
-      border-radius: ${rem(theme.sanity.radius[1])};
       box-shadow: ${focusRingStyle({
         base: theme.sanity.color.base,
         border,

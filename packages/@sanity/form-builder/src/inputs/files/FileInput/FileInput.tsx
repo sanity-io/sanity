@@ -377,6 +377,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 >
                   <FileTarget
                     tabIndex={0}
+                    shadow={1}
                     disabled={readOnly === true}
                     ref={this.setFocusInput}
                     onFiles={this.handleSelectFiles}

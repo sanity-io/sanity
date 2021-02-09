@@ -590,6 +590,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 >
                   <FileTarget
                     tabIndex={0}
+                    shadow={1}
                     disabled={readOnly === true}
                     ref={this.setFocusElement}
                     onFiles={this.handleSelectFiles}
