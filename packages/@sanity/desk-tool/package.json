@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -22,11 +22,11 @@
   "dependencies": {
     "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.10.5",
-    "@sanity/base": "2.3.3",
+    "@sanity/base": "2.3.4",
     "@sanity/data-aspects": "2.2.6",
     "@sanity/diff": "2.2.6",
-    "@sanity/field": "2.3.3",
-    "@sanity/form-builder": "2.3.3",
+    "@sanity/field": "2.3.4",
+    "@sanity/form-builder": "2.3.4",
     "@sanity/generate-help-url": "2.2.6",
     "@sanity/mutator": "2.2.6",
     "@sanity/react-hooks": "2.2.6",
