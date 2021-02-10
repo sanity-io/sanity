@@ -59,6 +59,8 @@ import richTextObject from './richTextObject'
 import mux from './mux'
 import review from './review'
 import gallery from './gallery'
+import address from './address'
+import person from './person'
 import presence, {objectWithNestedArray} from './presence'
 import {customBlock, hoistedPt, hoistedPtDocument} from './hoistedPt'
 
@@ -133,5 +135,7 @@ export default createSchema({
     hoistedPtDocument,
     hoistedPt,
     customBlock,
+    address,
+    person,
   ]),
 })
