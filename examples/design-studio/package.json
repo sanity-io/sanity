@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,13 +18,13 @@
     "design-studio"
   ],
   "dependencies": {
-    "@sanity/base": "2.3.4",
+    "@sanity/base": "2.3.5",
     "@sanity/cli": "2.2.6",
     "@sanity/core": "2.3.3",
-    "@sanity/default-layout": "2.3.4",
+    "@sanity/default-layout": "2.3.5",
     "@sanity/default-login": "2.2.6",
-    "@sanity/desk-tool": "2.3.4",
-    "@sanity/google-maps-input": "2.3.4",
+    "@sanity/desk-tool": "2.3.5",
+    "@sanity/google-maps-input": "2.3.5",
     "@sanity/react-hooks": "2.2.6",
     "@sanity/types": "2.2.6",
     "@sanity/ui": "^0.33.0",
