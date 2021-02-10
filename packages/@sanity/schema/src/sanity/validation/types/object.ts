@@ -161,9 +161,13 @@ export default (typeDef, visitorContext) => {
     preview = previewErrors.some((err) => err.severity === 'error') ? {} : preview
   }
 
-  if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
+  if (
+    typeDef.type !== 'document' &&
+    typeDef.type !== 'object' &&
+    typeof typeDef.initialValue !== 'undefined'
+  ) {
     problems.push(
-      error(`The "initialValue" property is currently only supported for document types.`)
+      error(`The "initialValue" property is currently only supported for document & object types.`)
     )
   }
 
