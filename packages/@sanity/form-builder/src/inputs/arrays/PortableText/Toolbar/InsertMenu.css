@@ -2,6 +2,9 @@
 
 .root {
   position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .menu {
