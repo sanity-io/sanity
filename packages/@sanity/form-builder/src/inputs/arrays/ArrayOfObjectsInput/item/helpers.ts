@@ -4,7 +4,7 @@ import {resolveTypeName} from '../../../../utils/resolveTypeName'
 import {IGNORE_KEYS} from './constants'
 
 type KeyedValue = {_key: string}
-export function pathSegmentFrom<T extends KeyedValue>(value: {_key: string}): KeyedSegment {
+export function pathSegmentFrom(value: {_key: string}): KeyedSegment {
   return {_key: value._key}
 }
 
