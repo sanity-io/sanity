@@ -1,6 +1,7 @@
+import {Layer} from '@sanity/ui'
+import {useEditState} from '@sanity/react-hooks'
 import React, {useCallback, useState} from 'react'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
-import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
 import {ActionStateDialog} from '../statusBar'
@@ -55,12 +56,12 @@ function KeyboardShortcutResponder({
   )
 
   return (
-    <div onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
+    <Layer onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
       {active && active.dialog && (
         <ActionStateDialog dialog={active.dialog} referenceElement={null} />
       )}
-    </div>
+    </Layer>
   )
 }
 
