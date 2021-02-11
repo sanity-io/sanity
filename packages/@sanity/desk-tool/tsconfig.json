@@ -16,12 +16,5 @@
       }
     ]
   },
-  "references": [
-    {
-      "path": "../react-hooks"
-    },
-    {
-      "path": "../field"
-    }
-  ]
+  "references": [{"path": "../base"}, {"path": "../react-hooks"}, {"path": "../field"}]
 }
