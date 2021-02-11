@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {Card, Flex, rem, Theme} from '@sanity/ui'
+import {Card, rem, Theme} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
 import {focusRingStyle} from './focusringUtils'
 
@@ -22,26 +22,6 @@ const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
 })
 
 export const FileTarget = fileTarget(CardWithFocusRing)
-
-// todo:
-//  This is a workaround for TS4023: Exported variable 'AssetBackground' has or is using name 'FlexProps'
-//  Can be deleted when @sanity/ui exports FlexProps
-type Workaround = React.ComponentType<React.ComponentProps<typeof Flex>>
-
-export const AssetBackground: Workaround = styled(Flex)((props: {theme: Theme}) => {
-  const {theme} = props
-  const {media} = theme.sanity
-  return css`
-    min-height: 10rem;
-    position: relative;
-    @media screen and (min-width: ${media[1]}px) {
-      min-height: 12rem;
-      max-height: 27rem;
-      min-width: 12rem;
-      height: auto;
-    }
-  `
-})
 
 export const Overlay: React.ComponentType = styled.div`
   position: absolute;
