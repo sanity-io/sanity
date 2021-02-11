@@ -17,9 +17,10 @@ import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {AssetBackground, FileTarget, FileInfo, Overlay} from '../common/styles'
+import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
+import {AssetBackground} from './styles'
 
 type Field = {
   name: string
@@ -398,7 +399,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 </ChangeIndicatorWithProvidedFullPath>
               </ChangeIndicatorCompareValueProvider>
             </Box>
-            <Grid gap={1} columns={3} marginTop={3}>
+            <Grid gap={1} columns={[2, 3]} marginTop={3}>
               {!readOnly && (
                 <FileInputButton
                   onSelect={this.handleSelectFiles}
