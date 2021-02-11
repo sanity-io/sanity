@@ -1,5 +1,4 @@
 import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {Layer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -238,13 +237,13 @@ export function DocumentPane(props: DocumentPaneProps) {
           )}
         </ChangeConnectorRoot>
 
-        <Layer className={styles.footerContainer}>
+        <div className={styles.footerContainer}>
           <DocumentStatusBar
             id={documentId}
             type={documentType}
             lastUpdated={value && value._updatedAt}
           />
-        </Layer>
+        </div>
 
         {connectionState === 'reconnecting' && (
           <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
@@ -252,14 +251,16 @@ export function DocumentPane(props: DocumentPaneProps) {
 
         <DocumentOperationResults id={documentId} type={documentType} />
 
-        <TimelinePopover
-          onClose={handleTimelineClose}
-          open={isTimelineOpen}
-          placement="bottom"
-          targetElement={
-            timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
-          }
-        />
+        <LegacyLayerProvider zOffset="paneHeader">
+          <TimelinePopover
+            onClose={handleTimelineClose}
+            open={isTimelineOpen}
+            placement="bottom"
+            targetElement={
+              timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
+            }
+          />
+        </LegacyLayerProvider>
       </DocumentActionShortcuts>
     </LegacyLayerProvider>
   )
