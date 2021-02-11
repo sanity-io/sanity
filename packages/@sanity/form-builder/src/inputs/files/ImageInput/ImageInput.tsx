@@ -37,10 +37,11 @@ import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
-import {AssetBackground, FileTarget, Overlay} from '../common/styles'
+import {FileTarget, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {urlToFile, base64ToFile} from './utils/image'
+import {AssetBackground} from './styles'
 
 interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -599,7 +600,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     onFocus={this.handleFileTargetFocus}
                     onBlur={this.handleFileTargetBlur}
                   >
-                    <AssetBackground align="center" justify="center" padding={3}>
+                    <AssetBackground align="center" justify="center" padding={1}>
                       {value?._upload && this.renderUploadState(value._upload)}
                       {!value?._upload && value?.asset && this.renderAsset()}
                       {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
@@ -612,7 +613,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               </ChangeIndicatorCompareValueProvider>
             </Box>
 
-            <Grid gap={1} columns={3} marginTop={3}>
+            <Grid gap={1} columns={[2, 3, 4]} marginTop={3}>
               {!readOnly && directUploads && (
                 <FileInputButton
                   icon={UploadIcon}
