@@ -1,4 +1,4 @@
-import {isPlainObject, assign} from 'lodash'
+import {isPlainObject, assign, defaultsDeep, set, has} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -10,29 +10,52 @@ export function isBuilder(template: Template | TemplateBuilder): template is Tem
 export async function getObjectFieldsInitialValues(
   documentName: string,
   value: any,
-  params: {[key: string]: any} = {}
+  params: {[key: string]: any} = {},
+  parentKey?: string
 ): Promise<Record<string, any>> {
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const initialValues = await (schemaType.fields || [])
-    .filter((f) => f.type.jsonType === 'object' && f.type.initialValue)
-    .reduce(async (obj, f) => {
-      // TODO: optimize function call with some sort of batching
-      const values = isPlainObject(f.type.initialValue)
-        ? f.type.initialValue
-        : await f.type.initialValue(params)
+  const fields = (schemaType.fields || []).filter((f) => f.type.jsonType === 'object')
 
-      return {
-        ...(await obj),
-        [f.name]: {
-          _type: f.type.name,
-          ...values,
-        },
-      }
-    }, {})
+  let initialValues = value
+
+  for (const field of fields) {
+    // make new parent key
+    const pk = parentKey ? `${parentKey}.${field.name}` : field.name
+
+    // if we have the new parent key set to undefined, we just want to skip the
+    // current iteration
+    if (has(value, pk) && !value[pk]) {
+      continue
+    }
+
+    // get initial value for the current field
+    let newValue = {}
+    if (field.type.initialValue) {
+      newValue = isPlainObject(field.type.initialValue)
+        ? field.type.initialValue
+        : await field.type.initialValue(params)
+    }
+    newValue = {
+      [field.name]: {
+        _type: field.type.name,
+        ...newValue,
+      },
+    }
+
+    // Set the new value to the actual position in the tree
+    if (parentKey) {
+      newValue = set({}, parentKey, newValue)
+    }
+    initialValues = defaultsDeep(value, newValue)
+
+    if (field.type.fields && field.type.fields.length > 0) {
+      await getObjectFieldsInitialValues(field.type.name, initialValues, params, pk)
+    }
+  }
 
   // Static value?
   if (isPlainObject(value)) {
@@ -63,9 +86,22 @@ async function resolveInitialValue(
     throw new Error(`Template "${id}" has invalid "value" property`)
   }
 
-  // Get initial values from sanity object type
-  const newValue = await getObjectFieldsInitialValues(id, value, params)
+  let initialValue
+  if (isPlainObject(value)) {
+    initialValue = value
+  }
 
+  // Not an object, so should be a function
+  if (typeof value !== 'function') {
+    throw new Error(
+      `Template "${id}" has invalid "value" property - must be a plain object or a resolver function`
+    )
+  }
+
+  initialValue = await value(params)
+
+  // Get initial values from sanity object type
+  const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
   return validateInitialValue(newValue, template)
 }
 

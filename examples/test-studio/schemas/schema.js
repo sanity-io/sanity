@@ -60,7 +60,9 @@ import mux from './mux'
 import review from './review'
 import gallery from './gallery'
 import address from './address'
+import street from './street'
 import person from './person'
+import line from './line'
 import presence, {objectWithNestedArray} from './presence'
 import {customBlock, hoistedPt, hoistedPtDocument} from './hoistedPt'
 
@@ -137,5 +139,7 @@ export default createSchema({
     customBlock,
     address,
     person,
+    street,
+    line,
   ]),
 })

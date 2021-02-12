@@ -4,13 +4,24 @@ export default {
   type: 'object',
 
   fields: [
-    {name: 'street', type: 'string', title: 'Street name'},
-    {name: 'streetNo', type: 'string', title: 'Street number'},
+    {
+      name: 'homeStreet',
+      title: 'Home Street',
+      type: 'street',
+    },
+    {
+      name: 'officeStreet',
+      title: 'Office Street',
+      type: 'street',
+    },
     {name: 'city', type: 'string', title: 'City'},
   ],
 
   initialValue: () => ({
-    street: 'Come on now',
-    streetNo: '123',
+    city: 'Abule',
+    officeStreet: {
+      _type: 'street',
+      streetNo: '100',
+    },
   }),
 }

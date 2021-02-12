@@ -78,5 +78,6 @@ export default {
 
   initialValue: () => ({
     name: 'Foo',
+    address: undefined,
   }),
 }
