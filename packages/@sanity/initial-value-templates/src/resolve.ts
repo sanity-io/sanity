@@ -96,9 +96,9 @@ async function resolveInitialValue(
       `Template "${id}" has invalid "value" property - must be a plain object or a resolver function`
     )
   }
-  initialValue = validateInitialValue(initialValue, template)
 
   // Get initial values from sanity object type
+  initialValue = validateInitialValue(initialValue, template)
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
   return validateInitialValue(newValue, template)
 }
