@@ -89,16 +89,10 @@ async function resolveInitialValue(
   let initialValue
   if (isPlainObject(value)) {
     initialValue = value
+  } else if (typeof value === 'function') {
+    initialValue = await value(params)
   }
-
-  // Not an object, so should be a function
-  if (typeof value !== 'function') {
-    throw new Error(
-      `Template "${id}" has invalid "value" property - must be a plain object or a resolver function`
-    )
-  }
-
-  initialValue = await value(params)
+  initialValue = validateInitialValue(initialValue, template)
 
   // Get initial values from sanity object type
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
