@@ -54,12 +54,6 @@ export default {
       ],
     },
     {
-      name: 'bestFriend',
-      title: 'Best friend',
-      type: 'reference',
-      to: [{type: 'author'}],
-    },
-    {
       name: 'favoriteBooks',
       title: 'Favorite books',
       type: 'array',
@@ -76,31 +70,14 @@ export default {
       type: 'address',
     },
     {
-      title: 'My Addresses',
-      name: 'myAddresses',
-      type: 'array',
-      of: [{type: 'address'}],
+      name: 'homeAddress',
+      title: 'Home Address',
+      type: 'address',
     },
   ],
 
   initialValue: () => ({
     name: 'Foo',
-    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
-    favoriteBooks: [
-      {
-        _ref: 'e5f87fcd-1e32-4a99-ab20-65f80a5c7c28',
-        _type: 'reference',
-      },
-    ],
-    address: {
-      _type: 'address',
-      city: 'New York',
-    },
-    myAddresses: [
-      {
-        _type: 'address',
-        city: 'New York',
-      },
-    ],
+    address: undefined,
   }),
 }
