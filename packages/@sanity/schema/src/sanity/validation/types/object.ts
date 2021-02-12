@@ -12,6 +12,7 @@ interface PreviewConfig {
   select?: {
     [key: string]: string
   }
+  // eslint-disable-next-line @typescript-eslint/ban-types
   prepare?: Function
 }
 
@@ -55,7 +56,7 @@ function validateFieldName(name): Array<any> {
   return []
 }
 
-export function validateField(field, visitorContext) {
+export function validateField(field, _visitorContext) {
   if (!isPlainObject(field)) {
     return [
       error(
@@ -65,7 +66,7 @@ export function validateField(field, visitorContext) {
     ]
   }
 
-  const {name, fieldset, ...fieldType} = field
+  const {name} = field
   return 'name' in field
     ? validateFieldName(name)
     : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]
