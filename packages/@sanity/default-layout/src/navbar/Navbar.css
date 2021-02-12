@@ -5,6 +5,7 @@
   color: var(--main-navigation-color--inverted);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  align-items: center;
   display: grid;
   box-sizing: border-box;
   /* prettier-ignore */
