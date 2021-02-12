@@ -91,6 +91,10 @@ async function resolveInitialValue(
     initialValue = value
   } else if (typeof value === 'function') {
     initialValue = await value(params)
+  } else {
+    throw new Error(
+      `Template "${id}" has invalid "value" property - must be a plain object or a resolver function`
+    )
   }
   initialValue = validateInitialValue(initialValue, template)
 
