@@ -23,6 +23,11 @@ export const recursiveObject = {
       type: 'recursiveObject',
     },
   ],
+  initialValue: {
+    first: 'foo',
+    second: 'bar',
+    _type: 'recursiveObject',
+  },
 }
 
 export default {
