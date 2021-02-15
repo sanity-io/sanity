@@ -1,4 +1,4 @@
-import {isPlainObject, defaultsDeep, set, has} from 'lodash'
+import {isPlainObject, defaultsDeep, set, has, memoize} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -17,8 +17,7 @@ export async function getObjectFieldsInitialValues(
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
 
-  // TODO: (rex) refactor to support memoization
-  memo = memo || {}
+  // TODO: (rex) refactor bottom up DP
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -62,12 +61,14 @@ export async function getObjectFieldsInitialValues(
     if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
     } else {
-      // TODO fix recursive objects
+      await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
     }
   }
 
   return initialValues
 }
+
+const getInitialValues = memoize(getObjectFieldsInitialValues)
 
 async function resolveInitialValue(
   template: Template | TemplateBuilder,
@@ -96,7 +97,7 @@ async function resolveInitialValue(
 
   // Get initial values from sanity object type
   initialValue = validateInitialValue(initialValue, template)
-  const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
+  const newValue = await getInitialValues(id, initialValue, params)
   return validateInitialValue(newValue, template)
 }
 
