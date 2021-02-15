@@ -19,9 +19,5 @@ export default {
 
   initialValue: () => ({
     city: 'Abule',
-    officeStreet: {
-      _type: 'street',
-      streetNo: '100',
-    },
   }),
 }
