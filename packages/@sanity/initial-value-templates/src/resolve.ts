@@ -1,4 +1,4 @@
-import {isPlainObject, assign, defaultsDeep, set, has} from 'lodash'
+import {isPlainObject, defaultsDeep, set, has} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -11,10 +11,14 @@ export async function getObjectFieldsInitialValues(
   documentName: string,
   value: any,
   params: {[key: string]: any} = {},
-  parentKey?: string
+  parentKey?: string,
+  memo?: Record<string, any>
 ): Promise<Record<string, any>> {
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
+
+  // TODO: (rex) refactor to support memoization
+  memo = memo || {}
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -24,52 +28,45 @@ export async function getObjectFieldsInitialValues(
 
   for (const field of fields) {
     // make new parent key
-    const pk = parentKey ? `${parentKey}.${field.name}` : field.name
+    const childWithPK = parentKey ? `${parentKey}.${field.name}` : field.name
 
     // if we have the new parent key set to undefined, we just want to skip the
     // current iteration
-    if (has(value, pk) && !value[pk]) {
+    if (has(value, childWithPK) && !value[childWithPK]) {
       continue
     }
 
+    let newFieldValue = {}
     // get initial value for the current field
-    let newValue = {}
     if (field.type.initialValue) {
-      newValue = isPlainObject(field.type.initialValue)
+      newFieldValue = isPlainObject(field.type.initialValue)
         ? field.type.initialValue
         : await field.type.initialValue(params)
     }
-    newValue = {
-      [field.name]: {
-        _type: field.type.name,
-        ...newValue,
-      },
+    const fieldValue = {
+      _type: field.type.name,
+      ...newFieldValue,
+    }
+
+    newFieldValue = {
+      [field.name]: fieldValue,
     }
 
     // Set the new value to the actual position in the tree
     if (parentKey) {
-      newValue = set({}, parentKey, newValue)
+      newFieldValue = set({}, parentKey, newFieldValue)
     }
-    initialValues = defaultsDeep(value, newValue)
 
-    if (field.type.fields && field.type.fields.length > 0) {
-      await getObjectFieldsInitialValues(field.type.name, initialValues, params, pk)
+    initialValues = defaultsDeep(value, newFieldValue)
+
+    if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
+      await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
+    } else {
+      // TODO fix recursive objects
     }
   }
 
-  // Static value?
-  if (isPlainObject(value)) {
-    return assign(initialValues, value)
-  }
-
-  // Not an object, so should be a function
-  if (typeof value !== 'function') {
-    throw new Error(
-      `Template "${documentName}" has invalid "value" property - must be a plain object or a resolver function`
-    )
-  }
-
-  return assign(initialValues, await value(params))
+  return initialValues
 }
 
 async function resolveInitialValue(
