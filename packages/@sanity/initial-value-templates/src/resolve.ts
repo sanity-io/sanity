@@ -61,7 +61,7 @@ export async function getObjectFieldsInitialValues(
     if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
     } else {
-      await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
+      // TODO (rex) fix stack overflow first
     }
   }
 
