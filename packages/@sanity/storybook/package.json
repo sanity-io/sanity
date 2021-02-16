@@ -27,7 +27,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/server": "2.2.6",
-    "@sanity/ui": "^0.33.1",
+    "@sanity/ui": "^0.33.4",
     "@sanity/webpack-integration": "2.2.6",
     "@storybook/addon-actions": "^3.4.11",
     "@storybook/addon-knobs": "^3.2.8",
