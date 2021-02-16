@@ -82,6 +82,7 @@ export default (config = {}) => {
         react: getModulePath('react'),
         'react-dom': getModulePath('react-dom'),
         moment$: 'moment/moment.js',
+        'react-native': 'react-native-web',
         ...rxPaths(),
       },
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
