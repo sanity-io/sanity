@@ -17,6 +17,8 @@ export async function getObjectFieldsInitialValues(
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
 
+  memo = memo || {}
+
   // TODO: (rex) refactor bottom up DP
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -37,11 +39,17 @@ export async function getObjectFieldsInitialValues(
 
     let newFieldValue = {}
     // get initial value for the current field
-    if (field.type.initialValue) {
+
+    if (memo[field.type.name]) {
+      newFieldValue = memo[field.type.name]
+    } else if (field.type.initialValue) {
       newFieldValue = isPlainObject(field.type.initialValue)
         ? field.type.initialValue
         : await field.type.initialValue(params)
+
+      memo[field.type.name] = newFieldValue
     }
+
     const fieldValue = {
       _type: field.type.name,
       ...newFieldValue,
