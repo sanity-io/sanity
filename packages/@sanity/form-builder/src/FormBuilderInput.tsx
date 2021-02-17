@@ -8,7 +8,7 @@ import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence
 import PatchEvent from './PatchEvent'
 import {emptyArray, emptyObject} from './utils/empty'
 
-const EMPTY_PROPS = emptyObject<{}>()
+const EMPTY_PROPS = emptyObject<Record<string, never>>()
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
@@ -27,7 +27,7 @@ interface Props {
   level: number
   isRoot?: boolean
   path: Path
-  filterField?: Function
+  filterField?: (...args: any[]) => any
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
@@ -89,6 +89,7 @@ export class FormBuilderInput extends React.Component<Props> {
     return propsDiffer || pathDiffer
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
