@@ -54,6 +54,12 @@ export default {
       ],
     },
     {
+      name: 'bestFriend',
+      title: 'Best friend',
+      type: 'reference',
+      to: [{type: 'author'}],
+    },
+    {
       name: 'favoriteBooks',
       title: 'Favorite books',
       type: 'array',
@@ -78,6 +84,13 @@ export default {
 
   initialValue: () => ({
     name: 'Foo',
+    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
+    favoriteBooks: [
+      {
+        _ref: 'e5f87fcd-1e32-4a99-ab20-65f80a5c7c28',
+        _type: 'reference',
+      },
+    ],
     // address: undefined,
   }),
 }
