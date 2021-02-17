@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import React from 'react'
+import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
 import {Marker} from '@sanity/types'
 import {FieldPresence, FormFieldPresence} from '../../presence'
@@ -23,7 +23,7 @@ export interface FormFieldHeaderProps {
   title?: React.ReactNode
 }
 
-export function FormFieldHeader(props: FormFieldHeaderProps) {
+export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHeaderProps) {
   const {
     __unstable_markers: markers,
     __unstable_presence: presence,
@@ -50,4 +50,4 @@ export function FormFieldHeader(props: FormFieldHeaderProps) {
       )}
     </Flex>
   )
-}
+})

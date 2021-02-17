@@ -2,7 +2,7 @@
 
 import {Marker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import React from 'react'
+import React, {memo} from 'react'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
 import {FormFieldPresence} from '../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
@@ -33,7 +33,7 @@ export interface FormFieldProps {
   title?: React.ReactNode
 }
 
-export function FormField(
+export const FormField = memo(function FormField(
   props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
 ) {
   const {
@@ -75,4 +75,4 @@ export function FormField(
       <div>{content}</div>
     </Stack>
   )
-}
+})

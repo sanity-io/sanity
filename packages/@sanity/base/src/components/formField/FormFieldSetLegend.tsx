@@ -1,5 +1,5 @@
 import {Box, Flex, rem, Text, Theme} from '@sanity/ui'
-import React from 'react'
+import React, {memo} from 'react'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {focusRingStyle} from './styles'
@@ -56,7 +56,7 @@ const ToggleIconBox = styled(Box)`
   }
 `
 
-export function FormFieldSetLegend(props: FormFieldSetLegendProps) {
+export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFieldSetLegendProps) {
   const {collapsed, collapsible, onClick, title} = props
 
   const text = (
@@ -86,4 +86,4 @@ export function FormFieldSetLegend(props: FormFieldSetLegendProps) {
       </ToggleButton>
     </Root>
   )
-}
+})
