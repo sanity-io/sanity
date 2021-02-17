@@ -1,4 +1,4 @@
-import {isPlainObject, defaultsDeep, set, has} from 'lodash'
+import {defaultsDeep, has, isPlainObject, set} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -11,7 +11,8 @@ export async function getObjectFieldsInitialValues(
   documentName: string,
   value: any,
   params: {[key: string]: any} = {},
-  parentKey?: string
+  parentKey?: string,
+  nestDepth?: number
 ): Promise<Record<string, any>> {
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
@@ -60,7 +61,21 @@ export async function getObjectFieldsInitialValues(
     if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK)
     } else {
-      // TODO (rex) fix stack overflow first
+      if (nestDepth === undefined) {
+        nestDepth = 1
+      } else {
+        nestDepth++
+      }
+
+      if (nestDepth <= 10) {
+        await getObjectFieldsInitialValues(
+          field.type.name,
+          initialValues,
+          params,
+          childWithPK,
+          nestDepth
+        )
+      }
     }
   }
 
@@ -94,9 +109,7 @@ async function resolveInitialValue(
 
   // Get initial values from sanity object type
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
-  const validate = validateInitialValue(newValue, template)
-
-  return validate
+  return validateInitialValue(newValue, template)
 }
 
 export {resolveInitialValue}
