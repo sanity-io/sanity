@@ -1,32 +1,12 @@
 const types = {
   author: author(),
   post: post(),
-  address: address(),
 }
 
 module.exports = {
   name: 'blog',
   get: (typeName) => types[typeName],
   getTypeNames: () => Object.keys(types),
-}
-
-function address() {
-  return {
-    name: 'address',
-    title: 'Address',
-    type: 'object',
-
-    fields: [
-      {name: 'street', type: 'string', title: 'Street name'},
-      {name: 'streetNo', type: 'string', title: 'Street number'},
-      {name: 'city', type: 'string', title: 'City'},
-    ],
-
-    initialValue: {
-      city: 'Abule',
-      streetNo: '100',
-    },
-  }
 }
 
 function author() {
@@ -56,11 +36,6 @@ function author() {
         options: {
           hotspot: true,
         },
-      },
-      {
-        name: 'address',
-        title: 'Address',
-        type: 'address',
       },
     ],
     preview: {
