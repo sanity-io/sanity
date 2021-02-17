@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
@@ -11,9 +11,13 @@ const StringInput = React.forwardRef(function StringInput(
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
+  const placeholder = type.placeholder
   const inputId = useId()
-  const validation = markers.filter((marker) => marker.type === 'validation')
-  const errors = validation.filter((marker) => marker.level === 'error')
+
+  const errors = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [markers]
+  )
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,6 +25,23 @@ const StringInput = React.forwardRef(function StringInput(
       onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
     },
     [onChange]
+  )
+
+  const input = useMemo(
+    () => (
+      <TextInput
+        id={inputId}
+        customValidity={errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={forwardedRef}
+      />
+    ),
+    [errors, forwardedRef, handleChange, inputId, onBlur, onFocus, placeholder, readOnly, value]
   )
 
   return (
@@ -32,17 +53,7 @@ const StringInput = React.forwardRef(function StringInput(
       __unstable_presence={presence}
       title={type.title}
     >
-      <TextInput
-        id={inputId}
-        customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value || ''}
-        readOnly={Boolean(readOnly)}
-        placeholder={type.placeholder}
-        onChange={handleChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        ref={forwardedRef}
-      />
+      {input}
     </FormField>
   )
 })
