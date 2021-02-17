@@ -88,7 +88,7 @@ export function DocumentPane(props: DocumentPaneProps) {
 
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
-      setFocusPath(nextFocusPath)
+      setFocusPath(PathUtils.pathFor(nextFocusPath))
       setLocation([
         {
           type: 'document',
