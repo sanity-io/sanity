@@ -1,4 +1,4 @@
-import {isPlainObject, defaultsDeep, set, has, memoize} from 'lodash'
+import {isPlainObject, defaultsDeep, set, has} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -11,15 +11,10 @@ export async function getObjectFieldsInitialValues(
   documentName: string,
   value: any,
   params: {[key: string]: any} = {},
-  parentKey?: string,
-  memo?: Record<string, any>
+  parentKey?: string
 ): Promise<Record<string, any>> {
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
-
-  memo = memo || {}
-
-  // TODO: (rex) refactor bottom up DP
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -40,14 +35,10 @@ export async function getObjectFieldsInitialValues(
     let newFieldValue = {}
     // get initial value for the current field
 
-    if (memo[field.type.name]) {
-      newFieldValue = memo[field.type.name]
-    } else if (field.type.initialValue) {
+    if (field.type.initialValue) {
       newFieldValue = isPlainObject(field.type.initialValue)
         ? field.type.initialValue
         : await field.type.initialValue(params)
-
-      memo[field.type.name] = newFieldValue
     }
 
     const fieldValue = {
@@ -67,7 +58,7 @@ export async function getObjectFieldsInitialValues(
     initialValues = defaultsDeep(value, newFieldValue)
 
     if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
-      await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK, memo)
+      await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK)
     } else {
       // TODO (rex) fix stack overflow first
     }
@@ -75,8 +66,6 @@ export async function getObjectFieldsInitialValues(
 
   return initialValues
 }
-
-const getInitialValues = memoize(getObjectFieldsInitialValues)
 
 async function resolveInitialValue(
   template: Template | TemplateBuilder,
@@ -104,9 +93,10 @@ async function resolveInitialValue(
   }
 
   // Get initial values from sanity object type
-  initialValue = validateInitialValue(initialValue, template)
-  const newValue = await getInitialValues(id, initialValue, params)
-  return validateInitialValue(newValue, template)
+  const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
+  const validate = validateInitialValue(newValue, template)
+
+  return validate
 }
 
 export {resolveInitialValue}
