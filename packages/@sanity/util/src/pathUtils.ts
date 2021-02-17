@@ -52,6 +52,19 @@ export function get(obj: unknown, path: Path | string, defaultVal?: unknown): un
   return acc
 }
 
+const pathsMemo = new Map<string, Path>()
+export function pathFor(path: Path): Path {
+  if (path.length === 0) {
+    return EMPTY_PATH
+  }
+  const asString = toString(path)
+  if (pathsMemo.has(asString)) {
+    return pathsMemo.get(asString)!
+  }
+  pathsMemo.set(asString, path)
+  return path
+}
+
 export function isEqual(path: Path, otherPath: Path): boolean {
   return (
     path.length === otherPath.length &&
