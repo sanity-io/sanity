@@ -80,13 +80,15 @@ export class FormBuilderInput extends React.Component<Props> {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {path: oldPath, ...oldProps} = this.props
-    const {path: newPath, ...newProps} = nextProps
+    const {path: oldPath, focusPath: oldFocusPath, markers: oldMarkers, ...oldProps} = this.props
+    const {path: newPath, focusPath: newFocusPath, markers: newMarkers, ...newProps} = nextProps
 
-    const propsDiffer = !shallowEquals(oldProps, newProps)
-    const pathDiffer = !PathUtils.isEqual(oldPath, newPath)
-
-    return propsDiffer || pathDiffer
+    return (
+      !shallowEquals(oldProps, newProps) ||
+      !shallowEquals(oldPath, newPath) ||
+      !shallowEquals(oldFocusPath, newFocusPath) ||
+      !shallowEquals(oldMarkers, newMarkers)
+    )
   }
 
   // eslint-disable-next-line camelcase
