@@ -4,6 +4,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import Field from './Field'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
@@ -58,7 +59,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
   static defaultProps = {
     onChange() {},
     level: 0,
-    focusPath: [],
+    focusPath: EMPTY_ARRAY,
     isRoot: false,
     filterField: () => true,
   }
@@ -139,9 +140,10 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const isExpanded =
       focusPath.length > 0 && fieldset.fields.some((field) => focusPath[0] === field.name)
     const fieldNames = fieldset.fields.map((f) => f.name)
-    const childPresence = presence.filter(
-      (item) => fieldNames.includes(item.path[0]) || item.path[0] === '$'
-    )
+    const childPresence =
+      presence.length === 0
+        ? EMPTY_ARRAY
+        : presence.filter((item) => fieldNames.includes(item.path[0]) || item.path[0] === '$')
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>

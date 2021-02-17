@@ -4,6 +4,7 @@ import pubsub from 'nano-pubsub'
 import {Schema, SchemaType} from '@sanity/types'
 import {Patch} from './typedefs/patch'
 import {fallbackInputs} from './fallbackInputs'
+import {EMPTY_ARRAY} from './utils/empty'
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -96,7 +97,7 @@ export default class FormBuilderContext extends React.Component<Props> {
     const {schema, filterField, patchChannel} = this.props
     return {
       filterField: filterField,
-      getValuePath: () => [],
+      getValuePath: () => EMPTY_ARRAY,
       formBuilder: {
         onPatch: patchChannel
           ? patchChannel.onPatch
