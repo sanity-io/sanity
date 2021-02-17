@@ -126,7 +126,7 @@ export function trimLeft(prefix: Path, path: Path): Path {
   if (!isSegmentEqual(prefixHead, pathHead)) {
     return path
   }
-  return trimLeft(prefixTail, pathTail)
+  return pathFor(trimLeft(prefixTail, pathTail))
 }
 
 export function trimRight(suffix: Path, path: Path): Path {
@@ -145,7 +145,7 @@ export function trimRight(suffix: Path, path: Path): Path {
     i++
   }
 
-  return path.slice(0, pathLen - i)
+  return pathFor(path.slice(0, pathLen - i))
 }
 
 export function trimChildPath(path: Path, childPath: Path): Path {
