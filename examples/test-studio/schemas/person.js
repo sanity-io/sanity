@@ -76,9 +76,10 @@ export default {
       type: 'address',
     },
     {
-      name: 'homeAddress',
-      title: 'Home Address',
-      type: 'address',
+      title: 'My Addresses',
+      name: 'myAddresses',
+      type: 'array',
+      of: [{type: 'address'}],
     },
   ],
 
@@ -91,6 +92,11 @@ export default {
         _type: 'reference',
       },
     ],
-    // address: undefined,
+    myAddresses: [
+      {
+        _type: 'address',
+        city: 'New York',
+      },
+    ],
   }),
 }
