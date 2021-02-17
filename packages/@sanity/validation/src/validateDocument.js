@@ -1,9 +1,9 @@
 const Type = require('type-of-is')
 const {flatten} = require('lodash')
 const ValidationError = require('./ValidationError')
-
+const {EMPTY_ARRAY} = require('./util/empty')
 /* eslint-disable no-console */
-module.exports = async (doc, schema) => {
+async function validateDocument(doc, schema) {
   const documentType = schema.get(doc._type)
   if (!documentType) {
     console.warn('Schema type for object type "%s" not found, skipping validation', doc._type)
@@ -17,6 +17,9 @@ module.exports = async (doc, schema) => {
     return [{type: 'validation', level: 'error', path: [], item: new ValidationError(err.message)}]
   }
 }
+
+module.exports = (doc, schema) =>
+  validateDocument(doc, schema).then((res) => (res.length === 0 ? EMPTY_ARRAY : res))
 
 function validateItem(item, type, path, options) {
   if (Array.isArray(item)) {

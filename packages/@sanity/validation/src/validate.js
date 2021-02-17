@@ -1,6 +1,7 @@
 const {get, flatten} = require('lodash')
 const ValidationError = require('./ValidationError')
 const genericValidator = require('./validators/genericValidator')
+const {EMPTY_ARRAY} = require('./util/empty')
 
 const typeValidators = {
   Boolean: require('./validators/booleanValidator'),
@@ -11,7 +12,7 @@ const typeValidators = {
   Date: require('./validators/dateValidator'),
 }
 
-module.exports = (rule, value, options = {}) => {
+function validate(rule, value, options = {}) {
   let rules = rule._rules
 
   const valueIsUndefined = value === null || typeof value === 'undefined'
@@ -77,3 +78,6 @@ module.exports = (rule, value, options = {}) => {
     return results.concat(result.paths.map((path) => ({path, level: rule._level, item: result})))
   }
 }
+
+module.exports = (rule, value, options = {}) =>
+  validate(rule, value, options).then((res) => (res.length === 0 ? EMPTY_ARRAY : res))
