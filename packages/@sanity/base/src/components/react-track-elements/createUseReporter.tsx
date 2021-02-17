@@ -16,7 +16,7 @@ function read<T>(value: T | (() => T)): T {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {}
+const noop = () => undefined
 
 export type IsEqualFunction<Value> = (a: Value, b: Value) => boolean
 
@@ -31,6 +31,7 @@ export function createUseReporter<Value>(
   ) {
     const {add, update, remove} = React.useContext(Context)
     const previous = React.useRef<Value>()
+
     React.useLayoutEffect(() => {
       if (id === null) {
         return noop
@@ -41,7 +42,7 @@ export function createUseReporter<Value>(
       return () => {
         remove(id)
       }
-    }, [id])
+    }, [add, id, remove, value])
 
     React.useLayoutEffect(() => {
       const current = read(value)
