@@ -3,7 +3,8 @@ import React, {SyntheticEvent, useCallback} from 'react'
 import {Path} from '@sanity/types'
 import deepCompare from 'react-fast-compare'
 import {useReporter} from './tracker'
-import {ConnectorContext} from './ChangeIndicatorContext'
+import {ConnectorContext} from './ConnectorContext'
+
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel
  */

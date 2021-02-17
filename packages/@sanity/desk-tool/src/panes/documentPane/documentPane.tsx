@@ -12,13 +12,14 @@ import {usePaneRouter} from '../../contexts/PaneRouterContext'
 import {useDeskToolFeatures} from '../../features'
 import {ChangesPanel} from './changesPanel'
 import {useDocumentHistory} from './documentHistory'
-import {DocumentPanel, getProductionPreviewItem} from './documentPanel'
+import {DocumentPanel} from './documentPanel'
 import {DocumentOperationResults} from './documentOperationResults'
 import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {TimelinePopover} from './timeline'
 import {Doc, DocumentViewType} from './types'
+import {usePreviewUrl} from './usePreviewUrl'
 
 import styles from './documentPane.css'
 
@@ -46,6 +47,8 @@ interface DocumentPaneProps {
   compareValue: Doc | null
 }
 
+const EMPTY_ARRAY = []
+
 // eslint-disable-next-line complexity
 export function DocumentPane(props: DocumentPaneProps) {
   const {
@@ -59,7 +62,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     isCollapsed,
     isClosable,
     markers,
-    menuItemGroups = [],
+    menuItemGroups = EMPTY_ARRAY,
     onChange,
     onCollapse,
     onExpand,
@@ -110,6 +113,8 @@ export function DocumentPane(props: DocumentPaneProps) {
     [isInspectOpen, paneRouter]
   )
 
+  const previewUrl = usePreviewUrl(value)
+
   const handleKeyUp = useCallback(
     (event: any) => {
       if (event.key === 'Escape' && showValidationTooltip) {
@@ -121,18 +126,12 @@ export function DocumentPane(props: DocumentPaneProps) {
       }
 
       if (isPreviewHotkey(event)) {
-        const item = getProductionPreviewItem({
-          features,
-          value,
-          rev: null,
-        })
-
-        if (item && item.url) {
-          window.open(item.url)
+        if (previewUrl) {
+          window.open(previewUrl)
         }
       }
     },
-    [features, showValidationTooltip, toggleInspect, value]
+    [previewUrl, showValidationTooltip, toggleInspect]
   )
 
   const handleInspectClose = useCallback(() => toggleInspect(false), [toggleInspect])

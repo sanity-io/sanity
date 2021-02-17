@@ -63,6 +63,9 @@ function toOrderClause(orderBy) {
     .join(', ')
 }
 
+const EMPTY_ARRAY = []
+const EMPTY_RECORD = {}
+
 export default class DocumentsListPane extends React.PureComponent {
   static propTypes = {
     index: PropTypes.number.isRequired,
@@ -108,10 +111,10 @@ export default class DocumentsListPane extends React.PureComponent {
 
   static defaultProps = {
     className: '',
-    styles: {},
-    menuItems: [],
-    menuItemGroups: [],
-    displayOptions: {},
+    styles: EMPTY_RECORD,
+    menuItems: EMPTY_ARRAY,
+    menuItemGroups: EMPTY_ARRAY,
+    displayOptions: EMPTY_RECORD,
     onExpand: undefined,
     onCollapse: undefined,
     defaultLayout: undefined,
@@ -160,6 +163,7 @@ export default class DocumentsListPane extends React.PureComponent {
         })),
         tap((nextState) => {
           if (sync) {
+            // eslint-disable-next-line react/no-direct-mutation-state
             this.state = {...this.state, ...nextState}
           } else {
             this.setState(nextState)

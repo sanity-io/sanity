@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo, useCallback, forwardRef} from 'react'
 import {capitalize} from 'lodash'
 import {useId} from '@reach/auto-id'
 import {isTitledListValue, TitledListValue} from '@sanity/types'
@@ -20,23 +20,32 @@ const SelectInput = React.forwardRef(function SelectInput(
   forwardedRef: React.ForwardedRef<HTMLSelectElement | HTMLInputElement>
 ) {
   const {value, readOnly, markers, type, level, onChange, onFocus, presence} = props
-  const items = ((type.options?.list || []) as unknown[]).map(toSelectItem)
+  const items = useMemo(() => ((type.options?.list || []) as unknown[]).map(toSelectItem), [
+    type.options?.list,
+  ])
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
   const validation = markers.filter((marker) => marker.type === 'validation')
   const errors = validation.filter((marker) => marker.level === 'error')
 
-  const itemFromOptionValue = (optionValue) => {
-    const index = Number(optionValue)
+  const itemFromOptionValue = useCallback(
+    (optionValue) => {
+      const index = Number(optionValue)
 
-    return items[index]
-  }
+      return items[index]
+    },
+    [items]
+  )
 
-  const optionValueFromItem = (item) => {
-    return String(items.indexOf(item))
-  }
+  const optionValueFromItem = useCallback(
+    (item) => {
+      return String(items.indexOf(item))
+    },
+    [items]
+  )
 
   const inputId = useId()
+
   const handleChange = React.useCallback(
     (nextItem: TitledListValue<string | number>) => {
       onChange(
@@ -46,31 +55,27 @@ const SelectInput = React.forwardRef(function SelectInput(
     [onChange]
   )
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const nextItem = itemFromOptionValue(event.currentTarget.value)
+  const handleSelectChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const nextItem = itemFromOptionValue(event.currentTarget.value)
 
-    if (!nextItem) {
-      handleChange(EMPTY_ITEM)
-      return
-    }
+      if (!nextItem) {
+        handleChange(EMPTY_ITEM)
+        return
+      }
 
-    handleChange(nextItem)
-  }
+      handleChange(nextItem)
+    },
+    [handleChange, itemFromOptionValue]
+  )
 
   const handleFocus = React.useCallback(() => {
     onFocus()
   }, [onFocus])
 
-  return (
-    <FormField
-      inputId={inputId}
-      level={level}
-      title={type.title}
-      description={type.description}
-      __unstable_markers={markers}
-      __unstable_presence={presence}
-    >
-      {isRadio ? (
+  const children = useMemo(() => {
+    if (isRadio) {
+      return (
         <RadioSelect
           inputId={inputId}
           items={items}
@@ -82,30 +87,58 @@ const SelectInput = React.forwardRef(function SelectInput(
           onFocus={handleFocus}
           customValidity={errors?.[0]?.item.message}
         />
-      ) : (
-        <Select
-          onChange={handleSelectChange}
-          onFocus={handleFocus}
-          id={inputId}
-          ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
-          readOnly={readOnly}
-          customValidity={errors?.[0]?.item.message}
-          value={optionValueFromItem(currentItem)}
-        >
-          {[EMPTY_ITEM, ...items].map((item, i) => (
-            <option key={`${i - 1}`} value={i - 1}>
-              {item.title}
-            </option>
-          ))}
-        </Select>
-      )}
+      )
+    }
+
+    return (
+      <Select
+        onChange={handleSelectChange}
+        onFocus={handleFocus}
+        id={inputId}
+        ref={forwardedRef as React.ForwardedRef<HTMLSelectElement>}
+        readOnly={readOnly}
+        customValidity={errors?.[0]?.item.message}
+        value={optionValueFromItem(currentItem)}
+      >
+        {[EMPTY_ITEM, ...items].map((item, i) => (
+          <option key={`${i - 1}`} value={i - 1}>
+            {item.title}
+          </option>
+        ))}
+      </Select>
+    )
+  }, [
+    currentItem,
+    errors,
+    forwardedRef,
+    handleChange,
+    handleFocus,
+    handleSelectChange,
+    inputId,
+    isRadio,
+    items,
+    optionValueFromItem,
+    readOnly,
+    type.options.direction,
+  ])
+
+  return (
+    <FormField
+      inputId={inputId}
+      level={level}
+      title={type.title}
+      description={type.description}
+      __unstable_markers={markers}
+      __unstable_presence={presence}
+    >
+      {children}
     </FormField>
   )
 })
 
 export default SelectInput
 
-const RadioSelect = React.forwardRef(function RadioSelect(
+const RadioSelect = forwardRef(function RadioSelect(
   props: {
     items: TitledListValue<string | number>[]
     value: TitledListValue<string | number>
@@ -116,7 +149,7 @@ const RadioSelect = React.forwardRef(function RadioSelect(
     customValidity?: string
     inputId?: string
   },
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
 
@@ -125,24 +158,57 @@ const RadioSelect = React.forwardRef(function RadioSelect(
     <Card border padding={3} radius={1}>
       <Layout space={3} role="group">
         {items.map((item, index) => (
-          <Flex key={index} as="label" align="center">
-            <Radio
-              ref={index === 0 ? forwardedRef : null}
-              checked={value === item}
-              onChange={() => onChange(item)}
-              onFocus={onFocus}
-              readOnly={readOnly}
-              customValidity={customValidity}
-              name={inputId}
-            />
-            <Box marginLeft={2}>
-              <Text size={1} weight="semibold">
-                {item.title}
-              </Text>
-            </Box>
-          </Flex>
+          <RadioSelectItem
+            customValidity={customValidity}
+            inputId={inputId}
+            item={item}
+            key={index}
+            onChange={onChange}
+            onFocus={onFocus}
+            readOnly={readOnly}
+            ref={index === 0 ? ref : null}
+            value={value}
+          />
         ))}
       </Layout>
     </Card>
+  )
+})
+
+const RadioSelectItem = forwardRef(function RadioSelectItem(
+  props: {
+    customValidity?: string
+    inputId?: string
+    item: TitledListValue<string | number>
+    onChange: (value: TitledListValue<string | number> | null) => void
+    onFocus: (event: React.FocusEvent<HTMLElement>) => void
+    readOnly: boolean
+    value: TitledListValue<string | number>
+  },
+  ref: React.ForwardedRef<HTMLInputElement>
+) {
+  const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
+
+  const handleChange = useCallback(() => {
+    onChange(item)
+  }, [item, onChange])
+
+  return (
+    <Flex as="label" align="center">
+      <Radio
+        ref={ref}
+        checked={value === item}
+        onChange={handleChange}
+        onFocus={onFocus}
+        readOnly={readOnly}
+        customValidity={customValidity}
+        name={inputId}
+      />
+      <Box marginLeft={2}>
+        <Text size={1} weight="semibold">
+          {item.title}
+        </Text>
+      </Box>
+    </Flex>
   )
 })

@@ -9,7 +9,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {DropdownButton} from '../../../../components/DropdownButton'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
@@ -35,7 +35,7 @@ export interface DocumentPanelHeaderProps {
   onCollapse?: () => void
   onExpand?: () => void
   onSetActiveView: (id: string | null) => void
-  onSplitPane: () => void
+  onSplitPane?: () => void
   onSetFormInputFocus: (path: Path) => void
   onTimelineOpen: () => void
   rev: Chunk | null
@@ -78,7 +78,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     views,
   } = props
   const features = useDeskToolFeatures()
-  const contextMenuItems = menuItems.filter(isMenuButton)
+  const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
   const [isContextMenuOpen, setContextMenuOpen] = useState(false)
   const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
 
@@ -97,6 +97,127 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
   const showVersionMenu = features.reviewChanges || views.length === 1
   const menuOpen = isTimelineOpen && timelineMode === 'rev'
 
+  const validationMenu = useMemo(
+    () => (
+      <div>
+        <ValidationMenu
+          boundaryElement={rootElement}
+          isOpen={isValidationOpen}
+          markers={markers}
+          schemaType={schemaType}
+          setFocusPath={onSetFormInputFocus}
+          setOpen={setValidationOpen}
+        />
+      </div>
+    ),
+    [isValidationOpen, markers, onSetFormInputFocus, rootElement, schemaType]
+  )
+
+  const contextMenu = useMemo(
+    () => (
+      <div>
+        <DocumentPanelContextMenu
+          boundaryElement={rootElement}
+          isCollapsed={isCollapsed}
+          itemGroups={menuItemGroups}
+          items={contextMenuItems}
+          onAction={onContextMenuAction}
+          open={isContextMenuOpen}
+          setOpen={setContextMenuOpen}
+        />
+      </div>
+    ),
+    [
+      contextMenuItems,
+      isCollapsed,
+      isContextMenuOpen,
+      menuItemGroups,
+      onContextMenuAction,
+      rootElement,
+    ]
+  )
+
+  const splitViewActions = useMemo(
+    () =>
+      features.splitViews && (
+        <>
+          {onSplitPane && views.length > 1 && (
+            <div>
+              <Button
+                icon={SplitHorizontalIcon}
+                kind="simple"
+                onClick={onSplitPane}
+                padding="small"
+                title="Split pane right"
+                type="button"
+              />
+            </div>
+          )}
+
+          {onSplitPane && isClosable && (
+            <div>
+              <Button
+                icon={CloseIcon}
+                kind="simple"
+                onClick={onCloseView}
+                padding="small"
+                title="Close pane"
+                type="button"
+              />
+            </div>
+          )}
+        </>
+      ),
+    [features.splitViews, isClosable, onCloseView, onSplitPane, views.length]
+  )
+
+  const tabs = useMemo(
+    () =>
+      showTabs && (
+        <div className={styles.tabsContainer}>
+          <DocumentHeaderTabs
+            activeViewId={activeViewId}
+            idPrefix={idPrefix}
+            onSetActiveView={onSetActiveView}
+            views={views}
+          />
+        </div>
+      ),
+    [activeViewId, idPrefix, onSetActiveView, showTabs, views]
+  )
+
+  const versionMenu = useMemo(
+    () =>
+      showVersionMenu && (
+        <div className={styles.versionSelectContainer} ref={versionSelectRef}>
+          <DropdownButton
+            onMouseUp={ignoreClickOutside}
+            onClick={onTimelineOpen}
+            selected={isTimelineOpen && timelineMode === 'rev'}
+          >
+            {/* eslint-disable-next-line no-nested-ternary */}
+            {menuOpen ? (
+              <>Select version</>
+            ) : rev ? (
+              <TimelineButtonLabel rev={rev} />
+            ) : (
+              <>Current version</>
+            )}
+          </DropdownButton>
+        </div>
+      ),
+    [
+      ignoreClickOutside,
+      isTimelineOpen,
+      menuOpen,
+      onTimelineOpen,
+      rev,
+      showVersionMenu,
+      timelineMode,
+      versionSelectRef,
+    ]
+  )
+
   return (
     <Layer className={classNames(styles.root, isCollapsed && styles.isCollapsed)}>
       <div className={styles.mainNav}>
@@ -111,92 +232,16 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             </div>
           )}
 
-          <div>
-            <ValidationMenu
-              boundaryElement={rootElement}
-              isOpen={isValidationOpen}
-              markers={markers}
-              schemaType={schemaType}
-              setFocusPath={onSetFormInputFocus}
-              setOpen={setValidationOpen}
-            />
-          </div>
-
-          <div>
-            <DocumentPanelContextMenu
-              boundaryElement={rootElement}
-              isCollapsed={isCollapsed}
-              itemGroups={menuItemGroups}
-              items={contextMenuItems}
-              onAction={onContextMenuAction}
-              open={isContextMenuOpen}
-              setOpen={setContextMenuOpen}
-            />
-          </div>
-
-          {features.splitViews && (
-            <>
-              {onSplitPane && views.length > 1 && (
-                <div>
-                  <Button
-                    icon={SplitHorizontalIcon}
-                    kind="simple"
-                    onClick={onSplitPane}
-                    padding="small"
-                    title="Split pane right"
-                    type="button"
-                  />
-                </div>
-              )}
-
-              {onSplitPane && isClosable && (
-                <div>
-                  <Button
-                    icon={CloseIcon}
-                    kind="simple"
-                    onClick={onCloseView}
-                    padding="small"
-                    title="Close pane"
-                    type="button"
-                  />
-                </div>
-              )}
-            </>
-          )}
+          {validationMenu}
+          {contextMenu}
+          {splitViewActions}
         </div>
       </div>
 
       {(showTabs || showVersionMenu) && (
         <div className={styles.viewNav}>
-          {showTabs && (
-            <div className={styles.tabsContainer}>
-              <DocumentHeaderTabs
-                activeViewId={activeViewId}
-                idPrefix={idPrefix}
-                onSetActiveView={onSetActiveView}
-                views={views}
-              />
-            </div>
-          )}
-
-          {showVersionMenu && (
-            <div className={styles.versionSelectContainer} ref={versionSelectRef}>
-              <DropdownButton
-                onMouseUp={ignoreClickOutside}
-                onClick={onTimelineOpen}
-                selected={isTimelineOpen && timelineMode === 'rev'}
-              >
-                {/* eslint-disable-next-line no-nested-ternary */}
-                {menuOpen ? (
-                  <>Select version</>
-                ) : rev ? (
-                  <TimelineButtonLabel rev={rev} />
-                ) : (
-                  <>Current version</>
-                )}
-              </DropdownButton>
-            </div>
-          )}
+          {tabs}
+          {versionMenu}
         </div>
       )}
     </Layer>

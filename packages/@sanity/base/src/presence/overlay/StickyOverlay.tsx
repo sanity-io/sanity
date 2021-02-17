@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import React from 'react'
+import React, {memo, useMemo} from 'react'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
   AVATAR_ARROW_HEIGHT,
@@ -13,7 +13,6 @@ import {
 } from '../constants'
 import {
   FieldPresenceData,
-  FormFieldPresence,
   Rect,
   ReportedRegionWithRect,
   RegionWithIntersectionDetails,
@@ -143,7 +142,11 @@ export function StickyOverlay(props: Props) {
   const {children, margins = DEFAULT_MARGINS} = props
   const reportedValues = useReportedValues()
   const ref = React.useRef()
-  const regions = ref.current ? regionsWithComputedRects(reportedValues, ref.current) : []
+  const regions = React.useMemo(
+    () => (ref.current ? regionsWithComputedRects(reportedValues, ref.current) : EMPTY_ARRAY),
+    [reportedValues]
+  )
+
   const renderCallback = React.useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
       const grouped = group(
@@ -172,13 +175,24 @@ export function StickyOverlay(props: Props) {
 
       return (
         <>
-          {[
-            renderDock('top', margins, grouped.top, counts.nearTop),
-            <Spacer key="spacerTop" height={topSpacing} />,
-            ...renderInside(grouped.inside, containerWidth),
-            <Spacer key="spacerBottom" height={bottomSpacing} />,
-            renderDock('bottom', margins, grouped.bottom, counts.nearBottom),
-          ]}
+          <PresenceDock
+            closeCount={counts.nearTop}
+            margins={margins}
+            position="top"
+            regionsWithIntersectionDetails={grouped.top}
+          />
+          <Spacer height={topSpacing} />
+          <PresenceInside
+            containerWidth={containerWidth}
+            regionsWithIntersectionDetails={grouped.inside}
+          />
+          <Spacer height={bottomSpacing} />
+          <PresenceDock
+            closeCount={counts.nearBottom}
+            margins={margins}
+            position="bottom"
+            regionsWithIntersectionDetails={grouped.bottom}
+          />
         </>
       )
     },
@@ -192,18 +206,27 @@ export function StickyOverlay(props: Props) {
   )
 }
 
-function renderDock(
-  position: 'top' | 'bottom',
-  margins: Margins,
-  regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
-  closeCount
-) {
+const EMPTY_ARRAY = []
+
+const PresenceDock = memo(function PresenceDock(props: {
+  closeCount: number
+  margins: Margins
+  position: 'top' | 'bottom'
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+}) {
+  const {closeCount, margins, position, regionsWithIntersectionDetails} = props
   const dir = position === 'top' ? 1 : -1
-  const allPresenceItems = flatten(
-    sortBy(regionsWithIntersectionDetails, (r) => r.region.rect.top * dir).map(
-      (withIntersection) => withIntersection.region.presence || []
-    ) || []
-  )
+  const allPresenceItems = useMemo(() => {
+    if (!regionsWithIntersectionDetails.length) {
+      return EMPTY_ARRAY
+    }
+
+    return flatten(
+      sortBy(regionsWithIntersectionDetails, (r) => r.region.rect.top * dir).map(
+        (withIntersection) => withIntersection.region.presence || EMPTY_ARRAY
+      )
+    )
+  }, [dir, regionsWithIntersectionDetails])
   const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
   const leftOffset =
     (leftMargin || 0) +
@@ -211,6 +234,7 @@ function renderDock(
     rightMargin
 
   const margin = position === 'top' ? topMargin : bottomMargin
+
   return (
     <div
       data-dock={position}
@@ -234,49 +258,55 @@ function renderDock(
       />
     </div>
   )
-}
+})
 
-function renderInside(
-  regionsWithIntersectionDetails: RegionWithSpacerHeight[],
+function PresenceInside(props: {
   containerWidth: number
-) {
-  return regionsWithIntersectionDetails.map((withIntersection) => {
-    const originalLeft = withIntersection.region.rect.left
-    const {distanceTop, distanceBottom} = withIntersection
+  regionsWithIntersectionDetails: RegionWithSpacerHeight[]
+}) {
+  const {regionsWithIntersectionDetails, containerWidth} = props
 
-    const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
-    const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
+  return (
+    <>
+      {regionsWithIntersectionDetails.map((withIntersection) => {
+        const originalLeft = withIntersection.region.rect.left
+        const {distanceTop, distanceBottom} = withIntersection
 
-    const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
+        const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
+        const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
 
-    const {presence, maxAvatars} = withIntersection.region
-    return (
-      <React.Fragment key={withIntersection.region.id}>
-        <div
-          style={{
-            zIndex: 2,
-            position: 'absolute',
-            pointerEvents: 'all',
-            ...ITEM_TRANSITION,
-            left: originalLeft,
-            transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
-            height: withIntersection.region.rect.height,
-            top: withIntersection.region.rect.top,
-          }}
-        >
-          <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
-            <FieldPresenceInner
-              stack={!nearTop && !nearBottom}
-              // eslint-disable-next-line no-nested-ternary
-              position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
-              maxAvatars={maxAvatars}
-              presence={presence}
-            />
-          </DebugValue>
-        </div>
-      </React.Fragment>
-    )
-  })
+        const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
+
+        const {presence, maxAvatars} = withIntersection.region
+        return (
+          <React.Fragment key={withIntersection.region.id}>
+            <div
+              style={{
+                zIndex: 2,
+                position: 'absolute',
+                pointerEvents: 'all',
+                ...ITEM_TRANSITION,
+                left: originalLeft,
+                transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
+                height: withIntersection.region.rect.height,
+                top: withIntersection.region.rect.top,
+              }}
+            >
+              <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
+                <FieldPresenceInner
+                  stack={!nearTop && !nearBottom}
+                  // eslint-disable-next-line no-nested-ternary
+                  position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
+                  maxAvatars={maxAvatars}
+                  presence={presence}
+                />
+              </DebugValue>
+            </div>
+          </React.Fragment>
+        )
+      })}
+    </>
+  )
 }
 
 const PassThrough = (props: {children: React.ReactElement; [prop: string]: any}) => props.children

@@ -6,6 +6,9 @@ import {PaneRouterContext} from '../../contexts/PaneRouterContext'
 import {PaneItem} from '../../components/paneItem'
 import {ListView} from '../../components/listView'
 
+const EMPTY_ARRAY = []
+const EMPTY_RECORD = {}
+
 export default class ListPane extends React.PureComponent {
   static contextType = PaneRouterContext
 
@@ -44,10 +47,10 @@ export default class ListPane extends React.PureComponent {
 
   static defaultProps = {
     className: '',
-    items: [],
-    menuItems: [],
-    menuItemGroups: [],
-    displayOptions: {},
+    items: EMPTY_ARRAY,
+    menuItems: EMPTY_ARRAY,
+    menuItemGroups: EMPTY_ARRAY,
+    displayOptions: EMPTY_RECORD,
     styles: undefined,
     onExpand: undefined,
     onCollapse: undefined,

@@ -3,22 +3,20 @@ import BinaryIcon from 'part:@sanity/base/binary-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
-import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import React from 'react'
 import {DeskToolFeatures} from '../../../../features'
-import {Doc} from '../../types'
 
 import styles from './menuItems.css'
 
 interface Params {
   features: DeskToolFeatures
-  isHistoryOpen?: boolean
-  rev: string | null
-  value: Doc | null
+  isHistoryOpen: boolean
+  hasValue: boolean
+  previewUrl: string | null
 }
 
 const getHistoryMenuItem = (params: Params): MenuItem | null => {
-  const {features, value, isHistoryOpen} = params
+  const {features, hasValue, isHistoryOpen} = params
 
   if (!features.reviewChanges) return null
 
@@ -26,11 +24,11 @@ const getHistoryMenuItem = (params: Params): MenuItem | null => {
     action: 'reviewChanges',
     title: 'Review changes',
     icon: HistoryIcon,
-    isDisabled: isHistoryOpen || !value,
+    isDisabled: isHistoryOpen || !hasValue,
   }
 }
 
-const getInspectItem = ({value}: Params): MenuItem => ({
+const getInspectItem = ({hasValue}: Params): MenuItem => ({
   action: 'inspect',
   title: (
     <span className={styles.menuItem}>
@@ -41,25 +39,10 @@ const getInspectItem = ({value}: Params): MenuItem => ({
     </span>
   ),
   icon: BinaryIcon,
-  isDisabled: !value,
+  isDisabled: !hasValue,
 })
 
-export const getProductionPreviewItem = ({value, rev}: Params): MenuItem | null => {
-  if (!value || !resolveProductionPreviewUrl) {
-    return null
-  }
-
-  let previewUrl: string
-
-  try {
-    previewUrl = resolveProductionPreviewUrl(value, rev)
-  } catch (error) {
-    error.message = `An error was thrown while trying to get production preview url: ${error.message}`
-    // eslint-disable-next-line no-console
-    console.error(error)
-    return null
-  }
-
+export const getProductionPreviewItem = ({previewUrl}: Params): MenuItem | null => {
   if (!previewUrl) {
     return null
   }

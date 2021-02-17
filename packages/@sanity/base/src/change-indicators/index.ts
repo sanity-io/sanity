@@ -1,4 +1,5 @@
-export {ChangeIndicatorContext, ConnectorContext} from './ChangeIndicatorContext'
+export {ChangeIndicatorContext} from './ChangeIndicatorContext'
+export {ConnectorContext} from './ConnectorContext'
 
 export {
   ChangeIndicator,

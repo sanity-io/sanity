@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/require-default-props */
 
-import React, {useContext} from 'react'
+import React, {memo, useContext} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from 'part:@sanity/components/avatar'
+import {useId} from '@reach/auto-id'
 import {UserAvatar} from '../components/UserAvatar'
 import {
   AVATAR_DISTANCE,
@@ -14,8 +14,6 @@ import {
 } from './constants'
 import {splitRight} from './utils'
 import styles from './FieldPresence.css'
-import {useId} from '@reach/auto-id'
-
 import {FormFieldPresenceContext} from './context'
 import {PresenceTooltip} from './PresenceTooltip'
 import {FormFieldPresence} from './types'
@@ -26,6 +24,10 @@ export interface FieldPresenceProps {
   maxAvatars: number
 }
 
+export const FieldPresence = DISABLE_OVERLAY
+  ? FieldPresenceWithoutOverlay
+  : FieldPresenceWithOverlay
+
 function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
@@ -34,6 +36,7 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   useReporter(useId() || '', () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
 
   const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+
   return (
     <div ref={ref} className={styles.root} style={{minWidth: minWidth, minHeight: AVATAR_SIZE}} />
   )
@@ -42,14 +45,13 @@ function FieldPresenceWithOverlay(props: FieldPresenceProps) {
 function FieldPresenceWithoutOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-  return presence.length > 0 ? (
-    <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
-  ) : null
-}
 
-export const FieldPresence = DISABLE_OVERLAY
-  ? FieldPresenceWithoutOverlay
-  : FieldPresenceWithOverlay
+  if (!presence.length) {
+    return null
+  }
+
+  return <FieldPresenceInner presence={presence} maxAvatars={maxAvatars} />
+}
 
 interface InnerProps {
   maxAvatars?: number
@@ -63,7 +65,7 @@ function calcAvatarStackWidth(len: number) {
   return -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * len
 }
 
-export function FieldPresenceInner({
+export const FieldPresenceInner = memo(function FieldPresenceInner({
   presence,
   position = 'inside',
   animateArrowFrom = 'inside',
@@ -125,4 +127,4 @@ export function FieldPresenceInner({
       </PresenceTooltip>
     </div>
   )
-}
+})

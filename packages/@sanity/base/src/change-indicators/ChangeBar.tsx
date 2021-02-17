@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import {Tooltip} from 'part:@sanity/components/tooltip'
-import React, {useCallback, useState} from 'react'
-import {ConnectorContext} from './ChangeIndicatorContext'
+import React, {useCallback, useMemo, useState} from 'react'
+import {ConnectorContext} from './ConnectorContext'
 
 import styles from './ChangeBar.css'
 
@@ -36,60 +36,65 @@ function EditIconSmall(props: Omit<React.SVGProps<SVGElement>, 'ref'>) {
   )
 }
 
-export const ChangeBar = React.forwardRef(
-  (props: {hasFocus: boolean; isChanged: boolean; children: React.ReactNode}, ref: any) => {
-    const [hover, setHover] = useState(false)
-    const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
+export function ChangeBar(props: {
+  children: React.ReactNode
+  hasFocus: boolean
+  isChanged: boolean
+}) {
+  const {children, hasFocus, isChanged} = props
 
-    const handleMouseEnter = useCallback(() => setHover(true), [])
-    const handleMouseLeave = useCallback(() => setHover(false), [])
+  const [hover, setHover] = useState(false)
+  const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
 
-    const tooltipContent = (
-      <div className={styles.tooltipContent}>
-        <span>Review changes</span>
-      </div>
-    )
+  const handleMouseEnter = useCallback(() => setHover(true), [])
+  const handleMouseLeave = useCallback(() => setHover(false), [])
 
-    return (
-      <div
-        ref={ref}
-        className={classNames(
-          styles.root,
-          hover && styles.hover,
-          props.hasFocus && styles.focus,
-          props.isChanged && styles.changed,
-          isReviewChangesOpen && styles.reviewChangesOpen
-        )}
-      >
-        <div className={styles.field}>{props.children}</div>
-
-        <Tooltip
-          content={tooltipContent}
-          disabled={!props.isChanged || isReviewChangesOpen}
-          placement="top"
-        >
-          <div className={styles.wrapper}>
-            <div className={styles.bar} />
-
-            <div className={styles.badge}>
-              <Shape className={styles.badge__shape} />
-              <EditIconSmall className={styles.badge__icon} />
-            </div>
-
-            <button
-              tabIndex={isReviewChangesOpen || !props.isChanged ? -1 : 0}
-              type="button"
-              aria-label="Review changes"
-              onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
-              className={styles.hitArea}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            />
+  const tooltip = useMemo(
+    () => (
+      <Tooltip
+        content={
+          <div className={styles.tooltipContent}>
+            <span>Review changes</span>
           </div>
-        </Tooltip>
-      </div>
-    )
-  }
-)
+        }
+        disabled={!isChanged || isReviewChangesOpen}
+        placement="top"
+      >
+        <div className={styles.wrapper}>
+          <div className={styles.bar} />
 
-ChangeBar.displayName = 'ChangeBar'
+          <div className={styles.badge}>
+            <Shape className={styles.badge__shape} />
+            <EditIconSmall className={styles.badge__icon} />
+          </div>
+
+          <button
+            tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
+            type="button"
+            aria-label="Review changes"
+            onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
+            className={styles.hitArea}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          />
+        </div>
+      </Tooltip>
+    ),
+    [handleMouseEnter, handleMouseLeave, isReviewChangesOpen, onOpenReviewChanges, isChanged]
+  )
+
+  return (
+    <div
+      className={classNames(
+        styles.root,
+        hover && styles.hover,
+        hasFocus && styles.focus,
+        isChanged && styles.changed,
+        isReviewChangesOpen && styles.reviewChangesOpen
+      )}
+    >
+      <div className={styles.field}>{children}</div>
+      {tooltip}
+    </div>
+  )
+}

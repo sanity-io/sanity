@@ -65,7 +65,7 @@ export function createScope<Value>() {
     React.useLayoutEffect(() => {
       setValues(context.read())
       return context.subscribe(setValues)
-    }, [])
+    }, [context])
     return values
   }
 

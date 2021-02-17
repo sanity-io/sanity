@@ -11,6 +11,8 @@ const typeValidators = {
   Date: require('./validators/dateValidator'),
 }
 
+const EMPTY_ARRAY = []
+
 module.exports = (rule, value, options = {}) => {
   let rules = rule._rules
 
@@ -20,7 +22,7 @@ module.exports = (rule, value, options = {}) => {
     rules = rules.filter((curr) => curr.flag === 'custom')
   } else if (!rule._required && valueIsUndefined) {
     // Short-circuit on optional, empty fields
-    return Promise.resolve([])
+    return Promise.resolve(EMPTY_ARRAY)
   }
 
   const type = rule._type
