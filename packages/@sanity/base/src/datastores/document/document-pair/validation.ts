@@ -16,11 +16,11 @@ import {IdPair} from '../types'
 import {editState} from './editState'
 
 type Marker = any
-
+const EMPTY_ARRAY = []
 function getValidationMarkers(draft, published): Observable<Marker[]> {
   const doc = draft || published
   if (!doc || !doc._type) {
-    return of([])
+    return of(EMPTY_ARRAY)
   }
   return from(validateDocument(doc, schema) as Promise<Marker[]>)
 }
@@ -51,12 +51,12 @@ export const validation = memoize(
             of({isValidating: false})
           )
         ),
-        distinctUntilChanged(
-          (prev, next) => prev.isValidating === next.isValidating && prev.markers === prev.markers
-        ),
         scan(
           (prev, validationStatus) => ({...prev, ...validationStatus}),
           INITIAL_VALIDATION_STATUS
+        ),
+        distinctUntilChanged(
+          (prev, next) => prev.isValidating === next.isValidating && prev.markers === next.markers
         )
       )
     ).pipe(publishReplay(1), refCount())
