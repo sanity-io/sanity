@@ -8,6 +8,9 @@ function noActionFn() {
   console.warn('No handler defined for action')
 }
 
+const EMPTY_ARRAY = []
+const EMPTY_RECORD = {}
+
 export default class UserComponentPane extends React.PureComponent {
   static propTypes = {
     styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
@@ -35,9 +38,9 @@ export default class UserComponentPane extends React.PureComponent {
 
   static defaultProps = {
     title: '',
-    options: {},
-    menuItems: [],
-    menuItemGroups: [],
+    options: EMPTY_RECORD,
+    menuItems: EMPTY_ARRAY,
+    menuItemGroups: EMPTY_ARRAY,
     styles: undefined,
     onExpand: undefined,
     onCollapse: undefined,

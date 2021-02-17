@@ -8,6 +8,7 @@ import {useZIndex} from '@sanity/base/components'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView} from '../types'
+import {usePreviewUrl} from '../usePreviewUrl'
 import {DocumentHeaderTitle} from './header/title'
 import {DocumentPanelHeader} from './header/header'
 import {getMenuItems} from './menuItems'
@@ -65,20 +66,23 @@ export function DocumentPanel(props: DocumentPanelProps) {
     setDocumentViewerContainerElement,
   ] = useState<HTMLDivElement | null>(null)
   const {displayed, historyController, open: openHistory} = useDocumentHistory()
-  const activeView = views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'}
-
+  const activeView = useMemo(
+    () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
+    [activeViewId, views]
+  )
   const {revTime} = historyController
-
+  const hasValue = Boolean(props.value)
+  const previewUrl = usePreviewUrl(props.value)
   const menuItems = useMemo(() => {
     return (
       getMenuItems({
         features,
+        hasValue,
         isHistoryOpen: props.isHistoryOpen,
-        rev: revTime ? revTime.id : null,
-        value: props.value,
+        previewUrl,
       }) || []
     )
-  }, [features, props.isHistoryOpen, revTime, props.value])
+  }, [features, hasValue, props.isHistoryOpen, previewUrl])
 
   const handleContextMenuAction = useCallback(
     (item) => {

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types, react/no-multi-comp */
-import React, {useContext} from 'react'
+import React, {useContext, useMemo} from 'react'
 import {isEqual, pick, omit} from 'lodash'
 import {StateLink, HOCRouter} from 'part:@sanity/base/router'
 
@@ -108,9 +108,11 @@ type ChildLinkProps = {
 const ChildLink = React.forwardRef(function ChildLink(props: ChildLinkProps, ref: React.Ref<any>) {
   const {childId, childPayload, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
-  const panes: RouterPanesState = routerPanesState
-    .slice(0, groupIndex + 1)
-    .concat([[{id: childId, payload: childPayload}]])
+  const panes: RouterPanesState = useMemo(
+    () =>
+      routerPanesState.slice(0, groupIndex + 1).concat([[{id: childId, payload: childPayload}]]),
+    [childId, childPayload, groupIndex, routerPanesState]
+  )
 
   return <StateLink ref={ref} {...rest} state={{panes}} />
 })
