@@ -67,7 +67,7 @@ export async function getObjectFieldsInitialValues(
         nestDepth++
       }
 
-      if (nestDepth <= 10) {
+      if (nestDepth <= 7) {
         await getObjectFieldsInitialValues(
           field.type.name,
           initialValues,
@@ -109,6 +109,7 @@ async function resolveInitialValue(
 
   // Get initial values from sanity object type
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
+  console.log(newValue)
   return validateInitialValue(newValue, template)
 }
 
