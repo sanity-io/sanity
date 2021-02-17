@@ -1,5 +1,6 @@
 import React from 'react'
 import {Path} from '@sanity/types'
+import {EMPTY_ARRAY} from './constants'
 
 interface ChangeIndicatorContext {
   value?: any
@@ -20,7 +21,11 @@ export const ConnectorContext: React.Context<ConnectorContext> = React.createCon
   onSetFocus: (nextPath: Path) => {},
 })
 
-const initial: ChangeIndicatorContext = {path: [], fullPath: [], focusPath: []}
+const initial: ChangeIndicatorContext = {
+  path: EMPTY_ARRAY,
+  fullPath: EMPTY_ARRAY,
+  focusPath: EMPTY_ARRAY,
+}
 
 export const ChangeIndicatorContext: React.Context<ChangeIndicatorContext> = React.createContext(
   initial

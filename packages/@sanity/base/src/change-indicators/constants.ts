@@ -14,3 +14,5 @@ export const STROKE_WIDTH = 2
 
 export const DEBUG = false
 export const DEBUG_LAYER_BOUNDS = DEBUG || false
+
+export const EMPTY_ARRAY = []

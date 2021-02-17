@@ -44,7 +44,7 @@ const ChangeBarWrapper = (
     `field-${PathUtils.toString(props.fullPath)}`,
     () => ({
       element: ref.current!,
-      path: props.fullPath,
+      path: PathUtils.pathFor(props.fullPath),
       isChanged: props.isChanged,
       hasFocus: props.hasFocus,
       hasHover: hasHover,
@@ -73,7 +73,7 @@ export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactN
 
   return (
     <ChangeIndicatorProvider
-      path={props.path}
+      path={PathUtils.pathFor(props.path)}
       focusPath={parentContext.focusPath}
       value={PathUtils.get(parentContext.value, props.path)}
       compareValue={PathUtils.get(parentContext.compareValue, props.path)}
@@ -83,30 +83,35 @@ export function ChangeIndicatorScope(props: {path: Path; children?: React.ReactN
   )
 }
 
-export function ChangeIndicatorProvider(props: {
+export const ChangeIndicatorProvider = React.memo(function ChangeIndicatorProvider(props: {
   path: Path
   focusPath: Path
   value: any
   compareValue: any
   children: React.ReactNode
 }) {
-  const parentContext = React.useContext(ChangeIndicatorContext)
-  const fullPath = parentContext.fullPath.concat(props.path)
 
+  const parentContext = React.useContext(ChangeIndicatorContext)
+
+  const path = PathUtils.pathFor(props.path)
+  const focusPath = PathUtils.pathFor(props.focusPath || [])
+  const fullPath = PathUtils.pathFor(parentContext.fullPath.concat(props.path))
+
+  const contextValue = React.useMemo(() => {
+    return {
+      value: props.value,
+      compareValue: props.compareValue,
+      focusPath,
+      path,
+      fullPath,
+    }
+  }, [fullPath, props.value, props.compareValue, focusPath, path])
   return (
-    <ChangeIndicatorContext.Provider
-      value={{
-        value: props.value,
-        compareValue: props.compareValue,
-        focusPath: props.focusPath || [],
-        path: props.path,
-        fullPath: fullPath,
-      }}
-    >
+    <ChangeIndicatorContext.Provider value={contextValue}>
       {props.children}
     </ChangeIndicatorContext.Provider>
   )
-}
+})
 
 interface CoreProps {
   className?: string
@@ -142,7 +147,7 @@ export const CoreChangeIndicator = ({
     <ChangeBarWrapper
       className={className}
       isChanged={isChanged}
-      fullPath={fullPath}
+      fullPath={PathUtils.pathFor(fullPath)}
       hasFocus={hasFocus}
     >
       {children}
@@ -161,13 +166,15 @@ export const ChangeIndicatorWithProvidedFullPath = ({
 }: any) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
-  const fullPath = parentContext.fullPath.concat(path)
+  const canonicalPath = PathUtils.pathFor(path)
+  const fullPath = PathUtils.pathFor(parentContext.fullPath.concat(canonicalPath))
+
   return (
     <CoreChangeIndicator
       hidden={hidden}
       className={className}
       value={value}
-      compareValue={PathUtils.get(parentContext.compareValue, path)}
+      compareValue={PathUtils.get(parentContext.compareValue, fullPath)}
       hasFocus={hasFocus}
       fullPath={fullPath}
       compareDeep={compareDeep}
@@ -191,16 +198,23 @@ export const ChangeIndicatorCompareValueProvider = (props: {
 }) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
+  const contextValue = React.useMemo(() => {
+    return {
+      value: props.value,
+      compareValue: props.compareValue,
+      focusPath: PathUtils.pathFor(parentContext.focusPath || []),
+      path: parentContext.path,
+      fullPath: parentContext.fullPath,
+    }
+  }, [
+    parentContext.focusPath,
+    parentContext.path,
+    parentContext.fullPath,
+    props.value,
+    props.compareValue,
+  ])
   return (
-    <ChangeIndicatorContext.Provider
-      value={{
-        value: props.value,
-        compareValue: props.compareValue,
-        focusPath: parentContext.focusPath || [],
-        path: parentContext.path,
-        fullPath: parentContext.fullPath,
-      }}
-    >
+    <ChangeIndicatorContext.Provider value={contextValue}>
       {props.children}
     </ChangeIndicatorContext.Provider>
   )
@@ -213,7 +227,7 @@ export const ContextProvidedChangeIndicator = (props: ChangeIndicatorContextProv
     <>{props.children}</>
   ) : (
     <CoreChangeIndicator
-      fullPath={fullPath}
+      fullPath={PathUtils.pathFor(fullPath)}
       value={value}
       compareValue={compareValue}
       hasFocus={PathUtils.hasFocus(focusPath, path)}
