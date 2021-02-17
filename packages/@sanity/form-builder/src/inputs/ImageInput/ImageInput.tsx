@@ -52,6 +52,7 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
+import withDocument from '../../utils/withDocument'
 import {urlToFile, base64ToFile} from './utils/image'
 
 import styles from './ImageInput.css'
@@ -126,7 +127,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     // Allow overriding sources set directly on type.options
     const sourcesFromType = get(props.type, 'options.sources')
     if (Array.isArray(sourcesFromType) && sourcesFromType.length > 0) {
-      this.assetSources = sourcesFromType
+      this.assetSources = sourcesFromType.map((source) => ({
+        ...source,
+        component: withDocument(source.component),
+      }))
     } else if (sourcesFromType) {
       this.assetSources = null
     }
@@ -528,7 +532,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize, document} = this.props
+    const {value, materialize} = this.props
     if (!selectedAssetSource) {
       return null
     }
@@ -539,7 +543,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           {(imageAsset) => {
             return (
               <Component
-                document={document}
                 selectedAssets={[imageAsset]}
                 selectionType="single"
                 onClose={this.handleAssetSourceClosed}
@@ -552,7 +555,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
     return (
       <Component
-        document={document}
         selectedAssets={[]}
         selectionType="single"
         onClose={this.handleAssetSourceClosed}
