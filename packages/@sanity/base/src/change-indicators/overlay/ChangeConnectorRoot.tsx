@@ -1,4 +1,6 @@
-import React from 'react'
+/* eslint-disable react/no-unused-prop-types */
+
+import React, {useMemo} from 'react'
 import {Path} from '@sanity/types'
 import {ScrollContainer} from 'part:@sanity/components/scroll'
 import {Tracker, ConnectorContext} from '../'
@@ -21,8 +23,18 @@ function EnabledChangeConnectorRoot({
   onOpenReviewChanges,
 }: Props) {
   const [rootRef, setRootRef] = React.useState<HTMLDivElement | null>()
+
+  const contextValue = useMemo(
+    () => ({
+      isReviewChangesOpen,
+      onOpenReviewChanges,
+      onSetFocus,
+    }),
+    [isReviewChangesOpen, onOpenReviewChanges, onSetFocus]
+  )
+
   return (
-    <ConnectorContext.Provider value={{isReviewChangesOpen, onOpenReviewChanges, onSetFocus}}>
+    <ConnectorContext.Provider value={contextValue}>
       <Tracker>
         <ScrollContainer ref={setRootRef} className={className}>
           {children}
