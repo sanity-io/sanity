@@ -113,7 +113,6 @@ export type AssetFromSource = {
 }
 
 export interface AssetSourceComponentProps {
-  document: SanityDocument
   selectedAssets: Asset[]
   selectionType: 'single' | 'multiple'
   onClose: () => void
