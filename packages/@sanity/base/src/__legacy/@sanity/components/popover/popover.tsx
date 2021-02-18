@@ -52,6 +52,8 @@ const PopoverChildren = forwardRef(
       disabled,
       fallbackPlacements,
       open,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      layer: _,
       placement = 'bottom',
       portal,
       style,
