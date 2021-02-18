@@ -1,3 +1,4 @@
+import React from 'react'
 import {Reference} from '../reference'
 import {SanityDocument} from '../documents'
 
