@@ -1,5 +1,5 @@
 // todo: get these utils from @sanity/ui instead
-export function focusRingBorderStyle(border: {color: string; width: number}) {
+export function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
 
@@ -7,7 +7,7 @@ export function focusRingStyle(opts: {
   base?: {bg: string}
   border?: {color: string; width: number}
   focusRing: {offset: number; width: number}
-}) {
+}): string {
   const {base, border, focusRing} = opts
   const focusRingOutsetWidth = focusRing.offset + focusRing.width
   const focusRingInsetWidth = 0 - focusRing.offset

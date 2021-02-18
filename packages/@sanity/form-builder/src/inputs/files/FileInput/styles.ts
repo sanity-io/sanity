@@ -1,12 +1,11 @@
-import styled from 'styled-components'
-import {Flex} from '@sanity/ui'
-import React from 'react'
+/* eslint-disable import/named */
 
-// todo:
-//  This is a workaround for TS4023: Exported variable 'AssetBackground' has or is using name 'FlexProps'
-//  Can be deleted when @sanity/ui exports FlexProps
-type Workaround = React.ComponentType<React.ComponentProps<typeof Flex>>
+import styled, {DefaultTheme, StyledComponent} from 'styled-components'
 
-export const AssetBackground: Workaround = styled(Flex)`
-  height: 10rem;
+export const AssetBackground: StyledComponent<'div', DefaultTheme> = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 12rem;
 `

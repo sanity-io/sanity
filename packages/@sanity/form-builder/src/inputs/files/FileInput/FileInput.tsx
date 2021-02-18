@@ -2,12 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {FormFieldSet, ImperativeToast, LegacyLayerProvider} from '@sanity/base/components'
 import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
-import {BinaryDocumentIcon, EditIcon, EyeOpenIcon, UploadIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Flex, Grid, Text, ToastParams} from '@sanity/ui'
+import {
+  BinaryDocumentIcon,
+  DownloadIcon,
+  EditIcon,
+  EyeOpenIcon,
+  TrashIcon,
+  UploadIcon,
+} from '@sanity/icons'
+import {Box, Button, Container, Dialog, Flex, Grid, Stack, Text, ToastParams} from '@sanity/ui'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 
@@ -180,21 +187,29 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderMaterializedAsset = (assetDocument: FileAsset) => {
     return (
-      <Flex align="center" justify="center">
-        <Box>
-          <BinaryDocumentIcon fontSize="3em" />
-        </Box>
-        <Box>
-          <Box padding={1}>
-            <Text size={1} weight="bold">
+      <Stack space={3}>
+        <Flex align="center" justify="center">
+          <Box>
+            <Text size={4}>
+              <BinaryDocumentIcon />
+            </Text>
+          </Box>
+          <Box marginLeft={3}>
+            <Text textOverflow="ellipsis" weight="medium">
               {assetDocument.originalFilename}
             </Text>
           </Box>
-          <Box padding={1}>
-            <Button as="a" href={`${assetDocument.url}?dl`} mode="ghost" text="Download" />
-          </Box>
-        </Box>
-      </Flex>
+        </Flex>
+
+        <Button
+          as="a"
+          fontSize={1}
+          href={`${assetDocument.url}?dl`}
+          icon={DownloadIcon}
+          mode="ghost"
+          text="Download file"
+        />
+      </Stack>
     )
   }
 
@@ -231,16 +246,19 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderAdvancedEdit(fields: Field[]) {
     return (
-      <Dialog
-        id={this.dialogId}
-        header={<>Edit details</>}
-        width={1}
-        onClose={this.handleStopAdvancedEdit}
-      >
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box padding={4}>{this.renderFields(fields)}</Box>
-        </PresenceOverlay>
-      </Dialog>
+      <LegacyLayerProvider zOffset="portal">
+        <Dialog
+          header="Edit details"
+          id={this.dialogId}
+          onClose={this.handleStopAdvancedEdit}
+          position="absolute"
+          width={1}
+        >
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
+            <Box padding={4}>{this.renderFields(fields)}</Box>
+          </PresenceOverlay>
+        </Dialog>
+      </LegacyLayerProvider>
     )
   }
 
@@ -310,7 +328,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     const {hasFileTargetFocus} = this.state
 
     return readOnly ? (
-      <span>Field is read only</span>
+      <Text align="center" muted>
+        This field is read-only
+      </Text>
     ) : (
       <UploadPlaceholder canPaste={hasFileTargetFocus} />
     )
@@ -341,7 +361,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   render() {
-    const {type, value, focusPath, compareValue, level, markers, readOnly, presence} = this.props
+    const {type, value, compareValue, level, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, hoveringFiles} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
@@ -365,73 +385,81 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           __unstable_changeIndicator={false}
         >
           <div>
-            <Box>
-              <ChangeIndicatorCompareValueProvider
+            <ChangeIndicatorCompareValueProvider
+              value={value?.asset?._ref}
+              compareValue={compareValue?.asset?._ref}
+            >
+              <ChangeIndicatorWithProvidedFullPath
+                path={[]}
+                hasFocus={this.hasFileTargetFocus()}
                 value={value?.asset?._ref}
                 compareValue={compareValue?.asset?._ref}
               >
-                <ChangeIndicatorWithProvidedFullPath
-                  path={[]}
-                  hasFocus={this.hasFileTargetFocus()}
-                  value={value?.asset?._ref}
-                  compareValue={compareValue?.asset?._ref}
+                <FileTarget
+                  tabIndex={0}
+                  disabled={readOnly === true}
+                  ref={this.setFocusInput}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
                 >
-                  <FileTarget
-                    tabIndex={0}
-                    shadow={1}
-                    disabled={readOnly === true}
-                    ref={this.setFocusInput}
-                    onFiles={this.handleSelectFiles}
-                    onFilesOver={this.handleFilesOver}
-                    onFilesOut={this.handleFilesOut}
-                    onFocus={this.handleFileTargetFocus}
-                    onBlur={this.handleFileTargetBlur}
-                  >
-                    <AssetBackground align="center" justify="center" padding={3}>
+                  <AssetBackground>
+                    <Container padding={3} sizing="border" width={0}>
                       {value?._upload && this.renderUploadState(value._upload)}
                       {!value?._upload && value?.asset && this.renderAsset()}
                       {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
                       {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
                         <Overlay>Drop top upload</Overlay>
                       )}
-                    </AssetBackground>
-                  </FileTarget>
-                </ChangeIndicatorWithProvidedFullPath>
-              </ChangeIndicatorCompareValueProvider>
-            </Box>
-            <Grid gap={1} columns={[2, 3]} marginTop={3}>
+                    </Container>
+                  </AssetBackground>
+                </FileTarget>
+              </ChangeIndicatorWithProvidedFullPath>
+            </ChangeIndicatorCompareValueProvider>
+
+            <Grid
+              gap={2}
+              marginTop={2}
+              style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
+            >
               {!readOnly && (
                 <FileInputButton
                   onSelect={this.handleSelectFiles}
                   mode="ghost"
                   icon={UploadIcon}
                   accept={accept}
-                  text="Upload"
+                  text="Upload file"
                 />
               )}
+
               {/* Enable when selecting already uploaded files is possible */}
               {/* {!readOnly && this.renderSelectFileButton()} */}
               {value && otherFields.length > 0 && (
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
                   mode="ghost"
-                  title={readOnly ? 'View details' : 'Edit details'}
                   onClick={this.handleStartAdvancedEdit}
-                  text={readOnly ? 'View details' : 'Edit'}
+                  text={readOnly ? 'View details' : 'Edit details'}
                 />
               )}
+
               {!readOnly && value?.asset && (
                 <Button
-                  tone="critical"
+                  icon={TrashIcon}
                   mode="ghost"
                   onClick={this.handleRemoveButtonClick}
-                  text="Remove"
+                  text="Remove file"
+                  tone="critical"
                 />
               )}
-              {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
             </Grid>
           </div>
+
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
+
+          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         </FormFieldSet>
       </>
     )

@@ -3,7 +3,7 @@ import {
   FormFieldSet,
   ImperativeToast,
 } from '@sanity/base/components'
-import {Box, Button, Dialog, Grid, Menu, MenuButton, MenuItem, ToastParams} from '@sanity/ui'
+import {Box, Button, Dialog, Grid, Menu, MenuButton, MenuItem, Text, ToastParams} from '@sanity/ui'
 import {get, partition, uniqueId} from 'lodash'
 import {Observable} from 'rxjs'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
@@ -25,6 +25,7 @@ import {
 import React from 'react'
 import PropTypes from 'prop-types'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
+import * as PathUtils from '@sanity/util/paths'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
@@ -42,7 +43,6 @@ import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {urlToFile, base64ToFile} from './utils/image'
 import {AssetBackground} from './styles'
-import * as PathUtils from '@sanity/util/paths'
 
 interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -481,7 +481,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   renderUploadPlaceholder() {
     const {readOnly} = this.props
     return readOnly ? (
-      <span>Field is read only</span>
+      <Text align="center" muted>
+        This field is read-only
+      </Text>
     ) : (
       <UploadPlaceholder canPaste={this.hasFileTargetFocus()} />
     )
