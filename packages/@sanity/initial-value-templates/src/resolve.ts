@@ -109,7 +109,6 @@ async function resolveInitialValue(
 
   // Get initial values from sanity object type
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
-  console.log(newValue)
   return validateInitialValue(newValue, template)
 }
 
