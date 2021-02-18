@@ -42,6 +42,7 @@ import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {urlToFile, base64ToFile} from './utils/image'
 import {AssetBackground} from './styles'
+import * as PathUtils from '@sanity/util/paths'
 
 interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -88,6 +89,39 @@ type ImageInputState = {
 
 type Focusable = {
   focus: () => void
+}
+
+type ImageInputFieldProps = {
+  field: ObjectField
+  onChange: (event: PatchEvent) => void
+  value: any
+  onBlur: () => void
+  onFocus: (path: Path) => void
+  readOnly: boolean
+  focusPath: Path
+  markers: Marker[]
+  level: number
+  presence: FormFieldPresence[]
+}
+
+function ImageInputField(props: ImageInputFieldProps) {
+  const {onChange, field, ...restProps} = props
+
+  const handleChange = React.useCallback(
+    (ev: PatchEvent) => {
+      onChange(ev.prefixAll(field.name))
+    },
+    [onChange, field]
+  )
+
+  return (
+    <FormBuilderInput
+      {...restProps}
+      type={field.type}
+      path={PathUtils.pathFor([field.name])}
+      onChange={handleChange}
+    />
+  )
 }
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
@@ -230,10 +264,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
 
-  handleFieldChange = (event: PatchEvent, field: ObjectField) => {
+  handleFieldChange = (event: PatchEvent) => {
     const {onChange, type} = this.props
     onChange(
-      event.prefixAll(field.name).prepend(
+      event.prepend(
         setIfMissing({
           _type: type.name,
         })
@@ -415,20 +449,22 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderField(field: ObjectField) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
-    const fieldValue = value && value[field.name]
+    const {value, level, focusPath, onFocus, readOnly, onBlur, presence, markers} = this.props
+    const fieldValue = value?.[field.name]
+    const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
+
     return (
-      <FormBuilderInput
+      <ImageInputField
+        field={field}
         value={fieldValue}
-        type={field.type}
-        onChange={(ev) => this.handleFieldChange(ev, field)}
-        path={[field.name]}
+        onChange={this.handleFieldChange}
         onFocus={onFocus}
         onBlur={onBlur}
         readOnly={Boolean(readOnly || field.type.readOnly)}
         focusPath={focusPath}
         level={level}
         presence={presence}
+        markers={fieldMarkers}
       />
     )
   }
