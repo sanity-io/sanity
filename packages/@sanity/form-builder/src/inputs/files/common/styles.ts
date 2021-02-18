@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components'
 import {Card, rem, Theme} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
-import {focusRingStyle} from './focusringUtils'
+import {focusRingBorderStyle, focusRingStyle} from './focusringUtils'
 
 export type {FileInfo} from '../../common/fileTarget'
 
@@ -9,10 +9,14 @@ const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
+    --card-focus-box-shadow: ${focusRingBorderStyle(border)};
+
     border-radius: ${rem(theme.sanity.radius[1])};
     outline: none;
+    box-shadow: var(--card-focus-box-shadow);
+
     &:focus {
-      box-shadow: ${focusRingStyle({
+      --card-focus-box-shadow: ${focusRingStyle({
         base: theme.sanity.color.base,
         border,
         focusRing: theme.sanity.focusRing,
