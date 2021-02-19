@@ -20,7 +20,7 @@ export type ReferenceFilterResolver = (options: {
   document: SanityDocument
   parent?: Record<string, unknown> | Record<string, unknown>[]
   parentPath: Path
-}) => ReferenceFilterSearchOptions
+}) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
 export type ReferenceOptions =
   | {filter: ReferenceFilterResolver}
