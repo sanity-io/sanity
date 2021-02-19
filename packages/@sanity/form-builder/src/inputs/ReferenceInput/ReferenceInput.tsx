@@ -162,7 +162,7 @@ export default withValuePath(
         this.search('')
       }
 
-      resolveUserDefinedFilter = (): ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions> => {
+      resolveUserDefinedFilter = () => {
         const {type, document, getValuePath} = this.props
         const options = type.options
         if (!options) {
