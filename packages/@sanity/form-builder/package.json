@@ -51,6 +51,7 @@
     "react-datepicker": "^1.8.0",
     "react-measure": "^2.3.0",
     "rxjs": "^6.5.3",
+    "scroll-into-view-if-needed": "^2.2.26",
     "shallow-equals": "^1.0.0",
     "speakingurl": "^13.0.0",
     "styled-components": "^5.2.1"

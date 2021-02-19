@@ -13,11 +13,15 @@
   background: var(--component-bg);
   border-radius: var(--border-radius-small);
   padding: calc(var(--extra-small-padding) - 1px);
-  transition: box-shadow 100ms;
+  transition: box-shadow 250ms;
 
   @nest :global(.ArrayInput__moving) & {
     box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
       0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
+  }
+
+  @nest [aria-selected='true'] & {
+    box-shadow: 0 0 0 1px var(--selected-item-color);
   }
 }
 

@@ -3,6 +3,8 @@ import {ArraySchemaType, Marker, Path} from '@sanity/types'
 import React from 'react'
 import PatchEvent from '../../../PatchEvent'
 import {ItemValue} from '../typedefs'
+import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
+import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {ArrayInputGridItem} from './ArrayInputGridItem'
 import {ArrayInputListItem} from './ArrayInputListItem'
 
@@ -25,11 +27,23 @@ interface ArrayInputItemProps {
 }
 
 export function ArrayInputItem(props: ArrayInputItemProps) {
+  const elementRef = React.useRef<HTMLDivElement>()
+  const hasFocusWithin = hasFocusWithinPath(props.focusPath, props.value)
+  useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithin)
+
   const options = props.type.options || {}
 
   if (options.layout === 'grid') {
-    return <ArrayInputGridItem {...props} />
+    return (
+      <div ref={elementRef} aria-selected={hasFocusWithin}>
+        <ArrayInputGridItem {...props} />
+      </div>
+    )
   }
 
-  return <ArrayInputListItem {...props} />
+  return (
+    <div ref={elementRef} aria-selected={hasFocusWithin}>
+      <ArrayInputListItem {...props} />
+    </div>
+  )
 }

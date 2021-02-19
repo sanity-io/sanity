@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {FunctionComponent, SyntheticEvent, useMemo} from 'react'
+import React, {FunctionComponent, SyntheticEvent, useMemo, useRef} from 'react'
 import classNames from 'classnames'
 import {Path, Marker, isValidationErrorMarker} from '@sanity/types'
 import {
@@ -11,6 +11,9 @@ import {
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 import {PatchEvent} from '../../../PatchEvent'
+
+import {useScrollIntoViewOnFocusWithin} from '../../../hooks/useScrollIntoViewOnFocusWithin'
+import {hasFocusWithinPath} from '../../../utils/focusUtils'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import styles from './BlockObject.css'
 
@@ -20,6 +23,7 @@ type Props = {
   markers: Marker[]
   onChange: (patchEvent: PatchEvent, path: Path) => void
   onFocus: (path: Path) => void
+  focusPath: Path
   readOnly: boolean
   type: Type
   value: PortableTextBlock
@@ -29,11 +33,16 @@ export const BlockObject: FunctionComponent<Props> = ({
   attributes: {focused, selected, path},
   editor,
   markers,
+  focusPath,
   onFocus,
   readOnly,
   type,
   value,
 }): JSX.Element => {
+  const elementRef = useRef()
+
+  useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, value))
+
   const errors = markers.filter(isValidationErrorMarker)
   const classnames = classNames([
     styles.root,
@@ -78,7 +87,7 @@ export const BlockObject: FunctionComponent<Props> = ({
     )
   }, [value, readOnly])
   return (
-    <div className={classnames} onDoubleClick={handleClickToOpen}>
+    <div className={classnames} ref={elementRef} onDoubleClick={handleClickToOpen}>
       <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
         {blockPreview}
       </div>

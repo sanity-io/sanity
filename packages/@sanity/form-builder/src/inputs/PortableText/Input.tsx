@@ -21,6 +21,7 @@ import {useZIndex} from '@sanity/base/components'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import PatchEvent from '../../PatchEvent'
+import {EMPTY_ARRAY} from '../../utils/empty'
 import styles from './PortableTextInput.css'
 import {BlockObject} from './Objects/BlockObject'
 import {InlineObject} from './Objects/InlineObject'
@@ -246,6 +247,7 @@ export default function PortableTextInput(props: Props) {
           editor={editor}
           markers={blockMarkers}
           onChange={handleFormBuilderEditObjectChange}
+          focusPath={focusPath || EMPTY_ARRAY}
           onFocus={onFocus}
           readOnly={readOnly}
           type={blockType}

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import scrollIntoView from 'scroll-into-view-if-needed'
-
 import {useDocumentPresence} from '@sanity/base/hooks'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import documentStore from 'part:@sanity/base/datastore/document'
@@ -48,14 +45,6 @@ export const EditForm = memo((props: Props) => {
     schema,
     type,
   } = props
-
-  const startSegment = focusPath[0]
-  useEffect(() => {
-    const el = document.querySelector(`[data-focus-path="${startSegment}"]`)
-    if (el) {
-      scrollIntoView(el, {scrollMode: 'if-needed', block: 'nearest'})
-    }
-  }, [startSegment])
 
   useEffect(() => {
     subscriptionRef.current = documentStore.pair
