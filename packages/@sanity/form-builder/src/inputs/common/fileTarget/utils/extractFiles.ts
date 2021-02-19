@@ -45,16 +45,22 @@ function normalizeItems(items: DataTransferItem[]) {
         return entry.isDirectory ? walk(entry) : toArray(item.getAsFile())
       }
 
-      // file
       if (item.kind === 'file') {
         const file = item.getAsFile()
         return Promise.resolve(file ? [file] : [])
       }
 
-      // others
-      return new Promise<string>((resolve) => item.getAsString(resolve)).then((str) =>
-        str ? [new File([str], 'unknown.txt', {type: item.type})] : []
-      )
+      if (item.kind === 'string') {
+        // note: for some reason item.type has been set to an empty string at the time the DataTransferItem.getAsString callback is called
+        // so the next line is there to keep it in scope
+        const mimeType = item.type
+        return new Promise<string>((resolve) => item.getAsString(resolve)).then((str) => {
+          return str ? [new File([str], 'datatransfer.txt', {type: mimeType})] : []
+        })
+      }
+
+      console.warn('Unknown DataTransferItem.kind: %s', item.kind)
+      return Promise.resolve([])
     })
   )
 }
