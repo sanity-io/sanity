@@ -336,7 +336,7 @@ export class ArrayInput extends React.Component<Props> {
             </Alert>
           )}
 
-          <Stack space={1}>
+          <Stack space={2}>
             <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
               {(value || []).map((item, index) => {
                 const isChildMarker = (marker: Marker) =>
