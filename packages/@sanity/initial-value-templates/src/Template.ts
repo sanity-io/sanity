@@ -1,3 +1,4 @@
+import {SchemaType} from '@sanity/types'
 import {TemplateParameter} from './TemplateParameters'
 
 type ValueResolver = (parameters: {[key: string]: any}) => {[key: string]: any}
@@ -7,7 +8,7 @@ export interface Template {
   title: string
   description?: string
   schemaType: string
-  icon?: Function
+  icon?: SchemaType['icon']
   value: ValueResolver | {[key: string]: any}
   parameters?: TemplateParameter[]
 }
@@ -51,7 +52,7 @@ export class TemplateBuilder {
     return this.spec.schemaType
   }
 
-  icon(icon: Function) {
+  icon(icon: SchemaType['icon']) {
     return this.clone({icon})
   }
 

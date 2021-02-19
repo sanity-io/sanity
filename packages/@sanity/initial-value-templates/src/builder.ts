@@ -1,17 +1,21 @@
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {Template, TemplateBuilder} from './Template'
-import {Schema, SchemaType, getDefaultSchema} from './parts/Schema'
+import {Schema, getDefaultSchema} from './parts/Schema'
 
 function defaultTemplateForType(
   schemaType: string | SchemaType,
   sanitySchema?: Schema
 ): TemplateBuilder {
-  let type: SchemaType
+  let docType: SchemaType
   if (typeof schemaType === 'string') {
     const schema = sanitySchema || getDefaultSchema()
-    type = schema.get(schemaType)
+    docType = schema.get(schemaType)
   } else {
-    type = schemaType
+    docType = schemaType
   }
+
+  // @todo fix typings for schema types to include `initialValue`!
+  const type = docType as ObjectSchemaType & {initialValue: Record<string, unknown>}
 
   return new TemplateBuilder({
     id: type.name,
@@ -22,7 +26,7 @@ function defaultTemplateForType(
   })
 }
 
-function defaults(sanitySchema?: Schema) {
+function defaults(sanitySchema?: Schema): TemplateBuilder[] {
   const schema = sanitySchema || getDefaultSchema()
   if (!schema) {
     throw new Error(
