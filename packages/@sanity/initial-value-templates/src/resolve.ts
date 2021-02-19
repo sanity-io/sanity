@@ -82,7 +82,7 @@ export async function getObjectFieldsInitialValues(
   return initialValues
 }
 
-async function resolveInitialValue(
+export async function resolveInitialValue(
   template: Template | TemplateBuilder,
   params: {[key: string]: any} = {}
 ): Promise<{[key: string]: any}> {
@@ -111,5 +111,3 @@ async function resolveInitialValue(
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
   return validateInitialValue(newValue, template)
 }
-
-export {resolveInitialValue}
