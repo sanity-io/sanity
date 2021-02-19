@@ -28,6 +28,7 @@
     "@sanity/types": "2.4.0",
     "@sanity/ui": "^0.33.4",
     "@sanity/util": "2.4.0",
+    "@sanity/color": "^2.0.13",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
     "classnames": "^2.2.5",
