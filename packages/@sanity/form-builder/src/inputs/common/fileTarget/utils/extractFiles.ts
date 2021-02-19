@@ -44,16 +44,21 @@ function normalizeItems(items: DataTransferItem[]) {
         return entry.isDirectory ? walk(entry) : toArray(item.getAsFile())
       }
 
-      // file
       if (item.kind === 'file') {
         const file = item.getAsFile()
         return Promise.resolve(file ? [file] : [])
       }
 
-      // others
-      return new Promise<string>((resolve) => item.getAsString(resolve)).then((str) =>
-        str ? [new File([str], 'unknown.txt', {type: item.type})] : []
-      )
+      if (item.kind === 'string') {
+        // We previously had support for reading datatransfer of strings here but decided to remove it since we don't handle it in higher up in the stack yet.
+        // If one day we want to support data transfer from a string value (e.g. copy+paste from a field to another), an earlier
+        // version of this file includes an implementation that uses DataTransferItem.getAsString to read the string value into a File
+        console.warn('DataTransfer with kind="string" is currently not supported')
+        return Promise.resolve([])
+      }
+
+      console.warn('Unknown DataTransferItem.kind: %s', item.kind)
+      return Promise.resolve([])
     })
   )
 }
