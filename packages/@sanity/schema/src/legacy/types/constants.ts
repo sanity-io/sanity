@@ -11,4 +11,5 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
   'hidden',
   'inputComponent',
   'diffComponent',
+  'initialValue',
 ]
