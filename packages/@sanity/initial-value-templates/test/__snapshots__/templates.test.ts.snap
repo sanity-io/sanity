@@ -22,6 +22,15 @@ Array [
       "_type": "post",
     },
   },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
 ]
 `;
 
@@ -68,6 +77,15 @@ Array [
       "_type": "post",
     },
   },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
 ]
 `;
 
@@ -97,6 +115,15 @@ Array [
     "value": Object {
       "_type": "post",
     },
+  },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
   },
 ]
 `;
@@ -128,6 +155,15 @@ Array [
       "_type": "post",
     },
   },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
 ]
 `;
 
@@ -157,6 +193,15 @@ Array [
     "value": Object {
       "_type": "post",
     },
+  },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
   },
 ]
 `;
@@ -188,6 +233,15 @@ Array [
       "_type": "post",
     },
   },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
 ]
 `;
 
@@ -218,6 +272,15 @@ Array [
       "_type": "post",
     },
   },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
+  },
 ]
 `;
 
@@ -247,6 +310,15 @@ Array [
     "value": Object {
       "_type": "post",
     },
+  },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
   },
 ]
 `;
