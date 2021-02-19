@@ -1,21 +1,17 @@
-import {ImperativeToast} from '@sanity/base/components'
-import {ToastParams, Text} from '@sanity/ui'
+import {Box, Flex, Text, useToast} from '@sanity/ui'
 import React from 'react'
-import {Path, SchemaType} from '@sanity/types'
-import humanize from 'humanize-list'
+import {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 // todo: define this as a core interface in this package (e.g. import from src/types.ts or similar instead of the sanity folder)
+import styled from 'styled-components'
 import {ResolvedUploader, Uploader} from '../../../../sanity/uploads/types'
-import {fileTarget} from '../../../common/fileTarget'
+import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {Overlay} from './styles'
 
-type Props = {
-  type: SchemaType
-  children: React.ReactChildren | null
-  className?: string
-  onFocus: (path: Path) => void
+type UploadTargetProps = {
   getUploadOptions: (file: File) => ResolvedUploader[]
   onUpload?: (event: {type: SchemaType; file: File; uploader: Uploader}) => void
+  children?: React.ReactNode
 }
 
 type UploadTask = {
@@ -23,103 +19,95 @@ type UploadTask = {
   uploaderCandidates: ResolvedUploader[]
 }
 
-type State = {
-  isDraggingOver: boolean
-}
+const Root = styled.div`
+  position: relative;
+`
 
-export function uploadTarget<T>(Component: any): React.ComponentType<any> {
-  const FileTarget = fileTarget(Component)
+export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
+  const FileTarget = fileTarget<any>(Component)
 
-  return class UploadTarget extends React.Component<Props & T, State> {
-    toast: {push: (params: ToastParams) => void} | null = null
+  return React.forwardRef(function UploadTarget(
+    props: UploadTargetProps & Props,
+    forwardedRef: React.ForwardedRef<HTMLElement>
+  ) {
+    const {children, getUploadOptions, onUpload, ...rest} = props
+    const {push: pushToast} = useToast()
 
-    _element: HTMLElement | null = null
+    const uploadFile = React.useCallback(
+      (file: File, resolvedUploader: ResolvedUploader) => {
+        const {type, uploader} = resolvedUploader
+        onUpload?.({file, type, uploader})
+      },
+      [onUpload]
+    )
 
-    state: State = {
-      isDraggingOver: false,
-    }
-    handleReceiveFiles = (files: File[]) => {
-      this.setState({isDraggingOver: false})
-      this.uploadFiles(files)
-    }
-    handleDragEnter = (event: React.DragEvent) => {
-      this.setState({isDraggingOver: true})
-    }
-    handleDragLeave = (event: React.DragEvent) => {
-      this.setState({isDraggingOver: false})
-    }
+    const handleFiles = React.useCallback(
+      (files: File[]) => {
+        const tasks: UploadTask[] = files.map((file) => ({
+          file,
+          uploaderCandidates: getUploadOptions(file),
+        }))
+        const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
+        const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
 
-    uploadFiles(files: File[]) {
-      const tasks: UploadTask[] = files.map((file) => ({
-        file,
-        uploaderCandidates: this.props.getUploadOptions(file),
-      }))
-      const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
-      const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
+        if (rejected.length > 0) {
+          const plural = rejected.length > 1
+          pushToast({
+            closable: true,
+            status: 'warning',
+            title: `The following item${
+              plural ? 's' : ''
+            } can't be uploaded because there's no known conversion from content type${
+              plural ? 's' : ''
+            } to array item:`,
+            description: rejected.map((task, i) => (
+              <Flex key={i} padding={2}>
+                <Box marginLeft={1}>
+                  <Text weight="semibold">{task.file.name}</Text>
+                </Box>
+                <Box paddingLeft={2}>
+                  <Text size={1}>({task.file.type})</Text>
+                </Box>
+              </Flex>
+            )),
+          })
+        }
 
-      if (rejected.length > 0) {
-        this.toast?.push({
-          closable: true,
-          status: 'warning',
-          title: 'File(s) not accepted',
-          description: humanize(rejected.map((task) => task.file.name)),
+        // todo: consider if we should to ask the user here
+        // the list of candidates is sorted by their priority and the first one is selected
+        // const ambiguous = tasks
+        //   .filter(task => task.uploaderCandidates.length > 1)
+        ready.forEach((task) => {
+          uploadFile(
+            task.file,
+            // eslint-disable-next-line max-nested-callbacks
+            sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0]
+          )
         })
-      }
+      },
+      [pushToast, getUploadOptions, uploadFile]
+    )
 
-      // todo: consider if we should to ask the user here
-      // the list of candidates is sorted by their priority and the first one is selected
-      // const ambiguous = tasks
-      //   .filter(task => task.uploaderCandidates.length > 1)
-      ready.forEach((task) => {
-        this.uploadFile(
-          task.file,
-          sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0]
-        )
-      })
-    }
+    const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])
+    const handleFilesOut = React.useCallback(() => setHoveringFiles([]), [])
 
-    uploadFile(file: File, resolvedUploader: ResolvedUploader) {
-      const {onUpload} = this.props
-      const {type, uploader} = resolvedUploader
-      onUpload?.({file, type, uploader})
-    }
-    setElement = (element: any) => {
-      // Only care about focus events from children
-      this._element = element
-    }
-
-    focus() {
-      if (this._element) {
-        this._element.focus()
-      }
-    }
-
-    setToast = (toast: {push: (params: ToastParams) => void}) => {
-      this.toast = toast
-    }
-
-    render() {
-      const {children, type, onUpload, getUploadOptions, ...rest} = this.props
-      const {isDraggingOver} = this.state
-      return (
-        <div style={{position: 'relative'}}>
-          <ImperativeToast ref={this.setToast} />
-          <FileTarget
-            {...rest}
-            ref={this.setElement}
-            onFiles={this.handleReceiveFiles}
-            onDragEnter={this.handleDragEnter}
-            onDragLeave={this.handleDragLeave}
-          >
-            {isDraggingOver && (
-              <Overlay>
-                <Text>Drop to upload</Text>
-              </Overlay>
-            )}
-            {children}
-          </FileTarget>
-        </div>
-      )
-    }
-  }
+    return (
+      <Root>
+        <FileTarget
+          {...rest}
+          ref={forwardedRef}
+          onFiles={handleFiles}
+          onFilesOver={setHoveringFiles}
+          onFilesOut={handleFilesOut}
+        >
+          {hoveringFiles.length > 0 && (
+            <Overlay>
+              <Text>Drop to upload</Text>
+            </Overlay>
+          )}
+          {children}
+        </FileTarget>
+      </Root>
+    )
+  })
 }

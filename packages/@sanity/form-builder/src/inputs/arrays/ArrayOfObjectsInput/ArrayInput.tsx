@@ -15,13 +15,13 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
-import {fileTarget} from '../../common/fileTarget'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
+import {uploadTarget} from './uploadTarget/uploadTarget'
 
 declare const __DEV__: boolean
 
-const UploadTargetFieldset = fileTarget(FormFieldSet)
+const UploadTargetFieldset = uploadTarget(FormFieldSet)
 
 const NO_MARKERS: Marker[] = []
 
@@ -285,18 +285,8 @@ export class ArrayInput extends React.Component<Props> {
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
 
-    const FieldSetComponent = directUploads ? UploadTargetFieldset : FormFieldSet
-    const fileTargetProps = directUploads
-      ? {
-          disabled: Boolean(readOnly),
-          ref: this.setFocusArea,
-          getUploadOptions: this.getUploadOptions,
-          onUpload: this.handleUpload,
-        }
-      : {}
-
     return (
-      <FieldSetComponent
+      <UploadTargetFieldset
         __unstable_changeIndicator={false}
         tabIndex={0}
         title={type.title}
@@ -306,7 +296,10 @@ export class ArrayInput extends React.Component<Props> {
         level={level - 1}
         __unstable_presence={presence.filter((item) => item.path[0] === '$')}
         __unstable_markers={markers}
-        {...fileTargetProps}
+        disabled={!directUploads || readOnly}
+        ref={this.setFocusArea}
+        getUploadOptions={this.getUploadOptions}
+        onUpload={this.handleUpload}
       >
         <Stack space={2}>
           {hasMissingKeys && (
@@ -394,7 +387,7 @@ export class ArrayInput extends React.Component<Props> {
             />
           </Stack>
         </Stack>
-      </FieldSetComponent>
+      </UploadTargetFieldset>
     )
   }
 }
