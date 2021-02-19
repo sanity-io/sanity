@@ -136,7 +136,7 @@ export default class Fieldset extends React.PureComponent<FieldsetProps, State> 
     return (
       <div
         {...rest}
-        onFocus={this.handleFocus}
+        onFocus={isCollapsible && isCollapsed ? this.handleFocus : null}
         tabIndex={isCollapsible && isCollapsed ? tabIndex : -1}
         ref={this.setFocusElement}
         className={rootClassName}
