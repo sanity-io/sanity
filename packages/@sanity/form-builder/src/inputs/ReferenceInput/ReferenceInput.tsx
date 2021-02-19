@@ -162,7 +162,7 @@ export default withValuePath(
         this.search('')
       }
 
-      resolveUserDefinedFilter = (): ReferenceFilterSearchOptions => {
+      resolveUserDefinedFilter = () => {
         const {type, document, getValuePath} = this.props
         const options = type.options
         if (!options) {
@@ -179,13 +179,14 @@ export default withValuePath(
 
         return {filter, params}
       }
-      search = (query: string) => {
-        const {type, onSearch} = this.props
-        const options = this.resolveUserDefinedFilter()
-
+      search = async (query: string) => {
         this.setState({
           isFetching: true,
         })
+
+        const {type, onSearch} = this.props
+        const options = await this.resolveUserDefinedFilter()
+
         this.subscriptions.replace(
           'search',
           onSearch(query, type, options).subscribe({
@@ -205,7 +206,7 @@ export default withValuePath(
             },
             error: (err: SearchError) => {
               const isQueryError = err.details && err.details.type === 'queryParseError'
-              if (!isQueryError || !this.resolveUserDefinedFilter().filter) {
+              if (!isQueryError || !options.filter) {
                 throw err
               }
 
