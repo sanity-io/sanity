@@ -24,6 +24,35 @@ const compiled = Schema.compile({
         role: 'Developer',
       }),
     },
+    {
+      name: 'address',
+      title: 'Address',
+      type: 'object',
+      fields: [
+        {
+          name: 'street',
+          type: 'string',
+          initialValue: 'one old street',
+        },
+        {
+          name: 'streetNo',
+          type: 'string',
+          initialValue: '123',
+        },
+      ],
+    },
+    {
+      name: 'person',
+      title: 'Person',
+      type: 'document',
+      icon: Icon,
+      fields: [
+        {
+          name: 'address',
+          type: 'address',
+        },
+      ],
+    },
 
     {
       name: 'post',
