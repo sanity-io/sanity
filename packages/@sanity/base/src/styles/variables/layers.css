@@ -10,6 +10,8 @@
   --zindex-navbar-dialog: 500001;
 
   --zindex-pane: 100;
+  --zindex-pane-header: 15000;
+  --zindex-pane-footer: 20000;
   --zindex-pane-resizer: 150;
 
   --zindex-portal: 200;

@@ -4,6 +4,8 @@ import {useZIndex} from '../ZIndexProvider'
 
 export type LegacyLayerZIndexKey =
   | 'pane'
+  | 'paneHeader'
+  | 'paneFooter'
   | 'paneResizer'
   | 'navbar'
   | 'navbarPopover'

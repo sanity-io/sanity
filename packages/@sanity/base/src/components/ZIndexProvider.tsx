@@ -6,6 +6,8 @@ interface ZIndexContextValue {
   navbarPopover: number
   navbarDialog: number
   pane: number
+  paneHeader: number
+  paneFooter: number
   paneResizer: number
   portal: number
   popover: number
@@ -49,6 +51,8 @@ const defaults: ZIndexContextValue = {
   navbarPopover: 500000,
   navbarDialog: 500001,
   pane: 100,
+  paneHeader: 15000,
+  paneFooter: 20000,
   paneResizer: 150,
   portal: 200,
   popover: 200,
@@ -82,11 +86,8 @@ function getLegacyZIndexes(): ZIndexContextValue {
       - DefaultPane
     */
     pane: getCustomCSSPropertyNumber('--zindex-pane') || defaults.pane,
-
-    /*
-      used by:
-      - DefaultPane
-    */
+    paneHeader: getCustomCSSPropertyNumber('--zindex-pane-header') || defaults.paneHeader,
+    paneFooter: getCustomCSSPropertyNumber('--zindex-pane-footer') || defaults.paneFooter,
     paneResizer: getCustomCSSPropertyNumber('--zindex-pane-resizer') || defaults.paneResizer,
 
     /*
