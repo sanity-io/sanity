@@ -1,4 +1,4 @@
-import {defaultsDeep, has, isPlainObject, set} from 'lodash'
+import {defaultsDeep, has, isEmpty, isFunction, isPlainObject, set, get, unset} from 'lodash'
 import schema from 'part:@sanity/base/schema'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -9,19 +9,38 @@ export function isBuilder(template: Template | TemplateBuilder): template is Tem
 
 export async function getObjectFieldsInitialValues(
   documentName: string,
-  value: any,
-  params: {[key: string]: any} = {},
+  value: Record<string, any>,
+  params: {[key: string]: unknown} = {},
   parentKey?: string,
   nestDepth?: number
 ): Promise<Record<string, any>> {
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const fields = (schemaType.fields || []).filter((f) => f.type.jsonType === 'object')
+  const fields = ((schemaType.jsonType === 'object' && schemaType.fields) || []).filter(
+    (f) => f.type.jsonType === 'object'
+  )
+
+  const primitiveFieldsWithInitial = (
+    (schemaType.jsonType === 'object' && schemaType.fields) ||
+    []
+  ).filter(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (f) => f.type.jsonType !== 'object' && f.type.jsonType !== 'array' && f.type.initialValue
+  )
 
   let initialValues = value
+  let primitiveInitialValues = {}
+
+  // If an initialValue was set, we just want to break the loop
+  for (const field of primitiveFieldsWithInitial) {
+    if (field.type.initialValue && parentKey) {
+      primitiveInitialValues[field.name] = isFunction(field.type.initialValue)
+        ? await field.type.initialValue(params)
+        : field.type.initialValue
+    }
+  }
 
   for (const field of fields) {
     // make new parent key
@@ -34,30 +53,38 @@ export async function getObjectFieldsInitialValues(
     }
 
     let newFieldValue = {}
-    // get initial value for the current field
 
+    // get initial value for the current field
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (field.type.initialValue) {
-      newFieldValue = isPlainObject(field.type.initialValue)
-        ? field.type.initialValue
-        : await field.type.initialValue(params)
+      newFieldValue = isFunction(field.type.initialValue)
+        ? await field.type.initialValue(params)
+        : field.type.initialValue
     }
 
     const fieldValue = {
-      _type: field.type.name,
       ...newFieldValue,
+      _type: field.type.name,
     }
 
-    newFieldValue = {
-      [field.name]: fieldValue,
+    // if we do have some value that contains more keys the _type
+    // we want to update our initial value with it
+    if (newFieldValue) {
+      let valuesToUpdate = {
+        [field.name]: fieldValue,
+      }
+
+      // Set the new value to the actual position in the tree
+      if (parentKey) {
+        valuesToUpdate = set({}, parentKey, valuesToUpdate)
+      }
+
+      initialValues = defaultsDeep(value, valuesToUpdate)
     }
 
-    // Set the new value to the actual position in the tree
-    if (parentKey) {
-      newFieldValue = set({}, parentKey, newFieldValue)
-    }
-
-    initialValues = defaultsDeep(value, newFieldValue)
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK)
     } else {
@@ -77,6 +104,25 @@ export async function getObjectFieldsInitialValues(
         )
       }
     }
+  }
+
+  // We set our initial values with our primitive values
+  if (!isEmpty(primitiveInitialValues)) {
+    if (parentKey) {
+      primitiveInitialValues = set({}, parentKey, primitiveInitialValues)
+    }
+    initialValues = defaultsDeep(value, primitiveInitialValues)
+  }
+
+  // finally we want to remove any object with just one or zero keys
+  const currentObject = parentKey ? get(initialValues, parentKey) : undefined
+  if (
+    parentKey &&
+    currentObject &&
+    isPlainObject(currentObject) &&
+    Object.keys(currentObject).length < 2
+  ) {
+    unset(initialValues, parentKey)
   }
 
   return initialValues
@@ -108,6 +154,7 @@ export async function resolveInitialValue(
   }
 
   // Get initial values from sanity object type
+  initialValue = validateInitialValue(initialValue, template)
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
   return validateInitialValue(newValue, template)
 }
