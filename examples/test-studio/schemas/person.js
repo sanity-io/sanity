@@ -92,6 +92,10 @@ export default {
         _type: 'reference',
       },
     ],
+    address: {
+      _type: 'address',
+      city: 'New York',
+    },
     myAddresses: [
       {
         _type: 'address',
