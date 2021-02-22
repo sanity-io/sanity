@@ -3,6 +3,7 @@ import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
 import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
+import styled from 'styled-components'
 import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../../transitional/IntentButton'
@@ -12,6 +13,12 @@ import {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle grid />
 
+const Root = styled(Card)`
+  transition: 250ms border;
+  &[aria-selected='true'] {
+    border-color: var(--card-focus-ring-color);
+  }
+`
 export const ItemCell = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLElement>
@@ -28,12 +35,14 @@ export const ItemCell = React.forwardRef(function ItemCell(
     presence,
     onRemove,
     validation,
+    ...rest
   } = props
   return (
-    <Card radius={2} shadow={1} padding={1} ref={ref}>
+    <Root {...rest} border radius={2} padding={1} ref={ref}>
       {type ? (
         <Card
           as="button"
+          type="button"
           radius={2}
           flex={1}
           tabIndex={0}
@@ -96,6 +105,6 @@ export const ItemCell = React.forwardRef(function ItemCell(
           />
         </Box>
       </Flex>
-    </Card>
+    </Root>
   )
 })
