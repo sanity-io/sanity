@@ -1,4 +1,3 @@
-import {isEqual} from 'lodash'
 import {
   distinctUntilChanged,
   map,
@@ -53,14 +52,6 @@ export const validation = memoize(
           )
         ),
         scan((prev, next) => ({...prev, ...next}), INITIAL_VALIDATION_STATUS),
-        scan((prev, next) => {
-          if (isEqual(prev.markers, next.markers)) {
-            // Ensure referential identity if the markers did not change
-            next.markers = prev.markers
-          }
-
-          return next
-        }),
         distinctUntilChanged(
           (prev, next) => prev.isValidating === next.isValidating && prev.markers === next.markers
         )
