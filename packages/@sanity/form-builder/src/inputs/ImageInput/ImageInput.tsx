@@ -104,7 +104,12 @@ type ImageInputState = {
   selectedAssetSource?: any
   hasFocus: boolean
 }
-const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
+const globalAssetSources = (userDefinedAssetSources ? userDefinedAssetSources : assetSources).map(
+  (source) => ({
+    ...source,
+    component: withDocument(source.component),
+  })
+)
 
 function ImageInputField(props: any) {
   const {onChange, ...restProps} = props
