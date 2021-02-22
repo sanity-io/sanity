@@ -39,7 +39,7 @@ export interface BaseSchemaType {
   readOnly?: boolean
   liveEdit?: boolean
   icon?: React.ComponentType
-  initialValue?: ((arg?: any) => Promise<never> | any) | any | undefined
+  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
 
   preview?: {
     select?: PreviewValue
