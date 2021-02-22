@@ -14,6 +14,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -69,6 +80,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -104,6 +126,17 @@ Array [
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
   },
   Object {
     "description": undefined,
@@ -147,6 +180,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -182,6 +226,17 @@ Array [
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
   },
   Object {
     "description": undefined,
@@ -225,6 +280,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -264,6 +330,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -286,7 +363,7 @@ Array [
 
 exports[`getTemplates validates that templates has unique IDs: warning 1`] = `
 "Failed to load defined templates, falling back to defaults:
-Template \\"Developer\\" at index 1 has the same ID (\\"author\\") as template \\"Author\\" at index 0"
+Template \\"person\\" is missing required properties: value"
 `;
 
 exports[`getTemplates validates that templates has value 1`] = `
@@ -299,6 +376,17 @@ Array [
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
   },
   Object {
     "description": undefined,

@@ -40,6 +40,17 @@ Array [
   TemplateBuilder {
     "spec": Object {
       "icon": [Function],
+      "id": "person",
+      "schemaType": "person",
+      "title": "Person",
+      "value": Object {
+        "_type": "person",
+      },
+    },
+  },
+  TemplateBuilder {
+    "spec": Object {
+      "icon": [Function],
       "id": "post",
       "schemaType": "post",
       "title": "Post",
@@ -70,6 +81,17 @@ Array [
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
   },
   Object {
     "description": undefined,
