@@ -151,7 +151,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
                 ? styles.loadingScreenLoaded
                 : styles.loadingScreen
             }
-            zOffset={5000}
+            zOffset={600000}
             ref={this.setLoadingScreenElement}
           >
             <AppLoadingScreen text="Restoring Sanity" />
