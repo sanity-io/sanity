@@ -1,11 +1,6 @@
+import client from '@sanity/client'
 import generateHelpUrl from '@sanity/generate-help-url'
 import getUserConfig from './getUserConfig'
-import client from '@sanity/client'
-
-/* eslint-disable no-process-env */
-const envAuthToken = process.env.SANITY_AUTH_TOKEN
-const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-/* eslint-enable no-process-env */
 
 const apiHosts = {
   staging: 'https://api.sanity.work',
@@ -37,6 +32,13 @@ export default function clientWrapper(manifest, configPath) {
   requester.use(authErrors())
 
   return function (opts = {}) {
+    // Read these environment variables "late" to allow `.env` files
+
+    /* eslint-disable no-process-env */
+    const envAuthToken = process.env.SANITY_AUTH_TOKEN
+    const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
+    /* eslint-enable no-process-env */
+
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const token = envAuthToken || userConfig.get('authToken')
