@@ -2,7 +2,7 @@ import React from 'react'
 import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
-import {Box} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
@@ -165,7 +165,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         __unstable_changeIndicator={false}
         __unstable_markers={markers}
       >
-        <Box>
+        <Stack space={2}>
           {value && value.length > 0 && (
             <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
               {value.map((item, index) => {
@@ -197,19 +197,18 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
               })}
             </List>
           )}
-          <Box marginTop={1}>
-            <ArrayFunctions
-              type={type}
-              value={value}
-              readOnly={readOnly}
-              onAppendItem={this.handleAppend}
-              onPrependItem={this.handlePrepend}
-              onFocusItem={this.handleFocusItem}
-              onCreateValue={getEmptyValue}
-              onChange={onChange}
-            />
-          </Box>
-        </Box>
+
+          <ArrayFunctions
+            type={type}
+            value={value}
+            readOnly={readOnly}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
+            onCreateValue={getEmptyValue}
+            onChange={onChange}
+          />
+        </Stack>
       </FormFieldSet>
     )
   }
