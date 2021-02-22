@@ -359,7 +359,6 @@ export class ArrayInput extends React.Component<Props> {
                       filterField={filterField}
                       focusPath={focusPath}
                       index={index}
-                      level={level}
                       markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                       onBlur={onBlur}
                       onChange={this.handleItemChange}
@@ -381,7 +380,7 @@ export class ArrayInput extends React.Component<Props> {
               readOnly={readOnly}
               onAppendItem={this.handleAppend}
               onPrependItem={this.handlePrepend}
-              onFocusItem={this.handleFocusItem}
+              onFocusItem={onFocus}
               onCreateValue={createProtoValue}
               onChange={onChange}
             />

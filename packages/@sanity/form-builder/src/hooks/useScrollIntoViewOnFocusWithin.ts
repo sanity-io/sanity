@@ -5,7 +5,7 @@ import {useDidUpdate} from './useDidUpdate'
 const SCROLL_OPTIONS = {scrollMode: 'if-needed'} as const
 
 export function useScrollIntoViewOnFocusWithin(
-  elementRef: {current?: HTMLElement},
+  elementRef: {current: HTMLElement | null},
   hasFocusWithin: boolean
 ): void {
   return useDidUpdate(
