@@ -1,5 +1,5 @@
 import {FieldPresence} from '@sanity/base/presence'
-import React from 'react'
+import React, {useCallback} from 'react'
 import {Box, Card, Flex} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
@@ -11,7 +11,7 @@ import {FormBuilderInput} from '../../../FormBuilderInput'
 import {ConfirmDeleteButton} from '../ArrayOfObjectsInput/ConfirmDeleteButton'
 import getEmptyValue from './getEmptyValue'
 
-const dragHandle = <DragHandle />
+const dragHandle = <DragHandle paddingX={2} paddingY={3} />
 
 type Props = {
   type?: SchemaType
@@ -56,40 +56,53 @@ export const ItemRow = React.forwardRef(function ItemRow(
     presence,
   } = props
 
-  const handleRemove = () => {
+  const handleRemove = useCallback(() => {
     onRemove(index)
-  }
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      onEnterKey(index)
-    }
-  }
+  }, [index, onRemove])
 
-  const handleKeyUp = (event: React.KeyboardEvent<any>) => {
-    if (event.shiftKey && event.key === 'Backspace' && value === '') {
-      onRemove(index)
-    }
-    if (event.key === 'Escape') {
-      onEscapeKey(index)
-    }
-  }
+  const handleKeyPress = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        onEnterKey(index)
+      }
+    },
+    [index, onEnterKey]
+  )
 
-  const handleChange = (patchEvent: PatchEvent) => {
-    onChange(
-      PatchEvent.from(
-        patchEvent.patches.map((
-          patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
-        ) =>
-          patch.path.length === 0 && patch.type === 'unset' && type
-            ? set(getEmptyValue(type))
-            : patch
-        )
-      ).prefixAll(index)
-    )
-  }
+  const handleKeyUp = useCallback(
+    (event: React.KeyboardEvent<any>) => {
+      if (event.shiftKey && event.key === 'Backspace' && value === '') {
+        onRemove(index)
+      }
+
+      if (event.key === 'Escape') {
+        onEscapeKey(index)
+      }
+    },
+    [index, onEscapeKey, onRemove, value]
+  )
+
+  const handleChange = useCallback(
+    (patchEvent: PatchEvent) => {
+      onChange(
+        PatchEvent.from(
+          patchEvent.patches.map((
+            patch // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
+          ) =>
+            patch.path.length === 0 && patch.type === 'unset' && type
+              ? set(getEmptyValue(type))
+              : patch
+          )
+        ).prefixAll(index)
+      )
+    },
+    [index, onChange, type]
+  )
+
+  const handleMissingTypeFocus = useCallback(() => onFocus([]), [onFocus])
 
   return (
-    <Card radius={2} shadow={1} padding={1} ref={ref}>
+    <Card border radius={2} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
@@ -115,7 +128,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
           </Card>
         ) : (
           <Box flex={1}>
-            <ItemWithMissingType value={value} onFocus={() => onFocus([])} />
+            <ItemWithMissingType value={value} onFocus={handleMissingTypeFocus} />
           </Box>
         )}
 
