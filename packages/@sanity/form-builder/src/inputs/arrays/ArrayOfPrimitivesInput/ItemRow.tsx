@@ -107,7 +107,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
         {type ? (
-          <Card radius={2} padding={1} flex={1} marginRight={2}>
+          <Card radius={1} flex={1} marginRight={2}>
             <FormBuilderInput
               ref={focusRef}
               value={value}
