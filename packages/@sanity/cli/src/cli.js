@@ -2,6 +2,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import path from 'path'
 import chalk from 'chalk'
+import dotenv from 'dotenv'
 import fse from 'fs-extra'
 import neatStack from 'neat-stack'
 import resolveFrom from 'resolve-from'
@@ -23,6 +24,11 @@ module.exports = async function runCli(cliRoot) {
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+
+  // Try to load .env files from the sanity studio directory
+  // eslint-disable-next-line no-process-env
+  const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
+  dotenv.config({path: path.join(workDir, `.env.${env}`)})
 
   await updateNotifier({pkg, cwd, workDir}).notify()
 
