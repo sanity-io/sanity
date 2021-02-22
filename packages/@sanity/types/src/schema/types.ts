@@ -39,6 +39,9 @@ export interface BaseSchemaType {
   readOnly?: boolean
   liveEdit?: boolean
   icon?: React.ComponentType
+  initialValue?: (
+    arg?: unknown
+  ) => (Promise<never> | never) | Record<string, unknown> | never | undefined
 
   preview?: {
     select?: PreviewValue
@@ -99,7 +102,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
   initialValue?: ((arg?: any) => Promise<boolean> | boolean) | boolean | undefined
 }
 
-export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
+export interface ArraySchemaType<V = unknown> extends Omit<BaseSchemaType, 'initialValue'> {
   jsonType: 'array'
   of: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
   options?: {
