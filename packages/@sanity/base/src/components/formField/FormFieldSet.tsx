@@ -179,7 +179,7 @@ export const FormFieldSet = forwardRef(
           hidden={collapsed}
           marginTop={1}
           paddingLeft={level === 0 ? 0 : 3}
-          onFocus={handleFocus}
+          onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
           ref={forwardedRef}
           tabIndex={tabIndex}
         >
