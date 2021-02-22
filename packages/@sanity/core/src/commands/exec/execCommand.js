@@ -2,7 +2,8 @@ import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 const helpText = `
 Options
-  --with-user-token
+  --with-user-token Preload access token from CLI config into 'part:@sanity/base/client' part
+  --mock-browser-env Mocks a browser-like environment using jsdom
 
 Examples
   # Run the script at some/script.js in Sanity context
