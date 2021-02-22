@@ -258,7 +258,7 @@ export default {
       title: 'Array of strings',
       description: 'This array contains only strings, with no title',
       type: 'array',
-      of: [{type: 'string'}],
+      of: [{type: 'string', validation: (Rule) => Rule.required().min(10).max(80)}],
     },
     {
       name: 'arrayOfPrimitives',
