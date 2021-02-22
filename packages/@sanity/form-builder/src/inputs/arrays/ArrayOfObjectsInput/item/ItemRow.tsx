@@ -3,6 +3,7 @@ import {FieldPresence} from '@sanity/base/presence'
 import React from 'react'
 import {Badge, Box, Card, Flex, Tooltip, Text} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
+import styled from 'styled-components'
 import Preview from '../../../../Preview'
 import {ConfirmDeleteButton} from '../ConfirmDeleteButton'
 import {IntentButton} from '../../../../transitional/IntentButton'
@@ -12,6 +13,12 @@ import {ItemLayoutProps} from './ItemLayoutProps'
 
 const dragHandle = <DragHandle paddingX={2} paddingY={3} />
 
+const Root = styled(Card)`
+  transition: 250ms border-color;
+  &[aria-selected='true'] {
+    border-color: var(--card-focus-ring-color);
+  }
+`
 export const ItemRow = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLElement>
@@ -28,16 +35,18 @@ export const ItemRow = React.forwardRef(function RegularItem(
     presence,
     onRemove,
     validation,
+    ...rest
   } = props
 
   return (
-    <Card border radius={2} padding={1} ref={ref}>
+    <Root {...rest} border radius={2} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
         {type ? (
           <Card
             as="button"
+            type="button"
             radius={2}
             // padding={1}
             flex={1}
@@ -102,6 +111,6 @@ export const ItemRow = React.forwardRef(function RegularItem(
           )}
         </Flex>
       </Flex>
-    </Card>
+    </Root>
   )
 })

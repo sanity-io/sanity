@@ -39,7 +39,7 @@ export const BlockObject: FunctionComponent<Props> = ({
   type,
   value,
 }): JSX.Element => {
-  const elementRef = useRef()
+  const elementRef = useRef<HTMLDivElement>()
 
   useScrollIntoViewOnFocusWithin(elementRef, hasFocusWithinPath(focusPath, value))
 
