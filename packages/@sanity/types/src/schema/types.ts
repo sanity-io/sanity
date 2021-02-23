@@ -39,7 +39,6 @@ export interface BaseSchemaType {
   readOnly?: boolean
   liveEdit?: boolean
   icon?: React.ComponentType
-  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
 
   preview?: {
     select?: PreviewValue
@@ -79,6 +78,7 @@ export interface StringSchemaType extends BaseSchemaType {
     dateFormat?: string
     timeFormat?: string
   }
+  initialValue?: ((arg?: any) => Promise<string> | string) | string | undefined
 }
 
 export interface TextSchemaType extends StringSchemaType {
@@ -88,6 +88,7 @@ export interface TextSchemaType extends StringSchemaType {
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
+  initialValue?: ((arg?: any) => Promise<number> | number) | number | undefined
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -95,6 +96,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
   options?: {
     layout: 'checkbox' | 'switch'
   }
+  initialValue?: ((arg?: any) => Promise<boolean> | boolean) | boolean | undefined
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -134,6 +136,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
   fieldsets?: Fieldset[]
+  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
@@ -186,7 +189,7 @@ export interface FileSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions
 }
 
-export interface ImageSchemaType extends Omit<BaseSchemaType, 'initialValue'> {
+export interface ImageSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions & {
     hotspot?: boolean
     metadata?: ('exif' | 'location' | 'lqip' | 'palette')[]
