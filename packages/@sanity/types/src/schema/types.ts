@@ -186,7 +186,7 @@ export interface FileSchemaType extends ObjectSchemaType {
   options?: AssetSchemaTypeOptions
 }
 
-export interface ImageSchemaType extends ObjectSchemaType {
+export interface ImageSchemaType extends Omit<BaseSchemaType, 'initialValue'> {
   options?: AssetSchemaTypeOptions & {
     hotspot?: boolean
     metadata?: ('exif' | 'location' | 'lqip' | 'palette')[]
