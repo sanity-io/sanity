@@ -14,7 +14,7 @@ import {ItemLayoutProps} from './ItemLayoutProps'
 const dragHandle = <DragHandle grid />
 
 const Root = styled(Card)`
-  transition: 1000ms border;
+  //transition: 1000ms border;
   &[aria-selected='true'] {
     border-color: var(--card-focus-ring-color);
   }

@@ -31,7 +31,7 @@ interface ArrayInputListItemProps {
   presence: FormFieldPresence[]
 }
 
-export function ArrayItem(props: ArrayInputListItemProps) {
+export const ArrayItem = React.memo(function ArrayItem(props: ArrayInputListItemProps) {
   const {
     value,
     markers,
@@ -144,4 +144,4 @@ export function ArrayItem(props: ArrayInputListItemProps) {
       )}
     </>
   )
-}
+})
