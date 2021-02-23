@@ -21,8 +21,9 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import ConfirmButton from '../ConfirmButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
-import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
-
+import {hasFocusAtPath, hasFocusWithinPath} from '../../../utils/focusUtils'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {isEmpty} from './helpers'
 import styles from './ArrayInputGridItem.css'
 
 interface ArrayInputGridItemProps {
@@ -60,14 +61,14 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
   componentDidMount() {
     const {focusPath, value} = this.props
 
-    if (value._key && hasFocusInPath(focusPath, value)) {
+    if (value._key && hasFocusAtPath(focusPath, value)) {
       this.focus()
     }
   }
 
   componentDidUpdate(prevProps: ArrayInputGridItemProps) {
-    const hadFocus = hasFocusInPath(prevProps.focusPath, prevProps.value)
-    const hasFocus = hasFocusInPath(this.props.focusPath, this.props.value)
+    const hadFocus = hasFocusAtPath(prevProps.focusPath, prevProps.value)
+    const hasFocus = hasFocusAtPath(this.props.focusPath, this.props.value)
 
     if (!hadFocus && hasFocus) {
       this.focus()
@@ -241,7 +242,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
         })
       })
       .filter(Boolean)
-    const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
+    const isEditingItem = hasFocusWithinPath(focusPath, value)
     const memberType = this.getMemberType()
 
     if (!memberType) {
@@ -250,7 +251,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
     return (
       <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
-        <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+        <ContextProvidedChangeIndicator compareDeep disabled={isEditingItem}>
           <div className={styles.inner}>
             <div
               tabIndex={0}
@@ -270,7 +271,7 @@ export class ArrayInputGridItem extends React.PureComponent<ArrayInputGridItemPr
 
               {!readOnly && (
                 <div className={styles.presenceContainer}>
-                  <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+                  <FieldPresence presence={isEditingItem ? EMPTY_ARRAY : presence} maxAvatars={1} />
                 </div>
               )}
             </div>

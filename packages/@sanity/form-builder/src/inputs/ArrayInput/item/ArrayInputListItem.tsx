@@ -21,7 +21,9 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import ConfirmButton from '../ConfirmButton'
 import {ItemValue} from '../typedefs'
 import InvalidItem from '../InvalidItem'
-import {hasFocusInPath, isEmpty, pathSegmentFrom} from './helpers'
+import {hasFocusAtPath, hasFocusWithinPath} from '../../../utils/focusUtils'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {isEmpty} from './helpers'
 
 import styles from './ArrayInputListItem.css'
 
@@ -62,14 +64,14 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
   componentDidMount() {
     const {focusPath, value} = this.props
 
-    if (value._key && hasFocusInPath(focusPath, value)) {
+    if (value._key && hasFocusAtPath(focusPath, value)) {
       this.focus()
     }
   }
 
   componentDidUpdate(prevProps: ArrayInputListItemProps) {
-    const hadFocus = hasFocusInPath(prevProps.focusPath, prevProps.value)
-    const hasFocus = hasFocusInPath(this.props.focusPath, this.props.value)
+    const hadFocus = hasFocusAtPath(prevProps.focusPath, prevProps.value)
+    const hasFocus = hasFocusAtPath(this.props.focusPath, this.props.value)
 
     if (!hadFocus && hasFocus) {
       this.focus()
@@ -244,7 +246,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
       return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
     })
 
-    const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
+    const isEditingItem = hasFocusWithinPath(focusPath, value)
     const memberType = this.getMemberType()
 
     if (!memberType) {
@@ -253,7 +255,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
 
     return (
       <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
-        <ContextProvidedChangeIndicator compareDeep disabled={hasItemFocus}>
+        <ContextProvidedChangeIndicator compareDeep disabled={isEditingItem}>
           <div className={styles.inner} ref={this.setInnerElement}>
             {isSortable && <DragHandle />}
 
@@ -277,7 +279,7 @@ export class ArrayInputListItem extends React.PureComponent<ArrayInputListItemPr
             <div className={styles.functions}>
               {!readOnly && (
                 <div className={styles.presenceContainer}>
-                  <FieldPresence presence={hasItemFocus ? [] : presence} maxAvatars={1} />
+                  <FieldPresence presence={isEditingItem ? EMPTY_ARRAY : presence} maxAvatars={1} />
                 </div>
               )}
 
