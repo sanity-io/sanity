@@ -12,6 +12,10 @@ export function createNoopTracker<T>() {
   return {
     useReportedValues: noop as () => Reported<T>[],
     Tracker: NoopTracker,
-    useReporter: noop as (id: string, value: T | (() => T), isEqual: IsEqualFunction<T>) => void,
+    useReporter: noop as (
+      id: string | null,
+      value: T | (() => T),
+      isEqual: IsEqualFunction<T>
+    ) => void,
   }
 }

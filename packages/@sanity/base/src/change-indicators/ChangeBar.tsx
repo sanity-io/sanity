@@ -40,8 +40,9 @@ export function ChangeBar(props: {
   children: React.ReactNode
   hasFocus: boolean
   isChanged: boolean
+  disabled?: boolean
 }) {
-  const {children, hasFocus, isChanged} = props
+  const {children, hasFocus, isChanged, disabled} = props
 
   const [hover, setHover] = useState(false)
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
@@ -50,48 +51,60 @@ export function ChangeBar(props: {
   const handleMouseLeave = useCallback(() => setHover(false), [])
 
   const tooltip = useMemo(
-    () => (
-      <Tooltip
-        content={
-          <div className={styles.tooltipContent}>
-            <span>Review changes</span>
-          </div>
-        }
-        disabled={!isChanged || isReviewChangesOpen}
-        placement="top"
-      >
-        <div className={styles.wrapper}>
-          <div className={styles.bar} />
+    () =>
+      disabled ? null : (
+        <Tooltip
+          content={
+            <div className={styles.tooltipContent}>
+              <span>Review changes</span>
+            </div>
+          }
+          disabled={!isChanged || isReviewChangesOpen}
+          placement="top"
+        >
+          <div className={styles.wrapper}>
+            <div className={styles.bar} />
 
-          <div className={styles.badge}>
-            <Shape className={styles.badge__shape} />
-            <EditIconSmall className={styles.badge__icon} />
-          </div>
+            <div className={styles.badge}>
+              <Shape className={styles.badge__shape} />
+              <EditIconSmall className={styles.badge__icon} />
+            </div>
 
-          <button
-            tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
-            type="button"
-            aria-label="Review changes"
-            onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
-            className={styles.hitArea}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          />
-        </div>
-      </Tooltip>
-    ),
-    [handleMouseEnter, handleMouseLeave, isReviewChangesOpen, onOpenReviewChanges, isChanged]
+            <button
+              tabIndex={isReviewChangesOpen || !isChanged ? -1 : 0}
+              type="button"
+              aria-label="Review changes"
+              onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
+              className={styles.hitArea}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            />
+          </div>
+        </Tooltip>
+      ),
+    [
+      handleMouseEnter,
+      handleMouseLeave,
+      isReviewChangesOpen,
+      onOpenReviewChanges,
+      isChanged,
+      disabled,
+    ]
   )
 
   return (
     <div
-      className={classNames(
-        styles.root,
-        hover && styles.hover,
-        hasFocus && styles.focus,
-        isChanged && styles.changed,
-        isReviewChangesOpen && styles.reviewChangesOpen
-      )}
+      className={
+        disabled
+          ? undefined
+          : classNames(
+              styles.root,
+              hover && styles.hover,
+              hasFocus && styles.focus,
+              isChanged && styles.changed,
+              isReviewChangesOpen && styles.reviewChangesOpen
+            )
+      }
     >
       <div className={styles.field}>{children}</div>
       {tooltip}

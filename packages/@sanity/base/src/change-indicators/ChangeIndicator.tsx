@@ -34,9 +34,10 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     fullPath: Path
     children: React.ReactNode
+    disabled?: boolean
   }
 ) {
-  const {children, className, fullPath, hasFocus, isChanged} = props
+  const {children, className, fullPath, hasFocus, isChanged, disabled} = props
   const layer = useLayer()
   const [hasHover, setHover] = React.useState(false)
   const onMouseEnter = React.useCallback(() => setHover(true), [])
@@ -44,7 +45,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
   const ref = React.useRef<HTMLDivElement | null>(null)
 
   useReporter(
-    `field-${PathUtils.toString(fullPath)}`,
+    disabled ? null : `field-${PathUtils.toString(fullPath)}`,
     () => ({
       element: ref.current!,
       path: props.fullPath,
@@ -59,7 +60,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
 
   return (
     <div ref={ref} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <ChangeBar hasFocus={hasFocus} isChanged={isChanged}>
+      <ChangeBar hasFocus={hasFocus} isChanged={isChanged} disabled={disabled}>
         {children}
       </ChangeBar>
     </div>
@@ -122,7 +123,7 @@ export function ChangeIndicatorProvider(props: {
 
 interface CoreProps {
   className?: string
-  hidden?: boolean
+  disabled?: boolean
   fullPath: Path
   compareDeep: boolean
   value: unknown
@@ -133,7 +134,7 @@ interface CoreProps {
 
 export const CoreChangeIndicator = ({
   className,
-  hidden,
+  disabled,
   fullPath,
   value,
   compareValue,
@@ -146,16 +147,13 @@ export const CoreChangeIndicator = ({
     (canCompareShallow(value, compareValue) && value !== compareValue) ||
     (compareDeep && !deepCompare(value, compareValue))
 
-  if (hidden) {
-    return <>{children}</>
-  }
-
   return (
     <ChangeBarWrapper
       className={className}
       isChanged={isChanged}
       fullPath={fullPath}
       hasFocus={hasFocus}
+      disabled={disabled}
     >
       {children}
     </ChangeBarWrapper>
@@ -164,7 +162,7 @@ export const CoreChangeIndicator = ({
 
 export const ChangeIndicatorWithProvidedFullPath = ({
   className,
-  hidden,
+  disabled,
   path,
   value,
   hasFocus,
@@ -180,7 +178,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
 
   return (
     <CoreChangeIndicator
-      hidden={hidden}
+      disabled={disabled}
       className={className}
       value={value}
       compareValue={PathUtils.get(parentContext.compareValue, path)}
@@ -237,12 +235,9 @@ export const ContextProvidedChangeIndicator = (
   const context = React.useContext(ChangeIndicatorContext)
   const {value, compareValue, path, focusPath, fullPath} = context
 
-  if (disabled) {
-    return <>{children}</>
-  }
-
   return (
     <CoreChangeIndicator
+      disabled={disabled}
       fullPath={fullPath}
       value={value}
       compareValue={compareValue}
