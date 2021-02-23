@@ -182,10 +182,6 @@ export function DocumentPane(props: DocumentPaneProps) {
           className={styles.documentAndChangesContainer}
         >
           <div className={styles.documentContainer}>
-            {isInspectOpen && (
-              <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
-            )}
-
             <DocumentPanel
               activeViewId={activeViewId}
               documentId={documentId}
@@ -262,6 +258,12 @@ export function DocumentPane(props: DocumentPaneProps) {
               timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
             }
           />
+        </LegacyLayerProvider>
+
+        <LegacyLayerProvider zOffset="fullscreen">
+          {isInspectOpen && (
+            <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
+          )}
         </LegacyLayerProvider>
       </DocumentActionShortcuts>
     </LegacyLayerProvider>
