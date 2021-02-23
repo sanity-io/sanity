@@ -23,6 +23,7 @@ export type LegacyLayerZIndexKey =
   | 'spinner'
   | 'drawershade'
   | 'drawer'
+  | 'fullscreen'
 
 /**
  * @internal This component should only be used by core Sanity packages.

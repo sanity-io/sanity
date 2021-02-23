@@ -15,6 +15,7 @@ interface ZIndexContextValue {
   movingItem: number
   drawershade: number
   drawer: number
+  fullscreen: number
 
   // NOT IN USE
   dropdown: number
@@ -60,6 +61,10 @@ const defaults: ZIndexContextValue = {
   movingItem: 10000,
   drawershade: 1000000,
   drawer: 1000001,
+  /**
+   * Use this for UI that needs to sit on top of the entire application
+   */
+  fullscreen: 1200000,
 
   // NOT IN USE
   dropdown: 200,
@@ -125,6 +130,11 @@ function getLegacyZIndexes(): ZIndexContextValue {
       used for snackbar
     */
     drawer: getCustomCSSPropertyNumber('--zindex-drawer') || defaults.drawer,
+
+    /**
+     * Use this for UI that needs to sit on top of the entire application
+     */
+    fullscreen: defaults.fullscreen,
 
     // NOT IN USE
     dropdown: getCustomCSSPropertyNumber('--zindex-dropdown') || defaults.dropdown,
