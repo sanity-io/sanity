@@ -8,6 +8,13 @@ export function isBuilder(template: Template | TemplateBuilder): template is Tem
   return typeof (template as TemplateBuilder).serialize === 'function'
 }
 
+/**
+ * @param documentName {string} this is the name of the document
+ * @param value {Record<string, any>} this is the our current initial value
+ * @param params {[key: string]: unknown} params is a sanity context object passed to every initial value function
+ * @param parentKey {string} parentKey holds nested object keys with dot notation
+ * @param nestDepth {number} optional depth for building recursive functions
+ */
 export async function getObjectFieldsInitialValues(
   documentName: string,
   value: Record<string, any>,
