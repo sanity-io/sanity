@@ -18,10 +18,12 @@ export async function getObjectFieldsInitialValues(
   const schemaType = schema.get(documentName)
   if (!schemaType) return {}
 
+  // select only object types
   const fields = ((schemaType.jsonType === 'object' && schemaType.fields) || []).filter(
     (f) => f.type.jsonType === 'object'
   )
 
+  // select all none array and object primitive types
   const primitiveFieldsWithInitial = (
     (schemaType.jsonType === 'object' && schemaType.fields) ||
     []
@@ -45,8 +47,8 @@ export async function getObjectFieldsInitialValues(
     // make new parent key
     const childWithPK = parentKey ? `${parentKey}.${field.name}` : field.name
 
-    // if we have the new parent key set to undefined, we just want to skip the
-    // current iteration
+    // if we have the new parent key set to undefined,
+    // we just want to skip the current iteration
     if (has(value, childWithPK) && !value[childWithPK]) {
       continue
     }
@@ -82,6 +84,9 @@ export async function getObjectFieldsInitialValues(
       initialValues = defaultsDeep(value, valuesToUpdate)
     }
 
+    // we want to recurse if the field schema is not the same as it's parent
+    // this is also to avoid recursing recursive object schema types
+    // for just plain schema types, we just want to loop [7] times to fill in the rendered desk-tool form
     if (fieldType.fields && fieldType.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK)
     } else {
@@ -91,6 +96,9 @@ export async function getObjectFieldsInitialValues(
         nestDepth++
       }
 
+      // [7] is a magic number which fits with initial [2] recursion before
+      // this loop is entered, which equals [9] which fits in properly to default
+      // rendered desk-tool form
       if (nestDepth <= 7) {
         await getObjectFieldsInitialValues(
           field.type.name,
@@ -150,8 +158,12 @@ export async function resolveInitialValue(
     )
   }
 
-  // Get initial values from sanity object type
+  // validate default document initial values
   initialValue = validateInitialValue(initialValue, template)
+
+  // Get dep initial values from sanity object types
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
+
+  // revalidate and return new initial values
   return validateInitialValue(newValue, template)
 }
