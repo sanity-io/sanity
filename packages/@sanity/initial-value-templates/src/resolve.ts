@@ -78,6 +78,7 @@ export async function getObjectFieldsInitialValues(
         valuesToUpdate = set({}, parentKey, valuesToUpdate)
       }
 
+      // assign new values
       initialValues = defaultsDeep(value, valuesToUpdate)
     }
 
