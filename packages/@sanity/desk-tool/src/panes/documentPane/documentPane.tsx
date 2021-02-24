@@ -182,10 +182,6 @@ export function DocumentPane(props: DocumentPaneProps) {
           className={styles.documentAndChangesContainer}
         >
           <div className={styles.documentContainer}>
-            {isInspectOpen && (
-              <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
-            )}
-
             <DocumentPanel
               activeViewId={activeViewId}
               documentId={documentId}
@@ -237,13 +233,15 @@ export function DocumentPane(props: DocumentPaneProps) {
           )}
         </ChangeConnectorRoot>
 
-        <Layer className={styles.footerContainer}>
-          <DocumentStatusBar
-            id={documentId}
-            type={documentType}
-            lastUpdated={value && value._updatedAt}
-          />
-        </Layer>
+        <LegacyLayerProvider zOffset="paneFooter">
+          <Layer className={styles.footerContainer}>
+            <DocumentStatusBar
+              id={documentId}
+              type={documentType}
+              lastUpdated={value && value._updatedAt}
+            />
+          </Layer>
+        </LegacyLayerProvider>
 
         {connectionState === 'reconnecting' && (
           <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
@@ -251,14 +249,22 @@ export function DocumentPane(props: DocumentPaneProps) {
 
         <DocumentOperationResults id={documentId} type={documentType} />
 
-        <TimelinePopover
-          onClose={handleTimelineClose}
-          open={isTimelineOpen}
-          placement="bottom"
-          targetElement={
-            timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
-          }
-        />
+        <LegacyLayerProvider zOffset="paneHeader">
+          <TimelinePopover
+            onClose={handleTimelineClose}
+            open={isTimelineOpen}
+            placement="bottom"
+            targetElement={
+              timelineMode === 'rev' ? versionSelectRef.current : changesSinceSelectRef.current
+            }
+          />
+        </LegacyLayerProvider>
+
+        <LegacyLayerProvider zOffset="fullscreen">
+          {isInspectOpen && (
+            <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
+          )}
+        </LegacyLayerProvider>
       </DocumentActionShortcuts>
     </LegacyLayerProvider>
   )

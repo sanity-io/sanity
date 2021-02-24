@@ -1,36 +1,20 @@
 import {LayerProvider} from '@sanity/ui'
 import React from 'react'
-import {useZIndex} from '../ZIndexProvider'
+import {useZIndex} from '../zOffsets/useZIndex'
+import {ZIndexContextValue} from '../zOffsets/types'
 
-export type LegacyLayerZIndexKey =
-  | 'pane'
-  | 'paneResizer'
-  | 'navbar'
-  | 'navbarPopover'
-  | 'navbarDialog'
-  | 'navbarFixed'
-  | 'dropdown'
-  | 'fullscreenEdit'
-  | 'portal'
-  | 'popoverBackground'
-  | 'popover'
-  | 'tooltip'
-  | 'modalBackground'
-  | 'modal'
-  | 'movingItem'
-  | 'spinner'
-  | 'drawershade'
-  | 'drawer'
+export type ZIndexContextValueKey = keyof ZIndexContextValue
 
 /**
- * @internal This component should only be used by core Sanity packages.
+ * This component should only be used by core Sanity packages.
+ * @internal
  */
 export function LegacyLayerProvider({
   children,
   zOffset: zOffsetKey,
 }: {
   children: React.ReactNode
-  zOffset: LegacyLayerZIndexKey
+  zOffset: ZIndexContextValueKey
 }) {
   const zIndex = useZIndex()
   const zOffset = zIndex[zOffsetKey]
