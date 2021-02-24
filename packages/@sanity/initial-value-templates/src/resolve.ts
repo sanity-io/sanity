@@ -75,7 +75,6 @@ export async function getObjectFieldsInitialValues(
       _type: field.type.name,
     }
 
-    // if we do have some value that contains more keys the _type
     // we want to update our initial value with it
     if (newFieldValue) {
       let valuesToUpdate = {
