@@ -1,5 +1,6 @@
 import {defaultsDeep, has, isEmpty, isFunction, isPlainObject, set, get, unset} from 'lodash'
 import schema from 'part:@sanity/base/schema'
+import {StringSchemaType, ObjectSchemaType} from '@sanity/types'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
 
@@ -24,21 +25,19 @@ export async function getObjectFieldsInitialValues(
   const primitiveFieldsWithInitial = (
     (schemaType.jsonType === 'object' && schemaType.fields) ||
     []
-  ).filter(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    (f) => f.type.jsonType !== 'object' && f.type.jsonType !== 'array' && f.type.initialValue
-  )
+  ).filter((f) => f.type.jsonType !== 'object' && f.type.jsonType !== 'array')
 
   let initialValues = value
   let primitiveInitialValues = {}
 
   // If an initialValue was set, we just want to break the loop
   for (const field of primitiveFieldsWithInitial) {
-    if (field.type.initialValue && parentKey) {
-      primitiveInitialValues[field.name] = isFunction(field.type.initialValue)
-        ? await field.type.initialValue(params)
-        : field.type.initialValue
+    // String schema just fixes lint error for ide as field could be boolean or num as well
+    const fieldType = field.type as StringSchemaType
+    if (fieldType.initialValue && parentKey) {
+      primitiveInitialValues[field.name] = isFunction(fieldType.initialValue)
+        ? await fieldType.initialValue(params)
+        : fieldType.initialValue
     }
   }
 
@@ -53,14 +52,13 @@ export async function getObjectFieldsInitialValues(
     }
 
     let newFieldValue = {}
+    const fieldType = field.type as ObjectSchemaType
 
     // get initial value for the current field
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (field.type.initialValue) {
-      newFieldValue = isFunction(field.type.initialValue)
-        ? await field.type.initialValue(params)
-        : field.type.initialValue
+    if (fieldType.initialValue) {
+      newFieldValue = isFunction(fieldType.initialValue)
+        ? await fieldType.initialValue(params)
+        : fieldType.initialValue
     }
 
     const fieldValue = {
@@ -83,9 +81,7 @@ export async function getObjectFieldsInitialValues(
       initialValues = defaultsDeep(value, valuesToUpdate)
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (field.type.fields && field.type.fields.length > 0 && field.type.name !== documentName) {
+    if (fieldType.fields && fieldType.fields.length > 0 && field.type.name !== documentName) {
       await getObjectFieldsInitialValues(field.type.name, initialValues, params, childWithPK)
     } else {
       if (nestDepth === undefined) {
