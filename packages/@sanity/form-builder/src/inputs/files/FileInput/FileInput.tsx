@@ -1,3 +1,5 @@
+/* eslint-disable no-undef, import/no-unresolved */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
@@ -119,7 +121,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   clearUploadStatus() {
-    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+    // todo: this is kind of hackish
+    this.props.onChange(PatchEvent.from([unset(['_upload'])]))
   }
 
   cancelUpload() {
