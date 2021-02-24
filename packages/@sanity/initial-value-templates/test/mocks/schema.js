@@ -42,6 +42,21 @@ const compiled = Schema.compile({
       ],
     },
     {
+      name: 'contact',
+      title: 'Contact',
+      type: 'object',
+      fields: [
+        {
+          name: 'email',
+          type: 'string',
+        },
+        {
+          name: 'phone',
+          type: 'string',
+        },
+      ],
+    },
+    {
       name: 'person',
       title: 'Person',
       type: 'document',
@@ -50,6 +65,10 @@ const compiled = Schema.compile({
         {
           name: 'address',
           type: 'address',
+        },
+        {
+          name: 'contact',
+          type: 'contact',
         },
       ],
     },

@@ -109,4 +109,30 @@ describe('resolveDeepInitialValues', () => {
       address: undefined,
     })
   })
+
+  test('resolves deep primitive type and remove initial values with just _type specified', async () => {
+    const defaultTemplates = T.defaults(getDefaultSchema()).map((tpl) => tpl.serialize())
+    const personTemplate = defaultTemplates.find((tpl) => tpl.id === 'person')
+    if (!personTemplate) {
+      throw new Error('Could not find person template')
+    }
+
+    const initialValue = await resolveInitialValue({
+      ...personTemplate,
+      value: {
+        ...personTemplate.value,
+        contact: {
+          _type: 'contact',
+        },
+      },
+    })
+
+    expect(initialValue).toMatchObject({
+      address: {
+        _type: 'address',
+        street: 'one old street',
+        streetNo: '123',
+      },
+    })
+  })
 })
