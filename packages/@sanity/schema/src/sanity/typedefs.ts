@@ -1,10 +1,40 @@
-export interface TypeDef {
-  name: string
-  type: string
-  title?: string
-  description?: string
-  options?: Record<string, any>
+interface GenericTypeDef<T extends string = string> {
+  /** The field name. This will be the key in the data record. */
+  name: string;
+  /** Name of any valid schema type. This will be the type of the value in the data record. */
+  type: T;
+  /** Human readable label for the field. */
+  title?: string;
+  hidden?: boolean;
+  description?: string;
+  readOnly?: string;
+  validation?: (validator: Validator<any>) => any;
 }
+
+export interface ArrayTypeDef extends GenericTypeDef<'array'> {
+  of: Array<{ type: string } & Partial<TypeDef>>;
+  options?: {
+    sortable?: boolean;
+    layout?: 'tags' | 'grid';
+    list?: Array<{ value: any; title: string }>;
+    editModal?: 'dialog' | 'fullscreen' | 'popover';
+  };
+  validation?: (validator: Validator<any>) => any;
+};
+
+export interface Validator<T = any> {
+    required: () => Validator<T>;
+    min: (n: number | string) => Validator<T>;
+    max: (n: number | string) => Validator<T>;
+    error: (m: string) => Validator<T>;
+    warning: (m: string) => Validator<T>;
+    valueOfField: (f: string) => any;
+    custom: (fn: (arg: T) => any) => Validator<T>;
+    /** All characters must be uppercase. */
+    uppercase: () => Validator<T>;
+};
+
+export type TypeDef = ArrayTypeDef | GenericTypeDef;
 
 export type SchemaDef = {
   name: string
