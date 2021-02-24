@@ -94,23 +94,20 @@ const Input = styled.input(
       paddingRight: rem(p),
       paddingBottom: rem(p - size.descenderHeight),
       paddingLeft: rem(p),
+      '&::placeholder': {
+        color: 'var(--input-placeholder-color)',
+      },
 
       // enabled
       '&:not(:invalid):not(:disabled)': {
         color: color.default.enabled.fg,
-
-        '&::placeholder': {
-          color: color.default.enabled.placeholder,
-        },
+        '--input-placeholder-color': color.default.enabled.placeholder,
       },
 
       // disabled
       '&:not(:invalid):disabled': {
         color: color.default.disabled.fg,
-
-        '&::placeholder': {
-          color: color.default.disabled.placeholder,
-        },
+        '--input-placeholder-color': color.default.disabled.placeholder,
       },
     }
   }
