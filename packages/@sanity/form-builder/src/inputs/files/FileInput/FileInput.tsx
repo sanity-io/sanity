@@ -63,7 +63,6 @@ const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
 type FileInputState = {
   isUploading: boolean
   isAdvancedEditOpen: boolean
-  hasFileTargetFocus: boolean
   hoveringFiles: FileInfo[]
 }
 
@@ -84,7 +83,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   state: FileInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
-    hasFileTargetFocus: false,
     hoveringFiles: [],
   }
 
@@ -327,14 +325,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderUploadPlaceholder() {
     const {readOnly} = this.props
-    const {hasFileTargetFocus} = this.state
 
     return readOnly ? (
       <Text align="center" muted>
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder canPaste={hasFileTargetFocus} />
+      <UploadPlaceholder />
     )
   }
 
