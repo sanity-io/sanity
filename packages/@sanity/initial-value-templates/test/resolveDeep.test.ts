@@ -8,7 +8,6 @@ function generateNestedObjectTest(
   depth?: number
 ): Record<string, any> {
   depth = depth || 1
-
   if (depth >= maxDepth) return obj
 
   depth++
