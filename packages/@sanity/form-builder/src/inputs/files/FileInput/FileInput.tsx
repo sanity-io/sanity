@@ -423,8 +423,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             </ChangeIndicatorCompareValueProvider>
 
             <Grid
-              gap={2}
-              marginTop={2}
+              gap={1}
+              marginTop={3}
               style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
             >
               {!readOnly && (

@@ -1,11 +1,24 @@
+/* eslint-disable import/no-unresolved */
+
 import {
   ChangeIndicatorWithProvidedFullPath,
   FormFieldSet,
   ImperativeToast,
 } from '@sanity/base/components'
-import {Box, Button, Dialog, Grid, Menu, MenuButton, MenuItem, Text, ToastParams} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Dialog,
+  Grid,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Stack,
+  Text,
+  ToastParams,
+} from '@sanity/ui'
 import {get, partition, uniqueId} from 'lodash'
-import {Observable} from 'rxjs'
+import {Observable, Subscription} from 'rxjs'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {EditIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon, EyeOpenIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
@@ -94,6 +107,7 @@ type Focusable = {
 type ImageInputFieldProps = {
   field: ObjectField
   onChange: (event: PatchEvent) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
   onBlur: () => void
   onFocus: (path: Path) => void
@@ -133,7 +147,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   _focusRef: null | Focusable = null
 
-  uploadSubscription: any
+  uploadSubscription: Subscription
+
   state: ImageInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
@@ -149,7 +164,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  setFocusElement = (el: any | null) => {
+  setFocusElement = (el: HTMLElement | null) => {
     this._focusRef = el
   }
 
@@ -165,7 +180,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   clearUploadStatus() {
-    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+    // todo: this is kind of hackish
+    this.props.onChange(PatchEvent.from([unset(['_upload'])]))
   }
 
   cancelUpload() {
@@ -400,13 +416,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       <Dialog
         header="Edit details"
         position="absolute"
-        width="auto"
         id={`${this._inputId}_dialog`}
         onClose={this.handleStopAdvancedEdit}
+        width={1}
       >
         <PresenceOverlay>
           <Box padding={4}>
-            <Grid gap={2} columns={2}>
+            <Stack space={5}>
               {withImageTool && (
                 <WithMaterializedReference materialize={materialize} reference={value?.asset}>
                   {(imageAsset) => (
@@ -422,7 +438,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 </WithMaterializedReference>
               )}
               {this.renderFields(fields)}
-            </Grid>
+            </Stack>
           </Box>
         </PresenceOverlay>
       </Dialog>
@@ -616,42 +632,44 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           __unstable_changeIndicator={false}
         >
           <div>
-            <Box>
-              <ChangeIndicatorCompareValueProvider
+            <ChangeIndicatorCompareValueProvider
+              value={value?.asset?._ref}
+              compareValue={compareValue?.asset?._ref}
+            >
+              <ChangeIndicatorWithProvidedFullPath
+                path={[]}
+                hasFocus={this.hasFileTargetFocus()}
                 value={value?.asset?._ref}
                 compareValue={compareValue?.asset?._ref}
               >
-                <ChangeIndicatorWithProvidedFullPath
-                  path={[]}
-                  hasFocus={this.hasFileTargetFocus()}
-                  value={value?.asset?._ref}
-                  compareValue={compareValue?.asset?._ref}
+                <FileTarget
+                  tabIndex={0}
+                  shadow={1}
+                  disabled={readOnly === true}
+                  ref={this.setFocusElement}
+                  onFiles={this.handleSelectFiles}
+                  onFilesOver={this.handleFilesOver}
+                  onFilesOut={this.handleFilesOut}
+                  onFocus={this.handleFileTargetFocus}
+                  onBlur={this.handleFileTargetBlur}
                 >
-                  <FileTarget
-                    tabIndex={0}
-                    shadow={1}
-                    disabled={readOnly === true}
-                    ref={this.setFocusElement}
-                    onFiles={this.handleSelectFiles}
-                    onFilesOver={this.handleFilesOver}
-                    onFilesOut={this.handleFilesOut}
-                    onFocus={this.handleFileTargetFocus}
-                    onBlur={this.handleFileTargetBlur}
-                  >
-                    <AssetBackground align="center" justify="center" padding={1}>
-                      {value?._upload && this.renderUploadState(value._upload)}
-                      {!value?._upload && value?.asset && this.renderAsset()}
-                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                        <Overlay>Drop top upload</Overlay>
-                      )}
-                    </AssetBackground>
-                  </FileTarget>
-                </ChangeIndicatorWithProvidedFullPath>
-              </ChangeIndicatorCompareValueProvider>
-            </Box>
+                  <AssetBackground align="center" justify="center" padding={1}>
+                    {value?._upload && this.renderUploadState(value._upload)}
+                    {!value?._upload && value?.asset && this.renderAsset()}
+                    {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                    {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                      <Overlay>Drop top upload</Overlay>
+                    )}
+                  </AssetBackground>
+                </FileTarget>
+              </ChangeIndicatorWithProvidedFullPath>
+            </ChangeIndicatorCompareValueProvider>
 
-            <Grid gap={1} columns={[2, 3, 4]} marginTop={3}>
+            <Grid
+              gap={1}
+              marginTop={3}
+              style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
+            >
               {!readOnly && directUploads && (
                 <FileInputButton
                   icon={UploadIcon}

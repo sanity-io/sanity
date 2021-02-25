@@ -1,3 +1,5 @@
+import React from 'react'
+
 export interface AssetRecord {
   _id?: string
   referenceCount?: number
