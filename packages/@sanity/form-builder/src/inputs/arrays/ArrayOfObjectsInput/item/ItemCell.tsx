@@ -67,8 +67,8 @@ export const ItemCell = React.forwardRef(function ItemCell(
       )}
       <Flex>
         <Box flex={1}>{(!readOnly && isSortable && dragHandle) || ' '}</Box>
-        {value._key && (
-          <Box>
+        {value._key && validation.length > 0 && (
+          <Box marginLeft={1} paddingX={1} paddingY={3}>
             <FormFieldValidationStatus
               __unstable_markers={validation}
               placement="bottom"
