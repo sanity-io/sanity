@@ -1,4 +1,4 @@
-import React, {ForwardedRef} from 'react'
+import React, {ForwardedRef, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {FormField} from '@sanity/base/components'
 import {TextSchemaType} from '@sanity/types'
@@ -21,8 +21,10 @@ const TextInput = React.forwardRef(function TextInput(
 
   const inputId = useId()
 
-  const validation = markers.filter((marker) => marker.type === 'validation')
-  const errors = validation.filter((marker) => marker.level === 'error')
+  const errors = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [markers]
+  )
 
   const handleChange = React.useCallback(
     (event) => {

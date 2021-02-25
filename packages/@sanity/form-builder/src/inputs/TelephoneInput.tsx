@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
@@ -12,8 +12,12 @@ const TelephoneInput = React.forwardRef(function TelephoneInput(
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
   const inputId = useId()
-  const validation = markers.filter((marker) => marker.type === 'validation')
-  const errors = validation.filter((marker) => marker.level === 'error')
+
+  const errors = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [markers]
+  )
+
   const handleChange = React.useCallback(
     (event) => {
       const inputValue = event.currentTarget.value

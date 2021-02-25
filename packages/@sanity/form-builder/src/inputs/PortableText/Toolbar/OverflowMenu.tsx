@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, useMemo} from 'react'
 
 import styles from './OverflowMenu.css'
 
@@ -39,8 +39,10 @@ export function OverflowMenu(props: Props) {
     actions.map((__, index) => ({index, visible: false}))
   )
   const actionStatesRef = useRef(actionStates)
-  const showOverflowButton = actionStates.filter((a) => !a.visible).length > 0
-  const hiddenActions = actionStates.filter((a) => !a.visible)
+  const showOverflowButton = useMemo(() => actionStates.filter((a) => !a.visible).length > 0, [
+    actionStates,
+  ])
+  const hiddenActions = useMemo(() => actionStates.filter((a) => !a.visible), [actionStates])
   const lastHidden = hiddenActions.length === 1
   const ioRef = useRef<IntersectionObserver | null>(null)
   const [open, setOpen] = useState(false)

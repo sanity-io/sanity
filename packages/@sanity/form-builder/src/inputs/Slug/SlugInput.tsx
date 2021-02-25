@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {
   Path,
   SanityDocument,
@@ -68,7 +68,7 @@ const SlugInput = React.forwardRef(function SlugInput(
   const sourceField = type.options?.source
 
   const inputId = useId()
-  const errors = markers.filter(isValidationErrorMarker)
+  const errors = useMemo(() => markers.filter(isValidationErrorMarker), [markers])
 
   const updateSlug = React.useCallback(
     (nextSlug) => {
