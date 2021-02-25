@@ -515,7 +515,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder canPaste={this.hasFileTargetFocus()} fileType="image" />
+      <UploadPlaceholder fileType="image" />
     )
   }
 

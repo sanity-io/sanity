@@ -7,7 +7,7 @@ import {focusRingBorderStyle, focusRingStyle} from './focusringUtils'
 
 export type {FileInfo} from '../../common/fileTarget'
 
-const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
+export const FileTarget = styled(fileTarget(Card))(({theme}: {theme: Theme}) => {
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
@@ -26,8 +26,6 @@ const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
     }
   `
 })
-
-export const FileTarget = fileTarget(CardWithFocusRing)
 
 export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;
