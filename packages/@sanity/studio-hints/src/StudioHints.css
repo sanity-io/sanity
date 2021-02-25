@@ -4,8 +4,9 @@
   box-sizing: border-box;
   height: 100%;
   width: 100%;
-  background: var(--main-navigation-color);
+  background-color: var(--main-navigation-color);
   color: var(--main-navigation-color--inverted);
+  border-top: 1px solid var(--hairline-color);
   overflow-x: auto;
   min-width: 420px;
   display: flex;
