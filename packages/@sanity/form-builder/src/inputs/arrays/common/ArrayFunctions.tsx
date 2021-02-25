@@ -44,13 +44,13 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
   }
 
   return (
-    <Grid autoCols="auto" gap={2}>
+    <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
       {type.of.length === 1 ? (
-        <Button mode="ghost" text="Add item" icon={AddIcon} onClick={handleAddBtnClick} />
+        <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text="Add item" />
       ) : (
         <MenuButton
+          button={<Button icon={AddIcon} mode="ghost" text="Add item…" />}
           id={menuButtonId || ''}
-          button={<Button mode="ghost" text="Add item…" icon={AddIcon} />}
           menu={
             <Menu>
               {type.of.map((memberDef) => {
