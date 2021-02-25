@@ -16,21 +16,14 @@ export default {
       type: 'url',
       title: 'Plain url',
       description: 'A plain URL field',
-      // validation: (Rule) =>
-      //   Rule.uri({
-      //     scheme: ['http', 'https', 'mailto', 'tel'],
-      //   }),
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https', 'mailto', 'tel']}),
     },
     {
       name: 'relativeUri',
       type: 'url',
       title: 'Relative url',
       description: 'A relative URL field',
-      validation: (Rule) =>
-        Rule.uri({
-          scheme: ['http', 'https', 'mailto', 'tel'],
-          allowRelative: true,
-        }),
+      validation: (Rule) => Rule.uri({allowRelative: true}),
     },
   ],
 }

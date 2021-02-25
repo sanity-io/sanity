@@ -18,6 +18,7 @@ export default {
       title: '2 rows text',
       description: 'This is a simple text field',
       rows: 2,
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'rows15',
