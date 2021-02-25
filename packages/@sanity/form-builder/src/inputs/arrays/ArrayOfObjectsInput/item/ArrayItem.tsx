@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+
 import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path} from '@sanity/types'
