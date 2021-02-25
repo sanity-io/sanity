@@ -1,5 +1,5 @@
 import {Marker, Path, SchemaType} from '@sanity/types'
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {BoundaryElementProvider, Box, Dialog, Layer} from '@sanity/ui'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
@@ -45,8 +45,10 @@ export function EditDialog(props: Props) {
 
   const title = readOnly ? type.title || '' : `Edit ${type.title || ''}`
 
-  const childMarkers = markers.filter((marker) => marker.path.length > 1)
-  const childPresence = presence.filter((_presence) => _presence.path.length > 1)
+  const childMarkers = useMemo(() => markers.filter((marker) => marker.path.length > 1), [markers])
+  const childPresence = useMemo(() => presence.filter((_presence) => _presence.path.length > 1), [
+    presence,
+  ])
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 

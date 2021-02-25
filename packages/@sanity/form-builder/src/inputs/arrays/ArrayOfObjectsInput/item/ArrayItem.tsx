@@ -4,7 +4,7 @@ import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
-import React, {useCallback, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import PatchEvent from '../../../../PatchEvent'
 import {ArrayMember} from '../types'
@@ -88,17 +88,19 @@ export function ArrayItem(props: ArrayInputListItemProps) {
 
   const options = type.options || {}
   const isSortable = !readOnly && !type.readOnly && options.sortable !== false
-  const validation = markers.filter(isValidationMarker)
-  const scopedValidation =
-    validation.length === 0
-      ? EMPTY_ARRAY
-      : validation.map((marker) => {
-          if (marker.path.length <= 1) {
-            return marker
-          }
-          const level = marker.level === 'error' ? 'errors' : 'warnings'
-          return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
-        })
+  const scopedValidation = useMemo(
+    () =>
+      markers.length === 0
+        ? EMPTY_ARRAY
+        : markers.filter(isValidationMarker).map((marker) => {
+            if (marker.path.length <= 1) {
+              return marker
+            }
+            const level = marker.level === 'error' ? 'errors' : 'warnings'
+            return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
+          }),
+    [markers]
+  )
 
   const isEditing = hasFocusWithinPath(focusPath, value)
 
