@@ -9,6 +9,12 @@
 .root {
   display: flex;
   position: relative;
+
+  @media (hover: hover) {
+    &:hover {
+      z-index: 10;
+    }
+  }
 }
 
 .field {
