@@ -1,11 +1,10 @@
 import React from 'react'
-import {Box, Button, Dialog} from '@sanity/ui'
+import {DownloadIcon} from '@sanity/icons'
+import {Box, Button, Dialog, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
 import {AssetFromSource} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import {client} from '../../legacyParts'
 import Asset from './Asset'
-
-import styles from './DefaultSource.css'
 
 const PER_PAGE = 200
 
@@ -102,7 +101,6 @@ export class DefaultSource extends React.Component<Props, State> {
     this.fetchPage(++this.pageNo)
   }
 
-  // TODO(@benedicteb, 2020-12-15) Add loading={isLoading} when the prop is available in UI
   render() {
     const {selectedAssets} = this.props
     const {assets, isLastPage, isLoading} = this.state
@@ -111,12 +109,12 @@ export class DefaultSource extends React.Component<Props, State> {
       <Dialog
         id={this._elementId}
         header="Select image"
-        width={1}
+        width={2}
         position="absolute"
         onClose={this.handleClose}
       >
-        <Box padding={2}>
-          <div className={styles.imageGrid}>
+        <Box padding={4}>
+          <Grid gap={2} style={{gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'}}>
             {assets.map((asset) => (
               <Asset
                 key={asset._id}
@@ -127,18 +125,32 @@ export class DefaultSource extends React.Component<Props, State> {
                 onDeleteFinished={this.handleDeleteFinished}
               />
             ))}
-          </div>
+          </Grid>
 
-          {!isLoading && assets.length === 0 && (
-            <div className={styles.noAssets}>No images found</div>
+          {isLoading && assets.length === 0 && (
+            <Flex justify="center">
+              <Spinner muted />
+            </Flex>
           )}
 
-          <div className={styles.loadMore}>
-            {!isLastPage && (
-              <Button mode={'ghost'} onClick={this.handleFetchNextPage} text={'Load more'} />
-            )}
-          </div>
+          {!isLoading && assets.length === 0 && (
+            <Text align="center" muted>
+              No images
+            </Text>
+          )}
         </Box>
+
+        {assets.length > 0 && !isLastPage && (
+          <Stack padding={4} style={{borderTop: '1px solid var(--card-border-color)'}}>
+            <Button
+              icon={DownloadIcon}
+              loading={isLoading}
+              onClick={this.handleFetchNextPage}
+              text="Load more"
+              tone="primary"
+            />
+          </Stack>
+        )}
       </Dialog>
     )
   }
