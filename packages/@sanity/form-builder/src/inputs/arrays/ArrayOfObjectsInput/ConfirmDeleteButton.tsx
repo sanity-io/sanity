@@ -11,17 +11,24 @@ export function ConfirmDeleteButton(props: {
 }) {
   const {onConfirm, placement = 'left', disabled} = props
   const id = useId()
+
   return (
     <MenuButton
+      button={<Button icon={TrashIcon} mode="bleed" disabled={disabled} />}
       id={id || ''}
-      button={<Button mode="bleed" icon={TrashIcon} disabled={disabled} />}
-      placement={placement}
-      portal={false}
       menu={
         <Menu>
-          <MenuItem color="danger" onClick={onConfirm} tone="critical" text={props.title} />
+          <MenuItem
+            color="danger"
+            icon={TrashIcon}
+            onClick={onConfirm}
+            text={props.title}
+            tone="critical"
+          />
         </Menu>
       }
+      placement={placement}
+      portal={false}
     />
   )
 }
