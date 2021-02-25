@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
