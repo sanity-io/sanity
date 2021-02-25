@@ -390,9 +390,11 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   handleFileTargetFocus = () => {
     this.props.onFocus(['asset'])
   }
+
   handleFileTargetBlur = () => {
     this.props.onBlur()
   }
+
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
     this.setState({
       hoveringFiles,
@@ -657,7 +659,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 compareValue={compareValue?.asset?._ref}
               >
                 <FileTarget
-                  tabIndex={0}
+                  tabIndex={readOnly ? undefined : 0}
                   shadow={1}
                   disabled={readOnly === true}
                   ref={this.setFocusElement}
