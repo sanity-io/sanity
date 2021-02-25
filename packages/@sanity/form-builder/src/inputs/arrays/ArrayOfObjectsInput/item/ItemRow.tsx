@@ -39,7 +39,7 @@ export const ItemRow = React.forwardRef(function RegularItem(
   } = props
 
   return (
-    <Root {...rest} border radius={2} padding={1} ref={ref}>
+    <Root {...rest} border radius={1} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 

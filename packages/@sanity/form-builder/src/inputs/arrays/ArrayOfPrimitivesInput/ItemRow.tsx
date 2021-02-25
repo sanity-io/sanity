@@ -102,7 +102,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
   const handleMissingTypeFocus = useCallback(() => onFocus([]), [onFocus])
 
   return (
-    <Card border radius={2} padding={1} ref={ref}>
+    <Card border radius={1} padding={1} ref={ref}>
       <Flex align="center">
         {isSortable && <Box marginRight={1}>{dragHandle}</Box>}
 
