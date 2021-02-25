@@ -4,7 +4,7 @@ import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {FormFieldSet} from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/lib/presence'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {Item, List} from '../common/list'
@@ -165,7 +165,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         __unstable_changeIndicator={false}
         __unstable_markers={markers}
       >
-        <Stack space={2}>
+        <Stack space={3}>
           {value && value.length > 0 && (
             <List onSortEnd={this.handleSortEnd} isSortable={isSortable}>
               {value.map((item, index) => {
@@ -173,6 +173,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                 const childPresence = presence.filter((pItem) => startsWith([index], pItem.path))
 
                 return (
+                  // eslint-disable-next-line react/no-array-index-key
                   <Item key={index} index={index} isSortable={isSortable}>
                     <ItemRow
                       level={level + 1}

@@ -301,7 +301,7 @@ export class ArrayInput extends React.Component<Props> {
         getUploadOptions={this.getUploadOptions}
         onUpload={this.handleUpload}
       >
-        <Stack space={2}>
+        <Stack space={3}>
           {hasMissingKeys && (
             <Alert
               status="warning"
@@ -336,43 +336,45 @@ export class ArrayInput extends React.Component<Props> {
             </Alert>
           )}
 
-          <Stack space={2}>
-            <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
-              {(value || []).map((item, index) => {
-                const isChildMarker = (marker: Marker) =>
-                  startsWith([index], marker.path) ||
-                  startsWith([{_key: item && item._key}], marker.path)
-                const childMarkers = markers.filter(isChildMarker)
-                const isChildPresence = (pItem: FormFieldPresence) =>
-                  startsWith([index], pItem.path) ||
-                  startsWith([{_key: item && item._key}], pItem.path)
-                const childPresence = presence.filter(isChildPresence)
-                return (
-                  <Item
-                    key={item._key || index}
-                    isSortable={isSortable}
-                    isGrid={isGrid}
-                    index={index}
-                  >
-                    <ArrayItem
-                      compareValue={compareValue}
-                      filterField={filterField}
-                      focusPath={focusPath}
+          <Stack data-ui="ArrayInput__content" space={3}>
+            {value && value.length > 0 && (
+              <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
+                {value.map((item, index) => {
+                  const isChildMarker = (marker: Marker) =>
+                    startsWith([index], marker.path) ||
+                    startsWith([{_key: item && item._key}], marker.path)
+                  const childMarkers = markers.filter(isChildMarker)
+                  const isChildPresence = (pItem: FormFieldPresence) =>
+                    startsWith([index], pItem.path) ||
+                    startsWith([{_key: item && item._key}], pItem.path)
+                  const childPresence = presence.filter(isChildPresence)
+                  return (
+                    <Item
+                      key={item._key || index}
+                      isSortable={isSortable}
+                      isGrid={isGrid}
                       index={index}
-                      markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-                      onBlur={onBlur}
-                      onChange={this.handleItemChange}
-                      onFocus={onFocus}
-                      onRemove={this.handleRemoveItem}
-                      presence={childPresence}
-                      readOnly={readOnly || hasMissingKeys}
-                      type={type}
-                      value={item}
-                    />
-                  </Item>
-                )
-              })}
-            </List>
+                    >
+                      <ArrayItem
+                        compareValue={compareValue}
+                        filterField={filterField}
+                        focusPath={focusPath}
+                        index={index}
+                        markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                        onBlur={onBlur}
+                        onChange={this.handleItemChange}
+                        onFocus={onFocus}
+                        onRemove={this.handleRemoveItem}
+                        presence={childPresence}
+                        readOnly={readOnly || hasMissingKeys}
+                        type={type}
+                        value={item}
+                      />
+                    </Item>
+                  )
+                })}
+              </List>
+            )}
 
             <ArrayFunctions
               type={type}
