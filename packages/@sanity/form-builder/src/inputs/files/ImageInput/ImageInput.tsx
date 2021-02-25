@@ -644,7 +644,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           __unstable_presence={assetFieldPresence}
           title={type.title}
           description={type.description}
-          level={level}
+          level={highlightedFields.length > 0 ? level : 0}
           __unstable_changeIndicator={false}
         >
           <div>
