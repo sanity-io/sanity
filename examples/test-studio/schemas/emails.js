@@ -17,5 +17,11 @@ export default {
       title: 'Plain email field',
       description: 'A plain email field',
     },
+    {
+      name: 'requiredEmail',
+      type: 'email',
+      title: 'Required email field',
+      validation: (Rule) => Rule.required(),
+    },
   ],
 }

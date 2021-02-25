@@ -51,6 +51,7 @@ export default {
           },
         ],
       },
+      validation: (Rule) => Rule.required().min(1),
     },
   ],
 }
