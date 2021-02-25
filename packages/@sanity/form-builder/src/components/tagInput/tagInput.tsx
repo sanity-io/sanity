@@ -1,7 +1,8 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, isHTMLElement, rem, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
-import styled, {CSSObject} from 'styled-components'
+import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import styled, {css} from 'styled-components'
+import type {CSSObject} from 'styled-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Box)(
@@ -12,6 +13,7 @@ const Root = styled(Box)(
     const space = rem(theme.sanity.space[1])
 
     return {
+      position: 'relative',
       borderRadius: `${radius[1]}px`,
       color: color.default.enabled.fg,
       backgroundColor: color.default.enabled.bg,
@@ -20,12 +22,13 @@ const Root = styled(Box)(
         width: input.border.width,
       }),
 
-      '& > div': {
+      '& > .content': {
+        position: 'relative',
         lineHeight: 0,
         margin: `-${space} 0 0 -${space}`,
       },
 
-      '& > div > div': {
+      '& > .content > div': {
         display: 'inline-block',
         verticalAlign: 'top',
         padding: `${space} 0 0 ${space}`,
@@ -94,24 +97,33 @@ const Input = styled.input(
       paddingRight: rem(p),
       paddingBottom: rem(p - size.descenderHeight),
       paddingLeft: rem(p),
-      '&::placeholder': {
-        color: 'var(--input-placeholder-color)',
-      },
 
       // enabled
       '&:not(:invalid):not(:disabled)': {
         color: color.default.enabled.fg,
-        '--input-placeholder-color': color.default.enabled.placeholder,
       },
 
       // disabled
       '&:not(:invalid):disabled': {
         color: color.default.disabled.fg,
-        '--input-placeholder-color': color.default.disabled.placeholder,
       },
     }
   }
 )
+
+const Placeholder = styled(Box)((props: {theme: Theme}) => {
+  const {theme} = props
+  const color = theme.sanity.color.input
+
+  return css`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    --card-fg-color: ${color.default.enabled.placeholder};
+  `
+})
 
 export const TagInput = forwardRef(
   (
@@ -119,11 +131,27 @@ export const TagInput = forwardRef(
       readOnly?: boolean
       onChange?: (newValue: {value: string}[]) => void
       onFocus?: () => void
+      placeholder?: string
       value?: {value: string}[]
     } & Omit<React.HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
     ref: React.Ref<HTMLInputElement>
   ) => {
-    const {disabled, onChange, onFocus, readOnly, value = [], ...restProps} = props
+    const {
+      disabled,
+      onChange,
+      onFocus,
+      placeholder: placeholderProp,
+      readOnly,
+      value = [],
+      ...restProps
+    } = props
+    const placeholder = useMemo(() => {
+      if (placeholderProp) return placeholderProp
+      if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+        return 'Enter tag…'
+      }
+      return 'Enter tag and press ENTER…'
+    }, [placeholderProp])
     const [inputValue, setInputValue] = useState('')
     const enabled = !disabled && !readOnly
     const [focused, setFocused] = useState(false)
@@ -208,7 +236,11 @@ export const TagInput = forwardRef(
         padding={1}
         ref={rootRef}
       >
-        <div>
+        <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
+          <Text textOverflow="ellipsis">{placeholder}</Text>
+        </Placeholder>
+
+        <div className="content">
           {value.map((tag, tagIndex) => (
             // eslint-disable-next-line react/no-array-index-key
             <div key={`tag-${tagIndex}`}>
