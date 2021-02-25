@@ -4,7 +4,11 @@ import {Box, Flex, Heading, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {FileTarget} from './styles'
 
-const ClipboardBox = styled(Box)`
+type UploadPlaceholderProps = {
+  fileType?: string
+}
+
+const ClipboardBox = styled(Box)<{canPaste?: boolean}>`
   opacity: 0.25;
   ${FileTarget}:focus & {
     opacity: 1;
@@ -12,10 +16,6 @@ const ClipboardBox = styled(Box)`
   transition-property: opacity;
   transition-duration: 100ms;
 `
-
-type UploadPlaceholderProps = {
-  fileType?: string
-}
 
 export default React.memo(function UploadPlaceholder({fileType = 'file'}: UploadPlaceholderProps) {
   return (
