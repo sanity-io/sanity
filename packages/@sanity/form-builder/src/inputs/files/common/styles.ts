@@ -1,4 +1,6 @@
-import styled, {css} from 'styled-components'
+/* eslint-disable import/named */
+
+import styled, {css, DefaultTheme, StyledComponent} from 'styled-components'
 import {Card, rem, Theme} from '@sanity/ui'
 import {fileTarget} from '../../common/fileTarget'
 import {focusRingBorderStyle, focusRingStyle} from './focusringUtils'
@@ -27,7 +29,7 @@ const CardWithFocusRing = styled(Card)(({theme}: {theme: Theme}) => {
 
 export const FileTarget = fileTarget(CardWithFocusRing)
 
-export const Overlay: React.ComponentType = styled.div`
+export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
