@@ -379,7 +379,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           __unstable_markers={markers}
           title={type.title}
           description={type.description}
-          level={level}
+          level={highlightedFields.length > 0 ? level : 0}
           __unstable_presence={assetFieldPresence}
           __unstable_changeIndicator={false}
         >
