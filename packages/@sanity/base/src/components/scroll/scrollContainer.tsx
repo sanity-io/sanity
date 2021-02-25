@@ -53,6 +53,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     selfRef.current!.addEventListener('scroll', handleScroll, {
       passive: true,
+      capture: true,
     })
 
     return () => {
