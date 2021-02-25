@@ -1,12 +1,11 @@
 import {Marker, Path, SchemaType} from '@sanity/types'
-import React from 'react'
-import {Box, Dialog, Layer} from '@sanity/ui'
+import React, {useState} from 'react'
+import {BoundaryElementProvider, Box, Dialog, Layer} from '@sanity/ui'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PopoverDialog} from '../../../../transitional/PopoverDialog'
 import {ArrayMember} from '../types'
 import PatchEvent from '../../../../PatchEvent'
-import {EditItemFold} from '../../../../transitional/EditItemFold'
 import {isEmpty} from './helpers'
 
 type Props = {
@@ -49,22 +48,26 @@ export function EditDialog(props: Props) {
   const childMarkers = markers.filter((marker) => marker.path.length > 1)
   const childPresence = presence.filter((_presence) => _presence.path.length > 1)
 
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+
   const content = (
-    <FormBuilderInput
-      type={type}
-      level={0}
-      value={isEmpty(value) ? undefined : value}
-      onChange={onChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      compareValue={compareValue}
-      focusPath={focusPath}
-      readOnly={readOnly || type.readOnly || false}
-      markers={childMarkers}
-      path={[{_key: value._key}]}
-      filterField={filterField}
-      presence={childPresence}
-    />
+    <BoundaryElementProvider element={boundaryElement}>
+      <FormBuilderInput
+        type={type}
+        level={0}
+        value={isEmpty(value) ? undefined : value}
+        onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        compareValue={compareValue}
+        focusPath={focusPath}
+        readOnly={readOnly || type.readOnly || false}
+        markers={childMarkers}
+        path={[{_key: value._key}]}
+        filterField={filterField}
+        presence={childPresence}
+      />
+    </BoundaryElementProvider>
   )
 
   if (dialogType === 'fullscreen') {
@@ -79,33 +82,30 @@ export function EditDialog(props: Props) {
           position="absolute"
         >
           <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <Box padding={4}>{content}</Box>
+            <Box padding={4} ref={setBoundaryElement}>
+              {content}
+            </Box>
           </PresenceOverlay>
         </Dialog>
       </Layer>
     )
   }
 
-  // TODO(@benedicteb, 2020-12-04) Make a plan for what to do with fold
-  if (dialogType === 'fold') {
-    return (
-      <div>
-        <EditItemFold title={title} onClose={onClose}>
-          <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
-        </EditItemFold>
-      </div>
-    )
-  }
+  if (dialogType === 'popover' || dialogType === 'fold') {
+    if (dialogType === 'fold') {
+      console.warn(`The option named \`editItem: "fold"\` is no longer supported`)
+    }
 
-  if (dialogType === 'popover') {
     return (
       <PopoverDialog
         onClose={onClose}
         referenceElement={referenceElement}
         placement="auto"
-        depth={10}
+        title={title}
       >
-        <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
+        <PresenceOverlay margins={[0, 0, 1, 0]}>
+          <Box ref={setBoundaryElement}>{content}</Box>
+        </PresenceOverlay>
       </PopoverDialog>
     )
   }
@@ -120,7 +120,9 @@ export function EditDialog(props: Props) {
       position="absolute"
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
-        <Box padding={4}>{content}</Box>
+        <Box padding={4} ref={setBoundaryElement}>
+          {content}
+        </Box>
       </PresenceOverlay>
     </Dialog>
   )
