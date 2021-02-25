@@ -31,7 +31,7 @@
   "dependencies": {
     "@sanity/base": "2.4.1",
     "@sanity/generate-help-url": "2.2.6",
-    "@sanity/ui": "^0.33.4",
+    "@sanity/ui": "^0.33.6",
     "@sanity/util": "2.4.0",
     "classnames": "^2.2.5",
     "is-hotkey": "^0.1.4",
