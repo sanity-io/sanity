@@ -53,7 +53,6 @@ describe('resolveDeepInitialValues', () => {
     }
 
     const initialValue = await resolveInitialValue(personTemplate)
-
     expect(initialValue).toMatchObject({
       address: {
         _type: 'address',
