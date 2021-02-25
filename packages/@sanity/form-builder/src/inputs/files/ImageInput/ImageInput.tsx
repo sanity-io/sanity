@@ -515,7 +515,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         This field is read-only
       </Text>
     ) : (
-      <UploadPlaceholder canPaste={this.hasFileTargetFocus()} />
+      <UploadPlaceholder canPaste={this.hasFileTargetFocus()} fileType="image" />
     )
   }
 
@@ -719,6 +719,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               )}
             </Grid>
           </div>
+
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
           {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
           {selectedAssetSource && this.renderAssetSource()}
