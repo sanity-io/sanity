@@ -11,14 +11,16 @@ import {DragHandle} from '../../common/DragHandle'
 import {ItemWithMissingType} from './ItemWithMissingType'
 import {ItemLayoutProps} from './ItemLayoutProps'
 
-const dragHandle = <DragHandle grid />
+const dragHandle = <DragHandle grid paddingX={2} />
 
 const Root = styled(Card)`
-  transition: 250ms border;
+  transition: border-color 250ms;
+
   &[aria-selected='true'] {
-    border-color: var(--card-focus-ring-color);
+    --card-border-color: var(--card-focus-ring-color);
   }
 `
+
 export const ItemCell = React.forwardRef(function ItemCell(
   props: ItemLayoutProps,
   ref: React.ForwardedRef<HTMLElement>
@@ -37,8 +39,10 @@ export const ItemCell = React.forwardRef(function ItemCell(
     validation,
     ...rest
   } = props
+
   return (
-    <Root {...rest} border radius={2} padding={1} ref={ref}>
+    <Root {...rest} border radius={1} padding={1} ref={ref}>
+      {/* Preview */}
       {type ? (
         <Card
           as="button"
@@ -51,22 +55,27 @@ export const ItemCell = React.forwardRef(function ItemCell(
           onKeyPress={onKeyPress}
           onFocus={onFocus}
         >
-          <Box margin={1}>
-            <Preview layout="media" value={value} type={type} />
-          </Box>
+          <Preview layout="media" value={value} type={type} />
         </Card>
       ) : (
         <Box flex={1}>
           <ItemWithMissingType value={value} onFocus={onFocus} />
         </Box>
       )}
+
+      {/* Presence */}
       {!readOnly && (
         <Box marginTop={3} marginRight={3} style={{position: 'absolute', top: 0, right: 0}}>
           <FieldPresence presence={presence} maxAvatars={1} />
         </Box>
       )}
-      <Flex>
+
+      {/* Footer */}
+      <Flex marginTop={1}>
+        {/* Drag handle */}
         <Box flex={1}>{(!readOnly && isSortable && dragHandle) || ' '}</Box>
+
+        {/* Validation status */}
         {value._key && validation.length > 0 && (
           <Box marginLeft={1} paddingX={1} paddingY={3}>
             <FormFieldValidationStatus
@@ -76,11 +85,15 @@ export const ItemCell = React.forwardRef(function ItemCell(
             />
           </Box>
         )}
+
+        {/* Edit button */}
         {value._ref && (
           <Box>
             <IntentButton icon={LinkIcon} intent="edit" params={{id: value._ref}} />
           </Box>
         )}
+
+        {/* Badge: missing key */}
         {!value._key && (
           <Tooltip
             content={
@@ -96,12 +109,14 @@ export const ItemCell = React.forwardRef(function ItemCell(
             </Badge>
           </Tooltip>
         )}
+
+        {/* Delete button */}
         <Box>
           <ConfirmDeleteButton
+            disabled={readOnly || !onRemove}
             onConfirm={onRemove}
             placement="bottom"
             title="Remove item"
-            disabled={readOnly || !onRemove}
           />
         </Box>
       </Flex>
