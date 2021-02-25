@@ -25,8 +25,11 @@ const SelectInput = React.forwardRef(function SelectInput(
   ])
   const currentItem = items.find((item) => item.value === value)
   const isRadio = type.options && type.options.layout === 'radio'
-  const validation = markers.filter((marker) => marker.type === 'validation')
-  const errors = validation.filter((marker) => marker.level === 'error')
+
+  const errors = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [markers]
+  )
 
   const itemFromOptionValue = useCallback(
     (optionValue) => {

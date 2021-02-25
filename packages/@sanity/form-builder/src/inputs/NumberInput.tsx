@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {NumberSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
@@ -12,8 +12,12 @@ const NumberInput = React.forwardRef(function NumberInput(
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value = '', readOnly, markers, type, level, onFocus, onChange, presence} = props
-  const validation = markers.filter((marker) => marker.type === 'validation')
-  const errors = validation.filter((marker) => marker.level === 'error')
+
+  const errors = useMemo(
+    () => markers.filter((marker) => marker.type === 'validation' && marker.level === 'error'),
+    [markers]
+  )
+
   const id = useId()
 
   // Show numpad on mobile if only positive numbers is preferred
