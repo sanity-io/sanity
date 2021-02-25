@@ -19,7 +19,6 @@ import {
 import {Box, Button, Container, Dialog, Flex, Grid, Stack, Text, ToastParams} from '@sanity/ui'
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
-
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
@@ -407,6 +406,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                   onFilesOut={this.handleFilesOut}
                   onFocus={this.handleFileTargetFocus}
                   onBlur={this.handleFileTargetBlur}
+                  tone="transparent"
                 >
                   <AssetBackground>
                     <Container padding={3} sizing="border" width={0}>
