@@ -27,6 +27,7 @@ import DevServerStatus from './DevServerStatus'
 import {GlobalStyle} from './GlobalStyle'
 import MissingProjectConfig from './MissingProjectConfig'
 import VersionChecker from './VersionChecker'
+import {useZIndex, ZIndexProvider} from './zOffsets'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -71,6 +72,7 @@ function UIErrorMessage() {
 function AppProvider() {
   const [portalElement, setPortalElement] = useState(() => document.createElement('div'))
   const [uiError, setUIError] = useState<Error | null>(null)
+  const zIndex = useZIndex()
 
   try {
     useRootTheme()
@@ -86,7 +88,7 @@ function AppProvider() {
     <UserColorManagerProvider manager={userColorManager}>
       <PortalProvider element={portalElement}>
         <LayerProvider>
-          <ToastProvider paddingY={7} zOffset={10000}>
+          <ToastProvider paddingY={7} zOffset={zIndex.toast}>
             <SnackbarProvider>
               <ThemeColorProvider tone="transparent">
                 <GlobalStyle />
@@ -114,9 +116,11 @@ function SanityRoot() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <AppProvider />
-    </ThemeProvider>
+    <ZIndexProvider>
+      <ThemeProvider theme={theme}>
+        <AppProvider />
+      </ThemeProvider>
+    </ZIndexProvider>
   )
 }
 

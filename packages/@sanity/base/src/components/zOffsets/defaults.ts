@@ -18,6 +18,7 @@ export const defaults: ZIndexContextValue = {
   drawershade: 1000000,
   drawer: 1000001,
   fullscreen: 1200000,
+  toast: 11000,
 
   // NOT IN USE
   dropdown: 200,

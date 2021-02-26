@@ -21,6 +21,7 @@ export function getLegacyZIndexes(): ZIndexContextValue {
     drawershade: getCustomCSSPropertyNumber('--zindex-drawershade') || defaults.drawershade,
     drawer: getCustomCSSPropertyNumber('--zindex-drawer') || defaults.drawer,
     fullscreen: defaults.fullscreen,
+    toast: defaults.toast,
 
     // THESE ARE NOT IN USE:
     dropdown: getCustomCSSPropertyNumber('--zindex-dropdown') || defaults.dropdown,

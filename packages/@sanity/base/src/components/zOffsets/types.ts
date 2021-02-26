@@ -36,6 +36,9 @@ export interface ZIndexContextValue {
   /** Used for UI that sits on top of the entire application */
   fullscreen: number
 
+  /** Used for toasts */
+  toast: number
+
   // THESE ARE NOT IN USE:
   dropdown: number
   navbarFixed: number
