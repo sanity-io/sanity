@@ -25,7 +25,7 @@ type Props = {
   markers: Marker[]
   index: number
   value: string | number | boolean
-  compareValue?: string | number | boolean
+  compareValue?: (string | number | boolean)[]
   isSortable: boolean
   readOnly: boolean | null
   level: number
