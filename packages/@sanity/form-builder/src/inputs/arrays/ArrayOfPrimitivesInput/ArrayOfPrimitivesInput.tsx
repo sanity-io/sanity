@@ -179,7 +179,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
                       level={level + 1}
                       index={index}
                       value={item}
-                      compareValue={(compareValue || [])[index]}
+                      compareValue={compareValue}
                       readOnly={readOnly}
                       markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
                       isSortable={isSortable}
