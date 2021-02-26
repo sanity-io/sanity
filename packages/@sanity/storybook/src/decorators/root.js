@@ -1,7 +1,7 @@
-const {theme: baseTheme} = require('@sanity/base')
-const {Card, ThemeProvider} = require('@sanity/ui')
-const React = require('react')
-const {css, createGlobalStyle} = require('styled-components')
+import {theme as baseTheme} from '@sanity/base'
+import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
+import React from 'react'
+import {css, createGlobalStyle} from 'styled-components'
 
 const GlobalStyle = createGlobalStyle(({theme}) => {
   const base = theme.sanity.color.base
@@ -31,11 +31,17 @@ const GlobalStyle = createGlobalStyle(({theme}) => {
   `
 })
 
-module.exports = function RootDecorator(story) {
+function RootDecorator(story) {
   return (
     <ThemeProvider scheme="light" theme={baseTheme}>
-      <GlobalStyle />
-      <Card style={{height: '100%'}}>{story()}</Card>
+      <ToastProvider zOffset={12000}>
+        <LayerProvider>
+          <GlobalStyle />
+          <Card height="fill">{story()}</Card>
+        </LayerProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }
+
+export default RootDecorator
