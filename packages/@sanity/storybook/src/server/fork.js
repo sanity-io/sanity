@@ -28,6 +28,7 @@ module.exports = (config) => {
   })
 
   proc.stderr.on('data', (data) => {
+    // eslint-disable-next-line no-control-regex
     const msg = data.toString().replace(/\x08/g, '').trim()
 
     // Skip empty messages

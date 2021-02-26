@@ -3,7 +3,7 @@ const storyBook = require('@storybook/react')
 const sortByName = (storyA, storyB) => (storyB.name || '').localeCompare(storyA.name || '')
 const registerStoryKind = storyBook.storiesOf
 
-const rootDecorator = require('./decorators/root')
+const rootDecorator = require('./decorators/root').default
 
 const storybookApi = Object.assign({}, storyBook, {
   declaredStories: [],
