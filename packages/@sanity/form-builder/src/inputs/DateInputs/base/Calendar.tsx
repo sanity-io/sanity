@@ -14,36 +14,10 @@ import {
 } from 'date-fns'
 import React, {forwardRef, useCallback, useEffect} from 'react'
 import {range} from 'lodash'
+import {ARROW_KEYS, HOURS_24, MONTH_NAMES, DEFAULT_TIME_PRESETS, WEEK_DAY_NAMES} from './constants'
 import {features} from './features'
 import {getWeeksOfMonth} from './utils'
 import {YearInput} from './YearInput'
-
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
-const WEEK_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const HOURS = range(0, 24)
-
-const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
-
-const TIME_PRESETS = [
-  [0, 0],
-  [6, 0],
-  [12, 0],
-  [18, 0],
-  [23, 59],
-]
 
 const formatTime = (hours: number, minutes: number) =>
   `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`
@@ -299,7 +273,7 @@ export const Calendar = forwardRef(function Calendar(
                     value={selectedDate?.getHours()}
                     onChange={handleHoursChange}
                   >
-                    {HOURS.map((h) => (
+                    {HOURS_24.map((h) => (
                       <option key={h} value={h}>
                         {`${h}`.padStart(2, '0')}
                       </option>
@@ -339,7 +313,7 @@ export const Calendar = forwardRef(function Calendar(
 
               {features.timePresets && (
                 <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-                  {TIME_PRESETS.map(([hours, minutes]) => {
+                  {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
                     return (
                       <TimePresetButton
                         key={`${hours}-${minutes}`}
