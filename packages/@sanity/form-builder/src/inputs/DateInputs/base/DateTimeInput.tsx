@@ -1,6 +1,5 @@
 import React, {useCallback} from 'react'
 import FocusLock from 'react-focus-lock'
-
 import {Box, Button, Layer, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
 import {DatePicker} from './DatePicker'

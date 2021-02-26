@@ -1,5 +1,5 @@
 import React from 'react'
-import {Calendar} from './Calendar'
+import {Calendar} from './calendar/Calendar'
 
 export const DatePicker = React.forwardRef(function DatePicker(
   props: Omit<React.ComponentProps<'div'>, 'onChange'> & {
