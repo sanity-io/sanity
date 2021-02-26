@@ -1,4 +1,4 @@
-import {Box, Button, Card, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
+import {Box, Button, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
@@ -144,182 +144,117 @@ export const Calendar = forwardRef(function Calendar(
     handleDateChange,
   ])
 
-  const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
-
-  const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
-
-  const handlePrevYearClick = useCallback(() => moveFocusedDate(-12), [moveFocusedDate])
-
-  const handleNextYearClick = useCallback(() => moveFocusedDate(12), [moveFocusedDate])
-
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 
   return (
-    <Card {...restProps} ref={ref}>
-      <Flex direction="column">
+    <Box data-ui="Calendar" {...restProps} ref={ref}>
+      {/* Select date */}
+      <Box padding={2}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid columns={3} gap={1}>
+          <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
             <Button text="Yesterday" mode="bleed" fontSize={1} onClick={handleYesterdayClick} />
             <Button text="Today" mode="bleed" fontSize={1} onClick={handleTodayClick} />
             <Button text="Tomorrow" mode="bleed" fontSize={1} onClick={handleTomorrowClick} />
           </Grid>
         )}
 
-        <Box marginTop={2}>
-          <Flex direction="column">
-            <Flex>
-              <Flex flex={1}>
-                <Button
-                  aria-label="Go to previous month"
-                  fontSize={1}
-                  onClick={handlePrevMonthClick}
-                  mode="bleed"
-                  icon={ChevronLeftIcon}
-                  paddingX={2}
-                  radius={0}
-                />
-                <Box flex={1}>
-                  <Select
-                    fontSize={1}
-                    radius={0}
-                    value={focusedDate?.getMonth()}
-                    onChange={handleFocusedMonthChange}
-                  >
-                    {MONTH_NAMES.map((m, i) => (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <option key={i} value={i}>
-                        {m}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-                <Button
-                  aria-label="Go to next month"
-                  fontSize={1}
-                  mode="bleed"
-                  icon={ChevronRightIcon}
-                  onClick={handleNextMonthClick}
-                  paddingX={2}
-                  radius={0}
-                />
-              </Flex>
-              <Flex>
-                <Button
-                  aria-label="Go to previous year"
-                  fontSize={1}
-                  onClick={handlePrevYearClick}
-                  mode="bleed"
-                  icon={ChevronLeftIcon}
-                  paddingX={2}
-                  radius={0}
-                />
-                <YearInput
-                  fontSize={1}
-                  value={focusedDate.getFullYear()}
-                  onChange={setFocusedDateYear}
-                  radius={0}
-                  style={{width: 65}}
-                />
-                <Button
-                  aria-label="Go to next year"
-                  fontSize={1}
-                  onClick={handleNextYearClick}
-                  mode="bleed"
-                  icon={ChevronRightIcon}
-                  paddingX={2}
-                  radius={0}
-                />
-              </Flex>
+        {/* Select month and year */}
+        <Flex>
+          <Box flex={1}>
+            <CalendarMonthSelect
+              moveFocusedDate={moveFocusedDate}
+              onChange={handleFocusedMonthChange}
+              value={focusedDate?.getMonth()}
+            />
+          </Box>
+          <Box marginLeft={2}>
+            <CalendarYearSelect
+              moveFocusedDate={moveFocusedDate}
+              onChange={setFocusedDateYear}
+              value={focusedDate.getFullYear()}
+            />
+          </Box>
+        </Flex>
+
+        {/* Selected month (grid of days) */}
+        <Box
+          data-calendar-grid
+          onKeyDown={handleKeyDown}
+          marginTop={2}
+          overflow="hidden"
+          tabIndex={0}
+        >
+          <CalendarMonth
+            date={focusedDate}
+            focused={focusedDate}
+            onSelect={handleDateChange}
+            selected={selectedDate}
+          />
+        </Box>
+      </Box>
+
+      {/* Select time */}
+      {selectTime && (
+        <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+          <Flex align="center">
+            <Flex align="center" flex={1}>
+              <Box>
+                <Select
+                  aria-label="Select hour"
+                  value={selectedDate?.getHours()}
+                  onChange={handleHoursChange}
+                >
+                  {HOURS_24.map((h) => (
+                    <option key={h} value={h}>
+                      {`${h}`.padStart(2, '0')}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
+
+              <Box paddingX={1}>
+                <Text>:</Text>
+              </Box>
+
+              <Box>
+                <Select
+                  aria-label="Select minutes"
+                  value={selectedDate?.getMinutes()}
+                  onChange={handleMinutesChange}
+                >
+                  {range(0, 60, timeStep).map((m) => (
+                    <option key={m} value={m}>
+                      {`${m}`.padStart(2, '0')}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
             </Flex>
 
-            {/* Spacer */}
-            <Box paddingTop={4} />
-
-            <Flex
-              direction="column"
-              justify="space-between"
-              tabIndex={0}
-              onKeyDown={handleKeyDown}
-              overflow="hidden"
-              data-calendar-grid
-            >
-              <CalendarMonth
-                date={focusedDate}
-                focused={focusedDate}
-                onSelect={handleDateChange}
-                selected={selectedDate}
-              />
-            </Flex>
+            <Box marginLeft={2}>
+              <Button text="Set to current time" mode="bleed" onClick={handleNowClick} />
+            </Box>
           </Flex>
 
-          {selectTime && (
-            <Box marginTop={4}>
-              <Flex direction="row" justify="center" align="center">
-                <Box>
-                  <Select
-                    aria-label="Select hour"
-                    value={selectedDate?.getHours()}
-                    onChange={handleHoursChange}
-                  >
-                    {HOURS_24.map((h) => (
-                      <option key={h} value={h}>
-                        {`${h}`.padStart(2, '0')}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-
-                <Box paddingX={1}>
-                  <Text size={3} weight="semibold">
-                    :
-                  </Text>
-                </Box>
-
-                <Box>
-                  <Select
-                    aria-label="Select minutes"
-                    value={selectedDate?.getMinutes()}
-                    onChange={handleMinutesChange}
-                  >
-                    {range(0, 60, timeStep).map((m) => (
-                      <option key={m} value={m}>
-                        {`${m}`.padStart(2, '0')}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-                <Box flex={0} paddingX={1}>
-                  <Button
-                    text="Now"
-                    aria-label="Now"
-                    mode="bleed"
-                    fontSize={1}
-                    onClick={handleNowClick}
+          {features.timePresets && (
+            <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+              {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
+                return (
+                  <CalendarTimePresetButton
+                    key={`${hours}-${minutes}`}
+                    hours={hours}
+                    minutes={minutes}
+                    onTimeChange={handleTimeChange}
+                    selectedDate={selectedDate}
                   />
-                </Box>
-              </Flex>
-
-              {features.timePresets && (
-                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-                  {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
-                    return (
-                      <CalendarTimePresetButton
-                        key={`${hours}-${minutes}`}
-                        hours={hours}
-                        minutes={minutes}
-                        onTimeChange={handleTimeChange}
-                        selectedDate={selectedDate}
-                      />
-                    )
-                  })}
-                </Flex>
-              )}
-            </Box>
+                )
+              })}
+            </Flex>
           )}
         </Box>
-      </Flex>
-    </Card>
+      )}
+    </Box>
   )
 })
 
@@ -344,5 +279,82 @@ function CalendarTimePresetButton(props: {
       fontSize={1}
       onClick={handleClick}
     />
+  )
+}
+
+function CalendarMonthSelect(props: {
+  moveFocusedDate: (by: number) => void
+  onChange: (e: React.FormEvent<HTMLSelectElement>) => void
+  value?: number
+}) {
+  const {moveFocusedDate, onChange, value} = props
+
+  const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
+
+  const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
+
+  return (
+    <Flex flex={1}>
+      <Button
+        aria-label="Go to previous month"
+        onClick={handlePrevMonthClick}
+        mode="bleed"
+        icon={ChevronLeftIcon}
+        paddingX={2}
+        radius={0}
+      />
+      <Box flex={1}>
+        <Select radius={0} value={value} onChange={onChange}>
+          {MONTH_NAMES.map((m, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <option key={i} value={i}>
+              {m}
+            </option>
+          ))}
+        </Select>
+      </Box>
+      <Button
+        aria-label="Go to next month"
+        mode="bleed"
+        icon={ChevronRightIcon}
+        onClick={handleNextMonthClick}
+        paddingX={2}
+        radius={0}
+      />
+    </Flex>
+  )
+}
+
+function CalendarYearSelect(props: {
+  moveFocusedDate: (by: number) => void
+  onChange: (year: number) => void
+  value?: number
+}) {
+  const {moveFocusedDate, onChange, value} = props
+
+  const handlePrevYearClick = useCallback(() => moveFocusedDate(-12), [moveFocusedDate])
+
+  const handleNextYearClick = useCallback(() => moveFocusedDate(12), [moveFocusedDate])
+
+  return (
+    <Flex>
+      <Button
+        aria-label="Previous year"
+        onClick={handlePrevYearClick}
+        mode="bleed"
+        icon={ChevronLeftIcon}
+        paddingX={2}
+        radius={0}
+      />
+      <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
+      <Button
+        aria-label="Next year"
+        onClick={handleNextYearClick}
+        mode="bleed"
+        icon={ChevronRightIcon}
+        paddingX={2}
+        radius={0}
+      />
+    </Flex>
   )
 }

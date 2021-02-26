@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import FocusLock from 'react-focus-lock'
-import {Box, Button, Layer, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
+import {Box, Button, LayerProvider, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
@@ -53,9 +53,8 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
       value={inputValue}
       onChange={onInputChange}
       suffix={
-        <Layer zOffset={1000}>
+        <LayerProvider zOffset={1000}>
           <Popover
-            ref={setPopoverRef}
             content={
               <FocusLock onDeactivation={handleDeactivation}>
                 <DatePicker
@@ -67,9 +66,10 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
                 />
               </FocusLock>
             }
-            padding={1}
-            placement="bottom-end"
             open={isPickerOpen}
+            placement="bottom-end"
+            ref={setPopoverRef}
+            radius={2}
           >
             <Box padding={1}>
               <Button
@@ -82,7 +82,7 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
               />
             </Box>
           </Popover>
-        </Layer>
+        </LayerProvider>
       }
     />
   )
