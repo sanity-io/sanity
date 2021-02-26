@@ -14,6 +14,7 @@ import {
 } from 'date-fns'
 import React, {forwardRef, useCallback, useEffect} from 'react'
 import {range} from 'lodash'
+import {features} from './features'
 import {getWeeksOfMonth} from './utils'
 import {YearInput} from './YearInput'
 
@@ -193,24 +194,31 @@ export const Calendar = forwardRef(function Calendar(
   return (
     <Card {...props} ref={ref}>
       <Flex direction="column">
-        <Grid columns={3} gap={1}>
-          <Button text="Yesterday" mode="bleed" fontSize={1} onClick={handleYesterdayClick} />
-          <Button text="Today" mode="bleed" fontSize={1} onClick={handleTodayClick} />
-          <Button text="Tomorrow" mode="bleed" fontSize={1} onClick={handleTomorrowClick} />
-        </Grid>
+        {/* Day presets */}
+        {features.dayPresets && (
+          <Grid columns={3} gap={1}>
+            <Button text="Yesterday" mode="bleed" fontSize={1} onClick={handleYesterdayClick} />
+            <Button text="Today" mode="bleed" fontSize={1} onClick={handleTodayClick} />
+            <Button text="Tomorrow" mode="bleed" fontSize={1} onClick={handleTomorrowClick} />
+          </Grid>
+        )}
+
         <Box marginTop={2}>
           <Flex direction="column">
             <Flex>
               <Flex flex={1}>
                 <Button
                   aria-label="Go to previous month"
+                  fontSize={1}
                   onClick={handlePrevMonthClick}
                   mode="bleed"
                   icon={ChevronLeftIcon}
+                  paddingX={2}
                   radius={0}
                 />
                 <Box flex={1}>
                   <Select
+                    fontSize={1}
                     radius={0}
                     value={focusedDate?.getMonth()}
                     onChange={handleFocusedMonthChange}
@@ -225,21 +233,26 @@ export const Calendar = forwardRef(function Calendar(
                 </Box>
                 <Button
                   aria-label="Go to next month"
+                  fontSize={1}
                   mode="bleed"
                   icon={ChevronRightIcon}
                   onClick={handleNextMonthClick}
+                  paddingX={2}
                   radius={0}
                 />
               </Flex>
               <Flex>
                 <Button
                   aria-label="Go to previous year"
+                  fontSize={1}
                   onClick={handlePrevYearClick}
                   mode="bleed"
                   icon={ChevronLeftIcon}
+                  paddingX={2}
                   radius={0}
                 />
                 <YearInput
+                  fontSize={1}
                   value={focusedDate.getFullYear()}
                   onChange={setFocusedDateYear}
                   radius={0}
@@ -247,9 +260,11 @@ export const Calendar = forwardRef(function Calendar(
                 />
                 <Button
                   aria-label="Go to next year"
+                  fontSize={1}
                   onClick={handleNextYearClick}
                   mode="bleed"
                   icon={ChevronRightIcon}
+                  paddingX={2}
                   radius={0}
                 />
               </Flex>
@@ -322,19 +337,21 @@ export const Calendar = forwardRef(function Calendar(
                 </Box>
               </Flex>
 
-              <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
-                {TIME_PRESETS.map(([hours, minutes]) => {
-                  return (
-                    <TimePresetButton
-                      key={`${hours}-${minutes}`}
-                      hours={hours}
-                      minutes={minutes}
-                      onTimeChange={handleTimeChange}
-                      selectedDate={selectedDate}
-                    />
-                  )
-                })}
-              </Flex>
+              {features.timePresets && (
+                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                  {TIME_PRESETS.map(([hours, minutes]) => {
+                    return (
+                      <TimePresetButton
+                        key={`${hours}-${minutes}`}
+                        hours={hours}
+                        minutes={minutes}
+                        onTimeChange={handleTimeChange}
+                        selectedDate={selectedDate}
+                      />
+                    )
+                  })}
+                </Flex>
+              )}
             </Box>
           )}
         </Box>
