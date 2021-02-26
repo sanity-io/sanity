@@ -29,14 +29,11 @@ describe('resolveDeepInitialValues', () => {
 
     expect(initialValue).toEqual({
       name: 'A default name!',
-      hasPet: false,
-      age: 30,
       heroImage: {
         _type: 'captionedImage',
         caption: 'Default caption!',
       },
-      awards: ['TypeScript Wizard of the Year'],
-      tasks: [{_type: 'task', description: 'Mark as done', isDone: false}],
+      numberOfCats: undefined,
       recursive: generateNestedObjectTest(
         {
           _type: 'recursiveObject',
