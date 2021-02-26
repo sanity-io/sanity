@@ -1,7 +1,5 @@
 import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
-
-// all weekdays except first
-const TAIL_WEEKDAYS = [1, 2, 3, 4, 5, 6]
+import {TAIL_WEEKDAYS} from './constants'
 
 export const getWeekStartsOfMonth = (date: Date): Date[] => {
   const firstDay = startOfMonth(date)
@@ -30,3 +28,6 @@ export const getWeeksOfMonth = (date: Date): Week[] =>
       days,
     })
   )
+
+export const formatTime = (hours: number, minutes: number): string =>
+  `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`

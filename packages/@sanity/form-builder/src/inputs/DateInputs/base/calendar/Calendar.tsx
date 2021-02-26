@@ -1,28 +1,15 @@
-/* eslint-disable no-nested-ternary */
 import {Box, Button, Card, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {
-  addDays,
-  addMonths,
-  isSameDay,
-  isSameMonth,
-  setDate,
-  setHours,
-  setMinutes,
-  setMonth,
-  setYear,
-} from 'date-fns'
-import React, {forwardRef, useCallback, useEffect} from 'react'
+import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
-import {ARROW_KEYS, HOURS_24, MONTH_NAMES, DEFAULT_TIME_PRESETS, WEEK_DAY_NAMES} from './constants'
+import React, {forwardRef, useCallback, useEffect} from 'react'
+import {CalendarMonth} from './CalendarMonth'
+import {ARROW_KEYS, HOURS_24, MONTH_NAMES, DEFAULT_TIME_PRESETS} from './constants'
 import {features} from './features'
-import {getWeeksOfMonth} from './utils'
+import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-const formatTime = (hours: number, minutes: number) =>
-  `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`
-
-type Props = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
+type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
@@ -32,17 +19,19 @@ type Props = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
 }
 
 export const Calendar = forwardRef(function Calendar(
-  {
+  props: CalendarProps,
+  forwardedRef: React.ForwardedRef<HTMLElement>
+) {
+  const {
     selectTime,
     onFocusedDateChange,
     selectedDate = new Date(),
     focusedDate = selectedDate,
     timeStep = 1,
     onSelect,
-    ...props
-  }: Props,
-  forwardedRef: React.ForwardedRef<HTMLElement>
-) {
+    ...restProps
+  } = props
+
   const setFocusedDate = useCallback((date: Date) => onFocusedDateChange(date), [
     onFocusedDateChange,
   ])
@@ -166,7 +155,7 @@ export const Calendar = forwardRef(function Calendar(
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 
   return (
-    <Card {...props} ref={ref}>
+    <Card {...restProps} ref={ref}>
       <Flex direction="column">
         {/* Day presets */}
         {features.dayPresets && (
@@ -315,7 +304,7 @@ export const Calendar = forwardRef(function Calendar(
                 <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
                   {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
                     return (
-                      <TimePresetButton
+                      <CalendarTimePresetButton
                         key={`${hours}-${minutes}`}
                         hours={hours}
                         minutes={minutes}
@@ -334,7 +323,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 })
 
-function TimePresetButton(props: {
+function CalendarTimePresetButton(props: {
   hours: number
   minutes: number
   onTimeChange: (hours: number, minutes: number) => void
@@ -355,93 +344,5 @@ function TimePresetButton(props: {
       fontSize={1}
       onClick={handleClick}
     />
-  )
-}
-
-type CalendarMonthProps = {
-  date: Date
-  focused?: Date
-  selected?: Date
-  onSelect: (date: Date) => void
-  hidden?: boolean
-}
-
-function CalendarMonth(props: CalendarMonthProps) {
-  const today = new Date()
-  return (
-    <Box aria-hidden={props.hidden || false}>
-      <Grid columns={7} gap={1}>
-        {WEEK_DAY_NAMES.map((weekday) => (
-          <Box key={weekday} paddingY={1}>
-            <Text size={1} weight="medium" style={{textAlign: 'center'}}>
-              {weekday}
-            </Text>
-          </Box>
-        ))}
-
-        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
-          week.days.map((date, dayIdx) => {
-            const focused = props.focused && isSameDay(date, props.focused)
-            const selected = props.selected && isSameDay(date, props.selected)
-            const isToday = isSameDay(date, today)
-            const isCurrentMonth = props.focused && isSameMonth(date, props.focused)
-
-            return (
-              <CalendarMonthItem
-                date={date}
-                focused={focused}
-                isCurrentMonth={isCurrentMonth}
-                isToday={isToday}
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${weekIdx}-${dayIdx}`}
-                onSelect={props.onSelect}
-                selected={selected}
-              />
-            )
-          })
-        )}
-      </Grid>
-    </Box>
-  )
-}
-
-function CalendarMonthItem(props: {
-  date: Date
-  focused: boolean
-  onSelect: (date: Date) => void
-  isCurrentMonth: boolean
-  isToday: boolean
-  selected: boolean
-}) {
-  const {date, focused, isCurrentMonth, isToday, onSelect, selected} = props
-
-  const handleClick = useCallback(() => {
-    onSelect(date)
-  }, [date, onSelect])
-
-  return (
-    <div aria-selected={selected}>
-      <Card
-        aria-label={date.toDateString()}
-        aria-pressed={selected}
-        as="button"
-        data-weekday
-        data-focused={focused ? 'true' : ''}
-        role="button"
-        tabIndex={-1}
-        onClick={handleClick}
-        padding={3}
-        radius={2}
-        tone={isToday ? 'primary' : 'default'}
-      >
-        <Text
-          muted={!isCurrentMonth}
-          style={{textAlign: 'center'}}
-          weight={isCurrentMonth ? 'medium' : 'regular'}
-        >
-          {date.getDate()}
-        </Text>
-      </Card>
-    </div>
   )
 }

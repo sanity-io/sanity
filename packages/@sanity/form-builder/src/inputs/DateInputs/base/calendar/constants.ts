@@ -28,3 +28,6 @@ export const DEFAULT_TIME_PRESETS = [
   [18, 0],
   [23, 59],
 ]
+
+// all weekdays except first
+export const TAIL_WEEKDAYS = [1, 2, 3, 4, 5, 6]
