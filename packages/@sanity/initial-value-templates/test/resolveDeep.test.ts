@@ -27,19 +27,22 @@ describe('resolveDeepInitialValues', () => {
 
     const initialValue = await resolveInitialValue(developerTemplate)
 
-    expect(initialValue).toMatchObject({
+    expect(initialValue).toEqual({
       name: 'A default name!',
-      numberOfCats: undefined,
+      hasPet: false,
+      age: 30,
       heroImage: {
         _type: 'captionedImage',
         caption: 'Default caption!',
       },
+      awards: ['TypeScript Wizard of the Year'],
+      tasks: [{_type: 'task', description: 'Mark as done', isDone: false}],
       recursive: generateNestedObjectTest(
         {
           _type: 'recursiveObject',
           name: '∞ recursion is ∞',
         },
-        7
+        9
       ),
     })
   })
@@ -52,7 +55,8 @@ describe('resolveDeepInitialValues', () => {
     }
 
     const initialValue = await resolveInitialValue(personTemplate)
-    expect(initialValue).toMatchObject({
+    expect(initialValue).toEqual({
+      _type: 'person',
       address: {
         _type: 'address',
         street: 'one old street',
@@ -79,7 +83,8 @@ describe('resolveDeepInitialValues', () => {
       },
     })
 
-    expect(initialValue).toMatchObject({
+    expect(initialValue).toEqual({
+      _type: 'person',
       address: {
         _type: 'address',
         street: 'one new street',
@@ -103,7 +108,8 @@ describe('resolveDeepInitialValues', () => {
       },
     })
 
-    expect(initialValue).toMatchObject({
+    expect(initialValue).toEqual({
+      _type: 'person',
       address: undefined,
     })
   })
@@ -125,7 +131,8 @@ describe('resolveDeepInitialValues', () => {
       },
     })
 
-    expect(initialValue).toMatchObject({
+    expect(initialValue).toEqual({
+      _type: 'person',
       address: {
         _type: 'address',
         street: 'one old street',
