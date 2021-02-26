@@ -18,7 +18,7 @@ export function CalendarDay(props: CalendarDayProps) {
   }, [date, onSelect])
 
   return (
-    <div aria-selected={selected}>
+    <div aria-selected={selected} data-ui="CalendarDay">
       <Card
         aria-label={date.toDateString()}
         aria-pressed={selected}
