@@ -1,22 +1,30 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-top: 3rem;
+  /* empty */
 }
 
 .heading {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  padding: var(--extra-small-padding) 0;
+  margin: 0 0 var(--small-padding);
   color: var(--state-warning-color);
 }
 
 .inspectValue {
-  border: 1px solid #aaa;
+  font-family: var(--font-family-monospace);
+  border: 1px solid var(--hairline-color);
   max-height: 200px;
   overflow-y: scroll;
-  background-color: white;
+  background-color: var(--component-bg);
+  padding: var(--small-padding);
+  margin: 0 0 var(--medium-padding);
 }
 
-.content {
-  border-top: 1px solid var(--state-warning-color);
-  border-bottom: 1px solid var(--state-warning-color);
-  padding: 1rem 0.5rem;
+.buttonWrapper {
+  @nest & button {
+    margin-right: var(--medium-padding);
+  }
 }

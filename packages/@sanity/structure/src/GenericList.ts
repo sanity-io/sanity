@@ -10,7 +10,7 @@ import {SerializeError} from './SerializeError'
 import {
   InitialValueTemplateItem,
   InitialValueTemplateItemBuilder,
-  maybeSerializeInitialValueTemplateItem
+  maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
 
@@ -18,7 +18,7 @@ function noChildResolver() {
   return undefined
 }
 
-const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
+export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
   return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
 }
 
@@ -122,7 +122,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
 
   showIcons(enabled: boolean) {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled}
+      displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled},
     })
   }
 
@@ -146,7 +146,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     const defaultLayout = this.spec.defaultLayout
     if (defaultLayout && !layoutOptions.includes(defaultLayout)) {
       throw new SerializeError(
-        `\`layout\` must be one of ${layoutOptions.map(item => `"${item}"`).join(', ')}`,
+        `\`layout\` must be one of ${layoutOptions.map((item) => `"${item}"`).join(', ')}`,
         path,
         id || options.index,
         this.spec.title
@@ -169,7 +169,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       menuItems: menuItemsWithCreateIntents(this.spec, {path, initialValueTemplates}),
       menuItemGroups: (this.spec.menuItemGroups || []).map((item, i) =>
         maybeSerializeMenuItemGroup(item, i, path)
-      )
+      ),
     }
   }
 
@@ -185,7 +185,7 @@ function menuItemsWithCreateIntents(
 ): MenuItem[] {
   const {path, initialValueTemplates = []} = options
   const items = (list.menuItems || []).map((item, i) => maybeSerializeMenuItem(item, i, path))
-  const hasCreate = items.some(menuItem => menuItem.intent && menuItem.intent.type === 'create')
+  const hasCreate = items.some((menuItem) => menuItem.intent && menuItem.intent.type === 'create')
   const hasTemplates = initialValueTemplates.length > 0
   if (hasCreate || !hasTemplates) {
     return items
@@ -220,20 +220,6 @@ function menuItemsWithCreateIntents(
     items.unshift(actionButton.action('toggleTemplateSelectionMenu').serialize())
   }
 
-  // Menu buttons
-  initialValueTemplates.forEach(tpl => {
-    const template = getTemplateById(tpl.templateId)
-    const templateTitle = tpl.title || (template && template.title)
-    items.push(
-      new MenuItemBuilder()
-        .title(`Create new ${templateTitle}`)
-        .icon(PlusIcon)
-        .intent(getCreateIntent(tpl))
-        .group('create-new')
-        .serialize()
-    )
-  })
-
   return items
 }
 
@@ -246,6 +232,6 @@ function getCreateIntent(templateItem: InitialValueTemplateItem): Intent {
 
   return {
     type: 'create',
-    params: intentParams
+    params: intentParams,
   }
 }

@@ -1,0 +1,158 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes progressGlow {
+  0% {
+    box-shadow: 0 0 3px var(--progress-bar-bg);
+  }
+
+  100% {
+    box-shadow: 0 0 15px var(--progress-bar-bg);
+  }
+}
+
+:root {
+  --height: 2.5em;
+  --media-width: var(--height);
+  --padding: var(--medium-padding);
+}
+
+.root {
+  position: relative;
+  padding: 0;
+  user-select: none;
+  clear: both;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  height: var(--height);
+  align-items: center;
+}
+
+.heading {
+  min-width: 0; /* making ellipsis work */
+  margin-right: var(--small-padding);
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  composes: ellipsis;
+  color: inherit;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: 400;
+  text-transform: none;
+  padding: 0;
+  margin: 0;
+
+  @nest .hasSubtitle & {
+    line-height: 1.3em;
+  }
+}
+
+.subtitle {
+  composes: ellipsis;
+  color: inherit;
+  margin: 0;
+  padding: 0 0 1px;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.media {
+  position: relative;
+  flex-basis: 2.5em;
+  width: 2.5em;
+  height: 2.5em;
+  min-width: 2.5em;
+  margin-right: var(--small-padding);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  @nest .placeholder & {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  @nest & > img {
+    display: block;
+    width: 2.5em;
+    height: 2.5em;
+    object-fit: contain;
+  }
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(24 / 16 * 1em);
+    color: inherit;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(36 / 16 * 1em);
+      margin: calc(6 / 36 * -1em);
+    }
+  }
+}
+
+.mediaString {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  padding: 5px;
+  font-size: var(--font-size-tiny);
+  color: var(--gray);
+}
+
+.placeholder {
+  composes: root;
+
+  @nest & .heading {
+    height: var(--height);
+  }
+
+  @nest & .title {
+    width: 80%;
+    max-width: 320px;
+    height: 11px;
+    background-color: currentColor;
+    opacity: 0.1;
+  }
+
+  @nest & .subtitle {
+    width: 50%;
+    max-width: 200px;
+    height: 9px;
+    background-color: currentColor;
+    opacity: 0.1;
+    margin-top: 0.5rem;
+    padding: 0;
+  }
+
+  @nest & .media {
+    border-color: transparent;
+    background-color: currentColor;
+    opacity: 0.1;
+  }
+}
+
+.status {
+  white-space: nowrap;
+  outline: none;
+  padding-left: var(--small-padding);
+}

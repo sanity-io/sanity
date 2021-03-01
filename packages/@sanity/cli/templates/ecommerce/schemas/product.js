@@ -6,7 +6,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'slug',
@@ -14,13 +14,13 @@ export default {
       type: 'slug',
       options: {
         source: 'title',
-        maxLength: 96
-      }
+        maxLength: 96,
+      },
     },
     {
       title: 'Default variant',
       name: 'defaultProductVariant',
-      type: 'productVariant'
+      type: 'productVariant',
     },
     {
       title: 'Variants',
@@ -29,9 +29,9 @@ export default {
       of: [
         {
           title: 'Variant',
-          type: 'productVariant'
-        }
-      ]
+          type: 'productVariant',
+        },
+      ],
     },
     {
       title: 'Tags',
@@ -39,23 +39,23 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'string'
-        }
+          type: 'string',
+        },
       ],
       options: {
-        layout: 'tags'
-      }
+        layout: 'tags',
+      },
     },
     {
       name: 'vendor',
       title: 'Vendor',
       type: 'reference',
-      to: {type: 'vendor'}
+      to: {type: 'vendor'},
     },
     {
       name: 'blurb',
       title: 'Blurb',
-      type: 'localeString'
+      type: 'localeString',
     },
     {
       name: 'categories',
@@ -64,22 +64,22 @@ export default {
       of: [
         {
           type: 'reference',
-          to: {type: 'category'}
-        }
-      ]
+          to: {type: 'category'},
+        },
+      ],
     },
     {
       name: 'body',
       title: 'Body',
-      type: 'localeBlockContent'
-    }
+      type: 'localeBlockContent',
+    },
   ],
 
   preview: {
     select: {
       title: 'title',
       manufactor: 'manufactor.title',
-      media: 'defaultProductVariant.images[0]'
-    }
-  }
+      media: 'defaultProductVariant.images[0]',
+    },
+  },
 }

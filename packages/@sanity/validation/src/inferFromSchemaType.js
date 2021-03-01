@@ -17,7 +17,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 
   const isInitialized =
     Array.isArray(typeDef.validation) &&
-    typeDef.validation.every(item => typeof item.validate === 'function')
+    typeDef.validation.every((item) => typeof item.validate === 'function')
 
   if (isInitialized) {
     inferForFields(typeDef, schema, visited)
@@ -30,6 +30,10 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   let base = typed ? typed(typeDef) : new Rule(typeDef)
 
   if (type && type.name === 'datetime') {
+    base = base.type('Date')
+  }
+
+  if (type && type.name === 'date') {
     base = base.type('Date')
   }
 
@@ -50,15 +54,17 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   }
 
   if (type && type.name === 'block') {
-    base = base.custom(blockValidator)
+    base = base.block(blockValidator)
   }
 
   if (typeDef.annotations) {
-    typeDef.annotations.forEach(annotation => inferFromSchemaType(annotation))
+    typeDef.annotations.forEach((annotation) => inferFromSchemaType(annotation))
   }
 
-  if (typeDef.options && typeDef.options.list) {
-    base = base.valid(typeDef.options.list.map(extractValueFromListOption))
+  if (typeDef.options && typeDef.options.list && Array.isArray(typeDef.options.list)) {
+    base = base.valid(
+      typeDef.options.list.map((option) => extractValueFromListOption(option, typeDef))
+    )
   }
 
   typeDef.validation = inferValidation(typeDef, base)
@@ -69,19 +75,19 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 }
 
 function inferForFields(typeDef, schema, visited) {
-  if (!typeDef.fields) {
+  if (typeDef.jsonType !== 'object' || !typeDef.fields) {
     return
   }
 
   const fieldRules = typeDef.validation
-    .map(rule => rule._fieldRules)
+    .map((rule) => rule._fieldRules)
     .filter(Boolean)
     .reduce((acc, current) => ({fields: {...acc.fields, ...current}, hasRules: true}), {
       fields: {},
-      hasRules: false
+      hasRules: false,
     })
 
-  typeDef.fields.forEach(field => {
+  typeDef.fields.forEach((field) => {
     field.type.validation = fieldRules.fields[field.name] || field.type.validation
     inferFromSchemaType(field.type, schema, visited)
   })
@@ -89,12 +95,35 @@ function inferForFields(typeDef, schema, visited) {
 
 function inferForMemberTypes(typeDef, schema, visited) {
   if (typeDef.of && typeDef.jsonType === 'array') {
-    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, schema, visited))
+    typeDef.of.forEach((candidate) => inferFromSchemaType(candidate, schema, visited))
   }
 }
 
-function extractValueFromListOption(option) {
-  return option.value || option
+function extractValueFromListOption(option, typeDef) {
+  // If you define a `list` option with object items, where the item has a `value` field,
+  // we don't want to treat that as the value but rather the surrounding object
+  // This differs from the case where you have a title/value pair setup for a string/number, for instance
+  if (typeDef.jsonType === 'object' && hasValueField(typeDef)) {
+    return option
+  }
+
+  return option.value === undefined ? option : option.value
+}
+
+function hasValueField(typeDef) {
+  while (!typeDef.fields && typeDef.type) {
+    return hasValueField(typeDef.type)
+  }
+
+  if (!Array.isArray(typeDef.fields)) {
+    return false
+  }
+
+  if (typeDef.fields.some((field) => field.name === 'value')) {
+    return true
+  }
+
+  return false
 }
 
 function inferValidation(field, baseRule) {

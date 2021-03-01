@@ -19,7 +19,7 @@ function PropTable({propTypes}) {
         </tr>
       </thead>
       <tbody>
-        {propTypes.map(prop => (
+        {propTypes.map((prop) => (
           <tr key={prop.property}>
             <th className={styles.property}>{prop.property}</th>
             <td className={styles.proptype}>{prop.propType}</td>
@@ -39,9 +39,9 @@ PropTable.propTypes = {
       property: PropTypes.string.isRequired,
       propType: PropTypes.string.isRequired,
       required: PropTypes.bool.isRequired,
-      defaultValue: PropTypes.any
+      defaultValue: PropTypes.any,
     })
-  )
+  ),
 }
 
 export default PropTable

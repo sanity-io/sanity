@@ -16,7 +16,7 @@ const isDisabled =
   process.env.BUILD_NUMBER || // Jenkins, TeamCity
   process.env.NO_UPDATE_NOTIFIER // Explicitly disabled
 
-export default options => {
+export default (options) => {
   debug('CLI installed at %s', __dirname)
 
   const {pkg, cwd, workDir} = options
@@ -85,7 +85,7 @@ export default options => {
       chalk.green(newVersion),
       ' \nRun ',
       chalk.cyan(upgradeCommand),
-      ' to update'
+      ' to update',
     ].join('')
 
     const boxenOpts = {
@@ -93,7 +93,7 @@ export default options => {
       margin: 1,
       align: 'center',
       borderColor: 'yellow',
-      borderStyle: 'round'
+      borderStyle: 'round',
     }
 
     // Print to stderr to prevent garbling command output

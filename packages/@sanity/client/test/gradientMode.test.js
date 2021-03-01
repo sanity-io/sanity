@@ -11,12 +11,12 @@ const sseServer = require('./helpers/sseServer')
 
 const apiHost = 'https://api.sanity.url'
 const clientConfig = {apiHost: apiHost, namespace: 'beerns', gradientMode: true}
-const getClient = conf => sanityClient(assign({}, clientConfig, conf || {}))
+const getClient = (conf) => sanityClient(assign({}, clientConfig, conf || {}))
 
 /*****************
  * GRADIENT MODE *
  *****************/
-test('[gradient] throws when creating client without specifying namespace', t => {
+test('[gradient] throws when creating client without specifying namespace', (t) => {
   t.throws(
     () => sanityClient({gradientMode: true}),
     /must contain `namespace`/,
@@ -25,7 +25,7 @@ test('[gradient] throws when creating client without specifying namespace', t =>
   t.end()
 })
 
-test('[gradient] can query for documents', t => {
+test('[gradient] can query for documents', (t) => {
   const query = '*[is "beerfiesta.beer" && title == $beerName]'
   const params = {beerName: 'Headroom Double IPA'}
   const qs =
@@ -36,12 +36,12 @@ test('[gradient] can query for documents', t => {
     .reply(200, {
       ms: 123,
       q: query,
-      result: [{_id: 'njgNkngskjg', _type: 'beerfiesta.beer', rating: 5}]
+      result: [{_id: 'njgNkngskjg', _type: 'beerfiesta.beer', rating: 5}],
     })
 
   getClient()
     .fetch(query, params)
-    .then(res => {
+    .then((res) => {
       t.equal(res.length, 1, 'length should match')
       t.equal(res[0].rating, 5, 'data should match')
     })
@@ -49,42 +49,42 @@ test('[gradient] can query for documents', t => {
     .then(t.end)
 })
 
-test('[gradient] can query for single document', t => {
+test('[gradient] can query for single document', (t) => {
   nock(apiHost)
     .get('/doc/beerns/njgNkngskjg')
     .reply(200, {
       ms: 123,
-      documents: [{_id: 'njgNkngskjg', title: 'Headroom Double IPA'}]
+      documents: [{_id: 'njgNkngskjg', title: 'Headroom Double IPA'}],
     })
 
   getClient()
     .getDocument('njgNkngskjg')
-    .then(res => {
+    .then((res) => {
       t.equal(res.title, 'Headroom Double IPA', 'data should match')
     })
     .catch(t.ifError)
     .then(t.end)
 })
 
-test('[gradient] can query for single document with token', t => {
+test('[gradient] can query for single document with token', (t) => {
   const reqheaders = {Authorization: 'Bearer MyToken'}
   nock(apiHost, {reqheaders})
     .get('/doc/beerns/barfoo')
     .reply(200, {
       ms: 123,
-      documents: [{_id: 'barfoo', mood: 'lax'}]
+      documents: [{_id: 'barfoo', mood: 'lax'}],
     })
 
   getClient({token: 'MyToken'})
     .getDocument('barfoo')
-    .then(res => {
+    .then((res) => {
       t.equal(res.mood, 'lax', 'data should match')
     })
     .catch(t.ifError)
     .then(t.end)
 })
 
-test('[gradient] can listen in gradient mode', t => {
+test('[gradient] can listen in gradient mode', (t) => {
   function onRequest(opts) {
     t.equal(opts.request.headers.authorization, 'Bearer FooToken', 'should have correct token')
     opts.channel.send({event: 'mutation', data: {abc: 123}})
@@ -99,10 +99,10 @@ test('[gradient] can listen in gradient mode', t => {
 
     const client = getClient({
       apiHost: `http://localhost:${server.address().port}`,
-      token: 'FooToken'
+      token: 'FooToken',
     })
 
-    const subscription = client.listen('*').subscribe(msg => {
+    const subscription = client.listen('*').subscribe((msg) => {
       t.deepEqual(msg, {type: 'mutation', abc: 123}, 'should have correct data')
       subscription.unsubscribe()
       server.close()

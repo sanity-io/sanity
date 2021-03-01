@@ -6,6 +6,6 @@ const applySubCommand = (yargs, cmd) => {
   return yargs.command(cmd)
 }
 
-const applySubCommands = subCommands => yargs => subCommands.reduce(applySubCommand, yargs)
+const applySubCommands = (subCommands) => (yargs) => subCommands.reduce(applySubCommand, yargs)
 
 export default applySubCommands

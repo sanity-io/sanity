@@ -6,27 +6,27 @@ export default {
     {
       title: 'Title',
       name: 'title',
-      type: 'string'
+      type: 'string',
     },
     {
       title: 'Weight in grams',
       name: 'grams',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'Price',
       name: 'price',
-      type: 'number'
+      type: 'number',
     },
     {
       title: 'SKU',
       name: 'sku',
-      type: 'string'
+      type: 'string',
     },
     {
       title: 'Taxable',
       name: 'taxable',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'images',
@@ -36,15 +36,15 @@ export default {
         {
           type: 'image',
           options: {
-            hotspot: true
-          }
-        }
-      ]
+            hotspot: true,
+          },
+        },
+      ],
     },
     {
       title: 'Bar code',
       name: 'barcode',
-      type: 'barcode'
-    }
-  ]
+      type: 'barcode',
+    },
+  ],
 }

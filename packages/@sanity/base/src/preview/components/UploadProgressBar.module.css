@@ -1,0 +1,40 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --progress-bar-height: 2px;
+}
+
+.root {
+  position: relative;
+  width: 100%;
+  clear: both;
+  z-index: 1000;
+}
+
+.inner {
+  width: 100%;
+  position: absolute;
+}
+
+.barContainer {
+  position: relative;
+  width: 100%;
+  height: var(--progress-bar-height);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bar {
+  background-color: black;
+  margin: 2px 2px 0 2px;
+  height: var(--progress-bar-height);
+  transition-property: width;
+  transition-duration: 1s;
+  transition-timing-function: linear;
+  max-width: 100%;
+  box-shadow: 0 0 2px 2px #eeffff;
+
+  @nest .completed & {
+    background-color: var(--state-success-color);
+  }
+}

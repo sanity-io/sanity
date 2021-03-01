@@ -1,0 +1,43 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    // -- strictness options we need to disable in a transition period.
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    // --
+    "jsx": "react",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "customMatcher": "\\.css$"
+        }
+      }
+    ]
+  },
+  "references": [
+    {
+      "path": "../structure"
+    },
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../util"
+    },
+    {
+      "path": "../state-router"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../mutator"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.dialogContent {
+  display: grid;
+  grid-gap: var(--medium-padding);
+
+  @media (--screen-medium) {
+    grid-template-columns: max-content 1fr;
+  }
+}
+
+.dialogSubtitle {
+  margin: 0;
+  padding: 0;
+}
+
+.referringDocumentsDescription {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-bottom: var(--medium-padding);
+}
+
+.intentLink {
+  color: inherit;
+  text-decoration: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--small-padding);
+}
+
+.openDocLink {
+  font-size: var(--font-size-small);
+  white-space: nowrap;
+}

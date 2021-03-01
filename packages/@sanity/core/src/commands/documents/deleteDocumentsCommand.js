@@ -29,23 +29,19 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
     const {dataset} = args.extOptions
-    const ids = args.argsWithoutOptions.map(str => `${str}`)
+    const ids = args.argsWithoutOptions.map((str) => `${str}`)
 
     if (!ids.length) {
       throw new Error('Document ID must be specified')
     }
 
-    const client = dataset
-      ? apiClient()
-          .clone()
-          .config({dataset})
-      : apiClient()
+    const client = dataset ? apiClient().clone().config({dataset}) : apiClient()
 
     const transaction = ids.reduce((trx, id) => trx.delete(id), client.transaction())
     try {
       const {results} = await transaction.commit()
-      const deleted = results.filter(res => res.operation === 'delete').map(res => res.id)
-      const notFound = ids.filter(id => !deleted.includes(id))
+      const deleted = results.filter((res) => res.operation === 'delete').map((res) => res.id)
+      const notFound = ids.filter((id) => !deleted.includes(id))
       if (deleted.length > 0) {
         output.print(`Deleted ${deleted.length} ${pluralize('document', deleted.length)}`)
       }
@@ -58,5 +54,5 @@ export default {
     } catch (err) {
       throw new Error(`Failed to delete ${pluralize('document', ids.length)}:\n${err.message}`)
     }
-  }
+  },
 }

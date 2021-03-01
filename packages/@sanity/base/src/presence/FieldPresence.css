@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  justify-content: flex-end;
+
+  @nest & > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.inner {
+  display: flex;
+  vertical-align: top;
+  flex-direction: row-reverse;
+  height: 23px;
+  min-width: 23px;
+}

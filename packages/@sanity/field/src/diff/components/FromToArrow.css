@@ -1,0 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  color: var(--text-muted);
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1rem);
+  }
+}

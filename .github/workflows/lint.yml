@@ -1,0 +1,70 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          # added -vX just to reset the cache, feel free to up it if you need
+          # to reset the cache again
+          cache-name: cache-node-modules-v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install npm dependencies
+        env:
+         PUPPETEER_SKIP_DOWNLOAD: 'true'
+        run: npm install
+
+      # Required for import lint rules to work - packages pointing to ex
+      # `lib/index.js`, where `src/index.ts` gets compiled to `lib/index.js`
+      - name: Build modules
+        id: buildModules
+        run: npm run build
+
+      - name: Lint changed files
+        id: listChangedFiles
+        run: |
+          # Is this a pull request?
+          if [ $GITHUB_BASE_REF ]; then
+            # If it is - compare against the base branch
+            # $GITHUB_BASE_REF is the branch you're merging *to*
+            git fetch origin $GITHUB_BASE_REF --depth=1
+            COMPARE_WITH=origin/$GITHUB_BASE_REF
+            CHANGED_FILES=$( git diff --name-only $COMPARE_WITH $GITHUB_SHA --diff-filter ACMRTUXB )
+            printf "\nThese files have changed between $COMPARE_WITH and $GITHUB_SHA:\n$CHANGED_FILES\n"
+          else
+            # If not it's a commit, check the files changed in this commit
+            git fetch origin $GITHUB_SHA --depth=2
+            CHANGED_FILES=$( git diff-tree --no-commit-id --name-only --diff-filter ACMRTUXB -r $GITHUB_SHA )
+            printf "\nThese files have changed in $GITHUB_SHA:\n$CHANGED_FILES\n"
+          fi
+
+          # Don't include files like LICENSE and css files
+          CHANGED_JS_FILES=$(echo "$CHANGED_FILES" | sed -e '/^.\+\(mjs\|tsx\|jsx\|js\|ts\)$/!d')
+
+          for FILE_NAME in $CHANGED_JS_FILES
+          do
+            npm run eslint -- $FILE_NAME
+          done
+
+      - name: Notify Slack about build failure
+        if: failure() && github.ref == 'refs/heads/ui/main'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ACTIONS_SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: prj-components
+          status: FAILED
+          color: danger

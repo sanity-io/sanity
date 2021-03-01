@@ -31,5 +31,5 @@ export default {
     if (success) {
       output.print('CORS origin added successfully')
     }
-  }
+  },
 }

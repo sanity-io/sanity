@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "complexity": 0,
+    "import/prefer-default-export": 0,
+    "import/order": 0,
+    "react/no-multi-comp": 0,
+    "react/prop-types": 0
+  }
+}

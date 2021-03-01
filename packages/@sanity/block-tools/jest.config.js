@@ -3,5 +3,5 @@ module.exports = {
   testRegex: 'test\\/.*\\.test\\.ts$',
   testEnvironment: 'node',
   setupFilesAfterEnv: ['./test/setup.ts'],
-  collectCoverageFrom: ['src/**.ts']
+  collectCoverageFrom: ['src/**.ts'],
 }

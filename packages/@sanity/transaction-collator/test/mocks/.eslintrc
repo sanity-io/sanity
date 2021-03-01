@@ -1,5 +1,5 @@
 {
   "rules": {
-    "import/no-commonjs": 0
+    "@typescript-eslint/no-var-requires": "off"
   }
 }

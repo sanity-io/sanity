@@ -9,7 +9,9 @@ const defaultOperation = allowedOperations[0]
 function validateOptions(input, opts) {
   const options = defaults({}, opts, {
     operation: defaultOperation,
-    onProgress: noop
+    onProgress: noop,
+    allowAssetsInDifferentDataset: false,
+    replaceAssets: false,
   })
 
   if (!isValidInput(input)) {
@@ -22,7 +24,7 @@ function validateOptions(input, opts) {
     throw new Error('`options.client` must be set to an instance of @sanity/client')
   }
 
-  const missing = clientMethods.find(key => typeof options.client[key] !== 'function')
+  const missing = clientMethods.find((key) => typeof options.client[key] !== 'function')
 
   if (missing) {
     throw new Error(
@@ -37,6 +39,10 @@ function validateOptions(input, opts) {
 
   if (!allowedOperations.includes(options.operation)) {
     throw new Error(`Operation "${options.operation}" is not supported`)
+  }
+
+  if (options.assetConcurrency && options.assetConcurrency > 12) {
+    throw new Error('`assetConcurrency` must be <= 12')
   }
 
   return options

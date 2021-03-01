@@ -1,0 +1,60 @@
+{
+  "root": true,
+  "project": {
+    "name": "SanityTest"
+  },
+  "api": {
+    "projectId": "q2r21cu7",
+    "dataset": "example"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/code-input",
+    "@sanity/desk-tool",
+    "@sanity/storybook",
+    "@sanity/vision",
+    "@sanity/language-filter"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    },
+    {
+      "name": "part:@sanity/language-filter/config",
+      "path": "./parts/languageFilterConfig"
+    },
+    {
+      "implements": "part:@sanity/base/brand-logo",
+      "path": "components/BrandLogo"
+    },
+    {
+      "implements": "part:@sanity/form-builder/input-resolver",
+      "path": "./parts/inputResolver"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "./themes/none.css"
+    }
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "exx11uqh"
+      }
+    },
+    "development": {
+      "api": {
+        "projectId": "q2r21cu7"
+      },
+      "parts": [
+        {
+          "implements": "part:@sanity/base/tool",
+          "path": "tools/css-variables/tool"
+        }
+      ]
+    }
+  }
+}

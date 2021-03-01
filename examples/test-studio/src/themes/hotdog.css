@@ -1,0 +1,16 @@
+:root {
+  --brand-darkest: #000;
+  --brand-lightest: #fff;
+  --gray-base: #323232;
+  --brand-primary: #f00;
+  --brand-primary--inverted: #fff;
+  --brand-secondary: #ff0;
+  --brand-secondary--inverted: #000;
+  --main-navigation-color: var(--brand-primary);
+  --main-navigation-color--inverted: var(--brand-primary--inverted);
+  --body-text: var(--brand-secondary--inverted);
+  --body-bg: color(var(--brand-secondary) blend(var(--brand-primary) 10%));
+  --component-bg: var(--brand-secondary);
+  --component-text-color: var(--brand-secondary--inverted);
+  --input-bg: color(var(--brand-lightest) blend(var(--brand-secondary) 40%));
+}

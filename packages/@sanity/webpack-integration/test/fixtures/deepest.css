@@ -1,0 +1,6 @@
+@import './non-part.css';
+
+:root {
+  --from-deepest: #abcdef;
+  --composed-from-non-part: color(var(--from-non-part) alpha(5%));
+}

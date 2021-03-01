@@ -1,3 +1,5 @@
+/examples/*/node_modules
+/examples/*/dist
 /packages/*/node_modules
 /packages/@sanity/*/node_modules
 /packages/*/dist
@@ -8,3 +10,4 @@
 /packages/@sanity/*/coverage
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
+*.json

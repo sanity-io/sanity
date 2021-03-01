@@ -13,33 +13,33 @@ export default function parse(patch: any): Patch[] {
     return patch.reduce((r, p) => r.concat(parse(p)), result)
   }
   if (patch.set) {
-    Object.keys(patch.set).forEach(path => {
+    Object.keys(patch.set).forEach((path) => {
       result.push(new SetPatch(patch.id, path, patch.set[path]))
     })
   }
   if (patch.setIfMissing) {
-    Object.keys(patch.setIfMissing).forEach(path => {
+    Object.keys(patch.setIfMissing).forEach((path) => {
       result.push(new SetIfMissingPatch(patch.id, path, patch.setIfMissing[path]))
     })
   }
   // TODO: merge
   if (patch.unset) {
-    patch.unset.forEach(path => {
+    patch.unset.forEach((path) => {
       result.push(new UnsetPatch(patch.id, path))
     })
   }
   if (patch.diffMatchPatch) {
-    Object.keys(patch.diffMatchPatch).forEach(path => {
+    Object.keys(patch.diffMatchPatch).forEach((path) => {
       result.push(new DiffMatchPatch(patch.id, path, patch.diffMatchPatch[path]))
     })
   }
   if (patch.inc) {
-    Object.keys(patch.inc).forEach(path => {
+    Object.keys(patch.inc).forEach((path) => {
       result.push(new IncPatch(patch.id, path, patch.inc[path]))
     })
   }
   if (patch.dec) {
-    Object.keys(patch.dec).forEach(path => {
+    Object.keys(patch.dec).forEach((path) => {
       result.push(new IncPatch(patch.id, path, -patch.dec[path]))
     })
   }

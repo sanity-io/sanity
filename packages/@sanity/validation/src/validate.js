@@ -8,8 +8,10 @@ const typeValidators = {
   String: require('./validators/stringValidator'),
   Array: require('./validators/arrayValidator'),
   Object: require('./validators/objectValidator'),
-  Date: require('./validators/dateValidator')
+  Date: require('./validators/dateValidator'),
 }
+
+const EMPTY_ARRAY = []
 
 module.exports = (rule, value, options = {}) => {
   let rules = rule._rules
@@ -17,10 +19,10 @@ module.exports = (rule, value, options = {}) => {
   const valueIsUndefined = value === null || typeof value === 'undefined'
   if (typeof rule._required === 'undefined' && valueIsUndefined) {
     // Run all _custom_ functions if the rule is not set to required or optional
-    rules = rules.filter(curr => curr.flag === 'custom')
+    rules = rules.filter((curr) => curr.flag === 'custom')
   } else if (!rule._required && valueIsUndefined) {
     // Short-circuit on optional, empty fields
-    return Promise.resolve([])
+    return Promise.resolve(EMPTY_ARRAY)
   }
 
   const type = rule._type
@@ -28,7 +30,7 @@ module.exports = (rule, value, options = {}) => {
 
   const tasks = rules.map(validateRule)
   return Promise.all(tasks)
-    .then(results => results.filter(Boolean))
+    .then((results) => results.filter(Boolean))
     .then(flatten)
 
   // eslint-disable-next-line complexity
@@ -74,6 +76,6 @@ module.exports = (rule, value, options = {}) => {
     }
 
     // Add individual items for each path
-    return results.concat(result.paths.map(path => ({path, level: rule._level, item: result})))
+    return results.concat(result.paths.map((path) => ({path, level: rule._level, item: result})))
   }
 }

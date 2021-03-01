@@ -1,0 +1,57 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  fill: none;
+
+  @nest :empty + & {
+    display: none;
+  }
+
+  @nest & > svg {
+    display: block;
+    transform-origin: 7.5px 7.5px;
+  }
+
+  @nest [data-popper-placement^='top'] > & {
+    bottom: -15px;
+  }
+
+  @nest [data-popper-placement^='right'] > & {
+    left: -15px;
+
+    @nest & > svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  @nest [data-popper-placement^='left'] > & {
+    right: -15px;
+
+    @nest & > svg {
+      transform: rotate(-90deg);
+    }
+  }
+
+  @nest [data-popper-placement^='bottom'] > & {
+    top: -15px;
+
+    @nest & > svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.border {
+  fill: var(--hairline-color);
+}
+
+.shape {
+  fill: var(--component-bg);
+
+  @nest .root[data-tone='navbar'] & {
+    fill: var(--main-navigation-color);
+  }
+}

@@ -1,0 +1,94 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes loadingScreen {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.root {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @media (--screen-medium) {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.loadingScreen {
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.loadingScreen {
+    position: fixed;
+  }
+
+  display: block;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+  animation-name: loadingScreen;
+  animation-duration: 1s;
+  animation-delay: 1s;
+}
+
+.loadingScreenLoaded {
+  display: none;
+}
+
+.mainArea {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+
+  @nest .root.isOverlayVisible & {
+    overflow: hidden;
+    height: 100%;
+  }
+}
+
+.toolContainer {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  margin-top: 0;
+  margin-left: env(safe-area-inset-left);
+  margin-right: env(safe-area-inset-right);
+
+  @media (--screen-medium) {
+    overflow: auto;
+  }
+}
+
+.sidecarContainer {
+  position: relative;
+
+  @media (--max-screen-medium) {
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    width: 420px;
+
+    @nest &:empty {
+      display: none;
+    }
+  }
+}
+
+.sideMenuContainer {
+  /* semantic class name */
+}

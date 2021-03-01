@@ -1,17 +1,4 @@
-import {Type} from '../../typedefs'
-
-export type ArrayType = Type & {
-  name: string
-  title: string
-  description: string
-  readOnly: boolean | null
-  options: {
-    editModal?: 'fold' | 'modal' | string
-    sortable?: boolean
-    layout?: 'grid'
-  }
-  of: Array<Type>
-}
+export type ModalType = 'modal' | 'fullscreen' | string
 
 export type ItemValue = {
   _type?: string

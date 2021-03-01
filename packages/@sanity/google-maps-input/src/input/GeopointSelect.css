@@ -1,0 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.map {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.searchInput {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 220px;
+}
+
+.input {
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+}
+
+:global(.pac-container) {
+  z-index: calc(var(--zindex-modal) + 1);
+}

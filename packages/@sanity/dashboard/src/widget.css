@@ -22,7 +22,7 @@
 
 .title {
   composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
-  padding: var(--small-padding) var(--medium-padding) !important;
+  margin: var(--small-padding) var(--medium-padding);
 }
 
 .content {

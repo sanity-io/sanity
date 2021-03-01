@@ -4,39 +4,51 @@ import findMatchingNodes from '../src/findMatchingNodes'
 const node: Node = {
   route: {
     raw: '/foo/:bar',
-    segments: [{type: 'dir', name: 'foo'}, {type: 'param', name: 'bar'}]
+    segments: [
+      {type: 'dir', name: 'foo'},
+      {type: 'param', name: 'bar'},
+    ],
   },
   children: [
     {
       route: {
         raw: '/nix/:animal',
-        segments: [{type: 'dir', name: 'nix'}, {type: 'param', name: 'animal'}]
+        segments: [
+          {type: 'dir', name: 'nix'},
+          {type: 'param', name: 'animal'},
+        ],
       },
-      children: []
+      children: [],
     },
     {
       route: {
         raw: '/qux/:animal',
-        segments: [{type: 'dir', name: 'qux'}, {type: 'param', name: 'animal'}],
+        segments: [
+          {type: 'dir', name: 'qux'},
+          {type: 'param', name: 'animal'},
+        ],
         transform: {
           animal: {
-            toState: value => ({name: value.toUpperCase()}),
-            toPath: animal => animal.name.toLowerCase()
-          }
-        }
+            toState: (value) => ({name: value.toUpperCase()}),
+            toPath: (animal) => animal.name.toLowerCase(),
+          },
+        },
       },
       children: [
         {
           route: {
             raw: 'flargh/:snargh',
-            segments: [{type: 'dir', name: 'flargh'}, {type: 'param', name: 'snargh'}],
-            transform: {}
+            segments: [
+              {type: 'dir', name: 'flargh'},
+              {type: 'param', name: 'snargh'},
+            ],
+            transform: {},
           },
-          children: []
-        }
-      ]
-    }
-  ]
+          children: [],
+        },
+      ],
+    },
+  ],
 }
 
 const examples: [Object, MatchResult][] = [
@@ -45,41 +57,41 @@ const examples: [Object, MatchResult][] = [
     {
       nodes: [],
       missing: ['bar'],
-      remaining: []
-    }
+      remaining: [],
+    },
   ],
   [
     {bar: 'bar'},
     {
       nodes: [node],
       missing: [],
-      remaining: []
-    }
+      remaining: [],
+    },
   ],
   [
     {bar: 'bar', animal: 'cat'},
     {
       nodes: [node, node.children[0]],
       remaining: [],
-      missing: []
-    }
+      missing: [],
+    },
   ],
   [
     {bar: 'bar', animal: 'cat', snargh: 'gnargh'},
     {
       nodes: [node, node.children[1], node.children[1].children[0]],
       remaining: [],
-      missing: []
-    }
+      missing: [],
+    },
   ],
   [
     {bar: 'bar', creature: 'cat'},
     {
       nodes: [],
       remaining: ['creature'],
-      missing: []
-    }
-  ]
+      missing: [],
+    },
+  ],
 ]
 
 examples.forEach(([state, result]) => {

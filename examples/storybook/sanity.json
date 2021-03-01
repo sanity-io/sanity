@@ -1,0 +1,36 @@
+{
+  "root": true,
+  "project": {
+    "name": "Storybook"
+  },
+  "api": {
+    "projectId": "f8i6krhg",
+    "dataset": "playground"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "@sanity/google-maps-input",
+    "@sanity/storybook"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schema"
+    },
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "./storybook"
+    },
+    {
+      "implements": "part:@sanity/base/document",
+      "path": "./storybook"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "./themes/dev.css"
+    }
+  ]
+}

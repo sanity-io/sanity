@@ -6,8 +6,8 @@ export default {
       type: 'object',
       fields: [
         {name: 'name', type: 'string', title: 'Name'},
-        {name: 'photo', type: 'image', title: 'Portrait'}
-      ]
+        {name: 'photo', type: 'image', title: 'Portrait'},
+      ],
     },
     {
       name: 'archive',
@@ -17,23 +17,23 @@ export default {
           name: 'title',
           title: 'Title',
           type: 'string',
-          required: true
+          required: true,
         },
         {
           name: 'singleFile',
           title: 'Single file',
-          type: 'file'
+          type: 'file',
         },
         {
           name: 'singleImageNoFields',
           title: 'Single image without fields',
-          type: 'image'
+          type: 'image',
         },
         {
           name: 'imageList',
           title: 'List of images',
           type: 'array',
-          of: [{type: 'user'}]
+          of: [{type: 'user'}],
         },
         {
           name: 'singleImage',
@@ -44,24 +44,24 @@ export default {
               /* todo make implicit maybe? */
               name: 'asset',
               type: 'reference',
-              to: [{type: 'imageAsset'}]
+              to: [{type: 'imageAsset'}],
             },
             {
               name: 'title',
               title: 'Title',
               type: 'string',
-              options: {isHighlighted: true}
+              options: {isHighlighted: true},
             },
             {
               name: 'altText',
               title: 'Alternative text',
               type: 'string',
-              options: {isHighlighted: true}
+              options: {isHighlighted: true},
             },
             {
               name: 'someThingNotThatImportant',
               title: 'Something not so important',
-              type: 'string'
+              type: 'string',
             },
             {
               name: 'hotspot',
@@ -69,21 +69,21 @@ export default {
               fields: [
                 {
                   name: 'x',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'y',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'height',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'width',
-                  type: 'number'
-                }
-              ]
+                  type: 'number',
+                },
+              ],
             },
             {
               name: 'crop',
@@ -91,25 +91,25 @@ export default {
               fields: [
                 {
                   name: 'top',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'left',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'right',
-                  type: 'number'
+                  type: 'number',
                 },
                 {
                   name: 'bottom',
-                  type: 'number'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+                  type: 'number',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }

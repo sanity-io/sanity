@@ -34,7 +34,7 @@ function isSupportedLanguage(mode) {
     return alias
   }
 
-  const isSupported = SUPPORTED_LANGUAGES.find(lang => lang.value === mode)
+  const isSupported = SUPPORTED_LANGUAGES.find((lang) => lang.value === mode)
   if (isSupported) {
     return mode
   }
@@ -49,8 +49,8 @@ export default class PreviewCode extends PureComponent {
       _type: PropTypes.string,
       code: PropTypes.string,
       language: PropTypes.string,
-      highlightedLines: PropTypes.array
-    })
+      highlightedLines: PropTypes.array,
+    }),
   }
 
   ace = React.createRef()

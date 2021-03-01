@@ -3,30 +3,22 @@ import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import resolveSearchConfig from '../resolveSearchConfig'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 const OVERRIDABLE_FIELDS = [
-  'jsonType',
+  ...DEFAULT_OVERRIDEABLE_FIELDS,
   'orderings',
-  'type',
-  'name',
-  'title',
-  'readOnly',
-  'hidden',
-  'description',
   '__experimental_search',
-  'options',
-  'inputComponent',
-  'validation',
-  'icon'
+  'icon',
 ]
 
-const normalizeSearchConfig = configs => {
+const normalizeSearchConfig = (configs) => {
   if (!Array.isArray(configs)) {
     throw new Error(
       'The search config of a document type must be an array of search config objects'
     )
   }
-  return configs.map(conf => {
+  return configs.map((conf) => {
     if (conf === 'defaults') {
       return conf
     }
@@ -38,7 +30,7 @@ const normalizeSearchConfig = configs => {
     }
     return {
       weight: 'weight' in conf ? conf.weight : 1,
-      path: toPath(conf.path)
+      path: toPath(conf.path),
     }
   })
 }
@@ -48,7 +40,7 @@ export const ObjectType = {
     return {
       name: 'object',
       type: null,
-      jsonType: 'object'
+      jsonType: 'object',
     }
   },
   extend(rawSubTypeDef, createMemberType) {
@@ -60,21 +52,21 @@ export const ObjectType = {
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
-      fields: subTypeDef.fields.map(fieldDef => {
+      fields: subTypeDef.fields.map((fieldDef) => {
         const {name, fieldset, ...rest} = fieldDef
 
         const compiledField = {
           name,
-          fieldset
+          fieldset,
         }
 
         return lazyGetter(compiledField, 'type', () => {
           return createMemberType({
             ...rest,
-            title: fieldDef.title || startCase(name)
+            title: fieldDef.title || startCase(name),
           })
         })
-      })
+      }),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
@@ -92,14 +84,14 @@ export const ObjectType = {
           : null
 
         if (userProvidedSearchConfig) {
-          return userProvidedSearchConfig.map(entry =>
+          return userProvidedSearchConfig.map((entry) =>
             entry === 'defaults' ? resolveSearchConfig(subTypeDef) : entry
           )
         }
         return resolveSearchConfig(parsed)
       },
       {
-        enumerable: false
+        enumerable: false,
       }
     )
 
@@ -110,39 +102,42 @@ export const ObjectType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            title: extensionDef.title || subTypeDef.title,
-            type: parent
+            title:
+              extensionDef.title ||
+              subTypeDef.title ||
+              (subTypeDef.name ? startCase(subTypeDef.name) : ''),
+            type: parent,
           })
           lazyGetter(current, '__experimental_search', () => parent.__experimental_search)
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }
 
 function createFieldsets(typeDef, fields) {
   const fieldsetsDef = typeDef.fieldsets || []
-  const fieldsets = fieldsetsDef.map(fieldset => {
+  const fieldsets = fieldsetsDef.map((fieldset) => {
     const {name, title, description, options} = fieldset
     return {
       name,
       title,
       description,
       options,
-      fields: []
+      fields: [],
     }
   })
 
   const fieldsetsByName = keyBy(fieldsets, 'name')
 
   return fields
-    .map(field => {
+    .map((field) => {
       if (field.fieldset) {
         const fieldset = fieldsetsByName[field.fieldset]
         if (!fieldset) {

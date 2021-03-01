@@ -14,11 +14,11 @@ function ErrorDialog(props) {
 
 ErrorDialog.propTypes = {
   heading: PropTypes.string,
-  error: PropTypes.oneOfType([PropTypes.instanceOf(Error), PropTypes.string]).isRequired
+  error: PropTypes.oneOfType([PropTypes.instanceOf(Error), PropTypes.string]).isRequired,
 }
 
 ErrorDialog.defaultProps = {
-  heading: 'An error occured'
+  heading: 'An error occured',
 }
 
 export default ErrorDialog

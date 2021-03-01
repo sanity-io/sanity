@@ -8,13 +8,20 @@ interface Field {
   name: string
 }
 
+interface PreviewConfig {
+  select?: {
+    [key: string]: string
+  }
+  prepare?: Function
+}
+
 function validateFieldName(name): Array<any> {
   if (typeof name !== 'string') {
     return [
       error(
         `Field names must be strings. Saw "${inspect(name)}"`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
-      )
+      ),
     ]
   }
   if (name.startsWith('_')) {
@@ -22,7 +29,7 @@ function validateFieldName(name): Array<any> {
       error(
         `Invalid field name "${name}". Field names cannot start with underscores "_" as it's reserved for system fields.`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
-      )
+      ),
     ]
   }
 
@@ -33,7 +40,7 @@ function validateFieldName(name): Array<any> {
           VALID_FIELD_RE
         )}).`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
-      )
+      ),
     ]
   }
   if (!CONVENTIONAL_FIELD_RE.test(name)) {
@@ -42,7 +49,7 @@ function validateFieldName(name): Array<any> {
         'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?' +
           ' It may be wise to keep special characters out of field names for easier access later on.'
       ),
-      HELP_IDS.OBJECT_FIELD_NAME_INVALID
+      HELP_IDS.OBJECT_FIELD_NAME_INVALID,
     ]
   }
   return []
@@ -54,7 +61,7 @@ export function validateField(field, visitorContext) {
       error(
         `Incorrect type for field definition - should be an object, saw ${inspect(field)}`,
         HELP_IDS.OBJECT_FIELD_DEFINITION_INVALID_TYPE
-      )
+      ),
     ]
   }
 
@@ -66,14 +73,14 @@ export function validateField(field, visitorContext) {
 
 function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {
   const dupes: {[name: string]: Array<Field>} = {}
-  array.forEach(field => {
+  array.forEach((field) => {
     if (!dupes[field.name]) {
       dupes[field.name] = []
     }
     dupes[field.name].push(field)
   })
   return Object.keys(dupes)
-    .map(fieldName => (dupes[fieldName].length > 1 ? dupes[fieldName] : null))
+    .map((fieldName) => (dupes[fieldName].length > 1 ? dupes[fieldName] : null))
     .filter(Boolean)
 }
 
@@ -85,13 +92,13 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
       error(
         `The "fields" property must be an array of fields. Instead saw "${typeof fields}"`,
         HELP_IDS.OBJECT_FIELDS_INVALID
-      )
+      ),
     ]
   }
 
-  const fieldsWithNames = fields.filter(field => typeof field.name === 'string')
+  const fieldsWithNames = fields.filter((field) => typeof field.name === 'string')
 
-  getDuplicateFields(fieldsWithNames).forEach(dupes => {
+  getDuplicateFields(fieldsWithNames).forEach((dupes) => {
     problems.push(
       error(
         `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
@@ -107,8 +114,52 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
   return problems
 }
 
+export function validatePreview(preview: PreviewConfig) {
+  if (!isPlainObject(preview)) {
+    return [error(`The "preview" property must be an object, instead saw "${typeof preview}"`)]
+  }
+
+  if (typeof preview.prepare !== 'undefined' && typeof preview.prepare !== 'function') {
+    return [
+      error(
+        `The "preview.prepare" property must be a function, instead saw "${typeof preview.prepare}"`
+      ),
+    ]
+  }
+
+  if (!preview.select) {
+    return []
+  }
+
+  if (!isPlainObject(preview.select)) {
+    return [
+      error(
+        `The "preview.select" property must be an object, instead saw "${typeof preview.prepare}"`
+      ),
+    ]
+  }
+
+  return Object.keys(preview.select).reduce((errs, key) => {
+    return typeof preview.select[key] === 'string'
+      ? errs
+      : errs.concat(
+          error(
+            `The key "${key}" of "preview.select" must be a string, instead saw "${typeof preview
+              .select[key]}"`
+          )
+        )
+  }, [])
+}
+
 export default (typeDef, visitorContext) => {
-  const problems = validateFields(typeDef.fields)
+  let problems = validateFields(typeDef.fields)
+
+  let preview = typeDef.preview
+  if (preview) {
+    const previewErrors = validatePreview(typeDef.preview)
+    problems = problems.concat(previewErrors)
+    preview = previewErrors.some((err) => err.severity === 'error') ? {} : preview
+  }
 
   if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
     problems.push(
@@ -118,15 +169,16 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
+    preview,
     fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field, index) => {
       const {name, ...fieldTypeDef} = field
       const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, index)
       return {
         name,
         ...fieldType,
-        _problems: validateField(field, visitorContext).concat(_problems || [])
+        _problems: validateField(field, visitorContext).concat(_problems || []),
       }
     }),
-    _problems: problems
+    _problems: problems,
   }
 }

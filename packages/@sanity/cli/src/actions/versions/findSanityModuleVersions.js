@@ -7,8 +7,19 @@ import dynamicRequire from '../../util/dynamicRequire'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
+/*
+ * Some packages can introduce errors when updating. For example with Sanity UI
+ * we are at the moment dependant upon the version of @sanity/ui that
+ * @sanity/base imports to be the only version used since all imports of UI
+ * need to use the same context.
+ *
+ * Put them in this array to make sure the upgrade script doesn't upgrade
+ * them.
+ */
+const PACKAGES_TO_EXCLUDE = ['@sanity/ui']
+
 const defaultOptions = {
-  includeCli: true
+  includeCli: true,
 }
 
 export default async (context, target, opts = {}) => {
@@ -25,7 +36,7 @@ export default async (context, target, opts = {}) => {
   const packages = values(versions)
   spin.stop()
 
-  return packages.map(mod => {
+  return packages.map((mod) => {
     mod.needsUpdate =
       target === 'latest'
         ? semverCompare(mod.version, mod.latest) === -1
@@ -50,7 +61,8 @@ function filterSanityModules(manifest) {
   )
 
   const sanityDeps = Object.keys(dependencies)
-    .filter(mod => mod.indexOf('@sanity/') === 0)
+    .filter((mod) => mod.indexOf('@sanity/') === 0)
+    .filter((mod) => !PACKAGES_TO_EXCLUDE.includes(mod))
     .sort()
 
   return sanityDeps.reduce((versions, dependency) => {
@@ -68,7 +80,7 @@ function buildPackageArray(packages, workDir, options = {}) {
     initial.push({
       name: pkg.name,
       version: pkg.version,
-      latest: tryFindLatestVersion(pkg.name, target)
+      latest: tryFindLatestVersion(pkg.name, target),
     })
   }
 
@@ -76,7 +88,7 @@ function buildPackageArray(packages, workDir, options = {}) {
     result.push({
       name: pkgName,
       version: getLocalVersion(pkgName, workDir) || '???',
-      latest: tryFindLatestVersion(pkgName, target)
+      latest: tryFindLatestVersion(pkgName, target),
     })
     return result
   }, initial)

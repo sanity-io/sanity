@@ -7,7 +7,7 @@ describe('blockContentTypeFeatures', () => {
   it('will give a sane feature set for the default schema', () => {
     const blockContentType = defaultSchema
       .get('blogPost')
-      .fields.find(field => field.name === 'body').type
+      .fields.find((field) => field.name === 'body').type
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const expected = require('../../fixtures/defaultFeatures.json')
     assert.deepEqual(
@@ -19,7 +19,7 @@ describe('blockContentTypeFeatures', () => {
   it('will give spesific features for a custom schema', () => {
     const blockContentType = customSchema
       .get('blogPost')
-      .fields.find(field => field.name === 'body').type
+      .fields.find((field) => field.name === 'body').type
     const expected = require('../../fixtures/customFeatures.json')
     assert.deepEqual(
       JSON.parse(JSON.stringify(blockContentTypeFeatures(blockContentType))),

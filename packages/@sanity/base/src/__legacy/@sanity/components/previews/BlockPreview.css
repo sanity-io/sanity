@@ -1,0 +1,93 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  user-select: none;
+  position: relative;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  padding: var(--small-padding);
+  box-sizing: border-box;
+}
+
+.heading {
+  vertical-align: baseline;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  min-height: calc(2.5rem + 1px);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  composes: title from './DefaultPreview.css';
+  margin: 0;
+  padding: 0;
+  white-space: inherit;
+}
+
+.subtitle {
+  composes: subtitle from './DefaultPreview.css';
+  margin: 0;
+  padding: 0;
+}
+
+.description {
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  padding-right: var(--medium-padding);
+  padding-top: var(--small-padding);
+  max-height: 5em;
+  position: relative;
+  mask-image: linear-gradient(to bottom, white, transparent);
+}
+
+.status {
+  color: var(--white);
+  background-color: var(--gray);
+  padding: var(--extra-small-padding) var(--small-padding);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  margin-left: auto;
+}
+
+.media {
+  height: calc(2.5rem + 1px);
+  width: calc(2.5rem + 1px);
+  min-width: calc(2.5rem + 1px);
+  margin-right: var(--small-padding);
+  position: relative;
+  overflow: hidden;
+
+  @nest & img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  @nest & svg {
+    display: block;
+    width: calc(2.5rem + 1px) !important;
+    height: calc(2.5rem + 1px) !important;
+  }
+}
+
+.media:empty {
+  display: none;
+}
+
+.content {
+}

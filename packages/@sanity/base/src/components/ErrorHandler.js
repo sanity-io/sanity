@@ -38,9 +38,16 @@ export default class ErrorHandler extends React.PureComponent {
     // Certain errors should be ignored
     if (
       [
-        /unexpected token <$/i // Trying to load HTML as JS
-      ].some(item => item.test(err.message))
+        /unexpected token <$/i, // Trying to load HTML as JS
+      ].some((item) => item.test(err.message))
     ) {
+      return
+    }
+
+    // NOTE: This checks if the error is the common "missing theme content value"
+    // error thrown by `@sanity/ui`, in order to take steps to render a helpful error message.
+    if (err.message.includes('useRootTheme():')) {
+      this.props.onUIError(err)
       return
     }
 

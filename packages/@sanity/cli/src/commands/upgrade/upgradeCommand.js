@@ -15,5 +15,5 @@ export default {
   signature: '[MODULE_NAME] [--tag DIST_TAG] [--range SEMVER_RANGE] [--save-exact]',
   description: 'Upgrades all (or some) Sanity modules to their latest versions',
   action: upgradeDependencies,
-  helpText: help
+  helpText: help,
 }

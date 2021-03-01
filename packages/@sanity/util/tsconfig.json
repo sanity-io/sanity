@@ -1,9 +1,16 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test/**/*.ts"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "strict": false,
-    "outDir": "lib/"
-  }
+    "composite": true,
+    // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
+    "noImplicitAny": false,
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+  "references": [
+    {
+      "path": "../types"
+    }
+  ]
 }

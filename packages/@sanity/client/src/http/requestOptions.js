@@ -10,7 +10,7 @@ module.exports = (config, overrides = {}) => {
     headers.Authorization = `Bearer ${token}`
   }
 
-  if (!overrides.useGlobalApi && (!config.useProjectHostname && config.projectId)) {
+  if (!overrides.useGlobalApi && !config.useProjectHostname && config.projectId) {
     headers[projectHeader] = config.projectId
   }
 
@@ -25,6 +25,6 @@ module.exports = (config, overrides = {}) => {
     headers: assign({}, headers, overrides.headers || {}),
     timeout: typeof timeout === 'undefined' ? 5 * 60 * 1000 : timeout,
     json: true,
-    withCredentials
+    withCredentials,
   })
 }

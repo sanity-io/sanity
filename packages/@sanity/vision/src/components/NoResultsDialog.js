@@ -17,7 +17,7 @@ function NoResultsDialog(props) {
 
 NoResultsDialog.propTypes = {
   query: PropTypes.string.isRequired,
-  dataset: PropTypes.string.isRequired
+  dataset: PropTypes.string.isRequired,
 }
 
 export default NoResultsDialog

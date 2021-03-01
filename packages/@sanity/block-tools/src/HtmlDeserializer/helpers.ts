@@ -13,14 +13,14 @@ import preprocessors from './preprocessors'
  */
 export function createRuleOptions(blockContentType) {
   const features = blockContentTypeFeatures(blockContentType)
-  const mapItem = item => item.value
+  const mapItem = (item) => item.value
   const enabledBlockStyles = features.styles.map(mapItem)
   const enabledSpanDecorators = features.decorators.map(mapItem)
   const enabledBlockAnnotations = features.annotations.map(mapItem)
   return {
     enabledBlockStyles,
     enabledSpanDecorators,
-    enabledBlockAnnotations
+    enabledBlockAnnotations,
   }
 }
 
@@ -44,7 +44,7 @@ export function preprocess(html, parseHtml) {
     .replace(/\s\s+/g, ' ') // Remove multiple whitespace
     .replace(/[\r\n]/g, ' ') // Remove newlines / carriage returns
   const doc = parseHtml(compactHtml)
-  preprocessors.forEach(processor => {
+  preprocessors.forEach((processor) => {
     processor(html, doc)
   })
   return doc
@@ -64,7 +64,7 @@ export function defaultParseHtml() {
         'You must supply the `options.parseHtml` function instead.'
     )
   }
-  return html => {
+  return (html) => {
     return new DOMParser().parseFromString(html, 'text/html')
   }
 }
@@ -72,7 +72,7 @@ export function defaultParseHtml() {
 export function flattenNestedBlocks(blocks) {
   let depth = 0
   const flattened = []
-  const traverse = _nodes => {
+  const traverse = (_nodes) => {
     const toRemove = []
     _nodes.forEach((node, i) => {
       if (depth === 0) {
@@ -91,7 +91,7 @@ export function flattenNestedBlocks(blocks) {
         flattened.push(node.block)
       }
     })
-    toRemove.forEach(node => {
+    toRemove.forEach((node) => {
       _nodes.splice(_nodes.indexOf(node), 1)
     })
     depth--
@@ -114,7 +114,7 @@ function isWhiteSpaceChar(text) {
 }
 
 export function trimWhitespace(blocks) {
-  blocks.forEach(block => {
+  blocks.forEach((block) => {
     if (!block.children) {
       return
     }
@@ -184,7 +184,7 @@ export function ensureRootIsBlocks(blocks) {
 
     const block = {
       ...DEFAULT_BLOCK,
-      children: [node]
+      children: [node],
     }
 
     memo.push(block)

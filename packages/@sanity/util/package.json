@@ -1,18 +1,21 @@
 {
   "name": "@sanity/util",
-  "version": "0.147.0",
+  "version": "2.4.0",
   "description": "Utilities shared across projects of Sanity",
   "main": "lib/index.js",
   "scripts": {
+    "build": "babel src --copy-files --extensions '.js,.jsx,.ts,.tsx' --out-dir lib",
     "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "test": "tap -j1"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/util"
   },
   "keywords": [
     "sanity",
@@ -29,6 +32,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
+    "@sanity/types": "2.4.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^6.0.1",
     "get-random-values": "^1.2.0",

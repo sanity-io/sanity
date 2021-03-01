@@ -1,0 +1,66 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  /* display: block; */
+}
+
+.mainNav {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  padding: var(--medium-padding);
+  font-weight: 400;
+  line-height: 17px;
+  cursor: default;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  @nest .isCollapsed & {
+    transform: rotate(90deg);
+    transform-origin: calc(49px / 2) calc(49px / 2);
+    min-width: 100vh;
+  }
+
+  @nest & strong {
+    font-weight: 600;
+  }
+}
+
+.paneActions {
+  padding: 8px;
+  display: flex;
+
+  @nest & > div:empty {
+    display: none;
+  }
+
+  @nest & > div:not(:empty) + div {
+    margin-left: 4px;
+  }
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.viewNav {
+  margin-top: calc(0 - var(--small-padding));
+  display: flex;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.tabsContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.versionSelectContainer {
+  margin: 4px 0.5em 4px auto;
+}

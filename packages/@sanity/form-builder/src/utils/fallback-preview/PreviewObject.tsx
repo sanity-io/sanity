@@ -25,7 +25,7 @@ export function PreviewObject(props: Props) {
         </h3>
       )}
       <ul>
-        {keys.map(key => (
+        {keys.map((key) => (
           <li key={key}>
             <b>{key}</b>:{' '}
             <PreviewAny {...rest} value={restValue[key]} _depth={_depth + 1} maxDepth={maxDepth} />

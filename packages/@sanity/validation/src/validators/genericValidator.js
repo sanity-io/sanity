@@ -2,6 +2,7 @@ const Type = require('type-of-is')
 const {flatten} = require('lodash')
 const deepEquals = require('../util/deepEquals')
 const pathToString = require('../util/pathToString')
+const handleValidationResult = require('../util/handleValidationResult')
 const ValidationError = require('../ValidationError')
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
@@ -26,12 +27,12 @@ const presence = (expected, value, message) => {
 const multiple = (children, value) => {
   const validate = require('../validate')
 
-  const items = children.map(child => validate(child, value, {isChild: true}))
+  const items = children.map((child) => validate(child, value, {isChild: true}))
   return Promise.all(items).then(flatten)
 }
 
 const all = (children, value, message) =>
-  multiple(children, value).then(results => {
+  multiple(children, value).then((results) => {
     const numErrors = results.length
     return numErrors === 0
       ? true
@@ -39,7 +40,7 @@ const all = (children, value, message) =>
   })
 
 const either = (children, value, message) =>
-  multiple(children, value).then(results => {
+  multiple(children, value).then((results) => {
     const numErrors = results.length
 
     // Read: There is at least one rule that matched
@@ -58,10 +59,10 @@ const valid = (allowedValues, actual, message) => {
   const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
 
   const defaultMessage = value
-    ? `Value "${strValue}" did not match any of allowed values`
-    : 'Value did not match any of allowed values'
+    ? `Value "${strValue}" did not match any allowed values`
+    : 'Value did not match any allowed values'
 
-  return allowedValues.some(expected => deepEquals(expected, actual))
+  return allowedValues.some((expected) => deepEquals(expected, actual))
     ? true
     : new ValidationError(message || defaultMessage)
 }
@@ -87,41 +88,19 @@ const custom = async (fn, value, message, options) => {
 
   clearTimeout(slowTimer)
 
-  if (Array.isArray(result)) {
-    if (result.length === 0) {
-      return true
-    }
-    return result
-  }
-
-  if (result === true) {
-    return true
-  }
-
-  if (typeof result === 'string') {
-    return new ValidationError(message || result)
-  }
-
-  if (result && (result.message && result.paths)) {
-    return new ValidationError(message || result.message, {paths: result.paths})
-  }
-
-  const path = pathToString(options.path)
-  throw new Error(
-    `${path}: Validator must return 'true' if valid or an error message as a string on errors`
-  )
+  return handleValidationResult(result, message, options)
 }
 
 function formatValidationErrors(message, results, options = {}) {
   const errOpts = {
     children: results.length > 1 ? results : undefined,
-    operator: options.operator
+    operator: options.operator,
   }
 
   return results.length === 1
     ? new ValidationError(message || results[0].item.message, errOpts)
     : new ValidationError(
-        message || `[${results.map(err => err.item.message).join(options.separator)}]`,
+        message || `[${results.map((err) => err.item.message).join(options.separator)}]`,
         errOpts
       )
 }
@@ -132,5 +111,5 @@ module.exports = {
   either,
   valid,
   custom,
-  presence
+  presence,
 }

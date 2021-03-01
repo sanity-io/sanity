@@ -56,5 +56,5 @@ export default {
     }
 
     return Promise.reject(new Error(`Unknown init type "${type}"`))
-  }
+  },
 }

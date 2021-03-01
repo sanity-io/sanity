@@ -1,0 +1,106 @@
+@import 'part:@sanity/base/theme/variables/forms-style';
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline-flex;
+  position: relative;
+  padding: 0;
+  max-width: 120px;
+}
+
+.previewContainer {
+  position: relative;
+  display: inline-block;;
+  cursor: move;
+  box-sizing: border-box;
+  background-color: var(--form-builder-block-background);
+  padding: 0 2px;
+  border-radius: 2px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--hairline-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewContainer:hover {
+  background-color: var(--selectable-item-color-hover);
+  /* box-shadow: var(--form-builder-block-shadow--hover); */
+}
+
+.root.hasErrors > .previewContainer {
+  /* box-shadow: var(--form-builder-block-shadow--invalid); */
+  background-color: color(var(--state-danger-color) a(15%));
+  /* border: 1px solid var(--form-builder-block-border-color-error); */
+}
+
+.root.focused > .previewContainer {
+  /* border: 1px solid var(--form-builder-block-border-color-focus); */
+  background-color: var(--selectable-item-color-focus);
+  /* box-shadow: var(--form-builder-block-shadow--focus); */
+}
+
+.root.selected > .previewContainer {
+  background-color: var(--form-builder-block-background-selected);
+}
+
+.root.focused.selected > .previewContainer {
+  /* border: 1px solid var(--form-builder-block-border-color-focus); */
+}
+
+.root.selected.hasErrors > .previewContainer {
+  box-shadow: none;
+  /* border: 1px solid
+    color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%)); */
+  background-color: color(
+    var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%)
+  );
+}
+
+.root.focused.hasErrors > .previewContainer {
+  /* box-shadow: var(--form-builder-block-shadow--invalid-focus); */
+  /* border: 1px solid var(--state-danger-color); */
+  background-color: color(var(--state-danger-color) a(30%));
+}
+
+.root.hasErrors > .previewContainer:hover {
+  background-color: color(var(--state-danger-color) a(25%));
+  /* border: 1px solid var(--form-builder-block-border-color-error); */
+}
+
+.root.focused.hasErrors > .previewContainer:hover {
+  background-color: color(var(--state-danger-color) a(45%));
+}
+
+.functions {
+  display: inline-flex;
+  align-items: center;
+  flex-grow: 0;
+  font-size: var(--font-size-small);
+  color: var(--text-color-secondary);
+  margin-left: var(--small-padding);
+}
+
+.functions > * {
+  margin-right: var(--small-padding);
+}
+
+.linkToReference {
+  z-index: 2;
+  transition: transform 0.1s linear, opacity 0.1s linear;
+  transform: scale(1.2);
+}
+
+.linkToReference svg {
+  color: inherit;
+}
+
+.linkToReference:hover {
+  opacity: 1;
+  color: var(--link-color);
+}
+
+.linkToReference:active {
+  opacity: 1;
+  color: var(--text-color);
+}

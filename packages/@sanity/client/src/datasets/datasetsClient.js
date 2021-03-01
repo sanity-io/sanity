@@ -25,7 +25,7 @@ assign(DatasetsClient.prototype, {
   _modify(method, name, body) {
     validate.dataset(name)
     return this.request({method, uri: `/datasets/${name}`, body})
-  }
+  },
 })
 
 module.exports = DatasetsClient

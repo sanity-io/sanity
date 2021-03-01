@@ -1,0 +1,90 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --progress-bar-height: calc(25 / 16 * 1em);
+  --progress-bar-color: var(--black);
+  --progress-bar-color-inverted: color(var(--brand-primary) contrast(80%));
+}
+
+@keyframes progressBarStripes {
+  0% {
+    background-position: 1rem 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.root {
+  border: 1px solid var(--progress-bar-color);
+  box-sizing: border-box;
+  border-radius: var(--border-radius-small);
+  height: var(--progress-bar-height);
+  width: 100%;
+  clear: both;
+  transition: border-color 0.5s linear;
+}
+
+.inner {
+  width: 100%;
+  position: relative;
+}
+
+.completed {
+  composes: root;
+  border-color: var(--state-success-color);
+}
+
+.uncompleted {
+  composes: root;
+}
+
+.barContainer {
+  position: relative;
+  width: 100%;
+  height: var(--progress-bar-height);
+  padding: 2px;
+  box-sizing: border-box;
+  background-color: color(var(--progress-bar-color) a(5%));
+  margin-bottom: 0.2em;
+}
+
+.isInProgress {
+}
+
+.bar {
+  border-radius: var(--border-radius-small);
+  height: calc(var(--progress-bar-height) - 6px);
+  transition: width 0.1s linear, background-color 0.3s linear, background-image 0.5s linear;
+  max-width: 100%;
+  background-color: var(--progress-bar-color);
+  background-size: 1rem 1rem;
+
+  @nest .completed & {
+    background-color: var(--state-success-color);
+  }
+
+  @nest .isInProgress & {
+    animation: progressBarStripes 0.5s linear infinite;
+    background-image: linear-gradient(
+      45deg,
+      color(var(--progress-bar-color-inverted) a(25%)) 25%,
+      transparent 25%,
+      transparent 50%,
+      color(var(--progress-bar-color-inverted) a(25%)) 50%,
+      color(var(--progress-bar-color-inverted) a(25%)) 75%,
+      transparent 75%,
+      transparent
+    );
+  }
+}
+
+.percent {
+  float: right;
+}
+
+.text,
+.percent {
+  font-size: var(--font-size-xsmall);
+}

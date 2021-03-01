@@ -1,0 +1,24 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.label {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: -1px;
+  margin-left: var(--small-padding);
+}
+
+.title {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+  padding-right: var(--small-padding);
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+}

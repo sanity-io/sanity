@@ -1,0 +1,68 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background-color: color(var(--gray) alpha(15%));
+  color: color(var(--gray) lightness(- 20%));
+  display: flex;
+  align-items: flex-start;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+  border-radius: var(--border-radius-medium);
+
+  @nest &.color_success {
+    background-color: color(var(--state-success-color) alpha(15%));
+    color: color(var(--state-success-color) lightness(- 20%));
+  }
+
+  @nest &.color_warning {
+    background-color: color(var(--state-warning-color) alpha(15%));
+    color: color(var(--state-warning-color) lightness(- 20%));
+  }
+
+  @nest &.color_danger {
+    background-color: color(var(--state-danger-color) alpha(15%));
+    color: color(var(--state-danger-color) lightness(- 20%));
+  }
+}
+
+.iconContainer {
+  width: calc(17 / 16 * 1em);
+  margin: -2px calc(var(--medium-padding) - var(--extra-small-padding) - 2px) -2px -2px;
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  margin: -2px 0 -1px;
+
+  @nest & > :first-child {
+    margin-top: 0;
+  }
+
+  @nest & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.title {
+  font: inherit;
+  font-weight: 700;
+  margin: 0;
+}
+
+.description {
+  @nest .title + & {
+    margin-top: calc(var(--extra-small-padding) / 2);
+  }
+}

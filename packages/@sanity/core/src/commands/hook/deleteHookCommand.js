@@ -14,7 +14,7 @@ export default {
     } catch (err) {
       throw new Error(`Hook deletion failed:\n${err.message}`)
     }
-  }
+  },
 }
 
 async function promptForHook(specified, context) {
@@ -24,7 +24,7 @@ async function promptForHook(specified, context) {
 
   const hooks = await client.request({uri: '/hooks', json: true})
   if (specifiedName) {
-    const selected = hooks.filter(hook => hook.name.toLowerCase() === specifiedName)[0]
+    const selected = hooks.filter((hook) => hook.name.toLowerCase() === specifiedName)[0]
     if (!selected) {
       throw new Error(`Hook with name "${specified} not found"`)
     }
@@ -32,10 +32,10 @@ async function promptForHook(specified, context) {
     return selected.id
   }
 
-  const choices = hooks.map(hook => ({value: hook.id, name: hook.name}))
+  const choices = hooks.map((hook) => ({value: hook.id, name: hook.name}))
   return prompt.single({
     message: 'Select hook to delete',
     type: 'list',
-    choices
+    choices,
   })
 }

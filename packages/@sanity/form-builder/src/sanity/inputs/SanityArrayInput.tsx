@@ -3,7 +3,7 @@ import resolveUploader from '../uploads/resolveUploader'
 import ArrayInput, {Props} from '../../inputs/ArrayInput'
 export default class SanityArray extends React.Component<Props> {
   input: any
-  setInput = input => {
+  setInput = (input) => {
     this.input = input
   }
   focus() {

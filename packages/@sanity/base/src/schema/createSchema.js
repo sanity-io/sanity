@@ -15,13 +15,13 @@ import imageDimensions from './types/imageDimensions'
 import imageMetadata from './types/imageMetadata'
 import fileAsset from './types/fileAsset'
 
-const isError = problem => problem.severity === 'error'
+const isError = (problem) => problem.severity === 'error'
 
-module.exports = schemaDef => {
+module.exports = (schemaDef) => {
   const validated = validateSchema(schemaDef.types).getTypes()
 
   const validation = groupProblems(validated)
-  const hasErrors = validation.some(group => group.problems.some(isError))
+  const hasErrors = validation.some((group) => group.problems.some(isError))
 
   let types = []
   if (!hasErrors) {
@@ -38,13 +38,13 @@ module.exports = schemaDef => {
       imageMetadata,
       imageDimensions,
       imagePalette,
-      imagePaletteSwatch
+      imagePaletteSwatch,
     ].filter(Boolean)
   }
 
   const compiled = Schema.compile({
     name: schemaDef.name,
-    types
+    types,
   })
 
   compiled._source = schemaDef

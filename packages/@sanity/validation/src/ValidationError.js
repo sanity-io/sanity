@@ -9,7 +9,7 @@ class ValidationError extends ExtendableError {
   }
 
   prefixPaths(prefix) {
-    this.paths = this.paths.map(path => prefix.concat(path))
+    this.paths = this.paths.map((path) => prefix.concat(path))
     return this
   }
 
@@ -17,7 +17,7 @@ class ValidationError extends ExtendableError {
     return new ValidationError(msg, {
       paths: this.paths,
       children: this.children,
-      operation: this.operation
+      operation: this.operation,
     })
   }
 }

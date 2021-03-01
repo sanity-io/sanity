@@ -2,12 +2,15 @@ import {isEqual} from 'lodash'
 import randomKey from './randomKey'
 
 // For a block with _type 'block' (text), join spans where possible
-export default function normalizeBlock(block, options: {allowedDecorators?: string[]} = {}) {
+export default function normalizeBlock(
+  block,
+  options: {allowedDecorators?: string[]; blockTypeName?: string} = {}
+) {
   let newIndex = 0
   if (!block._key) {
     block._key = randomKey(12)
   }
-  if (block._type !== 'block') {
+  if (block._type !== (options.blockTypeName || 'block')) {
     return block
   }
   if (!block.children) {
@@ -24,8 +27,8 @@ export default function normalizeBlock(block, options: {allowedDecorators?: stri
         _type: 'span',
         _key: `${block._key}${0}`,
         text: '',
-        marks: []
-      }
+        marks: [],
+      },
     ]
     return block
   }
@@ -52,20 +55,20 @@ export default function normalizeBlock(block, options: {allowedDecorators?: stri
       acc.push(child)
       return acc
     }, [])
-    .map(child => {
+    .map((child) => {
       child._key = `${block._key}${newIndex++}`
       if (child._type === 'span' && !child.marks) {
         child.marks = []
       }
       if (allowedDecorators && child._type === 'span') {
         child.marks = child.marks.filter(
-          mark => allowedDecorators.includes(mark) || block.markDefs.find(def => def._key)
+          (mark) => allowedDecorators.includes(mark) || block.markDefs.find((def) => def._key)
         )
       }
       usedMarkDefs = usedMarkDefs.concat(child.marks)
       return child
     })
   // Remove leftover markDefs
-  block.markDefs = block.markDefs.filter(markDef => usedMarkDefs.includes(markDef._key))
+  block.markDefs = block.markDefs.filter((markDef) => usedMarkDefs.includes(markDef._key))
   return block
 }

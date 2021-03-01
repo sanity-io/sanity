@@ -14,9 +14,9 @@ if (!targetDir) {
   throw new Error('Target directory must be specified (`.` for current dir)')
 }
 
-const notSanity = dir => dir !== '@sanity'
-const prefix = name => `@sanity/${name}`
-const normalize = dir => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
+const notSanity = (dir) => dir !== '@sanity'
+const prefix = (name) => `@sanity/${name}`
+const normalize = (dir) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
 
 const pkgPath = path.join(__dirname, '..', 'packages')
 const rootPackages = fs.readdirSync(pkgPath).filter(notSanity)
@@ -41,23 +41,23 @@ const targetSanityPackages = fs.readdirSync(path.join(targetDepsPath, '@sanity')
 const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
 const sharedPackages = argv.all
   ? packages
-  : packages.filter(pkgName => targetPackages.indexOf(pkgName) > -1)
+  : packages.filter((pkgName) => targetPackages.indexOf(pkgName) > -1)
 
 const sharedDeclared = argv.all
   ? packages
-  : packages.filter(pkgName => targetDeps.indexOf(pkgName) > -1)
+  : packages.filter((pkgName) => targetDeps.indexOf(pkgName) > -1)
 
-const removeFolders = sharedPackages.map(normalize).map(dir => path.join(targetDepsPath, dir))
+const removeFolders = sharedPackages.map(normalize).map((dir) => path.join(targetDepsPath, dir))
 
 // First, remove all locally installed dependencies that exists as a package in our monorepo
 console.log('Removing dependencies from node_modules:')
 console.log(`\n  ${sharedPackages.join('\n  ')}\n`)
 
-removeFolders.forEach(dir => rimraf.sync(dir))
+removeFolders.forEach((dir) => rimraf.sync(dir))
 
 // Secondly, symlink into node_modules, but only the dependencies declared in package.json
 console.log('Symlinking dependencies to node_modules:\n')
-sharedDeclared.forEach(dep => {
+sharedDeclared.forEach((dep) => {
   const sourceDepDir = path.join(pkgPath, normalize(dep))
   const targetDepDir = path.join(targetDepsPath, normalize(dep))
 

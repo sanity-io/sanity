@@ -1,0 +1,12 @@
+.root {
+  position: relative;
+  width: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.block {
+  position: absolute;
+  width: 100%;
+}

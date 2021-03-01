@@ -1,0 +1,42 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  overflow: hidden;
+  height: calc(1.5625em + 0.5em);
+
+  @nest &:before, &:after {
+    position: absolute;
+    content: '';
+    display: block;
+    top: 0;
+    bottom: 0;
+    width: 0.5em;
+    pointer-events: none;
+  }
+
+  @nest &:before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      var(--component-bg),
+      color(var(--component-bg) alpha(0%))
+    );
+  }
+
+  @nest &:after {
+    right: 0;
+    background: linear-gradient(
+      to right,
+      color(var(--component-bg) alpha(0%)),
+      var(--component-bg)
+    );
+  }
+
+  @nest & > div {
+    white-space: nowrap;
+    overflow: auto;
+    padding: 0.25em 0.5em 100px;
+    -webkit-overflow-scrolling: touch;
+  }
+}

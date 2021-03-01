@@ -11,27 +11,27 @@ function isModifiedEvent(event: MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 }
 
-type Props = {
+interface LinkProps {
   replace?: boolean
-  onClick?: (event: MouseEvent) => void
-  href: string
-  target?: string
-  children?: React.ReactNode
 }
 
-export default class Link extends React.PureComponent<Props> {
-  context: RouterProviderContext
-  _element: HTMLAnchorElement
+export default class Link extends React.PureComponent<
+  LinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>
+> {
+  context: RouterProviderContext | null = null
+  _element: HTMLAnchorElement | null = null
 
   static defaultProps = {
-    replace: false
+    replace: false,
   }
 
   static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck
+    __internalRouter: internalRouterContextTypeCheck,
   }
 
-  private handleClick = (event: MouseEvent): void => {
+  private handleClick = (event: React.MouseEvent<HTMLAnchorElement>): void => {
+    if (!this.context) throw new Error('Link: missing context value')
+
     if (!this.context.__internalRouter) {
       return
     }
@@ -41,6 +41,8 @@ export default class Link extends React.PureComponent<Props> {
     }
 
     const {onClick, href, target, replace} = this.props
+
+    if (!href) return
 
     if (onClick) {
       onClick(event)

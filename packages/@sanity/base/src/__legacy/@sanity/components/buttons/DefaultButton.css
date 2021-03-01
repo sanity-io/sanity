@@ -1,0 +1,854 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  /* Translate global vars to more descriptive naming: */
+
+  /*
+   * color={undefined}
+   */
+  --color-button-bg: var(--default-button-color);
+  --color-button-text: var(--default-button-color--inverted);
+  --color-button-border: transparent;
+  --color-button-spinner-bg: color(var(--color-button-bg) alpha(80%));
+  /* :focus */
+  --color-button-focus-bg: color(var(--color-button-bg) lightness(- 5%));
+  --color-button-focus-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--focus-color);
+  --color-button-navbar-focus-shadow: 0 0 0 1px var(--main-navigation-color),
+    0 0 0 3px var(--focus-color);
+  /* :hover */
+  --color-button-hover-bg: color(var(--color-button-bg) lightness(- 5%));
+  /* :active */
+  --color-button-active-bg: color(var(--color-button-bg) lightness(- 10%));
+  /* inverted={true} */
+  --color-button-inverted-color: var(--color-button-bg);
+  --color-button-inverted-border: color(var(--color-button-bg) alpha(35%));
+  --color-button-inverted-spinner-bg: color(var(--color-button-text) alpha(80%));
+  /* simple={true} */
+  /* :enabled */
+  --color-button-simple-enabled-bg: transparent;
+  --color-button-simple-enabled-text: color(var(--color-button-bg) lightness(- 10%));
+  /* :focus */
+  --color-button-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-simple-focus-text: color(var(--color-button-bg) lightness(- 20%));
+  /* :hover */
+  --color-button-simple-hover-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-simple-hover-text: color(var(--color-button-bg) lightness(- 20%));
+  /* :active */
+  --color-button-simple-active-bg: color(var(--color-button-bg) alpha(20%));
+  /* :selected */
+  --color-button-simple-selected-bg: color(var(--selected-item-color) alpha(15%));
+  --color-button-simple-selected-text: var(--selected-item-color);
+  /* simple={true} tone="navbar" */
+  --color-button-navbar-simple-text: var(--main-navigation-color--inverted-muted);
+  /* :focus */
+  --color-button-navbar-simple-focus-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-navbar-simple-focus-text: color(var(--color-button-bg) lightness(+ 20%));
+  /* :hover */
+  --color-button-navbar-simple-hover-bg: color(var(--color-button-bg) alpha(10%));
+  --color-button-navbar-simple-hover-text: color(var(--color-button-bg) lightness(+ 20%));
+  /* :active */
+  --color-button-navbar-simple-active-bg: color(var(--color-button-bg) alpha(20%));
+  /* :selected */
+  --color-button-navbar-simple-selected-bg: color(var(--selected-item-color) alpha(20%));
+  --color-button-navbar-simple-selected-text: color(var(--selected-item-color) lightness(+ 15%));
+
+  /**
+   * color="primary"
+   */
+  --color-button-primary-bg: var(--default-button-primary-color);
+  --color-button-primary-text: var(--default-button-primary-color--inverted);
+  --color-button-primary-border: transparent;
+  --color-button-primary-spinner-bg: color(var(--color-button-primary-bg) alpha(80%));
+  /* :focus */
+  --color-button-primary-focus-bg: color(var(--color-button-primary-bg) lightness(- 5%));
+  /* :hover */
+  --color-button-primary-hover-bg: color(var(--color-button-primary-bg) lightness(- 5%));
+  /* :active */
+  --color-button-primary-active-bg: color(var(--color-button-primary-bg) lightness(- 10%));
+  /* inverted={true} */
+  --color-button-primary-inverted-border: color(var(--color-button-primary-bg) alpha(50%));
+  --color-button-primary-inverted-color: var(--color-button-primary-bg);
+  --color-button-primary-inverted-spinner-bg: color(var(--color-button-primary-text) alpha(80%));
+  /* :focus */
+  --color-button-primary-inverted-focus-bg: var(--color-button-primary-bg);
+  --color-button-primary-inverted-focus-color: var(--color-button-primary-text);
+  /* simple={true} */
+  /* :enabled */
+  --color-button-primary-simple-enabled-bg: transparent;
+  --color-button-primary-simple-enabled-text: color(
+    var(--color-button-primary-bg) lightness(- 20%)
+  );
+  /* :focus */
+  --color-button-primary-simple-focus-bg: color(var(--color-button-primary-bg) alpha(10%));
+  --color-button-primary-simple-focus-text: color(var(--color-button-primary-bg) lightness(- 10%));
+  /* :hover */
+  --color-button-primary-simple-hover-bg: color(var(--color-button-primary-bg) alpha(10%));
+  --color-button-primary-simple-hover-text: color(var(--color-button-primary-bg) lightness(- 20%));
+  /* :active */
+  --color-button-primary-simple-active-bg: color(var(--color-button-primary-bg) alpha(20%));
+  /* :selected */
+  --color-button-primary-simple-selected-bg: color(var(--color-button-primary-bg) alpha(15%));
+  --color-button-primary-simple-selected-text: color(
+    var(--color-button-primary-bg) lightness(- 5%)
+  );
+
+  /**
+   * color="success"
+   */
+  --color-button-success-bg: var(--default-button-success-color);
+  --color-button-success-text: var(--default-button-success-color--inverted);
+  --color-button-success-border: transparent;
+  --color-button-success-spinner-bg: color(var(--color-button-success-bg) alpha(80%));
+  /* :focus */
+  --color-button-success-focus-bg: color(var(--color-button-success-bg) lightness(- 5%));
+  /* :hover */
+  --color-button-success-hover-bg: color(var(--color-button-success-bg) lightness(- 5%));
+  /* :active */
+  --color-button-success-active-bg: color(var(--color-button-success-bg) lightness(- 10%));
+  /* inverted={true} */
+  --color-button-success-inverted-border: color(var(--color-button-success-bg) alpha(50%));
+  --color-button-success-inverted-color: var(--color-button-success-bg);
+  --color-button-success-inverted-spinner-bg: color(var(--color-button-success-text) alpha(80%));
+  /* :focus */
+  --color-button-success-inverted-focus-bg: var(--color-button-success-bg);
+  --color-button-success-inverted-focus-color: var(--color-button-success-text);
+  /* simple={true} */
+  /* :enabled */
+  --color-button-success-simple-enabled-bg: transparent;
+  --color-button-success-simple-enabled-text: color(
+    var(--color-button-success-bg) lightness(- 20%)
+  );
+  /* :focus */
+  --color-button-success-simple-focus-bg: color(var(--color-button-success-bg) alpha(10%));
+  --color-button-success-simple-focus-text: color(var(--color-button-success-bg) lightness(- 10%));
+  /* :hover */
+  --color-button-success-simple-hover-bg: color(var(--color-button-success-bg) alpha(10%));
+  --color-button-success-simple-hover-text: color(var(--color-button-success-bg) lightness(- 20%));
+  /* :active */
+  --color-button-success-simple-active-bg: color(var(--color-button-success-bg) alpha(20%));
+  /* :selected */
+  --color-button-success-simple-selected-bg: color(var(--color-button-success-bg) alpha(15%));
+  --color-button-success-simple-selected-text: color(
+    var(--color-button-success-bg) lightness(- 5%)
+  );
+
+  /**
+   * color="warning"
+   */
+  --color-button-warning-bg: var(--default-button-warning-color);
+  --color-button-warning-text: var(--default-button-warning-color--inverted);
+  --color-button-warning-border: transparent;
+  --color-button-warning-spinner-bg: color(var(--color-button-warning-bg) alpha(80%));
+  /* :focus */
+  --color-button-warning-focus-bg: color(var(--color-button-warning-bg) lightness(- 5%));
+  /* :hover */
+  --color-button-warning-hover-bg: color(var(--color-button-warning-bg) lightness(- 5%));
+  /* :active */
+  --color-button-warning-active-bg: color(var(--color-button-warning-bg) lightness(- 10%));
+  /* inverted={true} */
+  --color-button-warning-inverted-border: color(var(--color-button-warning-bg) alpha(50%));
+  --color-button-warning-inverted-color: var(--color-button-warning-bg);
+  --color-button-warning-inverted-spinner-bg: color(var(--color-button-warning-text) alpha(80%));
+  /* :focus */
+  --color-button-warning-inverted-focus-bg: var(--color-button-warning-bg);
+  --color-button-warning-inverted-focus-color: var(--color-button-warning-text);
+  /* simple={true} */
+  /* :enabled */
+  --color-button-warning-simple-enabled-bg: transparent;
+  --color-button-warning-simple-enabled-text: color(
+    var(--color-button-warning-bg) lightness(- 20%)
+  );
+  /* :focus */
+  --color-button-warning-simple-focus-bg: color(var(--color-button-warning-bg) alpha(10%));
+  --color-button-warning-simple-focus-text: color(var(--color-button-warning-bg) lightness(- 10%));
+  /* :hover */
+  --color-button-warning-simple-hover-bg: color(var(--color-button-warning-bg) alpha(10%));
+  --color-button-warning-simple-hover-text: color(var(--color-button-warning-bg) lightness(- 20%));
+  /* :active */
+  --color-button-warning-simple-active-bg: color(var(--color-button-warning-bg) alpha(20%));
+  /* :selected */
+  --color-button-warning-simple-selected-bg: color(var(--color-button-warning-bg) alpha(15%));
+  --color-button-warning-simple-selected-text: color(
+    var(--color-button-warning-bg) lightness(- 5%)
+  );
+
+  /**
+   * color="danger"
+   */
+  --color-button-danger-bg: var(--default-button-danger-color);
+  --color-button-danger-text: var(--default-button-danger-color--inverted);
+  --color-button-danger-border: transparent;
+  --color-button-danger-spinner-bg: color(var(--color-button-danger-bg) alpha(80%));
+  /* :focus */
+  --color-button-danger-focus-bg: color(var(--color-button-danger-bg) lightness(- 5%));
+  /* :hover */
+  --color-button-danger-hover-bg: color(var(--color-button-danger-bg) lightness(- 5%));
+  /* :active */
+  --color-button-danger-active-bg: color(var(--color-button-danger-bg) lightness(- 10%));
+  /* inverted={true} */
+  --color-button-danger-inverted-border: color(var(--color-button-danger-bg) alpha(50%));
+  --color-button-danger-inverted-color: var(--color-button-danger-bg);
+  --color-button-danger-inverted-spinner-bg: color(var(--color-button-danger-text) alpha(80%));
+  /* :focus */
+  --color-button-danger-inverted-focus-bg: var(--color-button-danger-bg);
+  --color-button-danger-inverted-focus-color: var(--color-button-danger-text);
+  /* simple={true} */
+  /* :enabled */
+  --color-button-danger-simple-enabled-bg: transparent;
+  --color-button-danger-simple-enabled-text: color(var(--color-button-danger-bg) lightness(- 10%));
+  /* :focus */
+  --color-button-danger-simple-focus-bg: color(var(--color-button-danger-bg) alpha(10%));
+  --color-button-danger-simple-focus-text: color(var(--color-button-danger-bg) lightness(- 20%));
+  /* :hover */
+  --color-button-danger-simple-hover-bg: color(var(--color-button-danger-bg) alpha(10%));
+  --color-button-danger-simple-hover-text: color(var(--color-button-danger-bg) lightness(- 20%));
+  /* :active */
+  --color-button-danger-simple-active-bg: color(var(--color-button-danger-bg) alpha(20%));
+  /* :selected */
+  --color-button-danger-simple-selected-bg: color(var(--color-button-danger-bg) alpha(15%));
+  --color-button-danger-simple-selected-text: color(var(--color-button-danger-bg) lightness(- 5%));
+
+  /* COMMON */
+
+  /* :disabled */
+  --color-button-disabled-bg: color(var(--component-bg) blend(var(--color-button-bg) 20%));
+  --color-button-disabled-text: var(--color-button-bg);
+  --color-button-simple-disabled-bg: transparent;
+  --color-button-simple-disabled-text: var(--color-button-bg);
+}
+
+.root {
+  -webkit-font-smoothing: inherit;
+  position: relative;
+  appearance: none;
+  display: inline-flex;
+  vertical-align: middle;
+  justify-content: stretch;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  font: inherit;
+  user-select: none;
+  text-decoration: none;
+  background: none;
+  color: inherit;
+  border: none;
+  border-radius: 0;
+  white-space: nowrap;
+
+  @nest &[disabled] {
+    color: inherit;
+  }
+
+  @nest &.bleed {
+    display: flex;
+    height: 100%;
+  }
+
+  @nest & > .inner {
+    background-color: var(--color-button-bg);
+    color: var(--color-button-text);
+    border: 1px solid var(--color-button-border);
+  }
+
+  @nest &:not(.bleed) > .inner {
+    border-radius: var(--button-border-radius);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-spinner-bg);
+  }
+
+  @nest &:not(.disabled) {
+    @nest &:focus > .inner {
+      box-shadow: var(--color-button-focus-shadow);
+    }
+
+    @nest &:focus[data-tone='navbar'] > .inner {
+      box-shadow: var(--color-button-navbar-focus-shadow);
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: var(--color-button-hover-bg);
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: var(--color-button-active-bg);
+    }
+
+    @nest &.simple:not([data-tone='navbar']) {
+      @nest & > .inner {
+        background-color: var(--color-button-simple-enabled-bg);
+        color: var(--color-button-simple-enabled-text);
+      }
+
+      @nest & .spinner {
+        background-color: color(var(--white) alpha(80%));
+      }
+
+      @media (hover: hover) {
+        @nest &:hover > .inner {
+          background-color: var(--color-button-simple-hover-bg);
+          color: var(--color-button-simple-hover-text);
+        }
+      }
+
+      @nest &:active > .inner {
+        background-color: var(--color-button-simple-active-bg);
+      }
+
+      @nest &.selected > .inner {
+        background-color: var(--color-button-simple-selected-bg);
+        color: var(--color-button-simple-selected-text);
+      }
+    }
+
+    @nest &.simple[data-tone='navbar'] {
+      @nest & > .inner {
+        background-color: transparent;
+        color: var(--color-button-navbar-simple-text);
+      }
+
+      @nest & .spinner {
+        background-color: color(var(--white) alpha(80%));
+      }
+
+      @media (hover: hover) {
+        @nest &:hover > .inner {
+          background-color: var(--color-button-navbar-simple-hover-bg);
+          color: var(--color-button-navbar-simple-hover-text);
+        }
+      }
+
+      @nest &:active > .inner {
+        background-color: var(--color-button-navbar-simple-active-bg);
+      }
+
+      @nest &.selected > .inner {
+        background-color: var(--color-button-navbar-simple-selected-bg);
+        color: var(--color-button-navbar-simple-selected-text);
+      }
+    }
+  }
+
+  @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
+    @nest & > .inner {
+      color: var(--color-button-inverted-color);
+      border-color: var(--color-button-inverted-border);
+      background-color: transparent;
+    }
+
+    @nest & .spinner {
+      background-color: var(--color-button-inverted-spinner-bg);
+    }
+
+    @nest &.selected > .inner {
+      background-color: color(var(--default-button-color) alpha(20%));
+    }
+  }
+
+  @nest &.disabled {
+    @nest & > .inner {
+      background-color: var(--color-button-disabled-bg);
+      color: var(--color-button-disabled-text);
+    }
+
+    @nest &.simple > .inner {
+      background-color: var(--color-button-simple-disabled-bg);
+      color: var(--color-button-simple-disabled-text);
+    }
+  }
+
+  @nest &.loading > .inner {
+    overflow: hidden;
+  }
+
+  @nest &.size__extra-small {
+    font-size: var(--font-size-xsmall);
+    line-height: var(--line-height-xsmall);
+  }
+
+  @nest &.size__small {
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-small);
+  }
+
+  @nest &.size__medium {
+    /* default */
+    /* font-size: var(--font-size-base); */
+    /* line-height: var(--line-height-base); */
+  }
+
+  @nest &.size__large {
+    font-size: var(--font-size-large);
+    line-height: var(--line-height-large);
+  }
+
+  @nest &.size__extra-large {
+    font-size: var(--font-size-huge);
+    line-height: var(--line-height-huge);
+  }
+}
+
+.inner {
+  outline: none;
+  display: flex;
+  justify-self: stretch;
+  justify-content: stretch;
+  align-items: stretch;
+  width: stretch;
+  position: relative;
+}
+
+/* Used by ./ButtonGroup.css */
+.groupContainer {
+  @nest & .root:not(:last-child):not(:first-child) {
+    border-radius: 0;
+  }
+
+  @nest & .root:not(:last-child) {
+    border-right: 1px solid color(var(--body-bg) alpha(30%));
+  }
+
+  @nest & .inverted:not(:last-child) {
+    border-right: none;
+
+    @nest &:hover {
+      border-right: 1px solid currentColor;
+    }
+
+    @nest &:hover + .inverted {
+      border-left: none;
+    }
+  }
+
+  @nest & .root:first-child:not(:last-child) {
+    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
+  }
+
+  @nest & .root:last-child:not(:first-child) {
+    border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
+  }
+
+  @nest & .root + .root {
+    margin: 0;
+  }
+}
+
+.icon {
+  position: relative;
+  font-size: calc(17 / 16 * 1rem); /* 17px */
+  line-height: 1;
+  min-width: 1rem;
+
+  @nest & > svg {
+    display: block;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1rem); /* 25px */
+      margin: calc(4 / 16 * -1rem); /* -4px */
+    }
+  }
+}
+
+.iconStatus {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px var(--color-button-bg);
+
+  @nest .root:not(.disabled)[data-icon-status='primary'] & {
+    background: var(--brand-primary);
+  }
+
+  @nest .root:not(.disabled)[data-icon-status='success'] & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root:not(.disabled)[data-icon-status='warning'] & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root:not(.disabled)[data-icon-status='danger'] & {
+    background: var(--state-success-color);
+  }
+
+  @nest .root:not(.disabled).simple & {
+    box-shadow: 0 0 0 1px var(--component-bg);
+  }
+
+  @nest .root:not(.disabled).simple[data-tone='navbar'] & {
+    box-shadow: 0 0 0 1px var(--main-navigation-color);
+  }
+
+  @nest .root:not(.disabled):hover & {
+    box-shadow: 0 0 0 1px var(--color-button-hover-bg);
+  }
+}
+
+.text {
+  /* optical alignment */
+  margin: -2px 0 -1px;
+
+  @nest .icon + & {
+    margin-left: var(--small-padding--em);
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: stretch;
+
+  @nest .padding_small & {
+    padding: calc(var(--small-padding--em) - 1px);
+  }
+
+  @nest .padding_medium & {
+    padding: calc(var(--medium-padding--em) - var(--extra-small-padding--em) - 1px);
+  }
+
+  @nest .padding_large & {
+    padding: calc(var(--medium-padding--em) - 1px);
+  }
+}
+
+.secondary {
+  composes: inverted;
+}
+
+.color__primary:not(.disabled) {
+  @nest & > .inner {
+    border-color: var(--color-button-primary-border);
+    background-color: var(--color-button-primary-bg);
+    color: var(--color-button-primary-text);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-primary-spinner-bg);
+  }
+
+  @media (hover: hover) {
+    @nest &:hover > .inner {
+      background-color: var(--color-button-primary-hover-bg);
+    }
+  }
+
+  @nest &:active > .inner {
+    background-color: var(--color-button-primary-active-bg);
+  }
+
+  @nest &.inverted:not(:focus):not(:hover):not(:active) {
+    @nest & > .inner {
+      border-color: var(--color-button-primary-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-primary-inverted-color);
+    }
+
+    @nest & .spinner {
+      background-color: var(--color-button-primary-inverted-spinner-bg);
+    }
+  }
+
+  @nest &.simple:not([data-tone='navbar']) {
+    @nest & > .inner {
+      background-color: var(--color-button-primary-simple-enabled-bg);
+      color: var(--color-button-primary-simple-enabled-text);
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: var(--color-button-primary-simple-hover-bg);
+        color: var(--color-button-primary-simple-hover-text);
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: var(--color-button-primary-simple-active-bg);
+    }
+
+    @nest &.selected > .inner {
+      background-color: var(--color-button-primary-simple-selected-bg);
+      color: var(--color-button-primary-simple-selected-text);
+    }
+  }
+}
+
+.color__success:not(.disabled) {
+  @nest & > .inner {
+    border-color: var(--color-button-success-border);
+    background-color: var(--color-button-success-bg);
+    color: var(--color-button-success-text);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-success-spinner-bg);
+  }
+
+  @media (hover: hover) {
+    @nest &:hover > .inner {
+      background-color: var(--color-button-success-hover-bg);
+    }
+  }
+
+  @nest &:active > .inner {
+    background-color: var(--color-button-success-active-bg);
+  }
+
+  @nest &.inverted:not(:focus):not(:hover):not(:active) {
+    @nest & > .inner {
+      border-color: var(--color-button-success-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-success-inverted-color);
+    }
+
+    @nest & .spinner {
+      background-color: var(--color-button-success-inverted-spinner-bg);
+    }
+  }
+
+  @nest &.simple:not([data-tone='navbar']) {
+    @nest & > .inner {
+      background-color: var(--color-button-success-simple-enabled-bg);
+      color: var(--color-button-success-simple-enabled-text);
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: var(--color-button-success-simple-hover-bg);
+        color: var(--color-button-success-simple-hover-text);
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: var(--color-button-success-simple-active-bg);
+    }
+
+    @nest &.selected > .inner {
+      background-color: var(--color-button-success-simple-selected-bg);
+      color: var(--color-button-success-simple-selected-text);
+    }
+  }
+}
+
+.color__warning:not(.disabled) {
+  @nest & > .inner {
+    border-color: var(--color-button-warning-border);
+    background-color: var(--color-button-warning-bg);
+    color: var(--color-button-warning-text);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-warning-spinner-bg);
+  }
+
+  @media (hover: hover) {
+    @nest &:hover > .inner {
+      background-color: var(--color-button-warning-hover-bg);
+    }
+  }
+
+  @nest &:active > .inner {
+    background-color: var(--color-button-warning-active-bg);
+  }
+
+  @nest &.inverted:not(:focus):not(:hover):not(:active) {
+    @nest & > .inner {
+      border-color: var(--color-button-warning-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-warning-inverted-color);
+    }
+
+    @nest & .spinner {
+      background-color: var(--color-button-warning-inverted-spinner-bg);
+    }
+  }
+
+  @nest &.simple:not([data-tone='navbar']) {
+    @nest & > .inner {
+      background-color: var(--color-button-warning-simple-enabled-bg);
+      color: var(--color-button-warning-simple-enabled-text);
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: var(--color-button-warning-simple-hover-bg);
+        color: var(--color-button-warning-simple-hover-text);
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: var(--color-button-warning-simple-active-bg);
+    }
+
+    @nest &.selected > .inner {
+      background-color: var(--color-button-warning-simple-selected-bg);
+      color: var(--color-button-warning-simple-selected-text);
+    }
+  }
+}
+
+.color__danger:not(.disabled) {
+  @nest & > .inner {
+    border-color: var(--color-button-danger-border);
+    background-color: var(--color-button-danger-bg);
+    color: var(--color-button-danger-text);
+  }
+
+  @nest & .spinner {
+    background-color: var(--color-button-danger-spinner-bg);
+  }
+
+  @media (hover: hover) {
+    @nest &:hover > .inner {
+      background-color: var(--color-button-danger-hover-bg);
+    }
+  }
+
+  @nest &:active > .inner {
+    background-color: var(--color-button-danger-active-bg);
+  }
+
+  @nest &.inverted:not(:focus):not(:hover):not(:active) {
+    @nest & > .inner {
+      border-color: var(--color-button-danger-inverted-border);
+      background-color: transparent;
+      color: var(--color-button-danger-inverted-color);
+    }
+
+    @nest & .spinner {
+      background-color: var(--color-button-danger-inverted-spinner-bg);
+    }
+  }
+
+  @nest &.simple:not([data-tone='navbar']) {
+    @nest & > .inner {
+      background-color: var(--color-button-danger-simple-enabled-bg);
+      color: var(--color-button-danger-simple-enabled-text);
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: var(--color-button-danger-simple-hover-bg);
+        color: var(--color-button-danger-simple-hover-text);
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: var(--color-button-danger-simple-active-bg);
+    }
+
+    @nest &.selected > .inner {
+      background-color: var(--color-button-danger-simple-selected-bg);
+      color: var(--color-button-danger-simple-selected-text);
+    }
+  }
+}
+
+.color__white {
+  &.disabled > .inner {
+    background-color: transparent;
+    color: color(var(--default-button-color) alpha(20%));
+  }
+
+  &:not(.disabled) {
+    @nest & > .inner {
+      background-color: var(--white);
+      color: var(--default-button-color);
+    }
+
+    @nest & .spinner {
+      background-color: color(var(--white) alpha(80%));
+    }
+
+    @media (hover: hover) {
+      @nest &:hover > .inner {
+        background-color: color(var(--white) lightness(- 5%));
+        color: color(var(--default-button-color) lightness(- 20%));
+      }
+    }
+
+    @nest &:active > .inner {
+      background-color: color(var(--white) lightness(- 10%));
+      color: color(var(--default-button-color) lightness(- 20%));
+    }
+
+    @nest &.inverted:not(:focus):not(:hover):not(:active) {
+      @nest & > .inner {
+        color: var(--white);
+      }
+
+      @nest & .spinner {
+        color: var(--white);
+      }
+
+      @media (hover: hover) {
+        @nest &:hover > .inner {
+          background-color: color(var(--white) alpha(10%));
+        }
+      }
+
+      @nest &:active > .inner {
+        background-color: color(var(--white) alpha(20%));
+      }
+    }
+
+    @nest &.simple {
+      @nest & > .inner {
+        background-color: transparent;
+        color: var(--white);
+      }
+
+      @media (hover: hover) {
+        @nest &:hover > .inner {
+          background-color: color(var(--white) alpha(10%));
+          color: var(--white);
+        }
+      }
+
+      @nest &:active > .inner {
+        background-color: color(var(--white) alpha(20%));
+        color: var(--white);
+      }
+
+      @nest &.selected > .inner {
+        background-color: color(var(--white) alpha(20%));
+        color: var(--white);
+      }
+    }
+
+    @nest &.inverted:not(.disabled):not(:focus):not(:hover):not(:active) {
+      @nest & > .inner {
+        border-color: color(var(--white) alpha(10%));
+      }
+    }
+  }
+}
+
+.save {
+  composes: root;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+
+  @nest & > * {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: inherit;
+  }
+}

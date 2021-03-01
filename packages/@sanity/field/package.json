@@ -1,0 +1,55 @@
+{
+  "name": "@sanity/field",
+  "version": "2.4.3",
+  "description": "Diff utilities and preview components",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib coverage"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "field",
+    "diff"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@sanity/asset-utils": "^1.1.2",
+    "@sanity/base": "2.4.3",
+    "@sanity/diff": "2.2.6",
+    "@sanity/react-hooks": "2.4.0",
+    "@sanity/types": "2.4.0",
+    "@sanity/ui": "^0.33.6",
+    "@sanity/util": "2.4.0",
+    "date-fns": "^2.16.1",
+    "sanity-diff-patch": "^1.0.9",
+    "styled-components": "^5.2.1"
+  },
+  "devDependencies": {
+    "react": "17.0.1",
+    "rimraf": "^2.7.1"
+  },
+  "peerDependencies": {
+    "react": "^16.2.0 || ^17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/field"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}

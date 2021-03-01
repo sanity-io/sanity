@@ -8,5 +8,5 @@ export default [
   'http://placekitten.com/g/50/70',
   'http://placekitten.com/g/70/50',
   '/dog_smaller.jpg',
-  '/storesmeden.jpg'
+  '/storesmeden.jpg',
 ]

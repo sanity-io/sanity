@@ -1,7 +1,7 @@
 import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
-import {isPlainObject} from 'lodash'
+import {get, isPlainObject} from 'lodash'
 import {promisify} from 'es6-promisify'
 import {getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
@@ -29,7 +29,7 @@ export default async (args, context) => {
     httpHost,
     httpPort,
     context,
-    project: sanityConfig.get('project')
+    project: sanityConfig.get('project'),
   }
 
   checkStudioDependencyVersions(workDir)
@@ -62,7 +62,7 @@ export default async (args, context) => {
   // "done" event fires when Webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
 
-  compiler.plugin('done', stats => {
+  compiler.plugin('done', (stats) => {
     if (compileSpinner) {
       compileSpinner.succeed()
     }
@@ -104,22 +104,40 @@ async function ensureProjectConfig(context) {
   const {workDir, output} = context
   const manifestPath = path.join(workDir, 'sanity.json')
   const projectManifest = await fse.readJson(manifestPath)
-  const apiConfig = {    
-    projectId: context.apiClient().clientConfig.projectId || projectManifest.api.projectId,
-    dataset: context.apiClient().clientConfig.dataset || projectManifest.api.projectId
-  };
-  //TODO refactor this
-  if (typeof apiConfig !== 'undefined' && !isPlainObject(apiConfig)) {
+  const apiConfig = projectManifest.api || {}
+  if (!isPlainObject(apiConfig)) {
     throw new Error('Invalid `api` property in `sanity.json` - should be an object')
   }
 
-  let displayName = projectManifest.project && projectManifest.project.displayName
-  if (apiConfig.projectId && apiConfig.dataset) {
+  // The API client wrapper extracts information from environment variables,
+  // which means it could potentially hold any missing project ID / dataset
+  let {projectId, dataset} = context.apiClient({requireProject: false, requireUser: false}).config()
+
+  // The client wrapper returns `~dummy-placeholder-dataset-` in the case where
+  // no dataset is configured, to be able to do non-dataset requests without
+  // having the client complain. We don't want to use this as an _actual_ value.
+  dataset = dataset === '~dummy-placeholder-dataset-' ? undefined : dataset
+
+  // Let the user know why these values are being used
+  if (projectId && projectId !== apiConfig.projectId) {
+    output.print(`Using project ID from environment config (${projectId})`)
+  }
+
+  if (dataset && dataset !== apiConfig.dataset) {
+    output.print(`Using dataset from environment config (${dataset})`)
+  }
+
+  // If we're still missing information, prompt the user to provide them
+  const configMissing = !projectId || !dataset
+  if (!configMissing) {
+    validateAllowedDataset(dataset)
     return
   }
 
   output.print('Project configuration required before starting studio')
   output.print('')
+
+  let displayName = get(projectManifest, 'project.displayName')
 
   if (!projectId) {
     const selected = await getOrCreateProject(context)
@@ -142,29 +160,30 @@ async function ensureProjectConfig(context) {
   const newProps = {
     root: true,
     api: {
-      ...(projectManifest.api || {}),
+      ...apiConfig,
       projectId,
-      dataset
+      dataset,
     },
     project: {
       ...projectInfo,
       // Keep original name if present
-      name: projectInfo.name || displayName
-    }
+      name: projectInfo.name || displayName,
+    },
   }
 
-  // Ensure root, api and project keys are at top to follow sanity.json key order convention
   await fse.outputJSON(
     manifestPath,
     {
+      // We're listing `newProps` twice to ensure root, api and project keys
+      // are at top to follow sanity.json key order convention
       ...newProps,
       ...projectManifest,
-      ...newProps
+      ...newProps,
     },
     {spaces: 2}
   )
 
-  output.print('Project ID / dataset configured')
+  output.print(`Project ID + dataset written to "${manifestPath}"`)
 }
 
 function resolveStaticPath(rootDir, config) {
@@ -198,9 +217,9 @@ function printErrors(output, errors) {
   const formattedErrors = (errors.some(isLikelyASyntaxError)
     ? errors.filter(isLikelyASyntaxError)
     : errors
-  ).map(message => `Error in ${formatMessage(message)}`)
+  ).map((message) => `Error in ${formatMessage(message)}`)
 
-  formattedErrors.forEach(message => {
+  formattedErrors.forEach((message) => {
     output.print(message)
     output.print('')
   })
@@ -211,8 +230,8 @@ function printWarnings(output, warnings) {
   output.print()
 
   warnings
-    .map(message => `Warning in ${formatMessage(message)}`)
-    .forEach(message => {
+    .map((message) => `Warning in ${formatMessage(message)}`)
+    .forEach((message) => {
       output.print(message)
       output.print()
     })
@@ -236,45 +255,55 @@ async function getOrCreateProject(context) {
 
   debug(`User has ${projects.length} project(s) already, showing list of choices`)
 
-  const projectChoices = projects.map(project => ({
+  const projectChoices = projects.map((project) => ({
     value: project.id,
-    name: `${project.displayName} [${project.id}]`
+    name: `${project.displayName} [${project.id}]`,
   }))
 
   const selected = await prompt.single({
     message: 'Select project to use',
     type: 'list',
-    choices: [{value: 'new', name: 'Create new project'}, new prompt.Separator(), ...projectChoices]
+    choices: [
+      {value: 'new', name: 'Create new project'},
+      new prompt.Separator(),
+      ...projectChoices,
+    ],
   })
 
   if (selected === 'new') {
     debug('User wants to create a new project, prompting for name')
     return createProject(apiClient, {
       displayName: await prompt.single({
-        message: 'Informal name for your project'
-      })
+        message: 'Informal name for your project',
+      }),
     })
   }
 
   debug(`Returning selected project (${selected})`)
   return {
     projectId: selected,
-    displayName: projects.find(proj => proj.id === selected).displayName
+    displayName: projects.find((proj) => proj.id === selected).displayName,
   }
 }
 
 function createProject(apiClient, options) {
   return apiClient({
     requireUser: true,
-    requireProject: false
+    requireProject: false,
   })
     .request({
       method: 'POST',
       uri: '/projects',
-      body: options
+      body: options,
     })
-    .then(response => ({
+    .then((response) => ({
       projectId: response.projectId || response.id,
-      displayName: options.displayName || ''
+      displayName: options.displayName || '',
     }))
+}
+
+function validateAllowedDataset(datasetName) {
+  if (datasetName.startsWith('~')) {
+    throw new Error('Dataset aliases cannot be used in a studio context')
+  }
 }

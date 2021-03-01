@@ -18,5 +18,5 @@ export default {
   signature: '[--port <port>] [--host <host>]',
   description: 'Starts a web server for the Content Studio',
   action: lazyRequire(require.resolve('../../actions/start/startAction')),
-  helpText
+  helpText,
 }

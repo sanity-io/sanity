@@ -14,6 +14,6 @@ test('partial match', () => {
   expect(calculateScore(['foo', 'bar'], 'foo')).toEqual([0.25, `Matched 1 of 2 terms: [foo]`])
   expect(calculateScore(['foo', 'bar', 'baz'], 'foo foo bar')).toEqual([
     1 / 3,
-    `Matched 2 of 3 terms: [foo, bar]`
+    `Matched 2 of 3 terms: [foo, bar]`,
   ])
 })

@@ -8,7 +8,7 @@ test('toplevel', () => {
 
 test('scopes all the way down', () => {
   const router = route.scope('first', '/foo/:bar', [
-    route.scope('second', '/baz/:qux', [route.scope('third', '/omg/:lol')])
+    route.scope('second', '/baz/:qux', [route.scope('third', '/omg/:lol')]),
   ])
 
   expect({first: {bar: 'bar'}}).toEqual(router.decode('/foo/bar'))
@@ -23,10 +23,10 @@ test('scopes all the way down', () => {
       second: {
         qux: 'qux',
         third: {
-          lol: 'lol'
-        }
-      }
-    }
+          lol: 'lol',
+        },
+      },
+    },
   }).toEqual(router.decode('/foo/bar/baz/qux/omg/lol'))
   expect('/foo/bar/baz/qux/omg/lol').toEqual(
     router.encode({
@@ -35,10 +35,10 @@ test('scopes all the way down', () => {
         second: {
           qux: 'qux',
           third: {
-            lol: 'lol'
-          }
-        }
-      }
+            lol: 'lol',
+          },
+        },
+      },
     })
   )
 })

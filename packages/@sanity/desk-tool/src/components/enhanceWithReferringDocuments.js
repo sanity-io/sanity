@@ -19,10 +19,11 @@ export default function enhanceWithReferringDocuments(Component) {
     )
   }
 
-  EnhancedWithReferringDocuments.displayName = `enhanceWithReferringDocuments(${Component.displayName ||
-    Component.name})`
+  EnhancedWithReferringDocuments.displayName = `enhanceWithReferringDocuments(${
+    Component.displayName || Component.name
+  })`
   EnhancedWithReferringDocuments.propTypes = {
-    published: PropTypes.object
+    published: PropTypes.object,
   }
   return EnhancedWithReferringDocuments
 }

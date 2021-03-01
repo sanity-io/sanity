@@ -18,7 +18,7 @@ function extractErrorProps(res) {
   const props = {
     response: res,
     statusCode: res.statusCode,
-    responseBody: stringifyBody(body, res)
+    responseBody: stringifyBody(body, res),
   }
 
   // API/Boom style errors ({statusCode, error, message})

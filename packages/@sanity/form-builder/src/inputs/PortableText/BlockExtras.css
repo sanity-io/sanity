@@ -1,0 +1,84 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  z-index: var(--zindex-portal);
+}
+
+.content {
+  margin-left: calc(100% - var(--block-extras-width));
+  border-left: 2px solid transparent;
+  padding: var(--small-padding) 0 var(--small-padding) calc(var(--small-padding) - 2px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @nest &:hover::before {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: color(var(--gray) a(10%));
+  }
+}
+
+.hasFullScreen {
+  overflow: visible;
+}
+
+.hasFullScreen .content {
+  margin-left: 100%;
+}
+
+.withError {
+  composes: root;
+
+  @nest & .content {
+    border-color: var(--state-danger-color);
+  }
+
+  @nest & .content:hover::before {
+    background-color: color(var(--state-danger-color) a(10%));
+  }
+}
+
+.withWarning {
+  composes: root;
+  border-color: var(--state-warning-color);
+
+  @nest &:hover::before {
+    background-color: color(var(--state-warning-color) a(10%));
+  }
+}
+
+.blockActions {
+  pointer-events: all;
+
+  @nest & .content {
+    color: var(--text-color);
+    border-color: var(--gray);
+  }
+}
+
+.markers {
+  pointer-events: all;
+  width: calc(var(--block-extras-width) - var(--small-padding) * 2);
+
+  @nest & .content {
+    border-color: var(--state-info-color);
+    color: var(--text-color);
+  }
+}
+
+.hasFocus {
+}
+
+.changeIndicator {
+}

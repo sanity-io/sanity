@@ -7,7 +7,7 @@ export default class SelectLanguageProvider extends React.Component {
   state = {selected: []}
 
   componentDidMount(props) {
-    this.subscription = selectedLanguages$.subscribe(selected => {
+    this.subscription = selectedLanguages$.subscribe((selected) => {
       this.setState({selected: selected})
     })
   }

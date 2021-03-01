@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
+import {Schema, SchemaType} from '@sanity/types'
+import {Patch} from './typedefs/patch'
 import {fallbackInputs} from './fallbackInputs'
-import {Type} from './typedefs'
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -49,19 +50,20 @@ function memoize(method) {
 }
 
 interface Props {
-  schema: object
-  value: any
+  schema: Schema
+  value: unknown
   children: any
   filterField?: any
   patchChannel: {
     onPatch?: (patch: any) => void
   }
-  resolveInputComponent: (type: Type) => React.ComponentType
-  resolvePreviewComponent: (type: Type) => React.ComponentType
+  resolveInputComponent: (type: SchemaType) => React.ComponentType
+  resolvePreviewComponent: (type: SchemaType) => React.ComponentType
 }
+
 export default class FormBuilderContext extends React.Component<Props> {
   static createPatchChannel = () => {
-    const channel = pubsub()
+    const channel = pubsub<{snapshot: any; patches: Patch[]}>()
     return {onPatch: channel.subscribe, receivePatches: channel.publish}
   }
 
@@ -72,20 +74,20 @@ export default class FormBuilderContext extends React.Component<Props> {
     formBuilder: PropTypes.shape({
       schema: PropTypes.object,
       resolveInputComponent: PropTypes.func,
-      document: PropTypes.any
-    })
+      document: PropTypes.any,
+    }),
   }
 
   getDocument = () => {
     return this.props.value
   }
 
-  resolveInputComponent = memoizeMap(type => {
+  resolveInputComponent = memoizeMap((type) => {
     const {resolveInputComponent} = this.props
     return resolve(type, resolveInputComponent) || fallbackInputs[type.jsonType]
   })
 
-  resolvePreviewComponent = memoizeMap(type => {
+  resolvePreviewComponent = memoizeMap((type) => {
     const {resolvePreviewComponent} = this.props
     return resolve(type, resolvePreviewComponent)
   })
@@ -108,8 +110,8 @@ export default class FormBuilderContext extends React.Component<Props> {
         schema,
         resolveInputComponent: this.resolveInputComponent,
         resolvePreviewComponent: this.resolvePreviewComponent,
-        getDocument: this.getDocument
-      }
+        getDocument: this.getDocument,
+      },
     }
   })
 

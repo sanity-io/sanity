@@ -1,17 +1,16 @@
 {
   "name": "@sanity/structure",
-  "version": "0.147.0",
+  "version": "2.4.0",
   "description": "Build a navigation structure programatically",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "posttest": "tsc --noEmit",
     "clean": "rimraf lib coverage"
   },
   "keywords": [
@@ -27,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/initial-value-templates": "0.147.0",
+    "@sanity/initial-value-templates": "2.4.0",
     "@types/lodash": "^4.14.149",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^8.0.0",
@@ -36,15 +35,15 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3",
-    "ts-jest": "^24.2.0",
-    "typescript": "^3.7.3"
+    "ts-jest": "^26.3.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/structure"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

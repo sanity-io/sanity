@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {SerializeError} from '@sanity/structure'
 import ErrorIcon from 'part:@sanity/base/error-icon'
-import styles from './styles/StructureError.css'
+import styles from './StructureError.css'
 
 function formatStack(stack) {
   return (
@@ -72,6 +72,6 @@ StructureError.propTypes = {
     message: PropTypes.string.isRequired,
     stack: PropTypes.string.isRequired,
     path: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
-    helpId: PropTypes.string
-  }).isRequired
+    helpId: PropTypes.string,
+  }).isRequired,
 }

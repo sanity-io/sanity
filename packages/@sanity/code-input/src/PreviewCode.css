@@ -1,17 +1,18 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   position: relative;
 
-  @nest & > h3 {
+  /* @nest & > h3 {
     padding-left: 0.75rem;
-  }
+  } */
 }
 
 .aceWrapper {
-  border-top: 1px solid #ccc;
   box-sizing: border-box;
   cursor: default;
   background-color: #272822;
-  padding: 1rem;
+  padding: var(--medium-padding);
   pointer-events: none;
 }
 
@@ -21,5 +22,5 @@
 }
 
 .defaultPreviewContainer {
-  padding: 0.2em;
+  padding: var(--extra-small-padding);
 }

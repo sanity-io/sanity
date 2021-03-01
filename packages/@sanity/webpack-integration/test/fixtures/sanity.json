@@ -1,0 +1,18 @@
+{
+  "root": true,
+
+  "parts": [
+    {
+      "name": "part:root/css",
+      "path": "./root.css"
+    },
+    {
+      "name": "part:deeper/css",
+      "path": "./deeper.css"
+    },
+    {
+      "name": "part:deepest/css",
+      "path": "./deepest.css"
+    }
+  ]
+}

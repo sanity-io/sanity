@@ -1,0 +1,54 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--small-padding);
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  display: flex;
+  align-items: center;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: var(--small-padding);
+}
+
+.removed {
+  text-decoration: line-through;
+}
+
+.icon {
+  @nest & > svg {
+    display: block;
+    font-size: calc(35 / 16 * 1rem);
+  }
+}
+
+.iconRemoved {
+  composes: icon;
+  composes: removed;
+}
+
+.title {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  margin: -1px 0 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.titleRemoved {
+  composes: title;
+  composes: removed;
+}
+
+.children {
+  font-size: var(--font-size-tiny);
+  line-height: var(--line-height-tiny);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

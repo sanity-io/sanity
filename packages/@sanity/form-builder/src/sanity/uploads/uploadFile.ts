@@ -13,7 +13,7 @@ export default function uploadFile(file: File, options?: UploadOptions): Observa
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
-          set(100, [UPLOAD_STATUS_KEY, 'progress'])
+          set(100, [UPLOAD_STATUS_KEY, 'progress']),
         ])
       }
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])

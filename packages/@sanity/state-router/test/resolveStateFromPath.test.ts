@@ -4,13 +4,19 @@ import resolveStateFromPath from '../src/resolveStateFromPath'
 const node: Node = {
   route: {
     raw: '/foo/:bar',
-    segments: [{type: 'dir', name: 'foo'}, {type: 'param', name: 'bar'}]
+    segments: [
+      {type: 'dir', name: 'foo'},
+      {type: 'param', name: 'bar'},
+    ],
   },
   children: [
     {
       route: {
         raw: '/dynamic/:foo',
-        segments: [{type: 'dir', name: 'dynamic'}, {type: 'param', name: 'foo'}]
+        segments: [
+          {type: 'dir', name: 'dynamic'},
+          {type: 'param', name: 'foo'},
+        ],
       },
       children(state: any) {
         if (state.foo === 'foo') {
@@ -18,46 +24,52 @@ const node: Node = {
             {
               route: {
                 raw: '/:whenfoo',
-                segments: [{type: 'param', name: 'whenfoo'}]
+                segments: [{type: 'param', name: 'whenfoo'}],
               },
               transform: {},
-              children: []
-            }
+              children: [],
+            },
           ]
         }
         return [
           {
             route: {
               raw: '/:notfoo',
-              segments: [{type: 'param', name: 'notfoo'}]
+              segments: [{type: 'param', name: 'notfoo'}],
             },
             transform: {},
-            children: []
-          }
+            children: [],
+          },
         ]
-      }
+      },
     },
     {
       route: {
         raw: '/nix/:animal',
-        segments: [{type: 'dir', name: 'nix'}, {type: 'param', name: 'animal'}]
+        segments: [
+          {type: 'dir', name: 'nix'},
+          {type: 'param', name: 'animal'},
+        ],
       },
-      children: []
+      children: [],
     },
     {
       route: {
         raw: '/qux/:animal',
-        segments: [{type: 'dir', name: 'qux'}, {type: 'param', name: 'animal'}]
+        segments: [
+          {type: 'dir', name: 'qux'},
+          {type: 'param', name: 'animal'},
+        ],
       },
       transform: {
         animal: {
-          toState: value => ({name: value.toUpperCase()}),
-          toPath: animal => animal.name.toLowerCase()
-        }
+          toState: (value) => ({name: value.toUpperCase()}),
+          toPath: (animal) => animal.name.toLowerCase(),
+        },
       },
-      children: []
-    }
-  ]
+      children: [],
+    },
+  ],
 }
 
 const examples: any[] = [
@@ -68,22 +80,22 @@ const examples: any[] = [
     '/foo/bar/qux/cat',
     {
       animal: {name: 'CAT'},
-      bar: 'bar'
-    }
+      bar: 'bar',
+    },
   ],
   [
     '/foo/bar/nix/cat',
     {
       animal: 'cat',
-      bar: 'bar'
-    }
+      bar: 'bar',
+    },
   ],
   [
     '/foo/bar/nix/cat',
     {
       animal: 'cat',
-      bar: 'bar'
-    }
+      bar: 'bar',
+    },
   ],
   ['/nope/bar', null],
   [
@@ -91,10 +103,10 @@ const examples: any[] = [
     {
       bar: 'bar',
       foo: 'foo',
-      whenfoo: 'thisisfoo'
-    }
+      whenfoo: 'thisisfoo',
+    },
   ],
-  ['/foo', null]
+  ['/foo', null],
 ].filter(Boolean)
 
 examples.forEach(([path, state]) => {

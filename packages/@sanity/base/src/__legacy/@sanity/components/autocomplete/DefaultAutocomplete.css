@@ -1,0 +1,39 @@
+.root {
+  position: relative;
+}
+
+.suggestionsContainer {
+  position: relative;
+}
+
+.textField {
+  margin-bottom: 0;
+}
+
+.suggestions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-height: 50vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+
+  @nest .closed & {
+    display: none;
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+
+.opened {
+  composes: root;
+}
+
+.closed {
+  composes: root;
+}

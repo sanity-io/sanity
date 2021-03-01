@@ -1,0 +1,35 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  text-decoration: none;
+  display: inline;
+  position: relative;
+  border-bottom: 2px dotted color(var(--text-color) a(100%));
+}
+
+.valid {
+  composes: root;
+  background-color: color(var(--text-color) a(10%));
+  border-color: color(var(--text-color) a(100%));
+
+  @nest &:hover {
+    background-color: color(var(--text-color) a(20%));
+    border-color: color(var(--text-color) a(100%));
+  }
+}
+
+.error {
+  composes: root;
+  border-color: color(var(--state-danger-color) a(100%));
+  background-color: color(var(--state-danger-color) a(10%));
+
+  @nest &:hover {
+    background-color: color(var(--state-danger-color) a(30%));
+    border-color: color(var(--state-danger-color) a(100%));
+  }
+}
+
+.changeIndicator {
+  pointer-events: none !important;
+  display: inline-block;
+}

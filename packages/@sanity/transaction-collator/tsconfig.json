@@ -1,8 +1,9 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test/**/*.ts"],
-  "extends": "../../../tsconfig",
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
   "compilerOptions": {
+    "composite": true,
+    "rootDir": "src/",
     "outDir": "lib/"
   }
 }

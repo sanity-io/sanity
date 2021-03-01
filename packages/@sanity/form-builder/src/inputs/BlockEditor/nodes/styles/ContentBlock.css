@@ -1,5 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.textBlock {
-  composes: default from './Spacing.css';
-}

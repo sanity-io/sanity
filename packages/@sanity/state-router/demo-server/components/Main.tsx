@@ -35,13 +35,7 @@ export default withRouterHOC((props: Props) => {
         </StateLink>
       </p>
       <p>
-        <Link
-          href={`/foo/bar/${Math.random()
-            .toString(32)
-            .substring(2)}`}
-        >
-          Invalid
-        </Link>
+        <Link href={`/foo/bar/${Math.random().toString(32).substring(2)}`}>Invalid</Link>
       </p>
       <p>
         <StateLink toIndex>Back to index</StateLink>

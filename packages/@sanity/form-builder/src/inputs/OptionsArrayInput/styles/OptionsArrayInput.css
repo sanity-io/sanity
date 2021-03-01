@@ -1,16 +1,23 @@
-.error {
-  font-size: 0.8rem;
-  padding: 1em;
-  margin-bottom: 0.5rem;
-}
+@import 'part:@sanity/base/theme/variables-style';
 
 .itemWrapperVertical {
   display: block;
-  margin-bottom: 0.5rem;
+
+  @nest & .item {
+    margin-bottom: var(--small-padding);
+  }
+}
+
+.itemVertical {
+  margin-bottom: var(--small-padding);
+}
+
+.itemVertical {
+  margin-bottom: var(--small-padding);
 }
 
 .itemWrapperHorizontal {
-  display: inline-block;
-  line-height: 2em;
-  margin-right: 1em;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--medium-padding);
 }

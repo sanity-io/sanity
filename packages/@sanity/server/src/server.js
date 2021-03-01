@@ -8,7 +8,7 @@ import getWebpackBaseConfig from './configs/webpack.config'
 import applyStaticLoaderFix from './util/applyStaticLoaderFix'
 import {getDocumentElement} from './baseServer'
 
-const getWebpackCompiler = baseConfig => {
+const getWebpackCompiler = (baseConfig) => {
   const config =
     baseConfig.env === 'production'
       ? getWebpackProdConfig(baseConfig)
@@ -27,5 +27,5 @@ export {
   getWebpackProdConfig,
   getDocumentElement,
   applyStaticLoaderFix,
-  ReactDOM
+  ReactDOM,
 }

@@ -1,0 +1,201 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+/* @keyframes popoverDialogScaleIn {
+  0% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+} */
+
+@keyframes popoverDialogBackgroundFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+:root {
+  --array--add-item-color: var(--brand-primary);
+  --array--add-item-triangle-color: color(
+    var(--form-builder--array--add-item-color) lightness(- 20%)
+  );
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--backdrop-color);
+  opacity: 0.75;
+  pointer-events: none;
+  animation-name: popoverDialogBackgroundFadeIn;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
+}
+
+.root {
+  width: calc(100% - 16px);
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+
+  @nest &:not([data-size]), &[data-size='auto'] {
+    width: auto;
+  }
+
+  @nest &[data-size='small'] {
+    max-width: 20rem;
+  }
+
+  @nest &[data-size='medium'] {
+    max-width: 35rem;
+  }
+
+  @nest &[data-size='large'] {
+    max-width: 40rem;
+  }
+
+  @nest &[data-size='large'] {
+    max-width: 50rem;
+  }
+
+  /* Hide the popover dialog when the reference element is out of bounds */
+  @nest &[data-popper-reference-hidden='true'] {
+    display: none;
+  }
+}
+
+.arrow {
+  /* Popover's arrow element */
+}
+
+.card {
+  @nest .root[data-color='danger'] & {
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
+  }
+}
+
+.popperAnimation {
+  /* disabled for now*/
+
+  /* animation-name: popoverDialogScaleIn;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once; */
+}
+
+.closeButtonContainer {
+  margin-left: var(--medium-padding);
+}
+
+.closeButton {
+  @nest .header & {
+    margin: calc(0 - var(--medium-padding) + var(--small-padding));
+  }
+}
+
+.floatingCloseButtonContainer {
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  position: absolute;
+  border: 0;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background: var(--component-bg);
+  transform: translate(50%, -50%);
+  border-radius: 50%;
+
+  @nest & > button > span {
+    border-radius: 50% !important;
+  }
+}
+
+.content {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.contentWrapper {
+  @nest .root[data-padding='small'] & {
+    padding: var(--medium-padding) var(--small-padding);
+  }
+
+  @nest .root[data-padding='medium'] & {
+    padding: var(--large-padding) var(--medium-padding);
+  }
+
+  @nest .root[data-padding='large'] & {
+    padding: var(--extra-large-padding) var(--large-padding);
+  }
+}
+
+.header {
+  position: relative;
+  display: flex;
+  line-height: 0;
+
+  @nest &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+    pointer-events: none;
+  }
+
+  @nest .root[data-padding='small'] & {
+    padding: var(--small-padding);
+  }
+
+  @nest .root[data-padding='medium'] & {
+    padding: var(--medium-padding);
+  }
+
+  @nest .root[data-padding='large'] & {
+    padding: var(--large-padding);
+  }
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+
+  @nest & > h3 {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    font-weight: 700;
+    margin: -2px 0 -1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.footer {
+  composes: footer from 'part:@sanity/components/dialogs/default-style';
+
+  @nest .root[data-padding='small'] & {
+    padding: var(--small-padding);
+  }
+
+  @nest .root[data-padding='medium'] & {
+    padding: var(--medium-padding);
+  }
+
+  @nest .root[data-padding='large'] & {
+    padding: var(--large-padding);
+  }
+}

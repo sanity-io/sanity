@@ -93,16 +93,16 @@ export function getTemplates(schema?: Schema) {
 
 export function getParameterlessTemplatesBySchemaType(schemaType: string) {
   return getTemplatesBySchemaType(schemaType).filter(
-    tpl => !tpl.parameters || !tpl.parameters.length
+    (tpl) => !tpl.parameters || !tpl.parameters.length
   )
 }
 
 export function getTemplatesBySchemaType(schemaType: string) {
-  return getTemplates().filter(tpl => tpl.schemaType === schemaType)
+  return getTemplates().filter((tpl) => tpl.schemaType === schemaType)
 }
 
 export function getTemplateById(id: string) {
-  return getTemplates().find(tpl => tpl.id === id)
+  return getTemplates().find((tpl) => tpl.id === id)
 }
 
 export function templateExists(id: string) {

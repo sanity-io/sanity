@@ -1,6 +1,6 @@
 {
   "name": "@sanity/block-tools",
-  "version": "0.147.6",
+  "version": "2.2.6",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "main": "lib/index.js",
   "scripts": {
@@ -28,11 +28,11 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@sanity/schema": "0.147.6",
+    "@sanity/schema": "2.2.6",
     "assert": "^1.4.1",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "jsdom": "^12.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^26.3.0",
     "xpath": "0.0.27"
   },
   "directories": {
@@ -40,7 +40,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/block-tools"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

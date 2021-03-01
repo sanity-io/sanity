@@ -1,14 +1,12 @@
 {
   "name": "@sanity/dashboard",
-  "version": "0.147.6",
+  "version": "2.2.6",
   "description": "Tool for rendering dashboard widgets",
   "main": "src/DashboardTool.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "start": "npm run example-testbed",
-    "test": "#todo: jest"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -21,22 +19,22 @@
     "sanity-tool"
   ],
   "dependencies": {
+    "@sanity/image-url": "^0.140.19",
     "lodash": "^4.17.15",
-    "react-icons": "^2.2.7"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "0.147.6",
-    "@sanity/check": "0.147.0",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9"
+    "react": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/dashboard"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

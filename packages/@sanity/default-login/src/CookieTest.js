@@ -22,7 +22,7 @@ const checkCookies = () => {
         .then(() => true)
         .catch(() => false)
     })
-    .catch(error => ({error}))
+    .catch((error) => ({error}))
 }
 
 const hostname = client.clientConfig.url
@@ -30,16 +30,20 @@ const hostname = client.clientConfig.url
 
 class CookieTest extends PureComponent {
   static propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
   }
 
   constructor(props) {
     super(props)
     this.state = {isLoading: true}
-    checkCookies().then(isCookieError => {
+    checkCookies().then((isCookieError) => {
+      if (!this._isMounted) {
+        return
+      }
+
       this.setState({
         isCookieError: !isCookieError,
-        isLoading: false
+        isLoading: false,
       })
     })
     this.redirectToUrl = null
@@ -47,12 +51,14 @@ class CookieTest extends PureComponent {
   }
 
   componentDidMount() {
+    this._isMounted = true
     this.popupUrl = `${hostname}/auth/views/cookie/interact?redirectTo=${encodeURIComponent(
       window.location.toString()
     )}`
   }
 
   componentWillUnmount() {
+    this._isMounted = false
     if (this.popupSubscription) {
       this.popupSubscription.unsubscribe()
     }
@@ -66,12 +72,12 @@ class CookieTest extends PureComponent {
     openCenteredPopup(this.popupUrl, {
       height: 380,
       width: 640,
-      name
+      name,
     })
       .pipe(
-        mapTo(`Successfully performed the cookie whitelisting routine`),
+        mapTo('Successfully performed the cookie allowal routine'),
         finalize(() => window.location.reload()),
-        catchError(error => of(error.message))
+        catchError((error) => of(error.message))
       )
       .subscribe(console.log) // eslint-disable-line no-console
   }
@@ -137,7 +143,7 @@ class CookieTest extends PureComponent {
 
 CookieTest.propTypes = {
   sanityLogo: PropTypes.node,
-  SanityLogo: PropTypes.func
+  SanityLogo: PropTypes.func,
 }
 
 export default CookieTest

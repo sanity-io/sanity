@@ -44,7 +44,7 @@ export default {
         uri: `/invitations/project/${projectId}`,
         body: {email, role: role.id},
         useGlobalApi: true,
-        maxRedirects: 0
+        maxRedirects: 0,
       })
       .catch(
         prettifyQuotaError(
@@ -53,21 +53,21 @@ export default {
       )
 
     output.print(`Invitation sent to ${email}`)
-  }
+  },
 }
 
 function promptForEmail(prompt) {
   return prompt.single({
     type: 'input',
     message: 'Email to invite:',
-    filter: val => val.trim(),
-    validate: name => {
+    filter: (val) => val.trim(),
+    validate: (name) => {
       if (!name || !name.includes('@')) {
         return 'Invalid email'
       }
 
       return true
-    }
+    },
   })
 }
 
@@ -75,9 +75,9 @@ function promptForRole(prompt, roles) {
   return prompt.single({
     type: 'list',
     message: 'Which role should the user have?',
-    choices: roles.map(role => ({
+    choices: roles.map((role) => ({
       value: role.id,
-      name: `${role.name} (${role.description})`
-    }))
+      name: `${role.name} (${role.description})`,
+    })),
   })
 }

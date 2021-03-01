@@ -7,7 +7,7 @@ import {View, ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
 import {
   getUserDefinedDefaultDocumentBuilder,
-  DocumentFragmentResolveOptions
+  DocumentFragmentResolveOptions,
 } from './userDefinedStructure'
 import {getTemplateById} from '@sanity/initial-value-templates'
 
@@ -66,8 +66,8 @@ export class DocumentBuilder implements Serializable {
       id: paneId,
       options: {
         ...(this.spec.options || {}),
-        id: documentId
-      }
+        id: documentId,
+      },
     })
   }
 
@@ -79,8 +79,8 @@ export class DocumentBuilder implements Serializable {
     return this.clone({
       options: {
         ...(this.spec.options || {}),
-        type: typeof documentType === 'string' ? documentType : documentType.name
-      }
+        type: typeof documentType === 'string' ? documentType : documentType.name,
+      },
     })
   }
 
@@ -93,8 +93,8 @@ export class DocumentBuilder implements Serializable {
       options: {
         ...(this.spec.options || {}),
         template: templateId,
-        templateParameters: parameters
-      }
+        templateParameters: parameters,
+      },
     })
   }
 
@@ -124,7 +124,7 @@ export class DocumentBuilder implements Serializable {
       type: undefined,
       template: undefined,
       templateParameters: undefined,
-      ...this.spec.options
+      ...this.spec.options,
     }
 
     if (typeof id !== 'string' || !id) {
@@ -145,11 +145,12 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
-      (item, i) => maybeSerializeView(item, i, path)
-    )
+    const views = (this.spec.views && this.spec.views.length > 0
+      ? this.spec.views
+      : [form()]
+    ).map((item, i) => maybeSerializeView(item, i, path))
 
-    const viewIds = views.map(view => view.id)
+    const viewIds = views.map((view) => view.id)
     const dupes = uniq(viewIds.filter((id, i) => viewIds.includes(id, i + 1)))
     if (dupes.length > 0) {
       throw new SerializeError(
@@ -166,7 +167,7 @@ export class DocumentBuilder implements Serializable {
       id: validateId(id, path, index),
       type: 'document',
       options: getDocumentOptions(options),
-      views
+      views,
     }
   }
 
@@ -181,7 +182,7 @@ export class DocumentBuilder implements Serializable {
 function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
   const opts: DocumentOptions = {
     id: spec.id || '',
-    type: spec.type || '*'
+    type: spec.type || '*',
   }
 
   if (spec.template) {
@@ -239,9 +240,7 @@ export function documentFromEditorWithInitialValue(
   )
 }
 
-export function getDefaultDocumentNode(
-  options: DocumentFragmentResolveOptions
-): DocumentBuilder {
+export function getDefaultDocumentNode(options: DocumentFragmentResolveOptions): DocumentBuilder {
   const {documentId, schemaType} = options
   const userDefined = getUserDefinedDefaultDocumentBuilder(options)
 

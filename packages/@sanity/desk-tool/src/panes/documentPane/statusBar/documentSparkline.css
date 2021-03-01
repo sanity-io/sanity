@@ -1,0 +1,234 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes DocumentStatusBar__spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+:root {
+  --size: 25px;
+  /* Review changes button default */
+  --button-bg: var(--timeline-event-enabled-bg);
+  --button-fg: var(--timeline-event-enabled-fg);
+  --button-border: var(--timeline-event-enabled-border);
+  /* Review changes button hover */
+  --button-hover-bg: var(--button-fg);
+  --button-hover-fg: var(--button-bg);
+  --button-hover-border: var(--button-hover-bg);
+  /* Review changes button disabled */
+  --button-disabled-bg: var(--button-bg);
+  --button-disabled-fg: var(--timeline-event-disabled-fg);
+  --button-disabled-border: var(--timeline-event-disabled-icon-bg);
+  /* Session badge default */
+  --badge-bg: var(--button-fg);
+  --badge-fg: var(--button-bg);
+  --badge-border: var(--button-bg);
+  /* Session badge hover */
+  --badge-hover-bg: var(--button-hover-fg);
+  --badge-hover-fg: var(--button-hover-bg);
+  --badge-hover-border: var(--button-hover-bg);
+  /* Session badge disabled */
+  --badge-disabled-bg: var(--timeline-event-disabled-icon-bg);
+  --badge-disabled-fg: var(--timeline-event-disabled-icon-fg);
+  --badge-disabled-border: var(--badge-disabled-fg);
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  padding-right: var(--small-padding);
+}
+
+.primarySessionBadgeContainer {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  background: var(--component-bg);
+  height: 40px; /* same as reviewChangesButton button */
+  border: 1px solid transparent;
+
+  @nest .root[data-container-min~='xsmall'] & {
+    margin-right: var(--medium-padding);
+  }
+
+  @nest & .statusDetails {
+    display: block;
+  }
+}
+
+.reviewChangesButton {
+  color: var(--button-fg);
+  background: var(--button-bg);
+  text-align: left;
+  transform: translate3d(0, 0, 0);
+  display: block;
+  transition: transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
+  z-index: 0;
+  pointer-events: none;
+  cursor: not-allowed;
+
+  @nest .root[data-container-min~='xsmall'] & {
+    border: 1px solid var(--button-border);
+    border-radius: var(--border-radius-medium);
+    pointer-events: unset;
+    cursor: unset;
+
+    @nest &:hover:not(:disabled) {
+      background: var(--button-hover-bg);
+      border-color: var(--button-hover-border);
+
+      @nest & .statusDetails {
+        color: var(--button-hover-fg);
+      }
+
+      @nest & .badge {
+        color: var(--badge-hover-fg);
+        border-color: var(--badge-hover-border);
+        background: var(--badge-hover-bg);
+
+        @nest &:last-of-type .hoverIcon {
+          display: flex;
+        }
+
+        @nest & .icon {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @nest & .inner {
+    display: flex;
+    align-items: center;
+    padding-right: var(--small-padding);
+  }
+
+  @nest &[data-transition='in'] {
+    transform: translate3d(0px, 0, 0);
+  }
+
+  @nest &[data-transition='out'] {
+    pointer-events: none;
+    transform: translate3d(calc(var(--size) * -3), 0, 0);
+    opacity: 0;
+  }
+}
+
+.sessionBadges {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  line-height: 1;
+  height: var(--size);
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+
+  @nest &[data-syncing='true'] .badge svg {
+    animation-name: DocumentStatusBar__spin;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: default;
+  flex: 1;
+  background-color: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--badge-fg);
+  border-radius: calc(var(--size) * 2);
+  height: var(--size);
+  width: var(--size);
+  z-index: 10;
+  cursor: inherit;
+  transition: transform 0.3s linear;
+  box-sizing: border-box;
+
+  @nest &:not([data-type='publish']):not([data-type='live']):not(:last-of-type) .icon {
+    display: none;
+  }
+
+  @nest & .hoverIcon {
+    display: none;
+  }
+
+  @nest &[data-type='publish'] {
+    background-color: var(--timeline-event-enabled-icon-published-bg);
+    color: var(--timeline-event-enabled-icon-published-fg);
+  }
+
+  @nest &[data-type='live'] {
+    background-color: var(--timeline-event-enabled-icon-published-bg);
+    color: var(--timeline-event-enabled-icon-published-fg);
+  }
+
+  @nest &[data-type='editDraft'] {
+    background-color: var(--timeline-event-enabled-icon-edited-bg);
+    color: var(--timeline-event-enabled-icon-edited-fg);
+  }
+
+  @nest &[data-type='unpublish'] {
+    background-color: var(--timeline-event-enabled-icon-edited-bg);
+    color: var(--timeline-event-enabled-icon-edited-fg);
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.hoverIcon {
+  display: none;
+}
+
+.statusDetails {
+  font-size: var(--font-size-xsmall);
+  white-space: nowrap;
+  margin-left: var(--small-padding);
+  color: var(--button-fg);
+  display: none;
+
+  @nest .root[data-container-min~='xsmall'] .reviewChangesButton & {
+    display: block;
+  }
+}
+
+.label {
+  font-weight: 500;
+}
+
+.documentBadgesContainer {
+  display: none;
+  @nest .root[data-container-min~='small'] & {
+    display: block;
+  }
+}
+
+.root[data-disabled='true'] {
+  @nest & .reviewChangesButton {
+    border-color: var(--button-disabled-border);
+  }
+
+  @nest & .badge {
+    background: var(--badge-disabled-bg);
+    color: var(--badge-disabled-fg);
+    border-color: var(--badge-disabled-border);
+  }
+
+  @nest & .statusDetails {
+    color: var(--button-disabled-fg);
+  }
+}

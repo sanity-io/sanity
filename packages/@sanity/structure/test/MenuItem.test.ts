@@ -7,11 +7,7 @@ test('builds menu items with only title and action', () => {
 })
 
 test('throws if no title is set', () => {
-  expect(() =>
-    S.menuItem()
-      .action('foo')
-      .serialize()
-  ).toThrowErrorMatchingSnapshot()
+  expect(() => S.menuItem().action('foo').serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('throws if neither action nor intent is set', () => {
@@ -20,11 +16,7 @@ test('throws if neither action nor intent is set', () => {
 
 test('throws if setting both action AND intent', () => {
   expect(() =>
-    S.menuItem()
-      .title('foo')
-      .action('foo')
-      .intent({type: 'create'})
-      .serialize()
+    S.menuItem().title('foo').action('foo').intent({type: 'create'}).serialize()
   ).toThrowErrorMatchingSnapshot()
 })
 
@@ -47,28 +39,18 @@ test('builds menu item groups through constructor', () => {
 })
 
 test('builds menu item groups through builder', () => {
-  expect(
-    S.menuItemGroup()
-      .title('Foo')
-      .id('foo')
-      .serialize()
-  ).toMatchObject({id: 'foo', title: 'Foo'})
+  expect(S.menuItemGroup().title('Foo').id('foo').serialize()).toMatchObject({
+    id: 'foo',
+    title: 'Foo',
+  })
 })
 
 test('throws if building menu item group without id', () => {
-  expect(() =>
-    S.menuItemGroup()
-      .title('Foo')
-      .serialize()
-  ).toThrowError(/`id` is required/)
+  expect(() => S.menuItemGroup().title('Foo').serialize()).toThrowError(/`id` is required/)
 })
 
 test('throws if building menu item group without title', () => {
-  expect(() =>
-    S.menuItemGroup()
-      .id('foo')
-      .serialize()
-  ).toThrowError(/`title` is required/)
+  expect(() => S.menuItemGroup().id('foo').serialize()).toThrowError(/`title` is required/)
 })
 
 test('builder is immutable', () => {

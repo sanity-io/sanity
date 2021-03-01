@@ -1,68 +1,56 @@
 [
   {
     "_type": "block",
+    "markDefs": [],
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should not have any whitepace in the start, and none in the end"
+        "text": "I should not have any whitepace in the start, and none in the end",
+        "_key": "randomKey40"
       }
     ],
-    "markDefs": [],
-    "style": "normal"
+    "_key": "randomKey4"
   },
   {
     "_type": "block",
+    "markDefs": [],
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should not have any whitepace in the start, and none in the end"
+        "text": "I should not have any whitepace in the start, and none in the end",
+        "_key": "randomKey50"
       }
     ],
-    "markDefs": [],
-    "style": "normal"
+    "_key": "randomKey5"
   },
   {
     "_type": "block",
+    "markDefs": [],
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should not have any whitepace in the start, and none in the end"
+        "text": "I should not have any whitepace in the start, and none in the end",
+        "_key": "randomKey60"
       },
       {
         "_type": "span",
         "marks": [
           "em"
         ],
-        "text": " I have one in the beginning but none in the end"
+        "text": " I have one in the beginning but none in the end",
+        "_key": "randomKey61"
       }
     ],
-    "markDefs": [],
-    "style": "normal"
+    "_key": "randomKey6"
   },
   {
     "_type": "block",
-    "children": [
-      {
-        "_type": "span",
-        "marks": [],
-        "text": "I should not have any whitepace in the start, and one in the end "
-      },
-      {
-        "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
-        "text": "I have none in the beginning and none in the end"
-      },
-      {
-        "_type": "span",
-        "marks": [],
-        "text": " But I have one in the beginning"
-      }
-    ],
     "markDefs": [
       {
         "_key": "randomKey0",
@@ -70,34 +58,33 @@
         "href": "#foo"
       }
     ],
-    "style": "normal"
-  },
-  {
-    "_type": "block",
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should have a space here: "
+        "text": "I should not have any whitepace in the start, and one in the end ",
+        "_key": "randomKey70"
       },
       {
         "_type": "span",
         "marks": [
-          "randomKey1"
+          "randomKey0"
         ],
-        "text": "But none here"
+        "text": "I have none in the beginning and none in the end",
+        "_key": "randomKey71"
       },
       {
         "_type": "span",
         "marks": [],
-        "text": "."
-      },
-      {
-        "_type": "span",
-        "marks": [],
-        "text": "\n"
+        "text": " But I have one in the beginning",
+        "_key": "randomKey72"
       }
     ],
+    "_key": "randomKey7"
+  },
+  {
+    "_type": "block",
     "markDefs": [
       {
         "_key": "randomKey1",
@@ -105,41 +92,33 @@
         "href": "#lala"
       }
     ],
-    "style": "normal"
-  },
-  {
-    "_type": "block",
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should have a space between "
+        "text": "I should have a space here: ",
+        "_key": "randomKey80"
       },
       {
         "_type": "span",
         "marks": [
-          "randomKey2"
+          "randomKey1"
         ],
-        "text": "these"
+        "text": "But none here",
+        "_key": "randomKey81"
       },
       {
         "_type": "span",
         "marks": [],
-        "text": " "
-      },
-      {
-        "_type": "span",
-        "marks": [
-          "randomKey3"
-        ],
-        "text": "two"
-      },
-      {
-        "_type": "span",
-        "marks": [],
-        "text": " links."
+        "text": ".\n",
+        "_key": "randomKey82"
       }
     ],
+    "_key": "randomKey8"
+  },
+  {
+    "_type": "block",
     "markDefs": [
       {
         "_key": "randomKey2",
@@ -152,42 +131,85 @@
         "href": "#lala"
       }
     ],
-    "style": "normal"
-  },
-  {
-    "_type": "block",
+    "style": "normal",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text": "I should have a space between "
+        "text": "I should have a space between ",
+        "_key": "randomKey90"
       },
       {
         "_type": "span",
         "marks": [
-          "em"
+          "randomKey2"
         ],
-        "text": "these"
+        "text": "these",
+        "_key": "randomKey91"
       },
       {
         "_type": "span",
         "marks": [],
-        "text": " "
+        "text": " ",
+        "_key": "randomKey92"
       },
       {
         "_type": "span",
         "marks": [
-          "em"
+          "randomKey3"
         ],
-        "text": "two"
+        "text": "two",
+        "_key": "randomKey93"
       },
       {
         "_type": "span",
         "marks": [],
-        "text": " words."
+        "text": " links.",
+        "_key": "randomKey94"
       }
     ],
+    "_key": "randomKey9"
+  },
+  {
+    "_type": "block",
     "markDefs": [],
-    "style": "normal"
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "I should have a space between ",
+        "_key": "randomKey100"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "em"
+        ],
+        "text": "these",
+        "_key": "randomKey101"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " ",
+        "_key": "randomKey102"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "em"
+        ],
+        "text": "two",
+        "_key": "randomKey103"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " words.",
+        "_key": "randomKey104"
+      }
+    ],
+    "_key": "randomKey10"
   }
 ]

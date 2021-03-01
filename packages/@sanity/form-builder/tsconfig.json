@@ -1,18 +1,13 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["test/**/*.ts"],
+  "extends": "./tsconfig.strict",
   "compilerOptions": {
-    "strict": false,
-    "jsx": "react",
-    "outDir": "./lib",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "customMatcher": "\\.css$"
-        }
-      }
-    ]
+    // todo: we need to disable strict in a transition phase and should be removed eventually
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false
   }
 }

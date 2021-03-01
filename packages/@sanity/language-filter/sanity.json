@@ -6,11 +6,11 @@
   "parts": [
     {
       "implements": "part:@sanity/desk-tool/filter-fields-fn",
-      "path": "filter-fields.js"
+      "path": "filter-fields"
     },
     {
       "implements": "part:@sanity/desk-tool/language-select-component",
-      "path": "SelectLanguageProvider.js"
+      "path": "SelectLanguageProvider"
     }
   ]
 }

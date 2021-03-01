@@ -1,8 +1,10 @@
 /* stylelint-disable no-descending-specificity */
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 @keyframes blink {
-  50% { background-color: transparent; }
+  50% {
+    background-color: transparent;
+  }
 }
 
 .root {
@@ -224,7 +226,6 @@
 }
 
 .root :global(.Resizer:hover) {
-  transition: all 2s ease;
 }
 
 .root :global(.Resizer.horizontal) {

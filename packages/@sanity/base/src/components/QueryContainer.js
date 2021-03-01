@@ -11,43 +11,43 @@ import {
   takeUntil,
   share,
   publishReplay,
-  refCount
+  refCount,
 } from 'rxjs/operators'
 
-import {combineLatest, concat, merge, of} from 'rxjs'
+import {combineLatest, concat, merge, of, fromEvent} from 'rxjs'
 import deepEquals from 'react-fast-compare'
 import {createEventHandler, streamingComponent} from 'react-props-stream'
-import {listenQuery} from '../util/listenQuery'
+import {listenQuery} from '../datastores/document/listenQuery'
 
 const INITIAL_CHILD_PROPS = {
   result: null,
-  error: false
+  error: false,
 }
 
-const createResultChildProps = documents => ({
+const createResultChildProps = (documents) => ({
   result: {documents},
   loading: false,
-  error: false
+  error: false,
 })
 
-const createErrorChildProps = error => ({
+const createErrorChildProps = (error) => ({
   result: null,
   loading: false,
-  error
+  error,
 })
 
-export const getQueryResults = receivedProps$ => {
+export const getQueryResults = (receivedProps$) => {
   const [onRetry$, onRetry] = createEventHandler()
 
   const queryProps$ = receivedProps$.pipe(
-    map(props => ({query: props.query, params: props.params})),
+    map((props) => ({query: props.query, params: props.params})),
     distinctUntilChanged(deepEquals),
     publishReplay(1),
     refCount()
   )
 
   const queryResults$ = queryProps$.pipe(
-    switchMap(queryProps => {
+    switchMap((queryProps) => {
       const query$ = listenQuery(queryProps.query, queryProps.params).pipe(
         map(createResultChildProps),
         share()
@@ -59,14 +59,17 @@ export const getQueryResults = receivedProps$ => {
   return queryResults$.pipe(
     startWith(INITIAL_CHILD_PROPS),
     catchError((err, caught$) =>
-      concat(of(createErrorChildProps(err)), onRetry$.pipe(take(1), mergeMapTo(caught$)))
+      concat(
+        of(createErrorChildProps(err)),
+        merge(fromEvent(window, 'online'), onRetry$).pipe(take(1), mergeMapTo(caught$))
+      )
     ),
     scan((prev, next) => ({...prev, ...next, onRetry}))
   )
 }
 
 // todo: split into separate standalone parts so that behavior can be re-used
-export default streamingComponent(receivedProps$ => {
+export default streamingComponent((receivedProps$) => {
   const resultProps$ = getQueryResults(receivedProps$)
   return combineLatest(receivedProps$, resultProps$).pipe(
     map(([receivedProps, queryResult]) => {

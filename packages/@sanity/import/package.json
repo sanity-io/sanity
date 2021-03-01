@@ -1,16 +1,18 @@
 {
   "name": "@sanity/import",
-  "version": "0.147.3",
+  "version": "2.2.6",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
+    "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib",
     "coverage": "jest --coverage",
+    "prebuild": "npm run clean",
     "test": "jest"
   },
   "keywords": [
@@ -23,8 +25,9 @@
     "ndjson"
   ],
   "dependencies": {
-    "@sanity/mutator": "0.147.0",
-    "@sanity/uuid": "0.147.0",
+    "@sanity/generate-help-url": "2.2.6",
+    "@sanity/mutator": "2.2.6",
+    "@sanity/uuid": "^3.0.1",
     "debug": "^3.1.0",
     "file-url": "^2.0.2",
     "fs-extra": "^6.0.1",
@@ -33,18 +36,19 @@
     "gunzip-maybe": "^1.4.1",
     "is-tar": "^1.0.0",
     "lodash": "^4.17.15",
-    "mississippi": "^2.0.0",
+    "mississippi": "^4.0.0",
     "p-map": "^1.2.0",
     "peek-stream": "^1.1.2",
-    "split2": "^2.1.1",
+    "split2": "^3.2.2",
     "tar-fs": "^1.16.0",
     "tempy": "^0.3.0",
     "whatwg-url": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/client": "0.147.3",
-    "get-it": "^5.0.0",
-    "jest": "^24.9.0",
+    "@sanity/client": "2.2.6",
+    "get-it": "^5.0.3",
+    "jest": "^26.4.2",
+    "nock": "^9.0.5",
     "rimraf": "^2.7.1"
   },
   "jest": {
@@ -52,7 +56,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/import"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

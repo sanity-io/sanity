@@ -10,26 +10,26 @@ const INHERITED_FIELDS = [
   'description',
   'options',
   'fieldsets',
-  'icon'
+  'icon',
 ]
 
 const SPAN_CORE = {
   name: 'span',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
 }
 
 const MARKS_FIELD = {
   name: 'marks',
   title: 'Marks',
   type: 'array',
-  of: [{type: 'string'}]
+  of: [{type: 'string'}],
 }
 
 const TEXT_FIELD = {
   name: 'text',
   title: 'Text',
-  type: 'string'
+  type: 'string',
 }
 
 const DEFAULT_OPTIONS = {}
@@ -47,15 +47,15 @@ export const SpanType = {
 
     const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
       type: SPAN_CORE,
-      options: options
+      options: options,
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map(fieldDef => {
+      return fields.map((fieldDef) => {
         const {name, ...type} = fieldDef
         return {
           name: name,
-          type: extendMember(type)
+          type: extendMember(type),
         }
       })
     })
@@ -72,16 +72,16 @@ export const SpanType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "span"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

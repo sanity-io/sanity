@@ -1,5 +1,5 @@
 /* eslint-disable space-before-function-paren */
-module.exports = function(content) {
+module.exports = function (content) {
   if (this.cacheable) {
     this.cacheable()
   }

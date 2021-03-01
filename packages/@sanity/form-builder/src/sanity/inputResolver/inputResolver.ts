@@ -4,6 +4,7 @@ import * as is from '../../utils/is'
 import resolveReferenceInput from './resolveReferenceInput'
 import resolveArrayInput from './resolveArrayInput'
 import resolveStringInput from './resolveStringInput'
+import resolveNumberInput from './resolveNumberInput'
 
 function getExport(obj) {
   return obj && obj.__esModule ? obj.default : obj
@@ -30,6 +31,10 @@ function resolveTypeVariants(type) {
   // String input with a select
   if (is.type('string', type)) {
     return resolveStringInput(type)
+  }
+
+  if (is.type('number', type)) {
+    return resolveNumberInput(type)
   }
 
   return null

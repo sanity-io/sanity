@@ -1,13 +1,12 @@
-import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './utils/patches'
-
 import {flatten} from 'lodash'
+import {PathSegment} from '@sanity/types'
+import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './utils/patches'
 import {Patch} from './typedefs/patch'
-import {PathSegment} from './typedefs/path'
 
-type PatchArg = Patch | Array<Patch>
+type PatchArg = Patch | Patch[]
 
 export default class PatchEvent {
-  static from(...patches: Array<PatchArg>) {
+  static from(...patches: PatchArg[]): PatchEvent {
     return new PatchEvent(flatten(patches))
   }
 
@@ -26,7 +25,7 @@ export default class PatchEvent {
   }
 
   prefixAll(segment: PathSegment): PatchEvent {
-    return PatchEvent.from(this.patches.map(patch => prefixPath(patch, segment)))
+    return PatchEvent.from(this.patches.map((patch) => prefixPath(patch, segment)))
   }
 }
 

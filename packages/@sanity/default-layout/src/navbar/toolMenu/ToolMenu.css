@@ -1,0 +1,42 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @nest &[data-direction='horizontal'] {
+    white-space: nowrap;
+
+    @nest & > li {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    @nest & > li + li {
+      margin-left: 0.75em;
+    }
+  }
+
+  @nest &[data-direction='vertical'] {
+    @nest & > li > div > a {
+      width: 100%;
+
+      @nest & > span > span {
+        justify-content: flex-start;
+      }
+    }
+
+    @nest & > li + li {
+      margin-top: 0.25em;
+    }
+  }
+}
+
+.tooltipContent {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  display: block;
+  padding: calc(var(--small-padding) - 2px) var(--small-padding);
+}

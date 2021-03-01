@@ -1,18 +1,13 @@
 import React from 'react'
+import {uniqueId} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
-import PatchEvent, {set, unset} from '../../PatchEvent'
-import {Type} from '../typedefs'
-type Props = {
-  type: Type
-  value: Array<string>
-  level: number
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-}
-export default class TagsArrayInput extends React.PureComponent<Props> {
+import PatchEvent, {set, unset} from '../PatchEvent'
+import {Props} from './types'
+
+export default class TagsArrayInput extends React.PureComponent<Props<string[]>> {
   _input: TagInput
+  _inputId = uniqueId('TagsArrayInput')
   set(nextValue: string[]) {
     const patch = nextValue.length === 0 ? unset() : set(nextValue)
     this.props.onChange(PatchEvent.from(patch))
@@ -29,10 +24,17 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
     this._input = el
   }
   render() {
-    const {type, value, readOnly, level, onFocus} = this.props
+    const {type, value, readOnly, level, onFocus, presence} = this.props
     return (
-      <FormField level={level} label={type.title} description={type.description}>
+      <FormField
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+        labelFor={this._inputId}
+      >
         <TagInput
+          inputId={this._inputId}
           readOnly={readOnly}
           value={value}
           onChange={this.handleChange}

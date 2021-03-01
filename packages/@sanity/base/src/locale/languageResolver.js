@@ -13,5 +13,5 @@ function resolveLanguage(supportedLanguages = null) {
 }
 
 module.exports = {
-  resolveLanguage
+  resolveLanguage,
 }

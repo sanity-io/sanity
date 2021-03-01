@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "0.147.0",
+  "version": "2.3.8",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "lib/index.js",
   "scripts": {
@@ -27,13 +27,16 @@
   "homepage": "https://www.sanity.io/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "@sanity/schema": "2.2.6",
+    "jest": "^26.4.2"
   },
   "dependencies": {
     "clone-deep": "^2.0.1",
+    "date-fns": "^2.16.1",
     "es6-error": "^4.0.2",
     "type-of-is": "^3.5.1"
   },

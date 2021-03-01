@@ -1,0 +1,26 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  /*  */
+}
+
+.card {
+  display: block;
+}
+
+.sizeDiff {
+  display: inline-block;
+  padding: 0 4px;
+  background: var(--component-bg);
+  border-radius: var(--border-radius-small);
+  margin: 0 var(--small-padding);
+  margin-top: 2px;
+
+  @nest &[data-number='positive'] {
+    color: var(--state-success-color);
+  }
+
+  @nest &[data-number='negative'] {
+    color: var(--state-danger-color);
+  }
+}

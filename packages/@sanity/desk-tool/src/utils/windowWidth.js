@@ -1,9 +1,9 @@
 import {Observable, merge} from 'rxjs'
-import {map, share, debounceTime} from 'rxjs/operators'
+import {map, shareReplay, debounceTime, startWith} from 'rxjs/operators'
 
-const fromWindowEvent = eventName =>
-  new Observable(subscriber => {
-    const handler = event => subscriber.next(event)
+const fromWindowEvent = (eventName) =>
+  new Observable((subscriber) => {
+    const handler = (event) => subscriber.next(event)
     window.addEventListener(eventName, handler, false)
     return () => {
       window.removeEventListener(eventName, handler, false)
@@ -16,7 +16,8 @@ const resize$ = fromWindowEvent('resize')
 const windowWidth$ = merge(orientationChange$, resize$).pipe(
   debounceTime(50),
   map(() => window.innerWidth),
-  share()
+  shareReplay(1),
+  startWith(window.innerWidth)
 )
 
 export default windowWidth$

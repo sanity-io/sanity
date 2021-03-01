@@ -5,7 +5,7 @@ function batchDocuments(docs) {
   let currentBatchSize = 0
   const batches = [currentBatch]
 
-  docs.forEach(doc => {
+  docs.forEach((doc) => {
     const docSize = JSON.stringify(doc).length
     const newBatchSize = currentBatchSize + docSize
 

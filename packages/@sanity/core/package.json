@@ -1,15 +1,17 @@
 {
   "name": "@sanity/core",
-  "version": "0.147.6",
+  "version": "2.4.0",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib"
+    "build": "babel src --copy-files --out-dir lib",
+    "clean": "rimraf lib",
+    "prebuild": "npm run clean"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "keywords": [
     "sanity",
@@ -20,25 +22,26 @@
     "core"
   ],
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/preset-react": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
-    "@sanity/check": "0.147.0",
-    "@sanity/export": "0.147.3",
-    "@sanity/generate-help-url": "0.147.0",
-    "@sanity/import": "0.147.3",
-    "@sanity/mutator": "0.147.0",
-    "@sanity/plugin-loader": "0.147.0",
-    "@sanity/resolver": "0.147.0",
-    "@sanity/schema": "0.147.6",
-    "@sanity/server": "0.147.0",
-    "@sanity/util": "0.147.0",
-    "@sanity/uuid": "0.147.0",
-    "@sanity/webpack-integration": "0.147.0",
+    "@sanity/eventsource": "2.2.6",
+    "@sanity/export": "2.2.6",
+    "@sanity/generate-help-url": "2.2.6",
+    "@sanity/import": "2.2.6",
+    "@sanity/mutator": "2.2.6",
+    "@sanity/plugin-loader": "2.4.0",
+    "@sanity/resolver": "2.4.0",
+    "@sanity/schema": "2.2.6",
+    "@sanity/server": "2.4.0",
+    "@sanity/util": "2.4.0",
+    "@sanity/uuid": "^3.0.1",
+    "@sanity/webpack-integration": "2.4.0",
     "batch-stream-operation": "^1.0.2",
     "chokidar": "^2.0.3",
-    "configstore": "^3.0.0",
+    "configstore": "^5.0.1",
     "debug": "^3.1.0",
     "deep-sort-object": "^1.0.1",
     "dotenv": "^8.2.0",
@@ -51,6 +54,7 @@
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.1.1",
     "json5": "^1.0.1",
+    "klaw-sync": "^4.0.0",
     "lodash": "^4.17.15",
     "log-symbols": "^2.2.0",
     "oneline": "^1.0.3",
@@ -61,14 +65,17 @@
     "resolve-bin": "^0.4.0",
     "resolve-from": "^4.0.0",
     "rimraf": "^2.7.1",
+    "rxjs": "^6.5.3",
     "semver": "^6.1.2",
-    "simple-get": "^3.0.2",
+    "simple-get": "^4.0.0",
     "tar-fs": "^1.16.0",
-    "terser": "^4.4.0"
+    "terser": "4.6.7",
+    "yargs": "^16.2.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/core"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

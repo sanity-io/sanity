@@ -1,6 +1,6 @@
 import {SerializeError} from '@sanity/structure'
 
-export default structure => {
+export default (structure) => {
   if (!structure) {
     let val = 'null'
     if (structure !== null) {

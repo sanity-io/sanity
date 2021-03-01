@@ -8,7 +8,7 @@ type PreviewProps = {
 }
 export default class Preview extends React.PureComponent<PreviewProps, {}> {
   static contextTypes = {
-    formBuilder: PropTypes.object
+    formBuilder: PropTypes.object,
   }
   render() {
     const {type, value} = this.props

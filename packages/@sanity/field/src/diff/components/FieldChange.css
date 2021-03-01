@@ -1,0 +1,46 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+}
+
+.error {
+  composes: root;
+}
+
+.header {
+  padding: 0 0 var(--extra-small-padding);
+}
+
+.change {
+  position: relative;
+  padding: var(--extra-small-padding) 0 var(--extra-small-padding) var(--small-padding);
+
+  @nest &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-left: 1px solid var(--hairline-color);
+  }
+
+  @nest [data-revert-all-changes-hover] &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
+  @nest .revertHovered &::before {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
+  @nest .error &::before {
+    /* @todo: should not be treated the same way as :hover */
+    border-left: 1px solid var(--state-danger-color);
+  }
+}
+
+.revertChangesButtonContainer {
+  margin-left: calc(0 - var(--extra-small-padding) - 2px);
+  margin-top: var(--extra-small-padding);
+  margin-bottom: calc(0 - var(--extra-small-padding));
+}

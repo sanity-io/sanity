@@ -2,15 +2,14 @@
 const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
-const postcssImport = require('postcss-import')
-const postcssCssnext = require('postcss-cssnext')
 const PartResolverPlugin = require('@sanity/webpack-loader')
-const resolveStyleImport = require('./resolveStyleImport')
+const {getPostcssImportPlugin, getPostcssPlugins, getStyleResolver} = require('./postcss')
+const extractCssCustomProperties = require('./extractCssCustomProperties')
 
 const partLoaderPath = require.resolve('@sanity/webpack-loader/lib/partLoader')
 
 function getPartResolverPlugin(options) {
-  return new PartResolverPlugin(options)
+  return new PartResolverPlugin({...options, extractCssCustomProperties})
 }
 
 function tryReadDotEnv(studioRootPath, configEnv) {
@@ -52,7 +51,7 @@ function getEnvVars({isProd, env, basePath}) {
     },
     {
       'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
-      'process.env': JSON.stringify({})
+      'process.env': JSON.stringify({}),
     }
   )
 }
@@ -64,7 +63,7 @@ function getEnvPlugin(options) {
   const webpack = options.webpack || require('webpack')
   return new webpack.DefinePlugin({
     __DEV__: !isProd && bundleEnv === 'development',
-    ...getEnvVars({isProd, env, basePath: options.basePath})
+    ...getEnvVars({isProd, env, basePath: options.basePath}),
   })
 }
 
@@ -72,10 +71,10 @@ function getPlugins(options) {
   return [getPartResolverPlugin(options), getEnvPlugin(options)]
 }
 
-function getPartLoader(options) {
+function getPartLoader() {
   return {
     resourceQuery: /[?&]sanityPart=/,
-    use: partLoaderPath
+    use: partLoaderPath,
   }
 }
 
@@ -83,29 +82,13 @@ function getLoaders(options) {
   return [getPartLoader(options)]
 }
 
-function getStyleResolver(options) {
-  return resolveStyleImport({from: options.basePath})
-}
-
-function getPostcssImportPlugin(options) {
-  const styleResolver = getStyleResolver(options)
-  const importer = postcssImport({resolve: styleResolver})
-  return importer
-}
-
-function getPostcssPlugins(options) {
-  const importer = getPostcssImportPlugin(options)
-  const nextOpts = options.cssnext
-  return [importer, postcssCssnext(nextOpts)]
-}
-
 function getConfig(options) {
   return {
     plugins: getPlugins(options),
     loaders: getLoaders(options),
     postcss: () => ({
-      plugins: getPostcssPlugins(options)
-    })
+      plugins: getPostcssPlugins(options),
+    }),
   }
 }
 
@@ -119,5 +102,5 @@ module.exports = {
   getPartResolverPlugin: getPartResolverPlugin,
   getPostcssImportPlugin: getPostcssImportPlugin,
   getPostcssPlugins: getPostcssPlugins,
-  getConfig: getConfig
+  getConfig: getConfig,
 }

@@ -1,0 +1,21 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+}
+
+.label {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+  margin-bottom: 1em;
+}
+
+.button {
+  margin: 0;
+  background-color: var(--gray-lighter);
+}
+
+.selectedButton {
+  composes: button;
+  background-color: var(--brand-primary);
+  color: #fff;
+}

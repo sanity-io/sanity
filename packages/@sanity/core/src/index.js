@@ -4,5 +4,5 @@ import requiredCliVersionRange from './requiredCliVersionRange'
 // Must be module.exports (commonjs)
 module.exports = {
   commands,
-  requiredCliVersionRange
+  requiredCliVersionRange,
 }

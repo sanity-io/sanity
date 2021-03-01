@@ -1,7 +1,8 @@
 import client from 'part:@sanity/base/client'
 import {observePaths} from 'part:@sanity/base/preview'
 import {mergeMap, map, catchError} from 'rxjs/operators'
-import {from as observableFrom, of as observableOf} from 'rxjs'
+import {Observable, of as observableOf} from 'rxjs'
+import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/typedefs'
 
@@ -11,18 +12,22 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
   const {label, title, description, creditLine, source} = options
-  return observableFrom(hashFile(file)).pipe(
-    catchError((
-      error // ignore if hashing fails for some reason
-    ) => observableOf(null)),
-    mergeMap(hash => (hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null))),
+  return hashFile(file).pipe(
+    catchError(() =>
+      // ignore if hashing fails for some reason
+      observableOf(null)
+    ),
+    mergeMap((hash) =>
+      // note: the sanity api will still dedupe unique files, but this saves us from uploading the asset file entirely
+      hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null)
+    ),
     mergeMap((existing: any) => {
       if (existing) {
         return observableOf({
           // complete with the existing asset document
           type: 'complete',
           id: existing._id,
-          asset: existing
+          asset: existing,
         })
       }
       return client.observable.assets
@@ -33,16 +38,16 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
           title,
           description,
           creditLine,
-          source
+          source,
         })
         .pipe(
-          map((event: any) =>
+          map((event) =>
             event.type === 'response'
               ? {
                   // rewrite to a 'complete' event
                   type: 'complete',
                   id: event.body.document._id,
-                  asset: event.body.document
+                  asset: event.body.document,
                 }
               : event
           )
@@ -57,36 +62,54 @@ export const uploadImageAsset = (file, options) => uploadAsset('image', file, op
 export const uploadFileAsset = (file, options) => uploadAsset('file', file, options)
 
 export function materializeReference(id) {
-  return observePaths(id, ['originalFilename', 'url', 'metadata', 'label', 'title', 'description', 'creditLine', 'source'])
+  return observePaths(id, [
+    'originalFilename',
+    'url',
+    'metadata',
+    'label',
+    'title',
+    'description',
+    'creditLine',
+    'source',
+  ]) as Observable<FileAsset>
 }
 
 function fetchExisting(type, hash) {
   return client.observable.fetch('*[_type == $documentType && sha1hash == $hash][0]', {
     documentType: type,
-    hash
+    hash,
   })
 }
 
-function readFile(file): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
+function readFile(file): Observable<ArrayBuffer> {
+  return new Observable((subscriber) => {
     const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as ArrayBuffer)
-    reader.onerror = reject
+    reader.onload = () => {
+      subscriber.next(reader.result as ArrayBuffer)
+      subscriber.complete()
+    }
+    reader.onerror = (err) => {
+      subscriber.error(err)
+    }
     reader.readAsArrayBuffer(file)
+    return () => {
+      reader.abort()
+    }
   })
 }
 
 function hashFile(file) {
   if (!window.crypto || !window.crypto.subtle || !window.FileReader) {
-    return Promise.resolve(null)
+    return observableOf(null)
   }
-  return readFile(file)
-    .then(arrayBuffer => crypto.subtle.digest('SHA-1', arrayBuffer))
-    .then(hexFromBuffer)
+  return readFile(file).pipe(
+    mergeMap((arrayBuffer) => crypto.subtle.digest('SHA-1', arrayBuffer)),
+    map(hexFromBuffer)
+  )
 }
 
 function hexFromBuffer(buffer: ArrayBuffer) {
   return Array.prototype.map
-    .call(new Uint8Array(buffer), x => `00${x.toString(16)}`.slice(-2))
+    .call(new Uint8Array(buffer), (x) => `00${x.toString(16)}`.slice(-2))
     .join('')
 }

@@ -7,3 +7,4 @@ src
 .eslintrc
 .gitignore
 rollup.config.js
+tsconfig.tsbuildinfo

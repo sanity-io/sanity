@@ -9,11 +9,11 @@ import visionGui from './css/visionGui.css'
 
 const components = {
   Button,
-  Select
+  Select,
 }
 
 const styles = {
-  visionGui
+  visionGui,
 }
 
 const client = sanityClient.clone()

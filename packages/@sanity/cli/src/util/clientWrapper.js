@@ -1,14 +1,10 @@
 import client from '@sanity/client'
+import generateHelpUrl from '@sanity/generate-help-url'
 import getUserConfig from './getUserConfig'
-
-/* eslint-disable no-process-env */
-const envAuthToken = process.env.SANITY_AUTH_TOKEN
-const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-/* eslint-enable no-process-env */
 
 const apiHosts = {
   staging: 'https://api.sanity.work',
-  development: 'http://api.sanity.wtf'
+  development: 'http://api.sanity.wtf',
 }
 
 /**
@@ -18,45 +14,39 @@ const apiHosts = {
  */
 const defaults = {
   requireUser: true,
-  requireProject: true
+  requireProject: true,
 }
 
 const authErrors = () => ({
-  onError: err => {
-    if (envAuthToken || !err || !err.response) {
-      return err
+  onError: (err) => {
+    const statusCode = err.response && err.response.body && err.response.body.statusCode
+    if (statusCode === 401) {
+      err.message = `${err.message}. For more information, see ${generateHelpUrl('cli-errors')}.`
     }
-
-    const body = err.response.body
-    if (!body || body.statusCode !== 401) {
-      return err
-    }
-
-    const cfg = getUserConfig()
-    cfg.delete('authType')
-    cfg.delete('authToken')
-
-    // @todo trigger reauthentication automatically?
-    return new Error('You\'ve been logged out. Log back in again with "sanity login"')
-  }
+    return err
+  },
 })
 
 export default function clientWrapper(manifest, configPath) {
   const requester = client.requester.clone()
   requester.use(authErrors())
 
-  return function(opts = {}) {
+  return function (opts = {}) {
+    // Read these environment variables "late" to allow `.env` files
+
+    /* eslint-disable no-process-env */
+    const envAuthToken = process.env.SANITY_AUTH_TOKEN
+    const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
+    /* eslint-enable no-process-env */
+
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
-    const userApiConf = userConfig.get('api')
     const token = envAuthToken || userConfig.get('authToken')
     const apiHost = apiHosts[sanityEnv]
-    const apiConfig = Object.assign(
-      {},
-      userApiConf || {},
-      (manifest && manifest.api) || {},
-      api || {}
-    )
+    const apiConfig = {
+      ...((manifest && manifest.api) || {}),
+      ...(api || {}),
+    }
 
     if (apiHost) {
       apiConfig.apiHost = apiHost
@@ -75,11 +65,11 @@ export default function clientWrapper(manifest, configPath) {
 
     return client({
       ...apiConfig,
-      dataset: apiConfig.dataset || 'dummy',
+      dataset: apiConfig.dataset || '~dummy-placeholder-dataset-',
       token: token,
       useProjectHostname: requireProject,
       requester: requester,
-      useCdn: false
+      useCdn: false,
     })
   }
 }

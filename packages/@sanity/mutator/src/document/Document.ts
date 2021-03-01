@@ -10,8 +10,8 @@
 // TODO: When we have timestamps on mutation notifications, we can reject incoming mutations that are older
 // than the document we are seeing.
 
-import { isEqual } from "lodash";
-import Mutation from "./Mutation";
+import {isEqual} from 'lodash'
+import Mutation from './Mutation'
 
 import debug from './debug'
 import {Doc} from './types'
@@ -43,6 +43,8 @@ export default class Document {
   onMutation: Function
   // Called when consistency state changes with the boolean value of the current consistency state
   onConsistencyChanged: Function
+  // Called whenever a new incoming mutation comes in. These are always ordered correctly.
+  onRemoteMutation?: (mut: Mutation) => void
   // We are consistent when there are no unresolved mutations of our own, and no un-applicable incoming mutations.
   // When this has been going on for too long, and there has been a while since we staged a new mutation,
   //  it is time to reset your state.
@@ -92,7 +94,7 @@ export default class Document {
       this.onMutation({
         mutation,
         document: this.EDGE,
-        remote: false
+        remote: false,
       })
     }
 
@@ -108,7 +110,7 @@ export default class Document {
       failure: () => {
         this.pendingFailed(txnId)
         this.updateConsistencyFlag()
-      }
+      },
     }
   }
 
@@ -126,11 +128,12 @@ export default class Document {
   considerIncoming() {
     let mustRebase = false
     let nextMut: Mutation | null
+    const rebaseMutations: Mutation[] = []
     // Filter mutations that are older than the document
     if (this.HEAD) {
       const updatedAt = new Date(this.HEAD._updatedAt)
-      if (this.incoming.find(mut => mut.timestamp && mut.timestamp < updatedAt)) {
-        this.incoming = this.incoming.filter(mut => mut.timestamp < updatedAt)
+      if (this.incoming.find((mut) => mut.timestamp && mut.timestamp < updatedAt)) {
+        this.incoming = this.incoming.filter((mut) => mut.timestamp < updatedAt)
       }
     }
 
@@ -139,15 +142,18 @@ export default class Document {
     do {
       // Find next mutation that can be applied to HEAD (if any)
       if (this.HEAD) {
-        nextMut = this.incoming.find(mut => mut.previousRev == this.HEAD._rev)
+        nextMut = this.incoming.find((mut) => mut.previousRev == this.HEAD._rev)
       } else {
         // When HEAD is null, that means the document is currently deleted. Only mutations that start with a create
         // operation will be considered.
-        nextMut = this.incoming.find(mut => mut.appliesToMissingDocument())
+        nextMut = this.incoming.find((mut) => mut.appliesToMissingDocument())
       }
       if (nextMut) {
         const applied = this.applyIncoming(nextMut)
         mustRebase = mustRebase || applied
+        if (mustRebase) {
+          rebaseMutations.push(nextMut)
+        }
         // eslint-disable-next-line max-depth
         if (protect++ > 10) {
           throw new Error(
@@ -160,11 +166,14 @@ export default class Document {
     } while (nextMut)
 
     if (this.incoming.length > 0 && debug.enabled) {
-      debug('Unable to apply mutations %s', this.incoming.map(mut => mut.transactionId).join(', '))
+      debug(
+        'Unable to apply mutations %s',
+        this.incoming.map((mut) => mut.transactionId).join(', ')
+      )
     }
 
     if (mustRebase) {
-      this.rebase()
+      this.rebase(rebaseMutations)
     }
   }
 
@@ -204,8 +213,12 @@ export default class Document {
 
     this.HEAD = mut.apply(this.HEAD)
 
+    if (this.onRemoteMutation) {
+      this.onRemoteMutation(mut)
+    }
+
     // Eliminate from incoming set
-    this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)
+    this.incoming = this.incoming.filter((m) => m.transactionId != mut.transactionId)
 
     if (this.anyUnresolvedMutations()) {
       const needRebase = this.consumeUnresolved(mut.transactionId)
@@ -213,8 +226,8 @@ export default class Document {
         debug(
           `Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`
         )
-        debug(`Submitted txnIds: ${this.submitted.map(m => m.transactionId).join(', ')}`)
-        debug(`Pending txnIds: ${this.pending.map(m => m.transactionId).join(', ')}`)
+        debug(`Submitted txnIds: ${this.submitted.map((m) => m.transactionId).join(', ')}`)
+        debug(`Pending txnIds: ${this.pending.map((m) => m.transactionId).join(', ')}`)
         debug(`needRebase == %s`, needRebase)
       }
       return needRebase
@@ -228,7 +241,7 @@ export default class Document {
       this.onMutation({
         mutation: mut,
         document: this.EDGE,
-        remote: true
+        remote: true,
       })
     }
     return false
@@ -278,8 +291,8 @@ export default class Document {
     )
     // The mutation was not the upcoming mutation, so we'll have to check everything to
     // see if we have an out of order situation
-    this.submitted = this.submitted.filter(mut => mut.transactionId != txnId)
-    this.pending = this.pending.filter(mut => mut.transactionId != txnId)
+    this.submitted = this.submitted.filter((mut) => mut.transactionId != txnId)
+    this.pending = this.pending.filter((mut) => mut.transactionId != txnId)
     debug(`After scrubbing: Pending: %d, Submitted: %d`, this.pending.length, this.submitted.length)
     // Whether we had it or not we have either a reordering, or an unexpected mutation
     // so must rebase
@@ -300,7 +313,7 @@ export default class Document {
     // Oh, no. Submitted out of order.
     let justSubmitted
     const stillPending = []
-    this.pending.forEach(mutation => {
+    this.pending.forEach((mutation) => {
       if (mutation.transactionId == pendingTxnId) {
         justSubmitted = mutation
         return
@@ -313,16 +326,16 @@ export default class Document {
     this.submitted.push(justSubmitted)
     this.pending = stillPending
     // Must rebase since mutation order has changed
-    this.rebase()
+    this.rebase([])
   }
 
   pendingFailed(pendingTxnId: string) {
-    this.pending = this.pending.filter(mutation => mutation.transactionId != pendingTxnId)
+    this.pending = this.pending.filter((mutation) => mutation.transactionId != pendingTxnId)
     // Rebase to revert document to what it looked like before the failed mutation
-    this.rebase()
+    this.rebase([])
   }
 
-  rebase() {
+  rebase(incomingMutations: Mutation[]) {
     const oldEdge = this.EDGE
     this.EDGE = Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending))
     // Copy over rev, since we don't care if it changed, we only care about the content
@@ -331,7 +344,7 @@ export default class Document {
     }
     const changed = !isEqual(this.EDGE, oldEdge)
     if (changed && this.onRebase) {
-      this.onRebase(this.EDGE)
+      this.onRebase(this.EDGE, incomingMutations, this.pending)
     }
   }
 }

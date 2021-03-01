@@ -1,0 +1,29 @@
+{
+  "root": true,
+  "project": {
+    "name": "Blog studio example"
+  },
+  "api": {
+    "projectId": "ppsg7ml5",
+    "dataset": "blog"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    }
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "6989hjtp"
+      }
+    }
+  }
+}

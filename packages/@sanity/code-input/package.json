@@ -1,13 +1,12 @@
 {
   "name": "@sanity/code-input",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "Ace editor for editing code",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "prepublishOnly": "sanity-check"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -21,11 +20,9 @@
   ],
   "dependencies": {
     "lodash": "^4.17.15",
-    "react-ace": "^5.0.1",
-    "react-icons": "^2.2.7"
+    "react-ace": "^5.0.1"
   },
   "devDependencies": {
-    "@sanity/check": "0.147.0",
     "rimraf": "^2.7.1"
   },
   "bugs": {
@@ -34,6 +31,7 @@
   "homepage": "https://www.sanity.io/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/code-input"
   }
 }

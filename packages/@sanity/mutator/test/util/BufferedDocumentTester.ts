@@ -18,16 +18,16 @@ export default class BufferedDocumentTester {
   constructor(tap, attrs) {
     this.doc = new BufferedDocument(attrs)
     this.onRebaseCalled = false
-    this.doc.onRebase = edge => {
+    this.doc.onRebase = (edge) => {
       this.onRebaseCalled = true
     }
     this.doc.onMutation = (edge, mutation) => {
       this.onMutationCalled = true
     }
-    this.doc.onDelete = local => {
+    this.doc.onDelete = (local) => {
       this.onDeleteCalled = true
     }
-    this.doc.commitHandler = opts => {
+    this.doc.commitHandler = (opts) => {
       this.pendingCommit = opts
     }
     this.tap = tap
@@ -58,7 +58,7 @@ export default class BufferedDocumentTester {
       transactionId: toRev,
       resultRev: toRev,
       previousRev: fromRev,
-      mutations: [{patch}]
+      mutations: [{patch}],
     })
     this.doc.arrive(mut)
     return this
@@ -70,7 +70,7 @@ export default class BufferedDocumentTester {
       transactionId: toRev,
       resultRev: toRev,
       previousRev: fromRev,
-      mutations: [operation]
+      mutations: [operation],
     })
     this.doc.arrive(mut)
     return this
@@ -79,7 +79,7 @@ export default class BufferedDocumentTester {
   localPatch(patch) {
     this.resetState()
     const mut = new Mutation({
-      mutations: [{patch}]
+      mutations: [{patch}],
     })
     this.doc.add(mut)
     return this
@@ -91,7 +91,7 @@ export default class BufferedDocumentTester {
       transactionId: toRev,
       resultRev: toRev,
       previousRev: fromRev,
-      mutations: [operation]
+      mutations: [operation],
     })
     debug('Local mutation: %O', mut)
     this.doc.add(mut)

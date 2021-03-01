@@ -27,7 +27,7 @@
  *  })(document, ['a.js', 'b.js']);
  */
 
-export default scripts => {
+export default (scripts) => {
   const urls = `[${scripts.map(JSON.stringify).join(',')}]`
   return `/* Script loader */\n!function(e,t){if(void 0!==window.fetch)t.forEach(function(t){var o=e.createElement("script");o.src=t,o.async=!1,e.head.appendChild(o)});else{var o=e.getElementById("sanity");'<div style="height:100%;width: 100%;position: absolute;top:45%;text-align:center;font-family:helvetica, arial, sans-serif;">',"<h1>Browser not supported</h1>",'<p>Please use a modern browser such as <a href="https://www.google.com/chrome/">Chrome</a> or <a href="https://www.getfirefox.org/">Firefox</a>.</p>',"</div>","</div>";var r=o;do{r.style.height="100%",r=r.parentNode}while(r.parentNode);o.innerHTML='<div style="position:relative;height:100%;"><div style="height:100%;width: 100%;position: absolute;top:45%;text-align:center;font-family:helvetica, arial, sans-serif;"><h1>Browser not supported</h1><p>Please use a modern browser such as <a href="https://www.google.com/chrome/">Chrome</a> or <a href="https://www.getfirefox.org/">Firefox</a>.</p></div></div>'}}(document,${urls});`
 }

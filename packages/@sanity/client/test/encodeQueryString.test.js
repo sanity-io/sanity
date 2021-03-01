@@ -1,13 +1,13 @@
 const test = require('tape')
 const encode = require('../src/data/encodeQueryString')
 
-test('can encode basic query without parameters', t => {
+test('can encode basic query without parameters', (t) => {
   const query = 'gamedb.game[maxPlayers == 64]'
   t.equal(encode({query}), '?query=gamedb.game%5BmaxPlayers%20%3D%3D%2064%5D')
   t.end()
 })
 
-test('can encode queries with basic numeric parameters', t => {
+test('can encode queries with basic numeric parameters', (t) => {
   const query = 'gamedb.game[maxPlayers == $maxPlayers && score == $score]'
   t.equal(
     encode({query, params: {maxPlayers: 64, score: 3.45678}}),
@@ -17,7 +17,7 @@ test('can encode queries with basic numeric parameters', t => {
   t.end()
 })
 
-test('can encode queries with basic string parameters', t => {
+test('can encode queries with basic string parameters', (t) => {
   const query = 'gamedb.game[name == $name]'
   t.equal(
     encode({query, params: {name: 'foobar'}}),
@@ -26,7 +26,7 @@ test('can encode queries with basic string parameters', t => {
   t.end()
 })
 
-test('can encode queries with booleans', t => {
+test('can encode queries with booleans', (t) => {
   const query = 'gamedb.game[isReleased == $released]'
   t.equal(
     encode({query, params: {released: true}}),

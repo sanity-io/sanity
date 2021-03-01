@@ -1,39 +1,36 @@
-import {Type} from '../../typedefs'
-import {Patch} from '../../typedefs/patch'
 import {Observable} from 'rxjs'
+import {AssetSourceSpec, SchemaType} from '@sanity/types'
+import {AssetMetadataType} from '@sanity/client'
+import {Patch} from '../../typedefs/patch'
 
 export type UploadEvent = {
   type: 'uploadEvent'
-  patches: Array<Patch> | null
+  patches: Patch[] | null
 }
 
-export type ResolvedUploader = {uploader: Uploader; type: Type}
+export type ResolvedUploader = {uploader: Uploader; type: SchemaType}
 
 export type UploadOptions = {
-  metadata?: Array<string>
+  metadata?: AssetMetadataType[]
   storeOriginalFilename?: boolean
   label?: string
   title?: string
   description?: string
   creditLine?: string
-  source?: {
-    id: string
-    name: string
-    url?: string
-  }
+  source?: AssetSourceSpec
 }
 
 export type UploaderDef = {
   type: string
   accepts: string
-  upload: (file: File, type: Type) => Observable<UploadEvent>
+  upload: (file: File, type: SchemaType) => Observable<UploadEvent>
 }
 
 export type Uploader = {
   type: string
   accepts: string
-  upload: (file: File, type: Type, options?: UploadOptions) => Observable<UploadEvent>
+  upload: (file: File, type: SchemaType, options?: UploadOptions) => Observable<UploadEvent>
   priority: number
 }
 
-export type UploaderResolver = (type: Type, file: File) => Uploader | null
+export type UploaderResolver = (type: SchemaType, file: File) => Uploader | null

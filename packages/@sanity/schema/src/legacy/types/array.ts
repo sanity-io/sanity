@@ -1,21 +1,14 @@
 import {pick} from 'lodash'
 import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const ARRAY_CORE = {
   name: 'array',
   type: null,
   jsonType: 'array',
-  of: []
+  of: [],
 }
 
 export const ArrayType = {
@@ -24,10 +17,10 @@ export const ArrayType = {
   },
   extend(subTypeDef, createMemberType) {
     const parsed = Object.assign(pick(ARRAY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: ARRAY_CORE
+      type: ARRAY_CORE,
     })
     lazyGetter(parsed, 'of', () => {
-      return subTypeDef.of.map(ofTypeDef => {
+      return subTypeDef.of.map((ofTypeDef) => {
         return createMemberType(ofTypeDef)
       })
     })
@@ -39,16 +32,16 @@ export const ArrayType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

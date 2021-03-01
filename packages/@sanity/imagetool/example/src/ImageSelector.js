@@ -19,5 +19,5 @@ export default function ImageSelector(props) {
 }
 ImageSelector.propTypes = {
   images: PropTypes.arrayOf(PropTypes.string),
-  thumbWidth: PropTypes.number
+  thumbWidth: PropTypes.number,
 }

@@ -3,19 +3,21 @@ import {withPropsStream} from 'react-props-stream'
 import {concat, of} from 'rxjs'
 import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
-const loadProps = receivedProps$ =>
+const loadProps = (receivedProps$) =>
   receivedProps$.pipe(
     distinctUntilChanged((prev, next) => prev.id === next.id),
-    switchMap(receivedProps =>
+    switchMap((receivedProps) =>
       concat(
         of({...receivedProps, referringDocuments: [], isLoading: true}),
-        documentStore.query('*[references($docId)] [0...101]', {docId: receivedProps.id}).pipe(
-          map(event => ({
-            ...receivedProps,
-            referringDocuments: event.documents,
-            isLoading: false
-          }))
-        )
+        documentStore
+          .listenQuery('*[references($docId)] [0...101]', {docId: receivedProps.id})
+          .pipe(
+            map((docs) => ({
+              ...receivedProps,
+              referringDocuments: docs,
+              isLoading: false,
+            }))
+          )
       )
     )
   )

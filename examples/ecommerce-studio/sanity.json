@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "project": {
+    "name": "Sanity E-commerce example studio"
+  },
+  "api": {
+    "projectId": "ru2xdibx",
+    "dataset": "production"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "barcode-input"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    }
+  ]
+}

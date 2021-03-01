@@ -1,3 +1,4 @@
+import path from 'path'
 import webpack from 'webpack'
 import registerBabel from '@babel/register'
 import webpackDevMiddleware from 'webpack-dev-middleware'
@@ -5,8 +6,10 @@ import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
 import getStaticBasePath from './util/getStaticBasePath'
+import isSanityMonorepo from './configs/isSanityMonorepo'
 
 export default function getDevServer(config = {}) {
+  config.isSanityMonorepo = isSanityMonorepo(config.basePath)
   const staticPath = getStaticBasePath(config)
   const app = getBaseServer(config)
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
@@ -20,7 +23,16 @@ export default function getDevServer(config = {}) {
 
   // Use babel-register in order to be able to load things like
   // the document component, which can contain JSX etc
-  registerBabel()
+  if (config.isSanityMonorepo) {
+    registerBabel({
+      babelrc: false,
+      configFile: path.resolve(__dirname, '../.babelrc'),
+      // Ignore all files in node_modules except `node_modules/@sanity/base/**/*`
+      ignore: [/node_modules\/(?!@sanity\/base).*/],
+    })
+  } else {
+    registerBabel()
+  }
 
   // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
@@ -28,9 +40,9 @@ export default function getDevServer(config = {}) {
     webpackDevMiddleware(compiler, {
       logLevel: 'silent',
       watchOptions: {
-        ignored: /node_modules/
+        ignored: /node_modules/,
       },
-      publicPath: webpackConfig.output.publicPath
+      publicPath: webpackConfig.output.publicPath,
     })
   )
 

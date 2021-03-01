@@ -1,0 +1,28 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+/* @todo coder styling, fix me  */
+.text:not(:only-child) {
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  vertical-align: middle;
+}
+
+.indexGroup {
+  display: inline-block;
+  font-weight: 600;
+  vertical-align: middle;
+  padding: 1px var(--extra-small-padding);
+}
+
+ins.indexGroup {
+  text-decoration: none;
+}
+
+.index {
+  display: inline-block;
+  background: var(--gray-lightest);
+  border-radius: var(--border-radius-medium);
+  font-weight: 700;
+  padding: var(--extra-small-padding) var(--small-padding);
+}

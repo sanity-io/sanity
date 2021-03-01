@@ -27,8 +27,9 @@ module.exports = function parseArguments(argv = process.argv) {
       v, version,
     },
 
+    argv, // forwarded to commands that want to be more explicit about parsing
     extOptions, // forwarded to commands
     argsWithoutOptions, // remaining arguments
-    extraArguments // arguments after the ended argument list (--)
+    extraArguments, // arguments after the ended argument list (--)
   }
 }

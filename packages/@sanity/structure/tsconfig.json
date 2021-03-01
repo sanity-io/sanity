@@ -1,7 +1,16 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
   "compilerOptions": {
-    "outDir": "./lib"
-  }
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
+    "noImplicitAny": false
+  },
+  "references": [
+    {
+      "path": "../initial-value-templates"
+    }
+  ]
 }

@@ -1,0 +1,70 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  box-sizing: border-box;
+  margin-top: 2px;
+}
+
+.auto {
+  composes: root;
+}
+
+.padding_none {
+  padding: 0;
+}
+
+.padding_small {
+  padding: var(--small-padding);
+}
+
+.padding_medium {
+  padding: var(--medium-padding);
+}
+
+.padding_large {
+  padding: var(--large-padding);
+}
+
+.small {
+  composes: root;
+  width: calc(100vw - var(--medium-padding) * 4);
+
+  @media (--screen-medium) {
+    max-width: 20rem;
+  }
+}
+
+.medium {
+  composes: root;
+  width: calc(100vw - var(--medium-padding) * 4);
+
+  @media (--screen-medium) {
+    width: 27rem;
+  }
+
+  @media (--screen-default) {
+    width: 33rem;
+  }
+
+  @media (--screen-large) {
+    width: 35rem;
+  }
+}
+
+.large {
+  composes: root;
+  width: calc(100vw - var(--medium-padding) * 4);
+
+  @media (--screen-medium) {
+    width: 28rem;
+  }
+
+  @media (--screen-default) {
+    width: 40rem;
+  }
+
+  @media (--screen-large) {
+    width: 50rem;
+  }
+}

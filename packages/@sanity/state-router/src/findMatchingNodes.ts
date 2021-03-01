@@ -14,8 +14,8 @@ export default function findMatchingRoutes(node: Node, _state: Object | null): M
   const state = node.scope ? _state[node.scope] : _state
 
   const requiredParams = node.route.segments
-    .filter(seg => seg.type === 'param')
-    .map(seg => seg.name)
+    .filter((seg) => seg.type === 'param')
+    .map((seg) => seg.name)
 
   const stateKeys = state ? Object.keys(state) : []
 
@@ -42,7 +42,7 @@ export default function findMatchingRoutes(node: Node, _state: Object | null): M
 
   let matchingChild: MatchResult = {nodes: [], remaining: [], missing: []}
 
-  arrayify(children).some(childNode => {
+  arrayify(children).some((childNode) => {
     matchingChild = findMatchingRoutes(childNode, remainingState)
     return matchingChild.nodes.length > 0
   })

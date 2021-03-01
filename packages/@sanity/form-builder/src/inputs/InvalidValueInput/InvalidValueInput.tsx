@@ -1,61 +1,58 @@
 import React from 'react'
 import DefaultButton from 'part:@sanity/components/buttons/default'
-import Details from '../common/Details'
-import styles from './InvalidValueInput.css'
+import styles from '../ObjectInput/styles/UnknownFields.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import {ItemValue} from '../ArrayInput/typedefs'
+import Warning from '../Warning'
 import CONVERTERS from './converters'
-const setAutoHeight = el => {
-  if (el) {
-    el.style.height = `${Math.min(300, el.scrollHeight)}px`
-    el.style.padding = `${4}px`
-    el.style.overflow = 'auto'
-  }
-}
+import {UntypedValueInput} from './UntypedValueInput'
+
 function getConverters(value, actualType, validTypes) {
   if (!(actualType in CONVERTERS)) {
     return []
   }
+
   return Object.keys(CONVERTERS[actualType])
-    .filter(targetType => validTypes.includes(targetType))
-    .map(targetType => ({
+    .filter((targetType) => validTypes.includes(targetType))
+    .map((targetType) => ({
       from: actualType,
       to: targetType,
-      ...CONVERTERS[actualType][targetType]
+      ...CONVERTERS[actualType][targetType],
     }))
-    .filter(converter => converter.test(value))
+    .filter((converter) => converter.test(value))
 }
+
 type InvalidValueProps = {
   actualType?: string
-  validTypes?: any[]
-  value?: any
-  onChange?: (...args: any[]) => any
+  validTypes?: string[]
+  value?: unknown
+  onChange?: (event: PatchEvent, valueOverride?: ItemValue) => void
 }
-export default class InvalidValue extends React.PureComponent<InvalidValueProps, {}> {
-  element: any
+export default class InvalidValueInput extends React.PureComponent<InvalidValueProps, {}> {
   handleClearClick = () => {
     this.props.onChange(PatchEvent.from(unset()))
   }
-  handleConvertTo = converted => {
+
+  handleConvertTo = (converted) => {
     this.props.onChange(PatchEvent.from(set(converted)))
   }
-  focus() {
-    if (this.element) {
-      this.element.focus()
-    }
-  }
+
   renderValidTypes() {
     const {validTypes} = this.props
     if (validTypes.length === 1) {
       return (
         <div>
-          Only content of type <code>{validTypes[0]}</code> are valid here according to schema
+          Only content of type <code>{validTypes[0]}</code> are valid here according to the schema.
+          This could mean that the type has changed, or that someone else has added it to their own
+          local schema that is not yet deployed.
         </div>
       )
     }
+
     return (
       <div>
         Only the following types are valid here according to schema:{' '}
-        {validTypes.map(validType => (
+        {validTypes.map((validType) => (
           <li key={validType}>
             <code>{validType}</code>
           </li>
@@ -63,43 +60,43 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
       </div>
     )
   }
-  setElement = element => {
-    this.element = element
-  }
+
   render() {
-    const {value, actualType, validTypes} = this.props
+    const {value, actualType, validTypes, onChange} = this.props
+
+    if (typeof value === 'object' && value !== null && !('_type' in value)) {
+      return (
+        <UntypedValueInput
+          value={value as Record<string, unknown>}
+          validTypes={validTypes}
+          onChange={onChange}
+        />
+      )
+    }
+
     const converters = getConverters(value, actualType, validTypes)
-    return (
-      <div className={styles.root} tabIndex={0} ref={this.setElement}>
-        <h3>
-          Content has invalid type: <code>{actualType}</code>
-        </h3>
-        <Details>
-          Encountered a value of type <code>{actualType}</code>.{this.renderValidTypes()}
-          <h4>The current value is:</h4>
-          <textarea
-            ref={setAutoHeight}
-            className={styles.currentValueDump}
-            onFocus={e => e.target.select()}
-            readOnly
-            value={value && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-          />
-          {converters.map(converter => (
-            <DefaultButton
-              key={`${converter.from}-${converter.to}`}
-              onClick={() => this.handleConvertTo(converter.convert(value))}
-              color="primary"
-            >
-              Convert value to {converter.to}
-            </DefaultButton>
-          ))}
-        </Details>
-        <div className={styles.removeButtonWrapper}>
+    const message = (
+      <>
+        Encountered a value of type <code>{actualType}</code>.{this.renderValidTypes()}
+        <h4>{actualType}</h4>
+        <pre className={styles.inspectValue}>{JSON.stringify(value, null, 2)}</pre>
+        {converters.map((converter) => (
+          <DefaultButton
+            key={`${converter.from}-${converter.to}`}
+            onClick={() => this.handleConvertTo(converter.convert(value))}
+            color="primary"
+          >
+            Convert value to {converter.to}
+          </DefaultButton>
+        ))}
+        <div className={styles.buttonWrapper}>
           <DefaultButton onClick={this.handleClearClick} color="danger">
             Remove value
           </DefaultButton>
         </div>
-      </div>
+      </>
     )
+
+    return <Warning heading="Content has invalid type" message={message} />
   }
 }

@@ -1,14 +1,14 @@
 const GROQ_KEYWORDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 const VALID_FIELD = /^[a-zA-Z_][a-zA-Z0-9_]*$/
 
-export const fieldNeedsEscape = fieldName =>
+export const fieldNeedsEscape = (fieldName) =>
   !VALID_FIELD.test(fieldName) || GROQ_KEYWORDS.includes(fieldName)
 
-export const escapeField = fieldName => `["${fieldName}"]`
-const escapeFirst = fieldName => `@${escapeField(fieldName)}`
+export const escapeField = (fieldName) => `["${fieldName}"]`
+const escapeFirst = (fieldName) => `@${escapeField(fieldName)}`
 
-const isEmptyArray = v => Array.isArray(v) && v.length === 0
-export const joinPath = pathArray =>
+const isEmptyArray = (v) => Array.isArray(v) && v.length === 0
+export const joinPath = (pathArray) =>
   pathArray.reduce((prev, pathSegment, i) => {
     if (isEmptyArray(pathSegment)) {
       return `${prev}[]`

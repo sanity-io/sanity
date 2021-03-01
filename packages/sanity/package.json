@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "scripts": {
     "postinstall": "node placeholder.js"
@@ -18,12 +18,13 @@
     "content"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "homepage": "https://www.sanity.io/",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/sanity"
   }
 }

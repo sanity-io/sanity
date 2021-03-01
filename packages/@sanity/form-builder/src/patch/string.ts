@@ -17,7 +17,7 @@ const OPERATIONS = {
   },
   diffMatchPatch(currentValue, nextValue) {
     return dmp.patch_apply(dmp.patch_fromText(nextValue), currentValue)[0]
-  }
+  },
 }
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)

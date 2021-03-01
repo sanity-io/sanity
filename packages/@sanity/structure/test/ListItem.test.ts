@@ -9,39 +9,18 @@ test('throws if no id is set', () => {
 })
 
 test('infers ID from title if not specified', () => {
-  expect(
-    S.listItem()
-      .title('Hei der')
-      .getId()
-  ).toEqual('heiDer')
-  expect(
-    S.listItem()
-      .id('zing')
-      .title('Hei der')
-      .getId()
-  ).toEqual('zing')
-  expect(
-    S.listItem()
-      .title('Hei der')
-      .id('blah')
-      .getId()
-  ).toEqual('blah')
+  expect(S.listItem().title('Hei der').getId()).toEqual('heiDer')
+  expect(S.listItem().id('zing').title('Hei der').getId()).toEqual('zing')
+  expect(S.listItem().title('Hei der').id('blah').getId()).toEqual('blah')
 })
 
 test('throws if no title is set', () => {
-  expect(() =>
-    S.listItem()
-      .id('foo')
-      .serialize()
-  ).toThrowErrorMatchingSnapshot()
+  expect(() => S.listItem().id('foo').serialize()).toThrowErrorMatchingSnapshot()
 })
 
 test('builds list items with ID and title through setters', () => {
   expect(
-    S.listItem({id: 'books', title: 'Books'})
-      .id('authors')
-      .title('Authors')
-      .serialize()
+    S.listItem({id: 'books', title: 'Books'}).id('authors').title('Authors').serialize()
   ).toMatchSnapshot()
 })
 
@@ -66,11 +45,7 @@ test('builds list items with specific child resolver', () => {
 test('builds list items with child defined through builder', () => {
   expect(
     S.listItem({id: 'asoiaf', title: 'A Song of Ice and Fire'})
-      .child(
-        S.documentList()
-          .id('asoiaf-books')
-          .filter('author == "grrm"')
-      )
+      .child(S.documentList().id('asoiaf-books').filter('author == "grrm"'))
       .serialize()
   ).toMatchSnapshot()
 })
@@ -84,19 +59,11 @@ test('builds list items with specified schema type', () => {
 })
 
 test('builds list items with display options (dont show icon)', () => {
-  expect(
-    S.listItem({id: 'foo', title: 'Foo'})
-      .showIcon(false)
-      .serialize()
-  ).toMatchSnapshot()
+  expect(S.listItem({id: 'foo', title: 'Foo'}).showIcon(false).serialize()).toMatchSnapshot()
 })
 
 test('builds list items with display options (show icon)', () => {
-  expect(
-    S.listItem({id: 'foo', title: 'Foo'})
-      .showIcon(true)
-      .serialize()
-  ).toMatchSnapshot()
+  expect(S.listItem({id: 'foo', title: 'Foo'}).showIcon(true).serialize()).toMatchSnapshot()
 })
 
 test('builder is immutable', () => {

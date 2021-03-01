@@ -62,7 +62,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -71,7 +71,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -154,7 +154,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -163,7 +163,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -246,7 +246,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -255,7 +255,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -338,7 +338,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -347,7 +347,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -430,7 +430,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -439,7 +439,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -522,7 +522,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -531,7 +531,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {
@@ -614,7 +614,7 @@ Object {
       "params": Object {
         "layout": "default",
       },
-      "title": "List",
+      "title": "Compact view",
     },
     Object {
       "action": "setLayout",
@@ -623,7 +623,7 @@ Object {
       "params": Object {
         "layout": "detail",
       },
-      "title": "Details",
+      "title": "Detailed view",
     },
   ],
   "options": Object {

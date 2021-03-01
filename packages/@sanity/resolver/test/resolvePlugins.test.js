@@ -21,7 +21,7 @@ import {
   getRootLevelPartsTree,
   getNodeResolutionTree,
   getPathAlternatives,
-  getDuplicatePluginTree
+  getDuplicatePluginTree,
 } from './fixtures'
 
 const opts = {basePath: '/sanity'}
@@ -57,7 +57,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({missingDescription: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 0')
           err.message.should.contain('`description`')
         })
@@ -67,7 +67,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({unprefixed: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 1')
           err.message.should.contain('needs a "part:"-prefix')
           err.message.should.contain('xamples')
@@ -78,7 +78,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({allPrefixed: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 2')
           err.message.should.contain('"all:"')
           err.message.should.contain('xamples')
@@ -89,7 +89,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({doublePrefix: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 3')
           err.message.should.contain('":"')
           err.message.should.contain('xamples')
@@ -100,7 +100,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({noPluginName: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 4')
           err.message.should.contain('plugin name')
           err.message.should.contain('xamples')
@@ -111,7 +111,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({noPartName: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 5')
           err.message.should.contain('after the plugin name')
           err.message.should.contain('xamples')
@@ -122,7 +122,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({missingImplements: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 6')
           err.message.should.contain('either `name` or `implements`')
         })
@@ -132,7 +132,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({missingName: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 7')
           err.message.should.contain('either `name` or `implements`')
         })
@@ -142,7 +142,7 @@ describe('plugin resolver', () => {
       mockFs(getInvalidPartDeclaration({missingPath: true}))
       return resolvePlugins(opts)
         .then(shouldHaveThrown)
-        .catch(err => {
+        .catch((err) => {
           err.message.should.contain('index 8')
         })
     })
@@ -165,23 +165,23 @@ describe('plugin resolver', () => {
 
   it('resolves plugins in the right order', () => {
     mockFs(getDeepTree())
-    return resolvePlugins(opts).then(plugins => {
+    return resolvePlugins(opts).then((plugins) => {
       plugins
-        .map(plugin => plugin.name)
+        .map((plugin) => plugin.name)
         .should.eql([
           '@sanity/default-layout',
           '@sanity/core',
           'baz',
           'bar',
           'foo',
-          '(project root)'
+          '(project root)',
         ])
     })
   })
 
   it('does not list duplicate plugins multiple times', () => {
     mockFs(getDuplicatePluginTree())
-    return resolvePlugins(opts).then(plugins => {
+    return resolvePlugins(opts).then((plugins) => {
       plugins.should.have.length(3)
     })
   })
@@ -190,21 +190,21 @@ describe('plugin resolver', () => {
     mockFs(getDeepTree())
     const plugins = resolvePlugins(syncOpts)
     plugins
-      .map(plugin => plugin.name)
+      .map((plugin) => plugin.name)
       .should.eql(['@sanity/default-layout', '@sanity/core', 'baz', 'bar', 'foo', '(project root)'])
   })
 
   describe('respects the sanity plugin resolution order', () => {
     it('prefers fully qualified, local path (/plugins/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'fullLocalPath'}))
-      return resolvePlugins(opts).then(plugins => {
+      return resolvePlugins(opts).then((plugins) => {
         plugins[0].path.should.equal('/sanity/plugins/sanity-plugin-bar')
       })
     })
 
     it('prefers short-named, local path as 2nd option (/plugins/<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'shortLocalPath'}))
-      return resolvePlugins(opts).then(plugins => {
+      return resolvePlugins(opts).then((plugins) => {
         plugins[0].path.should.equal('/sanity/plugins/bar')
       })
     })
@@ -212,7 +212,7 @@ describe('plugin resolver', () => {
     const subPath = '/node_modules/sanity-plugin-<parent>/node_modules/sanity-plugin-<name>'
     it(`prefers fully qualified in parent plugin node_modules as 3rd option (${subPath})`, () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
-      return resolvePlugins(opts).then(plugins => {
+      return resolvePlugins(opts).then((plugins) => {
         plugins[0].path.should.equal(
           '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar'
         )
@@ -221,7 +221,7 @@ describe('plugin resolver', () => {
 
     it('prefers fully qualified in root node_modules as 4th option (/node_modules/sanity-plugin-<name>)', () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'nodeModules'}))
-      return resolvePlugins(opts).then(plugins => {
+      return resolvePlugins(opts).then((plugins) => {
         plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-bar')
       })
     })
@@ -229,7 +229,7 @@ describe('plugin resolver', () => {
     it('follows the node resolution algorithm (trickles down directory tree)', () => {
       mockFs(getNodeResolutionTree())
       const resolveOpts = Object.assign(opts, {basePath: '/sanity/app'})
-      return resolvePlugins(resolveOpts).then(plugins => {
+      return resolvePlugins(resolveOpts).then((plugins) => {
         plugins[0].path.should.equal('/sanity/node_modules/@sanity/default-layout')
         plugins[1].path.should.equal('/sanity/node_modules/@sanity/core')
         plugins[2].path.should.equal('/node_modules/@sanity/strawberry')
@@ -241,7 +241,7 @@ describe('plugin resolver', () => {
 
   it('can resolve parts for a basic setup', () => {
     mockFs(getBasicTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       const settings = res.definitions['part:@sanity/default-layout/settingsPane']
       settings.path.should.equal('/sanity/node_modules/@sanity/default-layout')
 
@@ -249,35 +249,35 @@ describe('plugin resolver', () => {
       tool.should.have.length(2)
       tool[0].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
       })
 
       const main = res.implementations['part:@sanity/core/root']
       main.should.have.length(1)
       main[0].should.eql({
         plugin: '@sanity/default-layout',
-        path: '/sanity/node_modules/@sanity/default-layout/lib/components/Root'
+        path: '/sanity/node_modules/@sanity/default-layout/lib/components/Root',
       })
 
       const comments = res.implementations['part:instagram/commentsList']
       comments[0].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/CommentsList',
       })
     })
   })
 
   it('resolves plugins as well as parts', () => {
     mockFs(getBasicTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.plugins.should.have.length(4)
       res.plugins
-        .map(plugin => plugin.path)
+        .map((plugin) => plugin.path)
         .should.eql([
           '/sanity/node_modules/@sanity/default-layout',
           '/sanity/node_modules/@sanity/core',
           '/sanity/node_modules/sanity-plugin-instagram',
-          '/sanity'
+          '/sanity',
         ])
     })
   })
@@ -288,18 +288,18 @@ describe('plugin resolver', () => {
     const res = resolveParts(syncOpts)
     res.plugins.should.have.length(4)
     res.plugins
-      .map(plugin => plugin.path)
+      .map((plugin) => plugin.path)
       .should.eql([
         '/sanity/node_modules/@sanity/default-layout',
         '/sanity/node_modules/@sanity/core',
         '/sanity/node_modules/sanity-plugin-instagram',
-        '/sanity'
+        '/sanity',
       ])
   })
 
   it('doesnt try to look up the same location twice', () => {
     mockFs(getScopedPluginsTree())
-    return resolveParts(opts).catch(err => {
+    return resolveParts(opts).catch((err) => {
       err.locations
         .some((location, index) => err.locations.indexOf(location, index + 1) !== -1)
         .should.equal(false)
@@ -308,69 +308,69 @@ describe('plugin resolver', () => {
 
   it('resolves path to "compiled" path for node_modules, "source" for plugins', () => {
     mockFs(getMixedPluginTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.implementations['part:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/File'
+        path: '/sanity/plugins/foo/src/File',
       })
 
       res.implementations['part:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
       })
     })
   })
 
   it('resolves path to "compiled" if "useCompiledPaths"-option is set to true', () => {
     mockFs(getMixedPluginTree())
-    return resolveParts(Object.assign({}, opts, {useCompiledPaths: true})).then(res => {
+    return resolveParts(Object.assign({}, opts, {useCompiledPaths: true})).then((res) => {
       res.implementations['part:@sanity/default-layout/tool'][0].should.eql({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/lib/File'
+        path: '/sanity/plugins/foo/lib/File',
       })
 
       res.implementations['part:@sanity/default-layout/tool'][1].should.eql({
         plugin: 'instagram',
-        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool'
+        path: '/sanity/node_modules/sanity-plugin-instagram/lib/components/InstagramTool',
       })
     })
   })
 
   it('treats dot-paths as relative to sanity.json, absolute as absolute', () => {
     mockFs(getPathAlternatives())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.implementations['part:foo/relative'][0].should.eql({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/relative/Path.js'
+        path: '/sanity/plugins/foo/src/relative/Path.js',
       })
 
       res.implementations['part:foo/absolute'][0].should.eql({
         plugin: 'foo',
-        path: '/absolute/path/to/File.js'
+        path: '/absolute/path/to/File.js',
       })
 
       res.implementations['part:foo/dot-path'][0].should.eql({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/locale/en-us.json'
+        path: '/sanity/plugins/foo/locale/en-us.json',
       })
     })
   })
 
   it('late-defined plugins assign themselves to the start of the fulfillers list', () => {
     mockFs(getMixedPluginTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       const fulfillers = res.implementations['part:instagram/commentsList']
       fulfillers.should.have.length(2)
       fulfillers[0].should.eql({
         plugin: 'foo',
-        path: '/sanity/plugins/foo/src/InstaComments'
+        path: '/sanity/plugins/foo/src/InstaComments',
       })
     })
   })
 
   it('resolves multi-fulfiller parts correctly', () => {
     mockFs(getMultiTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.definitions.should.have.property('part:@sanity/base/absolute')
       res.implementations.should.have.property('part:@sanity/base/absolute')
       res.implementations['part:@sanity/base/absolute'].should.have.length(2)
@@ -379,27 +379,27 @@ describe('plugin resolver', () => {
 
   it('handles style parts as regular parts', () => {
     mockFs(getStyleTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.implementations['part:@sanity/default-layout/header-style'].should.eql([
         {
           path: '/sanity/node_modules/sanity-plugin-screaming-dev-badge/css/scream.css',
-          plugin: 'screaming-dev-badge'
+          plugin: 'screaming-dev-badge',
         },
         {
           path: '/sanity/node_modules/sanity-plugin-material-design/css/header.css',
-          plugin: 'material-design'
+          plugin: 'material-design',
         },
         {
           path: '/sanity/node_modules/@sanity/default-layout/css/header.css',
-          plugin: '@sanity/default-layout'
-        }
+          plugin: '@sanity/default-layout',
+        },
       ])
     })
   })
 
   it('allows a part to both implement a part and define a new one', () => {
     mockFs(getStyleOverriderTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.definitions.should.have.property('part:foo/button-style')
       res.definitions.should.have.property('part:foo/button-default-style')
 
@@ -415,7 +415,7 @@ describe('plugin resolver', () => {
 
   it('should include parts defined in base manifest', () => {
     mockFs(getRootLevelPartsTree())
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.definitions.should.have.property('part:@sanity/config/schema')
       res.definitions['part:@sanity/config/schema'].path.should.eql('/sanity')
 
@@ -432,7 +432,7 @@ describe('plugin resolver', () => {
 
   it('should treat base manifest parts as most significant', () => {
     mockFs(getRootLevelPartsTree({}))
-    return resolveParts(opts).then(res => {
+    return resolveParts(opts).then((res) => {
       res.definitions.should.have.property('part:@sanity/core/root')
       res.definitions['part:@sanity/core/root'].plugin.should.eql('@sanity/core')
 
@@ -446,7 +446,7 @@ describe('plugin resolver', () => {
 
     const rootPath = resolveProjectRoot({
       basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
-      sync: true
+      sync: true,
     })
 
     rootPath.should.eql('/sanity')
@@ -457,8 +457,8 @@ describe('plugin resolver', () => {
 
     return resolveParts({
       basePath: '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar',
-      resolveProjectRoot: true
-    }).then(parts => {
+      resolveProjectRoot: true,
+    }).then((parts) => {
       parts.plugins[parts.plugins.length - 1].path.should.eql('/sanity')
     })
   })
@@ -466,7 +466,7 @@ describe('plugin resolver', () => {
   it('can resolve relative paths as plugins', () => {
     mockFs(getParentDirTree())
 
-    return resolveParts({basePath: '/sanity/app'}).then(parts => {
+    return resolveParts({basePath: '/sanity/app'}).then((parts) => {
       parts.plugins[3].should.include.keys({
         name: 'my-parent-plugin',
         path: '/sanity/my-parent-plugin',
@@ -474,15 +474,15 @@ describe('plugin resolver', () => {
           parts: [
             {
               name: 'part:my-parent-plugin/foo/bar',
-              path: 'foobar.js'
-            }
-          ]
-        }
+              path: 'foobar.js',
+            },
+          ],
+        },
       })
 
       parts.implementations['part:my-parent-plugin/foo/bar'][0].should.eql({
         plugin: 'my-parent-plugin',
-        path: '/sanity/my-parent-plugin/foobar.js'
+        path: '/sanity/my-parent-plugin/foobar.js',
       })
     })
   })

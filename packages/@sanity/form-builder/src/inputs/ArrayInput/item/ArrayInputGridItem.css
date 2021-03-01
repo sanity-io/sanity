@@ -1,0 +1,128 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  padding: 1px;
+}
+
+.inner {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+
+  background: var(--component-bg);
+  border-radius: var(--border-radius-small);
+  padding: calc(var(--extra-small-padding) - 1px);
+  transition: box-shadow 250ms;
+
+  @nest :global(.ArrayInput__moving) & {
+    box-shadow: 0 0 0 1px var(--hairline-color), 0 8px 17px 2px var(--shadow-color-umbra),
+      0 3px 14px 2px var(--shadow-color-penumbra), 0 5px 5px -3px var(--shadow-color-ambient);
+  }
+  @nest [aria-selected='true'] & {
+    box-shadow: 0 0 0 1px var(--selected-item-color);
+  }
+}
+
+.innerWithError {
+  composes: inner;
+}
+
+.popupAnchor {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--selectable-item-color-highlighted);
+}
+
+.editRootFold {
+  position: relative;
+  width: calc(100% + var(--medium-padding) * 2);
+  margin-left: calc(var(--medium-padding) * -1);
+}
+
+.missingKeyMessage {
+  color: var(--state-warning-color);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 200;
+  padding: var(--extra-small-padding) var(--small-padding);
+  background-color: var(--input-bg);
+}
+
+.dragHandle {
+  display: block;
+  flex-grow: 0;
+  margin-right: var(--extra-small-padding);
+
+  @nest & > button {
+    cursor: move;
+  }
+}
+
+.previewWrapper {
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+
+  border-radius: var(--border-radius-base);
+  position: relative;
+
+  @nest &:focus {
+    box-shadow: var(--input-box-shadow--focus);
+  }
+}
+
+.previewWrapperHelper {
+  outline: none;
+}
+
+.previewWrapperHelper:focus {
+  @nest .innerWithError & {
+    box-shadow: var(--input-box-shadow--invalid-focus);
+  }
+}
+
+.presenceContainer {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  margin-top: var(--extra-small-padding);
+  padding: var(--extra-small-padding);
+}
+
+.dragHandleContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.functions {
+  display: flex;
+  align-items: center;
+  top: var(--extra-small-padding);
+  right: var(--extra-small-padding);
+
+  @nest &:empty {
+    display: none;
+  }
+
+  @nest & > div {
+    @nest &:empty {
+      display: none;
+    }
+  }
+
+  @nest & > div:not(:empty) + div {
+    margin-left: var(--extra-small-padding);
+  }
+}
+
+.validationIconError {
+  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
+}

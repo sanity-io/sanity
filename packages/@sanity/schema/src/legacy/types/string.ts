@@ -1,20 +1,13 @@
 import {pick} from 'lodash'
 import primitivePreview from '../preview/primitivePreview'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const STRING_CORE = {
   name: 'string',
   type: null,
-  jsonType: 'string'
+  jsonType: 'string',
 }
 
 export const StringType = {
@@ -24,7 +17,7 @@ export const StringType = {
   extend(subTypeDef) {
     const parsed = Object.assign(pick(STRING_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: STRING_CORE,
-      preview: primitivePreview
+      preview: primitivePreview,
     })
 
     return subtype(parsed)
@@ -34,13 +27,13 @@ export const StringType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

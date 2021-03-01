@@ -1,8 +1,9 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/no-unassigned-import */
+
 const {configure, sanity} = require('part:@sanity/storybook')
 
 require('normalize.css')
-require('part:@sanity/base/theme/body-style')
-require('./styles.css')
 
 configure(() => {
   // Trigger loading of stories (side-effect of registering them)

@@ -1,0 +1,138 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --change-bar-changed-color: var(--state-warning-color);
+  --change-bar-changed-focus-color: var(--focus-color);
+  --change-bar-changed-badge-animation-duration: 150ms;
+}
+
+.root {
+  display: flex;
+  position: relative;
+}
+
+.field {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.wrapper {
+  position: relative;
+  opacity: 1;
+  transition: opacity 100ms;
+
+  @nest .root:not(.changed) > & {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.bar {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  width: 2px;
+  bottom: 0;
+  background-color: var(--change-bar-changed-color);
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+
+  @nest .root.focus > .wrapper > & {
+    background-color: var(--change-bar-changed-focus-color);
+  }
+
+  @media (--max-screen-medium) {
+    /* hide on mobile */
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    display: unset;
+  }
+}
+
+.badge {
+  position: absolute;
+  background: var(--change-bar-changed-color);
+  top: 50%;
+  left: -9px;
+  width: 19px;
+  height: 19px;
+  border-radius: 9.5px;
+  transform: translate3d(-0.5px, -10px, 0) scale(0, 1);
+  transition: transform var(--change-bar-changed-badge-animation-duration),
+    opacity var(--change-bar-changed-badge-animation-duration);
+
+  @nest .root.hover > .wrapper > &, .root.focus > .wrapper > & {
+    transform: translate3d(-0.5px, -10px, 0) scale(1);
+  }
+
+  @nest .root.reviewChangesOpen > .wrapper > & {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @nest .root.focus > .wrapper > & {
+    background-color: var(--change-bar-changed-focus-color);
+  }
+}
+
+.badge__shape {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 27px;
+  transform: translate3d(-0.5px, -4px, 0);
+  color: var(--change-bar-changed-color);
+
+  @nest .root.focus > .wrapper > .badge > & {
+    color: var(--change-bar-changed-focus-color);
+  }
+}
+
+.badge__icon {
+  display: block;
+  position: relative;
+  margin: 1px;
+  font-size: calc(17 / 16 * 1rem);
+  color: var(--component-bg);
+  opacity: 0;
+  transition: opacity var(--change-bar-changed-badge-animation-duration);
+
+  @nest .root.hover > .wrapper > .badge > &, .root.focus > .wrapper > .badge > & {
+    opacity: 1;
+  }
+}
+
+.hitArea {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  display: block;
+  padding: 0;
+  background: 0;
+  position: absolute;
+  left: calc(0 - var(--extra-small-padding));
+  width: calc(var(--extra-small-padding) + var(--medium-padding));
+  height: 100%;
+  cursor: pointer;
+  pointer-events: all;
+
+  @nest &:focus {
+    border: 0;
+    outline: 0;
+  }
+}
+
+.tooltipContent {
+  padding: var(--small-padding);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  color: var(--text-color-secondary);
+
+  @nest & > span {
+    display: block;
+    margin: -4px 0 -3px;
+  }
+}

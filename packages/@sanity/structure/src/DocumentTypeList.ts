@@ -37,7 +37,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
       ...parent.getSpec(),
       ...this.spec,
       ...(withSpec || {}),
-      ...override
+      ...override,
     }
     return builder
   }

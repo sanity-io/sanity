@@ -1,53 +1,54 @@
-import React from 'react'
 import {get} from 'lodash'
-import TextInput from 'part:@sanity/components/textinputs/default'
-import FormField from 'part:@sanity/components/formfields/default'
-import {getValidationRule} from '../utils/getValidationRule'
+import React from 'react'
+import {StringSchemaType} from '@sanity/types'
+import {TextInput} from '@sanity/ui'
+import {useId} from '@reach/auto-id'
+import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
-import {Type, Marker} from '../typedefs'
-type Props = {
-  type: Type
-  level: number
-  value: string | null
-  readOnly: boolean | null
-  onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
-  markers: Array<Marker>
-}
-export default class UrlInput extends React.Component<Props> {
-  _input: TextInput | null
-  handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value
-    this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
-  }
-  focus() {
-    if (this._input) {
-      this._input.focus()
-    }
-  }
-  setInput = (input: TextInput | null) => {
-    this._input = input
-  }
-  render() {
-    const {value, markers, type, readOnly, level, onFocus} = this.props
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
-    // Use text input for relative URIs
-    const uriRule = getValidationRule(type, 'uri')
-    const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
-    return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
-        <TextInput
-          customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-          type={inputType}
-          value={value}
-          readOnly={readOnly}
-          placeholder={type.placeholder}
-          onChange={this.handleChange}
-          onFocus={onFocus}
-          ref={this.setInput}
-        />
-      </FormField>
-    )
-  }
-}
+import {getValidationRule} from '../utils/getValidationRule'
+import {Props} from './types'
+
+const UrlInput = React.forwardRef(function UrlInput(
+  props: Props<string, StringSchemaType>,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
+  const inputId = useId()
+  const validation = markers.filter((marker) => marker.type === 'validation')
+  const errors = validation.filter((marker) => marker.level === 'error')
+  const handleChange = React.useCallback(
+    (event) => {
+      const inputValue = event.currentTarget.value
+      onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+    },
+    [onChange]
+  )
+  const uriRule = getValidationRule(type, 'uri')
+  const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
+  return (
+    <FormField
+      level={level}
+      __unstable_markers={markers}
+      title={type.title}
+      description={type.description}
+      __unstable_presence={presence}
+      inputId={inputId}
+    >
+      <TextInput
+        type={inputType}
+        inputMode="url"
+        id={inputId}
+        customValidity={errors.length > 0 ? errors[0].item.message : ''}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
+        placeholder={type.placeholder}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={forwardedRef}
+      />
+    </FormField>
+  )
+})
+
+export default UrlInput

@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--small-padding);
+}
+
+.card {
+  display: block;
+}

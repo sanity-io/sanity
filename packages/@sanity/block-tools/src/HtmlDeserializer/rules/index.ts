@@ -6,6 +6,6 @@ export default function createRules(blockContentType, options = {}) {
   return [
     ...createWordRules(blockContentType, options),
     ...createGDocsRules(blockContentType, options),
-    ...createHTMLRules(blockContentType, options)
+    ...createHTMLRules(blockContentType, options),
   ]
 }

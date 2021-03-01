@@ -10,7 +10,7 @@
 }
 
 .title {
-  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
   margin: 0 0 var(--small-padding);
   padding: 0;
 }

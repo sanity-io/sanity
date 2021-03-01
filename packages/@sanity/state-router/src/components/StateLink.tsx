@@ -6,21 +6,23 @@ import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 const EMPTY_STATE = {}
 
 type Props = {
-  state?: Object
+  state?: Record<string, any>
   toIndex?: boolean
 }
 
-export default class StateLink extends React.PureComponent<Props> {
-  context: RouterProviderContext
-  _element: Link
+export default class StateLink extends React.PureComponent<
+  Props & React.HTMLProps<HTMLAnchorElement>
+> {
+  context: RouterProviderContext | null = null
+  _element: Link | null = null
 
   static defaultProps = {
     replace: false,
-    toIndex: false
+    toIndex: false,
   }
 
   static contextTypes = {
-    __internalRouter: internalRouterContextTypeCheck
+    __internalRouter: internalRouterContextTypeCheck,
   }
 
   resolveUrl(): string {
@@ -44,10 +46,13 @@ export default class StateLink extends React.PureComponent<Props> {
     return this.resolvePathFromState(nextState)
   }
 
-  resolvePathFromState(state: Object) {
+  resolvePathFromState(state: Record<string, any>) {
+    if (!this.context) throw new Error('StateLink: missing context value')
+
     if (!this.context.__internalRouter) {
       return `javascript://state@${JSON.stringify(state)}`
     }
+
     return this.context.__internalRouter.resolvePathFromState(state)
   }
 

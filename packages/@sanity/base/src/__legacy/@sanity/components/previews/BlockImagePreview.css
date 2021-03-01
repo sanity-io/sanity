@@ -1,0 +1,80 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  pointer-events: none;
+}
+
+.preview {
+  display: flex;
+  justify-content: center;
+}
+
+.heading {
+  padding: var(--medium-padding);
+}
+
+.media + .heading {
+  padding-left: 0;
+}
+
+.media + .heading:empty {
+  padding: 0;
+}
+
+.header {
+  padding: var(--medium-padding);
+}
+
+.title {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: var(--extra-small-padding) 0;
+  margin: -2px 0 -1px;
+}
+
+.media {
+  position: relative;
+  flex: 1;
+
+  @nest & img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  @nest & svg {
+    display: block;
+    width: calc(2.5rem + 1px) !important;
+    height: calc(2.5rem + 1px) !important;
+    margin: var(--small-padding);
+  }
+
+  @nest .header + & {
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid var(--hairline-color);
+      pointer-events: none;
+    }
+  }
+}
+
+.media:empty {
+  display: none;
+}
+
+.subtitle {
+  margin: 0;
+  padding: 0;
+  font-size: var(--font-size-small);
+}
+
+.description {
+  font-size: var(--font-size-xsmall);
+}

@@ -1,13 +1,14 @@
 {
   "name": "@sanity/eventsource",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "EventSource polyfill for browser and node.js",
   "main": "./node.js",
   "browser": "./browser.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/eventsource"
   },
   "keywords": [
     "sanity",
@@ -25,7 +26,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "eventsource": "^1.0.6",
-    "eventsource-polyfill": "^0.9.6"
+    "@rexxars/eventsource-polyfill": "^1.0.0",
+    "eventsource": "^1.0.6"
   }
 }

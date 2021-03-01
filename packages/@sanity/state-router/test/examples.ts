@@ -12,7 +12,7 @@ export const router = route('/:dataset', [
       return [route.scope('another-tool', '/omg/:nope')]
     }
     return null
-  })
+  }),
 ])
 
 export const examples: Array<[string, {}]> = [
@@ -22,15 +22,15 @@ export const examples: Array<[string, {}]> = [
     '/some-dataset/settings/desk',
     {
       dataset: 'some-dataset',
-      setting: 'desk'
-    }
+      setting: 'desk',
+    },
   ],
   [
     '/some-dataset/tools/desk',
     {
       dataset: 'some-dataset',
-      tool: 'desk'
-    }
+      tool: 'desk',
+    },
   ],
   [
     '/some-dataset/tools/desk/collections/articles',
@@ -38,9 +38,9 @@ export const examples: Array<[string, {}]> = [
       dataset: 'some-dataset',
       tool: 'desk',
       desk: {
-        collection: 'articles'
-      }
-    }
+        collection: 'articles',
+      },
+    },
   ],
   [
     '/some-dataset/tools/another-tool/omg/foo',
@@ -48,9 +48,9 @@ export const examples: Array<[string, {}]> = [
       dataset: 'some-dataset',
       tool: 'another-tool',
       'another-tool': {
-        nope: 'foo'
-      }
-    }
+        nope: 'foo',
+      },
+    },
   ],
   [
     '/some-dataset/tools/another-tool/omg/foo',
@@ -58,8 +58,8 @@ export const examples: Array<[string, {}]> = [
       dataset: 'some-dataset',
       tool: 'another-tool',
       'another-tool': {
-        nope: 'foo'
-      }
-    }
-  ]
+        nope: 'foo',
+      },
+    },
+  ],
 ]

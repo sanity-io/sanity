@@ -13,13 +13,36 @@ Object {
         "id": "movie_1",
         "set": Object {
           "metadata.poster.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "metadata.poster": Object {
-            "_type": "someAssetI",
+            "_type": "image",
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`will upload an asset if asset doc exists but file does not: single create mutation 1`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "patch": Object {
+        "id": "movie_1",
+        "set": Object {
+          "metadata.poster.asset": Object {
+            "_ref": "image-newAssetId",
+            "_type": "reference",
+          },
+        },
+        "setIfMissing": Object {
+          "metadata.poster": Object {
+            "_type": "image",
           },
         },
       },
@@ -36,13 +59,13 @@ Object {
         "id": "movie_1",
         "set": Object {
           "metadata.poster.asset": Object {
-            "_ref": "newAssetId",
+            "_ref": "image-newAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "metadata.poster": Object {
-            "_type": "newAssetI",
+            "_type": "image",
           },
         },
       },
@@ -59,13 +82,13 @@ Object {
         "id": "doc_1",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -75,13 +98,13 @@ Object {
         "id": "doc_2",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -91,13 +114,13 @@ Object {
         "id": "doc_3",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -107,13 +130,13 @@ Object {
         "id": "doc_4",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -123,13 +146,13 @@ Object {
         "id": "doc_5",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -139,13 +162,13 @@ Object {
         "id": "doc_6",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -155,13 +178,13 @@ Object {
         "id": "doc_7",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -171,13 +194,13 @@ Object {
         "id": "doc_8",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -187,13 +210,13 @@ Object {
         "id": "doc_9",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -203,13 +226,13 @@ Object {
         "id": "doc_10",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -219,13 +242,13 @@ Object {
         "id": "doc_11",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -235,13 +258,13 @@ Object {
         "id": "doc_12",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -251,13 +274,13 @@ Object {
         "id": "doc_13",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -267,13 +290,13 @@ Object {
         "id": "doc_14",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -283,13 +306,13 @@ Object {
         "id": "doc_15",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -299,13 +322,13 @@ Object {
         "id": "doc_16",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -315,13 +338,13 @@ Object {
         "id": "doc_17",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -331,13 +354,13 @@ Object {
         "id": "doc_18",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -347,13 +370,13 @@ Object {
         "id": "doc_19",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -363,13 +386,13 @@ Object {
         "id": "doc_20",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -379,13 +402,13 @@ Object {
         "id": "doc_21",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -395,13 +418,13 @@ Object {
         "id": "doc_22",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -411,13 +434,13 @@ Object {
         "id": "doc_23",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -427,13 +450,13 @@ Object {
         "id": "doc_24",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -443,13 +466,13 @@ Object {
         "id": "doc_25",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -459,13 +482,13 @@ Object {
         "id": "doc_26",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -475,13 +498,13 @@ Object {
         "id": "doc_27",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -491,13 +514,13 @@ Object {
         "id": "doc_28",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -507,13 +530,13 @@ Object {
         "id": "doc_29",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -523,13 +546,13 @@ Object {
         "id": "doc_30",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -539,13 +562,13 @@ Object {
         "id": "doc_31",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -555,13 +578,13 @@ Object {
         "id": "doc_32",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -571,13 +594,13 @@ Object {
         "id": "doc_33",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -587,13 +610,13 @@ Object {
         "id": "doc_34",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -603,13 +626,13 @@ Object {
         "id": "doc_35",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -619,13 +642,13 @@ Object {
         "id": "doc_36",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -635,13 +658,13 @@ Object {
         "id": "doc_37",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -651,13 +674,13 @@ Object {
         "id": "doc_38",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -667,13 +690,13 @@ Object {
         "id": "doc_39",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -683,13 +706,13 @@ Object {
         "id": "doc_40",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -699,13 +722,13 @@ Object {
         "id": "doc_41",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -715,13 +738,13 @@ Object {
         "id": "doc_42",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -731,13 +754,13 @@ Object {
         "id": "doc_43",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -747,13 +770,13 @@ Object {
         "id": "doc_44",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -763,13 +786,13 @@ Object {
         "id": "doc_45",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -779,13 +802,13 @@ Object {
         "id": "doc_46",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -795,13 +818,13 @@ Object {
         "id": "doc_47",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -811,13 +834,13 @@ Object {
         "id": "doc_48",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -827,13 +850,13 @@ Object {
         "id": "doc_49",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -843,13 +866,13 @@ Object {
         "id": "doc_50",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -866,13 +889,13 @@ Object {
         "id": "doc_51",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -882,13 +905,13 @@ Object {
         "id": "doc_52",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -898,13 +921,13 @@ Object {
         "id": "doc_53",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -914,13 +937,13 @@ Object {
         "id": "doc_54",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -930,13 +953,13 @@ Object {
         "id": "doc_55",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -946,13 +969,13 @@ Object {
         "id": "doc_56",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -962,13 +985,13 @@ Object {
         "id": "doc_57",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -978,13 +1001,13 @@ Object {
         "id": "doc_58",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -994,13 +1017,13 @@ Object {
         "id": "doc_59",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },
@@ -1010,13 +1033,13 @@ Object {
         "id": "doc_60",
         "set": Object {
           "some.path.asset": Object {
-            "_ref": "someAssetId",
+            "_ref": "image-someAssetId",
             "_type": "reference",
           },
         },
         "setIfMissing": Object {
           "some.path": Object {
-            "_type": "someAssetI",
+            "_type": "image",
           },
         },
       },

@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--medium-padding);
+
+  @nest & pre {
+    font-family: var(--font-family-monospace);
+  }
+}

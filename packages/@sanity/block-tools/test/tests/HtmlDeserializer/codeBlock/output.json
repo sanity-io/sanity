@@ -1,9 +1,23 @@
 [
   {
+    "_key": "randomKey0",
     "_type": "block",
-    "children": [{"_type": "span", "marks": ["em"], "text": "Hei"}],
+    "children": [
+      {
+        "_key": "randomKey00",
+        "_type": "span",
+        "marks": [
+          "em"
+        ],
+        "text": "Hei"
+      }
+    ],
     "markDefs": [],
     "style": "normal"
   },
-  {"_type": "code", "text": "const foo = 'bar'"}
+  {
+    "_key": "randomKey1",
+    "_type": "code",
+    "text": "const foo = 'bar'"
+  }
 ]

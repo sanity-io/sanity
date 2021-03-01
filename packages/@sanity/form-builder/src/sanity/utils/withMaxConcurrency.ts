@@ -29,11 +29,9 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
   return request
 
   function request(observable: Observable<any>) {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       if (currentSubscriptions.length >= concurrency) {
-        return scheduleAndWait(observable)
-          .pipe(mergeMap(request))
-          .subscribe(observer)
+        return scheduleAndWait(observable).pipe(mergeMap(request)).subscribe(observer)
       }
       const subscription = observable.subscribe(observer)
       currentSubscriptions.push(subscription)
@@ -48,7 +46,7 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
 
   function scheduleAndWait(observable) {
     pendingObservables.push(observable)
-    return ready$.asObservable().pipe(first(obs => obs === observable))
+    return ready$.asObservable().pipe(first((obs) => obs === observable))
   }
 
   function check() {

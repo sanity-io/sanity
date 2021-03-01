@@ -1,14 +1,16 @@
 {
   "name": "@sanity/webpack-integration",
-  "version": "0.147.0",
+  "version": "2.4.0",
   "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
   "scripts": {
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/webpack-integration"
   },
   "keywords": [
     "sanity",
@@ -20,7 +22,7 @@
     "webpack"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -29,8 +31,8 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/resolver": "0.147.0",
-    "@sanity/webpack-loader": "0.147.0",
+    "@sanity/resolver": "2.4.0",
+    "@sanity/webpack-loader": "2.4.0",
     "dotenv": "^8.2.0",
     "fs.realpath": "^1.0.0",
     "p-async-cache": "^1.0.2",
@@ -40,9 +42,13 @@
     "resolve": "^1.3.3"
   },
   "devDependencies": {
+    "jest": "^26.4.2",
     "webpack": "^3.8.1"
   },
   "peerDependencies": {
     "webpack": ">= 1.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

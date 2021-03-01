@@ -8,9 +8,9 @@ test('transform config on regular routes', () => {
       transform: {
         settings: {
           toState: decodeParams,
-          toPath: encodeParams
-        }
-      }
+          toPath: encodeParams,
+        },
+      },
     },
     route('/other/:page')
   )
@@ -19,16 +19,16 @@ test('transform config on regular routes', () => {
     section: 'bar',
     settings: {
       width: 'full',
-      view: 'details'
-    }
+      view: 'details',
+    },
   })
   expect(
     router.encode({
       section: 'bar',
       settings: {
         width: 'full',
-        view: 'details'
-      }
+        view: 'details',
+      },
     })
   ).toBe('/some/bar/width=full;view=details')
 
@@ -36,8 +36,8 @@ test('transform config on regular routes', () => {
     router.encode({
       section: 'bar',
       settings: {
-        width: 'full'
-      }
+        width: 'full',
+      },
     })
   ).toBe('/some/bar/width=full')
 
@@ -46,8 +46,8 @@ test('transform config on regular routes', () => {
       section: 'bar',
       page: 'stuff',
       settings: {
-        foo: 'bar'
-      }
+        foo: 'bar',
+      },
     })
   ).toBe('/some/bar/foo=bar/other/stuff')
 })
@@ -59,10 +59,10 @@ test('transform config on scoped routes', () => {
       transform: {
         params: {
           toState: decodeParams,
-          toPath: encodeParams
-        }
-      }
-    })
+          toPath: encodeParams,
+        },
+      },
+    }),
   ])
 
   expect(router.decode('/some/foo/other/width=full;view=details')).toEqual({
@@ -70,9 +70,9 @@ test('transform config on scoped routes', () => {
     myscope: {
       params: {
         width: 'full',
-        view: 'details'
-      }
-    }
+        view: 'details',
+      },
+    },
   })
 
   expect(
@@ -81,9 +81,9 @@ test('transform config on scoped routes', () => {
       myscope: {
         params: {
           width: 'full',
-          view: 'details'
-        }
-      }
+          view: 'details',
+        },
+      },
     })
   ).toBe('/some/foo/other/width=full;view=details')
 })

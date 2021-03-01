@@ -1,0 +1,22 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.crumb {
+  display: flex;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+
+  @nest & strong {
+    font-weight: 600;
+  }
+}
+
+.crumb > * {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.change__breadcrumb__separator {
+  font-style: normal;
+  margin: 0 var(--extra-small-padding);
+  color: var(--gray-light);
+}

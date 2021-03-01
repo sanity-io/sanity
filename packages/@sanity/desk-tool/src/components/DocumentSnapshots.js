@@ -5,16 +5,16 @@ import {merge} from 'rxjs'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 
-const DocumentSnapshots = streamingComponent(props$ => {
+const DocumentSnapshots = streamingComponent((props$) => {
   return props$.pipe(
-    switchMap(props =>
+    switchMap((props) =>
       merge(
-        observePaths(getDraftId(props.id), props.paths).pipe(map(draft => ({draft}))),
-        observePaths(getPublishedId(props.id), props.paths).pipe(map(published => ({published})))
+        observePaths(getDraftId(props.id), props.paths).pipe(map((draft) => ({draft}))),
+        observePaths(getPublishedId(props.id), props.paths).pipe(map((published) => ({published})))
       ).pipe(
         scan((prev, res) => ({...prev, ...res}), {}),
-        filter(res => 'draft' in res && 'published' in res),
-        map(res => props.children(res))
+        filter((res) => 'draft' in res && 'published' in res),
+        map((res) => props.children(res))
       )
     )
   )
@@ -23,7 +23,7 @@ const DocumentSnapshots = streamingComponent(props$ => {
 DocumentSnapshots.propTypes = {
   id: PropTypes.string.isRequired,
   paths: PropTypes.arrayOf(PropTypes.string),
-  children: PropTypes.func.isRequired
+  children: PropTypes.func.isRequired,
 }
 
 export default DocumentSnapshots

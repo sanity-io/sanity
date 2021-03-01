@@ -1,0 +1,17 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  align-items: center;
+}
+
+.preview,
+.label {
+  composes: root;
+}
+
+.title {
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+  margin-left: var(--small-padding);
+  line-height: 1;
+}

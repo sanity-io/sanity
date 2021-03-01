@@ -16,16 +16,16 @@ export default {
               type: 'reference',
               description: 'Pet you pet',
               to: {
-                type: 'pet'
-              }
-            }
-          ]
+                type: 'pet',
+              },
+            },
+          ],
         },
         {
           name: 'title',
           title: 'Title',
           type: 'string',
-          required: true
+          required: true,
         },
         {
           name: 'pet',
@@ -35,9 +35,9 @@ export default {
           to: [
             {
               type: 'pet',
-              title: 'Pet'
-            }
-          ]
+              title: 'Pet',
+            },
+          ],
         },
         {
           name: 'petTwoTypes',
@@ -47,13 +47,13 @@ export default {
           to: [
             {
               type: 'pet',
-              title: 'Pet'
+              title: 'Pet',
             },
             {
               type: 'wildAnimal',
-              title: 'Wild Animal'
-            }
-          ]
+              title: 'Wild Animal',
+            },
+          ],
         },
         {
           name: 'pet2',
@@ -62,14 +62,14 @@ export default {
           description: 'inputType is browse',
           options: {
             inputType: 'browser',
-            searchable: false
+            searchable: false,
           },
           to: [
             {
               type: 'pet',
-              title: 'Pet'
-            }
-          ]
+              title: 'Pet',
+            },
+          ],
         },
         {
           name: 'pet4',
@@ -78,14 +78,14 @@ export default {
           description: 'inputType is browser, and searchable is true',
           options: {
             inputType: 'browser',
-            searchable: true
+            searchable: true,
           },
           to: [
             {
               type: 'pet',
-              title: 'Pet'
-            }
-          ]
+              title: 'Pet',
+            },
+          ],
         },
         {
           name: 'pet3',
@@ -94,14 +94,14 @@ export default {
           type: 'reference',
           options: {
             inputType: 'select',
-            searchable: false
+            searchable: false,
           },
           to: [
             {
               type: 'pet',
-              title: 'Pet'
-            }
-          ]
+              title: 'Pet',
+            },
+          ],
         },
         {
           name: 'pet5',
@@ -110,16 +110,16 @@ export default {
           type: 'reference',
           options: {
             inputType: 'select',
-            searchable: true
+            searchable: true,
           },
           to: [
             {
               type: 'pet',
-              title: 'Pet'
-            }
-          ]
-        }
-      ]
+              title: 'Pet',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'pet',
@@ -128,9 +128,9 @@ export default {
         {
           name: 'name',
           title: 'Name',
-          type: 'string'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'wildAnimal',
@@ -139,9 +139,9 @@ export default {
         {
           name: 'name',
           title: 'Name',
-          type: 'string'
-        }
-      ]
-    }
-  ]
+          type: 'string',
+        },
+      ],
+    },
+  ],
 }

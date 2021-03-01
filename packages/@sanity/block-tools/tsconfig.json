@@ -1,10 +1,14 @@
 {
-  "extends": "../../../tsconfig",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "test/**/*.ts"],
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
   "compilerOptions": {
-    "strict": false,
+    "composite": true,
+    // -- strictness options we need to disable in a transition period.
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    // --
     "jsx": "react",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "rootDir": "./src"
   }
 }

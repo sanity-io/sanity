@@ -1,3 +1,4 @@
 /* eslint-disable no-var */
-var evs = require('eventsource-polyfill/dist/eventsource')
+var evs = require('@rexxars/eventsource-polyfill')
+
 module.exports = window.EventSource || evs.EventSource

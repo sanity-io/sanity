@@ -16,5 +16,5 @@ export default {
   signature: '[OUTPUT_DIR]',
   description: 'Builds the current Sanity configuration to a static bundle',
   action: lazyRequire(require.resolve('../../actions/build/buildStaticAssets')),
-  helpText
+  helpText,
 }

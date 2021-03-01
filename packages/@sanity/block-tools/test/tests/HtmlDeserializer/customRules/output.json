@@ -1,30 +1,66 @@
 [
   {
     "_type": "block",
-    "children": [
-      {"_type": "span", "marks": ["strong"], "text": "Hei"},
-      {"_type": "span", "marks": ["code"], "text": "const foo = 'bar'"}
-    ],
     "markDefs": [],
-    "style": "normal"
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [
+          "strong"
+        ],
+        "text": "Hei",
+        "_key": "randomKey10"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "code"
+        ],
+        "text": "const foo = 'bar'",
+        "_key": "randomKey11"
+      }
+    ],
+    "_key": "randomKey1"
   },
   {
     "_type": "block",
-    "children": [
-      {"_type": "span", "marks": [], "text": "Quote "},
-      {"_type": "span", "marks": ["strong"], "text": "with emphasis"},
-      {"_type": "span", "marks": [], "text": "\n\n"},
-      {"_type": "span", "marks": ["strong"], "text": "Emphasis!"}
-    ],
+    "style": "blockquote",
     "markDefs": [],
-    "style": "blockquote"
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Quote ",
+        "_key": "randomKey20"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "strong"
+        ],
+        "text": "with emphasis",
+        "_key": "randomKey21"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n\n",
+        "_key": "randomKey22"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "strong"
+        ],
+        "text": "Emphasis!",
+        "_key": "randomKey23"
+      }
+    ],
+    "_key": "randomKey2"
   },
   {
     "_type": "block",
-    "children": [
-      {"_type": "image", "src": "http://image.gif"},
-      {"_type": "span", "marks": ["randomKey0"], "text": "Image link"}
-    ],
     "markDefs": [
       {
         "_key": "randomKey0",
@@ -32,6 +68,22 @@
         "href": "http://foo"
       }
     ],
-    "style": "normal"
+    "style": "normal",
+    "children": [
+      {
+        "_type": "image",
+        "src": "http://image.gif",
+        "_key": "randomKey30"
+      },
+      {
+        "_type": "span",
+        "text": "Image link",
+        "marks": [
+          "randomKey0"
+        ],
+        "_key": "randomKey31"
+      }
+    ],
+    "_key": "randomKey3"
   }
 ]

@@ -15,7 +15,7 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<View>, FormViewB
     const base = super.serialize(options)
     return {
       ...base,
-      type: 'form'
+      type: 'form',
     }
   }
 

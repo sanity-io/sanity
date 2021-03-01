@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline-block;
+  /* position: relative; */
+  margin-left: var(--small-padding);
+}
+
+.wrapper {
+  padding: var(--small-padding);
+}

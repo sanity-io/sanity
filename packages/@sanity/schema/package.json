@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "0.147.6",
+  "version": "2.2.6",
   "description": "",
   "main": "lib/legacy/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@sanity/generate-help-url": "0.147.0",
+    "@sanity/generate-help-url": "2.2.6",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "json-reduce": "^1.0.0",
@@ -33,10 +33,10 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^8.0.0",
     "empty": "^0.10.1",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.7.1",
-    "ts-jest": "^24.2.0"
+    "ts-jest": "^26.3.0"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -44,6 +44,7 @@
   "homepage": "https://www.sanity.io/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/schema"
   }
 }

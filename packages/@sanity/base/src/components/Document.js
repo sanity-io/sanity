@@ -25,15 +25,15 @@ function Document(props) {
   const basePath = props.basePath.replace(/\/+$/, '')
   const staticPath = `${basePath}${props.staticPath}`
 
-  const stylesheets = props.stylesheets.map(item => (
+  const stylesheets = props.stylesheets.map((item) => (
     <link key={item.path} rel="stylesheet" href={assetUrl(staticPath, item)} />
   ))
 
-  const subresources = props.scripts.map(item => (
+  const subresources = props.scripts.map((item) => (
     <link key={item.path} rel="subresource" href={assetUrl(staticPath, item)} />
   ))
 
-  const scripts = props.scripts.map(item => assetUrl(staticPath, item))
+  const scripts = props.scripts.map((item) => assetUrl(staticPath, item))
   const scriptLoader = generateScriptLoader(scripts)
   const errorHandler = uncaughtErrorHandler()
 
@@ -47,6 +47,8 @@ function Document(props) {
         <meta charSet={props.charset} />
         <title>{props.title}</title>
         <meta name="viewport" content={props.viewport} />
+        <meta name="robots" content="noindex" />
+        <style>{`html {background-color: #e4e8ed;}`}</style>
         {stylesheets}
         {subresources}
         {favicons}
@@ -68,7 +70,7 @@ function Document(props) {
 
 const asset = PropTypes.shape({
   path: PropTypes.string.isRequired,
-  hash: PropTypes.string
+  hash: PropTypes.string,
 })
 
 Document.defaultProps = {
@@ -80,7 +82,7 @@ Document.defaultProps = {
   staticPath: '/static',
   favicons: [{path: 'favicon.ico'}],
   stylesheets: [],
-  scripts: []
+  scripts: [],
 }
 
 Document.propTypes = {
@@ -92,7 +94,7 @@ Document.propTypes = {
   staticPath: PropTypes.string,
   favicons: PropTypes.arrayOf(asset),
   stylesheets: PropTypes.arrayOf(asset),
-  scripts: PropTypes.arrayOf(asset)
+  scripts: PropTypes.arrayOf(asset),
 }
 
 export default Document

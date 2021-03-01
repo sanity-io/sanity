@@ -1,0 +1,24 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  max-width: 250px;
+  max-height: 60vh;
+  overflow: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @nest &[data-kind='simple'] {
+    max-width: 220px;
+    padding: var(--small-padding) 0;
+    padding-right: var(--small-padding);
+  }
+}
+
+.item {
+  padding: var(--extra-small-padding) 0;
+
+  @nest .root:not([data-kind='simple']) > &:not(:last-child) {
+    border-bottom: 1px solid var(--hairline-color);
+  }
+}

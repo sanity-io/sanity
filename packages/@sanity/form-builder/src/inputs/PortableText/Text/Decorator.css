@@ -1,0 +1,30 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.em {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+.strike-through {
+  text-decoration: line-through;
+}
+
+.code {
+  font-family: var(--font-family-monospace);
+  background: color(var(--text-color) alpha(5%));
+}

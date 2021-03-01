@@ -1,0 +1,84 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background: var(--component-bg);
+  height: 100%;
+  flex-direction: column;
+
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.root:not([hidden]) {
+    display: flex;
+  }
+}
+
+.headerContainer {
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.headerContainer {
+    position: relative;
+  }
+
+  background: var(--component-bg);
+
+  @nest .root:not(.isCollapsed) &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+    z-index: 1;
+  }
+
+  @media (--max-screen-medium) {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.documentViewerContainer {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.documentScroller {
+  height: 100%;
+  position: relative;
+
+  @media not screen and (prefers-reduced-motion) {
+    scroll-behavior: smooth;
+  }
+
+  @media (--screen-medium) {
+    height: 100%;
+    overflow: auto;
+  }
+}
+
+.portalContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.portal {
+  pointer-events: all;
+}

@@ -1,0 +1,44 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.itemStatus {
+  z-index: 2;
+  position: relative;
+  opacity: 0.7;
+  transition: opacity 0.15s linear;
+  outline: none;
+
+  @nest &:hover {
+    opacity: 1;
+  }
+
+  @nest .selectedItem & {
+    color: var(--selected-item-color--inverted);
+  }
+
+  @nest & > i {
+    display: flex;
+    height: 100%;
+    align-items: center;
+  }
+}
+
+.draftBadge {
+  opacity: 0.5;
+
+  @nest & > svg {
+    display: block;
+    font-size: 21px;
+  }
+}
+
+.tooltipWrapper {
+  padding: var(--small-padding);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+
+  @nest & > span {
+    display: block;
+    margin: -3px 0 -2px;
+  }
+}

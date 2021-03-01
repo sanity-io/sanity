@@ -209,14 +209,3 @@ Will return an object with the features enabled for the input block content type
   ]
 }
 ```
-
-### ``blocksToEditorValue(blocks, blockContentTypeSchema)``
-
-Convert blocks to a serialized editor value respecting the input schema.
-This function does not make much sense outside the studio internal code.
-
-
-### ``editorValueToBlocks(slateState, blockContentTypeSchema)``
-
-Convert a slate state to blocks respecting the input schema.
-This function does not make much sense outside the studio internal code.

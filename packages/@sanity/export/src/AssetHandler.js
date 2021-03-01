@@ -12,20 +12,26 @@ const debug = require('./debug')
 const EXCLUDE_PROPS = ['_id', '_type', 'assetId', 'extension', 'mimeType', 'path', 'url']
 const ACTION_REMOVE = 'remove'
 const ACTION_REWRITE = 'rewrite'
+const ASSET_DOWNLOAD_CONCURRENCY = 8
 
 class AssetHandler {
   constructor(options) {
+    const concurrency = options.concurrency || ASSET_DOWNLOAD_CONCURRENCY
+    debug('Using asset download concurrency of %d', concurrency)
+
     this.client = options.client
     this.tmpDir = options.tmpDir
     this.assetDirsCreated = false
 
+    this.downloading = []
     this.assetsSeen = new Map()
     this.assetMap = {}
     this.filesWritten = 0
     this.queueSize = 0
-    this.queue = options.queue || new PQueue({concurrency: 3})
+    this.queue = options.queue || new PQueue({concurrency})
+
     this.rejectedError = null
-    this.reject = err => {
+    this.reject = (err) => {
       this.rejectedError = err
     }
   }
@@ -60,7 +66,7 @@ class AssetHandler {
       return
     }
 
-    callback(null, await this.findAndModify(doc, ACTION_REWRITE))
+    callback(null, this.findAndModify(doc, ACTION_REWRITE))
   })
 
   // Called in the case where we don't _want_ assets, so basically just remove all asset documents
@@ -71,7 +77,7 @@ class AssetHandler {
       return
     }
 
-    callback(null, await this.findAndModify(doc, ACTION_REMOVE))
+    callback(null, this.findAndModify(doc, ACTION_REMOVE))
   })
 
   // Called when we are using raw export mode along with `assets: false`, where we simply
@@ -96,6 +102,7 @@ class AssetHandler {
 
     debug('Adding download task for %s (destination: %s)', assetDoc._id, dstPath)
     this.queueSize++
+    this.downloading.push(assetDoc.url)
     this.queue.add(() => this.downloadAsset(assetDoc, dstPath))
   }
 
@@ -170,7 +177,7 @@ class AssetHandler {
     }
 
     if (differs && attemptNum < 3) {
-      debug('%s does not match downloaded asset, retrying (#%d)', method, attemptNum + 1)
+      debug('%s does not match downloaded asset, retrying (#%d) [%s]', method, attemptNum + 1, url)
       return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
     } else if (differs) {
       const details = [
@@ -183,7 +190,7 @@ class AssetHandler {
           parseInt(contentLength, 10) !== size &&
           `Asset should be ${contentLength} bytes, got ${size}`,
 
-        `Did not succeed after ${attemptNum} attempts.`
+        `Did not succeed after ${attemptNum} attempts.`,
       ]
 
       const detailsString = `Details:\n - ${details.filter(Boolean).join('\n - ')}`
@@ -208,14 +215,18 @@ class AssetHandler {
       this.assetMap[id] = metaProps
     }
 
+    this.downloading.splice(
+      this.downloading.findIndex((datUrl) => datUrl === url),
+      1
+    )
+
     this.filesWritten++
     return true
   }
 
-  // eslint-disable-next-line complexity
-  findAndModify = async (item, action) => {
+  findAndModify = (item, action) => {
     if (Array.isArray(item)) {
-      const children = await Promise.all(item.map(child => this.findAndModify(child, action)))
+      const children = item.map((child) => this.findAndModify(child, action))
       return children.filter(Boolean)
     }
 
@@ -231,21 +242,11 @@ class AssetHandler {
     if (isAsset && action === ACTION_REWRITE) {
       const {asset, ...other} = item
       const assetId = asset._ref
-      if (isModernAsset(assetId)) {
-        const assetType = getAssetType(item)
-        const filePath = `${assetType}s/${generateFilename(assetId)}`
-        return {
-          _sanityAsset: `${assetType}@file://./${filePath}`,
-          ...(await this.findAndModify(other, action))
-        }
-      }
-
-      // Legacy asset
-      const type = this.assetsSeen.get(assetId) || (await this.lookupAssetType(assetId))
-      const filePath = `${type}s/${generateFilename(assetId)}`
+      const assetType = getAssetType(item)
+      const filePath = `${assetType}s/${generateFilename(assetId)}`
       return {
-        _sanityAsset: `${type}@file://./${filePath}`,
-        ...(await this.findAndModify(other, action))
+        _sanityAsset: `${assetType}@file://./${filePath}`,
+        ...this.findAndModify(other, action),
       }
     }
 
@@ -255,8 +256,7 @@ class AssetHandler {
       const key = keys[i]
       const value = item[key]
 
-      // eslint-disable-next-line no-await-in-loop
-      newItem[key] = await this.findAndModify(value, action)
+      newItem[key] = this.findAndModify(value, action)
 
       if (typeof newItem[key] === 'undefined') {
         delete newItem[key]
@@ -265,15 +265,10 @@ class AssetHandler {
 
     return newItem
   }
-
-  lookupAssetType = async assetId => {
-    const docType = await this.client.fetch('*[_id == $id][0]._type', {id: assetId})
-    return docType === 'sanity.imageAsset' ? 'image' : 'file'
-  }
 }
 
 function isAssetField(item) {
-  return item.asset && item.asset._ref
+  return item.asset && item.asset._ref && isSanityAsset(item.asset._ref)
 }
 
 function getAssetType(item) {
@@ -285,8 +280,11 @@ function getAssetType(item) {
   return type || null
 }
 
-function isModernAsset(assetId) {
-  return /^(image|file)/.test(assetId)
+function isSanityAsset(assetId) {
+  return (
+    /^image-[a-f0-9]{40}-\d+x\d+-[a-z]+$/.test(assetId) ||
+    /^file-[a-f0-9]{40}-[a-z0-9]+$/.test(assetId)
+  )
 }
 
 function generateFilename(assetId) {
@@ -308,7 +306,7 @@ function writeHashedStream(filePath, stream) {
   })
 
   return new Promise((resolve, reject) =>
-    miss.pipe(stream, hasher, fse.createWriteStream(filePath), err => {
+    miss.pipe(stream, hasher, fse.createWriteStream(filePath), (err) => {
       if (err) {
         reject(err)
         return
@@ -317,7 +315,7 @@ function writeHashedStream(filePath, stream) {
       resolve({
         size,
         sha1: sha1.digest('hex'),
-        md5: md5.digest('hex')
+        md5: md5.digest('hex'),
       })
     })
   )
@@ -325,7 +323,7 @@ function writeHashedStream(filePath, stream) {
 
 function tryGetErrorFromStream(stream) {
   return new Promise((resolve, reject) => {
-    miss.pipe(stream, miss.concat(parse), err => (err ? reject(err) : noop))
+    miss.pipe(stream, miss.concat(parse), (err) => (err ? reject(err) : noop))
 
     function parse(body) {
       try {

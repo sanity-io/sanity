@@ -1,7 +1,6 @@
 import React, {PureComponent} from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import spinnerStyles from 'part:@sanity/components/loading/spinner-style'
 
 const eventBus = window.__webpack_hot_middleware_eventbus__
 const events = eventBus ? eventBus.eventTypes : {}
@@ -18,7 +17,7 @@ class DevServerStatus extends PureComponent {
       connectionState: STATE_CONNECTING,
       hasHadConnection: false,
       buildState: events.EVENT_UP_TO_DATE,
-      reloadRequired: false
+      reloadRequired: false,
     }
   }
 
@@ -36,7 +35,7 @@ class DevServerStatus extends PureComponent {
     }
   }
 
-  handleEvent = evt => {
+  handleEvent = (evt) => {
     switch (evt.type) {
       case events.EVENT_DISCONNECTED:
         return this.setState({connectionState: STATE_CLOSED})
@@ -49,7 +48,7 @@ class DevServerStatus extends PureComponent {
       case events.EVENT_UP_TO_DATE:
         return this.setState(({reloadRequired: reloadWasRequired}) => ({
           buildState: evt.type,
-          reloadRequired: reloadWasRequired || evt.requiresReload || false
+          reloadRequired: reloadWasRequired || evt.requiresReload || false,
         }))
       default:
         if (evt.requiresReload && !this.state.reloadRequired) {
@@ -86,6 +85,7 @@ class DevServerStatus extends PureComponent {
           title={<strong>Reload required!</strong>}
           subtitle={<div>To see your latest changes, you need to reload the browser window.</div>}
           action={{title: 'Reload', callback: () => window.location.reload()}}
+          allowDuplicateSnackbarType
         />
       )
     }
@@ -97,13 +97,8 @@ class DevServerStatus extends PureComponent {
           kind="warning"
           isPersisted
           isCloseable={false}
-          title={
-            <Spinner inline>
-              <div className={spinnerStyles.message}>
-                <strong>Rebuilding bundle…</strong>
-              </div>
-            </Spinner>
-          }
+          title={<Spinner delay={0} inline message="Rebuilding bundle…" />}
+          allowDuplicateSnackbarType
         />
       )
     }
@@ -135,6 +130,7 @@ class DevServerStatus extends PureComponent {
               project folder.
             </div>
           }
+          allowDuplicateSnackbarType
         />
       )
     }

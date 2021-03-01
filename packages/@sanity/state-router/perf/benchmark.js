@@ -43,7 +43,7 @@ function time(label, fn) {
 function runExample(exampleName) {
   const example = require(`./examples/${exampleName}.js`)
 
-  group(`${exampleName} example`, run => {
+  group(`${exampleName} example`, (run) => {
     run(100, 'creating routes…', () => {
       return createRouteFromExample(...example.routes)
     })

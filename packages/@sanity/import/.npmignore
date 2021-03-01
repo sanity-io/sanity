@@ -3,3 +3,4 @@
 .eslintignore
 .eslintrc
 test
+tsconfig.tsbuildinfo

@@ -1,5 +1,5 @@
 import {arrayToJSONMatchPath} from '@sanity/mutator'
-import {Path, PathSegment} from '../../typedefs/path'
+import {Path, PathSegment} from '@sanity/types'
 
 const IS_NUMERIC = /^\d+$/
 
@@ -20,7 +20,7 @@ function parseGradientPath(focusPathStr): Path {
   return focusPathStr
     .split(/[[.\]]/g)
     .filter(Boolean)
-    .map(seg => (seg.includes('==') ? splitAttr(seg) : coerce(seg)))
+    .map((seg) => (seg.includes('==') ? splitAttr(seg) : coerce(seg)))
 }
 
 export function toGradient(formBuilderPath: Path): string {

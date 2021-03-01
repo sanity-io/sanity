@@ -4,7 +4,7 @@ export default function promptForDatasetName(prompt, options = {}) {
   return prompt.single({
     type: 'input',
     message: 'Dataset name:',
-    validate: name => {
+    validate: (name) => {
       const err = validateDatasetName(name)
       if (err) {
         return err
@@ -12,6 +12,6 @@ export default function promptForDatasetName(prompt, options = {}) {
 
       return true
     },
-    ...options
+    ...options,
   })
 }

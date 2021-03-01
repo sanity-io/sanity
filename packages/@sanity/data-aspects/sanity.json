@@ -10,7 +10,7 @@
     },
     {
       "implements": "part:@sanity/data-aspects/resolver",
-      "path": "DataAspectsResolver.js"
+      "path": "DataAspectsResolver"
     }
   ]
 }

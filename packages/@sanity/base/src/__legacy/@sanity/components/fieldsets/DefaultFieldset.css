@@ -1,0 +1,193 @@
+/* stylelint-disable no-descending-specificity */
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  outline: none;
+}
+
+.fieldWrapper {
+  display: grid;
+  grid-gap: 2rem var(--medium-padding);
+
+  @nest &[data-columns='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--small-padding);
+}
+
+.headerMain {
+  flex-grow: 1;
+  padding: var(--extra-small-padding) 0;
+}
+
+.headerStatus {
+  padding: 0 var(--small-padding);
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin: var(--extra-small-padding) 0 0;
+  padding: 0;
+  display: block;
+}
+
+@media (--screen-medium) {
+  .columns4 .fieldWrapper[data-columns='true'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .columns3 .fieldWrapper[data-columns='true'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .columns2 .fieldWrapper[data-columns='true'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.transparent {
+  background-color: transparent;
+}
+
+.columns1 {
+  composes: root;
+}
+
+.columns2 {
+  composes: root;
+}
+
+.content {
+  position: relative;
+  display: block;
+  /* background-color: var(--fieldset-bg); */
+
+  @nest .transparent & {
+    background-color: transparent;
+  }
+
+  @nest .hasErrors:focus-within & {
+    box-shadow: var(--fieldset-box-shadow--invalid-focus) !important;
+  }
+}
+
+.contentCollapsible {
+  composes: content;
+  border: 1px solid red !important;
+
+  @nest &:empty {
+    display: none;
+  }
+}
+
+/*
+  Nested inside itself
+  Stop border and padding
+*/
+.content .content .content {
+  border: none;
+  padding: 0 !important;
+  box-shadow: none;
+}
+
+.level0,
+.level1,
+.level2,
+.level3,
+.level4 {
+  display: block;
+  box-shadow: none;
+}
+
+.inner {
+  display: block;
+}
+
+.arrow {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  margin-right: 0.25em;
+  vertical-align: middle;
+  transition: transform 0.1s linear;
+  transform: rotate(-90deg);
+  margin-top: 1px;
+
+  @nest &.isOpen {
+    transform: rotate(0);
+  }
+
+  @nest & svg {
+    position: absolute;
+    transform: scale(1.2);
+  }
+}
+
+.legend {
+  composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
+  color: var(--legend-color);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: -1px 0 0;
+  padding: 0;
+  user-select: none;
+  cursor: default;
+}
+
+.labelContainer {
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.validationStatus {
+  margin: -5px 0 -4px;
+}
+
+.label {
+  padding-right: var(--small-padding);
+}
+
+.root.level0 > .fieldset > .inner > .content {
+  /* box-shadow: var(--fieldset-box-shadow); */
+}
+
+.root.level1 > .fieldset > .inner > .content {
+  padding-left: calc(var(--small-padding) - 1px);
+  border-left: var(--fieldset-border);
+
+  @media (--screen-medium) {
+    padding-left: calc(var(--medium-padding) - var(--extra-small-padding));
+  }
+}
+
+.root.level2 > .fieldset > .inner > .content {
+  padding-left: calc(var(--small-padding) - 1px);
+  border-left: var(--fieldset-border);
+
+  @media (--screen-medium) {
+    padding-left: calc(var(--medium-padding) - var(--extra-small-padding));
+  }
+}
+
+.debugNestingLevel {
+  display: none;
+}

@@ -1,18 +1,13 @@
 /* eslint-disable complexity */
 import React, {Fragment} from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
-import DocumentStatusBar from './DocumentStatusBar/index'
 
-storiesOf('[tool] Desk tool', module)
+storiesOf('@sanity/desk-tool', module)
   .addDecorator(withKnobs)
   .add('Confirm Delete', () => {
     const hasReferringDocuments = boolean('hasReferringDocuments', false)
@@ -23,9 +18,9 @@ storiesOf('[tool] Desk tool', module)
       canContinue && {
         name: 'confirm',
         title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now',
-        color: 'danger'
+        color: 'danger',
       },
-      {name: 'cancel', title: 'Keep', kind: 'simple'}
+      {name: 'cancel', title: 'Keep', kind: 'simple'},
     ].filter(Boolean)
     const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
 
@@ -64,7 +59,7 @@ storiesOf('[tool] Desk tool', module)
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <Fragment>
             <h3>
-              Are you sure you would like to permanently delete the document
+              Are you sure you want to permanently delete the document
               <strong>&nbsp;&ldquo;Test document&rdquo;</strong>?
             </h3>
           </Fragment>
@@ -81,9 +76,9 @@ storiesOf('[tool] Desk tool', module)
     const actions = [
       canContinue && {
         name: 'confirm',
-        title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'
+        title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now',
       },
-      {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+      {name: 'cancel', title: 'Cancel', kind: 'secondary'},
     ].filter(Boolean)
 
     const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'
@@ -123,7 +118,7 @@ storiesOf('[tool] Desk tool', module)
         {!isCheckingReferringDocuments && !hasReferringDocuments && (
           <div>
             <p>
-              Are you sure you would like to unpublish the document <strong>Document title</strong>?
+              Are you sure you want to unpublish the document <strong>Document title</strong>?
             </p>
             <h2>Careful!</h2>
             <p>
@@ -139,102 +134,16 @@ storiesOf('[tool] Desk tool', module)
     const isNetworkError = boolean('isNetworkError')
     const message = text('message', 'An error occured')
     return (
-      <Dialog color="danger" title="Error" isOpen centered>
+      <Dialog color="danger" title="Error" isOpen centered size="medium">
         {!isNetworkError && <p>{message}</p>}
         {isNetworkError && (
-          <DialogContent size="medium">
+          <>
             <p>An error occured while attempting to reach the Sanity API.</p>
             <pre>Cors check goes here</pre>
-          </DialogContent>
+          </>
         )}
 
         <Button onClick={() => console.log('retry')}>Retry</Button>
       </Dialog>
-    )
-  })
-  .add('Document status (draft)', () => {
-    // eslint-disable-next-line no-console
-    const handleClick = (...args) => console.log('handleClick', ...args)
-    const isPublished = boolean('Published', false)
-    const isDraft = boolean('Draft', false)
-    const isDisconnected = boolean('Disconnected', false)
-    const isHistoryAvailable = boolean('History', false)
-    const isSyncing = boolean('Syncing', false)
-    const historyStatus = text('historyStatus', 'Updated just now')
-    const badges = [
-      isPublished && {id: 'published', label: 'Published', color: 'success'},
-      isDraft && {id: 'draft', label: 'Draft', color: 'warning'}
-    ].filter(Boolean)
-    const actions = [
-      {id: 'publish', label: 'Publish', color: 'primary', handleClick, disabled: true},
-      {
-        id: 'discardChanges',
-        label: 'Discard changes',
-        icon: CloseIcon,
-        handleClick,
-        disabled: true
-      },
-      {id: 'unpublish', label: 'Unpublish', icon: CloseIcon, handleClick},
-      {id: 'duplicate', label: 'Duplicate', icon: ContentCopyIcon, handleClick},
-      {id: 'delete', label: 'Delete', icon: TrashIcon, handleClick}
-    ]
-
-    const props = {
-      badges,
-      actions,
-      historyStatus: historyStatus ? <>{historyStatus}</> : null,
-      idPrefix: 'storybook-desk-tool',
-      isDisconnected,
-      isHistoryAvailable,
-      isSyncing,
-      // eslint-disable-next-line no-console
-      onHistoryStatusClick: () => console.log('onHistoryStatusClick')
-    }
-
-    const demoRootStyles = {
-      background: '#ddd',
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 2em)',
-      margin: '0 auto'
-    }
-
-    return (
-      <div style={demoRootStyles}>
-        <div style={{flex: '1'}} />
-        <div>
-          <DocumentStatusBar {...props} />
-        </div>
-      </div>
-    )
-  })
-  .add('Document status (history)', () => {
-    // eslint-disable-next-line no-console
-    const handleClick = (...args) => console.log('handleClick', ...args)
-    const actions = [{id: 'restore', label: 'Restore', color: 'primary', handleClick}]
-
-    const props = {
-      actions,
-      historyStatus: <>Updated just now</>,
-      idPrefix: 'storybook-desk-tool',
-      // eslint-disable-next-line no-console
-      onHistoryStatusClick: () => console.log('onHistoryStatusClick')
-    }
-
-    const demoRootStyles = {
-      background: '#ddd',
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 2em)',
-      margin: '0 auto'
-    }
-
-    return (
-      <div style={demoRootStyles}>
-        <div style={{flex: '1'}} />
-        <div>
-          <DocumentStatusBar {...props} />
-        </div>
-      </div>
     )
   })

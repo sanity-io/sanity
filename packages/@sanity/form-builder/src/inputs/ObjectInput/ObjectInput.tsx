@@ -1,62 +1,75 @@
 import React from 'react'
-import Field from './Field'
+import {Marker, ObjectSchemaTypeWithOptions, Path} from '@sanity/types'
+import {FormFieldPresence} from '@sanity/base/presence'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
+import Field from './Field'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
-function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
+import styles from './styles/ObjectInput.css'
+
+function getCollapsedWithDefaults(
+  options: ObjectSchemaTypeWithOptions['options'] = {},
+  level: number
+) {
   // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"
   //       --> relevant: https://github.com/sanity-io/sanity/issues/537
   if (options.collapsible === true || options.collapsable === true) {
     // collapsible explicit set to true
     return {
       collapsible: true,
-      collapsed: options.collapsed !== false
+      collapsed: options.collapsed !== false,
     }
   } else if (options.collapsible === false || options.collapsable === false) {
     // collapsible explicit set to false
     return {
       // hard limit to avoid infinite recursion
       collapsible: level > 9,
-      collapsed: level > 9
+      collapsed: level > 9,
     }
   }
   // default
   return {
     collapsible: level > 2,
-    collapsed: level > 2
+    collapsed: level > 2,
   }
 }
+
 type ObjectInputProps = {
-  type?: any
-  value?: {[key: string]: any}
+  type: ObjectSchemaTypeWithOptions
+  value?: Record<string, unknown>
+  compareValue?: Record<string, unknown>
   onChange?: (...args: any[]) => any
   onFocus: (...args: any[]) => any
-  focusPath?: any[]
-  markers?: any[]
   onBlur: (...args: any[]) => any
+  focusPath?: Path
+  markers?: Marker[]
   level?: number
   readOnly?: boolean
   isRoot?: boolean
   filterField?: (...args: any[]) => any
+  presence: FormFieldPresence[]
 }
-export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
+
+export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
   _firstField: any
   static defaultProps = {
     onChange() {},
     level: 0,
     focusPath: [],
     isRoot: false,
-    filterField: () => true
+    filterField: () => true,
   }
+
   handleBlur() {
     const {onChange, value} = this.props
     if (isEmpty(value)) {
       onChange(PatchEvent.from(unset()))
     }
   }
+
   handleFieldChange = (fieldEvent: PatchEvent, field) => {
     const {onChange, type, value, isRoot} = this.props
     let event = fieldEvent.prefixAll(field.name)
@@ -79,11 +92,25 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     }
     onChange(event)
   }
+
   renderField(field, level, index) {
-    const {type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField} = this.props
+    const {
+      type,
+      value,
+      markers,
+      readOnly,
+      focusPath,
+      onFocus,
+      onBlur,
+      compareValue,
+      filterField,
+      presence,
+    } = this.props
+
     if (!filterField(type, field) || field.type.hidden) {
       return null
     }
+
     const fieldValue = value && value[field.name]
     return (
       <Field
@@ -93,21 +120,36 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         onChange={this.handleFieldChange}
         onFocus={onFocus}
         onBlur={onBlur}
+        compareValue={compareValue}
         markers={markers}
         focusPath={focusPath}
         level={level}
+        presence={presence}
         readOnly={readOnly}
         filterField={filterField}
         ref={index === 0 && this.setFirstField}
       />
     )
   }
+
   renderFieldset(fieldset, fieldsetIndex) {
-    const {level, focusPath} = this.props
+    const {level, focusPath, presence, onFocus, markers} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
     const isExpanded =
-      focusPath.length > 0 && fieldset.fields.some(field => focusPath[0] === field.name)
+      focusPath.length > 0 && fieldset.fields.some((field) => focusPath[0] === field.name)
+
+    const fieldNames = fieldset.fields.map((f) => f.name)
+
+    const childPresence =
+      presence.length === 0
+        ? presence
+        : presence.filter((item) => fieldNames.includes(item.path[0]))
+
+    const childMarkers =
+      markers.length === 0 ? markers : markers.filter((item) => fieldNames.includes(item.path[0]))
+
+    const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
@@ -116,7 +158,11 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           level={level + 1}
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+          isCollapsed={isCollapsed}
+          presence={childPresence}
+          onFocus={onFocus}
+          changeIndicator={false}
+          markers={childMarkers}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -125,6 +171,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
       </div>
     )
   }
+
   getRenderedFields() {
     const {type, level} = this.props
     if (!type.fieldsets) {
@@ -137,18 +184,22 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         : this.renderFieldset(fieldset, i)
     })
   }
+
   renderUnknownFields() {
     const {value, type, onChange, readOnly} = this.props
     if (!type.fields) {
       return null
     }
-    const knownFieldNames = type.fields.map(field => field.name)
+
+    const knownFieldNames = type.fields.map((field) => field.name)
     const unknownFields = Object.keys(value || {}).filter(
-      key => !key.startsWith('_') && !knownFieldNames.includes(key)
+      (key) => !key.startsWith('_') && !knownFieldNames.includes(key)
     )
+
     if (unknownFields.length === 0) {
       return null
     }
+
     return (
       <UnknownFields
         readOnly={readOnly}
@@ -158,41 +209,55 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
       />
     )
   }
-  setFirstField = el => {
+
+  setFirstField = (el) => {
     this._firstField = el
   }
+
   focus() {
     if (this._firstField) {
       this._firstField.focus()
     }
   }
+
   render() {
-    const {type, level, focusPath} = this.props
+    const {type, level, focusPath, onFocus, presence, markers} = this.props
     const renderedFields = this.getRenderedFields()
     const renderedUnknownFields = this.renderUnknownFields()
+
     if (level === 0) {
       return (
-        <div>
-          {renderedFields}
-          {renderedUnknownFields}
+        <div className={styles.root}>
+          <div className={styles.fieldWrapper}>
+            {renderedFields}
+            {renderedUnknownFields}
+          </div>
         </div>
       )
     }
+
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
     const isExpanded = focusPath.length > 0
     const columns = type.options && type.options.columns
+    const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
-      <Fieldset
-        level={level}
-        legend={type.title}
-        description={type.description}
-        columns={columns}
-        isCollapsible={collapsibleOpts.collapsible}
-        isCollapsed={!isExpanded && collapsibleOpts.collapsed}
-      >
-        {renderedFields}
-        {renderedUnknownFields}
-      </Fieldset>
+      <div className={styles.root}>
+        <Fieldset
+          level={level}
+          legend={type.title}
+          description={type.description}
+          columns={columns}
+          isCollapsible={collapsibleOpts.collapsible}
+          isCollapsed={isCollapsed}
+          markers={markers}
+          presence={presence}
+          onFocus={onFocus}
+          changeIndicator={false}
+        >
+          {renderedFields}
+          {renderedUnknownFields}
+        </Fieldset>
+      </div>
     )
   }
 }

@@ -18,7 +18,7 @@ pipeline:
     - npm run build
 
     # Deploy the test-studio
-    - cd /drone/src/github.com/sanity-io/sanity/packages/test-studio
+    - cd /drone/src/github.com/sanity-io/sanity/examples/test-studio
     - /drone/src/github.com/sanity-io/sanity/packages/@sanity/cli/bin/sanity deploy
 
     # Publish a new `next`

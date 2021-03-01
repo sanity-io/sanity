@@ -1,0 +1,9 @@
+.content {
+  @nest & > :first-child {
+    margin-top: 0;
+  }
+
+  @nest & > :last-child {
+    margin-bottom: 0;
+  }
+}

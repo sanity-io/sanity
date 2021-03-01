@@ -12,8 +12,8 @@ export default (() => {
       {
         title: 'Code',
         name: 'code',
-        type: 'text'
-      }
-    ]
+        type: 'text',
+      },
+    ],
   }
 })()

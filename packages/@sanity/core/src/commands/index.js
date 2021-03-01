@@ -10,6 +10,8 @@ import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
+import copyDatasetCommand from './dataset/copyDatasetCommand'
+import aliasDatasetCommand from './dataset/alias/aliasCommands'
 import documentsGroup from './documents/documentsGroup'
 import getDocumentsCommand from './documents/getDocumentsCommand'
 import queryDocumentsCommand from './documents/queryDocumentsCommand'
@@ -30,6 +32,7 @@ import addCorsOriginCommand from './cors/addCorsOriginCommand'
 import listCorsOriginsCommand from './cors/listCorsOriginsCommand'
 import deleteCorsOriginCommand from './cors/deleteCorsOriginCommand'
 import graphqlGroup from './graphql/graphqlGroup'
+import listGraphQLAPIsCommand from './graphql/listGraphQLAPIsCommand'
 import deployGraphQLAPICommand from './graphql/deployGraphQLAPICommand'
 import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 import usersGroup from './users/usersGroup'
@@ -49,6 +52,8 @@ export default [
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
+  copyDatasetCommand,
+  aliasDatasetCommand,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,
@@ -68,10 +73,11 @@ export default [
   deleteDocumentsCommand,
   createDocumentsCommand,
   graphqlGroup,
+  listGraphQLAPIsCommand,
   deployGraphQLAPICommand,
   deleteGraphQLAPICommand,
   installCommand,
   startCommand,
   uninstallCommand,
-  execCommand
+  execCommand,
 ]

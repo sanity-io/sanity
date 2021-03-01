@@ -14,7 +14,7 @@ const DEFAULT_COLOR = {
   hsl: {h: 200, s: 0.7732, l: 0.5156, a: 1},
   hsv: {h: 200, s: 0.8414, v: 0.8901, a: 1},
   rgb: {r: 46, g: 163, b: 227, a: 1},
-  source: 'hex'
+  source: 'hex',
 }
 
 export default class ColorInput extends PureComponent {
@@ -26,16 +26,16 @@ export default class ColorInput extends PureComponent {
       description: PropTypes.string,
       fields: PropTypes.arrayOf(
         PropTypes.shape({
-          name: PropTypes.string.isRequired
+          name: PropTypes.string.isRequired,
         })
-      )
+      ),
     }).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     value: PropTypes.shape({
       hex: PropTypes.string,
-      alpha: PropTypes.number
-    })
+      alpha: PropTypes.number,
+    }),
   }
 
   focus() {
@@ -45,12 +45,12 @@ export default class ColorInput extends PureComponent {
     }
   }
 
-  emitSetColor = nextColor => {
+  emitSetColor = (nextColor) => {
     const {onChange, type} = this.props
 
     const fieldPatches = type.fields
-      .filter(field => field.name in nextColor)
-      .map(field => {
+      .filter((field) => field.name in nextColor)
+      .map((field) => {
         const nextFieldValue = nextColor[field.name]
         const isObject = field.type.jsonType === 'object'
         return set(
@@ -64,7 +64,7 @@ export default class ColorInput extends PureComponent {
         setIfMissing({_type: type.name}),
         set(type.name, ['_type']),
         set(nextColor.rgb.a, ['alpha']),
-        ...fieldPatches
+        ...fieldPatches,
       ])
     )
   }

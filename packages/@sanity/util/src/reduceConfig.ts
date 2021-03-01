@@ -9,11 +9,11 @@ const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 const basePath = process.env.SANITY_STUDIO_PROJECT_BASEPATH || process.env.STUDIO_BASEPATH
 const apiHosts = {
   staging: 'https://api.sanity.work',
-  development: 'http://api.sanity.wtf'
+  development: 'http://api.sanity.wtf',
 }
 
 const processEnvConfig = {
-  project: basePath ? {basePath} : {}
+  project: basePath ? {basePath} : {},
 }
 
 function clean(obj) {

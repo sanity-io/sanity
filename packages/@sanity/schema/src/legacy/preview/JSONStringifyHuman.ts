@@ -28,7 +28,7 @@ function _stringify(value, options, depth) {
   }
   if (typeof value === 'object' && value !== null) {
     const keys = Object.keys(value).filter(
-      key => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined'
+      (key) => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined'
     )
 
     if (isEmpty(pick(value, keys))) {
@@ -37,7 +37,7 @@ function _stringify(value, options, depth) {
 
     const asString = keys
       .slice(0, options.maxBreadth)
-      .map(key => `${key}: ${_stringify(value[key], options, depth + 1)}`)
+      .map((key) => `${key}: ${_stringify(value[key], options, depth + 1)}`)
       .join(', ')
 
     return depth === 0 ? asString : `{${asString}}`
@@ -53,7 +53,7 @@ export default function stringify(
   const opts = {
     maxDepth: 'maxDepth' in options ? options.maxDepth : 2,
     maxBreadth: 'maxBreadth' in options ? options.maxBreadth : 2,
-    ignoreKeys: 'ignoreKeys' in options ? options.ignoreKeys : []
+    ignoreKeys: 'ignoreKeys' in options ? options.ignoreKeys : [],
   }
   return _stringify(value, opts, 0)
 }

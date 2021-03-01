@@ -4,6 +4,6 @@
     "node": true
   },
   "rules": {
-    "import/no-commonjs": "off"
+    "@typescript-eslint/no-var-requires": "off"
   }
 }

@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["src", "parts"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "jsx": "react",
+    "esModuleInterop": true
+  }
+}

@@ -1,0 +1,91 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background: var(--component-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  outline: none;
+
+  @media (--screen-medium) {
+    height: 100%;
+  }
+}
+
+.documentAndChangesContainer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+
+.footerContainer {
+  /*
+    NOTE: The reason for the double selector here, is to be able to override
+    `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
+    applies class names to the element, we need to provide a more specific
+    CSS selector to make sure this property is not overriden.
+  */
+  @nest &.footerContainer {
+    position: relative;
+
+    @media (--max-screen-medium) {
+      position: sticky;
+      bottom: 0;
+    }
+  }
+
+  background: var(--component-bg);
+
+  @nest &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    border-top: 1px solid var(--hairline-color);
+  }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.isDisabled {
+  display: none; /* hide on mobile */
+
+  @media (--screen-medium) {
+    display: flex;
+  }
+}
+
+.isActive {
+  display: flex;
+}
+
+.isCollapsed {
+  @media (--screen-medium) {
+    composes: root;
+    flex-direction: row;
+    width: 49px;
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+.documentContainer {
+  flex: 3;
+  min-width: 334px;
+}
+
+.changesContainer {
+  flex: 2;
+  min-width: 334px;
+  max-width: 480px;
+  border-left: 1px dashed var(--hairline-color);
+}

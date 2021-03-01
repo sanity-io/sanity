@@ -1,0 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  @media (--max-screen-medium) {
+    display: none;
+  }
+
+  @media (--screen-medium) {
+    @nest &.root {
+      position: absolute;
+    }
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.isOpen {
+  max-width: 420px;
+  transform: translate3d(0, 0, 0);
+}
+
+.isOpen {
+  max-width: 420px;
+  transform: translate3d(0, 0, 0);
+}

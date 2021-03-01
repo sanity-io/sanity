@@ -30,7 +30,7 @@ export default class Matcher {
   // the active set
   extractRecursives() {
     // console.log(JSON.stringify(this.active))
-    this.active = this.active.filter(descender => {
+    this.active = this.active.filter((descender) => {
       if (descender.isRecursive()) {
         this.recursives.push(...descender.extractRecursives())
         return false
@@ -41,7 +41,7 @@ export default class Matcher {
 
   // Find recursives that are relevant now and should be considered part of the active set
   activeRecursives(probe: Probe): Array<Descender> {
-    return this.recursives.filter(descender => {
+    return this.recursives.filter((descender) => {
       const head = descender.head
       // Constraints are always relevant
       if (head.isConstraint()) {
@@ -67,7 +67,7 @@ export default class Matcher {
 
   iterate(probe: Probe): Matcher {
     const newActiveSet: Array<Descender> = []
-    this.active.concat(this.activeRecursives(probe)).forEach(descender => {
+    this.active.concat(this.activeRecursives(probe)).forEach((descender) => {
       newActiveSet.push(...descender.iterate(probe))
     })
     return new Matcher(newActiveSet, this)
@@ -76,7 +76,7 @@ export default class Matcher {
   // Returns true if any of the descenders in the active or recursive set
   // consider the current state a final destination
   isDestination(): boolean {
-    const arrival = this.active.find(descender => {
+    const arrival = this.active.find((descender) => {
       if (descender.hasArrived()) {
         return true
       }
@@ -94,13 +94,13 @@ export default class Matcher {
   extractMatches(probe: Probe): Result {
     const leads = []
     const targets = []
-    this.active.forEach(descender => {
+    this.active.forEach((descender) => {
       if (descender.hasArrived()) {
         // This was allready arrived, so matches this value, not descenders
         targets.push(
           new Expression({
             type: 'alias',
-            target: 'self'
+            target: 'self',
           })
         )
         return
@@ -118,10 +118,10 @@ export default class Matcher {
       if (descender.tail) {
         // Not arrived yet
         const matcher = new Matcher(descender.descend(), this)
-        descender.head.toFieldReferences().forEach(field => {
+        descender.head.toFieldReferences().forEach((field) => {
           leads.push({
             target: descender.head,
-            matcher: matcher
+            matcher: matcher,
           })
         })
       } else {
@@ -139,26 +139,26 @@ export default class Matcher {
         for (let i = 0; i < length; i++) {
           leads.push({
             target: Expression.indexReference(i),
-            matcher: recursivesMatcher
+            matcher: recursivesMatcher,
           })
         }
       } else if (probe.containerType() == 'object') {
-        probe.attributeKeys().forEach(name => {
+        probe.attributeKeys().forEach((name) => {
           leads.push({
             target: Expression.attributeReference(name),
-            matcher: recursivesMatcher
+            matcher: recursivesMatcher,
           })
         })
       }
     }
 
     const result: Result = {
-      leads: leads
+      leads: leads,
     }
     if (targets.length > 0) {
       result.delivery = {
         targets: targets,
-        payload: this.payload
+        payload: this.payload,
       }
     }
     return result

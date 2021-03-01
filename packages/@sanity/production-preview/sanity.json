@@ -10,7 +10,7 @@
     },
     {
       "implements": "part:@sanity/transitional/production-preview/resolve-production-url",
-      "path": "resolveProductionUrl.js"
+      "path": "resolveProductionUrl"
     }
   ]
 }

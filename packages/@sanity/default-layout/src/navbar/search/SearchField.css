@@ -1,0 +1,204 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  color: var(--main-navigation-color--inverted-muted);
+  height: 100%;
+
+  @nest &:not(.isBleeding) {
+    background: color(
+      var(--main-navigation-color) blend(var(--main-navigation-color--inverted) 10%)
+    );
+    border-radius: var(--border-radius-base);
+    height: 33px;
+  }
+
+  @nest &.isBleeding {
+    color: var(--text-color);
+  }
+
+  @nest &.isFocused:not(.isBleeding) {
+    background: var(--component-bg);
+    color: var(--text-color);
+  }
+
+  @nest &.isFocused.isBleeding {
+    background: var(--component-bg);
+    color: var(--text-color);
+  }
+
+  @nest &.isOpen:not(.isBleeding) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.inputField {
+  display: flex;
+
+  @nest .isBleeding & {
+    background: var(--component-bg);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 160;
+  }
+
+  @nest .root.isBleeding.isOpen &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+  }
+
+  @nest .root:not(.isBleeding) & {
+    height: 100%;
+  }
+}
+
+.label {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 33px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @nest & > svg {
+    font-size: calc(25 / 16 * 1rem);
+  }
+
+  @nest .isBleeding & {
+    display: none;
+  }
+}
+
+.input {
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  margin: 0;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: 0 0 2px 33px;
+  box-sizing: border-box;
+  white-space: nowrap;
+
+  @nest &::placeholder {
+    @nest .root.isBleeding & {
+      color: var(--text-muted);
+    }
+
+    @nest .root:not(.isBleeding) & {
+      color: var(--main-navigation-color--inverted-muted);
+    }
+
+    @nest .root:not(.isBleeding).isFocused & {
+      color: transparent;
+    }
+  }
+
+  @nest .isBleeding & {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    padding: calc(1em - 2px) 1em calc(1em - 1px);
+  }
+
+  @nest &::-ms-clear {
+    display: none;
+  }
+}
+
+.clearButton {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 41px;
+
+  & > svg {
+    font-size: 1.5625em;
+  }
+
+  @nest .root:not(.isBleeding):not(.hasValue) & {
+    display: none;
+  }
+
+  @nest .root:not(.isBleeding) & > svg {
+    font-size: 20px;
+  }
+}
+
+.clearButtonWithValue {
+  composes: clearButton;
+  display: flex;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
+}
+
+.hotkeys {
+  display: none;
+  margin-left: auto;
+  box-sizing: border-box;
+  font-size: var(--font-size-tiny);
+  align-items: center;
+
+  @nest .root:not(.isBleeding):not(.hasValue) & {
+    padding-right: 0.75em;
+  }
+
+  @media (--screen-medium) {
+    @nest .isFocused & {
+      display: flex;
+    }
+  }
+}
+
+.results {
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
+  display: none;
+  position: absolute;
+  background: var(--component-bg);
+  color: var(--component-text-color);
+  top: 33px;
+  left: 0;
+  width: 100%;
+  z-index: 150;
+
+  @nest .root.isBleeding & {
+    top: 0;
+    box-shadow: none;
+    padding-top: 49px;
+  }
+
+  @nest .root:not(.isBleeding) & {
+    border-bottom-left-radius: var(--border-radius-base);
+    border-bottom-right-radius: var(--border-radius-base);
+    max-height: 80vh;
+    overflow: auto;
+
+    @media (max-height: 429px) {
+      max-height: calc(100vh - 33px - 16px);
+    }
+  }
+
+  @nest .root.isOpen & {
+    display: block;
+  }
+}

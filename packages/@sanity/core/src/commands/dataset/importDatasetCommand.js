@@ -8,13 +8,17 @@ import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import validateDatasetName from '../../actions/dataset/validateDatasetName'
 import debug from '../../debug'
 
-const yellow = str => `\u001b[33m${str}\u001b[39m`
+const yellow = (str) => `\u001b[33m${str}\u001b[39m`
 
 const helpText = `
 Options
   --missing On duplicate document IDs, skip importing document in question
   --replace On duplicate document IDs, replace existing document with imported document
   --allow-failing-assets Skip assets that cannot be fetched/uploaded
+  --replace-assets Skip reuse of existing assets
+
+Rarely used options (should generally not be used)
+  --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
@@ -42,7 +46,10 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
 
+    const allowAssetsInDifferentDataset = args.extOptions['allow-assets-in-different-dataset']
     const allowFailingAssets = args.extOptions['allow-failing-assets']
+    const assetConcurrency = args.extOptions['asset-concurrency']
+    const replaceAssets = args.extOptions['replace-assets']
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -106,7 +113,7 @@ export default {
 
       if (currentProgress && currentProgress.succeed) {
         const timeSpent = prettyMs(Date.now() - prevStepStart, {
-          secDecimalDigits: 2
+          secDecimalDigits: 2,
         })
         currentProgress.text = `[100%] ${prevStep} (${timeSpent})`
         currentProgress.succeed()
@@ -121,7 +128,7 @@ export default {
 
       spinInterval = setInterval(() => {
         const timeSpent = prettyMs(Date.now() - prevStepStart, {
-          secDecimalDigits: 2
+          secDecimalDigits: 2,
         })
         currentProgress.text = `${percent}${opts.step} (${timeSpent})`
       }, 60)
@@ -133,7 +140,7 @@ export default {
 
       if (success) {
         const timeSpent = prettyMs(Date.now() - stepStart, {
-          secDecimalDigits: 2
+          secDecimalDigits: 2,
         })
         currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
         currentProgress.succeed()
@@ -148,7 +155,10 @@ export default {
         client: importClient,
         operation,
         onProgress,
-        allowFailingAssets
+        allowFailingAssets,
+        allowAssetsInDifferentDataset,
+        assetConcurrency,
+        replaceAssets,
       })
 
       endTask({success: true})
@@ -158,22 +168,33 @@ export default {
     } catch (err) {
       endTask({success: false})
 
-      let error = err.message
-      if (!fromInitCommand && err.response && err.response.statusCode === 409) {
-        error = [
-          err.message,
-          '',
-          'You probably want either:',
-          ' --replace (replace existing documents with same IDs)',
-          ' --missing (only import documents that do not already exist)'
-        ].join('\n')
+      const isNonRefConflict =
+        !fromInitCommand &&
+        err.response &&
+        err.response.statusCode === 409 &&
+        err.step !== 'strengthen-references'
 
-        err.message = error
+      if (!isNonRefConflict) {
+        throw err
       }
 
-      throw err
+      const message = [
+        err.message,
+        '',
+        'You probably want either:',
+        ' --replace (replace existing documents with same IDs)',
+        ' --missing (only import documents that do not already exist)',
+        '',
+      ].join('\n')
+
+      const error = new Error(message)
+      error.details = err.details
+      error.response = err.response
+      error.responseBody = err.responseBody
+
+      throw error
     }
-  }
+  },
 }
 
 async function determineTargetDataset(target, context) {
@@ -196,14 +217,14 @@ async function determineTargetDataset(target, context) {
   if (!targetDataset) {
     targetDataset = await chooseDatasetPrompt(context, {
       message: 'Select target dataset',
-      allowCreation: true
+      allowCreation: true,
     })
-  } else if (!datasets.find(dataset => dataset.name === targetDataset)) {
+  } else if (!datasets.find((dataset) => dataset.name === targetDataset)) {
     debug('Target dataset does not exist, prompting for creation')
     const shouldCreate = await prompt.single({
       type: 'confirm',
       message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
-      default: true
+      default: true,
     })
 
     if (!shouldCreate) {
@@ -249,7 +270,7 @@ function getUrlStream(url) {
 }
 
 function printWarnings(warnings, output) {
-  const assetFails = warnings.filter(warn => warn.type === 'asset')
+  const assetFails = warnings.filter((warn) => warn.type === 'asset')
 
   if (!assetFails.length) {
     return
@@ -259,7 +280,7 @@ function printWarnings(warnings, output) {
 
   warn(yellow('⚠ Failed to import the following %s:'), assetFails.length > 1 ? 'assets' : 'asset')
 
-  warnings.forEach(warning => {
+  warnings.forEach((warning) => {
     warn(`  ${warning.url}`)
   })
 }

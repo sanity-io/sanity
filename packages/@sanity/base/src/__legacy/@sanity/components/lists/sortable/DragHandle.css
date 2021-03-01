@@ -1,0 +1,5 @@
+.root {
+  @nest & > svg {
+    display: block;
+  }
+}

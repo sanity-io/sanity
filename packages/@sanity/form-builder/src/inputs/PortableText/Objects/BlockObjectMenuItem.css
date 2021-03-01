@@ -1,0 +1,37 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
+}
+
+.menuItemDanger {
+  composes: menuItem;
+  color: var(--state-danger-color);
+}
+
+.iconContainer {
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.title {
+  margin: -2px 0 -1px var(--small-padding);
+}
+
+.intentLink {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  color: inherit;
+  text-decoration: none;
+}

@@ -1,12 +1,21 @@
 const storyBook = require('@storybook/react')
+
 const sortByName = (storyA, storyB) => (storyB.name || '').localeCompare(storyA.name || '')
 const registerStoryKind = storyBook.storiesOf
+
+const rootDecorator = require('./decorators/root').default
 
 const storybookApi = Object.assign({}, storyBook, {
   declaredStories: [],
 
   storiesOf: (...args) => {
-    const kind = {name: args[0], kind: args, decorators: [], stories: []}
+    const kind = {
+      name: args[0],
+      kind: args,
+      decorators: [[rootDecorator]],
+      stories: [],
+    }
+
     storybookApi.declaredStories.push(kind)
 
     const api = {
@@ -18,7 +27,7 @@ const storybookApi = Object.assign({}, storyBook, {
       addDecorator: (...decorator) => {
         kind.decorators.push(decorator)
         return api
-      }
+      },
     }
 
     return api
@@ -27,14 +36,16 @@ const storybookApi = Object.assign({}, storyBook, {
   sanity: {
     registerDeclaredStories: () => {
       storybookApi.declaredStories.sort(sortByName)
+
       while (storybookApi.declaredStories.length > 0) {
         const story = storybookApi.declaredStories.pop()
         const kind = registerStoryKind(...story.kind)
-        story.decorators.forEach(dec => kind.addDecorator(...dec))
-        story.stories.forEach(stry => kind.add(...stry))
+
+        story.decorators.forEach((dec) => kind.addDecorator(...dec))
+        story.stories.forEach((stry) => kind.add(...stry))
       }
-    }
-  }
+    },
+  },
 })
 
 module.exports = storybookApi

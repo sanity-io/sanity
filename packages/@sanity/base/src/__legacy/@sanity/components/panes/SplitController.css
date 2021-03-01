@@ -1,0 +1,88 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  min-width: 0;
+  width: 100%;
+  overflow: auto;
+
+  @media (--screen-medium) {
+    display: flex;
+    height: 100%;
+  }
+
+  @nest & :global(.Pane1) {
+    background-color: inherit;
+  }
+}
+
+/* .vertical {
+  composes: root;
+} */
+
+.splitPane {
+  display: block;
+}
+
+.splitWrapper {
+  display: block;
+}
+
+.splitWrapperResizing {
+  composes: splitWrapper;
+}
+
+.singleWrapper {
+  /*
+    This is to keep the DOM-tree in the same structure
+    to avoide a re-render of the dom and to fill the entire width
+  */
+  @nest & :global(.Pane1) {
+    max-width: 100% !important;
+    flex: 1 !important;
+  }
+
+  @nest & :global(.Pane2) {
+    display: none;
+  }
+
+  @nest & .resizer {
+    display: none;
+  }
+}
+
+.resizer {
+  position: relative;
+  z-index: var(--zindex-pane-resizer);
+  box-sizing: border-box;
+  background-clip: padding-box;
+  width: 11px;
+  margin: 0 -5px;
+
+  @nest &:after {
+    background: var(--component-bg);
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 5px;
+    bottom: 0;
+    border-left: 1px solid var(--hairline-color);
+  }
+
+  &:not(.disabled):not(.collapsed) {
+    @media (hover: hover) {
+      cursor: ew-resize;
+
+      &:hover {
+        background: color(var(--gray) alpha(5%));
+      }
+    }
+  }
+}
+
+.lastPane .resizer {
+  display: none;
+}
+
+.hideResize > .splitPane > .resizer {
+  display: none;
+}

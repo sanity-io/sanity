@@ -1,3 +1,3 @@
 module.exports = {
-  isActionEnabled: () => true
+  isActionEnabled: () => true,
 }

@@ -19,7 +19,7 @@ export default async function initPlugin(args, context, initOpts = {}) {
 
   let specifiedTemplate = null
   if (specifiedTemplateUrl) {
-    specifiedTemplate = pluginTemplates.find(tpl => tpl.value === specifiedTemplateUrl)
+    specifiedTemplate = pluginTemplates.find((tpl) => tpl.value === specifiedTemplateUrl)
   }
 
   if (specifiedTemplate) {
@@ -38,10 +38,10 @@ export default async function initPlugin(args, context, initOpts = {}) {
   const selected = await prompt.single({
     message: 'Select template to use',
     type: 'list',
-    choices: templateChoices
+    choices: templateChoices,
   })
 
-  specifiedTemplate = pluginTemplates.find(tpl => tpl.value === selected)
+  specifiedTemplate = pluginTemplates.find((tpl) => tpl.value === selected)
   debug('User selected template URL: %s', specifiedTemplate.url)
   return bootstrapFromUrl(context, specifiedTemplate.url)
 }
@@ -56,7 +56,7 @@ async function bootstrapFromUrl(context, url) {
     const addIt = await prompt.single({
       type: 'confirm',
       message: 'Enable plugin in current Sanity installation?',
-      default: true
+      default: true,
     })
 
     if (addIt) {
@@ -79,11 +79,11 @@ async function bootstrapFromUrl(context, url) {
     const addDeps = await prompt.single({
       type: 'confirm',
       message: 'Install dependencies in current project?',
-      default: true
+      default: true,
     })
 
     if (addDeps) {
-      const deps = Object.keys(dependencies).map(dep => `${dep}@${dependencies[dep]}`)
+      const deps = Object.keys(dependencies).map((dep) => `${dep}@${dependencies[dep]}`)
       await yarn(['add'].concat(deps), {...output, rootDir: workDir})
 
       output.print('Dependencies installed.')

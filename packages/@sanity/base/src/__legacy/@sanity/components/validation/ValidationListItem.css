@@ -1,0 +1,88 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  margin: 0;
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  color: inherit;
+  padding: var(--medium-padding);
+  line-height: 0;
+}
+
+.root.kind_simple {
+  user-select: none;
+  cursor: unset;
+  padding: var(--extra-small-padding) var(--medium-padding);
+  border: 0;
+}
+
+.root.error {
+  @nest & .icon {
+    color: var(--state-danger-color);
+  }
+}
+
+.root.warning {
+  @nest & .icon {
+    color: var(--state-warning-color);
+  }
+}
+
+.interactive {
+  composes: root;
+  cursor: pointer;
+
+  @nest &.error:not(.kind_simple):hover, &.error:not(.kind_simple):focus {
+    background-color: color(var(--state-danger-color) a(10%));
+  }
+
+  @nest &.warning:not(.kind_simple):hover, &.warning:not(.kind_simple):focus {
+    background-color: color(var(--state-warning-color) a(10%));
+  }
+}
+
+.icon {
+  display: block;
+  margin: -3px 0 -3px -3px;
+
+  @nest & > svg {
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: -4px;
+    }
+  }
+}
+
+.content {
+  flex-grow: 1;
+  min-width: 0;
+  padding-left: var(--small-padding);
+  margin: -3px 0 -2px;
+}
+
+.path {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+}
+
+.message {
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+
+  @nest .path + & {
+    margin-top: calc(var(--extra-small-padding) / 2);
+  }
+
+  @nest .truncate & {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

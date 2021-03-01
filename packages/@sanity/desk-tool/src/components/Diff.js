@@ -18,7 +18,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {diffJson} from 'diff'
-import styles from './styles/Diff.css'
+import styles from './Diff.css'
 
 function getDiffStatKey(part) {
   if (part.added) {
@@ -33,12 +33,12 @@ function getDiffStatKey(part) {
 export default class Diff extends React.PureComponent {
   static defaultProps = {
     inputA: '',
-    inputB: ''
+    inputB: '',
   }
 
   static propTypes = {
     inputA: PropTypes.object,
-    inputB: PropTypes.object
+    inputB: PropTypes.object,
   }
 
   render() {

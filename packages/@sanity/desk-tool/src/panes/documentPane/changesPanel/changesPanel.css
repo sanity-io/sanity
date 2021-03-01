@@ -1,0 +1,85 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background: var(--component-bg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  position: relative;
+
+  @nest &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+  }
+}
+
+.changeWrapper {
+  border-left: 1px solid var(--hairline-color);
+  padding-left: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.mainNav {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font: inherit;
+  line-height: 17px;
+  font-weight: 600;
+  padding: var(--medium-padding) var(--medium-padding) var(--small-padding);
+}
+
+.closeButtonContainer {
+  padding: var(--small-padding);
+}
+
+.changesSinceSelectContainer {
+  flex: 1;
+  min-width: 0;
+
+  @nest & > div {
+    display: inline-block;
+  }
+}
+
+.versionSelectContainer {
+  padding: var(--extra-small-padding) var(--small-padding);
+  padding-right: calc(var(--medium-padding) - var(--extra-small-padding) + 1px);
+  margin-top: calc(0 - var(--small-padding));
+  display: flex;
+  align-items: center;
+
+  @nest & > button {
+    display: block;
+  }
+}
+
+.changeAuthorsContainer {
+  margin-left: auto;
+}
+
+.changeAuthorsAvatarStack {
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--large-padding) var(--medium-padding);
+  overflow: auto;
+  position: relative;
+
+  @media not screen and (prefers-reduced-motion) {
+    scroll-behavior: smooth;
+  }
+}

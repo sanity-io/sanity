@@ -10,7 +10,7 @@ export default Schema.compile({
         {
           title: 'Title',
           type: 'string',
-          name: 'title'
+          name: 'title',
         },
         {
           title: 'Body',
@@ -26,12 +26,12 @@ export default Schema.compile({
                 {
                   title: 'Code',
                   name: 'code',
-                  type: 'text'
+                  type: 'text',
                 },
                 {
                   name: 'language',
                   title: 'Language',
-                  type: 'string'
+                  type: 'string',
                 },
                 {
                   title: 'Highlighted lines',
@@ -40,15 +40,15 @@ export default Schema.compile({
                   of: [
                     {
                       type: 'number',
-                      title: 'Highlighted line'
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+                      title: 'Highlighted line',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 })

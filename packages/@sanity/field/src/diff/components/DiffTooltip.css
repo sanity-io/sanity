@@ -1,0 +1,53 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.annotation {
+  margin: var(--small-padding) 0 0;
+  display: flex;
+  align-items: center;
+}
+
+.user {
+  border-radius: calc(23px / 2); /* 23px = avatar size */
+  display: flex;
+  align-items: center;
+  padding-right: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.avatarContainer {
+  display: block;
+}
+
+.displayName {
+  display: block;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  margin: -2px 0 -1px calc(var(--extra-small-padding) + 2px);
+}
+
+.loadingText {
+  color: var(--text-muted);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  margin-top: -2px 0 -1px;
+}
+
+.timeAgo {
+  margin-left: auto;
+  padding-left: var(--small-padding);
+  font-size: var(--font-size-small);
+  color: var(--text-muted);
+  margin-top: -2px 0 -1px;
+}
+
+.description {
+  color: var(--text-muted);
+  font-size: var(--font-size-xsmall--uppercase);
+  line-height: var(--line-height-xsmall--uppercase);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: -3px 0 -2px;
+}

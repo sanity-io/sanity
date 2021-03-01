@@ -25,5 +25,5 @@ export default {
   image: Image,
   file: File,
   string: StringInput,
-  slug: SlugInput
+  slug: SlugInput,
 }

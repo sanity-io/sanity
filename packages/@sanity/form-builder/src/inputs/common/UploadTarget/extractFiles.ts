@@ -25,7 +25,7 @@ export function extractDroppedFiles(dataTransfer: DataTransfer) {
 
 function normalizeItems(items: Array<DataTransferItem>) {
   return Promise.all(
-    items.map(item => {
+    items.map((item) => {
       // directory
       if (item.kind === 'file' && item.webkitGetAsEntry) {
         let entry
@@ -48,7 +48,7 @@ function normalizeItems(items: Array<DataTransferItem>) {
       }
 
       // others
-      return new Promise<string>(resolve => item.getAsString(resolve)).then(str =>
+      return new Promise<string>((resolve) => item.getAsString(resolve)).then((str) =>
         str ? [new File([str], 'unknown.txt', {type: item.type})] : []
       )
     })
@@ -58,14 +58,14 @@ function normalizeItems(items: Array<DataTransferItem>) {
 type WebKitFileEntry = any
 function walk(entry: WebKitFileEntry): Promise<File[]> {
   if (entry.isFile) {
-    return new Promise(resolve => entry.file(resolve)).then((file: File) => [file])
+    return new Promise((resolve) => entry.file(resolve)).then((file: File) => [file])
   }
 
   if (entry.isDirectory) {
     const dir = entry.createReader()
-    return new Promise<File[]>(resolve => dir.readEntries(resolve))
-      .then(entries => entries.filter(entr => !entr.name.startsWith('.')))
-      .then(entries => Promise.all(entries.map(walk)).then(flatten))
+    return new Promise<File[]>((resolve) => dir.readEntries(resolve))
+      .then((entries) => entries.filter((entr) => !entr.name.startsWith('.')))
+      .then((entries) => Promise.all(entries.map(walk)).then(flatten))
   }
   return Promise.resolve([])
 }

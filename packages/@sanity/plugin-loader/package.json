@@ -1,18 +1,19 @@
 {
   "name": "@sanity/plugin-loader",
-  "version": "0.147.0",
+  "version": "2.4.0",
   "description": "Monkey-patches node's require algorithm to allow requiring of Sanity parts",
   "main": "loader.js",
   "scripts": {
-    "test": "#todo: ava",
+    "test": "tape test/*.test.js",
     "coverage": "nyc --reporter=html ava"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/plugin-loader"
   },
   "keywords": [
     "sanity",
@@ -31,19 +32,13 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
-  "ava": {
-    "files": [
-      "test/*.test.js"
-    ]
-  },
   "devDependencies": {
-    "ava": "^0.19.1",
-    "nyc": "^11.0.3"
+    "tape": "^4.8.0"
   },
   "dependencies": {
-    "@sanity/resolver": "0.147.0",
-    "@sanity/util": "0.147.0",
-    "@sanity/webpack-integration": "0.147.0",
+    "@sanity/resolver": "2.4.0",
+    "@sanity/util": "2.4.0",
+    "@sanity/webpack-integration": "2.4.0",
     "css-modules-require-hook": "4.1.0",
     "interop-require": "^1.0.0"
   }

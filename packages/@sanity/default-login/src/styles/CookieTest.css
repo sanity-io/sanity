@@ -24,8 +24,8 @@
 }
 
 .projectName {
-  composes: heading1 from 'part:@sanity/base/theme/typography/text-blocks-style';
-  font-weight: 100;
+  composes: heading1 from 'part:@sanity/base/theme/typography/headings-style';
+  text-align: center;
 }
 
 .projectNameHidden {

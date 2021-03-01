@@ -1,0 +1,135 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@keyframes sanity_spinner_rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sanity_spinner_appear {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.root {
+  animation-name: sanity_spinner_appear;
+  animation-duration: 250ms;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
+  animation-fill-mode: forwards;
+  opacity: 0;
+
+  &.center,
+  &.fullscreen {
+    text-align: center;
+  }
+
+  &.fullscreen {
+    background-color: color(var(--body-bg) a(50%));
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: var(--zindex-portal);
+  }
+}
+
+.block {
+  composes: root;
+  text-align: center;
+}
+
+.inline {
+  composes: root;
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.inner {
+  @nest .root.fullscreen & {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+.iconContainer {
+  display: inline-block;
+  vertical-align: top;
+  height: calc(17 / 16 * 1em);
+  width: calc(17 / 16 * 1em);
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    margin: 0 auto;
+  }
+
+  @nest & > svg {
+    animation-name: sanity_spinner_rotation;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform-origin: center center;
+    will-change: transform;
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+    width: 1em;
+    height: 1em;
+    shape-rendering: geometricPrecision;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+
+    @nest .root.fullscreen & {
+      font-size: calc(21 / 16 * 1em);
+
+      @nest &[data-sanity-icon='true'] {
+        font-size: calc(29 / 16 * 1em);
+        margin: calc(4 / 29 * -1em);
+      }
+    }
+  }
+
+  @nest .root.fullscreen & {
+    height: calc(21 / 16 * 1em);
+    width: calc(21 / 16 * 1em);
+    margin: calc(4 / 21 * -1em);
+  }
+}
+
+.message {
+  display: inline-block;
+  vertical-align: top;
+  /* Optical alignment of the text */
+  margin: -2px 0 -1px var(--small-padding);
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    /* Optical alignment of the text */
+    margin: calc(var(--small-padding) - 2px) auto -1px;
+  }
+
+  @nest .root.center &, .root.fullscreen & {
+    display: block;
+    white-space: pre-wrap;
+    padding-top: var(--small-padding);
+    align-self: center;
+  }
+}

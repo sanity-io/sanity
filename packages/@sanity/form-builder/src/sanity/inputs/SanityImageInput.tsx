@@ -1,17 +1,16 @@
 import React from 'react'
 import ImageInput, {Props} from '../../inputs/ImageInput'
-import {materializeReference} from './client-adapters/assets'
 import resolveUploader from '../uploads/resolveUploader'
-import withDocument from '../../utils/withDocument'
+import {materializeReference} from './client-adapters/assets'
 
-export default withDocument(class SanityImageInput extends React.Component<Props> {
+export default class SanityImageInput extends React.Component<Props> {
   _input: any
   focus() {
     if (this._input) {
       this._input.focus()
     }
   }
-  setInput = input => {
+  setInput = (input) => {
     this._input = input
   }
   render() {
@@ -24,4 +23,4 @@ export default withDocument(class SanityImageInput extends React.Component<Props
       />
     )
   }
-})
+}

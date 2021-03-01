@@ -6,11 +6,11 @@ let intl = null
 
 export class IntlWrapper extends React.Component {
   static contextTypes = {
-    intl: intlShape
+    intl: intlShape,
   }
 
   static propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
   }
 
   UNSAFE_componentWillMount() {
@@ -33,7 +33,7 @@ const proxies = [
   'formatNumber',
   'formatPlural',
   'formatMessage',
-  'formatHTMLMessage'
+  'formatHTMLMessage',
 ].reduce((target, fnName) => {
   target[fnName] = (...args) => {
     if (!intl) {

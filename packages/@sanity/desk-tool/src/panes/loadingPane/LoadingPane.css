@@ -1,0 +1,21 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+
+  @media (--max-screen-medium) {
+    /* hack to make the spinner place at center */
+    min-height: calc(100vh - 12rem);
+  }
+}

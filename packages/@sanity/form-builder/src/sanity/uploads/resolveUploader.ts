@@ -1,16 +1,18 @@
+import {ImageSchemaType, FileSchemaType} from '@sanity/types'
 import accept from 'attr-accept'
-import uploaders from './uploaders'
-import {get} from 'lodash'
-import {Uploader} from './typedefs'
-import {Type} from '../../typedefs'
 import * as is from '../../utils/is'
+import uploaders from './uploaders'
+import {Uploader} from './typedefs'
 
-export default function resolveUploader(type: Type, file: File): Uploader | null {
-  return uploaders.find(uploader => {
+export default function resolveUploader(
+  type: ImageSchemaType | FileSchemaType,
+  file: File
+): Uploader | null {
+  return uploaders.find((uploader) => {
     return (
       is.type(uploader.type, type) &&
       accept(file, uploader.accepts) &&
-      accept(file, get(type.options, 'accept') || '')
+      accept(file, type.options?.accept || '')
     )
   })
 }

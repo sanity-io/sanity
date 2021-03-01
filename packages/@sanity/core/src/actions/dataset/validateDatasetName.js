@@ -1,4 +1,4 @@
-module.exports = datasetName => {
+module.exports = (datasetName) => {
   if (!datasetName) {
     return 'Dataset name is missing'
   }

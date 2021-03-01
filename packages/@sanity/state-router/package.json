@@ -1,12 +1,11 @@
 {
   "name": "@sanity/state-router",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
     "start": "remon --require ts-node/register demo-server/app.ts",
     "test": "jest",
-    "compile": "tsc",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
     "clean": "rimraf lib"
@@ -23,36 +22,36 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.15",
-    "nano-pubsub": "^1.0.2"
+    "nano-pubsub": "^2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
-    "@types/react": "^16.3",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
     "history": "^4.6.3",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",
     "quickreload": "^2.1.2",
-    "react": "16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
     "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
-    "ts-jest": "^24.2.0",
-    "ts-node": "^8.3.0",
+    "ts-jest": "^26.3.0",
+    "ts-node": "^8.6.2",
     "tsify": "^4.0.1"
   },
   "peerDependencies": {
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/state-router"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

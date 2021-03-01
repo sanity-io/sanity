@@ -1,5 +1,5 @@
 import {get} from 'lodash'
-import StringSelect from '../../inputs/SelectInput'
+import SelectInput from '../../inputs/SelectInput'
 import StringInput from '../../inputs/StringInput'
 
 export function getOption(type, optionName) {
@@ -7,5 +7,5 @@ export function getOption(type, optionName) {
 }
 
 export default function resolveStringInput(type) {
-  return getOption(type, 'list') ? StringSelect : StringInput
+  return getOption(type, 'list') ? SelectInput : StringInput
 }

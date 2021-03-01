@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-unassigned-import */
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -39,7 +39,7 @@ class ParamsEditor extends React.PureComponent {
       lineNumbers: true,
       tabSize: 2,
       mode: {name: 'javascript', json: true},
-      autoCloseBrackets: true
+      autoCloseBrackets: true,
     }
     return (
       <ReactCodeMirror
@@ -60,14 +60,14 @@ ParamsEditor.propTypes = {
   onExecute: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
-  height: PropTypes.number
+  height: PropTypes.number,
 }
 
 ParamsEditor.defaultProps = {
   value: '{\n  \n}',
   className: 'vision_params-editor',
   classNameInvalid: 'vision_params-editor-invalid',
-  height: 100
+  height: 100,
 }
 
 export default ParamsEditor

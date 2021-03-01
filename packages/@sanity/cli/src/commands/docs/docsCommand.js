@@ -11,5 +11,5 @@ export default {
 
     print(`Opening ${url}`)
     open(url, {wait: false})
-  }
+  },
 }

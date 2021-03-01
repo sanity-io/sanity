@@ -1,0 +1,42 @@
+{
+  "root": true,
+  "project": {
+    "name": "Design Studio"
+  },
+  "api": {
+    "projectId": "vr2mh9ho",
+    "dataset": "production"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "ui-test-bed-tool",
+    "@sanity/google-maps-input",
+    "asset-source-unsplash"
+  ],
+  "env": {
+    "development": {
+      "plugins": ["@sanity/vision"]
+    }
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "schemas"
+    },
+    {
+      "name": "part:@sanity/desk-tool/structure",
+      "path": "structure"
+    },
+    {
+      "name": "part:@sanity/base/initial-value-templates",
+      "path": "documentInitialValueTemplates"
+    },
+    {
+      "implements": "part:@sanity/base/theme/variables/override-style",
+      "path": "themes/dev.css"
+    }
+  ]
+}

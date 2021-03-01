@@ -18,13 +18,13 @@ const typeVisitors = {
   image,
   block,
   document: documentVisitor,
-  reference: reference
+  reference: reference,
 }
 
-const getNoopVisitor = visitorContext => schemaDef => ({
+const getNoopVisitor = (visitorContext) => (schemaDef) => ({
   name: `<unnamed_type_@_index_${visitorContext.index}>`,
   ...schemaDef,
-  _problems: []
+  _problems: [],
 })
 
 function combine(...visitors) {
@@ -34,7 +34,7 @@ function combine(...visitors) {
         const res = visitor(result, visitorContext)
         return {
           ...res,
-          _problems: result._problems.concat(res._problems)
+          _problems: result._problems.concat(res._problems),
         }
       },
       {_problems: [], ...schemaType}

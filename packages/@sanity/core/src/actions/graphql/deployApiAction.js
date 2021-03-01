@@ -1,42 +1,89 @@
+/* eslint-disable no-process-env, no-process-exit, max-statements */
+const {get} = require('lodash')
+const yargs = require('yargs/yargs')
+const {hideBin} = require('yargs/helpers')
+const oneline = require('oneline')
+const debug = require('../../debug').default
+const getUrlHeaders = require('../../util/getUrlHeaders')
 const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
 const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
-const generateTypeQueries = require('./generateTypeQueries')
-const generateTypeFilters = require('./generateTypeFilters')
 const SchemaError = require('./SchemaError')
 
+const gen1 = require('./gen1')
+const gen2 = require('./gen2')
+const gen3 = require('./gen3')
+
+const latestGeneration = 'gen3'
+const generations = {
+  gen1,
+  gen2,
+  gen3,
+}
+
+const isInteractive = process.stdout.isTTY && process.env.TERM !== 'dumb' && !('CI' in process.env)
+
 module.exports = async function deployApiActions(args, context) {
-  const {apiClient, workDir, output, prompt} = context
+  // Reparsing CLI flags for better control of binary flags
+  const flags = parseCliFlags(args)
+
+  const {apiClient, workDir, output, prompt, chalk} = context
 
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
-  const flags = args.extOptions
+  let spinner
+  const {force, tag, playground, nonNullDocumentFields} = flags
 
   const client = apiClient({
     requireUser: true,
-    requireProject: true
+    requireProject: true,
   })
 
   const dataset = flags.dataset || client.config().dataset
-  const enablePlayground =
-    typeof flags.playground === 'undefined'
-      ? await prompt.single({
-          type: 'confirm',
-          message: `Do you want to enable a GraphQL playground?`,
-          default: true
-        })
-      : flags.playground
+  let generation = flags.generation
+  if (generation && !generations.hasOwnProperty(generation)) {
+    throw new Error(`Unknown API generation "${generation}"`)
+  }
 
-  let spinner = output.spinner('Generating GraphQL schema').start()
+  context.output.print(`Dataset: ${dataset}`)
+  context.output.print(`Tag: ${tag}\n`)
+
+  spinner = output.spinner('Checking for deployed API').start()
+  const {currentGeneration, playgroundEnabled = true} = await getCurrentSchemaProps({
+    client,
+    dataset,
+    tag,
+  })
+  spinner.succeed()
+
+  generation = await resolveApiGeneration({currentGeneration, flags, output, prompt, chalk})
+  if (!generation) {
+    // User cancelled
+    return
+  }
+
+  let enablePlayground = playground
+  if (typeof playground === 'undefined' && !isInteractive) {
+    enablePlayground = playgroundEnabled
+  } else if (typeof playground === 'undefined') {
+    enablePlayground = await prompt.single({
+      type: 'confirm',
+      message: 'Do you want to enable a GraphQL playground?',
+      default: playgroundEnabled,
+    })
+  }
+
+  spinner = output.spinner('Generating GraphQL schema').start()
 
   let schema
   try {
+    const generateSchema = generations[generation]
     const sanitySchema = getSanitySchema(workDir)
-    const extracted = extractFromSanitySchema(sanitySchema)
-    const filters = generateTypeFilters(extracted.types)
-    const queries = generateTypeQueries(extracted.types, filters)
-    const types = extracted.types.concat(filters)
-    schema = {types, queries, interfaces: extracted.interfaces}
+    const extracted = extractFromSanitySchema(sanitySchema, {
+      nonNullDocumentFields,
+    })
+
+    schema = generateSchema(extracted)
   } catch (err) {
     spinner.fail()
 
@@ -49,14 +96,34 @@ module.exports = async function deployApiActions(args, context) {
   }
 
   spinner.succeed()
+
+  spinner = output.spinner('Validating GraphQL API').start()
+  let valid
+  try {
+    valid = await client.request({
+      url: `/apis/graphql/${dataset}/${tag}/validate`,
+      method: 'POST',
+      body: {enablePlayground, schema},
+      maxRedirects: 0,
+    })
+  } catch (err) {
+    const validationError = get(err, 'response.body.validationError')
+    spinner.fail()
+    throw validationError ? new Error(validationError) : err
+  }
+
+  if (!(await confirmValidationResult(valid, {spinner, output, prompt, force}))) {
+    return
+  }
+
   spinner = output.spinner('Deploying GraphQL API').start()
 
   try {
     const response = await client.request({
-      url: `/apis/graphql/${dataset}/default`,
+      url: `/apis/graphql/${dataset}/${tag}`,
       method: 'PUT',
       body: {enablePlayground, schema},
-      maxRedirects: 0
+      maxRedirects: 0,
     })
 
     spinner.succeed()
@@ -66,4 +133,135 @@ module.exports = async function deployApiActions(args, context) {
     spinner.fail()
     throw err
   }
+}
+
+function getCurrentSchemaProps({client, dataset, tag}) {
+  return getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
+    Authorization: `Bearer ${client.config().token}`,
+  })
+    .then((res) => ({
+      currentGeneration: res['x-sanity-graphql-generation'],
+      playgroundEnabled: res['x-sanity-graphql-playground'] === 'true',
+    }))
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        return {}
+      }
+
+      throw err
+    })
+}
+
+function parseCliFlags(args) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .option('dataset', {type: 'string'})
+    .option('tag', {type: 'string', default: 'default'})
+    .option('generation', {type: 'string'})
+    .option('non-null-document-fields', {type: 'boolean', default: false})
+    .option('playground', {type: 'boolean'})
+    .option('force', {type: 'boolean'}).argv
+}
+
+async function confirmValidationResult(valid, {spinner, output, prompt, force}) {
+  const {validationError, breakingChanges, dangerousChanges} = valid
+  if (validationError) {
+    spinner.fail()
+    throw new Error(`GraphQL schema is not valid:\n\n${validationError}`)
+  }
+
+  const hasProblematicChanges = breakingChanges.length > 0 || dangerousChanges.length > 0
+  if (force && hasProblematicChanges) {
+    spinner.text = 'Validating GraphQL API: Dangerous changes. Forced with `--force`.'
+    spinner.warn()
+    return true
+  } else if (force || !hasProblematicChanges) {
+    spinner.succeed()
+    return true
+  }
+
+  spinner.warn()
+
+  if (dangerousChanges.length > 0) {
+    output.print('\nFound potentially dangerous changes from previous schema:')
+    dangerousChanges.forEach((change) => output.print(` - ${change.description}`))
+  }
+
+  if (breakingChanges.length > 0) {
+    output.print('\nFound BREAKING changes from previous schema:')
+    breakingChanges.forEach((change) => output.print(` - ${change.description}`))
+  }
+
+  output.print('')
+
+  if (!isInteractive) {
+    throw new Error(
+      'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
+    )
+  }
+
+  const shouldDeploy = await prompt.single({
+    type: 'confirm',
+    message: 'Do you want to deploy a new API despite the dangerous changes?',
+    default: false,
+  })
+
+  return shouldDeploy
+}
+
+async function resolveApiGeneration({currentGeneration, flags, output, prompt, chalk}) {
+  // a) If no API is currently deployed:
+  //    use the specificed one, or use whichever generation is the latest
+  // b) If an API generation is specified explicitly:
+  //    use the given one, but _prompt_ if it differs from the current one
+  // c) If no API generation is specified explicitly:
+  //    use whichever is already deployed, but warn if differs from latest
+  if (!currentGeneration) {
+    const generation = flags.generation || latestGeneration
+    debug(
+      'There is no current generation deployed, using %s (%s)',
+      generation,
+      flags.generation ? 'specified' : 'default'
+    )
+    return generation
+  }
+
+  if (flags.generation && flags.generation !== currentGeneration) {
+    if (!flags.force && !isInteractive) {
+      throw new Error(oneline`
+        Specified generation (${flags.generation}) differs from the one currently deployed (${currentGeneration}).
+        Re-run the command with \`--force\` to force deployment.
+      `)
+    }
+
+    output.warn(
+      `Specified generation (${flags.generation}) differs from the one currently deployed (${currentGeneration}).`
+    )
+
+    const confirmDeploy =
+      flags.force ||
+      (await prompt.single({
+        type: 'confirm',
+        message: 'Are you sure you want to deploy?',
+        default: false,
+      }))
+
+    return confirmDeploy ? flags.generation : null
+  }
+
+  const generation = flags.generation || currentGeneration
+  if (generation !== latestGeneration) {
+    output.warn(
+      chalk.cyan(
+        `A new generation of the GraphQL API is available, use \`--generation ${latestGeneration}\` to use it`
+      )
+    )
+  }
+
+  if (flags.generation) {
+    debug('Using specified (%s) generation', flags.generation)
+    return flags.generation
+  }
+
+  debug('Using the currently deployed version (%s)', currentGeneration)
+  return currentGeneration
 }

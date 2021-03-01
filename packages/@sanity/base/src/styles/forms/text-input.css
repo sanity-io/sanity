@@ -7,19 +7,16 @@
   display: block;
   width: 100%;
   outline: none;
+  font: inherit;
   line-height: var(--input-line-height);
-  font-size: inherit;
   box-sizing: border-box;
-  padding: var(--input-padding-horizontal) var(--input-padding-vertical);
+  padding: calc(var(--input-padding-horizontal) - var(--input-border-size) - 2px)
+    calc(var(--input-padding-vertical) - var(--input-border-size))
+    calc(var(--input-padding-horizontal) - var(--input-border-size) - 1px);
   border-radius: var(--input-border-radius);
-  transition: box-shadow 50ms linear;
   color: var(--input-color);
   background-color: var(--input-bg);
   box-shadow: var(--input-box-shadow);
-
-  @nest &:disabled {
-    opacity: 0.5;
-  }
 
   @nest &::placeholder {
     color: var(--input-color-placeholder);
@@ -29,36 +26,43 @@
 .textInput {
   composes: root;
 
-  @nest &:read-only {
-    opacity: 0.5;
+  @nest &:disabled {
+    color: var(--input-color-read-only);
+    background: var(--input-bg-disabled);
   }
 
-  @nest &:not(:disabled) {
-    @nest &:not(:read-only) {
-      @nest &:hover {
-        box-shadow: var(--input-box-shadow--hover);
-        border-color: var(--input-border-color-hover);
-      }
+  @nest &:read-only {
+    color: var(--input-color-read-only);
+    background: var(--input-bg-disabled);
+  }
 
-      @nest &:focus, &:focus-within {
-        box-shadow: var(--input-box-shadow--focus);
-        background-color: var(--input-bg-focus);
-        border-color: var(--input-border-color-focus);
+  @nest &:not(:disabled):not(:read-only) {
+    @nest &:hover {
+      box-shadow: var(--input-box-shadow--hover);
+      border-color: var(--input-border-color-hover);
+    }
 
-        @nest &:invalid {
-          box-shadow: var(--input-box-shadow--invalid-focus);
-        }
-      }
+    @nest &:active {
+      border-color: var(--input-border-color-active);
+    }
 
-      @nest &:active {
-        border-color: var(--input-border-color-active);
-      }
+    @nest &:focus, &:focus-within {
+      box-shadow: var(--input-box-shadow-thin--focus);
+      background-color: var(--input-bg-focus);
+      border-color: var(--input-border-color-focus);
 
       @nest &:invalid {
-        border-color: var(--input-border-color-invalid);
-        background-color: var(--input-bg-invalid);
-        box-shadow: var(--input-box-shadow--invalid);
+        box-shadow: var(--input-box-shadow--invalid-focus);
       }
+    }
+
+    @nest &:not(:focus):not(:focus-within):invalid {
+      border-color: var(--input-border-color-invalid);
+    }
+
+    @nest &:invalid {
+      background-color: var(--input-bg-invalid);
+      box-shadow: var(--input-box-shadow--invalid);
     }
   }
 }

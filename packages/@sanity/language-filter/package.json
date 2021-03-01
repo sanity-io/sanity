@@ -1,6 +1,6 @@
 {
   "name": "@sanity/language-filter",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "A Sanity plugin that supports filtering localized fields by language",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   },
   "peerDependencies": {
     "prop-types": "^15.3",
-    "react": "^16.9"
+    "react": "^16.9 || ^17"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -29,7 +29,8 @@
   "homepage": "https://www.sanity.io/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/language-filter"
   },
   "publishConfig": {
     "access": "public"

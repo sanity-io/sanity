@@ -15,8 +15,8 @@ module.exports = class SchemaError extends Error {
     const logger = output || consoleOutputter
     logger.error('Uh oh… found errors in schema:\n')
 
-    this.problemGroups.forEach(group => {
-      group.problems.forEach(problem => {
+    this.problemGroups.forEach((group) => {
+      group.problems.forEach((problem) => {
         const icon = logSymbols[problem.severity] || logSymbols.info
         output.error(`  ${icon} ${upperFirst(problem.severity)}: ${getPath(group.path)}`)
         output.error(`  ${problem.message}`)
@@ -31,7 +31,7 @@ module.exports = class SchemaError extends Error {
 
 function getPath(path) {
   return path
-    .map(segment => {
+    .map((segment) => {
       if (segment.kind === 'type' && segment.name && segment.type) {
         return `${segment.name} - (${segment.type})`
       }

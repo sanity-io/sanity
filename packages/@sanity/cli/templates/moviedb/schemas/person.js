@@ -1,16 +1,16 @@
-import icon from 'react-icons/lib/md/person'
+import UserIcon from 'part:@sanity/base/user-icon'
 
 export default {
   name: 'person',
   title: 'Person',
   type: 'document',
-  icon,
+  icon: UserIcon,
   fields: [
     {
       name: 'name',
       title: 'Name',
       type: 'string',
-      description: 'Please use "Firstname Lastname" format'
+      description: 'Please use "Firstname Lastname" format',
     },
     {
       name: 'slug',
@@ -18,19 +18,19 @@ export default {
       type: 'slug',
       options: {
         source: 'name',
-        maxLength: 100
-      }
+        maxLength: 100,
+      },
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
       options: {
-        hotspot: true
-      }
-    }
+        hotspot: true,
+      },
+    },
   ],
   preview: {
-    select: {title: 'name', media: 'image'}
-  }
+    select: {title: 'name', media: 'image'},
+  },
 }

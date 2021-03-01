@@ -6,7 +6,7 @@ import blockTools from '../../../src'
 
 describe('HtmlDeserializer', () => {
   const tests = fs.readdirSync(__dirname)
-  tests.forEach(test => {
+  tests.forEach((test) => {
     if (test[0] === '.' || path.extname(test).length > 0) {
       return
     }
@@ -16,7 +16,7 @@ describe('HtmlDeserializer', () => {
       const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json'), 'utf-8'))
       const fn = require(path.resolve(dir)).default
       const commonOptions = {
-        parseHtml: html => new JSDOM(html).window.document
+        parseHtml: (html) => new JSDOM(html).window.document,
       }
       const output = fn(input, blockTools, commonOptions)
       // console.log(JSON.stringify(output, null, 2))

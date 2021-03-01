@@ -1,0 +1,32 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.segment {
+  line-height: calc(1.25em + 2px);
+  position: relative;
+  border-radius: var(--border-radius-small);
+}
+
+.changedSegment {
+  composes: segment;
+
+  @nest &:hover {
+    background-color: none !important;
+    background-image: linear-gradient(
+      to bottom,
+      var(--component-bg) 0,
+      var(--component-bg) 33.333%,
+      currentColor 33.333%,
+      currentColor 100%
+    );
+    background-size: 1px 3px;
+    background-repeat: repeat-x;
+    background-position-y: bottom;
+    padding-bottom: 3px;
+    box-shadow: 0 0 0 1px var(--component-bg);
+    z-index: 1;
+  }
+}
+
+ins.changedSegment {
+  text-decoration: none;
+}

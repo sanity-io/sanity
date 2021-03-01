@@ -2,19 +2,19 @@ import {test} from 'tap'
 
 import BufferedDocumentTester from './util/BufferedDocumentTester'
 
-test('simple edit cycle', tap => {
+test('simple edit cycle', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    title: 'Hello'
+    title: 'Hello',
   })
     .hasNoLocalEdits()
     .stage('when applying first local edit')
     .localPatch({
       id: 'a',
       set: {
-        title: 'Good bye'
-      }
+        title: 'Good bye',
+      },
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -22,8 +22,8 @@ test('simple edit cycle', tap => {
     .localPatch({
       id: 'a',
       set: {
-        body: 'My friend'
-      }
+        body: 'My friend',
+      },
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -46,11 +46,11 @@ test('simple edit cycle', tap => {
     .end()
 })
 
-test('simple remote edit', tap => {
+test('simple remote edit', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    numbers: [0]
+    numbers: [0],
   })
     .hasNoLocalEdits()
     .stage('when remote patch appear')
@@ -58,8 +58,8 @@ test('simple remote edit', tap => {
       id: 'a',
       insert: {
         before: 'numbers[0]',
-        items: [-1]
-      }
+        items: [-1],
+      },
     })
     .onMutationFired()
     .didNotRebase()
@@ -70,11 +70,11 @@ test('simple remote edit', tap => {
     .end()
 })
 
-test('simple edit cycle with remote edits causing rebase', tap => {
+test('simple edit cycle with remote edits causing rebase', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    numbers: [0]
+    numbers: [0],
   })
     .hasNoLocalEdits()
     .stage('when applying first local edit')
@@ -82,8 +82,8 @@ test('simple edit cycle with remote edits causing rebase', tap => {
       id: 'a',
       insert: {
         after: 'numbers[-1]',
-        items: [1]
-      }
+        items: [1],
+      },
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -93,8 +93,8 @@ test('simple edit cycle with remote edits causing rebase', tap => {
       id: 'a',
       insert: {
         before: 'numbers[0]',
-        items: [-1]
-      }
+        items: [-1],
+      },
     })
     .didRebase()
     .hasLocalEdits()
@@ -115,26 +115,26 @@ test('simple edit cycle with remote edits causing rebase', tap => {
     .end()
 })
 
-test('document being deleted by remote', tap => {
+test('document being deleted by remote', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when applying first local edit')
     .localPatch({
       id: 'a',
       set: {
-        text: 'goodbye'
-      }
+        text: 'goodbye',
+      },
     })
     .onMutationFired()
     .hasLocalEdits()
     .assertLOCAL('text', 'goodbye')
     .stage('when remote delete patch appear')
     .remoteMutation('1', '2', {
-      delete: {id: 'a'}
+      delete: {id: 'a'},
     })
     .didRebase()
     .onDeleteDidFire()
@@ -142,7 +142,7 @@ test('document being deleted by remote', tap => {
     .assertALLDeleted()
     .stage('when local user creates document')
     .localMutation(null, '3', {
-      create: {_id: 'a', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'}
+      create: {_id: 'a', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'},
     })
     .assert((tap, bufDoc) => {
       tap.type(bufDoc.LOCAL._createdAt, 'string', 'New documents must have a _createdAt time')
@@ -161,17 +161,17 @@ test('document being deleted by remote', tap => {
     .end()
 })
 
-test('document being created with `createOrReplace`', tap => {
+test('document being created with `createOrReplace`', (tap) => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when applying createOrReplace mutation')
     .localMutation(null, '2', {
-      createOrReplace: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+      createOrReplace: {_id: 'a', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -180,20 +180,20 @@ test('document being created with `createOrReplace`', tap => {
     .end()
 })
 
-test('document being created with `createIfNotExists`', tap => {
+test('document being created with `createIfNotExists`', (tap) => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .localMutation('1', '2', {
-      delete: {id: 'a'}
+      delete: {id: 'a'},
     })
     .stage('when applying createIfNotExists mutation')
     .localMutation(null, '3', {
-      createIfNotExists: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+      createIfNotExists: {_id: 'a', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -202,20 +202,20 @@ test('document being created with `createIfNotExists`', tap => {
     .end()
 })
 
-test('document being created with `create`', tap => {
+test('document being created with `create`', (tap) => {
   const createdAt = '2018-01-25T15:18:12.114Z'
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .localMutation('1', '2', {
-      delete: {id: 'a'}
+      delete: {id: 'a'},
     })
     .stage('when applying create mutation')
     .localMutation(null, '2', {
-      create: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+      create: {_id: 'a', text: 'good morning', _createdAt: createdAt},
     })
     .onMutationFired()
     .hasLocalEdits()
@@ -223,16 +223,16 @@ test('document being created with `create`', tap => {
     .end()
 })
 
-test('document being deleted by local', tap => {
+test('document being deleted by local', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when local deletes document')
     .localMutation('1', '2', {
-      delete: {id: 'a'}
+      delete: {id: 'a'},
     })
     .onMutationFired()
     .onDeleteDidFire()
@@ -247,19 +247,19 @@ test('document being deleted by local', tap => {
     .end()
 })
 
-test('no-op-patch only changes _rev of target document', tap => {
+test('no-op-patch only changes _rev of target document', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
     _rev: '1',
-    text: 'hello'
+    text: 'hello',
   })
     .hasNoLocalEdits()
     .stage('when local fires a no-op patch')
     .localMutation('1', '2', {
       id: 'a',
       patch: {
-        unset: ['nonExistent']
-      }
+        unset: ['nonExistent'],
+      },
     })
     .assertLOCAL('_rev', '2')
     .assertEDGE('_rev', '1')
@@ -271,18 +271,18 @@ test('no-op-patch only changes _rev of target document', tap => {
     .end()
 })
 
-test('remotely created documents has _rev', tap => {
+test('remotely created documents has _rev', (tap) => {
   new BufferedDocumentTester(tap, {
     _id: 'a',
-    _rev: '1'
+    _rev: '1',
   })
     .remoteMutation('1', '2', {
-      delete: {id: 'a'}
+      delete: {id: 'a'},
     })
     .remoteMutation(null, '2', {
       create: {
-        _id: 'a'
-      }
+        _id: 'a',
+      },
     })
     .assertHEAD('_rev', '2')
     .end()

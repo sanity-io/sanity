@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React, {PureComponent} from 'react'
-import MdCode from 'react-icons/lib/md/code'
+import CodeBlockIcon from 'part:@sanity/base/code-block-icon'
 import JsonLogo from './jsonLogo'
 
 // eslint-disable-next-line react/no-multi-comp
@@ -24,7 +24,7 @@ class Input extends PureComponent {
 }
 
 // eslint-disable-next-line react/no-multi-comp
-const Preview = props => {
+const Preview = (props) => {
   const PreviewCode = require('./PreviewCode').default
   return <PreviewCode {...props} />
 }
@@ -75,22 +75,22 @@ export default {
   type: 'object',
   title: 'Code',
   inputComponent: Input,
-  icon: MdCode,
+  icon: CodeBlockIcon,
   fields: [
     {
       title: 'Code',
       name: 'code',
-      type: 'text'
+      type: 'text',
     },
     {
       name: 'language',
       title: 'Language',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'filename',
       title: 'Filename',
-      type: 'string'
+      type: 'string',
     },
     {
       title: 'Highlighted lines',
@@ -99,24 +99,24 @@ export default {
       of: [
         {
           type: 'number',
-          title: 'Highlighted line'
-        }
-      ]
-    }
+          title: 'Highlighted line',
+        },
+      ],
+    },
   ],
   preview: {
     select: {
       language: 'language',
       code: 'code',
       filename: 'filename',
-      highlightedLines: 'highlightedLines'
+      highlightedLines: 'highlightedLines',
     },
-    prepare: value => {
+    prepare: (value) => {
       return {
         title: value.filename || (value.language || 'unknown').toUpperCase(),
         media: getMedia(value.language),
-        extendedPreview: <Preview value={value} />
+        extendedPreview: <Preview value={value} />,
       }
-    }
-  }
+    },
+  },
 }

@@ -5,7 +5,7 @@ import PlainProbe from '../src/jsonpath/PlainProbe'
 // Just a couple of basic tests to check that basic object descent works.
 // The real hardcore testing of the matcher is done indirectly in the
 // 'patch' test.
-test('basic path match', tap => {
+test('basic path match', (tap) => {
   const mx = Matcher.fromPath('a.b').setPayload('My Patch')
   const r1: any = mx.match(new PlainProbe({a: {b: 1}}))
   // console.log("r1", JSON.stringify(r1, null, 0))

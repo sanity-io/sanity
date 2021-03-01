@@ -4,9 +4,11 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
+
 type FieldProps = {
   field: any
   value?: any
+  compareValue?: any
   onChange: (...args: any[]) => any
   onFocus: (...args: any[]) => any
   onBlur: (...args: any[]) => any
@@ -15,25 +17,28 @@ type FieldProps = {
   readOnly?: boolean
   markers?: any[]
   level?: number
+  presence: any
 }
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
-export default class Field extends React.Component<FieldProps> {
+export default class Field extends React.PureComponent<FieldProps> {
   _input: any
   static defaultProps = {
     level: 0,
-    focusPath: []
+    focusPath: [],
   }
-  handleChange = event => {
+  handleChange = (event) => {
     const {field, onChange} = this.props
     if (!field.type.readOnly) {
       onChange(event, field)
     }
   }
   focus() {
-    this._input.focus()
+    if (this._input && typeof this._input.focus === 'function') {
+      this._input.focus()
+    }
   }
-  setInput = input => {
+  setInput = (input) => {
     this._input = input
   }
   render() {
@@ -46,7 +51,9 @@ export default class Field extends React.Component<FieldProps> {
       onBlur,
       markers,
       focusPath,
-      filterField
+      filterField,
+      compareValue,
+      presence,
     } = this.props
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -57,7 +64,7 @@ export default class Field extends React.Component<FieldProps> {
       if (expectedType !== actualType && !isCompatible) {
         return (
           <div className={styles.root}>
-            <Fieldset legend={field.type.title} level={level}>
+            <Fieldset legend={field.type.title} level={level} presence={presence}>
               <InvalidValue
                 value={value}
                 onChange={this.handleChange}
@@ -83,7 +90,9 @@ export default class Field extends React.Component<FieldProps> {
           focusPath={focusPath}
           filterField={filterField}
           markers={markers}
+          compareValue={compareValue}
           level={level}
+          presence={presence}
           ref={this.setInput}
         />
       </div>

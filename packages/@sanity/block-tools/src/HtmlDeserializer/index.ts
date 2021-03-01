@@ -1,5 +1,6 @@
 import {flatten} from 'lodash'
 import resolveJsType from '../util/resolveJsType'
+import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -7,7 +8,7 @@ import {
   flattenNestedBlocks,
   trimWhitespace,
   preprocess,
-  tagName
+  tagName,
 } from './helpers'
 import createRules from './rules'
 
@@ -22,6 +23,7 @@ let _markDefs = []
  *
  */
 export default class HtmlDeserializer {
+  blockContentType: any
   rules: any[]
   parseHtml: (html: string) => any
   /**
@@ -44,7 +46,8 @@ export default class HtmlDeserializer {
     const standardRules = createRules(blockContentType, createRuleOptions(blockContentType))
     this.rules = [...rules, ...standardRules]
     const parseHtml = options.parseHtml || defaultParseHtml()
-    this.parseHtml = html => {
+    this.blockContentType = blockContentType
+    this.parseHtml = (html) => {
       const doc = preprocess(html, parseHtml)
       return doc.body
     }
@@ -56,28 +59,35 @@ export default class HtmlDeserializer {
    * @param {String} html
    * @return {Array}
    */
-  deserialize = html => {
+  deserialize = (html) => {
     _markDefs = []
     const {parseHtml} = this
     const fragment = parseHtml(html)
     const children = Array.from(fragment.childNodes)
+    // Ensure that there are no blocks within blocks, and trim whitespace
     const blocks = trimWhitespace(
       flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
     )
     if (_markDefs.length > 0) {
       blocks
-        .filter(block => block._type === 'block')
-        .forEach(block => {
+        .filter((block) => block._type === 'block')
+        .forEach((block) => {
           block.markDefs = block.markDefs || []
           block.markDefs = block.markDefs.concat(
-            _markDefs.filter(def => {
-              return flatten(block.children.map(child => child.marks || [])).includes(def._key)
+            _markDefs.filter((def) => {
+              return flatten(block.children.map((child) => child.marks || [])).includes(def._key)
             })
           )
         })
     }
-    // Ensure that there are no blocks within blocks, and trim whitespace
-    return blocks
+    // Set back the potentially hoisted block type
+    const type = this.blockContentType.of.find(findBlockType)
+    return blocks.map((block) => {
+      if (block._type === 'block') {
+        block._type = type.name
+      }
+      return block
+    })
   }
 
   /**
@@ -111,13 +121,13 @@ export default class HtmlDeserializer {
    * @return {Any}
    */
   // eslint-disable-next-line complexity
-  deserializeElement = element => {
+  deserializeElement = (element) => {
     let node
     if (!element.tagName) {
       element.tagName = ''
     }
 
-    const next = elements => {
+    const next = (elements) => {
       let _elements = elements
       if (Object.prototype.toString.call(_elements) == '[object NodeList]') {
         _elements = Array.from(_elements)
@@ -136,10 +146,10 @@ export default class HtmlDeserializer {
       }
     }
 
-    const block = props => {
+    const block = (props) => {
       return {
         _type: '__block',
-        block: props
+        block: props,
       }
     }
 
@@ -197,9 +207,9 @@ export default class HtmlDeserializer {
    * @param {Object} decorator
    * @return {Array}
    */
-  deserializeDecorator = decorator => {
+  deserializeDecorator = (decorator) => {
     const {name} = decorator
-    const applyDecorator = node => {
+    const applyDecorator = (node) => {
       if (node._type === '__decorator') {
         return this.deserializeDecorator(node)
       } else if (node._type === 'span') {
@@ -230,10 +240,10 @@ export default class HtmlDeserializer {
    * @param {Object} annotation
    * @return {Array}
    */
-  deserializeAnnotation = annotation => {
+  deserializeAnnotation = (annotation) => {
     const {markDef} = annotation
     _markDefs.push(markDef)
-    const applyAnnotation = node => {
+    const applyAnnotation = (node) => {
       if (node._type === '__annotation') {
         return this.deserializeAnnotation(node)
       } else if (node._type === 'span') {
@@ -256,4 +266,16 @@ export default class HtmlDeserializer {
       return children
     }, [])
   }
+}
+
+function findBlockType(type) {
+  if (type.type) {
+    return findBlockType(type.type)
+  }
+
+  if (type.name === 'block') {
+    return type
+  }
+
+  return null
 }

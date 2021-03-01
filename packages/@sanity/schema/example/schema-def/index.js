@@ -5,9 +5,9 @@ const CUSTOMER = {
     {
       name: 'customerId',
       title: 'Customer ID',
-      type: 'string'
-    }
-  ]
+      type: 'string',
+    },
+  ],
 }
 
 const PERSON = {
@@ -19,42 +19,45 @@ const PERSON = {
       fields: ['foo'],
       prepare(v) {
         return v
-      }
-    }
+      },
+    },
   },
   fields: [
     {
       name: 'firstName',
       title: 'First name',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'address',
       type: 'address',
-      title: 'Address of person'
+      title: 'Address of person',
     },
     {
       name: 'image',
       type: 'image',
-      fields: [{name: 'caption', type: 'string'}]
+      fields: [{name: 'caption', type: 'string'}],
     },
     {
       name: 'customer',
       type: 'reference',
-      to: {type: 'customer'}
+      to: {type: 'customer'},
     },
     {
       name: 'something',
       type: 'any',
-      of: [{type: 'string'}, {type: 'number'}]
-    }
-  ]
+      of: [{type: 'string'}, {type: 'number'}],
+    },
+  ],
 }
 
 const ADDRESS = {
   name: 'address',
   type: 'object',
-  fields: [{name: 'zipcode', type: 'string'}, {name: 'street', type: 'string'}]
+  fields: [
+    {name: 'zipcode', type: 'string'},
+    {name: 'street', type: 'string'},
+  ],
 }
 const RELATION = {
   name: 'relation',
@@ -62,7 +65,7 @@ const RELATION = {
   fields: [
     {
       name: 'name',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'related',
@@ -72,14 +75,14 @@ const RELATION = {
           fields: ['bar'],
           prepare(v) {
             return v
-          }
-        }
-      }
-    }
-  ]
+          },
+        },
+      },
+    },
+  ],
 }
 
 export default {
   name: 'test',
-  types: [PERSON, ADDRESS, CUSTOMER, RELATION]
+  types: [PERSON, ADDRESS, CUSTOMER, RELATION],
 }

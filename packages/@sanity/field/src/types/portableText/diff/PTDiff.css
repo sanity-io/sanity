@@ -1,0 +1,11 @@
+.root {
+  /* @nest .added & {
+    border-color: green;
+  }
+  @nest .changed & {
+   border-color: blue;
+  }
+  @nest .removed & {
+    border-color: red;
+  } */
+}

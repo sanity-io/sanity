@@ -4,13 +4,13 @@ import React from 'react'
 export default class ImageLoader extends React.Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
-    children: PropTypes.func.isRequired
+    children: PropTypes.func.isRequired,
   }
 
   state = {
     isLoading: true,
     image: null,
-    error: null
+    error: null,
   }
 
   UNSAFE_componentWillMount() {
@@ -21,21 +21,21 @@ export default class ImageLoader extends React.Component {
     const image = new Image()
     this.setState({
       image: null,
-      error: null
+      error: null,
     })
 
     image.onload = () => {
       this.setState({
         image: image,
         error: null,
-        isLoading: false
+        isLoading: false,
       })
     }
 
     image.onerror = () => {
       this.setState({
         error: new Error(`Could not load image from ${JSON.stringify(this.props.src)}`),
-        isLoading: false
+        isLoading: false,
       })
     }
 

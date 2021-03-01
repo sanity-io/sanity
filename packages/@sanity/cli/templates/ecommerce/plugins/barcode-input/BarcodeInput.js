@@ -9,7 +9,7 @@ const {setIfMissing} = patches
 
 export default class BarcodeInput extends PureComponent {
   state = {
-    valid: true
+    valid: true,
   }
 
   static propTypes = {
@@ -18,7 +18,7 @@ export default class BarcodeInput extends PureComponent {
     onChange: PropTypes.func,
     type: PropTypes.string,
     onFocus: PropTypes.func,
-    onBlur: PropTypes.func
+    onBlur: PropTypes.func,
   }
 
   handleFieldChange = (field, fieldPatchEvent) => {
@@ -26,7 +26,7 @@ export default class BarcodeInput extends PureComponent {
     onChange(fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
   }
 
-  handleValid = valid => {
+  handleValid = (valid) => {
     this.setState({valid})
   }
 
@@ -36,24 +36,23 @@ export default class BarcodeInput extends PureComponent {
     return (
       <Fieldset level={level} legend={type.title} description={type.description}>
         <div className={valid ? styles.barcodeValid : styles.barcodeInvalid}>
-          {value &&
-            value.barcode && (
-              <Barcode
-                textAlign="center"
-                value={value.barcode}
-                format={value.format || ''}
-                valid={this.handleValid} // eslint-disable-line react/jsx-handler-names
-              />
-            )}
+          {value && value.barcode && (
+            <Barcode
+              textAlign="center"
+              value={value.barcode}
+              format={value.format || ''}
+              valid={this.handleValid} // eslint-disable-line react/jsx-handler-names
+            />
+          )}
         </div>
         {!valid && <p className={styles.errorMessage}>Not valid {value.format}</p>}
         <div className={styles.fieldWrapper}>
-          {type.fields.map(field => (
+          {type.fields.map((field) => (
             <FormBuilderInput
               key={field.name}
               type={field.type}
               value={value && value[field.name]}
-              onChange={patchEvent => this.handleFieldChange(field, patchEvent)}
+              onChange={(patchEvent) => this.handleFieldChange(field, patchEvent)}
               onBlur={this.props.onBlur}
               onFocus={this.props.onFocus}
             />

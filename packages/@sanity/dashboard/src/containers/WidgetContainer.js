@@ -6,17 +6,17 @@ import NotFoundWidget from '../components/NotFoundWidget'
 function WidgetContainer(props) {
   const config = props.config || {}
   const definition = Array.isArray(definitions)
-    ? definitions.find(wid => wid.name === config.name)
+    ? definitions.find((wid) => wid.name === config.name)
     : null
 
   if (definition) {
     const options = {
       ...(definition.options || {}),
-      ...(config.options || {})
+      ...(config.options || {}),
     }
     const layout = {
       ...(definition.layout || {}),
-      ...(config.layout || {})
+      ...(config.layout || {}),
     }
 
     return (
@@ -33,7 +33,7 @@ function WidgetContainer(props) {
       <NotFoundWidget title={<>Not found: "{config.name}"</>}>
         <p>
           Make sure your <code>sanity.json</code> file mentions such a widget and that it’s an
-          implementaion of <code>part:@sanity/dashboard/widget</code>
+          implementation of <code>part:@sanity/dashboard/widget</code>.
         </p>
       </NotFoundWidget>
     </div>
@@ -42,11 +42,11 @@ function WidgetContainer(props) {
 
 WidgetContainer.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  config: PropTypes.any
+  config: PropTypes.any,
 }
 
 WidgetContainer.defaultProps = {
-  config: null
+  config: null,
 }
 
 export default WidgetContainer

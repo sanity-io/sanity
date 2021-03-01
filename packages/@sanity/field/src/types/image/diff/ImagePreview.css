@@ -1,0 +1,89 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  flex: 1;
+  min-height: 0;
+  padding: var(--small-padding) var(--small-padding) 0;
+}
+
+.imageWrapper {
+  height: 100%;
+  max-height: 190px;
+  position: relative;
+  background-color: color(var(--gray-lightest) alpha(50%));
+  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  display: flex;
+  flex-direction: column;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px var(--hairline-color);
+    pointer-events: none;
+  }
+}
+
+.image {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+
+  @nest &[data-action='removed'] {
+    opacity: 0.5;
+  }
+}
+
+.error {
+  composes: image;
+  margin: 50px 0;
+  text-align: center;
+}
+
+.hotspotCrop {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.imageWrapperChanged {
+  composes: imageWrapper;
+  opacity: 0.45;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
+.noImage {
+  composes: small from 'part:@sanity/base/theme/typography/text-blocks-style';
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-small);
+  background: var(--gray-lightest);
+  color: var(--gray-dark);
+}

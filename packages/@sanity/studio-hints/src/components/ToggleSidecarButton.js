@@ -1,20 +1,20 @@
 /* eslint-disable prefer-template */
+
 import React from 'react'
-import HelpOutline from 'react-icons/lib/io/ios-help-outline'
-import Exit from 'react-icons/lib/io/ios-close-outline'
 import {
   isSidecarOpenSetting,
-  toggleSidecarOpenState
+  toggleSidecarOpenState,
 } from 'part:@sanity/default-layout/sidecar-datastore'
-import styles from './ToggleSidecarButton.css'
+import Button from 'part:@sanity/components/buttons/default'
+import HelpCircleIcon from 'part:@sanity/base/help-circle-icon'
 
 export default class ToggleSidecarButton extends React.PureComponent {
   state = {
-    isOpen: true
+    isOpen: true,
   }
 
   componentDidMount() {
-    this.subscription = isSidecarOpenSetting.listen().subscribe(isOpen => {
+    this.subscription = isSidecarOpenSetting.listen().subscribe((isOpen) => {
       this.setState({isOpen: isOpen !== false})
     })
   }
@@ -27,18 +27,18 @@ export default class ToggleSidecarButton extends React.PureComponent {
 
   render() {
     const {isOpen} = this.state
+
     return (
-      <button
-        className={styles.toggleButton}
-        onClick={toggleSidecarOpenState}
-        type="button"
+      <Button
         aria-label="Toggle sidecar"
         aria-pressed={isOpen}
-      >
-        <div className={styles.inner} tabIndex={-1}>
-          {isOpen ? <Exit /> : <HelpOutline />}
-        </div>
-      </button>
+        icon={HelpCircleIcon}
+        kind="simple"
+        onClick={toggleSidecarOpenState}
+        selected={isOpen}
+        tone="navbar"
+        padding="small"
+      />
     )
   }
 }

@@ -1,38 +1,42 @@
+import {ComponentType} from 'react'
+import {ArraySchemaType} from '@sanity/types'
+import * as is from '../../utils/is'
 import OptionsArray from '../../inputs/OptionsArrayInput'
-import BlockEditor from '../../inputs/BlockEditor'
+import PortableTextInput from '../../inputs/PortableText/PortableTextInput'
 import ArrayOfPrimitivesInput from '../../inputs/ArrayOfPrimitivesInput'
 import TagsArrayInput from '../../inputs/TagsArrayInput'
-import * as is from '../../utils/is'
-import {get} from 'lodash'
 import SanityArrayInput from '../inputs/SanityArrayInput'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
-export function isArrayOfPrimitives(type) {
-  return type.of.every(ofType => PRIMITIVES.includes(ofType.jsonType))
+export function isArrayOfPrimitives(type: ArraySchemaType): boolean {
+  return type.of.every((ofType) => PRIMITIVES.includes(ofType.jsonType))
 }
 
-function isTagsArray(type) {
-  return (
-    get(type.options, 'layout') === 'tags' && type.of.length === 1 && is.type('string', type.of[0])
-  )
+function isStringArray(type: ArraySchemaType): type is ArraySchemaType<string> {
+  return type.of.length === 1 && is.type('string', type.of[0])
 }
 
-function hasBlocks(type) {
-  return type.of.some(memberType => is.type('block', memberType))
+function isTagsArray(type: ArraySchemaType<string>): boolean {
+  return type.options?.layout === 'tags'
 }
 
-export function hasOptionsList(type) {
-  return get(type.options, 'list')
+function isPortableText(type: ArraySchemaType): boolean {
+  // TODO: better testing here, not only for type 'block' !
+  return type.of.some((memberType) => is.type('block', memberType))
 }
 
-export default function resolveArrayInput(type) {
+export function hasOptionsList(type: ArraySchemaType): boolean {
+  return Boolean(type.options?.list)
+}
+
+export default function resolveArrayInput(type: ArraySchemaType): ComponentType {
   // Schema provides predefines list
   if (hasOptionsList(type)) {
     return OptionsArray
   }
 
-  if (isTagsArray(type)) {
+  if (isStringArray(type) && isTagsArray(type)) {
     return TagsArrayInput
   }
 
@@ -41,9 +45,9 @@ export default function resolveArrayInput(type) {
     return ArrayOfPrimitivesInput
   }
 
-  // Use block editor if its an array that includes blocks
-  if (hasBlocks(type)) {
-    return BlockEditor
+  // Use Portable Text editor if portable text.
+  if (isPortableText(type)) {
+    return PortableTextInput
   }
 
   // use default

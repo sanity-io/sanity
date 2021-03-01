@@ -1,0 +1,74 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --broken-backdrop: color(var(--gray-base) lightness(+ 70%) a(50%));
+}
+
+.root {
+  position: absolute;
+  top: 0;
+  box-shadow: 0 0 0 9999px var(--broken-backdrop);
+  max-width: 100%;
+  line-height: 1.3125;
+  outline: 0;
+  margin: var(--medium-padding) var(--extra-large-padding);
+  border-radius: var(--border-radius-large);
+}
+
+.inner {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+  position: relative;
+  border-radius: var(--border-radius-large);
+  line-height: inherit;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: var(--small-padding);
+}
+
+.icon {
+  margin-right: calc(var(--small-padding) - 2px);
+  align-self: center;
+  line-height: 0;
+  font-size: 1.2rem;
+}
+
+.subtitle {
+  margin-bottom: var(--small-padding);
+}
+
+.root[data-kind='info'] .inner {
+  background-color: var(--state-info-color);
+  color: var(--state-info-color--inverted);
+}
+
+.root[data-kind='warning'] .inner {
+  background-color: var(--state-warning-color);
+  color: var(--state-warning-color--inverted);
+}
+
+.root[data-kind='success'] .inner {
+  background-color: var(--state-success-color);
+  color: var(--state-success-color--inverted);
+}
+
+.root[data-kind='error'] .inner {
+  background-color: var(--state-danger-color);
+  color: var(--state-danger-color--inverted);
+}
+
+.root[data-kind='neutral'] .inner {
+  background-color: var(--component-bg);
+  color: var(--text-color);
+}
+
+.content {
+  padding: var(--medium-padding) calc(var(--medium-padding) - 2px) var(--medium-padding);
+}
+
+.children:not(:empty) {
+  padding-top: 0.5em;
+}

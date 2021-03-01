@@ -1,0 +1,38 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+}
+
+.emptyMessage {
+  background: var(--gray-lightest);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-small);
+
+  /* optical alignment */
+  @nest & > span {
+    display: block;
+    margin: -2px 0 -1px;
+  }
+}
+
+.annotation {
+  align-self: stretch;
+  border-radius: var(--border-radius-small);
+}
+
+.nestedFields {
+  margin-top: var(--medium-padding);
+
+  @nest & .field {
+    margin-bottom: var(--medium-padding);
+  }
+
+  @nest & .title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: var(--small-padding);
+  }
+}

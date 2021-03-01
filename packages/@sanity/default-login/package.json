@@ -1,13 +1,12 @@
 {
   "name": "@sanity/default-login",
-  "version": "0.147.0",
+  "version": "2.2.6",
   "description": "Lets the user log in to Sanity.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib",
-    "prepublishOnly": "sanity-check"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
@@ -19,17 +18,17 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/generate-help-url": "0.147.0",
+    "@sanity/generate-help-url": "2.2.6",
     "prop-types": "^15.6.0",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/check": "0.147.0",
     "rimraf": "^2.7.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/default-login"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

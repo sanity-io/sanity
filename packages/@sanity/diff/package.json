@@ -1,0 +1,66 @@
+{
+  "name": "@sanity/diff",
+  "version": "2.2.6",
+  "description": "Generates diffs between documents and primitive types",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "clean": "rimraf lib coverage"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "diff"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "diff-match-patch": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "jest": "^26.4.2",
+    "rimraf": "^2.7.1",
+    "ts-jest": "^26.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/diff"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "jest": {
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
+    "testPathIgnorePatterns": [
+      "/lib/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/lib/"
+    ]
+  }
+}

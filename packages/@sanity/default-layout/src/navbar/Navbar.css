@@ -1,0 +1,215 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background-color: var(--main-navigation-color);
+  color: var(--main-navigation-color--inverted);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  align-items: center;
+  display: grid;
+  box-sizing: border-box;
+  /* prettier-ignore */
+  grid-template-areas:  'hamburger   createButton branding       helpButton  presence    searchButton';
+  /* prettier-ignore */
+  grid-template-columns: min-content min-content  minmax(0, 1fr) min-content min-content min-content;
+
+  @media (--screen-medium) {
+    /* prettier-ignore */
+    grid-template-areas:  'hamburger   branding    createButton search              helpButton  presence    extras';
+    /* prettier-ignore */
+    grid-template-columns: max-content max-content min-content  minmax(180px, 100%) min-content max-content max-content;
+
+    @nest &.withToolMenu {
+      /* prettier-ignore */
+      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus helpButton  presence    loginStatus';
+      /* prettier-ignore */
+      grid-template-columns: max-content max-content   min-content  minmax(180px, 400px)  auto         max-content max-content  min-content max-content min-content;
+    }
+  }
+
+  @nest &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-bottom: 1px solid var(--hairline-color);
+  }
+}
+
+.branding {
+  grid-area: branding;
+  padding: var(--small-padding);
+}
+
+.brandingLink {
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--extra-small-padding);
+  display: block;
+
+  @nest &:focus {
+    outline: 0;
+    box-shadow: var(--input-box-shadow--focus);
+  }
+}
+
+.hamburger {
+  grid-area: hamburger;
+  padding: var(--small-padding) var(--extra-small-padding);
+
+  @media (--screen-medium) {
+    @nest .withToolMenu & {
+      display: none;
+    }
+  }
+}
+
+.datasetSelect {
+  display: none;
+  grid-area: datasetSelect;
+  padding: var(--small-padding);
+  box-sizing: border-box;
+
+  @media (--screen-medium) {
+    @nest .withToolMenu & {
+      display: flex;
+    }
+  }
+}
+
+.toolSwitcher {
+  display: none;
+  grid-area: toolSwitcher;
+  padding: var(--small-padding) var(--extra-small-padding);
+
+  @media (--screen-medium) {
+    @nest .withToolMenu & {
+      display: flex;
+    }
+  }
+}
+
+.sanityStatus {
+  grid-area: sanityStatus;
+  display: none;
+  padding: var(--small-padding) var(--extra-small-padding);
+
+  @media (--screen-medium) {
+    @nest .withToolMenu & {
+      display: block;
+    }
+  }
+}
+
+.presenceStatus {
+  grid-area: presence;
+  padding: var(--small-padding) var(--extra-small-padding);
+}
+
+.loginStatus {
+  grid-area: loginStatus;
+  display: none;
+  padding: var(--small-padding) var(--extra-small-padding);
+
+  @media (--screen-medium) {
+    @nest .withToolMenu & {
+      display: block;
+    }
+  }
+}
+
+.helpButton {
+  grid-area: helpButton;
+  padding: var(--small-padding) var(--extra-small-padding);
+}
+
+.extras {
+  grid-area: extras;
+  display: none;
+
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.search {
+  grid-area: search;
+
+  @media (--max-screen-medium) {
+    position: absolute;
+    z-index: var(--zindex-drawer);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    background-color: var(--body-bg);
+    color: var(--gray-base);
+
+    @nest &.searchIsOpen {
+      opacity: 1;
+
+      @nest & > div {
+        pointer-events: all;
+      }
+    }
+  }
+
+  @media (--screen-medium) {
+    position: relative;
+    padding: var(--small-padding);
+
+    @nest &.searchIsOpen {
+      z-index: var(--zindex-drawer);
+    }
+  }
+}
+
+.createButton {
+  grid-area: createButton;
+  padding: var(--small-padding) var(--extra-small-padding);
+}
+
+.createButtonInner {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+}
+
+.createButtonIcon {
+  display: inline-block;
+  font-size: calc(25 / 16 * 1em);
+  line-height: 1;
+
+  @nest & > svg {
+    display: block;
+  }
+
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.createButtonText {
+  display: none;
+  font-size: 1em;
+}
+
+.createButtonTooltipContent {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  display: block;
+  padding: calc(var(--small-padding) - 2px) var(--small-padding);
+}
+
+.searchButton {
+  grid-area: searchButton;
+  padding: var(--small-padding) var(--extra-small-padding);
+
+  @media (--screen-medium) {
+    display: none;
+  }
+}

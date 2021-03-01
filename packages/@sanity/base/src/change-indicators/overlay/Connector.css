@@ -1,0 +1,59 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.debugRect {
+  stroke: #ccc;
+  fill: none;
+  pointer-events: none;
+  stroke-linecap: round;
+}
+
+.path {
+  fill: none;
+  stroke: #ccc;
+  pointer-events: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.focused {
+  stroke: var(--focus-color);
+}
+
+.revertHovered {
+  stroke: var(--state-danger-color);
+}
+
+.hovered {
+  stroke: var(--state-warning-color);
+}
+
+.interactivePath {
+  fill: none;
+  pointer-events: stroke;
+  stroke: var(--focus-color);
+  cursor: pointer;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  @nest &:hover {
+    opacity: 0.1;
+  }
+}
+
+.rightBar {
+  stroke: none;
+  fill: var(--focus-color);
+  pointer-events: none;
+}
+
+.rightBarFocused {
+  fill: var(--focus-color);
+}
+
+.rightBarRevertHovered {
+  fill: var(--state-danger-color);
+}
+
+.rightBarHovered {
+  fill: var(--state-warning-color);
+}

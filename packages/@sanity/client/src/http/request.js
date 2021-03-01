@@ -9,7 +9,7 @@ const Observable = require('@sanity/observable/minimal')
 const {ClientError, ServerError} = require('./errors')
 
 const httpError = {
-  onResponse: res => {
+  onResponse: (res) => {
     if (res.statusCode >= 500) {
       throw new ServerError(res)
     } else if (res.statusCode >= 400) {
@@ -17,7 +17,7 @@ const httpError = {
     }
 
     return res
-  }
+  },
 }
 
 // Environment-specific middleware.
@@ -28,7 +28,7 @@ const middleware = envSpecific.concat([
   jsonResponse(),
   progress(),
   httpError,
-  observable({implementation: Observable})
+  observable({implementation: Observable}),
 ])
 
 const request = getIt(middleware)

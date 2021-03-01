@@ -1,0 +1,48 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  text-decoration: none;
+  color: inherit;
+  padding: var(--small-padding);
+  box-sizing: border-box;
+  position: relative;
+  border-radius: var(--border-radius-medium);
+
+  @media (--screen-medium) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.projectName {
+  display: block;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  line-height: calc(17 / 16);
+  font-weight: 700;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+
+  @media (--screen-medium) {
+    width: unset;
+    max-width: 12em;
+  }
+}
+
+.brandLogoContainer {
+  display: block;
+  cursor: pointer;
+  color: inherit;
+
+  @nest & svg {
+    display: block;
+    fill: currentColor;
+    height: 1em;
+    width: auto;
+  }
+}

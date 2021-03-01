@@ -1,0 +1,20 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+}
+
+.menu {
+  padding: var(--extra-small-padding) 0;
+  max-height: calc(50vh - 6em);
+  overflow: auto;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+
+  @nest & > span > span {
+    justify-content: flex-start;
+  }
+}

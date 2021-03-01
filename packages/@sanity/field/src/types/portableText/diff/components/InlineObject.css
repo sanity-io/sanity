@@ -1,0 +1,66 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  border-radius: var(--border-radius-small);
+  box-shadow: inset 0 0 0 1px var(--hairline-color);
+  cursor: pointer;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.removed {
+  text-decoration: line-through;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: var(--font-size-xsmall--uppercase);
+  line-height: var(--line-height-xsmall--uppercase);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.popoverContent {
+  min-width: 160px;
+  max-height: calc(100vh - 49px - 65px - 16px);
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+  @nest & .popoverContent {
+  }
+}
+
+.previewContainer {
+  display: inline-flex;
+  vertical-align: top;
+  max-width: 160px;
+  margin: 0;
+  padding: 0 0 3px;
+
+  @nest & > span:first-child {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    margin: 2px 0 -2px;
+
+    /* Hacky override */
+    @nest & > span:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @nest & > svg {
+    display: block;
+    font-size: 17px;
+    line-height: 17px;
+    margin: 2px 0 -2px 2px;
+    opacity: 0.5;
+
+    @nest .root:hover & {
+      opacity: 1;
+    }
+  }
+}

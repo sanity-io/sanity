@@ -1,0 +1,70 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --dropdown-button-color: var(--default-button-color);
+
+  /* :enabled */
+  --dropdown-button-bg: transparent;
+  --dropdown-button-text: color(var(--dropdown-button-color) lightness(- 10%));
+
+  /* :hover */
+  --dropdown-button-hover-bg: color(var(--dropdown-button-color) alpha(10%));
+  --dropdown-button-hover-text: color(var(--dropdown-button-color) lightness(- 20%));
+
+  /* :selected */
+  --dropdown-button-selected-bg: color(var(--selected-item-color) alpha(15%));
+  --dropdown-button-selected-text: var(--selected-item-color);
+}
+
+.root {
+  appearance: none;
+  font: inherit;
+  border: 0;
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-medium);
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  outline: none;
+  background-color: var(--dropdown-button-bg);
+  color: var(--dropdown-button-text);
+  white-space: nowrap;
+
+  @media (hover: hover) {
+    @nest &:hover {
+      background-color: var(--dropdown-button-hover-bg);
+      color: var(--dropdown-button-hover-text);
+    }
+  }
+
+  @nest &.selected {
+    background-color: var(--dropdown-button-selected-bg);
+    color: var(--dropdown-button-selected-text);
+  }
+
+  @nest &:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-color);
+  }
+}
+
+.content {
+  display: block;
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  margin: -3px 0.5em -2px 0;
+}
+
+.iconContainer {
+  display: block;
+  margin: -5px;
+
+  @nest & > svg {
+    display: flex;
+    font-size: calc(21 / 16 * 1rem);
+
+    @nest & path {
+      stroke-width: 1.5 !important;
+    }
+  }
+}

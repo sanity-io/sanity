@@ -1,9 +1,0 @@
-{
-  "env": {
-    "browser": false,
-    "node": true
-  },
-  "rules": {
-    "import/no-commonjs": "off"
-  }
-}

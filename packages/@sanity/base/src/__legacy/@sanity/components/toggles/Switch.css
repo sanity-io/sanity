@@ -1,0 +1,116 @@
+@import 'part:@sanity/base/theme/variables-style';
+@import 'part:@sanity/base/theme/animation-style';
+
+:root {
+  /* Thumb */
+  --thumb-size: calc(15 / 16 * 1rem);
+  --thumb-off-color: var(--white);
+  --thumb-on-color: var(--white);
+  --thumb-disabled-color: var(--input-color-disabled);
+  --thumb-offset: calc(4 / 16 * 1rem);
+
+  /* Track */
+  --track-height: calc(23 / 16 * 1rem);
+  --track-width: calc(39 / 16 * 1rem);
+  --track-disabled-color: var(--input-bg-disabled);
+  --track-color: var(--gray-light);
+  --track-off-color: var(--gray);
+  --track-on-color: var(--state-success-color);
+}
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  /* Hide input element, while still making it respond to focus. */
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  z-index: 1;
+}
+
+.switchWrapper {
+  flex-shrink: 0;
+  position: relative;
+  height: var(--track-height);
+  width: var(--track-width);
+  border-radius: var(--track-height);
+}
+
+.thumb {
+  background: var(--thumb-off-color);
+  position: absolute;
+  left: var(--thumb-offset);
+  top: var(--thumb-offset);
+  height: var(--thumb-size);
+  width: var(--thumb-size);
+  border-radius: calc(var(--thumb-size) / 2);
+  cursor: default;
+  composes: animation-default from 'part:@sanity/base/theme/animation-style';
+  transform-origin: left;
+  transition-property: transform;
+}
+
+.track {
+  background: var(--track-off-color);
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: var(--track-height);
+  width: var(--track-width);
+  border-radius: calc(var(--track-height) / 2);
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.input:focus + .switchWrapper {
+  box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--focus-color);
+}
+
+.input:checked + .switchWrapper {
+  @nest & .thumb {
+    background: var(--thumb-on-color);
+    transform: translate3d(
+      calc(var(--track-width) - var(--thumb-size) - (var(--thumb-offset) * 2)),
+      0,
+      0
+    );
+  }
+
+  @nest & .track {
+    background: var(--track-on-color);
+  }
+}
+
+.input:disabled + .switchWrapper {
+  @nest & .thumb {
+    background: var(--thumb-disabled-color);
+    cursor: auto;
+    opacity: 0.75;
+  }
+
+  @nest & .track {
+    background: var(--track-disabled-color);
+    cursor: default;
+    box-shadow: 0 0 0 1px var(--gray-light);
+  }
+}
+
+.input:indeterminate + .switchWrapper {
+  @nest & .thumb {
+    transform: translate3d(
+      calc((var(--track-width) - var(--thumb-size) - (var(--thumb-offset) * 2)) / 2),
+      0,
+      0
+    );
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "example-studio",
+  "private": true,
+  "version": "2.4.3",
+  "description": "A sanity studio with instructional examples and useful patterns",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "sanity start --port 3335",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "example-studio"
+  ],
+  "dependencies": {
+    "@sanity/base": "2.4.3",
+    "@sanity/block-tools": "2.2.6",
+    "@sanity/cli": "2.4.0",
+    "@sanity/code-input": "2.2.6",
+    "@sanity/core": "2.4.0",
+    "@sanity/default-layout": "2.4.3",
+    "@sanity/default-login": "2.2.6",
+    "@sanity/desk-tool": "2.4.3",
+    "@sanity/form-builder": "2.4.3",
+    "@sanity/language-filter": "2.2.6",
+    "@sanity/storybook": "2.4.3",
+    "@sanity/vision": "2.2.6",
+    "bio-pv": "^1.8.1",
+    "date-fns": "^2.16.1",
+    "fetch": "^1.1.0",
+    "get-video-id": "^2.1.4",
+    "humanize-list": "^1.0.1",
+    "prop-types": "^15.6.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-icons": "^3.11.0",
+    "react-tooltip": "^3.5.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.7.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/example-studio"
+  }
+}

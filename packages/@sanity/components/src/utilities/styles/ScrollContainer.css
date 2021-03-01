@@ -1,9 +1,0 @@
-.scrollContainer {
-  /* transform: translateZ(0); Prevents repaint, but commented out because it destroys fixed position on children */
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-}

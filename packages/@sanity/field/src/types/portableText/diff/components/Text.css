@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline;
+}
+
+.isChanged {
+  cursor: pointer;
+}
+
+.previewContainer {
+}
+
+.popoverContainer {
+  min-width: 160px;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding));
+  @nest & .popoverContent {
+  }
+}

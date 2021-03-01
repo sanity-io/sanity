@@ -48,7 +48,7 @@ export default function serializeStructure(
   // Promise/observable returning a function, builder or plain JSON structure
   if (isSubscribable(item)) {
     return observableFrom(item).pipe(
-      mergeMap(val => serializeStructure(<StructureNode>val, context, resolverArgs))
+      mergeMap((val) => serializeStructure(<StructureNode>val, context, resolverArgs))
     )
   }
 

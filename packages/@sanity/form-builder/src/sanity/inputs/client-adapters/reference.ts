@@ -10,6 +10,6 @@ export function getPreviewSnapshot(value, referenceType) {
 export function search(textTerm, referenceType, options) {
   const doSearch = createWeightedSearch(referenceType.to, client, options)
   return doSearch(textTerm, {includeDrafts: false}).pipe(
-    map((results: any[]) => results.map(res => res.hit))
+    map((results: any[]) => results.map((res) => res.hit))
   )
 }

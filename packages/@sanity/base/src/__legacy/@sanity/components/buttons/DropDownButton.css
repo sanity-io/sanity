@@ -1,0 +1,87 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline-flex;
+}
+
+.buttonContainer {
+  display: inline-flex;
+  width: stretch;
+}
+
+.button {
+  width: stretch;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  outline: none;
+}
+
+.label {
+  display: block;
+}
+
+.iconContainer {
+  height: 17px;
+  line-height: 0;
+  margin: 2px 0 1px;
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+
+  @nest .label + & {
+    margin-left: var(--small-padding);
+  }
+}
+
+.menu {
+  display: block;
+  padding: var(--extra-small-padding) 0 !important;
+  max-height: calc(50vh - 6em);
+  overflow: auto;
+}
+
+.menuItem {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  white-space: pre;
+}
+
+.menuItem__inner {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--medium-padding) - var(--extra-small-padding)) var(--medium-padding);
+
+  @nest &[data-color='danger'] {
+    color: var(--state-danger-color);
+  }
+}
+
+.menuItem__iconContainer {
+  height: 17px;
+
+  @nest & > svg {
+    font-size: calc(17 / 16 * 1em);
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.menuItem__label {
+  margin: -2px 0 -1px;
+
+  @nest .menuItem__iconContainer + & {
+    margin-left: var(--small-padding);
+  }
+}

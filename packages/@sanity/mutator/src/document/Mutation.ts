@@ -6,7 +6,7 @@ import {Doc, Mut} from './types'
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
 // on first application, and any changes in properties will not effectively
-type MutationParams = {
+export type MutationParams = {
   transactionId?: string
   transition?: string
   identity?: string
@@ -14,6 +14,7 @@ type MutationParams = {
   resultRev?: string
   mutations: Array<Mut>
   timestamp?: String
+  effects?: {apply: unknown; revert: unknown}
 }
 
 // change its behavior after that.
@@ -49,6 +50,9 @@ export default class Mutation {
     }
     return undefined
   }
+  get effects() {
+    return this.params.effects
+  }
   assignRandomTransactionId() {
     this.params.resultRev = this.params.transactionId = luid()
   }
@@ -69,41 +73,41 @@ export default class Mutation {
   // Compiles all mutations into a handy function
   compile() {
     const operations = []
-    this.mutations.forEach(mutation => {
+    this.mutations.forEach((mutation) => {
       if (mutation.create) {
         // TODO: Fail entire patch if document did exist
-        operations.push(doc =>
+        operations.push((doc) =>
           doc === null
             ? Object.assign(mutation.create, {
-                _createdAt: mutation.create._createdAt || this.params.timestamp
+                _createdAt: mutation.create._createdAt || this.params.timestamp,
               })
             : doc
         )
       } else if (mutation.createIfNotExists) {
-        operations.push(doc =>
+        operations.push((doc) =>
           doc === null
             ? Object.assign(mutation.createIfNotExists, {
-                _createdAt: mutation.createIfNotExists._createdAt || this.params.timestamp
+                _createdAt: mutation.createIfNotExists._createdAt || this.params.timestamp,
               })
             : doc
         )
       } else if (mutation.createOrReplace) {
         operations.push(() =>
           Object.assign(mutation.createOrReplace, {
-            _createdAt: mutation.createOrReplace._createdAt || this.params.timestamp
+            _createdAt: mutation.createOrReplace._createdAt || this.params.timestamp,
           })
         )
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {
         const patch = new Patcher(mutation.patch)
-        operations.push(doc => patch.apply(doc))
+        operations.push((doc) => patch.apply(doc))
       } else {
         throw new Error(`Unsupported mutation ${JSON.stringify(mutation, null, 2)}`)
       }
     })
     if (typeof this.params.timestamp === 'string') {
-      operations.push(doc => {
+      operations.push((doc) => {
         if (doc) {
           return Object.assign(doc, {_updatedAt: this.params.timestamp})
         }
@@ -112,7 +116,7 @@ export default class Mutation {
     }
     const prevRev = this.previousRev
     const rev = this.resultRev || this.transactionId
-    this.compiled = doc => {
+    this.compiled = (doc) => {
       if (prevRev && prevRev != doc._rev) {
         throw new Error(
           `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`

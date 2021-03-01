@@ -13,7 +13,7 @@ const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
 
-const toPromise = observable => observable.toPromise()
+const toPromise = (observable) => observable.toPromise()
 
 function SanityClient(config = defaultConfig) {
   if (!(this instanceof SanityClient)) {
@@ -73,7 +73,7 @@ assign(SanityClient.prototype, {
     const reqOptions = getRequestOptions(
       this.clientConfig,
       assign({}, options, {
-        url: this.getUrl(uri, canUseCdn)
+        url: this.getUrl(uri, canUseCdn),
       })
     )
 
@@ -82,12 +82,12 @@ assign(SanityClient.prototype, {
 
   request(options) {
     const observable = this._requestObservable(options).pipe(
-      filter(event => event.type === 'response'),
-      map(event => event.body)
+      filter((event) => event.type === 'response'),
+      map((event) => event.body)
     )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable
-  }
+  },
 })
 
 SanityClient.Patch = Patch

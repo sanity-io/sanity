@@ -1,19 +1,12 @@
 import {pick, omit} from 'lodash'
+import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
-const OVERRIDABLE_FIELDS = [
-  'jsonType',
-  'type',
-  'name',
-  'title',
-  'description',
-  'options',
-  'fieldsets'
-]
+const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const ANY_CORE = {
   name: 'any',
   type: null,
-  jsonType: 'any'
+  jsonType: 'any',
 }
 
 export const AnyType = {
@@ -23,12 +16,12 @@ export const AnyType = {
   extend(subTypeDef, extendMember) {
     const parsed = Object.assign(pick(ANY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: ANY_CORE,
-      of: subTypeDef.of.map(fieldDef => {
+      of: subTypeDef.of.map((fieldDef) => {
         return {
           name: fieldDef.name,
-          type: extendMember(omit(fieldDef, 'name'))
+          type: extendMember(omit(fieldDef, 'name')),
         }
-      })
+      }),
     })
 
     return subtype(parsed)
@@ -38,16 +31,16 @@ export const AnyType = {
         get() {
           return parent
         },
-        extend: extensionDef => {
+        extend: (extensionDef) => {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            type: parent
+            type: parent,
           })
           return subtype(current)
-        }
+        },
       }
     }
-  }
+  },
 }

@@ -11,10 +11,10 @@ export function lazyGetter(target, key, getter, config: Config = {}) {
       Object.defineProperty(target, key, {
         value: val,
         writable: Boolean(config.writable),
-        configurable: false
+        configurable: false,
       })
       return val
-    }
+    },
   })
   return target
 }

@@ -13,19 +13,19 @@ const para = chance.paragraph({sentences: 2})
 
 class StoryWidget extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
   }
 
   state = {
     height: 'auto',
-    width: 'auto'
+    width: 'auto',
   }
 
-  handleWidthChange = event => {
+  handleWidthChange = (event) => {
     this.setState({width: event.target.value})
   }
 
-  handleHeightChange = event => {
+  handleHeightChange = (event) => {
     this.setState({height: event.target.value})
   }
 
@@ -65,14 +65,14 @@ class StoryWidget extends React.Component {
   }
 }
 
-storiesOf('Dashboard')
+storiesOf('Dashboard', module)
   .addDecorator(withKnobs)
   .add('Grid', () => {
     const widgets = range(number('widgets', 7))
     return (
       <DashboardLayout>
         <div className={widgetGroupStyles.root}>
-          {widgets.map(widget => (
+          {widgets.map((widget) => (
             <StoryWidget key={widget} title={`Widget ${widget + 1}`} />
           ))}
         </div>

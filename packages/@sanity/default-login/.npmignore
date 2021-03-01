@@ -4,3 +4,4 @@
 .eslintrc
 src
 test
+tsconfig.tsbuildinfo

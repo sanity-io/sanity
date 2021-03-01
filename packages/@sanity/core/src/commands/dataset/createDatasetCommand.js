@@ -32,8 +32,8 @@ export default {
     }
 
     const [datasets, projectFeatures] = await Promise.all([
-      client.datasets.list().then(sets => sets.map(ds => ds.name)),
-      client.request({uri: '/features'})
+      client.datasets.list().then((sets) => sets.map((ds) => ds.name)),
+      client.request({uri: '/features'}),
     ])
 
     if (flags.visibility && !allowedModes.includes(flags.visibility)) {
@@ -57,7 +57,7 @@ export default {
     } catch (err) {
       throw new Error(`Dataset creation failed:\n${err.message}`)
     }
-  }
+  },
 }
 
 async function promptForDatasetVisibility(prompt, output) {
@@ -67,13 +67,13 @@ async function promptForDatasetVisibility(prompt, output) {
     choices: [
       {
         value: 'public',
-        name: 'Public (world readable)'
+        name: 'Public (world readable)',
       },
       {
         value: 'private',
-        name: 'Private (Authenticated user or token needed)'
-      }
-    ]
+        name: 'Private (Authenticated user or token needed)',
+      },
+    ],
   })
 
   if (mode === 'private') {

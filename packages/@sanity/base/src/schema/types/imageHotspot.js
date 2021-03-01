@@ -5,19 +5,19 @@ export default {
   fields: [
     {
       name: 'x',
-      type: 'number'
+      type: 'number',
     },
     {
       name: 'y',
-      type: 'number'
+      type: 'number',
     },
     {
       name: 'height',
-      type: 'number'
+      type: 'number',
     },
     {
       name: 'width',
-      type: 'number'
-    }
-  ]
+      type: 'number',
+    },
+  ],
 }

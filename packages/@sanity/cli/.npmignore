@@ -6,3 +6,4 @@
 /.eslintignore
 /.eslintrc
 /yarn.lock
+tsconfig.tsbuildinfo

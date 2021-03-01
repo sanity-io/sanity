@@ -1,0 +1,55 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.headline {
+  composes: heading1 from 'part:@sanity/base/theme/typography/headings-style';
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--hairline-color);
+}
+
+.icon {
+  border-top: 1px solid var(--hairline-color);
+  display: flex;
+}
+
+.iconPreview {
+  background: color(var(--gray) alpha(5%));
+  padding: var(--medium-padding--em);
+  font-size: 2em;
+  line-height: 1;
+  width: 1em;
+  height: 1em;
+
+  @nest & svg {
+    vertical-align: top !important;
+    width: 1em;
+    height: 1em;
+
+    @nest &[data-sanity-icon='true'] {
+      font-size: calc(25 / 16 * 1em);
+      margin: calc(4 / 25 * -1em);
+    }
+  }
+}
+
+.iconText {
+  flex: 1;
+  padding: var(--medium-padding--em);
+}
+
+.iconTitle {
+  font-weight: 700;
+}
+
+.iconCode {
+  font-family: var(--font-family-monospace);
+  background: var(--pre-bg);
+  color: var(--pre-color);
+  margin: var(--small-padding--em) 0 0;
+  padding: var(--extra-small-padding--em);
+  overflow: auto;
+}

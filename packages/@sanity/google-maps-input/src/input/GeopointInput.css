@@ -1,0 +1,52 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.previewImage {
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.dialogInner {
+  max-width: 100%;
+  max-height: 100%;
+  height: 40rem;
+  width: 50rem;
+  z-index: 0;
+  position: relative;
+  box-sizing: border-box;
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+}
+
+.map {
+  position: relative;
+  border-radius: var(--input-border-radius);
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 0 1px var(--hairline-color);
+    pointer-events: none;
+  }
+
+  @nest &.focused {
+    box-shadow: 0 0 0 1px var(--component-bg), 0 0 0 3px var(--focus-color);
+  }
+}
+
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}
+
+.map + .functions {
+  margin-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-top: var(--medium-padding);
+  }
+}

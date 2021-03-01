@@ -1,0 +1,49 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.tabsContainer {
+  margin-top: calc(0 - var(--small-padding));
+  display: flex;
+}
+
+.headerPaneActions {
+  padding: 0 var(--small-padding) 0 0;
+
+  @nest & button {
+    vertical-align: top;
+    -webkit-appearance: none;
+    -webkit-font-smoothing: inherit;
+    border: 0;
+    padding: var(--extra-small-padding);
+    border-radius: var(--border-radius-small);
+    background: none;
+    color: var(--text-muted);
+    outline: none;
+
+    @nest & svg {
+      vertical-align: top;
+      font-size: calc(25 / 16 * 1em); /* 25px */
+      line-height: 1;
+    }
+
+    /* Focus wrapper */
+    @nest & > div {
+      outline: none;
+    }
+
+    @media (hover: hover) {
+      @nest &:hover {
+        color: inherit;
+      }
+    }
+
+    @nest &:focus {
+      background: var(--selectable-item-color-hover);
+      color: inherit;
+    }
+  }
+}
+
+.headerTabsContainer {
+  flex: 1;
+  overflow: hidden;
+}

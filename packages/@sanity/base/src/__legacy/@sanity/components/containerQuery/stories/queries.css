@@ -1,0 +1,23 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background: var(--component-bg);
+  padding: 1em;
+  color: fff;
+
+  @nest &[data-container-min~='medium'] {
+    background: var(--gray-lightest);
+  }
+
+  @nest &[data-container-min~='default'] {
+    background: var(--gray-lighter);
+  }
+
+  @nest &[data-container-min~='large'] {
+    background: var(--gray-light);
+  }
+
+  @nest &[data-container-min~='xlarge'] {
+    background: var(--gray);
+  }
+}

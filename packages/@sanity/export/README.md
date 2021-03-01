@@ -38,14 +38,17 @@ exportDataset({
 
   // Export only given document types (`_type`)
   // Optional, default: all types
-  types: ['products', 'shops']
+  types: ['products', 'shops'],
+
+  // Run 12 concurrent asset downloads
+  assetConcurrency: 12
 })
 ```
 
 ## Future improvements
 
-* Restore original filenames, keep track of duplicates, increase counter (`filename (<num>).ext`)
-* Skip archiving on raw/no-asset mode?
+- Restore original filenames, keep track of duplicates, increase counter (`filename (<num>).ext`)
+- Skip archiving on raw/no-asset mode?
 
 ## CLI-tool
 

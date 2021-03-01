@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "project": {
+    "name": "Movies Unlimited"
+  },
+  "api": {
+    "projectId": "zp7mbokg",
+    "dataset": "production"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/default-layout",
+    "@sanity/default-login",
+    "@sanity/desk-tool",
+    "@sanity/google-maps-input",
+    "@sanity/vision",
+    "@sanity/production-preview"
+  ],
+  "parts": [
+    {
+      "name": "part:@sanity/base/schema",
+      "path": "./schemas/schema"
+    },
+    {
+      "implements": "part:@sanity/base/brand-logo",
+      "path": "components/BrandLogo"
+    },
+    {
+      "implements": "part:@sanity/production-preview/resolve-production-url",
+      "path": "./resolveProductionUrl"
+    }
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "3pvq1ebc"
+      }
+    }
+  }
+}

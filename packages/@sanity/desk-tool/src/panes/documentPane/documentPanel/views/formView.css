@@ -1,0 +1,25 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --form-view-padding-bottom-small: 7.5em;
+  --form-view-padding-bottom-medium: 15em;
+}
+
+.root {
+  max-width: 640px;
+  flex-grow: 1;
+  margin: 0 auto;
+  padding: var(--large-padding) var(--medium-padding) var(--form-view-padding-bottom-small);
+
+  @media (--screen-medium) {
+    padding: var(--large-padding) var(--medium-padding) var(--form-view-padding-bottom-medium);
+  }
+}
+
+.typeMisMatchMessage {
+  padding: var(--large-padding) var(--medium-padding) var(--form-view-padding-bottom-small);
+
+  @media (--screen-medium) {
+    padding: var(--large-padding) var(--medium-padding) var(--form-view-padding-bottom-medium);
+  }
+}

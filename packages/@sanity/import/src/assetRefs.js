@@ -8,7 +8,7 @@ const assetMatcher = /^(file|image)@([a-z]+:\/\/.*)/
 
 // Note: mutates in-place
 function unsetAssetRefs(doc) {
-  findAssetRefs(doc).forEach(path => {
+  findAssetRefs(doc).forEach((path) => {
     const parentPath = path.slice(0, -1)
     const parent = get(doc, parentPath)
 
@@ -30,12 +30,12 @@ function absolutifyPaths(doc, absPath) {
     return doc
   }
 
-  const modifier = value =>
+  const modifier = (value) =>
     value
       .replace(/file:\/\/\.\//i, `${getFileUrl(absPath, {resolve: false})}/`)
       .replace(/(https?):\/\/\.\//, `$1://${absPath}/`)
 
-  findAssetRefs(doc).forEach(path => {
+  findAssetRefs(doc).forEach((path) => {
     set(doc, path, modifier(get(doc, path)))
   })
 
@@ -44,12 +44,12 @@ function absolutifyPaths(doc, absPath) {
 
 function getAssetRefs(doc) {
   return findAssetRefs(doc)
-    .map(path => validateAssetImportKey(path, doc))
-    .map(path => ({
+    .map((path) => validateAssetImportKey(path, doc))
+    .map((path) => ({
       documentId: doc._id,
       path: serializePath({path: path.filter(isNotAssetKey)}),
       url: get(doc, path).replace(assetMatcher, '$2'),
-      type: get(doc, path).replace(assetMatcher, '$1')
+      type: get(doc, path).replace(assetMatcher, '$1'),
     }))
 }
 
@@ -58,7 +58,7 @@ function isNotAssetKey(segment) {
 }
 
 function findAssetRefs(doc) {
-  return extractWithPath(`..[${assetKey}]`, doc).map(match => match.path)
+  return extractWithPath(`..[${assetKey}]`, doc).map((match) => match.path)
 }
 
 function validateAssetImportKey(path, doc) {
@@ -67,7 +67,7 @@ function validateAssetImportKey(path, doc) {
       [
         'Asset type is not specified.',
         '`_sanityAsset` values must be prefixed with a type, eg image@url or file@url.',
-        `See document with ID "${doc._id}", path: ${serializePath({path})}`
+        `See document with ID "${doc._id}", path: ${serializePath({path})}`,
       ].join('\n')
     )
   }

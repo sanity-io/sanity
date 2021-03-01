@@ -16,6 +16,6 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
-    _problems: problems
+    _problems: problems,
   }
 }

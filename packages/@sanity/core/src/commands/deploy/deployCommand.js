@@ -16,5 +16,5 @@ export default {
   signature: '[SOURCE_DIR] [--no-build]  [--source-maps] [--no-minify]',
   description: 'Deploys a statically built Sanity studio',
   action: lazyRequire(require.resolve('../../actions/deploy/deployAction')),
-  helpText
+  helpText,
 }

@@ -16,7 +16,7 @@ function resolveStyleImport(moduleId, opts) {
     throw new Error(`No implementers of part '${partName}'`)
   }
 
-  const paths = part.map(implementer => implementer.path)
+  const paths = part.map((implementer) => implementer.path)
   return loadAll ? paths.reverse() : paths[0]
 }
 

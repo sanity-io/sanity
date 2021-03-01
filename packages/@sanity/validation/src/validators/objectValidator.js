@@ -1,4 +1,6 @@
 const ValidationError = require('../ValidationError')
+const pathToString = require('../util/pathToString')
+const handleValidationResult = require('../util/handleValidationResult')
 const genericValidator = require('./genericValidator')
 
 const metaKeys = ['_key', '_type', '_weak']
@@ -8,7 +10,7 @@ const presence = (expected, value, message) => {
     return true
   }
 
-  const keys = value && Object.keys(value).filter(key => !metaKeys.includes(key))
+  const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
   if (typeof value === 'undefined' || (keys && keys.length === 0)) {
     return new ValidationError(message || 'Required')
   }
@@ -28,6 +30,19 @@ const reference = (unused, value, message) => {
   return true
 }
 
+const block = async (validateBlock, value, message, options) => {
+  let result
+  try {
+    result = await validateBlock(value, options)
+  } catch (err) {
+    const path = pathToString(options.path)
+    err.message = `${path}: Error validating value: ${err.message}`
+    throw err
+  }
+
+  return handleValidationResult(result, message, options)
+}
+
 const assetRequired = (flag, value, message) => {
   if (!value || !value.asset || !value.asset._ref) {
     const assetType = flag.assetType || 'Asset'
@@ -40,5 +55,6 @@ const assetRequired = (flag, value, message) => {
 module.exports = Object.assign({}, genericValidator, {
   presence,
   reference,
-  assetRequired
+  block,
+  assetRequired,
 })

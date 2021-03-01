@@ -1,7 +1,8 @@
-/* eslint-disable max-len */
+// part:@sanity/base/sanity-logo-alpha
+
 import React from 'react'
 
-const SanityLogoAlpha = props => (
+const SanityLogoAlpha = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 685.8 138.3">
     <path fill="currentColor" d="M512.6 49.1L512.6 136.1 484.5 136.1 484.5 63.8 512.6 49.1" />
     <path

@@ -1,4 +1,4 @@
-const tryParseParams = val => {
+const tryParseParams = (val) => {
   try {
     return val ? JSON.parse(val) : {}
   } catch (err) {

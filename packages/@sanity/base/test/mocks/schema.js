@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const Icon = () => null
 
 const schema = {
@@ -9,8 +9,8 @@ const schema = {
     icon: Icon,
     fields: [],
     initialValue: () => ({
-      role: 'Developer'
-    })
+      role: 'Developer',
+    }),
   },
 
   post: {
@@ -18,11 +18,11 @@ const schema = {
     title: 'Post',
     type: 'document',
     icon: Icon,
-    fields: []
-  }
+    fields: [],
+  },
 }
 
 module.exports = {
   getTypeNames: () => Object.keys(schema),
-  get: name => schema[name]
+  get: (name) => schema[name],
 }

@@ -4,14 +4,14 @@ import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/
 import Preview from 'part:@sanity/base/preview'
 import {IntentLink} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import styles from './styles/ReferringDocumentsList.css'
+import styles from './ReferringDocumentsList.css'
 import DraftStatus from './DraftStatus'
 
 export default function ReferringDocumentsList(props) {
   const {documents} = props
   return (
     <DefaultList className={styles.root}>
-      {documents.map(document => {
+      {documents.map((document) => {
         const schemaType = schema.get(document._type)
         return (
           <DefaultItem className={styles.item} key={document._id}>
@@ -40,7 +40,7 @@ ReferringDocumentsList.propTypes = {
   documents: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string,
-      _type: PropTypes.string
+      _type: PropTypes.string,
     })
-  )
+  ),
 }

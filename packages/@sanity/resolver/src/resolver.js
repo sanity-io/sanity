@@ -1,3 +1,4 @@
+import fs from 'fs'
 import path from 'path'
 import generateHelpUrl from '@sanity/generate-help-url'
 import flattenTree from './flattenTree'
@@ -17,14 +18,14 @@ export function resolveParts(opts = {}) {
     return mergeResult(resolveTree(options), options)
   }
 
-  return resolveTree(options).then(plugins => mergeResult(plugins, options))
+  return resolveTree(options).then((plugins) => mergeResult(plugins, options))
 }
 
 function resolveTreeSync(options) {
   const basePath = options.basePath || process.cwd()
   const manifest = readManifest(options)
   const plugins = resolvePlugins(manifest.plugins || [], options).concat([
-    getProjectRootPlugin(basePath, manifest)
+    getProjectRootPlugin(basePath, manifest),
   ])
 
   return plugins.reduce(flattenTree, plugins.slice())
@@ -56,7 +57,7 @@ function getProjectRootPlugin(basePath, manifest) {
     name: '(project root)',
     path: basePath,
     manifest: manifest,
-    plugins: []
+    plugins: [],
   }
 }
 
@@ -67,7 +68,7 @@ function mergeResult(plugins, options = {}) {
 
   // Find plugins that define parts, and do a basic validation on the syntax
   const partPlugins = plugins
-    .map(plugin => {
+    .map((plugin) => {
       if (!plugin.manifest.parts) {
         return false
       }
@@ -81,14 +82,14 @@ function mergeResult(plugins, options = {}) {
 
       return {
         parts: plugin.manifest.parts,
-        plugin: plugin
+        plugin: plugin,
       }
     })
     .filter(Boolean)
     .reverse()
 
   partPlugins.forEach(({parts, plugin}) => {
-    parts.forEach(part => {
+    parts.forEach((part) => {
       if (part.name && part.path) {
         assignNonOverridablePart(plugin, part, implementations, definitions, options)
       } else if (part.name) {
@@ -112,9 +113,11 @@ function assignNonOverridablePart(plugin, part, implementations, definitions, op
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `${`Plugins ${existing} and ${current} both define part "${part.name}"` +
+      `${
+        `Plugins ${existing} and ${current} both define part "${part.name}"` +
         ' - did you mean to use "implements"?\n' +
-        'See '}${generateHelpUrl('part-declare-vs-implement')}`
+        'See '
+      }${generateHelpUrl('part-declare-vs-implement')}`
     )
   }
 
@@ -129,9 +132,11 @@ function assignDefinitionForAbstractPart(plugin, part, definitions) {
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `${`Plugins ${existing} and ${current} both define part "${part.name}"` +
+      `${
+        `Plugins ${existing} and ${current} both define part "${part.name}"` +
         ' - did you mean to use "implements"?\n' +
-        'See '}${generateHelpUrl('part-declare-vs-implement')}`
+        'See '
+      }${generateHelpUrl('part-declare-vs-implement')}`
     )
   }
 
@@ -143,9 +148,11 @@ function assignPartImplementation(plugin, part, implementations, definitions, op
   if (!part.path) {
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `${`Plugin ${current} tries to implement a part "${partName}",` +
+      `${
+        `Plugin ${current} tries to implement a part "${partName}",` +
         ' but did not define a path. Did you mean to use "name"?\n' +
-        'See '}${generateHelpUrl('part-declare-vs-implement')}`
+        'See '
+      }${generateHelpUrl('part-declare-vs-implement')}`
     )
   }
 
@@ -154,9 +161,11 @@ function assignPartImplementation(plugin, part, implementations, definitions, op
     const existing = `"${prevDefinition.plugin}" (${prevDefinition.path})`
     const current = `"${plugin.name}" (${plugin.path})`
     throw new Error(
-      `${`Plugin ${current} tried to implement part "${partName}", which is already declared` +
+      `${
+        `Plugin ${current} tried to implement part "${partName}", which is already declared` +
         ` as a non-overridable part by ${existing} - ` +
-        'See '}${generateHelpUrl('implement-non-overridable-part')}`
+        'See '
+      }${generateHelpUrl('implement-non-overridable-part')}`
     )
   } else if (!prevDefinition) {
     // In some cases, a user might want to declare a new part name and
@@ -170,7 +179,7 @@ function assignPartImplementation(plugin, part, implementations, definitions, op
     // a plugin that declares the part outright, we want to use that over this
     definitions[partName] = getDefinitionDeclaration(plugin, part, {
       isAbstract: true,
-      loose: true
+      loose: true,
     })
   }
 
@@ -192,19 +201,26 @@ function getDefinitionDeclaration(plugin, part, options = {}) {
     path: plugin.path,
     description: part.description,
     isAbstract: isAbstract,
-    loose: options.loose
+    loose: options.loose,
   }
 }
 
 function getImplementationDeclaration(plugin, part, options) {
   const paths = plugin.manifest.paths || {}
-  const isLib =
-    options.useCompiledPaths || plugin.path.split(path.sep).indexOf('node_modules') !== -1
+
+  let pluginPath = plugin.path
+
+  if (options.isSanityMonorepo) {
+    pluginPath = tryResolvePath(pluginPath)
+  }
+
+  const isLib = pluginPath.split(path.sep).indexOf('node_modules') !== -1
   const isDotPath = /^\.{1,2}[\\/]/.test(part.path)
+  const useCompiled = options.useCompiledPaths || isLib
 
   const basePath = isDotPath
-    ? plugin.path
-    : path.join(plugin.path, (isLib ? paths.compiled : paths.source) || '')
+    ? pluginPath
+    : path.join(pluginPath, (useCompiled ? paths.compiled : paths.source) || '')
 
   const filePath = path.isAbsolute(part.path)
     ? part.path
@@ -212,6 +228,14 @@ function getImplementationDeclaration(plugin, part, options) {
 
   return {
     plugin: plugin.name,
-    path: filePath
+    path: filePath,
+  }
+}
+
+function tryResolvePath(dstPath) {
+  try {
+    return fs.realpathSync(dstPath)
+  } catch (err) {
+    return dstPath
   }
 }

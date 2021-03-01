@@ -24,8 +24,8 @@ module.exports = async function importFromFolder(fromDir, options, importers) {
   const images = await globby('images/*', {cwd: fromDir, absolute: true})
   const files = await globby('files/*', {cwd: fromDir, absolute: true})
   const unreferencedAssets = []
-    .concat(images.map(imgPath => `image#${getFileUrl(imgPath, {resolve: false})}`))
-    .concat(files.map(filePath => `file#${getFileUrl(filePath, {resolve: false})}`))
+    .concat(images.map((imgPath) => `image#${getFileUrl(imgPath, {resolve: false})}`))
+    .concat(files.map((filePath) => `file#${getFileUrl(filePath, {resolve: false})}`))
 
   debug('Queueing %d assets', unreferencedAssets.length)
 

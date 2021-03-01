@@ -10,7 +10,7 @@ describe('T.template()', () => {
         title: 'some title',
         schemaType: 'author',
         value: {name: 'Default name!'},
-        icon
+        icon,
       }).serialize()
     ).toMatchSnapshot()
   })
@@ -20,30 +20,19 @@ describe('T.template()', () => {
   })
 
   test('throws on missing title', () => {
-    expect(() =>
-      T.template()
-        .id('id')
-        .serialize()
-    ).toThrowError(/required "title"/)
+    expect(() => T.template().id('id').serialize()).toThrowError(/required "title"/)
   })
 
   test('throws on missing schemaType', () => {
-    expect(() =>
-      T.template()
-        .id('id')
-        .title('Blah')
-        .serialize()
-    ).toThrowError(/required "schemaType"/)
+    expect(() => T.template().id('id').title('Blah').serialize()).toThrowError(
+      /required "schemaType"/
+    )
   })
 
   test('throws on missing value', () => {
-    expect(() =>
-      T.template()
-        .id('id')
-        .title('Blah')
-        .schemaType('author')
-        .serialize()
-    ).toThrowError(/required "value"/)
+    expect(() => T.template().id('id').title('Blah').schemaType('author').serialize()).toThrowError(
+      /required "value"/
+    )
   })
 
   test('can construct using builder', () => {
@@ -90,6 +79,6 @@ describe('T.defaultTemplateForType()', () => {
 describe('T.defaults()', () => {
   test('generates array of all schema type templates', () => {
     expect(T.defaults()).toMatchSnapshot()
-    expect(T.defaults().map(tpl => tpl.serialize())).toMatchSnapshot()
+    expect(T.defaults().map((tpl) => tpl.serialize())).toMatchSnapshot()
   })
 })

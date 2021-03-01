@@ -12,18 +12,13 @@ test('builds component node through constructor', () => {
       title: 'some title',
       child: childResolver,
       options,
-      component
+      component,
     }).serialize()
   ).toMatchSnapshot()
 })
 
 test('builds component node through alt. constructor', () => {
-  expect(
-    S.component(component)
-      .id('foo')
-      .child(childResolver)
-      .serialize()
-  ).toMatchSnapshot()
+  expect(S.component(component).id('foo').child(childResolver).serialize()).toMatchSnapshot()
 })
 
 test('throws on missing id', () => {
@@ -31,32 +26,15 @@ test('throws on missing id', () => {
 })
 
 test('infers ID from title if not specified', () => {
-  expect(
-    S.component()
-      .title('Hei der')
-      .getId()
-  ).toEqual('heiDer')
-  expect(
-    S.component()
-      .id('zing')
-      .title('Hei der')
-      .getId()
-  ).toEqual('zing')
-  expect(
-    S.component()
-      .title('Hei der')
-      .id('blah')
-      .getId()
-  ).toEqual('blah')
+  expect(S.component().title('Hei der').getId()).toEqual('heiDer')
+  expect(S.component().id('zing').title('Hei der').getId()).toEqual('zing')
+  expect(S.component().title('Hei der').id('blah').getId()).toEqual('blah')
 })
 
 test('throws on missing component', () => {
-  expect(() =>
-    S.component()
-      .id('id')
-      .title('title')
-      .serialize()
-  ).toThrowError(/`component` is required/)
+  expect(() => S.component().id('id').title('title').serialize()).toThrowError(
+    /`component` is required/
+  )
 })
 
 test('can construct using builder', () => {
@@ -86,11 +64,7 @@ test('can set menu items with builder', () => {
     S.component()
       .id('yeah')
       .component(component)
-      .menuItems([
-        S.menuItem()
-          .title('Purge')
-          .action(noop)
-      ])
+      .menuItems([S.menuItem().title('Purge').action(noop)])
       .serialize()
   ).toMatchSnapshot()
 })
@@ -111,17 +85,8 @@ test('can set menu items groups with builder', () => {
     S.component()
       .id('yeah')
       .component(component)
-      .menuItems([
-        S.menuItem()
-          .title('Print')
-          .action(noop)
-          .group('old-school')
-      ])
-      .menuItemGroups([
-        S.menuItemGroup()
-          .id('old-school')
-          .title('Old-school')
-      ])
+      .menuItems([S.menuItem().title('Print').action(noop).group('old-school')])
+      .menuItemGroups([S.menuItemGroup().id('old-school').title('Old-school')])
       .serialize()
   ).toMatchSnapshot()
 })

@@ -15,7 +15,7 @@ export default function calculateStyles(options = {}) {
     {hotspot, crop},
     {
       aspect: containerAspect,
-      align
+      align,
     }
   )
 
@@ -23,17 +23,17 @@ export default function calculateStyles(options = {}) {
 
   return {
     debug: {
-      result
+      result,
     },
     container: {
       //outline: '1px solid cyan',
       overflow: 'hidden',
       position: 'relative',
       width: '100%',
-      height: containerHeight
+      height: containerHeight,
     },
     padding: {
-      marginTop: containerHeight
+      marginTop: containerHeight,
     },
     crop: {
       position: 'absolute',
@@ -41,15 +41,15 @@ export default function calculateStyles(options = {}) {
       height: toStylePercentage(result.crop.height),
       width: toStylePercentage(result.crop.width),
       top: toStylePercentage(result.crop.top),
-      left: toStylePercentage(result.crop.left)
+      left: toStylePercentage(result.crop.left),
     },
     image: {
       position: 'absolute',
       height: toStylePercentage(result.image.height),
       width: toStylePercentage(result.image.width),
       top: toStylePercentage(result.image.top),
-      left: toStylePercentage(result.image.left)
-    }
+      left: toStylePercentage(result.image.left),
+    },
   }
 }
 
@@ -88,7 +88,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     top: -crop.top / netHeight,
     left: -crop.left / netWidth,
     width: 1 / netWidth,
-    height: 1 / netHeight
+    height: 1 / netHeight,
   }
 
   // The rational aspect is the aspect ration of the crop in ratios of the image size meaning the image
@@ -104,7 +104,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     x: (descriptor.hotspot.x - crop.left) / netWidth,
     y: (descriptor.hotspot.y - crop.top) / netHeight,
     height: descriptor.hotspot.height / netHeight,
-    width: descriptor.hotspot.width / netWidth
+    width: descriptor.hotspot.width / netWidth,
   }
 
   // Lets calculate the maximum scale the image may be presented at without cropping the hotspot. A scale of
@@ -147,7 +147,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 
     outCrop = {
       width: letterboxScale,
-      height: (letterboxScale / cropAspect) * viewportAspect
+      height: (letterboxScale / cropAspect) * viewportAspect,
     }
 
     const hotspotLeft = hotspot.x * outCrop.width - (hotspot.width * outCrop.width) / 2
@@ -202,7 +202,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       height,
       left: 0,
       // Place the Y center of the hotspot near the center of the viewport
-      top
+      top,
     }
   } else {
     // crop is wider
@@ -221,14 +221,14 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       height: (minFullBleedScale / cropAspect) * viewportAspect,
       top: 0,
       // Place the X center of the hotspot at the center of the viewport
-      left
+      left,
     }
   }
 
   return {
     method,
     crop: outCrop,
-    image: outImg
+    image: outImg,
   }
 }
 

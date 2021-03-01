@@ -1,10 +1,10 @@
 {
   "name": "create-sanity",
-  "version": "0.147.3",
+  "version": "2.4.0",
   "description": "Initialize a new Sanity project",
   "bin": "index.js",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "keywords": [
     "sanity",
@@ -21,10 +21,11 @@
   "homepage": "https://www.sanity.io/",
   "license": "MIT",
   "dependencies": {
-    "@sanity/cli": "0.147.3"
+    "@sanity/cli": "2.4.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/create-sanity"
   }
 }

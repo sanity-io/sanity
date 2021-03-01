@@ -1,0 +1,22 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  pointer-events: none;
+}
+
+.card {
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
+
+  background: var(--component-bg);
+  color: var(--component-text-color);
+  border-radius: var(--border-radius-medium);
+
+  @nest [data-tone='navbar'] > & {
+    background: var(--main-navigation-color);
+    color: var(--main-navigation-color--inverted);
+  }
+
+  @nest &:empty {
+    display: none;
+  }
+}

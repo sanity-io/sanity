@@ -1,0 +1,177 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --placeholder-gradient: linear-gradient(
+    90deg,
+    color(var(--text-color) a(10%)),
+    color(var(--text-color) a(5%)) 10%,
+    color(var(--text-color) a(10%))
+  );
+}
+
+.root {
+  display: block;
+  max-width: 100%;
+  position: relative;
+  background-color: var(--component-bg);
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: ellipsis;
+  text-transform: none;
+  color: inherit;
+  margin: 0 !important;
+  min-width: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  text-transform: none;
+  font-weight: 400;
+  margin: var(--extra-small-padding) 0 0;
+  padding: 0;
+  color: inherit;
+}
+
+.date {
+  font-size: var(--font-size-xsmall);
+  margin-bottom: 0.5em;
+}
+
+.mediaContainer {
+  display: block;
+  background-color: var(--preview-placeholder-text-color);
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-image: var(--placeholder-gradient);
+
+  @nest & img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.mediaString {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  padding: 5px;
+  font-size: var(--font-size-small);
+  color: var(--gray);
+}
+
+.mediaPadding {
+  position: relative;
+}
+
+.mediaContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @nest & :global(.sanity-studio__preview-fallback-icon) {
+    width: 4em;
+    height: 4em;
+    opacity: 0.5;
+  }
+
+  @nest & > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.mediaContentRelative {
+  position: relative;
+}
+
+.description {
+  font-size: var(--font-size-xsmall);
+  line-height: var(--line-height-xsmall);
+  color: inherit;
+  font-weight: 400;
+  padding: 0;
+  margin: var(--extra-small-padding) 0 0;
+}
+
+.meta {
+  padding: 1em;
+  background-color: inherit;
+}
+
+/* .imgLandscape {
+  composes: img;
+}
+
+.imgPortrait {
+  composes: img;
+} */
+
+.placeholder {
+  composes: root;
+  position: relative;
+
+  @nest & .media {
+    background-image: var(--placeholder-gradient);
+  }
+
+  @nest & .meta {
+    position: relative;
+  }
+
+  @nest & .title {
+    background-image: var(--placeholder-gradient);
+    width: 70%;
+    height: 0.8em;
+    margin-bottom: 0.2em;
+  }
+
+  @nest & .subtitle {
+    background-image: var(--placeholder-gradient);
+    height: 1em;
+  }
+
+  @nest & .date {
+    background-image: var(--placeholder-gradient);
+    width: 4rem;
+    height: 0.8em;
+    margin-bottom: 0.2em;
+  }
+
+  @nest & .description_1 {
+    background-image: var(--placeholder-gradient);
+    width: calc(100% - 2rem);
+    height: 0.8em;
+    margin-bottom: 0.2em;
+  }
+
+  @nest & .description_2 {
+    background-image: var(--placeholder-gradient);
+    width: calc(50% - 2rem);
+    height: 0.8em;
+    margin-bottom: 0.2em;
+  }
+}

@@ -1,0 +1,98 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--backdrop-color);
+  color: var(--component-text-color);
+  padding: var(--large-padding);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (--max-screen-medium) {
+    position: fixed;
+  }
+}
+
+.card {
+  composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
+  position: relative;
+  box-sizing: border-box;
+  max-height: 100%;
+  background: var(--component-bg);
+  border-radius: var(--border-radius-base);
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  border-bottom: 1px solid var(--hairline-color);
+  display: flex;
+  align-items: center;
+  padding: calc(var(--medium-padding) - var(--small-padding));
+}
+
+.title {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  font-weight: 700;
+  padding: var(--small-padding);
+  margin: -2px 0 -1px;
+  flex: 1;
+}
+
+.actions {
+  margin-left: 1em;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--medium-padding);
+
+  @nest & > :first-child {
+    margin-top: 0;
+  }
+
+  @nest & > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.actionsWrapper {
+  border-top: 1px solid var(--hairline-color);
+  padding: var(--medium-padding);
+}
+
+.closeButton {
+  appearance: none;
+  background: var(--component-bg);
+  display: block;
+  font: inherit;
+  border: none;
+  color: inherit;
+  outline: none;
+  padding: 0;
+  lmargin: 0;
+  cursor: pointer;
+
+  & > svg {
+    display: block;
+  }
+
+  @nest .default & {
+    color: var(--gray);
+
+    @nest &:hover {
+      color: inherit;
+    }
+  }
+}

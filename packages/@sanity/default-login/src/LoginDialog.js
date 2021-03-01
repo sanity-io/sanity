@@ -14,33 +14,33 @@ export default class LoginDialog extends React.Component {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
     projectId: PropTypes.string,
-    SanityLogo: PropTypes.func
+    SanityLogo: PropTypes.func,
   }
 
   static defaultProps = {
     description: null,
     projectId: null,
-    SanityLogo: null
+    SanityLogo: null,
   }
 
   state = {
     providers: [],
     isLoaded: false,
     shouldRedirect: false,
-    error: null
+    error: null,
   }
 
   componentDidMount() {
     this.getProviders = cancelWrap(authenticationFetcher.getProviders())
     this.getProviders.promise
-      .then(providers =>
+      .then((providers) =>
         this.setState({
           providers: providers,
           isLoaded: true,
-          shouldRedirect: providers.length === 1 && pluginConfig.providers.redirectOnSingle
+          shouldRedirect: providers.length === 1 && pluginConfig.providers.redirectOnSingle,
         })
       )
-      .catch(err => this.setState({error: err}))
+      .catch((err) => this.setState({error: err}))
   }
 
   componentWillUnmount() {
@@ -59,18 +59,22 @@ export default class LoginDialog extends React.Component {
     const currentUrl = encodeURIComponent(window.location.toString())
     const params = [`origin=${currentUrl}`, projectId && `projectId=${projectId}`].filter(Boolean)
 
-    if (provider.custom && !provider.supported) {
+    if (provider.custom && !provider.supported && !this.state.error) {
       this.setState({
         error: {
           message:
             'This project is missing the required "thirdPartyLogin" ' +
             'feature to support custom logins.',
-          link: generateHelpUrl('third-party-login')
-        }
+          link: generateHelpUrl('third-party-login'),
+          hideClose: true,
+        },
       })
       return
     }
-    window.location = `${provider.url}?${params.join('&')}`
+
+    if (!this.state.error) {
+      window.location = `${provider.url}?${params.join('&')}`
+    }
   }
 
   handleLoginButtonClicked = (provider, evnt) => {
@@ -93,7 +97,7 @@ export default class LoginDialog extends React.Component {
           title="Error"
           isOpen
           centered
-          onClose={this.handleErrorDialogClosed}
+          onClose={error.hideClose ? undefined : this.handleErrorDialogClosed}
         >
           <div className={styles.error}>
             {error.message}

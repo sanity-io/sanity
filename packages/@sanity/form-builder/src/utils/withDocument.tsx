@@ -5,7 +5,7 @@ export default function withDocument(ComposedComponent: any) {
     _input: any
     static displayName = `withDocument(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
-      formBuilder: PropTypes.any
+      formBuilder: PropTypes.any,
     }
     state: {
       document: Record<string, any>
@@ -28,7 +28,7 @@ export default function withDocument(ComposedComponent: any) {
     focus() {
       this._input.focus()
     }
-    setInput = input => {
+    setInput = (input) => {
       this._input = input
     }
     render() {

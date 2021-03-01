@@ -1,10 +1,12 @@
 {
   "name": "@sanity/server",
-  "version": "0.147.0",
+  "version": "2.4.0",
   "description": "Webserver dedicated to serving Sanity, allowing a smooth development experience",
   "main": "lib/server.js",
   "scripts": {
+    "build": "babel src --copy-files --out-dir lib",
     "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "start": "node bin/sanity-server.js",
     "start-dev": "node bin/sanity-server.js --dev"
   },
@@ -12,11 +14,12 @@
     "sanity-server": "./bin/sanity-server.js"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sanity-io/sanity.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/server"
   },
   "keywords": [
     "sanity",
@@ -34,28 +37,31 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/preset-react": "^7.7.4",
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@babel/register": "^7.7.4",
     "@hot-loader/react-dom": "^16.9.0-4.12.11",
     "@sanity/css-loader": "^0.28.12",
-    "@sanity/eventsource": "0.147.0",
-    "@sanity/resolver": "0.147.0",
-    "@sanity/webpack-integration": "0.147.0",
-    "@sanity/webpack-loader": "0.147.0",
+    "@sanity/eventsource": "2.2.6",
+    "@sanity/resolver": "2.4.0",
+    "@sanity/webpack-integration": "2.4.0",
+    "@sanity/webpack-loader": "2.4.0",
     "babel-loader": "^8.0.6",
     "eventsource-polyfill": "^0.9.6",
     "express": "^4.16.1",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
+    "find-config": "^1.0.0",
     "json-loader": "^0.5.4",
     "lodash": "^4.17.15",
     "normalize.css": "^5.0.0",
     "postcss-loader": "^2.0.6",
     "querystring": "^0.2.0",
     "react-hot-loader": "^4.12.11",
+    "read-pkg-up": "^7.0.1",
     "require-uncached": "^1.0.3",
     "resolve": "^1.3.3",
     "resolve-from": "^4.0.0",
@@ -63,6 +69,7 @@
     "strip-ansi": "^5.2.0",
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
+    "tsconfig": "^7.0.0",
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^2.0.5",
     "webpack-hot-middleware": "2.25.0"
@@ -71,14 +78,15 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^5.0.5",
+    "find-config": "^1.0.0",
     "prop-types": "^15.6.0",
-    "react": "16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9",
-    "react-dom": "^16.9"
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   }
 }

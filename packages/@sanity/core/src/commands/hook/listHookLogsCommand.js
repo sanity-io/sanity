@@ -24,14 +24,14 @@ export default {
     }
 
     const groupedAttempts = groupBy(attempts, 'messageId')
-    const populated = messages.map(msg => Object.assign(msg, {attempts: groupedAttempts[msg.id]}))
+    const populated = messages.map((msg) => Object.assign(msg, {attempts: groupedAttempts[msg.id]}))
     const totalMessages = messages.length - 1
 
     populated.forEach((message, i) => {
       printMessage(message, context, {detailed: flags.detailed})
       printSeparator(context, totalMessages === i)
     })
-  }
+  },
 }
 
 async function promptForHook(specified, context) {
@@ -41,7 +41,7 @@ async function promptForHook(specified, context) {
 
   const hooks = await client.request({uri: '/hooks', json: true})
   if (specifiedName) {
-    const selected = hooks.filter(hook => hook.name.toLowerCase() === specifiedName)[0]
+    const selected = hooks.filter((hook) => hook.name.toLowerCase() === specifiedName)[0]
     if (!selected) {
       throw new Error(`Hook with name "${specified} not found"`)
     }
@@ -57,11 +57,11 @@ async function promptForHook(specified, context) {
     return hooks[0].id
   }
 
-  const choices = hooks.map(hook => ({value: hook.id, name: hook.name}))
+  const choices = hooks.map((hook) => ({value: hook.id, name: hook.name}))
   return prompt.single({
     message: 'Select hook to list logs for',
     type: 'list',
-    choices
+    choices,
   })
 }
 
@@ -90,7 +90,7 @@ function printMessage(message, context, options) {
 
   if (detailed && message.attempts) {
     output.print('Attempts:')
-    message.attempts.forEach(attempt => {
+    message.attempts.forEach((attempt) => {
       const date = attempt.createdAt.replace(/\.\d+Z$/, 'Z')
       const prefix = `  [${date}]`
 

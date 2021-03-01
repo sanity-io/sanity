@@ -2,6 +2,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import path from 'path'
 import chalk from 'chalk'
+import dotenv from 'dotenv'
 import fse from 'fs-extra'
 import neatStack from 'neat-stack'
 import resolveFrom from 'resolve-from'
@@ -24,12 +25,17 @@ module.exports = async function runCli(cliRoot) {
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
 
+  // Try to load .env files from the sanity studio directory
+  // eslint-disable-next-line no-process-env
+  const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
+  dotenv.config({path: path.join(workDir, `.env.${env}`)})
+
   await updateNotifier({pkg, cwd, workDir}).notify()
 
   const options = {
     cliRoot: cliRoot,
     workDir: workDir,
-    corePath: getCoreModulePath(workDir)
+    corePath: getCoreModulePath(workDir),
   }
 
   warnOnNonProductionEnvironment()
@@ -53,10 +59,10 @@ module.exports = async function runCli(cliRoot) {
   }
 
   const cliRunner = getCliRunner(commands)
-  cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
-    const error = err.details || err
+  cliRunner.runCommand(args.groupOrCommand, args, options).catch((err) => {
+    const error = typeof err.details === 'string' ? err.details : err
     // eslint-disable-next-line no-console
-    console.error(error.stack ? neatStack(err) : error)
+    console.error(`\n${error.stack ? neatStack(err) : error}`)
     // eslint-disable-next-line no-process-exit
     process.exit(1)
   })
@@ -74,7 +80,7 @@ function getCoreModulePath(workDir) {
       chalk.yellow(
         [
           '@sanity/core not installed in current project',
-          'Project-specific commands not available until you run `sanity install`'
+          'Project-specific commands not available until you run `sanity install`',
         ].join('\n')
       )
     )
@@ -106,7 +112,7 @@ function resolveRootDir(cwd) {
     return (
       resolveProjectRoot({
         basePath: cwd,
-        sync: true
+        sync: true,
       }) || cwd
     )
   } catch (err) {

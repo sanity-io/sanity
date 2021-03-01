@@ -4,7 +4,7 @@ import shadowStyles from 'part:@sanity/base/theme/shadows-style'
 import {range} from 'lodash'
 import styles from './story.css'
 
-storiesOf('Variables')
+storiesOf('@sanity/base/Variables', module)
   .add('Brand colors', () => {
     return (
       <div>
@@ -56,7 +56,7 @@ storiesOf('Variables')
     return (
       <div>
         <div className={styles.shadows}>
-          {[1, 6, 12, 16, 24].map(i => {
+          {[1, 6, 12, 16, 24].map((i) => {
             return (
               <div key={i} className={shadowStyles[`shadow-${i}dp`]}>
                 shadow-{i}dp

@@ -32,6 +32,6 @@ export function isPointInRect(point, rect) {
 export function getPointAtCircumference(radians, ellipse) {
   return {
     x: ellipse.center.x - (ellipse.width / 2) * Math.cos(radians),
-    y: ellipse.center.y - (ellipse.height / 2) * Math.sin(radians)
+    y: ellipse.center.y - (ellipse.height / 2) * Math.sin(radians),
   }
 }

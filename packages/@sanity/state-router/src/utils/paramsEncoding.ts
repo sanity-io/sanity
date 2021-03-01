@@ -8,6 +8,6 @@ export function decodeParams(pathsegment) {
 
 export function encodeParams(params) {
   return Object.keys(params)
-    .map(key => `${key}=${params[key]}`)
+    .map((key) => `${key}=${params[key]}`)
     .join(';')
 }

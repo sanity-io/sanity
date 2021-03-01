@@ -2,19 +2,16 @@
   "hoist": true,
   "concurrency": 8,
   "ci": false,
-  "packages": [
-    "packages/@sanity/*",
-    "packages/blog-studio",
-    "packages/clean-studio",
-    "packages/create-sanity",
-    "packages/ecommerce-studio",
-    "packages/eslint-config-sanity",
-    "packages/example-studio",
-    "packages/groq",
-    "packages/movies-studio",
-    "packages/sanity",
-    "packages/storybook",
-    "packages/test-studio"
+  "npmClient": "npm",
+  "npmClientArgs": [
+    "--no-package-lock"
   ],
-  "version": "0.147.6"
+  "packages": [
+    "examples/*",
+    "packages/@sanity/*",
+    "packages/create-sanity",
+    "packages/groq",
+    "packages/sanity"
+  ],
+  "version": "2.4.3"
 }

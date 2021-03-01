@@ -15,7 +15,7 @@ function stringifySegment(segment, hasLeading) {
 
   if (isObject) {
     return Object.keys(segment)
-      .map(key => {
+      .map((key) => {
         const val = segment[key]
         return `[${key}=="${val}"]`
       })
