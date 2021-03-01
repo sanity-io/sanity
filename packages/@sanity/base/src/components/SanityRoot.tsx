@@ -86,7 +86,7 @@ function AppProvider() {
     <UserColorManagerProvider manager={userColorManager}>
       <PortalProvider element={portalElement}>
         <LayerProvider>
-          <ToastProvider>
+          <ToastProvider paddingY={7} zOffset={10000}>
             <SnackbarProvider>
               <ThemeColorProvider tone="transparent">
                 <GlobalStyle />
