@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
-    "@types/node": "^8.0.0",
     "empty": "^0.10.1",
     "jest": "^26.4.2",
     "recursive-readdir": "^2.1.0",
