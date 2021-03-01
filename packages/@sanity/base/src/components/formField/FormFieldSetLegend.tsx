@@ -71,7 +71,7 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
 
   return (
     <Root>
-      <ToggleButton onClick={onClick}>
+      <ToggleButton type="button" onClick={onClick}>
         <ToggleIconBox>
           <Text muted size={1}>
             <ToggleArrowRightIcon
