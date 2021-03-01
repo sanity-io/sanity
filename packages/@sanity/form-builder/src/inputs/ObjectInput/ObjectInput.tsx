@@ -138,10 +138,17 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
     const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
     const isExpanded =
       focusPath.length > 0 && fieldset.fields.some((field) => focusPath[0] === field.name)
+
     const fieldNames = fieldset.fields.map((f) => f.name)
-    const childPresence = presence.filter(
-      (item) => fieldNames.includes(item.path[0]) || item.path[0] === '$'
-    )
+
+    const childPresence =
+      presence.length === 0
+        ? presence
+        : presence.filter((item) => fieldNames.includes(item.path[0]))
+
+    const childMarkers =
+      markers.length === 0 ? markers : markers.filter((item) => fieldNames.includes(item.path[0]))
+
     const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
@@ -155,7 +162,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
           presence={childPresence}
           onFocus={onFocus}
           changeIndicator={false}
-          markers={markers}
+          markers={childMarkers}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
