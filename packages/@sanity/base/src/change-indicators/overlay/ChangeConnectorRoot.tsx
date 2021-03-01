@@ -2,7 +2,7 @@
 
 import React, {useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {ScrollContainer} from '../../components/scroll'
 import {Tracker, ConnectorContext} from '../'
 import {ENABLED} from '../constants'
 import {ConnectorsOverlay} from './ConnectorsOverlay'

@@ -16,7 +16,7 @@ import {
 import {Marker} from '@sanity/types'
 import {useLayer} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {ScrollContainer} from 'part:@sanity/components/scroll'
+import {ScrollContainer} from '@sanity/base/components'
 import React, {useMemo, useCallback, useEffect, useState} from 'react'
 import PatchEvent from '../../PatchEvent'
 import styles from './PortableTextInput.css'
