@@ -1,6 +1,6 @@
 import {useDocumentOperationEvent} from '@sanity/react-hooks'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import React from 'react'
+import {useToast} from '@sanity/ui'
+import React, {useEffect} from 'react'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -38,31 +38,34 @@ type Props = {
 }
 
 export const DocumentOperationResults = React.memo((props: Props) => {
+  const {push} = useToast()
   const event: any = useDocumentOperationEvent(props.id, props.type)
 
-  if (!event) {
-    return null
-  }
+  useEffect(() => {
+    if (!event) return
 
-  if (event && event.type === 'error') {
-    return (
-      <Snackbar
-        kind="error"
-        key={Math.random()}
-        title={getOpErrorTitle(event.op)}
-        subtitle={
+    if (event.type === 'error') {
+      push({
+        closable: true,
+        status: 'error',
+        title: getOpErrorTitle(event.op),
+        description: (
           <details>
             <summary>Details</summary>
             {event.error.message}
           </details>
-        }
-      />
-    )
-  }
+        ),
+      })
+    }
 
-  if (event && event.type === 'success' && !IGNORE_OPS.includes(event.op)) {
-    return <Snackbar key={Math.random()} kind="success" title={getOpSuccessTitle(event.op)} />
-  }
+    if (event.type === 'success' && !IGNORE_OPS.includes(event.op)) {
+      push({
+        closable: true,
+        status: 'success',
+        title: getOpSuccessTitle(event.op),
+      })
+    }
+  }, [event, push])
 
   return null
 })
