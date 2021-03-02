@@ -1,4 +1,5 @@
 // Note: INCOMPLETE, but it's a start
+import React from 'react'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
@@ -77,6 +78,7 @@ export interface StringSchemaType extends BaseSchemaType {
     dateFormat?: string
     timeFormat?: string
   }
+  initialValue?: ((arg?: any) => Promise<string> | string) | string | undefined
 }
 
 export interface TextSchemaType extends StringSchemaType {
@@ -86,6 +88,7 @@ export interface TextSchemaType extends StringSchemaType {
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
+  initialValue?: ((arg?: any) => Promise<number> | number) | number | undefined
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -93,6 +96,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
   options?: {
     layout: 'checkbox' | 'switch'
   }
+  initialValue?: ((arg?: any) => Promise<boolean> | boolean) | boolean | undefined
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -132,6 +136,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
   fieldsets?: Fieldset[]
+  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {
