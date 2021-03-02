@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import-cli",
-  "version": "2.2.6",
+  "version": "2.5.0",
   "description": "CLI tool that imports documents from an ndjson file or URL",
   "main": "lib/sanity-import.js",
   "bin": {
