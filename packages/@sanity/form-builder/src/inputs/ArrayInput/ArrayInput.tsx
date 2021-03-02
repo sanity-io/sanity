@@ -51,6 +51,7 @@ export type Props = {
   filterField: () => any
   resolveUploader?: (type: SchemaType, file: File) => Uploader
   presence: FormFieldPresence[]
+  canAppendItem?: boolean
 }
 
 type ArrayInputState = {
@@ -354,7 +355,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   }
 
   render() {
-    const {type, level = 1, markers, readOnly, onChange, value, presence} = this.props
+    const {type, level = 1, markers, readOnly, onChange, value, presence, canAppendItem} = this.props
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
 
     if (hasNonObjectValues) {
@@ -450,6 +451,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
             type={type}
             value={value}
             readOnly={readOnly}
+            canAppendItem={canAppendItem}
             onAppendItem={this.handleAppend}
             onPrependItem={this.handlePrepend}
             onFocusItem={this.handleFocusItem}
