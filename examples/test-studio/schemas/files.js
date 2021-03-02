@@ -41,6 +41,12 @@ export default {
       ],
     },
     {
+      name: 'readOnly',
+      title: 'A read only file field',
+      type: 'file',
+      readOnly: true,
+    },
+    {
       name: 'fileWithoutOriginalFilename',
       title: 'File without original filename',
       type: 'file',

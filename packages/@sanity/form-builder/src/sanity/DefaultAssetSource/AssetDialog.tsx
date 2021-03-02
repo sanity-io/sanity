@@ -1,15 +1,17 @@
 import React from 'react'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import {IntentLink} from 'part:@sanity/base/router'
-import schema from 'part:@sanity/base/schema'
-import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import {List, Item} from 'part:@sanity/components/lists/default'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {LinkIcon, TrashIcon} from '@sanity/icons'
 import Preview from '../../Preview'
-import {AssetAction, AssetRecord} from './types'
+import {AssetAction, AssetRecord} from '../../inputs/files/ImageInput/types'
+import {
+  DefaultDialog,
+  IntentLink,
+  Item,
+  List,
+  schema,
+  WithReferringDocuments,
+} from '../../legacyParts'
 
+import {SpinnerWithText} from '../../components/SpinnerWithText'
 import styles from './AssetDialog.css'
 
 interface Props {
@@ -67,7 +69,7 @@ export default function AssetDialog({asset, dialogType, onAction, onClose}: Prop
             const filteredDocuments = referringDocuments.filter((doc) => !drafts.includes(doc._id))
 
             if (isLoading) {
-              return <Spinner>Loading…</Spinner>
+              return <SpinnerWithText text={'Loading...'} />
             }
 
             return (

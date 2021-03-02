@@ -1,5 +1,5 @@
 import React from 'react'
-import FileInput, {Props} from '../../inputs/FileInput'
+import FileInput, {Props} from '../../inputs/files/FileInput'
 import resolveUploader from '../uploads/resolveUploader'
 import {materializeReference} from './client-adapters/assets'
 export default class SanityFileInput extends React.Component<Props> {

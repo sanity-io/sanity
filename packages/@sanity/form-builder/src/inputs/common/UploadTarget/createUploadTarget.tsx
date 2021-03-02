@@ -6,10 +6,10 @@ import {sortBy} from 'lodash'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import styles from '../../../styles/UploadTarget.css'
-import {ResolvedUploader} from '../../../sanity/uploads/typedefs'
-import {extractDroppedFiles, extractPastedFiles} from './extractFiles'
-import {imageUrlToBlob} from './imageUrlToBlob'
+import {ResolvedUploader} from '../../../sanity/uploads/types'
+import {extractDroppedFiles, extractPastedFiles} from '../fileTarget/utils/extractFiles'
+import {imageUrlToBlob} from '../fileTarget/utils/imageUrlToBlob'
+import styles from './UploadTarget.css'
 
 type Props = {
   type: SchemaType
