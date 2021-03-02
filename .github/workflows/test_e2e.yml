@@ -31,6 +31,9 @@ jobs:
          PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: npm install
 
+      - name: Build monorepo packages
+        run: npm run build
+
       - name: Run cypress
         run: npm run test-e2e
         env:
