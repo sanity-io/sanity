@@ -1,10 +1,9 @@
-import client from 'part:@sanity/base/client'
-import {observePaths} from 'part:@sanity/base/preview'
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
 import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
-import {UploadOptions} from '../../uploads/typedefs'
+import {UploadOptions} from '../../uploads/types'
+import {client, observePaths} from '../../../legacyParts'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

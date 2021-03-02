@@ -1,9 +1,8 @@
-import {of as observableOf} from 'rxjs'
-import {Observable} from 'rxjs'
+import {of as observableOf, Observable} from 'rxjs'
 import {map, concat} from 'rxjs/operators'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
-import {set} from '../../utils/patches'
-import {UploadEvent, UploadOptions} from './typedefs'
+import {set} from '../../patch/patches'
+import {UploadEvent, UploadOptions} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
@@ -14,9 +13,13 @@ export default function uploadFile(file: File, options?: UploadOptions): Observa
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
           set(100, [UPLOAD_STATUS_KEY, 'progress']),
+          set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
         ])
       }
-      return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
+      return createUploadEvent([
+        set(event.percent, [UPLOAD_STATUS_KEY, 'progress']),
+        set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
+      ])
     })
   )
 

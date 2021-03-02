@@ -1,10 +1,9 @@
 import React from 'react'
-import ImageIcon from 'part:@sanity/base/image-icon'
-import client from 'part:@sanity/base/client'
-import Button from 'part:@sanity/components/buttons/default'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import {Button, Dialog} from '@sanity/ui'
+import {AssetFromSource} from '@sanity/types'
+import {uniqueId} from 'lodash'
+import {client} from '../../legacyParts'
 import Asset from './Asset'
-import {AssetFromSource} from './ImageInput'
 
 import styles from './DefaultSource.css'
 
@@ -36,12 +35,14 @@ type State = {
   isLoading: boolean
 }
 
-class DefaultSource extends React.Component<Props, State> {
+export class DefaultSource extends React.Component<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
     isLoading: false,
   }
+
+  _elementId = `default-asset-source-${uniqueId()}`
 
   pageNo = 0
 
@@ -101,12 +102,13 @@ class DefaultSource extends React.Component<Props, State> {
     this.fetchPage(++this.pageNo)
   }
 
+  // TODO(@benedicteb, 2020-12-15) Add loading={isLoading} when the prop is available in UI
   render() {
     const {selectedAssets} = this.props
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <DefaultDialog isOpen onClose={this.handleClose} size="large" title="Select image">
+      <Dialog id={this._elementId} header="Select image" width={1} position="absolute">
         <div className={styles.imageGrid}>
           {assets.map((asset) => (
             <Asset
@@ -126,19 +128,10 @@ class DefaultSource extends React.Component<Props, State> {
 
         <div className={styles.loadMore}>
           {!isLastPage && (
-            <Button inverted onClick={this.handleFetchNextPage} loading={isLoading}>
-              Load more
-            </Button>
+            <Button mode={'ghost'} onClick={this.handleFetchNextPage} text={'Load more'} />
           )}
         </div>
-      </DefaultDialog>
+      </Dialog>
     )
   }
-}
-
-export default {
-  name: 'sanity-default',
-  title: 'Uploaded images',
-  component: DefaultSource,
-  icon: ImageIcon,
 }

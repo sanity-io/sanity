@@ -2,12 +2,11 @@
  * Utilities for extracting files from dataTransfer in a predictable cross-browser fashion.
  * Also recursively extracts files from a directory
  * Inspired by https://github.com/component/normalized-upload
- * Contains special handling of
  */
 
 import {flatten} from 'lodash'
 
-export function extractPastedFiles(dataTransfer: DataTransfer): Promise<Array<File>> {
+export function extractPastedFiles(dataTransfer: DataTransfer): Promise<File[]> {
   if (dataTransfer.files && dataTransfer.files.length > 0) {
     return Promise.resolve(Array.from(dataTransfer.files || []))
   }
@@ -15,15 +14,19 @@ export function extractPastedFiles(dataTransfer: DataTransfer): Promise<Array<Fi
 }
 
 export function extractDroppedFiles(dataTransfer: DataTransfer) {
-  const files: Array<File> = Array.from(dataTransfer.files || [])
-  const items: Array<DataTransferItem> = Array.from(dataTransfer.items || [])
+  const files: File[] = Array.from(dataTransfer.files || [])
+  const items: DataTransferItem[] = Array.from(dataTransfer.items || [])
   if (files && files.length > 0) {
     return Promise.resolve(files)
   }
   return normalizeItems(items).then(flatten)
 }
 
-function normalizeItems(items: Array<DataTransferItem>) {
+function toArray<T>(v: T | null): T[] {
+  return v === null ? [] : [v]
+}
+
+function normalizeItems(items: DataTransferItem[]) {
   return Promise.all(
     items.map((item) => {
       // directory
@@ -33,12 +36,12 @@ function normalizeItems(items: Array<DataTransferItem>) {
         try {
           entry = item.webkitGetAsEntry()
         } catch (err) {
-          return [item.getAsFile()]
+          return toArray(item.getAsFile())
         }
         if (!entry) {
           return []
         }
-        return entry.isDirectory ? walk(entry) : [item.getAsFile()]
+        return entry.isDirectory ? walk(entry) : toArray(item.getAsFile())
       }
 
       // file
@@ -55,15 +58,42 @@ function normalizeItems(items: Array<DataTransferItem>) {
   )
 }
 
-type WebKitFileEntry = any
-function walk(entry: WebKitFileEntry): Promise<File[]> {
+// Warning: experimental API: https://wicg.github.io/entries-api
+type WebKitFileEntry = {
+  isFile: true
+  isDirectory: false
+  name: string
+  fullPath: string
+  file: (fileCallback: (file: File) => void, errorCallback?: (error: Error) => void) => void
+}
+
+type WebKitDirectoryEntry = {
+  isFile: false
+  isDirectory: true
+  name: string
+  fullPath: string
+  createReader: () => DirectoryReader
+}
+
+type Entry = WebKitFileEntry | WebKitDirectoryEntry
+
+type DirectoryReader = {
+  readEntries: (
+    successCallback: (entries: Entry[]) => void,
+    errorCallback?: (error: Error) => void
+  ) => void
+}
+
+function walk(entry: Entry): Promise<File[]> {
   if (entry.isFile) {
-    return new Promise((resolve) => entry.file(resolve)).then((file: File) => [file])
+    return new Promise<File>((resolve, reject) =>
+      entry.file(resolve, reject)
+    ).then((file: File) => [file])
   }
 
   if (entry.isDirectory) {
     const dir = entry.createReader()
-    return new Promise<File[]>((resolve) => dir.readEntries(resolve))
+    return new Promise<Entry[]>((resolve, reject) => dir.readEntries(resolve, reject))
       .then((entries) => entries.filter((entr) => !entr.name.startsWith('.')))
       .then((entries) => Promise.all(entries.map(walk)).then(flatten))
   }
