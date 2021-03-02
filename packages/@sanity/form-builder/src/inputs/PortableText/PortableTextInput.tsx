@@ -16,9 +16,9 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
-import {Patch} from '../../typedefs/patch'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
+import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
 import RespondToInvalidContent from './InvalidValue'

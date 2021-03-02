@@ -11,6 +11,7 @@ import {
   ReferenceSchemaType,
   SanityDocument,
 } from '@sanity/types'
+import {Observable} from 'rxjs'
 import {FOCUS_TERMINATOR, get} from '@sanity/util/paths'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {LinkIcon} from '@sanity/icons'
@@ -19,7 +20,6 @@ import {IntentLink, SearchableSelect} from '../../legacyParts'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import {ObservableI} from '../../typedefs/observable'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
 import {Alert} from '../../components/Alert'
@@ -53,9 +53,9 @@ export type Props = {
     query: string,
     type: ReferenceSchemaType,
     options: ReferenceFilterSearchOptions
-  ) => ObservableI<Array<SearchHit>>
+  ) => Observable<SearchHit[]>
   onFocus: (path: Path) => void
-  getPreviewSnapshot: (reference, type) => ObservableI<PreviewSnapshot>
+  getPreviewSnapshot: (reference, type) => Observable<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
   presence: any
