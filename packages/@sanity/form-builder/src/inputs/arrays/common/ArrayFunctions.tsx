@@ -53,7 +53,7 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
           id={menuButtonId || ''}
           menu={
             <Menu>
-              {type.of.map((memberDef) => {
+              {type.of.map((memberDef, i) => {
                 // Use reference icon if reference is to one type only
                 const referenceIcon =
                   isReferenceSchemaType(memberDef) &&
@@ -63,7 +63,7 @@ export default function ArrayFunctions(props: ArrayFunctionsProps) {
                 const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                 return (
                   <MenuItem
-                    key={memberDef.type?.name}
+                    key={i}
                     text={memberDef.title || memberDef.type?.name}
                     onClick={() => insertItem(memberDef)}
                     icon={icon}
