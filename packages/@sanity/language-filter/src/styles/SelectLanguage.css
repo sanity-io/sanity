@@ -1,47 +1,70 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --dropdown-button-color: var(--default-button-color);
+
+  /* :enabled */
+  --dropdown-button-bg: transparent;
+  --dropdown-button-text: color(var(--dropdown-button-color) lightness(- 10%));
+
+  /* :hover */
+  --dropdown-button-hover-bg: color(var(--dropdown-button-color) alpha(10%));
+  --dropdown-button-hover-text: color(var(--dropdown-button-color) lightness(- 20%));
+
+  /* :selected */
+  --dropdown-button-selected-bg: color(var(--selected-item-color) alpha(15%));
+  --dropdown-button-selected-text: var(--selected-item-color);
+}
+
 .target {
-  display: flex;
-  align-items: center;
-  color: var(--default-button-color);
-  white-space: nowrap;
-  align-self: center;
-  border-radius: var(--button-border-radius);
+  appearance: none;
+  font: inherit;
+  border: 0;
   padding: var(--small-padding);
-  cursor: default;
+  border-radius: var(--border-radius-medium);
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  outline: none;
+  background-color: var(--dropdown-button-bg);
+  color: var(--dropdown-button-text);
+  white-space: nowrap;
 
   @media (hover: hover) {
     @nest &:hover {
-      background: color(var(--default-button-color) a(10%));
-      color: color(var(--default-button-color) lightness(- 20%));
+      background-color: var(--dropdown-button-hover-bg);
+      color: var(--dropdown-button-hover-text);
     }
   }
 
-  @nest &[data-open='true'] {
-    background: color(var(--selected-item-color) alpha(15%));
-    color: var(--selected-item-color);
+  @nest &.targetSelected {
+    background-color: var(--dropdown-button-selected-bg);
+    color: var(--dropdown-button-selected-text);
+  }
+
+  @nest &:focus-visible {
+    box-shadow: 0 0 0 2px var(--focus-color);
   }
 }
 
 .targetValue {
+  display: block;
   font-size: var(--font-size-small);
   line-height: var(--line-height-small);
-
-  /* Optical alignment */
-  padding: 0 0 1px;
+  font-weight: 600;
+  margin: -3px 0.5em -2px 0;
 }
 
 .targetIcon {
-  margin-left: var(--extra-small-padding);
+  display: block;
+  margin: -5px;
 
-  @nest & svg {
-    display: block;
-    font-size: calc(15 / 16 * 1em);
-    margin: 1px 0;
+  @nest & > svg {
+    display: flex;
+    font-size: calc(21 / 16 * 1rem);
 
-    &[data-sanity-icon='true'] {
-      font-size: calc(21 / 16 * 1em);
-      margin: calc(2 / 21 * -1em);
+    @nest & path {
+      stroke-width: 1.5 !important;
     }
   }
 }
