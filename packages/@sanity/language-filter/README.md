@@ -34,10 +34,12 @@ export default {
     {id: 'pt', title: 'Portuguese'}
     //...
   ],
+  defaultLanguages: ['nb'],
   filterField: (enclosingType, field, selectedLanguageIds) =>
     !enclosingType.name.startsWith('locale') || selectedLanguageIds.includes(field.name)
 }
 ```
 
 - `supportedLanguages` is an array of languages with `id` and `title`. If your localized fields are defined using our recommended way described here (https://www.sanity.io/docs/localization), you probably want to share this list of supported languages between this config and your schema. 
+- `defaultLanguages` (optional) is an array of strings where each entry must match an `id` from the `supportedLanguages` array. These languages will be listed by default and will not be possible to unselect. If no `defaultLanguages` is configured, all localized fields will be selected by default.
 - `filterField` is a function that must return true if the field should be displayed. It is passed the enclosing type (e.g the object type containing the localized fields, the field, and an array of the currently selected language ids.

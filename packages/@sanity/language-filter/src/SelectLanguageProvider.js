@@ -1,7 +1,7 @@
 import React from 'react'
+import config from 'part:@sanity/language-filter/config'
 import {selectedLanguages$, setLangs} from './datastore'
 import SelectLanguage from './SelectLanguage'
-import config from 'part:@sanity/language-filter/config'
 
 export default class SelectLanguageProvider extends React.Component {
   state = {selected: []}
@@ -20,6 +20,7 @@ export default class SelectLanguageProvider extends React.Component {
     return (
       <SelectLanguage
         languages={config.supportedLanguages}
+        defaultLanguages={config.defaultLanguages}
         selected={selected}
         onChange={setLangs}
       />
