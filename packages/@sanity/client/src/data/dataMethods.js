@@ -118,8 +118,16 @@ module.exports = {
     return this.isPromiseAPI() ? toPromise(request) : request
   },
 
+  _inFlightRequests = {},
+
   _dataRequest(endpoint, body, options = {}) {
     const isMutation = endpoint === 'mutate'
+    
+    // Check for in flight request
+    const key = hash(body, options);
+    if (!isMutation && this._inFlightRequests[key]) {
+      return this._inFlightRequests[key];
+    }
 
     // Check if the query string is within a configured threshold,
     // in which case we can use GET. Otherwise, use POST.
@@ -141,7 +149,9 @@ module.exports = {
       token,
     }
 
-    return this._requestObservable(reqOptions).pipe(
+    const observable = this._requestObservable(reqOptions).pipe(
+      // Remove in-flight request on response
+      tap(() => !isMutation && delete this._inFlightRequests[key]),
       filter(isResponse),
       map(getBody),
       map((res) => {
@@ -167,6 +177,12 @@ module.exports = {
         }
       })
     )
+
+    if (!isMutation) {
+      this._inFlightRequests[key] = observable;
+    }
+
+    return observable;
   },
 
   _create(doc, op, options = {}) {
