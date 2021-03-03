@@ -21,6 +21,18 @@ const getMutationQuery = (options = {}) => {
   }
 }
 
+// djb2 hash
+// Sourced from - https://gist.github.com/eplawless/52813b1d8ad9af510d85
+const hash = (...args) => {
+  const str = JSON.stringify(args);
+  var len = str.length;
+  var hash = 5381;
+  for (var idx = 0; idx < len; ++idx) {
+    hash = 33 * hash + str.charCodeAt(idx);
+  }
+  return hash;
+}
+
 const isResponse = (event) => event.type === 'response'
 const getBody = (event) => event.body
 
