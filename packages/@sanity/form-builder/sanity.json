@@ -24,11 +24,6 @@
       "description": "Input component for the core array type"
     },
     {
-      "name": "part:@sanity/form-builder/input/array-default",
-      "implements": "part:@sanity/form-builder/input/array",
-      "path": "inputs/ArrayInput/ArrayInput"
-    },
-    {
       "name": "part:@sanity/form-builder/input/array/functions",
       "description": "React component defining array functions such as add item"
     },
@@ -109,9 +104,14 @@
       "path": "PatchEvent"
     },
     {
+      "name": "part:@sanity/form-builder/input/array-default",
+      "implements": "part:@sanity/form-builder/input/array",
+      "path": "inputs/arrays/ArrayOfObjectsInput"
+    },
+    {
       "name": "part:@sanity/form-builder/input/array/functions-default",
       "implements": "part:@sanity/form-builder/input/array/functions",
-      "path": "inputs/ArrayInput/ArrayFunctions"
+      "path": "inputs/arrays/common/ArrayFunctions"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-default",

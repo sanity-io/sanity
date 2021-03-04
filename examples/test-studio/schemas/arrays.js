@@ -271,10 +271,6 @@ export default {
           title: 'String',
         },
         {
-          type: 'number',
-          title: 'Number',
-        },
-        {
           type: 'boolean',
           title: 'Boolean',
         },

@@ -16,12 +16,13 @@ import {
   HotkeyOptions,
 } from '@sanity/portable-text-editor'
 import {Subject} from 'rxjs'
+import {Box} from '@sanity/ui'
 import PatchEvent from '../../PatchEvent'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {Patch} from '../../patch/types'
 import {RenderBlockActions, RenderCustomMarkers} from './types'
 import Input from './Input'
-import RespondToInvalidContent from './InvalidValue'
+import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import styles from './PortableTextInput.css'
 
 export type PatchWithOrigin = Patch & {
@@ -175,14 +176,13 @@ const PortableTextInputWithRef = React.forwardRef(function PortableTextInput(
   let respondToInvalidContent = null
   if (invalidValue) {
     respondToInvalidContent = (
-      <>
+      <Box marginBottom={2}>
         <RespondToInvalidContent
           onChange={handleEditorChange}
           onIgnore={handleIgnoreValidation}
           resolution={invalidValue.resolution}
-          value={value}
         />
-      </>
+      </Box>
     )
   }
 
