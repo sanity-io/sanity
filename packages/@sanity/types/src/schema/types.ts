@@ -113,6 +113,7 @@ export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
      */
     editModal?: 'dialog' | 'fullscreen' | 'popover' | 'fold'
   }
+  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
 }
 
 export interface BlockSchemaType extends ObjectSchemaType {
