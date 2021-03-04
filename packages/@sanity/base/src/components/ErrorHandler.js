@@ -1,13 +1,23 @@
 import {useToast} from '@sanity/ui'
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 
 const SANITY_ERROR_HANDLER = Symbol.for('SANITY_ERROR_HANDLER')
 
 function ErrorHandler({onUIError}) {
   const {push} = useToast()
 
+  const prevErrorRef = useRef(null)
+
   const handleGlobalError = useCallback(
     (msg, url, lineNo, columnNo, err) => {
+      // Workaround for issue triggering two errors in a row in DEV (https://github.com/facebook/react/issues/10474)
+      // We store a ref to the previous error and checks if it's equal to the current
+      if (prevErrorRef.current === err) {
+        prevErrorRef.current = null
+        return
+      }
+      prevErrorRef.current = err
+
       // Certain events (ResizeObserver max loop threshold, for instance)
       // only gives a _message_. We choose to ignore these events since
       // they are usually not _fatal_
