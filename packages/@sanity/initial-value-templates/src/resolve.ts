@@ -1,14 +1,48 @@
-import {defaultsDeep, has, isEmpty, isFunction, isPlainObject, set, get, unset} from 'lodash'
-import schema from 'part:@sanity/base/schema'
+import {has, isEmpty, isFunction, isPlainObject, set, get, unset, isObject, isNil} from 'lodash'
 import {StringSchemaType, ObjectSchemaType} from '@sanity/types'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
+import {getDefaultSchema} from './parts/Schema'
+
+const schema = getDefaultSchema()
 
 export function isBuilder(template: Template | TemplateBuilder): template is TemplateBuilder {
   return typeof (template as TemplateBuilder).serialize === 'function'
 }
 
+const isValidKey = (key) => {
+  return key !== '__proto__' && key !== 'constructor' && key !== 'prototype'
+}
+
+const mergeDeep = (target, ...rest) => {
+  for (const obj of rest) {
+    if (isObject(obj)) {
+      for (const key in obj) {
+        if (isValidKey(key)) {
+          merge(target, obj[key], key, target)
+        }
+      }
+    }
+  }
+  return target
+}
+
+function merge(target, val, key, src) {
+  const obj = target[key]
+  if (isObject(val) && isObject(obj)) {
+    mergeDeep(obj, val)
+  } else if (has(src, key) && isNil(obj)) {
+    target[key] = undefined
+  } else if (!isNil(obj) && !isNil(val)) {
+    target[key] = obj
+  } else {
+    target[key] = val
+  }
+}
+
 /**
+ * Get deep initial values
+ *
  * @param documentName {string} this is the name of the document
  * @param value {Record<string, any>} this is the our current initial value
  * @param params {[key: string]: unknown} params is a sanity context object passed to every initial value function
@@ -34,20 +68,37 @@ export async function getObjectFieldsInitialValues(
   const primitiveFieldsWithInitial = (
     (schemaType.jsonType === 'object' && schemaType.fields) ||
     []
-  ).filter((f) => f.type.jsonType !== 'object' && f.type.jsonType !== 'array')
+  ).filter(
+    (f) =>
+      f.type.jsonType !== 'object' && f.type.jsonType !== 'array' && has(f.type, 'initialValue')
+  )
+
+  // select all none array and object primitive types
+  const arrayFieldsWithInitial = (
+    (schemaType.jsonType === 'object' && schemaType.fields) ||
+    []
+  ).filter((f: any) => f.type.jsonType === 'array' && f.type.initialValue)
 
   let initialValues = value
   let primitiveInitialValues = {}
 
+  // Get initial value of primitive types
   // If an initialValue was set, we just want to break the loop
   for (const field of primitiveFieldsWithInitial) {
     // String schema just fixes lint error for ide as field could be boolean or num as well
     const fieldType = field.type as StringSchemaType
-    if (fieldType.initialValue && parentKey) {
-      primitiveInitialValues[field.name] = isFunction(fieldType.initialValue)
-        ? await fieldType.initialValue(params)
-        : fieldType.initialValue
-    }
+    primitiveInitialValues[field.name] = isFunction(fieldType.initialValue)
+      ? await fieldType.initialValue(params)
+      : fieldType.initialValue
+  }
+
+  // Get initial value of array types (Simple implementation)
+  for (const field of arrayFieldsWithInitial) {
+    // String schema just fixes lint error for ide as field could be boolean or num as well
+    const fieldType = field.type as StringSchemaType
+    primitiveInitialValues[field.name] = isFunction(fieldType.initialValue)
+      ? await fieldType.initialValue(params)
+      : fieldType.initialValue
   }
 
   for (const field of fields) {
@@ -64,7 +115,7 @@ export async function getObjectFieldsInitialValues(
     const fieldType = field.type as ObjectSchemaType
 
     // get initial value for the current field
-    if (fieldType.initialValue) {
+    if (has(fieldType, 'initialValue')) {
       newFieldValue = isFunction(fieldType.initialValue)
         ? await fieldType.initialValue(params)
         : fieldType.initialValue
@@ -87,7 +138,7 @@ export async function getObjectFieldsInitialValues(
       }
 
       // assign new values
-      initialValues = defaultsDeep(value, valuesToUpdate)
+      initialValues = mergeDeep(value, valuesToUpdate)
     }
 
     // we want to recurse if the field schema is not the same as it's parent
@@ -122,7 +173,8 @@ export async function getObjectFieldsInitialValues(
     if (parentKey) {
       primitiveInitialValues = set({}, parentKey, primitiveInitialValues)
     }
-    initialValues = defaultsDeep(value, primitiveInitialValues)
+
+    initialValues = mergeDeep(value, primitiveInitialValues)
   }
 
   // finally we want to remove any object with just one or zero keys
