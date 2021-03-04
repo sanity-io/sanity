@@ -5,7 +5,7 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {isEmpty} from '@sanity/util/content'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Field from './Field'
-import UnknownFields from './UnknownFields'
+import {UnknownFields} from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
 import styles from './styles/ObjectInput.css'
