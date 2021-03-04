@@ -2,7 +2,7 @@ import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import InvalidValue from '../InvalidValueInput'
+import {InvalidValueInput} from '../InvalidValueInput'
 import styles from './styles/Field.css'
 
 type FieldProps = {
@@ -65,7 +65,7 @@ export default class Field extends React.PureComponent<FieldProps> {
         return (
           <div className={styles.root}>
             <Fieldset legend={field.type.title} level={level} presence={presence}>
-              <InvalidValue
+              <InvalidValueInput
                 value={value}
                 onChange={this.handleChange}
                 validTypes={[field.type.name]}
