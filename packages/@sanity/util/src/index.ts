@@ -5,6 +5,7 @@ import dynamicRequire from './dynamicRequire'
 import * as safeJson from './safeJson'
 import getSanityVersions from './getSanityVersions'
 import * as pathTools from './pathTools'
+import deepMerge from './deepMerge'
 
 export {
   getConfig,
@@ -14,4 +15,5 @@ export {
   safeJson,
   getSanityVersions,
   pathTools,
+  deepMerge,
 }
