@@ -1,5 +1,6 @@
-import {has, isEmpty, isFunction, isPlainObject, set, get, unset, isObject, isNil} from 'lodash'
+import {has, isEmpty, isFunction, isPlainObject, set, get, unset} from 'lodash'
 import {StringSchemaType, ObjectSchemaType} from '@sanity/types'
+import {deepMerge} from '@sanity/util'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
 import {getDefaultSchema} from './parts/Schema'
@@ -8,36 +9,6 @@ const schema = getDefaultSchema()
 
 export function isBuilder(template: Template | TemplateBuilder): template is TemplateBuilder {
   return typeof (template as TemplateBuilder).serialize === 'function'
-}
-
-const isValidKey = (key) => {
-  return key !== '__proto__' && key !== 'constructor' && key !== 'prototype'
-}
-
-const mergeDeep = (target, ...rest) => {
-  for (const obj of rest) {
-    if (isObject(obj)) {
-      for (const key in obj) {
-        if (isValidKey(key)) {
-          merge(target, obj[key], key, target)
-        }
-      }
-    }
-  }
-  return target
-}
-
-function merge(target, val, key, src) {
-  const obj = target[key]
-  if (isObject(val) && isObject(obj)) {
-    mergeDeep(obj, val)
-  } else if (has(src, key) && isNil(obj)) {
-    target[key] = undefined
-  } else if (!isNil(obj) && !isNil(val)) {
-    target[key] = obj
-  } else {
-    target[key] = val
-  }
 }
 
 /**
@@ -138,7 +109,7 @@ export async function getObjectFieldsInitialValues(
       }
 
       // assign new values
-      initialValues = mergeDeep(value, valuesToUpdate)
+      initialValues = deepMerge(value, valuesToUpdate)
     }
 
     // we want to recurse if the field schema is not the same as it's parent
@@ -174,7 +145,7 @@ export async function getObjectFieldsInitialValues(
       primitiveInitialValues = set({}, parentKey, primitiveInitialValues)
     }
 
-    initialValues = mergeDeep(value, primitiveInitialValues)
+    initialValues = deepMerge(value, primitiveInitialValues)
   }
 
   // finally we want to remove any object with just one or zero keys
@@ -219,7 +190,7 @@ export async function resolveInitialValue(
   // validate default document initial values
   initialValue = validateInitialValue(initialValue, template)
 
-  // Get dep initial values from sanity object types
+  // Get deep initial values from sanity object types
   const newValue = await getObjectFieldsInitialValues(id, initialValue, params)
 
   // revalidate and return new initial values
