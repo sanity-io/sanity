@@ -157,7 +157,7 @@ function parseCliFlags(args) {
     .option('dataset', {type: 'string'})
     .option('tag', {type: 'string', default: 'default'})
     .option('generation', {type: 'string'})
-    .option('non-null-document-fields', {type: 'boolean', default: false})
+    .option('non-null-document-fields', {type: 'boolean', default: true})
     .option('playground', {type: 'boolean'})
     .option('force', {type: 'boolean'}).argv
 }
