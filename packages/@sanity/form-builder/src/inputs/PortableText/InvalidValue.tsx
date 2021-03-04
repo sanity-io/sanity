@@ -1,53 +1,55 @@
-import React from 'react'
-import DefaultButton from 'part:@sanity/components/buttons/default'
-import {InvalidValueResolution, PortableTextBlock} from '@sanity/portable-text-editor'
-import Warning from '../Warning'
-import styles from '../ObjectInput/styles/UnknownFields.css'
+import {InvalidValueResolution} from '@sanity/portable-text-editor'
+import {Box, Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
+import {Alert} from '../../components/Alert'
 
-type InvalidValueProps = {
-  resolution: InvalidValueResolution
-  value: PortableTextBlock[]
+interface InvalidValueProps {
   onChange: (...args: any[]) => any
   onIgnore: () => void
+  resolution: InvalidValueResolution
 }
 
-export default class InvalidValue extends React.PureComponent<InvalidValueProps> {
-  handleAction = (): void => {
-    const resolution = this.props.resolution
+export function InvalidValue(props: InvalidValueProps) {
+  const {onChange, onIgnore, resolution} = props
+
+  const handleAction = useCallback(() => {
     if (resolution) {
-      const {patches} = resolution
-      this.props.onChange({type: 'mutation', patches})
+      onChange({type: 'mutation', patches: resolution.patches})
     }
-  }
-  handleIgnore = (): void => {
-    this.props.onIgnore()
-  }
-  render() {
-    const {resolution} = this.props
-    const message = (
-      <>
-        <p>{resolution.description}</p>
-        <p>
-          <pre className={styles.inspectValue}>{JSON.stringify(resolution.item, null, 2)}</pre>
-        </p>
-        {resolution.action && (
-          <>
-            <div className={styles.buttonWrapper}>
-              <DefaultButton color="primary" onClick={this.handleAction}>
-                {resolution.action}
-              </DefaultButton>
-              <DefaultButton kind="secondary" onClick={this.handleIgnore}>
-                Ignore
-              </DefaultButton>
-            </div>
-            <p>
-              It’s generally safe to perform the action above, but if you are in doubt, get in touch
-              with those responsible for configuring your studio.
-            </p>
-          </>
-        )}
-      </>
-    )
-    return <Warning heading="Invalid portable text value" message={message} />
-  }
+  }, [onChange, resolution])
+
+  return (
+    <Alert
+      suffix={
+        <Stack padding={2}>
+          {resolution.action && (
+            <Grid columns={[1, 2]} gap={1}>
+              <Button mode="ghost" onClick={onIgnore} text="Ignore" />
+              <Button onClick={handleAction} text={resolution.action} tone="caution" />
+            </Grid>
+          )}
+
+          <Box padding={3}>
+            {resolution.action && (
+              <Text as="p" muted size={1}>
+                NOTE: It’s generally safe to perform the action above, but if you are in doubt, get
+                in touch with those responsible for configuring your studio.
+              </Text>
+            )}
+          </Box>
+        </Stack>
+      }
+      title={<>Invalid block value</>}
+    >
+      <Stack space={3}>
+        <Text as="p" muted size={1}>
+          {resolution.description}
+        </Text>
+
+        <Card border overflow="auto" padding={2} tone="inherit">
+          <Code language="json">{JSON.stringify(resolution.item, null, 2)}</Code>
+        </Card>
+      </Stack>
+    </Alert>
+  )
 }

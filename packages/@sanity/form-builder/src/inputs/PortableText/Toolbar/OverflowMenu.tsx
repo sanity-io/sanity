@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 import classNames from 'classnames'
 import EllipsisIcon from 'part:@sanity/base/ellipsis-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'
