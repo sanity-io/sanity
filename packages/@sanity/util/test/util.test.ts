@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import {test} from 'tap'
-import {reduceConfig, getSanityVersions, pathTools} from '../src'
+import {reduceConfig, getSanityVersions, pathTools, deepMerge} from '../src'
 
 test('merges env config', (t) => {
   const reduced = reduceConfig(
@@ -108,5 +108,110 @@ test('path tools: can absolutify homedir paths', (t) => {
 test('path tools: can absolutify (noop) absolute paths', (t) => {
   const {absolutify} = pathTools
   t.strictDeepEquals(absolutify('/tmp/foo'), '/tmp/foo')
+  t.end()
+})
+
+test('deepMerge: can merge objects with unique properties', (t) => {
+  const targetObject = {
+    name: 'Foo',
+    hasPet: false,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+    },
+  }
+  const source = {
+    ...targetObject,
+    address: {
+      homeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+    },
+  }
+
+  const result = deepMerge(targetObject, source)
+  t.strictDeepEquals(result, {
+    name: 'Foo',
+    hasPet: false,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+      homeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+    },
+  })
+  t.end()
+})
+
+test('deepMerge: can merge objects with target overlapping properties taking precedence', (t) => {
+  const targetObject = {
+    name: 'Foo',
+    hasPet: false,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+    },
+  }
+
+  const source = {
+    ...targetObject,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '600 way street, off 11th avenue',
+      },
+    },
+  }
+
+  const result = deepMerge(targetObject, source)
+  t.strictDeepEquals(result, {
+    name: 'Foo',
+    hasPet: false,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '12 way street, off 11th avenue',
+      },
+    },
+  })
+  t.end()
+})
+
+test('deepMerge: can merge objects with undefined on target taking precedence', (t) => {
+  const targetObject = {
+    name: 'Foo',
+    hasPet: undefined,
+    address: {
+      officeStreet: undefined,
+    },
+  }
+
+  const source = {
+    ...targetObject,
+    address: {
+      officeStreet: {
+        _type: 'street',
+        street: '600 way street, off 11th avenue',
+      },
+    },
+  }
+
+  const result = deepMerge(targetObject, source)
+  t.strictDeepEquals(result, {
+    name: 'Foo',
+    hasPet: undefined,
+    address: {
+      officeStreet: undefined,
+    },
+  })
   t.end()
 })
