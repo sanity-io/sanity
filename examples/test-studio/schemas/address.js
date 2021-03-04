@@ -13,24 +13,21 @@ export default {
       name: 'officeStreet',
       title: 'Office Street',
       type: 'street',
-    },
-    {
-      title: 'My Streets',
-      name: 'streets',
-      type: 'array',
-      of: [{type: 'street'}],
+      initialValue: {
+        _type: 'street',
+        street: 'One street lane',
+        streetNo: '4567',
+      },
     },
     {name: 'city', type: 'string', title: 'City'},
   ],
 
   initialValue: () => ({
     city: 'Abule',
-    streets: [
-      {
-        _type: 'street',
-        street: 'One street lane',
-        streetNo: '4567',
-      },
-    ],
+    /* homeStreet: {
+      _type: 'street',
+      street: 'Two street lane',
+      streetNo: '4567',
+    }, */
   }),
 }

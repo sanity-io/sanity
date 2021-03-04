@@ -8,7 +8,7 @@ export default {
       name: 'street',
       type: 'string',
       title: 'Street name',
-      initialValue: '12 way street, off 11th avenue',
+      initialValue: '92 way street, off 11th avenue',
     },
     {name: 'streetNo', type: 'string', title: 'Street number'},
     {name: 'lines', type: 'line', title: 'Address Lines'},
@@ -20,6 +20,7 @@ export default {
       options: {
         layout: 'tags',
       },
+      initialValue: ['life', 'value'],
     },
   ],
 

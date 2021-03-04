@@ -32,6 +32,11 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: 'hasPet',
+      type: 'boolean',
+      initialValue: false,
+    },
+    {
       name: 'role',
       title: 'Role',
       type: 'string',
@@ -52,6 +57,7 @@ export default {
           type: 'string',
         },
       ],
+      initialValue: () => ['TypeScript Wizard of the Year'],
     },
     {
       name: 'bestFriend',
@@ -75,16 +81,11 @@ export default {
       title: 'Address',
       type: 'address',
     },
-    {
-      title: 'My Addresses',
-      name: 'myAddresses',
-      type: 'array',
-      of: [{type: 'address'}],
-    },
   ],
 
   initialValue: () => ({
     name: 'Foo',
+    hasPet: undefined,
     bestFriend: {_type: 'reference', _ref: 'foo-bar'},
     favoriteBooks: [
       {
@@ -96,11 +97,5 @@ export default {
       _type: 'address',
       city: 'New York',
     },
-    myAddresses: [
-      {
-        _type: 'address',
-        city: 'New York',
-      },
-    ],
   }),
 }
