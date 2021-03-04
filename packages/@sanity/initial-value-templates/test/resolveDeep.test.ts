@@ -27,12 +27,27 @@ describe('resolveDeepInitialValues', () => {
 
     const initialValue = await resolveInitialValue(developerTemplate)
 
+    expect(initialValue.tasks[0]).toHaveProperty('_key')
+
+    initialValue.tasks[0]._key = '1b2e4ce9629e0e7f1caa4f4778d81a49'
+
     expect(initialValue).toEqual({
       name: 'A default name!',
+      hasPet: false,
+      age: 30,
       heroImage: {
         _type: 'captionedImage',
         caption: 'Default caption!',
       },
+      awards: ['TypeScript Wizard of the Year'],
+      tasks: [
+        {
+          _key: '1b2e4ce9629e0e7f1caa4f4778d81a49',
+          _type: 'task',
+          description: 'Mark as done',
+          isDone: false,
+        },
+      ],
       numberOfCats: undefined,
       recursive: generateNestedObjectTest(
         {
