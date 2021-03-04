@@ -20,7 +20,7 @@ export default class SelectLanguageProvider extends React.Component {
     return (
       <SelectLanguage
         languages={config.supportedLanguages}
-        defaultLanguage={config.defaultLanguage}
+        defaultLanguages={config.defaultLanguages}
         selected={selected}
         onChange={setLangs}
       />

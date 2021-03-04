@@ -14,10 +14,12 @@ const LanguagePropType = PropTypes.shape({
 })
 
 const ACTION_LABEL = 'Filter languages'
+
 export default class SelectLanguage extends React.Component {
   static propTypes = {
     languages: PropTypes.arrayOf(LanguagePropType),
-    selected: PropTypes.arrayOf(LanguagePropType),
+    defaultLanguages: PropTypes.arrayOf(PropTypes.string),
+    selected: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func,
   }
 
@@ -62,8 +64,8 @@ export default class SelectLanguage extends React.Component {
   }
 
   isDefaultLang = (langId) => {
-    const {defaultLanguage} = this.props
-    return langId === defaultLanguage
+    const {defaultLanguages} = this.props
+    return defaultLanguages && defaultLanguages.includes(langId)
   }
 
   handleSelectAll = (event) => {
@@ -71,8 +73,8 @@ export default class SelectLanguage extends React.Component {
     onChange(languages.map((l) => l.id))
   }
   handleSelectNone = (event) => {
-    const {languages, onChange} = this.props
-    onChange(languages.map((l) => this.isDefaultLang(l.id) && l.id))
+    const {onChange} = this.props
+    onChange([])
   }
   handleLangCheckboxChange = (event) => {
     const id = event.target.getAttribute('data-lang-id')
