@@ -375,7 +375,7 @@ function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
   }
 
   function getDocumentInterfaceFields() {
-    const isNullable = typeof nonNullDocumentFields === 'boolean' ? !nonNullDocumentFields : true
+    const isNullable = !nonNullDocumentFields;
     return [
       {
         fieldName: '_id',
