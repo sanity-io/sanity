@@ -1,8 +1,6 @@
-describe('DatetimeInput react-datepicker popper', () => {
+describe('DatetimeInput date-picker-dialog', () => {
   beforeEach(() => {
-    cy.visit(
-      '/test/desk/datetimeTest%2Ctemplate%3DdatetimeTest;b44f31f5-2cb0-431b-a912-aba0e1bf46cd'
-    )
+    cy.visit('/test/desk/datetimeTest%2Ctemplate%3DdatetimeTest;ci-cypress')
   })
 
   it('should be rendered on top of array input dialog', () => {
@@ -12,17 +10,24 @@ describe('DatetimeInput react-datepicker popper', () => {
     })
 
     cy.getField('date').within(($dateField) => {
-      cy.get('button[title="Select date"]').click()
+      cy.get('button[data-testid="select-date-button"]').click()
     })
 
-    cy.get('.react-datepicker-popper').should('be.visible')
+    cy.get('[data-testid="date-input-dialog"]').should('be.visible')
+
+    cy.get('body').type('{esc}') // close the calendar dialog
+    cy.get('body').type('{esc}') // close the array dialog
+    // allow some time for the studio to flush pending mutations so that we submit the mutation removing the empty
+    // array item on dialog close
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1500)
   })
 
   it('should be visible when clicking select date', () => {
     cy.getField('justDefaults').within(($field) => {
-      cy.get('button[title="Select date"]').click()
+      cy.get('button[data-testid="select-date-button"]').click()
     })
 
-    cy.get('.react-datepicker-popper').should('be.visible')
+    cy.get('[data-testid="date-input-dialog"]').should('be.visible')
   })
 })
