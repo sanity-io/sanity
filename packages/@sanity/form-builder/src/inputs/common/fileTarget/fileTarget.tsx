@@ -142,11 +142,11 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
         <Component
           {...(rest as ComponentProps)}
           ref={forwardedRef}
-          onKeyDown={!disabled && handleKeyDown}
-          onDragOver={!disabled && handleDragOver}
-          onDragEnter={!disabled && handleDragEnter}
-          onDragLeave={!disabled && handleDragLeave}
-          onDrop={!disabled && handleDrop}
+          onKeyDown={disabled ? undefined : handleKeyDown}
+          onDragOver={disabled ? undefined : handleDragOver}
+          onDragEnter={disabled ? undefined : handleDragEnter}
+          onDragLeave={disabled ? undefined : handleDragLeave}
+          onDrop={disabled ? undefined : handleDrop}
         />
         {!disabled && showPasteInput && (
           <div contentEditable onPaste={handlePaste} ref={pasteInput} style={PASTE_INPUT_STYLE} />
