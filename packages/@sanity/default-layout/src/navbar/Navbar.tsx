@@ -100,7 +100,7 @@ export default function Navbar(props: Props) {
             <div>
               <Button
                 aria-label="Create"
-                data-test="default-layout-global-create-button"
+                data-testid="default-layout-global-create-button"
                 icon={ComposeIcon}
                 kind="simple"
                 onClick={onCreateButtonClick}

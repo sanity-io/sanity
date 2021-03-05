@@ -92,7 +92,7 @@ export default class ListPane extends React.PureComponent {
 
     return (
       <DefaultPane
-        data-test="desk-tool-list-pane"
+        data-testid="desk-tool-list-pane"
         index={index}
         title={title}
         styles={styles}
