@@ -15,7 +15,7 @@ function ActionModal(props: Props) {
   return (
     <LegacyLayerProvider zOffset="navbarDialog">
       <DefaultDialog
-        data-test="default-layout-global-create-dialog"
+        data-testid="default-layout-global-create-dialog"
         onClickOutside={onClose}
         onClose={onClose}
         size="large"
