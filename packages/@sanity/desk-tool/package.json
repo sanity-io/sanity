@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@popperjs/core": "^2.5.4",
-    "@reach/auto-id": "^0.10.5",
+    "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.6.0",
     "@sanity/data-aspects": "2.2.6",
     "@sanity/diff": "2.2.6",
