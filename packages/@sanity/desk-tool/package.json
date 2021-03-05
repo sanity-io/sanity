@@ -32,7 +32,7 @@
     "@sanity/react-hooks": "2.6.0",
     "@sanity/structure": "2.6.0",
     "@sanity/types": "2.6.0",
-    "@sanity/ui": "^0.33.6",
+    "@sanity/ui": "^0.33.9",
     "@sanity/util": "2.6.0",
     "@sanity/uuid": "^3.0.1",
     "boundless-arrow-key-navigation": "^1.1.0",
