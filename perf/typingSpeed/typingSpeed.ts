@@ -22,7 +22,7 @@ export async function testTypingSpeed({userToken}: Options) {
     timeout: 1000 * 60 * 5,
   })
 
-  const input = await page.waitForSelector('[data-focus-path="rootStringField"] input')
+  const input = await page.waitForSelector('[data-testid="input-rootStringField"] input')
 
   // clear the input value first
   await input.evaluate((el: HTMLInputElement) => {
