@@ -316,7 +316,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
   )
 
   return (
-    <div data-focus-path={PathUtils.toString(path)}>
+    <div data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(path)}`}>
       <FormFieldPresenceContext.Provider value={childPresenceInfo}>
         <ChangeIndicatorProvider
           path={path}

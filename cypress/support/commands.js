@@ -22,8 +22,7 @@ Cypress.Commands.add('login', (sanitySessionToken) => {
 })
 
 Cypress.Commands.add('getField', (fieldName) => {
-  // TODO(@benedicteb, 2021-01-26) Add <data-qa=..." /> or something to html to make select super robust
-  return cy.get(`[data-focus-path=${fieldName}]`)
+  return cy.get(`[data-testid="input-${fieldName}"]`)
 })
 
 Cypress.Commands.add('getFieldInput', (fieldName) => {
