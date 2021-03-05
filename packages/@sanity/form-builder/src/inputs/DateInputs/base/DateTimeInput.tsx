@@ -55,6 +55,8 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
       suffix={
         <LayerProvider zOffset={1000}>
           <Popover
+            data-testid="date-input-dialog"
+            portal
             content={
               <FocusLock onDeactivation={handleDeactivation}>
                 <DatePicker
@@ -79,6 +81,7 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
                 padding={2}
                 onClick={handleClick}
                 style={{display: 'block'}}
+                data-testid="select-date-button"
               />
             </Box>
           </Popover>
