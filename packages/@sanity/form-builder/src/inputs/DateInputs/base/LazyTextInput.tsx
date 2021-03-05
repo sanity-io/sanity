@@ -3,11 +3,15 @@ import {TextInput} from '@sanity/ui'
 
 type TextInputProps = React.ComponentProps<typeof TextInput>
 
-type Props = Omit<TextInputProps, 'onChange'> & {
-  onChange?: (
-    event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>
-  ) => void
-}
+// todo: delete this when v0.34 of @sanity/ui is out
+type Workaround = any
+
+type Props = Workaround &
+  Omit<TextInputProps, 'onChange'> & {
+    onChange?: (
+      event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>
+    ) => void
+  }
 
 /**
  * A TextInput that only emit onChange when it has to
