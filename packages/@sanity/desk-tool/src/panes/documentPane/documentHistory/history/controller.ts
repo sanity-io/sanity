@@ -122,7 +122,7 @@ export class Controller {
 
   /** Returns true when the changes panel should be active. */
   changesPanelActive(): boolean {
-    return Boolean(this._since) && this.selectionState !== 'invalid'
+    return Boolean(this._since) && this.selectionState === 'range'
   }
 
   findRangeForNewRev(rev: Chunk): [string | null, string | null] {
