@@ -18,6 +18,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.6.0",
     "@sanity/block-tools": "2.5.0",
     "@sanity/color": "^2.0.14",

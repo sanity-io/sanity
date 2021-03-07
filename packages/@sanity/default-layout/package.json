@@ -29,6 +29,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
+    "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.6.0",
     "@sanity/generate-help-url": "2.2.6",
     "@sanity/ui": "^0.33.9",
