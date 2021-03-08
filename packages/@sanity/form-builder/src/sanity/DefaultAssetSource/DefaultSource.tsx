@@ -106,13 +106,7 @@ export class DefaultSource extends React.Component<Props, State> {
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <Dialog
-        id={this._elementId}
-        header="Select image"
-        width={2}
-        position="absolute"
-        onClose={this.handleClose}
-      >
+      <Dialog id={this._elementId} header="Select image" width={2} onClose={this.handleClose}>
         <Box padding={4}>
           <Grid gap={2} style={{gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'}}>
             {assets.map((asset) => (
