@@ -41,7 +41,9 @@
   }
 
   @media (--max-screen-medium) {
-    position: sticky;
+    @nest &.headerContainer {
+      position: sticky;
+    }
     top: 0;
   }
 }
