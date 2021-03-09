@@ -4,7 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {FormFieldSet, ImperativeToast, LegacyLayerProvider} from '@sanity/base/components'
+import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -246,19 +246,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   renderAdvancedEdit(fields: Field[]) {
     return (
-      <LegacyLayerProvider zOffset="portal">
-        <Dialog
-          header="Edit details"
-          id={this.dialogId}
-          onClose={this.handleStopAdvancedEdit}
-          position="absolute"
-          width={1}
-        >
-          <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <Box padding={4}>{this.renderFields(fields)}</Box>
-          </PresenceOverlay>
-        </Dialog>
-      </LegacyLayerProvider>
+      <Dialog
+        header="Edit details"
+        id={this.dialogId}
+        onClose={this.handleStopAdvancedEdit}
+        width={1}
+      >
+        <PresenceOverlay margins={[0, 0, 1, 0]}>
+          <Box padding={4}>{this.renderFields(fields)}</Box>
+        </PresenceOverlay>
+      </Dialog>
     )
   }
 

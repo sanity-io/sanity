@@ -10,8 +10,9 @@ import TextInput from 'part:@sanity/components/textinputs/default'
 import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
 import {uniqueId} from 'lodash'
-import {Layer} from '@sanity/ui'
+import {Layer, Portal} from '@sanity/ui'
 
+import {LegacyLayerProvider} from '@sanity/base/components'
 import styles from './styles/BaseDateTimeInput.css'
 
 type Props = {
@@ -106,12 +107,12 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     }
   }
   renderPopperContainer = ({children}) => {
-    const {isDialogOpen} = this.state
-
     return (
-      <Layer>
-        <div className={isDialogOpen ? styles.portal : styles.portalClosed}>{children}</div>
-      </Layer>
+      <LegacyLayerProvider zOffset="popover">
+        <Portal>
+          <Layer>{children}</Layer>
+        </Portal>
+      </LegacyLayerProvider>
     )
   }
   render() {

@@ -431,7 +431,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <Dialog
         header="Edit details"
-        position="absolute"
         id={`${this._inputId}_dialog`}
         onClose={this.handleStopAdvancedEdit}
         width={1}
