@@ -6,7 +6,7 @@ const del = require('del')
 const changed = require('gulp-changed')
 const filter = require('gulp-filter')
 const chalk = require('chalk')
-const babel = require('gulp-babel')
+const esbuild = require('gulp-esbuild')
 const {runTsc} = require('./scripts/runTsc')
 const log = require('fancy-log')
 const through = require('through2')
@@ -44,7 +44,7 @@ const withDisplayName = (name, fn) => {
 }
 
 const TASK_INFO = {
-  babel: {title: 'Babel', color: chalk.yellowBright},
+  esbuild: {title: 'Esbuild', color: chalk.yellowBright},
   assets: {title: 'Assets (copy)', color: chalk.greenBright},
   watch: {title: 'Watch', color: chalk.cyanBright},
   _unknown: {title: 'Unknown', color: chalk.white},
@@ -58,7 +58,7 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
 }
 
 function buildJavaScript(packageDir, destDir) {
-  return withDisplayName(compileTaskName('babel', packageDir, 'cjs'), () =>
+  return withDisplayName(compileTaskName('esbuild', packageDir, 'cjs'), () =>
     src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
       .pipe(
         changed(destDir, {
@@ -66,7 +66,17 @@ function buildJavaScript(packageDir, destDir) {
           transformPath: (orgPath) => orgPath.replace(/\.tsx?$/, '.js'),
         })
       )
-      .pipe(babel())
+      .pipe(
+        esbuild({
+          format: 'cjs',
+          target: ['es2020', 'chrome58', 'firefox57', 'safari10', 'edge16', 'node10'],
+          loader: {
+            '.tsx': 'tsx',
+            '.ts': 'ts',
+            '.js': 'jsx',
+          },
+        })
+      )
       .pipe(dest(destDir, {cwd: packageDir}))
   )
 }
