@@ -113,6 +113,7 @@ const watchJSAndAssets = parallel(
   )
 )
 
+exports.js = buildJSAndAssets
 exports.ts = buildTS
 exports.watchTS = series(buildTS, watchTS)
 exports.build = series(buildJSAndAssets, buildTS)
