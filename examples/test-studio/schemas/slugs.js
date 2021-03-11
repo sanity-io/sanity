@@ -32,7 +32,7 @@ export default {
     },
     {
       name: 'noSource',
-      title: 'Slug with not source',
+      title: 'Slug with no source',
       type: 'slug',
       options: {
         maxLength: 100,
