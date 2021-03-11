@@ -75,14 +75,7 @@ export function EditDialog(props: Props) {
   if (dialogType === 'fullscreen') {
     return (
       <Layer>
-        <Dialog
-          width="auto"
-          id={value._key}
-          onClose={onClose}
-          key={value._key}
-          header={title}
-          position="absolute"
-        >
+        <Dialog width="auto" id={value._key} onClose={onClose} key={value._key} header={title}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
             <Box padding={4} ref={setBoundaryElement}>
               {content}
@@ -113,14 +106,7 @@ export function EditDialog(props: Props) {
   }
 
   return (
-    <Dialog
-      width={1}
-      id={value._key}
-      onClose={onClose}
-      key={value._key}
-      header={title}
-      position="absolute"
-    >
+    <Dialog width={1} id={value._key} onClose={onClose} key={value._key} header={title}>
       <PresenceOverlay margins={[0, 0, 1, 0]}>
         <Box padding={4} ref={setBoundaryElement}>
           {content}
