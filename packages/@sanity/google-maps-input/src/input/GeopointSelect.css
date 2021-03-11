@@ -23,5 +23,14 @@
 }
 
 :global(.pac-container) {
-  z-index: calc(var(--zindex-modal) + 1);
+  /**
+   * Google maps renders the "search results" container at the root of the body,
+   * and we can't control the placement, so we need to just assume a high z-index works.
+   * Because modals can be nested and adds to the z-index, we need a fairly high number
+   * to be sure. Important to note that the search results dialog closes automatically
+   * (with display: none) once the input loses focus, so it _shouldn't_ cause any
+   * "bleed through" issues. In a future version we may consider handling the
+   * search/rendering ourselves, which would solve this in a more coherent fashion.
+   */
+  z-index: calc(var(--zindex-modal) + 10000);
 }
