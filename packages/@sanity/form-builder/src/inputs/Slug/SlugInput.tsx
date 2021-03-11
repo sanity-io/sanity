@@ -134,16 +134,18 @@ const SlugInput = React.forwardRef(function SlugInput(
                 </Card>
               )}
             </Box>
-            <Box marginLeft={1}>
-              <Button
-                mode="ghost"
-                type="button"
-                disabled={readOnly || isUpdating}
-                onClick={handleGenerateSlug}
-                onFocus={handleFocus}
-                text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
-              />
-            </Box>
+            {sourceField && (
+              <Box marginLeft={1}>
+                <Button
+                  mode="ghost"
+                  type="button"
+                  disabled={readOnly || isUpdating}
+                  onClick={handleGenerateSlug}
+                  onFocus={handleFocus}
+                  text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+                />
+              </Box>
+            )}
           </Flex>
         </Stack>
       </FormField>
