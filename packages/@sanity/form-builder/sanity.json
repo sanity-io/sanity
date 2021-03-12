@@ -24,6 +24,11 @@
       "description": "Input component for the core array type"
     },
     {
+      "name": "part:@sanity/form-builder/input/array-default",
+      "implements": "part:@sanity/form-builder/input/array",
+      "path": "inputs/ArrayInput/ArrayInput"
+    },
+    {
       "name": "part:@sanity/form-builder/input/array/functions",
       "description": "React component defining array functions such as add item"
     },
