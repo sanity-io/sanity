@@ -46,6 +46,20 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
+  const suffix = (
+    <Box padding={1}>
+      <Button
+        ref={buttonRef}
+        icon={CalendarIcon}
+        mode="bleed"
+        padding={2}
+        onClick={handleClick}
+        style={{display: 'block'}}
+        data-testid="select-date-button"
+      />
+    </Box>
+  )
+
   return (
     <LazyTextInput
       ref={inputRef}
@@ -53,39 +67,36 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
       value={inputValue}
       onChange={onInputChange}
       suffix={
-        <LayerProvider zOffset={1000}>
-          <Popover
-            data-testid="date-input-dialog"
-            portal
-            content={
-              <FocusLock onDeactivation={handleDeactivation}>
-                <DatePicker
-                  selectTime={selectTime}
-                  timeStep={timeStep}
-                  onKeyUp={handleKeyUp}
-                  value={value}
-                  onChange={onChange}
-                />
-              </FocusLock>
-            }
-            open={isPickerOpen}
-            placement="bottom-end"
-            ref={setPopoverRef}
-            radius={2}
-          >
-            <Box padding={1}>
-              <Button
-                ref={buttonRef}
-                icon={CalendarIcon}
-                mode="bleed"
-                padding={2}
-                onClick={handleClick}
-                style={{display: 'block'}}
-                data-testid="select-date-button"
-              />
-            </Box>
-          </Popover>
-        </LayerProvider>
+        isPickerOpen ? (
+          // Note: we're conditionally inserting the popover here due to an
+          // issue with popovers rendering incorrectly on subsequent renders
+          // see https://github.com/sanity-io/design/issues/519
+          <LayerProvider zOffset={1000}>
+            <Popover
+              data-testid="date-input-dialog"
+              portal
+              content={
+                <FocusLock onDeactivation={handleDeactivation}>
+                  <DatePicker
+                    selectTime={selectTime}
+                    timeStep={timeStep}
+                    onKeyUp={handleKeyUp}
+                    value={value}
+                    onChange={onChange}
+                  />
+                </FocusLock>
+              }
+              open
+              placement="bottom-end"
+              ref={setPopoverRef}
+              radius={2}
+            >
+              {suffix}
+            </Popover>
+          </LayerProvider>
+        ) : (
+          suffix
+        )
       }
     />
   )
