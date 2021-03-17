@@ -13,7 +13,7 @@ const tests = [
   ['1 2 3', ['1', '2', '3']],
   ['foo, bar, baz', ['foo', 'bar', 'baz']],
   ['foo   , bar   , baz', ['foo', 'bar', 'baz']],
-  ['a.b.c', ['a.b.c']],
+  ['a.b.c', ['a', 'b', 'c']],
   ['fourty-two', ['fourty', 'two']],
   ['abc -23 def', ['abc', '23', 'def']],
 ]
