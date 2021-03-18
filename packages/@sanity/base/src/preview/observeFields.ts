@@ -1,4 +1,3 @@
-import client from 'part:@sanity/base/client'
 import {
   combineLatest,
   concat,
@@ -21,6 +20,7 @@ import {
   tap,
 } from 'rxjs/operators'
 import {difference, flatten} from 'lodash'
+import {versionedClient} from '../client/versionedClient'
 import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
 import {FieldName, Id, Selection} from './types'
@@ -32,7 +32,7 @@ let _globalListener
 const getGlobalEvents = () => {
   if (!_globalListener) {
     const allEvents$ = observableFrom(
-      client.listen(
+      versionedClient.listen(
         '*[!(_id in path("_.**"))]',
         {},
         {events: ['welcome', 'mutation'], includeResult: false, visibility: 'query'}
@@ -72,7 +72,7 @@ function listen(id: Id) {
 
 function fetchAllDocumentPaths(selections: Selection[]) {
   const combinedSelections = combineSelections(selections)
-  return client.observable
+  return versionedClient.observable
     .fetch(toGradientQuery(combinedSelections))
     .pipe(map((result: any) => reassemble(result, combinedSelections)))
 }

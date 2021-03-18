@@ -1,6 +1,6 @@
 import {useObservable} from '@sanity/react-hooks'
-import client from 'part:@sanity/base/client'
 import React, {useCallback, useMemo, useState} from 'react'
+import {versionedClient} from '../../../versionedClient'
 import {usePaneRouter} from '../../../contexts/PaneRouterContext'
 import {Doc} from '../types'
 import {DocumentHistoryContext} from './context'
@@ -34,7 +34,7 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
         createObservableController({
           timeline,
           documentId,
-          client,
+          client: versionedClient,
         }),
       [documentId, timeline]
     )

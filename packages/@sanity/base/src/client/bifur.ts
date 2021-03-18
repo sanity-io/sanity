@@ -1,4 +1,4 @@
-import client from 'part:@sanity/base/client'
 import {fromSanityClient} from '@sanity/bifur-client'
+import {versionedClient} from './versionedClient'
 
-export const bifur = fromSanityClient(client)
+export const bifur = fromSanityClient(versionedClient)

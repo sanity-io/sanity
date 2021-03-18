@@ -1,10 +1,10 @@
-import client from 'part:@sanity/base/client'
 import {from, merge} from 'rxjs'
 import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {omit, isUndefined} from 'lodash'
 import jsonReduce from 'json-reduce'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {versionedClient} from '../../client/versionedClient'
 
 const documentRevisionCache = Object.create(null)
 
@@ -34,7 +34,7 @@ const getHistory = (documentIds, options = {}) => {
     throw new Error(`getHistory can't handle both time and revision parameters`)
   }
 
-  const dataset = client.clientConfig.dataset
+  const dataset = versionedClient.clientConfig.dataset
   let url = `/data/history/${dataset}/documents/${ids.join(',')}`
 
   if (revision) {
@@ -44,7 +44,7 @@ const getHistory = (documentIds, options = {}) => {
     url = `${url}?time=${timestamp}`
   }
 
-  return client.request({url})
+  return versionedClient.request({url})
 }
 
 const getDocumentAtRevision = (documentId, revision) => {
@@ -53,9 +53,9 @@ const getDocumentAtRevision = (documentId, revision) => {
 
   const cacheKey = `${publishedId}@${revision}`
   if (!(cacheKey in documentRevisionCache)) {
-    const dataset = client.clientConfig.dataset
+    const dataset = versionedClient.clientConfig.dataset
     const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
-    documentRevisionCache[cacheKey] = client.request({url}).then(({documents}) => {
+    documentRevisionCache[cacheKey] = versionedClient.request({url}).then(({documents}) => {
       const published = documents.find((res) => res._id === publishedId)
       const draft = documents.find((res) => res._id === draftId)
       return draft || published
@@ -67,9 +67,9 @@ const getDocumentAtRevision = (documentId, revision) => {
 
 const getTransactions = (documentIds) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
-  const dataset = client.clientConfig.dataset
+  const dataset = versionedClient.clientConfig.dataset
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}?excludeContent=true`
-  return client.request({url}).then(ndjsonToArray)
+  return versionedClient.request({url}).then(ndjsonToArray)
 }
 
 function historyEventsFor(documentId) {
@@ -89,7 +89,7 @@ function historyEventsFor(documentId) {
     reduce(compileTransactions, {})
   )
 
-  const realtimeTransactions$ = client.observable.listen(query, {documentIds: pairs}).pipe(
+  const realtimeTransactions$ = versionedClient.observable.listen(query, {documentIds: pairs}).pipe(
     map((item) => ({
       author: item.identity,
       documentIDs: pairs,
@@ -162,7 +162,7 @@ function restore(id, targetId, rev) {
         .map((refId) => `"${refId}": defined(*[_id=="${refId}"]._id)`)
         .join(',')
 
-      return client.observable
+      return versionedClient.observable
         .fetch(`{${existingIdsQuery}}`)
         .pipe(map((existingIds) => removeMissingReferences(documentAtRevision, existingIds)))
     }),
@@ -174,7 +174,7 @@ function restore(id, targetId, rev) {
       })
     ),
     mergeMap((restoredDraft) =>
-      client.observable.transaction().createOrReplace(restoredDraft).commit()
+      versionedClient.observable.transaction().createOrReplace(restoredDraft).commit()
     )
   )
 }

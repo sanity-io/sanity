@@ -193,6 +193,7 @@ export default function PortableTextInput(props: Props) {
     PortableTextEditor.focus(editor)
   }
 
+  // eslint-disable-next-line no-unused-vars
   function blur(): void {
     PortableTextEditor.blur(editor)
   }

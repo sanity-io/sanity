@@ -37,7 +37,6 @@
     "@sanity/production-preview",
     "@sanity/studio-hints",
     "dashboard-widget-cats",
-    "dashboard-widget-document-count",
     "dashboard-widget-document-list",
     "mux-input"
   ],

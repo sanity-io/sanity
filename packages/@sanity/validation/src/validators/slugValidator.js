@@ -1,4 +1,5 @@
 const {get, memoize} = require('lodash')
+const getClient = require('../getClient')
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
@@ -21,7 +22,6 @@ function serializePath(path) {
 }
 
 const defaultIsUnique = (slug, options) => {
-  const client = require('part:@sanity/base/client')
   const {document, path, type} = options
   const {disableArrayWarning} = type.options
   const {published, draft} = getDocumentIds(document._id)
@@ -38,7 +38,7 @@ const defaultIsUnique = (slug, options) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return client.fetch(`!defined(*[${constraints}][0]._id)`, {
+  return getClient().fetch(`!defined(*[${constraints}][0]._id)`, {
     docType,
     draft,
     published,

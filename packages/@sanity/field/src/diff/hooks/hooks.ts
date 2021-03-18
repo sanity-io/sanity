@@ -1,8 +1,8 @@
 import {Reference} from '@sanity/types'
 import {useState, useEffect} from 'react'
-import client from 'part:@sanity/base/client'
 import {observeForPreview} from 'part:@sanity/base/preview'
 import {SchemaType} from '../../types'
+import {versionedClient} from '../../versionedClient'
 
 interface PreviewSnapshot {
   title: string
@@ -15,7 +15,7 @@ export function useRefValue<T = unknown>(refId: string | undefined | null): T | 
       return undefined
     }
 
-    const subscription = client.observable.getDocument(refId).subscribe(setValue)
+    const subscription = versionedClient.observable.getDocument(refId).subscribe(setValue)
 
     return () => {
       subscription.unsubscribe()

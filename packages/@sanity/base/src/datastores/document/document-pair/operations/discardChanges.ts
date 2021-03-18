@@ -1,4 +1,4 @@
-import client from 'part:@sanity/base/client'
+import {versionedClient} from '../../../../client/versionedClient'
 import {OperationArgs} from '../../types'
 
 export const discardChanges = {
@@ -12,6 +12,6 @@ export const discardChanges = {
     return false
   },
   execute: ({idPair}: OperationArgs) => {
-    return client.observable.transaction().delete(idPair.draftId).commit()
+    return versionedClient.observable.transaction().delete(idPair.draftId).commit()
   },
 }

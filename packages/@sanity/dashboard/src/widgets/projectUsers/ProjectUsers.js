@@ -1,11 +1,11 @@
 import React from 'react'
 import {map, switchMap} from 'rxjs/operators'
-import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import RobotIcon from 'part:@sanity/base/robot-icon'
+import {versionedClient} from '../../versionedClient'
 import styles from './ProjectUsers.css'
 
 function getInviteUrl(projectId) {
@@ -50,14 +50,14 @@ class ProjectUsers extends React.PureComponent {
       this.subscription.unsubscribe()
     }
 
-    const {projectId} = sanityClient.config()
-    this.subscription = sanityClient.observable
+    const {projectId} = versionedClient.config()
+    this.subscription = versionedClient.observable
       .request({
         uri: `/projects/${projectId}`,
       })
       .pipe(
         switchMap((project) =>
-          sanityClient.observable
+          versionedClient.observable
             .request({
               uri: `/users/${project.members.map((mem) => mem.id).join(',')}`,
             })

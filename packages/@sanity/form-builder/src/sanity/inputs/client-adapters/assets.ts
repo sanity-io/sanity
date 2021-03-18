@@ -3,7 +3,8 @@ import {Observable, of as observableOf} from 'rxjs'
 import {FileAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/types'
-import {client, observePaths} from '../../../legacyParts'
+import {observePaths} from '../../../legacyParts'
+import {versionedClient} from '../../versionedClient'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
@@ -29,7 +30,7 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
           asset: existing,
         })
       }
-      return client.observable.assets
+      return versionedClient.observable.assets
         .upload(assetType, file, {
           extract,
           preserveFilename,
@@ -74,7 +75,7 @@ export function materializeReference(id) {
 }
 
 function fetchExisting(type, hash) {
-  return client.observable.fetch('*[_type == $documentType && sha1hash == $hash][0]', {
+  return versionedClient.observable.fetch('*[_type == $documentType && sha1hash == $hash][0]', {
     documentType: type,
     hash,
   })

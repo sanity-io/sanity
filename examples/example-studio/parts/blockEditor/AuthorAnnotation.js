@@ -4,6 +4,8 @@ import ReactTooltip from 'react-tooltip'
 import sanityClient from 'part:@sanity/base/client'
 import styles from './AuthorAnnotation.css'
 
+const client = sanityClient.withConfig({apiVersion: '1'})
+
 export default class AuthorAnnotation extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -18,7 +20,7 @@ export default class AuthorAnnotation extends React.Component {
   // eslint-disable-next-line consistent-return
   fetchAuthor() {
     if (this.props._ref) {
-      return sanityClient.getDocument(this.props._ref).then((author) => {
+      return client.getDocument(this.props._ref).then((author) => {
         this.setState({author: author})
       })
     }

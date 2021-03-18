@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, {PureComponent} from 'react'
-import client from 'part:@sanity/base/client'
 import config from 'config:sanity'
 import Button from 'part:@sanity/components/buttons/default'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
@@ -10,14 +9,15 @@ import {mapTo, catchError, finalize} from 'rxjs/operators'
 import styles from './styles/CookieTest.css'
 
 import {openCenteredPopup} from './util/openWindow'
+import {versionedClient} from './versionedClient'
 
 const projectName = (config.project && config.project.name) || ''
 
 const checkCookies = () => {
-  return client
+  return versionedClient
     .request({method: 'post', uri: '/auth/testCookie', withCredentials: true})
     .then(() => {
-      return client
+      return versionedClient
         .request({uri: '/auth/testCookie', withCredentials: true})
         .then(() => true)
         .catch(() => false)
@@ -25,7 +25,7 @@ const checkCookies = () => {
     .catch((error) => ({error}))
 }
 
-const hostname = client.clientConfig.url
+const hostname = versionedClient.clientConfig.url
 // const hostname = 'http://localhost:5000/v1'
 
 class CookieTest extends PureComponent {

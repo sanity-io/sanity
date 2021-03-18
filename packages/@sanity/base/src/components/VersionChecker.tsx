@@ -3,7 +3,7 @@ import React, {PureComponent} from 'react'
 import semverCompare from 'semver-compare'
 import versions from 'sanity:versions'
 import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message?'
-import client from 'part:@sanity/base/client'
+import {versionedClient} from '../client/versionedClient'
 import {requestIdleCallback, cancelIdleCallback} from '../actions/utils/requestIdleCallback'
 import FullscreenError from './FullscreenError'
 
@@ -89,7 +89,7 @@ const checkVersions = (options: {getOutdated?: boolean} = {}): Promise<VersionsR
     return Promise.resolve({result: JSON.parse(local)})
   }
 
-  return client
+  return versionedClient
     .request({
       uri: '/versions',
       // resolving the right client definition seems to be an issue :shrug:

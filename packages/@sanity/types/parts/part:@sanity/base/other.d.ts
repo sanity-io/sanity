@@ -59,19 +59,27 @@ declare module 'part:@sanity/base/brand-logo?' {
   export default BrandLogo
 }
 declare module 'part:@sanity/base/client' {
-  import {SanityClient} from '@sanity/client'
-  declare const client: SanityClient
+  import {ClientConfig, SanityClient, SanityClient} from '@sanity/client'
+
+  type StudioClient = SanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}
+
+  declare const client: StudioClient
   export default client
 }
 declare module 'part:@sanity/base/client?' {
   import client from 'part:@sanity/base/client'
-  declare const maybeClient: client | void
+
+  type StudioClient = SanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}
+
+  declare const client: StudioClient | void
   export default maybeClient
 }
 declare module 'part:@sanity/base/configure-client?' {
   import {SanityClient as OriginalSanityClient} from '@sanity/client'
 
-  type Configurer = (client: OriginalSanityClient) => OriginalSanityClient
+  type Configurer = (
+    client: OriginalSanityClient
+  ) => OriginalSanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}
   const configure: Configurer | undefined
 
   export default configure

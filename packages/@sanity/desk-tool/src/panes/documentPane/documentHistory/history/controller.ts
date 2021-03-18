@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {Annotation} from '@sanity/field/diff'
 import {Observable} from 'rxjs'
 import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'

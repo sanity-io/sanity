@@ -1,9 +1,10 @@
+import type {ComponentType} from 'react'
 import {Type} from '@sanity/portable-text-editor'
 
 export interface BlockItem {
   disabled: boolean
   handle: () => void
-  icon: React.ComponentType
+  icon: ComponentType
   inline: boolean
   key: string
   type: Type
@@ -13,7 +14,7 @@ export interface BlockStyleItem {
   active: boolean
   key: string
   style: string
-  styleComponent: React.ComponentType | null
+  styleComponent: ComponentType | null
   title: string
 }
 
@@ -22,7 +23,7 @@ export interface PTEToolbarAction {
   disabled: boolean
   handle: () => void
   hotkeys?: string[]
-  icon: React.ComponentType
+  icon: ComponentType
   key: string
   title: string
 }

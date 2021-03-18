@@ -1,5 +1,5 @@
 import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
-import client from 'part:@sanity/base/client'
+import {versionedClient} from '../../client/versionedClient'
 import {checkoutPair} from './document-pair/checkoutPair'
 import createDeprecatedAPIs from './_createDeprecatedAPIs'
 import {IdPair} from './types'
@@ -20,7 +20,7 @@ function getIdPairFromPublished(publishedId: string): IdPair {
 }
 
 export default {
-  ...createDeprecatedAPIs(client), // Todo: can be removed in ~january 2020
+  ...createDeprecatedAPIs(versionedClient), // Todo: can be removed in ~january 2020
   checkoutPair: (idPair: IdPair) => checkoutPair(idPair),
   listenQuery,
 

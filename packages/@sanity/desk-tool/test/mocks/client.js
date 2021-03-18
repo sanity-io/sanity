@@ -1,3 +1,5 @@
 module.exports = {
-  fetch: () => Promise.resolve(['book', 'book']),
+  withConfig: () => ({
+    fetch: () => Promise.resolve(['book', 'book']),
+  }),
 }

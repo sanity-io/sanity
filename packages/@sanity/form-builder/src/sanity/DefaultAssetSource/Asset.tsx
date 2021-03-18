@@ -1,8 +1,9 @@
+import type {Subscription} from 'rxjs'
 import classNames from 'classnames'
 import React from 'react'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {AssetAction, AssetRecord} from '../../inputs/files/ImageInput/types'
-import {client} from '../../legacyParts'
+import {versionedClient} from '../versionedClient'
 import AssetDialog from './AssetDialog'
 import AssetMenu from './AssetMenu'
 
@@ -33,22 +34,30 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
     dialogType: null,
   }
 
+  delete$: Subscription
+
+  componentWillUnmount() {
+    if (this.delete$) {
+      this.delete$.unsubscribe()
+    }
+  }
+
   handleDeleteAsset = (asset) => {
     const {onDeleteFinished} = this.props
 
     this.setState({isDeleting: true})
 
-    return client
-      .delete(asset._id)
-      .then(() => {
+    this.delete$ = versionedClient.observable.delete(asset._id).subscribe({
+      next: () => {
         this.setState({isDeleting: false})
         onDeleteFinished(asset._id)
-      })
-      .catch((err) => {
+      },
+      error: (err) => {
         this.setState({isDeleting: false, dialogType: 'error'})
         // eslint-disable-next-line no-console
         console.error('Could not delete asset', err)
-      })
+      },
+    })
   }
 
   handleDialogClose = () => {

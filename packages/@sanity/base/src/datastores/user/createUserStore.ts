@@ -3,7 +3,7 @@ import raf from 'raf'
 import DataLoader from 'dataloader'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-import client from 'part:@sanity/base/client'
+import {versionedClient} from '../../client/versionedClient'
 import {User, CurrentUser, CurrentUserEvent} from './types'
 
 const userCache: Record<string, User | null> = {}
@@ -78,7 +78,7 @@ async function loadUsers(userIds: readonly string[]): Promise<(User | null)[]> {
   const missingIds = userIds.filter((userId) => !(userId in userCache))
   let users: User[] = []
   if (missingIds.length > 0) {
-    users = await client
+    users = await versionedClient
       .request({
         uri: `/users/${missingIds.join(',')}`,
         withCredentials: true,

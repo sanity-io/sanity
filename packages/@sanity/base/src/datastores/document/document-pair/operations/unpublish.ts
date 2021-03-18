@@ -1,6 +1,6 @@
-import {OperationArgs} from '../../types'
-import client from 'part:@sanity/base/client'
 import {omit} from 'lodash'
+import {versionedClient} from '../../../../client/versionedClient'
+import {OperationArgs} from '../../types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const unpublish = {
@@ -11,7 +11,7 @@ export const unpublish = {
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
   execute: ({idPair, snapshots}: OperationArgs) => {
-    let tx = client.observable.transaction().delete(idPair.publishedId)
+    let tx = versionedClient.observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {
       tx = tx.createIfNotExists({

@@ -1,16 +1,16 @@
+import {merge, Observable} from 'rxjs'
+import {filter, map, share} from 'rxjs/operators'
+import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
-import {filter, map, share} from 'rxjs/operators'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
-import {merge, Observable} from 'rxjs'
-import client from 'part:@sanity/base/client'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
 
 function commitMutations(mutations) {
-  return client.dataRequest('mutate', mutations, {
+  return versionedClient.dataRequest('mutate', mutations, {
     visibility: 'async',
     returnDocuments: false,
   })
@@ -48,7 +48,7 @@ function setVersion<T>(version: 'draft' | 'published') {
 export function checkoutPair(idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
-  const listenerEvents$ = getPairListener(client, idPair).pipe(share())
+  const listenerEvents$ = getPairListener(versionedClient, idPair).pipe(share())
 
   const reconnect$ = listenerEvents$.pipe(filter((ev) => ev.type === 'reconnect')) as Observable<
     ReconnectEvent

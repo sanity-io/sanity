@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import client from 'part:@sanity/base/client'
+import sanityClient from 'part:@sanity/base/client'
 
 // Run this script with: `sanity exec --with-user-token migrations/renameField.js`
 //
@@ -16,6 +16,8 @@ import client from 'part:@sanity/base/client'
 // - This script will exit if any of the mutations fail due to a revision mismatch (which means the
 //   document was edited between fetch => update)
 // - The query must eventually return an empty set, or else this script will continue indefinitely
+
+const client = sanityClient.withConfig({apiVersion: '1'})
 
 // Fetching documents that matches the precondition for the migration.
 // NOTE: This query should eventually return an empty set of documents to mark the migration
