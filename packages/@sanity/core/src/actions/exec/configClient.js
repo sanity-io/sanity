@@ -21,4 +21,5 @@ if (!token) {
   )
 }
 
-client.config({token})
+// Reconfigure client and silence the warning about configuring it globally
+client.config({token}, true)

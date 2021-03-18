@@ -1,3 +1,4 @@
+import {ClientConfig} from '@sanity/client'
 import config from 'config:sanity'
 import {capitalize} from 'lodash'
 
@@ -9,10 +10,16 @@ function prepareSpace(space) {
   })
 }
 
-function getConfiguredSpaces(): {api: {}; default: boolean; name: string; title: string}[] {
+function getConfiguredSpaces(): {
+  api: Partial<ClientConfig>
+  default: boolean
+  name: string
+  title: string
+}[] {
   if (!config[FEATURE_KEY]) {
     return null
   }
+
   return config[FEATURE_KEY] && config[FEATURE_KEY].map(prepareSpace)
 }
 

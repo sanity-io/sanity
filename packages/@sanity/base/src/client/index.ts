@@ -1,7 +1,17 @@
+/**
+ * This is the client exposed as `part:@sanity/base/client`, used as:
+ *
+ * ```ts
+ * import sanityClient from 'part:@sanity/base/client'
+ *
+ * const client = sanityClient.withConfig({apiVersion: '1'})
+ * client.fetch(...)
+ * ```
+ */
+import sanityClient from '@sanity/client'
 import generateHelpUrl from '@sanity/generate-help-url'
 import config from 'config:sanity'
 import configureClient from 'part:@sanity/base/configure-client?'
-import sanityClient, {SanityClient} from '@sanity/client'
 
 const fallbackConfig = {projectId: 'UNSPECIFIED', dataset: 'UNSPECIFIED'}
 const apiConfig = {
@@ -13,9 +23,7 @@ const apiConfig = {
 }
 
 const client = sanityClient(apiConfig)
-const configuredClient = experimental(
-  configureClient ? configureClient(sanityClient(apiConfig)) : client
-)
+const configuredClient = configureClient ? configureClient(sanityClient(apiConfig)) : client
 
 const getKeys = (obj) => Object.keys(Object.getPrototypeOf(obj)).concat(Object.keys(obj))
 const instances = [configuredClient]
@@ -40,7 +48,11 @@ const wrappedClient = {
     // Don't allow overriding apiVersion on instantiated clients
     const {apiVersion, ...rest} = newConfig
     instances.forEach((instance) => instance.config(rest))
-    return wrappedClient
+    return configuredClient
+  },
+
+  get clientConfig() {
+    return configuredClient.clientConfig
   },
 
   withConfig: (newConfig) => {
@@ -58,28 +70,8 @@ const wrappedClient = {
   },
 }
 
-function experimental(original: SanityClient): SanityClient {
-  let useExperimental = false
-  try {
-    useExperimental = Boolean(window.localStorage.vx)
-  } catch (err) {
-    // nah
-  }
-
-  if (!useExperimental) {
-    return original
-  }
-
-  ;[original.clientConfig as any, original.observable.clientConfig as any].forEach((cfg) => {
-    cfg.url = cfg.url.replace(/\/v1$/, '/vX')
-    cfg.cdnUrl = cfg.cdnUrl.replace(/\/v1$/, '/vX')
-  })
-
-  return original
-}
-
 getKeys(configuredClient).forEach((key) => {
-  if (key === 'config') {
+  if (key === 'config' || key === 'clientConfig' || key === 'withConfig') {
     return
   }
 
@@ -95,11 +87,13 @@ getKeys(configuredClient).forEach((key) => {
         )
       )
 
-      return configuredClient[key]
+      return typeof configuredClient[key] === 'function'
+        ? configuredClient[key].bind(configuredClient)
+        : configuredClient[key]
     },
   })
 })
 
 // Expose as CJS to allow Node scripts to consume it without `.default`
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-module.exports = configuredClient
+module.exports = wrappedClient

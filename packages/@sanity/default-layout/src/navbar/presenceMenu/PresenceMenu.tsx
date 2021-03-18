@@ -1,4 +1,3 @@
-import client from 'part:@sanity/base/client'
 import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useGlobalPresence} from '@sanity/base/hooks'
 import CogIcon from 'part:@sanity/base/cog-icon'
@@ -9,6 +8,7 @@ import {ClickOutside} from 'part:@sanity/components/click-outside'
 import {Popover} from 'part:@sanity/components/popover'
 import Escapable from 'part:@sanity/components/utilities/escapable'
 import React, {useCallback, useState} from 'react'
+import {versionedClient} from '../../versionedClient'
 import {PresenceListRow} from './PresenceListRow'
 
 import styles from './PresenceMenu.css'
@@ -16,7 +16,7 @@ import styles from './PresenceMenu.css'
 const MAX_AVATARS_GLOBAL = 4
 
 export function PresenceMenu() {
-  const {projectId} = client.config()
+  const {projectId} = versionedClient.config()
   const presence = useGlobalPresence()
   const [open, setOpen] = useState(false)
 

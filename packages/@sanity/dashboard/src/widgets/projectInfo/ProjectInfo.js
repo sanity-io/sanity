@@ -2,12 +2,12 @@
 import React from 'react'
 import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
-import sanityClient from 'part:@sanity/base/client'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import WidgetContainer from 'part:@sanity/dashboard/widget-container'
+import {versionedClient} from '../../versionedClient'
 import styles from './ProjectInfo.css'
 
-const {projectId, dataset} = sanityClient.config()
+const {projectId, dataset} = versionedClient.config()
 
 function isUrl(url) {
   return /^https?:\/\//.test(`${url}`)
@@ -47,7 +47,7 @@ class ProjectInfo extends React.PureComponent {
     this.subscriptions = []
 
     this.subscriptions.push(
-      sanityClient.observable.request({uri: `/projects/${projectId}`}).subscribe({
+      versionedClient.observable.request({uri: `/projects/${projectId}`}).subscribe({
         next: (result) => {
           const {studioHost} = result
           this.setState({studioHost: studioHost ? `https://${studioHost}.sanity.studio` : null})
@@ -65,7 +65,7 @@ class ProjectInfo extends React.PureComponent {
 
     // ping assumed graphql endpoint
     this.subscriptions.push(
-      sanityClient.observable
+      versionedClient.observable
         .request({
           method: 'HEAD',
           uri: `/graphql/${dataset}/default`,

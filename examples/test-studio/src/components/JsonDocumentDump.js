@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import client from 'part:@sanity/base/client'
+import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
+
+const client = sanityClient.withConfig({apiVersion: '1'})
 
 export default class JsonDocumentDump extends React.PureComponent {
   static propTypes = {

@@ -78,6 +78,7 @@ function PortableTextSanityEditor(props: Props) {
   const ptFeatures = useMemo(() => PortableTextEditor.getPortableTextFeatures(editor), [])
   const {isTopLayer} = useLayer()
 
+  // eslint-disable-next-line no-unused-vars
   const handleOpenObjectHotkey = (
     event: React.BaseSyntheticEvent,
     ptEditor: PortableTextEditor

@@ -3,10 +3,10 @@ import {getTemplateById} from '@sanity/base/initial-value-templates'
 import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'
-import client from 'part:@sanity/base/client'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {useRouter} from 'part:@sanity/base/router'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import {versionedClient} from '../versionedClient'
 import {useStructure} from '../utils/resolvePanes'
 import {LOADING_PANE} from '../constants'
 import StructureError from './StructureError'
@@ -125,7 +125,9 @@ function resolveTypeForDocument(id, specifiedType) {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = id.replace(/^drafts\./, '')
   const draftId = `drafts.${documentId}`
-  return client.observable.fetch(query, {documentId, draftId}).pipe(map((types) => types[0]))
+  return versionedClient.observable
+    .fetch(query, {documentId, draftId})
+    .pipe(map((types) => types[0]))
 }
 
 export default IntentResolver

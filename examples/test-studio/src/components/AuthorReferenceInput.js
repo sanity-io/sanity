@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import imageUrlBuilder from '@sanity/image-url'
-import client from 'part:@sanity/base/client'
+import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import FormField from 'part:@sanity/components/formfields/default'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import styles from './AuthorReferenceInput.css'
 
 const noop = () => null
+const client = sanityClient.withConfig({apiVersion: '1'})
 const imageBuilder = imageUrlBuilder(client)
 
 export default class AuthorReferenceInput extends React.Component {

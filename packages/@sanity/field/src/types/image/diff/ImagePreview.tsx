@@ -2,8 +2,8 @@ import React, {SyntheticEvent} from 'react'
 import {useDocumentValues} from '@sanity/base/hooks'
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
-import sanityClient from 'part:@sanity/base/client'
 import ImageIcon from 'part:@sanity/base/image-icon'
+import {versionedClient} from '../../../versionedClient'
 import {MetaInfo} from '../../../diff'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
@@ -12,7 +12,7 @@ import {ImagePreviewProps, MinimalAsset} from './types'
 import styles from './ImagePreview.css'
 
 const ASSET_FIELDS = ['originalFilename']
-const imageBuilder = imageUrlBuilder(sanityClient)
+const imageBuilder = imageUrlBuilder(versionedClient)
 
 // To trigger error state, change `src` attribute to random string ("foo")
 // To trigger slow loading, use a throttling proxy (charles) or browser devtools

@@ -1,8 +1,9 @@
 import settings from 'part:@sanity/base/settings'
-import client from 'part:@sanity/base/client'
+import studioClient from 'part:@sanity/base/client'
 
 const storageKey = 'studio-hints'
 const studioHintsSettings = settings.forNamespace(storageKey)
+const client = studioClient.withConfig({apiVersion: '1'})
 
 export const locationSetting = studioHintsSettings.forKey('location')
 

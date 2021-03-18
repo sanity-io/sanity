@@ -1,9 +1,10 @@
+import type {Subscription} from 'rxjs'
 import React from 'react'
 import {DownloadIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
 import {AssetFromSource} from '@sanity/types'
 import {uniqueId} from 'lodash'
-import {client} from '../../legacyParts'
+import {versionedClient} from '../versionedClient'
 import Asset from './Asset'
 
 const PER_PAGE = 200
@@ -44,6 +45,7 @@ export class DefaultSource extends React.Component<Props, State> {
   _elementId = `default-asset-source-${uniqueId()}`
 
   pageNo = 0
+  fetch$: Subscription
 
   fetchPage(pageNo: number) {
     const start = pageNo * PER_PAGE
@@ -51,7 +53,7 @@ export class DefaultSource extends React.Component<Props, State> {
 
     this.setState({isLoading: true})
 
-    return client.fetch(buildQuery(start, end)).then((result) => {
+    this.fetch$ = versionedClient.observable.fetch(buildQuery(start, end)).subscribe((result) => {
       this.setState((prevState) => ({
         isLastPage: result.length < PER_PAGE,
         assets: prevState.assets.concat(result),
@@ -68,6 +70,12 @@ export class DefaultSource extends React.Component<Props, State> {
 
   componentDidMount() {
     this.fetchPage(this.pageNo)
+  }
+
+  componentWillUnmount() {
+    if (this.fetch$) {
+      this.fetch$.unsubscribe()
+    }
   }
 
   select(id) {

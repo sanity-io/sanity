@@ -1,9 +1,9 @@
-import client from 'part:@sanity/base/client'
 import pluginConfig from 'config:@sanity/default-login'
+import {versionedClient} from '../versionedClient'
 
 export default function getProviders() {
   const config = pluginConfig || {}
-  return client
+  return versionedClient
     .request({
       uri: '/auth/providers',
       withCredentials: true,

@@ -16,7 +16,7 @@ const styles = {
   visionGui,
 }
 
-const client = sanityClient.clone()
+const client = sanityClient.withConfig({apiVersion: '1'})
 
 // Used in Sanity project
 function SanityVision() {
