@@ -69,7 +69,7 @@ const Content = styled(Box)<{
     border-radius: ${rem(radius[1])};
 
     &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing})};
+      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
     }
 
     &:focus:not(:focus-visible) {
