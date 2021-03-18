@@ -16,6 +16,8 @@ const tests = [
   ['a.b.c', ['a.b.c']],
   ['sanity.io', ['sanity.io']],
   ['fourty-two', ['fourty', 'two']],
+  ['full stop. Then new beginning', ['full', 'stop', 'Then', 'new', 'beginning']],
+  ['about .io domains', ['about', 'io', 'domains']],
   ['abc -23 def', ['abc', '23', 'def']],
   ['banana&[friends]\\/ barnåler', ['banana', 'friends', 'barnåler']],
   ['banana&friends barnåler', ['banana', 'friends', 'barnåler']],
