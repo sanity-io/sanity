@@ -1,5 +1,6 @@
-const pattern = /([^\s,-])+/g
+const SPECIAL_CHARS = /([^!@#$%^&*(),\\/?":{}|[\]+<>\s-])+/g
+const STRIP_EDGE_CHARS = /(^[.]+)|([.]+$)/
 
 export function tokenize(string) {
-  return string.match(pattern) || []
+  return (string.match(SPECIAL_CHARS) || []).map((token) => token.replace(STRIP_EDGE_CHARS, ''))
 }

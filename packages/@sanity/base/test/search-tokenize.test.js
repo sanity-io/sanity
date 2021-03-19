@@ -14,8 +14,16 @@ const tests = [
   ['foo, bar, baz', ['foo', 'bar', 'baz']],
   ['foo   , bar   , baz', ['foo', 'bar', 'baz']],
   ['a.b.c', ['a.b.c']],
+  ['sanity.io', ['sanity.io']],
   ['fourty-two', ['fourty', 'two']],
+  ['full stop. Then new beginning', ['full', 'stop', 'Then', 'new', 'beginning']],
+  ['about .io domains', ['about', 'io', 'domains']],
   ['abc -23 def', ['abc', '23', 'def']],
+  ['banana&[friends]\\/ barnåler', ['banana', 'friends', 'barnåler']],
+  ['banana&friends barnåler', ['banana', 'friends', 'barnåler']],
+  ['ban*ana*', ['ban', 'ana']],
+  ['한국인은 banana 동의하지 않는다', ['한국인은', 'banana', '동의하지', '않는다']],
+  ['한국인은    동의2하지', ['한국인은', '동의2하지']],
 ]
 
 tests.forEach(([input, expected]) => {
