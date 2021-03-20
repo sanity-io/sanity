@@ -23,6 +23,7 @@
     "@popperjs/core": "^2.5.4",
     "@reach/auto-id": "^0.13.2",
     "@sanity/base": "2.6.4",
+    "@sanity/client": "2.2.6",
     "@sanity/data-aspects": "2.2.6",
     "@sanity/diff": "2.2.6",
     "@sanity/field": "2.6.4",

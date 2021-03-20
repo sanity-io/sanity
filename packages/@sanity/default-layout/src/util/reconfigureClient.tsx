@@ -1,9 +1,8 @@
-import {SanityClient, ClientConfig} from '@sanity/client'
 import client from 'part:@sanity/base/client'
-import {CONFIGURED_SPACES} from './spaces'
+import {CONFIGURED_SPACES, ApiConfig} from './spaces'
 
-type StudioClient = SanityClient & {
-  config(newConfig?: Partial<ClientConfig>, silenceConfigWarning?: boolean): SanityClient
+type StudioClient = {
+  config(newConfig?: ApiConfig, silenceConfigWarning?: boolean): unknown
 }
 
 export default function reconfigureClient(routerState: {space: string}): void {

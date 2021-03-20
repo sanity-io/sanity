@@ -119,6 +119,8 @@ export interface AssetSourceComponentProps {
   onSelect: (assetFromSource: AssetFromSource) => void
 }
 
+export type AssetMetadataType = 'location' | 'exif' | 'image' | 'palette' | 'lqip' | 'none'
+
 export interface AssetSource {
   name: string
   title: string

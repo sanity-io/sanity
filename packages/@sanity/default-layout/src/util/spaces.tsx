@@ -1,8 +1,12 @@
-import {ClientConfig} from '@sanity/client'
 import config from 'config:sanity'
 import {capitalize} from 'lodash'
 
 const FEATURE_KEY = '__experimental_spaces'
+
+export interface ApiConfig {
+  projectId?: string
+  dataset?: string
+}
 
 function prepareSpace(space) {
   return Object.assign({}, space, {
@@ -11,7 +15,7 @@ function prepareSpace(space) {
 }
 
 function getConfiguredSpaces(): {
-  api: Partial<ClientConfig>
+  api: ApiConfig
   default: boolean
   name: string
   title: string
