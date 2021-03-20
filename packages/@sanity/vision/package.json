@@ -20,6 +20,8 @@
     "admin"
   ],
   "dependencies": {
+    "@sanity/icons": "^1.0.5",
+    "@sanity/ui": "^0.33.9",
     "classnames": "^2.2.5",
     "codemirror": "^5.47.0",
     "moment": "^2.19.1",

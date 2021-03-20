@@ -23,4 +23,4 @@ function SanityVision() {
   return <Vision styles={styles} components={components} client={client} schema={schema} />
 }
 
-module.exports = SanityVision
+export default SanityVision
