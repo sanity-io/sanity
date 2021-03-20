@@ -1,12 +1,6 @@
 /* stylelint-disable no-descending-specificity */
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes blink {
-  50% {
-    background-color: transparent;
-  }
-}
-
 .root {
   position: absolute;
   top: 0;
@@ -19,44 +13,14 @@
   flex-direction: column;
 }
 
-.header {
-  border-bottom: 1px solid var(--component-border-color);
-  padding: var(--small-padding);
-  display: flex;
-  align-items: center;
-  background-color: color(var(--main-navigation-color) a(90%));
-  color: var(--main-navigation-color--inverted);
-}
-
 .splitContainer {
   flex-grow: 1;
   box-sizing: border-box;
   position: relative;
 }
 
-.datasetSelectorContainer {
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-}
-
-.datasetLabel {
-  text-transform: uppercase;
-  margin-right: 0.5em;
-}
-
-.queryTimingContainer {
-  font-size: var(--font-size-xsmall);
-  padding: 0 var(--medium-padding);
-}
-
-.headerFunctions {
-  margin-left: auto;
-  align-self: flex-end;
-
-  @nest & > * {
-    margin-left: 0.5em;
-  }
+.header {
+  border-bottom: 1px solid #c1c2c5;
 }
 
 .grid {
@@ -91,16 +55,6 @@
   position: relative;
   height: 100%;
   width: 100%;
-}
-
-.datasetSelector {
-  composes: select from 'part:@sanity/components/selects/default-style';
-  min-width: 10rem;
-}
-
-.datasetSelectorLabel {
-  composes: level_2 from 'part:@sanity/components/labels/default-style';
-  margin-right: 20px;
 }
 
 .inputContainer {
@@ -159,55 +113,6 @@
   composes: paramsEditor;
   background: color(var(--state-danger-color) a(20%));
   width: 100%;
-}
-
-.controls {
-  margin: 10px 0;
-}
-
-.controls::after {
-  content: ' ';
-  display: block;
-  clear: both;
-}
-
-.queryTiming {
-  margin: 0;
-  padding: 0;
-
-  @nest & span {
-    opacity: 0.6;
-  }
-}
-
-.queryTimingLong {
-  composes: queryTiming;
-  color: var(--state-danger-color);
-  font-weight: bold;
-  font-size: var(--font-size-xsmall);
-}
-
-.queryUrlContainer {
-  flex-grow: 1;
-  font-size: var(--font-size-xsmall);
-  margin: 0 var(--medium-padding);
-}
-
-.queryUrlLine {
-  display: flex;
-}
-
-.queryUrl {
-  composes: queryTiming;
-  color: inherit;
-  opacity: 0.6;
-  font-size: 1em;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  border: 0;
-  background-color: transparent;
-  width: stretch;
 }
 
 .queryUrlCopy {

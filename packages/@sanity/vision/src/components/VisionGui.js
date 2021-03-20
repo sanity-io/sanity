@@ -2,33 +2,30 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
+import SplitPane from 'react-split-pane'
+import {PlayIcon} from '@sanity/icons'
+import {Flex, Card, Button, Stack, Box, Label, Select, Text, TextInput} from '@sanity/ui'
+import studioClient from 'part:@sanity/base/client'
 import {storeState, getState} from '../util/localState'
 import parseApiQueryString from '../util/parseApiQueryString'
 import tryParseParams from '../util/tryParseParams'
+import encodeQueryString from '../util/encodeQueryString'
+import {apiVersions} from '../apiVersions'
 import DelayedSpinner from './DelayedSpinner'
 import QueryEditor from './QueryEditor'
 import ParamsEditor from './ParamsEditor'
 import ResultView from './ResultView'
 import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
-import SplitPane from 'react-split-pane'
-import encodeQueryString from '../util/encodeQueryString'
 
-// eslint-disable-next-line import/no-unassigned-import
+/* eslint-disable import/no-unassigned-import, import/no-unresolved */
 import 'codemirror/lib/codemirror.css?raw'
-// eslint-disable-next-line import/no-unassigned-import
 import 'codemirror/theme/material.css?raw'
-// eslint-disable-next-line import/no-unassigned-import
 import 'codemirror/addon/hint/show-hint.css?raw'
+/* eslint-enable import/no-unassigned-import, import/no-unresolved */
 
-// eslint-disable-next-line import/no-unassigned-import
-import 'codemirror/lib/codemirror.css?raw'
-// eslint-disable-next-line import/no-unassigned-import
-import 'codemirror/theme/material.css?raw'
-// eslint-disable-next-line import/no-unassigned-import
-import 'codemirror/addon/hint/show-hint.css?raw'
-
-const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
+const NO_POINTER_EVENTS = {pointerEvents: 'none'}
+const sanityUrl = /\.api\.sanity\.io\/(vx|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const handleCopyUrl = () => {
   const emailLink = document.querySelector('#vision-query-url')
@@ -43,23 +40,31 @@ const handleCopyUrl = () => {
 }
 
 class VisionGui extends React.PureComponent {
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props)
 
     const lastQuery = getState('lastQuery')
     const lastParams = getState('lastParams')
 
     const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
-    const defaultDataset = context.client.config().dataset || firstDataset
+    const defaultDataset = studioClient.config().dataset || firstDataset
+    const defaultApiVersion = `v${studioClient.config().apiVersion || '1'}`
 
     let dataset = getState('dataset', defaultDataset)
+    let apiVersion = getState('apiVersion', defaultApiVersion)
 
     if (!this.props.datasets.some(({name}) => name === dataset)) {
       dataset = defaultDataset
     }
 
+    if (!apiVersions.includes(apiVersion)) {
+      apiVersion = apiVersions[0]
+    }
+
     this._queryEditorContainer = React.createRef()
     this._paramsEditorContainer = React.createRef()
+
+    this.client = studioClient.withConfig({apiVersion, dataset})
 
     this.subscribers = {}
     this.state = {
@@ -68,10 +73,13 @@ class VisionGui extends React.PureComponent {
       rawParams: lastParams,
       queryInProgress: false,
       dataset,
+      apiVersion,
     }
 
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
+    this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
     this.handleListenExecution = this.handleListenExecution.bind(this)
+    this.handleListenerCancellation = this.handleListenerCancellation.bind(this)
     this.handleListenerMutation = this.handleListenerMutation.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
@@ -80,7 +88,6 @@ class VisionGui extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.context.client.config({dataset: this.state.dataset})
     window.document.addEventListener('paste', this.handlePaste)
   }
 
@@ -96,7 +103,7 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    const [, dataset, urlQuery] = match
+    const [, apiVersion, dataset, urlQuery] = match
     const qs = queryString.parse(urlQuery)
     let parts
 
@@ -107,16 +114,28 @@ class VisionGui extends React.PureComponent {
       return // Give up on error
     }
 
-    if (this.context.client.config().dataset !== dataset) {
-      this.handleChangeDataset({target: {value: dataset}})
+    if (this.state.data !== dataset) {
+      storeState('dataset', dataset)
+    }
+
+    if (this.state.apiVersion !== apiVersion) {
+      storeState('apiVersion', apiVersion)
     }
 
     evt.preventDefault()
-    this.setState({
-      query: parts.query,
-      params: parts.params,
-      rawParams: JSON.stringify(parts.params, null, 2),
-    })
+    this.client.config({dataset, apiVersion})
+    this.setState(
+      {
+        dataset,
+        apiVersion,
+        query: parts.query,
+        params: parts.params,
+        rawParams: JSON.stringify(parts.params, null, 2),
+      },
+      () => {
+        this.handleQueryExecution()
+      }
+    )
   }
 
   cancelQuery() {
@@ -141,7 +160,15 @@ class VisionGui extends React.PureComponent {
     const dataset = evt.target.value
     storeState('dataset', dataset)
     this.setState({dataset})
-    this.context.client.config({dataset})
+    this.client.config({dataset})
+    this.handleQueryExecution()
+  }
+
+  handleChangeApiVersion(evt) {
+    const apiVersion = evt.target.value
+    storeState('apiVersion', apiVersion)
+    this.setState({apiVersion})
+    this.client.config({apiVersion})
     this.handleQueryExecution()
   }
 
@@ -155,6 +182,15 @@ class VisionGui extends React.PureComponent {
     this.setState({listenMutations})
   }
 
+  handleListenerCancellation() {
+    if (!this.state.listenInProgress) {
+      return
+    }
+
+    this.cancelListener()
+    this.setState({listenInProgress: false})
+  }
+
   handleListenExecution() {
     const {query, params, rawParams, listenInProgress} = this.state
     if (listenInProgress) {
@@ -163,9 +199,10 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    const client = this.context.client
     const paramsError = params instanceof Error && params
-    const url = client.getUrl(client.getDataUrl('listen', encodeQueryString(query, params)))
+    const url = this.client.getUrl(
+      this.client.getDataUrl('listen', encodeQueryString(query, params))
+    )
     storeState('lastQuery', query)
     storeState('lastParams', rawParams)
 
@@ -186,7 +223,7 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    this.subscribers.listen = client.listen(query, params, {}).subscribe({
+    this.subscribers.listen = this.client.listen(query, params, {}).subscribe({
       next: this.handleListenerMutation,
       error: (error) =>
         this.setState({
@@ -199,7 +236,6 @@ class VisionGui extends React.PureComponent {
 
   handleQueryExecution() {
     const {query, params, rawParams} = this.state
-    const client = this.context.client.observable
     const paramsError = params instanceof Error && params
     storeState('lastQuery', query)
     storeState('lastParams', rawParams)
@@ -220,27 +256,31 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    const url = client.getUrl(client.getDataUrl('query', encodeQueryString(query, params)))
+    const url = this.client.getUrl(
+      this.client.getDataUrl('query', encodeQueryString(query, params))
+    )
     const queryStart = Date.now()
 
-    this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
-      next: (res) =>
-        this.setState({
-          executedQuery: query,
-          url,
-          queryTime: res.ms,
-          e2eTime: Date.now() - queryStart,
-          result: res.result,
-          queryInProgress: false,
-          error: null,
-        }),
-      error: (error) =>
-        this.setState({
-          error,
-          query,
-          queryInProgress: false,
-        }),
-    })
+    this.subscribers.query = this.client.observable
+      .fetch(query, params, {filterResponse: false})
+      .subscribe({
+        next: (res) =>
+          this.setState({
+            executedQuery: query,
+            url,
+            queryTime: res.ms,
+            e2eTime: Date.now() - queryStart,
+            result: res.result,
+            queryInProgress: false,
+            error: null,
+          }),
+        error: (error) =>
+          this.setState({
+            error,
+            query,
+            queryInProgress: false,
+          }),
+      })
   }
 
   handleQueryChange(data) {
@@ -252,7 +292,7 @@ class VisionGui extends React.PureComponent {
   }
 
   render() {
-    const {client, components} = this.context
+    const {datasets} = this.props
     const {
       error,
       result,
@@ -264,11 +304,10 @@ class VisionGui extends React.PureComponent {
       queryTime,
       e2eTime,
       listenMutations,
+      apiVersion,
+      dataset,
     } = this.state
-    const {Button, Select} = components
     const styles = this.context.styles.visionGui
-    const dataset = client.config().dataset
-    const datasets = this.props.datasets.map((set) => set.name)
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
     const hasEmptyResult = hasResult && Array.isArray(result) && result.length === 0
 
@@ -278,67 +317,105 @@ class VisionGui extends React.PureComponent {
     const visionClass = ['sanity-vision', this.context.styles.visionGui.root]
       .filter(Boolean)
       .join(' ')
-    const headerClass = ['sanity-vision', this.context.styles.visionGui.header]
-      .filter(Boolean)
-      .join(' ')
+
     return (
       <div className={visionClass}>
-        <div className={headerClass}>
-          <div className={styles.headerLeft}>
-            <label className={styles.datasetSelectorContainer}>
-              <span className={styles.datasetLabel}>Dataset</span>
-              <Select
-                value={this.state.dataset || client.config().dataset}
-                values={datasets}
-                onChange={this.handleChangeDataset}
-              />
-            </label>
-          </div>
-          {typeof url === 'string' && (
-            <div className={styles.queryUrlContainer}>
-              <div>
-                Query URL&nbsp;
-                <a onClick={handleCopyUrl} className={styles.queryUrlCopy}>
-                  copy
-                </a>
-              </div>
-              <div className={styles.queryUrlLine}>
-                <input className={styles.queryUrl} readOnly id="vision-query-url" value={url} />
-              </div>
-            </div>
-          )}
-          <div className={styles.queryTimingContainer}>
-            {typeof queryTime === 'number' && (
-              <p
-                className={
-                  queryTime > 0.5
-                    ? styles.queryTiming || 'queryTiming'
-                    : styles.queryTimingLong || 'queryTiming'
-                }
-              >
-                Query time
-                <br />
-                <span>
-                  {queryTime}ms (end-to-end: {e2eTime}ms)
-                </span>
-              </p>
-            )}
-          </div>
-          <div className={styles.headerFunctions}>
-            <Button
-              onClick={this.handleListenExecution}
-              loading={listenInProgress}
-              color="white"
-              inverted
-            >
-              Listen
-            </Button>
+        <Card className={styles.header}>
+          <Flex>
+            {/* Dataset selector */}
+            <Box padding={1}>
+              <Stack>
+                <Card padding={2}>
+                  <Label>Dataset</Label>
+                </Card>
+                <Select value={dataset} onChange={this.handleChangeDataset}>
+                  {datasets.map((ds) => (
+                    <option key={ds.name}>{ds.name}</option>
+                  ))}
+                </Select>
+              </Stack>
+            </Box>
 
-            <Button onClick={this.handleQueryExecution} loading={queryInProgress} color="primary">
-              Run query
-            </Button>
-          </div>
-        </div>
+            {/* API version selector */}
+            <Box padding={1}>
+              <Stack>
+                <Card padding={2}>
+                  <Label>API version</Label>
+                </Card>
+                <Select value={apiVersion} onChange={this.handleChangeApiVersion}>
+                  {apiVersions.map((version) => (
+                    <option key={version}>{version}</option>
+                  ))}
+                </Select>
+              </Stack>
+            </Box>
+
+            {/* Query URL (for copying) */}
+            {typeof url === 'string' ? (
+              <Box padding={1} flex={1}>
+                <Stack>
+                  <Card padding={2}>
+                    <Label>
+                      Query URL&nbsp;
+                      <a onClick={handleCopyUrl} className={styles.queryUrlCopy}>
+                        [copy]
+                      </a>
+                    </Label>
+                  </Card>
+                  <TextInput readOnly id="vision-query-url" value={url} />
+                </Stack>
+              </Box>
+            ) : (
+              <Box flex={1} />
+            )}
+
+            {/* Execution time */}
+            {typeof queryTime === 'number' && (
+              <Box padding={1}>
+                <Stack>
+                  <Card padding={2}>
+                    <Label>Timings</Label>
+                  </Card>
+                  <Stack space={2}>
+                    <Text size={2}>Execution: {queryTime}ms</Text>
+                    <Text size={2}>End-to-end: {e2eTime}ms</Text>
+                  </Stack>
+                </Stack>
+              </Box>
+            )}
+
+            {/* Controls (listen/run) */}
+            <Box padding={1}>
+              <Stack>
+                <Card padding={2}>
+                  <Label align="right">Controls</Label>
+                </Card>
+                <Flex>
+                  <Card onClick={this.handleListenerCancellation}>
+                    <Button
+                      style={listenInProgress ? NO_POINTER_EVENTS : undefined}
+                      onClick={this.handleListenExecution}
+                      loading={listenInProgress}
+                      type="button"
+                      text="Listen"
+                      mode="ghost"
+                    />
+                  </Card>
+
+                  <Card marginLeft={1}>
+                    <Button
+                      onClick={this.handleQueryExecution}
+                      icon={PlayIcon}
+                      loading={queryInProgress}
+                      tone="primary"
+                      text="Run query"
+                    />
+                  </Card>
+                </Flex>
+              </Stack>
+            </Box>
+          </Flex>
+        </Card>
         <div className={styles.splitContainer}>
           <SplitPane split="vertical" minSize={150} defaultSize={400}>
             <div className={styles.edit}>
@@ -398,7 +475,6 @@ VisionGui.propTypes = {
 }
 
 VisionGui.contextTypes = {
-  client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
   styles: PropTypes.object,
   components: PropTypes.object,
 }

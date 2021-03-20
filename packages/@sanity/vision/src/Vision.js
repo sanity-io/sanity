@@ -43,4 +43,4 @@ Vision.childContextTypes = {
   styles: PropTypes.object.isRequired,
 }
 
-module.exports = Vision
+export default Vision
