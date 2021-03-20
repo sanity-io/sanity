@@ -3,9 +3,9 @@ import crypto from 'crypto'
 import getRepoInfo from 'git-repo-info'
 import Hashids from 'hashids'
 import {omit} from 'lodash'
-import createClient from '@sanity/client'
 import {nanoid} from 'nanoid'
 import {uuid} from '@sanity/uuid'
+import createClient from '../../packages/@sanity/client'
 import {testTypingSpeed} from './typingSpeed'
 
 const hashIds = new Hashids()

@@ -9,7 +9,7 @@
   "scripts": {
     "analyze": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify --full-paths -t envify -g uglifyify lib/sanityClient.js --standalone=SanityClient | discify --open",
     "browserify": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
-    "build": "npm run browserify && npm run minify && npm run size",
+    "build": "babel src --copy-files --out-dir lib && npm run browserify && npm run minify && npm run size",
     "size": "node -r @babel/register src/scripts/print-bundle-size",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
@@ -31,6 +31,9 @@
     "object-assign": "^4.1.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
     "boxen": "^4.1.0",
     "browserify": "^14.3.0",
     "chalk": "^2.3.0",

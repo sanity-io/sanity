@@ -6,7 +6,7 @@ declare module 'all:part:@sanity/base/absolutes' {
 declare module 'all:part:@sanity/base/component'
 
 declare module 'all:part:@sanity/base/diff-resolver' {
-  import {ComponentType} from 'react'
+  import type {ComponentType} from 'react'
 
   type DiffComponent = ComponentType<unknown>
   type DiffResolver = (schemaType: unknown) => DiffComponent | undefined
@@ -59,7 +59,7 @@ declare module 'part:@sanity/base/brand-logo?' {
   export default BrandLogo
 }
 declare module 'part:@sanity/base/client' {
-  import {ClientConfig, SanityClient, SanityClient} from '@sanity/client'
+  import type {ClientConfig, SanityClient, SanityClient} from '@sanity/client'
 
   type StudioClient = SanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}
 
@@ -67,7 +67,7 @@ declare module 'part:@sanity/base/client' {
   export default client
 }
 declare module 'part:@sanity/base/client?' {
-  import client from 'part:@sanity/base/client'
+  import type client from 'part:@sanity/base/client'
 
   type StudioClient = SanityClient & {withConfig: (config: Partial<ClientConfig>) => SanityClient}
 
@@ -75,7 +75,7 @@ declare module 'part:@sanity/base/client?' {
   export default maybeClient
 }
 declare module 'part:@sanity/base/configure-client?' {
-  import {SanityClient as OriginalSanityClient} from '@sanity/client'
+  import type {SanityClient as OriginalSanityClient} from '@sanity/client'
 
   type Configurer = (
     client: OriginalSanityClient
@@ -123,8 +123,8 @@ declare module 'part:@sanity/base/new-document-structure?' {
 }
 
 declare module 'part:@sanity/base/preview' {
-  import {Reference, SchemaType} from '@sanity/types'
-  import {Observable} from 'rxjs'
+  import type {Reference, SchemaType} from '@sanity/types'
+  import type {Observable} from 'rxjs'
 
   declare const PreviewBase: React.ComponentType<{
     type?: SchemaType
@@ -146,7 +146,7 @@ declare module 'part:@sanity/base/preview' {
 }
 
 declare module 'part:@sanity/base/preview?' {
-  import {SchemaType} from '@sanity/types'
+  import type {SchemaType} from '@sanity/types'
   const Preview: React.ComponentType<{
     layout: 'default'
     status: React.ReactNode
@@ -184,7 +184,7 @@ declare module 'part:@sanity/base/sanity-logo-alpha'
 declare module 'part:@sanity/base/sanity-root'
 declare module 'part:@sanity/base/sanity-studio-logo'
 declare module 'part:@sanity/base/schema' {
-  import {SchemaType} from '@sanity/types'
+  import type {SchemaType} from '@sanity/types'
 
   interface Schema {
     _validation: {
@@ -200,7 +200,7 @@ declare module 'part:@sanity/base/schema' {
 }
 
 declare module 'part:@sanity/base/schema?' {
-  import schema from 'part:@sanity/base/schema'
+  import type schema from 'part:@sanity/base/schema'
   declare const maybeSchema: typeof schema | void
   export default maybeSchema
 }
