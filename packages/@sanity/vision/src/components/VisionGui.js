@@ -226,7 +226,7 @@ class VisionGui extends React.PureComponent {
     this.subscribers.query = client.fetch(query, params, {filterResponse: false}).subscribe({
       next: (res) =>
         this.setState({
-          query,
+          executedQuery: query,
           url,
           queryTime: res.ms,
           e2eTime: Date.now() - queryStart,
@@ -259,6 +259,7 @@ class VisionGui extends React.PureComponent {
       url,
       query,
       queryInProgress,
+      executedQuery,
       listenInProgress,
       queryTime,
       e2eTime,
@@ -269,6 +270,7 @@ class VisionGui extends React.PureComponent {
     const dataset = client.config().dataset
     const datasets = this.props.datasets.map((set) => set.name)
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
+    const hasEmptyResult = hasResult && Array.isArray(result) && result.length === 0
 
     // Note that because of react-json-inspector, we need at least one
     // addressable, non-generated class name. Therefore;
@@ -368,10 +370,10 @@ class VisionGui extends React.PureComponent {
               <div className={styles.result}>
                 {queryInProgress && <DelayedSpinner />}
                 {error && <QueryErrorDialog error={error} />}
-                {hasResult && <ResultView data={result} query={query} />}
-                {Array.isArray(result) && result.length === 0 && (
+                {hasResult && !hasEmptyResult && <ResultView data={result} query={query} />}
+                {hasEmptyResult && (
                   <div className={styles.noResult}>
-                    <NoResultsDialog query={query} dataset={dataset} />
+                    <NoResultsDialog query={executedQuery} dataset={dataset} />
                   </div>
                 )}
                 {listenMutations && listenMutations.length > 0 && (
