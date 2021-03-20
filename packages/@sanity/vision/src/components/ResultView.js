@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactJsonView from 'react-json-view'
 
-function isJSONValue(data) {
+function isJsonObject(data) {
   return data !== null && typeof data === 'object'
 }
 
 function ResultView(props) {
   const {data} = props
 
-  return isJSONValue(data) ? (
+  return isJsonObject(data) ? (
     <ReactJsonView
       name="result"
       src={data}
@@ -18,7 +18,7 @@ function ResultView(props) {
       groupArraysAfterLength={50}
     />
   ) : (
-    <pre>{data || 'null'}</pre>
+    <pre>{data === null ? 'null' : data.toString()}</pre>
   )
 }
 
