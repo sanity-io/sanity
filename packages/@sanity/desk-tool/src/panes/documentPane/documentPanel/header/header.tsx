@@ -228,7 +228,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
         <div className={styles.paneActions}>
           {LanguageFilter && (
             <div>
-              <LanguageFilter />
+              <LanguageFilter schemaType={schemaType} />
             </div>
           )}
 
