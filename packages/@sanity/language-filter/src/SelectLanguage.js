@@ -19,6 +19,7 @@ export default class SelectLanguage extends React.Component {
   static propTypes = {
     languages: PropTypes.arrayOf(LanguagePropType),
     defaultLanguages: PropTypes.arrayOf(PropTypes.string),
+    documentTypes: PropTypes.arrayOf(PropTypes.string),
     selected: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func,
   }
@@ -68,6 +69,11 @@ export default class SelectLanguage extends React.Component {
     return defaultLanguages && defaultLanguages.includes(langId)
   }
 
+  isValidDocumentType = () => {
+    const {currentDocumentType, documentTypes} = this.props
+    return documentTypes ? documentTypes.includes(currentDocumentType) : true
+  }
+
   handleSelectAll = (event) => {
     const {languages, onChange} = this.props
     onChange(languages.map((l) => l.id))
@@ -92,7 +98,7 @@ export default class SelectLanguage extends React.Component {
       this.togglePoppableRef.current &&
       this.togglePoppableRef.current._element
 
-    return (
+    return this.isValidDocumentType() ? (
       <>
         <button
           type="button"
@@ -122,7 +128,7 @@ export default class SelectLanguage extends React.Component {
           onClickOutside={this.handleClickOutside}
           placement="bottom"
           referenceElement={toggleRef}
-          id={this.id}
+          id={id}
         >
           {isOpen && (
             <div className={styles.root}>
@@ -157,6 +163,8 @@ export default class SelectLanguage extends React.Component {
           )}
         </Poppable>
       </>
+    ) : (
+      <></>
     )
   }
 }
