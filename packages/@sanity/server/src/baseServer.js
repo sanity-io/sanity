@@ -1,9 +1,11 @@
+import https from 'https'
 import path from 'path'
 import express from 'express'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import requireUncached from 'require-uncached'
 import {resolveParts} from '@sanity/resolver'
+import getHttpsConfig from './util/getHttpsConfig'
 import getStaticBasePath from './util/getStaticBasePath'
 
 const docPart = 'part:@sanity/base/document'
@@ -37,8 +39,15 @@ const getDocumentComponent = (basePath, isSanityMonorepo = false) => {
   })
 }
 
-export function getBaseServer() {
-  return express()
+export function getBaseServer(config) {
+  const app = express()
+  if (config.https) {
+    app.listen = function (host, port, resolve) {
+      https.createServer(getHttpsConfig(), this).listen(host, port)
+      resolve()
+    }
+  }
+  return app
 }
 
 export function getDocumentElement({project, basePath, hashes, isSanityMonorepo}, props = {}) {
