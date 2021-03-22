@@ -32,6 +32,11 @@ export default {
       title: 'Description',
     },
     {
+      name: 'altText',
+      type: 'string',
+      title: 'Alternative text',
+    },
+    {
       name: 'sha1hash',
       type: 'string',
       title: 'SHA1 hash',
