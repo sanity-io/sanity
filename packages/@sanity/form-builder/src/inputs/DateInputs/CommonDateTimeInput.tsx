@@ -4,7 +4,6 @@ import {FormField} from '@sanity/base/components'
 import {Marker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
-import PatchEvent, {set, unset} from '../../PatchEvent'
 import {DateTimeInput} from './base/DateTimeInput'
 import {format, parse} from './legacy'
 import {CommonProps} from './types'
@@ -13,6 +12,7 @@ type Props = CommonProps & {
   title: string
   description: string
   inputFormat: string
+  onChange: (nextDate: Date | null) => void
   selectTime: boolean
   placeholder?: string
   timeStep?: number
@@ -49,12 +49,12 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
       setParseError(undefined)
       setInputValue(undefined)
       if (!nextInputValue) {
-        onChange(PatchEvent.from([unset()]))
+        onChange(null)
         return
       }
       const result = parse(nextInputValue, inputFormat)
       if (result.isValid) {
-        onChange(PatchEvent.from([set(result.date.toISOString())]))
+        onChange(result.date)
       } else {
         setParseError(result.error)
         // keep the input value floating around as long as it's invalid so that the
@@ -67,7 +67,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 
   const handleDatePickerChange = React.useCallback(
     (nextDate: Date) => {
-      onChange(PatchEvent.from([set(nextDate.toISOString())]))
+      onChange(nextDate)
       setParseError(undefined)
       setInputValue(undefined)
     },
