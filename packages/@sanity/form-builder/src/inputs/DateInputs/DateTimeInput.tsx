@@ -1,5 +1,6 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 
+import PatchEvent, {set, unset} from '../../PatchEvent'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {CommonProps} from './types'
 
@@ -18,6 +19,7 @@ type SchemaOptions = {
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'
 type Props = CommonProps & {
+  onChange: (event: PatchEvent) => void
   type: {
     name: string
     title: string
@@ -40,14 +42,22 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
   props: Props,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {type, ...rest} = props
+  const {type, onChange, ...rest} = props
   const {title, description, placeholder} = type
 
   const {dateFormat, timeFormat, timeStep} = parseOptions(type.options)
 
+  const handleChange = useCallback(
+    (nextDate: Date | null) => {
+      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate.toISOString())]))
+    },
+    [onChange]
+  )
+
   return (
     <CommonDateTimeInput
       {...rest}
+      onChange={handleChange}
       ref={forwardedRef}
       selectTime
       timeStep={timeStep}
