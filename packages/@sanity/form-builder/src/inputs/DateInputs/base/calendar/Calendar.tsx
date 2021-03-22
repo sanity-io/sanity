@@ -18,6 +18,21 @@ type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   onFocusedDateChange: (index: Date) => void
 }
 
+// This is used to maintain focus on a child element of the calendar-grid between re-renders
+// When using arrow keys to move focus from a day in one month to another we are setting focus at the button for the day
+// after it has changed but *only* if we *already* had focus inside the calendar grid (e.g not if focus was on the "next
+// year" button, or any of the other controls)
+// When moving from the last day of a month that displays 6 weeks in the grid to a month that displays 5 weeks, current
+// focus gets lost on render, so this provides us with a stable element to help us preserve focus on a child element of
+// the calendar grid between re-renders
+const PRESERVE_FOCUS_ELEMENT = (
+  <span
+    data-preserve-focus
+    style={{overflow: 'hidden', position: 'absolute', outline: 'none'}}
+    tabIndex={-1}
+  />
+)
+
 export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
   forwardedRef: React.ForwardedRef<HTMLElement>
@@ -114,8 +129,10 @@ export const Calendar = forwardRef(function Calendar(
       if (event.key === 'ArrowRight') {
         onFocusedDateChange(addDays(focusedDate, 1))
       }
+      // set focus temporarily on this element to make sure focus is still inside the calendar-grid after re-render
+      ref.current?.querySelector<HTMLElement>('[data-preserve-focus]')?.focus()
     },
-    [focusCurrentWeekDay, onFocusedDateChange, focusedDate]
+    [ref, focusCurrentWeekDay, onFocusedDateChange, focusedDate]
   )
 
   useEffect(() => {
@@ -124,7 +141,7 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     const currentFocusInCalendarGrid = document.activeElement?.matches(
-      '[data-calendar-grid] [data-weekday], [data-calendar-grid]'
+      '[data-calendar-grid], [data-calendar-grid] [data-preserve-focus]'
     )
     if (
       // Only move focus if it's currently in the calendar grid
@@ -191,6 +208,7 @@ export const Calendar = forwardRef(function Calendar(
             onSelect={handleDateChange}
             selected={selectedDate}
           />
+          {PRESERVE_FOCUS_ELEMENT}
         </Box>
       </Box>
 
