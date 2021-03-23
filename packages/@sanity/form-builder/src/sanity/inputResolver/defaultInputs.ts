@@ -1,7 +1,7 @@
 import BooleanInput from '../../inputs/BooleanInput'
 import EmailInput from '../../inputs/EmailInput'
 import NumberInput from '../../inputs/NumberInput'
-import ObjectInput from '../../inputs/ObjectInput'
+import {ObjectInput} from '../../inputs/ObjectInput'
 import StringInput from '../../inputs/StringInput'
 import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import TextInput from '../../inputs/TextInput'
