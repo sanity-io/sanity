@@ -10,9 +10,8 @@ declare const __DEV__: boolean
 
 type Props = {
   fieldNames: string[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: Record<string, any>
-  onChange: (event: PatchEvent) => void
+  value?: Record<string, unknown>
+  onChange?: (event: PatchEvent) => void
   readOnly?: boolean
 }
 
@@ -22,7 +21,9 @@ export function UnknownFields(props: Props) {
 
   const handleUnsetClick = useCallback(
     (fieldName) => {
-      onChange(PatchEvent.from(unset([fieldName])))
+      if (onChange) {
+        onChange(PatchEvent.from(unset([fieldName])))
+      }
     },
     [onChange]
   )
@@ -32,37 +33,36 @@ export function UnknownFields(props: Props) {
       status="warning"
       title={
         <>
-          {fieldsLen === 1 && <>This document contains an unknown property</>}
-          {fieldsLen > 1 && <>This document contains unknown properties</>}
+          {fieldsLen === 1 && <>Unknown field found</>}
+          {fieldsLen > 1 && <>Unknown fields found</>}
         </>
       }
     >
       <Text as="p" muted size={1}>
-        {fieldsLen === 1 && (
-          <>Encountered a property that is not defined in the document’s schema.</>
-        )}
-        {fieldsLen > 1 && (
-          <>Encountered {fieldsLen} properties that are not defined in the document’s schema.</>
+        {fieldsLen === 1 ? (
+          <>Encountered a field that is not defined in the schema.</>
+        ) : (
+          <>Encountered {fieldsLen} fields that are not defined in the schema.</>
         )}
       </Text>
 
       <Details marginTop={4} open={__DEV__} title={<>Developer info</>}>
         <Box marginBottom={3}>
-          {fieldsLen === 1 && (
-            <Text as="p" muted size={1}>
-              This field is not defined in the document’s schema, which could mean that the field
-              definition has been removed or that someone else has added it to their own local
-              project and have not deployed their changes yet.
-            </Text>
-          )}
-
-          {fieldsLen > 1 && (
-            <Text as="p" muted size={1}>
-              These fields are not defined in the document’s schema, which could mean that the field
-              definitions have been removed or that someone else has added them to their own local
-              project and have not deployed their changes yet.
-            </Text>
-          )}
+          <Text as="p" muted size={1}>
+            {fieldsLen === 1 ? (
+              <>
+                This field is not defined in the schema, which could mean that the field definition
+                has been removed or that someone else has added it to their own local project and
+                have not deployed their changes yet.
+              </>
+            ) : (
+              <>
+                These fields are not defined in the document’s schema, which could mean that the
+                field definitions have been removed or that someone else has added them to their own
+                local project and have not deployed their changes yet.
+              </>
+            )}
+          </Text>
         </Box>
 
         <Stack as="ul" space={3}>
@@ -71,9 +71,9 @@ export function UnknownFields(props: Props) {
               <UnknownField
                 key={fieldName}
                 fieldName={fieldName}
-                onUnsetClient={handleUnsetClick}
+                onUnsetClick={handleUnsetClick}
                 readOnly={readOnly}
-                value={value[fieldName]}
+                value={value?.[fieldName]}
               />
             )
           })}
@@ -85,19 +85,19 @@ export function UnknownFields(props: Props) {
 
 function UnknownField({
   fieldName,
-  onUnsetClient,
+  onUnsetClick,
   readOnly,
   value,
 }: {
   fieldName: string
   // eslint-disable-next-line no-shadow
-  onUnsetClient: (fieldName: string) => void
-  readOnly: boolean
-  value: any
+  onUnsetClick: (fieldName: string) => void
+  readOnly?: boolean
+  value: unknown
 }) {
   const handleUnsetClick = useCallback(() => {
-    onUnsetClient(fieldName)
-  }, [fieldName, onUnsetClient])
+    onUnsetClick(fieldName)
+  }, [fieldName, onUnsetClick])
 
   return (
     <Card as="li" padding={3} radius={2} shadow={1} tone="caution">
@@ -115,9 +115,9 @@ function UnknownField({
 
         {readOnly && (
           <Text as="p" muted size={1}>
-            This property is <strong>read only</strong> according to the document’s schema and
-            cannot be unset. If you want to be able to unset this in Studio, make sure you remove
-            the <code>readOnly</code> property from the enclosing type in the schema.
+            This field is <strong>read only</strong> according to the document’s schema and cannot
+            be unset. If you want to be able to unset this in Studio, make sure you remove the{' '}
+            <code>readOnly</code> field from the enclosing type in the schema.
           </Text>
         )}
 
@@ -126,7 +126,7 @@ function UnknownField({
             icon={TrashIcon}
             onClick={handleUnsetClick}
             tone="critical"
-            text={<>Remove property</>}
+            text={<>Remove field</>}
           />
         )}
       </Stack>

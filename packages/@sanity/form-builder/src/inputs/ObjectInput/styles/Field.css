@@ -1,8 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.root {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}

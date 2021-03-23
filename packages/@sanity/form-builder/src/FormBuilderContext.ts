@@ -51,7 +51,7 @@ function memoize(method) {
 
 interface Props {
   schema: Schema
-  value: unknown
+  value?: unknown
   children: any
   filterField?: any
   patchChannel: {

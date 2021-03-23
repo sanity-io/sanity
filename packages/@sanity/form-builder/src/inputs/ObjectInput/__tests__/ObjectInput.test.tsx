@@ -7,7 +7,7 @@ import React, {ForwardedRef, forwardRef} from 'react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
 import {SchemaType} from '@sanity/types'
-import ObjectInput, {Props} from '../ObjectInput'
+import {ObjectInput, Props} from '../ObjectInput'
 import FormBuilderContext from '../../../FormBuilderContext'
 import is from '../../../utils/is'
 

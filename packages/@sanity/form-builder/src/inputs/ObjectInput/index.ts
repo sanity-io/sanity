@@ -1,1 +1,1 @@
-export {default} from './ObjectInput'
+export {ObjectInput} from './ObjectInput'
