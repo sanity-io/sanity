@@ -6,6 +6,25 @@ export type DatasetAclMode = 'public' | 'private' | 'custom'
 export type ListenVisibility = 'sync' | 'async' | 'query'
 export type ListenEventName = 'mutation' | 'welcome' | 'reconnect'
 
+export interface ResponseEvent<T = unknown> {
+  type: 'response'
+  body: T
+  url: string
+  method: string
+  statusCode: number
+  statusMessage?: string
+  headers: Record<string, string>
+}
+
+export interface ProgressEvent {
+  type: 'progress'
+  stage: 'upload' | 'download'
+  percent: number
+  total?: number
+  loaded?: number
+  lengthComputable: boolean
+}
+
 type AttributeSet = {[key: string]: any}
 type QueryParams = {[key: string]: any}
 type MutationSelection = {query: string} | {id: string}
@@ -794,10 +813,25 @@ export class ObservableSanityClient {
      * @param options Options to use for the upload
      */
     upload(
+      assetType: 'file' | 'image',
+      body: File | Blob | Buffer | ReadableStream,
+      options?: UploadOptions
+    ): Observable<
+      ResponseEvent<{document: SanityAssetDocument | SanityImageAssetDocument}> | ProgressEvent
+    >
+
+    /**
+     * Uploads a file asset to the configured dataset
+     *
+     * @param assetType Asset type (file/image)
+     * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
+     * @param options Options to use for the upload
+     */
+    upload(
       assetType: 'file',
       body: File | Blob | Buffer | ReadableStream,
       options?: UploadOptions
-    ): Observable<SanityAssetDocument>
+    ): Observable<ResponseEvent<{document: SanityAssetDocument}> | ProgressEvent>
 
     /**
      * Uploads an image asset to the configured dataset
@@ -810,7 +844,7 @@ export class ObservableSanityClient {
       assetType: 'image',
       body: File | Blob | Buffer | ReadableStream,
       options?: UploadOptions
-    ): Observable<SanityImageAssetDocument>
+    ): Observable<ResponseEvent<{document: SanityImageAssetDocument}> | ProgressEvent>
 
     /**
      * DEPRECATED: Deletes an asset of the given type and ID
@@ -1375,7 +1409,7 @@ export class ObservableSanityClient {
    * @deprecated Use your own request library!
    * @param options Request options
    */
-  request(options: RawRequestOptions): Observable<any>
+  request<T = any>(options: RawRequestOptions): Observable<ResponseEvent<T> | ProgressEvent>
 }
 
 export interface SanityClient {
@@ -1417,6 +1451,19 @@ export interface SanityClient {
   observable: ObservableSanityClient
 
   assets: {
+    /**
+     * Uploads a file asset to the configured dataset
+     *
+     * @param assetType Asset type (file/image)
+     * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
+     * @param options Options to use for the upload
+     */
+    upload(
+      assetType: 'file' | 'image',
+      body: File | Blob | Buffer | ReadableStream,
+      options?: UploadOptions
+    ): Promise<SanityAssetDocument | SanityImageAssetDocument>
+
     /**
      * Uploads a file asset to the configured dataset
      *
