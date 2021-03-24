@@ -100,7 +100,7 @@ const SlugInput = React.forwardRef(function SlugInput(
     updateSlug,
   ])
 
-  const handleFocus = React.useCallback(() => onFocus(), [onFocus])
+  const handleFocus = React.useCallback(() => onFocus(['current']), [onFocus])
 
   return (
     <ChangeIndicatorCompareValueProvider
