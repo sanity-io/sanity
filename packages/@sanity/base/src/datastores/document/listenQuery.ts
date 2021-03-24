@@ -4,9 +4,11 @@ import {mergeMap, throttleTime, share, switchMapTo, take} from 'rxjs/operators'
 
 import {ReconnectEvent, WelcomeEvent} from './types'
 
-const fetch = (query: string, params: {}) => defer(() => client.observable.fetch(query, params))
+type Params = Record<string, string>
 
-const listen = (query: string, params: {}) =>
+const fetch = (query: string, params: Params) => defer(() => client.observable.fetch(query, params))
+
+const listen = (query: string, params: Params) =>
   defer(() =>
     client.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
@@ -23,7 +25,7 @@ function isWelcomeEvent(
 
 // todo: promote as building block for better re-use
 // todo: optimize by patching collection in-place
-export const listenQuery = (query: string, params: {}) => {
+export const listenQuery = (query: string, params: Params = {}) => {
   const fetchOnce$ = fetch(query, params)
 
   const events$ = listen(query, params).pipe(
