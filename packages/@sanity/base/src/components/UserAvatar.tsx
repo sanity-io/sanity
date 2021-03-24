@@ -25,11 +25,14 @@ interface UnloadedUserProps extends BaseProps {
 
 type UserProps = LoadedUserProps | UnloadedUserProps
 
+const symbols = /[^\p{Alpha}\p{White_Space}]/gu
+const whitespace = /\p{White_Space}+/u
+
 function nameToInitials(fullName: string) {
-  const namesArray = fullName.split(' ')
+  const namesArray = fullName.replace(symbols, '').split(whitespace)
 
   if (namesArray.length === 1) {
-    return `${namesArray[0].charAt(0)}`
+    return `${namesArray[0].charAt(0)}`.toUpperCase()
   }
 
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
