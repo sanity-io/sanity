@@ -183,10 +183,6 @@
       "description": "Fetches locale messages for the given locale"
     },
     {
-      "name": "part:@sanity/base/locale/intl",
-      "description": "Exposes the current ReactIntl module instance"
-    },
-    {
       "name": "part:@sanity/base/locale/formatters",
       "description": "Functions to format based on resolved locale"
     },
@@ -201,10 +197,6 @@
     {
       "name": "part:@sanity/base/authentication-fetcher",
       "description": "Fetches the logged in user and JSON web token."
-    },
-    {
-      "name": "part:@sanity/base/sanity-intl-provider",
-      "description": "Wraps the ReactIntl.IntlProvider component with the resolved locale and messages"
     },
     {
       "name": "part:@sanity/base/query-container",
@@ -424,20 +416,12 @@
       "path": "locale/intl"
     },
     {
-      "implements": "part:@sanity/base/sanity-intl-provider",
-      "path": "components/SanityIntlProvider"
-    },
-    {
       "implements": "part:@sanity/base/query-container",
       "path": "components/QueryContainer"
     },
     {
       "implements": "part:@sanity/base/with-referring-documents",
       "path": "components/WithReferringDocuments"
-    },
-    {
-      "implements": "part:@sanity/base/locale/formatters",
-      "path": "components/IntlWrapper"
     },
     {
       "implements": "part:@sanity/base/theme/layout/box-style",
