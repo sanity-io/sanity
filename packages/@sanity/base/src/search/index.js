@@ -1,5 +1,5 @@
 import schema from 'part:@sanity/base/schema'
-import {versionedClient} from '../client'
+import {versionedClient} from '../client/versionedClient'
 import {getSearchableTypes} from './common/utils'
 import {createWeightedSearch} from './weighted/createWeightedSearch'
 
