@@ -15,7 +15,6 @@ declare module 'all:part:@sanity/base/diff-resolver' {
   export default diffResolvers
 }
 
-declare module 'all:part:@sanity/base/locale-messages'
 declare module 'all:part:@sanity/base/schema-type'
 declare module 'all:part:@sanity/base/tool' {
   const tools: {
@@ -90,9 +89,6 @@ declare module 'part:@sanity/base/document-badges/resolver'
 declare module 'part:@sanity/base/initial-value-templates'
 declare module 'part:@sanity/base/initial-value-templates?'
 declare module 'part:@sanity/base/language-resolver'
-declare module 'part:@sanity/base/locale-message-fetcher'
-declare module 'part:@sanity/base/locale/formatters'
-declare module 'part:@sanity/base/locale/intl'
 
 declare module 'part:@sanity/base/location' {
   declare const locationStore: {
