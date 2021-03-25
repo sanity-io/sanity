@@ -1,8 +1,29 @@
 // Location implementation which keeps overlapping props in sync, e.g. host / hostname, and search / query
 import url from 'url'
 
-export function configure({qsImpl} = {qsImpl: require('querystring')}) {
-  class Location {
+export interface Location {
+  query: string
+  hostname: string
+  port: string
+  pathname: string
+  protocol: string
+  slashes: boolean
+  search: string
+  hash: string
+}
+
+export function configure(
+  {qsImpl} = {qsImpl: require('querystring')}
+): {parse: (urlToParse: string) => Location; stringify: (location: Location) => string} {
+  class LocationImpl {
+    query: string
+    hostname: string
+    port: string
+    pathname: string
+    protocol: string
+    slashes: boolean
+    hash: string
+
     get search() {
       const stringified = qsImpl.stringify(this.query || {})
       return stringified.length > 1 ? `?${stringified}` : null
@@ -13,6 +34,14 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
 
     get host() {
       return this.port ? `${this.hostname}:${this.port}` : this.hostname
+    }
+
+    set host(newVal) {
+      const [hostname, port] = newVal.split(':')
+      Object.assign(this, {
+        hostname: hostname,
+        port: port,
+      })
     }
 
     get path() {
@@ -27,13 +56,6 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
       })
     }
 
-    set host(newVal) {
-      const [hostname, port] = newVal.split(':')
-      Object.assign(this, {
-        hostname: hostname,
-        port: port,
-      })
-    }
     get href() {
       return url.format(this)
     }
@@ -61,20 +83,20 @@ export function configure({qsImpl} = {qsImpl: require('querystring')}) {
   }
 
   return {
-    parse(urlToParse) {
-      return Object.assign(new Location(), {
+    parse(urlToParse): Location {
+      return Object.assign(new LocationImpl(), {
         href: urlToParse,
       })
     },
-    stringify(u) {
+    stringify(location: Location) {
       return url.format({
-        protocol: u.protocol,
-        slashes: u.slashes,
-        hostname: u.hostname,
-        pathname: u.pathname,
-        port: u.port,
-        search: u.search,
-        hash: u.hash,
+        protocol: location.protocol,
+        slashes: location.slashes,
+        hostname: location.hostname,
+        pathname: location.pathname,
+        port: location.port,
+        search: location.search,
+        hash: location.hash,
       })
     },
   }

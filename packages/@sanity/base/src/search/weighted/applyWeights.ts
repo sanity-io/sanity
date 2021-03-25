@@ -1,7 +1,7 @@
 import {words, uniq, compact, union, intersection, keyBy, toLower} from 'lodash'
 
 // takes a set of terms and a value and returns a [score, story] pair where score is a value between 0, 1 and story is the explanation
-export const calculateScore = (searchTerms, value) => {
+export const calculateScore = (searchTerms, value): [number, string] => {
   const uniqueValueTerms = uniq(compact(words(toLower(value))))
   const uniqueSearchTerms = uniq(searchTerms.map(toLower))
   const matches = intersection(uniqueSearchTerms, uniqueValueTerms)

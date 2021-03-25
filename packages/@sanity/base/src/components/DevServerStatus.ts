@@ -1,7 +1,9 @@
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
-const eventBus = window.__webpack_hot_middleware_eventbus__
+declare const __DEV__: boolean
+
+const eventBus = (window as any).__webpack_hot_middleware_eventbus__
 const events = eventBus ? eventBus.eventTypes : {}
 
 const CONNECTION_TOAST_ID = 'dev-server-status'
@@ -58,30 +60,29 @@ function DevServerStatus() {
       id: CONNECTION_TOAST_ID,
       status: 'warning',
       title: 'Disconnected from dev server',
-      timeout: Infinity,
     })
   }, [connectionState, push])
 
   const handleEvent = useCallback(
     (evt) => {
       if (evt.type === events.EVENT_BUILT) {
-        handleBuilt(evt)
+        handleBuilt()
       }
 
       if (evt.type === events.EVENT_BUILDING) {
-        handleBuilding(evt)
+        handleBuilding()
       }
 
       if (evt.type === events.EVENT_CONNECTING) {
-        handleConnecting(evt)
+        handleConnecting()
       }
 
       if (evt.type === events.EVENT_CONNECTED) {
-        handleConnected(evt)
+        handleConnected()
       }
 
       if (evt.type === events.EVENT_DISCONNECTED) {
-        handleDisconnected(evt)
+        handleDisconnected()
       }
     },
     [handleBuilding, handleBuilt, handleConnected, handleConnecting, handleDisconnected]

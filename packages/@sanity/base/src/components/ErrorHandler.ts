@@ -1,5 +1,6 @@
 import {useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
+declare const __DEV__: boolean
 
 const SANITY_ERROR_HANDLER = Symbol.for('SANITY_ERROR_HANDLER')
 
@@ -49,19 +50,18 @@ function ErrorHandler({onUIError}) {
         status: 'error',
         title: __DEV__ ? `Error: ${err.message}` : 'An error occured',
         description: "Check your browser's JavaScript console for details.",
-        timeout: 8000,
       })
     },
     [onUIError, push]
   )
 
-  handleGlobalError.identity = SANITY_ERROR_HANDLER
+  ;(handleGlobalError as any).identity = SANITY_ERROR_HANDLER
 
   useEffect(() => {
     let originalErrorHandler
 
     // Only store the original error handler if it wasn't a copy of _this_ error handler
-    if (window.onerror && window.onerror.identity !== SANITY_ERROR_HANDLER) {
+    if (window.onerror && (window.onerror as any).identity !== SANITY_ERROR_HANDLER) {
       originalErrorHandler = window.onerror
     }
 

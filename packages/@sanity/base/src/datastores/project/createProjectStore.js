@@ -3,19 +3,19 @@ import createActions from '../utils/createActions'
 import projectFetcher from 'part:@sanity/base/project-fetcher'
 import config from 'config:sanity'
 
-function AccessDeniedError(message) {
+export function AccessDeniedError(message) {
   this.name = 'AccessDeniedError'
   this.message = message || ''
 }
 AccessDeniedError.prototype = Object.create(Error.prototype)
 
-function NotFoundError(message) {
+export function NotFoundError(message) {
   this.name = 'NotFoundError'
   this.message = message || ''
 }
 NotFoundError.prototype = Object.create(Error.prototype)
 
-function UnknownApiError(error) {
+export function UnknownApiError(error) {
   this.name = 'UnknownApiError'
   this.message = error.message
   this.code = error.code

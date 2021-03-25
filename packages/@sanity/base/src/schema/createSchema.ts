@@ -2,6 +2,7 @@ import Schema from '@sanity/schema'
 import legacyRichDate from 'part:@sanity/form-builder/input/legacy-date/schema?'
 import validateSchema from '@sanity/schema/lib/sanity/validateSchema'
 import groupProblems from '@sanity/schema/lib/sanity/groupProblems'
+// eslint-disable-next-line import/no-unresolved
 import {inferFromSchema as inferValidation} from '@sanity/validation'
 import slug from './types/slug'
 import geopoint from './types/geopoint'
@@ -47,8 +48,8 @@ module.exports = (schemaDef) => {
     types,
   })
 
-  compiled._source = schemaDef
-  compiled._validation = validation
+  ;(compiled as any)._source = schemaDef
+  ;(compiled as any)._validation = validation
 
   return inferValidation(compiled)
 }

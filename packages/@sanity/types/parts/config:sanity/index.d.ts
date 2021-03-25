@@ -1,5 +1,6 @@
 declare module 'config:sanity' {
   interface SanityConfig {
+    root: boolean
     project: {
       name?: string
       basePath?: string
@@ -8,6 +9,7 @@ declare module 'config:sanity' {
       projectId: string
       dataset: string
     }
+    plugins: string[]
   }
 
   const config: SanityConfig
