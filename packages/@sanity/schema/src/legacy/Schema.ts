@@ -1,8 +1,9 @@
-import * as types from './types'
+import {omit} from 'lodash'
 import {SchemaDef} from '../sanity/typedefs'
+import * as types from './types'
 
 function compileRegistry(schemaDef) {
-  const registry = Object.assign(Object.create(null), types)
+  const registry = Object.assign(Object.create(null), omit(types, 'default'))
 
   const defsByName = schemaDef.types.reduce((acc, def) => {
     if (acc[def.name]) {
