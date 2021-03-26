@@ -34,7 +34,6 @@ export default (config = {}) => {
     throw new Error(missingErr)
   }
 
-  const babelConfig = tryRead(path.join(basePath, '.babelrc'))
   const isProd = env === 'production'
 
   const cssExtractor = new ExtractTextPlugin({
@@ -90,15 +89,11 @@ export default (config = {}) => {
           test: /(\.jsx?|\.tsx?)(\?|$)/,
           exclude: /(node_modules|bower_components)/,
           use: {
-            loader: require.resolve('babel-loader'),
-            options: babelConfig || {
-              presets: [
-                require.resolve('@babel/preset-typescript'),
-                require.resolve('@babel/preset-react'),
-                [require.resolve('@babel/preset-env'), require('./babel-env-config')],
-              ],
-              plugins: [require.resolve('@babel/plugin-proposal-class-properties')].filter(Boolean),
-              cacheDirectory: true,
+            loader: require.resolve('esbuild-loader'),
+            options: {
+              loader: 'tsx',
+              target: ['es2020', 'chrome80', 'firefox80', 'safari11', 'edge18', 'node12'],
+              format: 'cjs',
             },
           },
         },
@@ -161,15 +156,5 @@ export default (config = {}) => {
       cssExtractor,
       commonChunkPlugin,
     ].filter(Boolean),
-  }
-}
-
-function tryRead(filePath) {
-  try {
-    // eslint-disable-next-line no-sync
-    const content = fs.readFileSync(filePath)
-    return JSON.parse(content)
-  } catch (err) {
-    return null
   }
 }
