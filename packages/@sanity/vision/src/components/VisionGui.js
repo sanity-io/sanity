@@ -78,6 +78,7 @@ class VisionGui extends React.PureComponent {
 
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
     this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
+    this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
     this.handleListenExecution = this.handleListenExecution.bind(this)
     this.handleListenerCancellation = this.handleListenerCancellation.bind(this)
     this.handleListenerMutation = this.handleListenerMutation.bind(this)
@@ -166,10 +167,40 @@ class VisionGui extends React.PureComponent {
 
   handleChangeApiVersion(evt) {
     const apiVersion = evt.target.value
+    if (apiVersion === 'other') {
+      this.setState({customApiVersion: true})
+      return
+    }
+
     storeState('apiVersion', apiVersion)
-    this.setState({apiVersion})
+    this.setState({apiVersion, customApiVersion: undefined})
     this.client.config({apiVersion})
     this.handleQueryExecution()
+  }
+
+  handleCustomApiVersionChange(evt) {
+    const customApiVersion = evt.target.value
+    const parseableApiVersion = customApiVersion
+      .replace(/^v/, '')
+      .trim()
+      .match(/^\d{4}-\d{2}-\d{2}$/)
+
+    const isValidApiVersion = !isNaN(Date.parse(parseableApiVersion))
+
+    this.setState(
+      (prevState) => ({
+        apiVersion: isValidApiVersion ? customApiVersion : prevState.apiVersion,
+        customApiVersion: customApiVersion || true,
+        isValidApiVersion,
+      }),
+      () => {
+        if (!this.state.isValidApiVersion) {
+          return
+        }
+
+        this.client.config({apiVersion: this.state.customApiVersion})
+      }
+    )
   }
 
   handleListenerMutation(mut) {
@@ -306,6 +337,8 @@ class VisionGui extends React.PureComponent {
       listenMutations,
       apiVersion,
       dataset,
+      customApiVersion,
+      isValidApiVersion,
     } = this.state
     const styles = this.context.styles.visionGui
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
@@ -342,13 +375,36 @@ class VisionGui extends React.PureComponent {
                 <Card padding={2}>
                   <Label>API version</Label>
                 </Card>
-                <Select value={apiVersion} onChange={this.handleChangeApiVersion}>
+                <Select
+                  value={customApiVersion ? 'other' : apiVersion}
+                  onChange={this.handleChangeApiVersion}
+                >
                   {apiVersions.map((version) => (
                     <option key={version}>{version}</option>
                   ))}
+                  <option key="other" value="other">
+                    Other
+                  </option>
                 </Select>
               </Stack>
             </Box>
+
+            {/* Custom API version input */}
+            {customApiVersion && (
+              <Box padding={1}>
+                <Stack>
+                  <Card padding={2}>
+                    <Label>Custom API version</Label>
+                  </Card>
+
+                  <TextInput
+                    value={typeof customApiVersion === 'string' ? customApiVersion : ''}
+                    onChange={this.handleCustomApiVersionChange}
+                    customValidity={isValidApiVersion ? undefined : 'Invalid API version'}
+                  />
+                </Stack>
+              </Box>
+            )}
 
             {/* Query URL (for copying) */}
             {typeof url === 'string' ? (
