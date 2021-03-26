@@ -1,4 +1,5 @@
 import {from, merge} from 'rxjs'
+// eslint-disable-next-line import/no-unresolved
 import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
 import {omit, isUndefined} from 'lodash'
@@ -26,7 +27,9 @@ const ndjsonToArray = (ndjson) => {
     .map((line) => JSON.parse(line))
 }
 
-const getHistory = (documentIds, options = {}) => {
+type HistoryTransaction = any
+
+const getHistory = (documentIds, options: {time?: number; revision?: string} = {}) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const {time, revision} = options
 
@@ -79,7 +82,7 @@ function historyEventsFor(documentId) {
 
   const pastTransactions$ = from(getTransactions(pairs)).pipe(
     mergeMap((transactions) => from(transactions)),
-    map((trans) => ({
+    map((trans: HistoryTransaction) => ({
       author: trans.author,
       documentIDs: pairs,
       id: trans.id,
@@ -173,7 +176,7 @@ function restore(id, targetId, rev) {
         _id: targetId,
       })
     ),
-    mergeMap((restoredDraft) =>
+    mergeMap((restoredDraft: any) =>
       versionedClient.observable.transaction().createOrReplace(restoredDraft).commit()
     )
   )
