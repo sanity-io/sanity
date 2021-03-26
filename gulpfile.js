@@ -7,6 +7,7 @@ const changed = require('gulp-changed')
 const filter = require('gulp-filter')
 const chalk = require('chalk')
 const esbuild = require('gulp-esbuild')
+const babel = require('gulp-babel')
 const {runTsc} = require('./scripts/runTsc')
 const log = require('fancy-log')
 const through = require('through2')
@@ -44,6 +45,7 @@ const withDisplayName = (name, fn) => {
 }
 
 const TASK_INFO = {
+  babel: {title: 'Babel', color: chalk.yellowBright},
   esbuild: {title: 'Esbuild', color: chalk.yellowBright},
   assets: {title: 'Assets (copy)', color: chalk.greenBright},
   watch: {title: 'Watch', color: chalk.cyanBright},
@@ -57,8 +59,22 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
   }`
 }
 
-function buildJavaScript(packageDir, destDir) {
-  return withDisplayName(compileTaskName('esbuild', packageDir, 'cjs'), () =>
+function buildWithBabel(packageDir, destDir) {
+  return withDisplayName(compileTaskName('babel', packageDir), () =>
+    src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
+      .pipe(
+        changed(destDir, {
+          cwd: packageDir,
+          transformPath: (orgPath) => orgPath.replace(/\.tsx?$/, '.js'),
+        })
+      )
+      .pipe(babel())
+      .pipe(dest(destDir, {cwd: packageDir}))
+  )
+}
+
+function buildWithEsbuild(packageDir, destDir) {
+  return withDisplayName(compileTaskName('esbuild', packageDir), () =>
     src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
       .pipe(
         changed(destDir, {
@@ -69,7 +85,7 @@ function buildJavaScript(packageDir, destDir) {
       .pipe(
         esbuild({
           format: 'cjs',
-          target: ['es2020', 'chrome58', 'firefox57', 'safari10', 'edge16', 'node10'],
+          target: ['es2020', 'chrome80', 'firefox80', 'safari11', 'edge26', 'node12'],
           loader: {
             '.tsx': 'tsx',
             '.ts': 'ts',
@@ -90,9 +106,15 @@ function copyAssets(packageDir, destDir) {
   )
 }
 
-function buildPackage(packageDir) {
+function buildPackageWithBabel(packageDir) {
   return parallel(
-    buildJavaScript(packageDir, LEGACY_DEST_DIR),
+    buildWithBabel(packageDir, LEGACY_DEST_DIR),
+    copyAssets(packageDir, LEGACY_DEST_DIR)
+  )
+}
+function buildPackageWithEsbuild(packageDir) {
+  return parallel(
+    buildWithEsbuild(packageDir, LEGACY_DEST_DIR),
     copyAssets(packageDir, LEGACY_DEST_DIR)
   )
 }
@@ -118,22 +140,25 @@ const buildTS = function buildTS() {
   )
 }
 
-const buildJSAndAssets = parallel(PACKAGE_PATHS.map(buildPackage))
 const watchJSAndAssets = parallel(
   PACKAGE_PATHS.map((packageDir) =>
     watchPackage(
       compileTaskName('watch', packageDir, 'JS/Assets'),
       packageDir,
-      buildPackage(packageDir)
+      buildPackageWithBabel(packageDir, LEGACY_DEST_DIR)
     )
   )
 )
 
-exports.js = buildJSAndAssets
+const buildAllWithEsbuild = parallel(PACKAGE_PATHS.map(buildPackageWithEsbuild))
+const buildAllWithBabel = parallel(PACKAGE_PATHS.map(buildPackageWithBabel))
+
+exports.esbuild = buildAllWithEsbuild
+exports.babel = buildAllWithBabel
 exports.ts = buildTS
 exports.watchTS = series(buildTS, watchTS)
-exports.watchJS = series(buildJSAndAssets, watchJSAndAssets)
-exports.build = series(buildJSAndAssets, buildTS)
-exports.watch = series(buildJSAndAssets, parallel(watchJSAndAssets, watchTS))
 exports.clean = () =>
   del(PACKAGE_PATHS.flatMap((pth) => [path.join(pth, LEGACY_DEST_DIR), path.join(pth, DEST_DIR)]))
+exports.build = series(buildAllWithBabel, buildTS)
+exports.watch = series(buildAllWithBabel, parallel(watchJSAndAssets, watchTS))
+exports.clean = () => del(PACKAGE_PATHS.map((pth) => path.join(pth, DEST_DIR)))
