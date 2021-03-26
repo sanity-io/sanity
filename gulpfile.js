@@ -85,7 +85,7 @@ function buildWithEsbuild(packageDir, destDir) {
       .pipe(
         esbuild({
           format: 'cjs',
-          target: ['es2020', 'chrome80', 'firefox80', 'safari11', 'edge26', 'node12'],
+          target: ['es2020', 'chrome80', 'firefox80', 'safari11', 'edge18', 'node12'],
           loader: {
             '.tsx': 'tsx',
             '.ts': 'ts',
