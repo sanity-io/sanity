@@ -256,15 +256,21 @@ function extractFromSanitySchema(sanitySchema, extractOptions = {}) {
     }
 
     if (isReference(child)) {
-      return getReferenceDefinition(child, arrayDef)
+      return {
+        ...getReferenceDefinition(child, arrayDef),
+        isNullable: false,
+      };
     }
 
     // In the case of nested scalars, recurse (markdown -> longText -> text -> string)
     if (scalars.includes(child.jsonType) && !scalars.includes(child.name)) {
-      return {type: mapFieldType(child)}
+      return {
+        type: mapFieldType(child),
+        isNullable: false,
+      }
     }
 
-    return {type: getTypeName(child.name)}
+    return {type: getTypeName(child.name), isNullable: false}
   }
 
   function typeNeedsHoisting(type) {
