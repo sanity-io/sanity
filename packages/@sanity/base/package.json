@@ -74,6 +74,7 @@
     "react-sortable-hoc": "^1.11.0",
     "react-split-pane": "^0.1.84",
     "rxjs": "^6.5.3",
+    "rxjs-exhaustmap-with-trailing": "^1.0.0",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0",
     "styled-components": "^5.2.1"
