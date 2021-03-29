@@ -91,6 +91,7 @@ export default (config = {}) => {
           use: {
             loader: require.resolve('esbuild-loader'),
             options: {
+              minify: true,
               loader: 'tsx',
               target: ['es2020', 'chrome80', 'firefox80', 'safari11', 'edge18', 'node12'],
               format: 'cjs',
