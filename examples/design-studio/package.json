@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "design-studio",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "Sanity Design Studio",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -28,7 +28,7 @@
     "@sanity/react-hooks": "2.7.2",
     "@sanity/types": "2.7.2",
     "@sanity/ui": "^0.33.9",
-    "@sanity/vision": "2.7.2",
+    "@sanity/vision": "2.7.3",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
