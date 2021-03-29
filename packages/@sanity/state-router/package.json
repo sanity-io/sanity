@@ -25,12 +25,12 @@
     "nano-pubsub": "^2.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^26.0.22",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
     "history": "^4.6.3",
-    "jest": "^26.4.2",
+    "jest": "^26.6.3",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",
     "quickreload": "^2.1.2",
@@ -40,8 +40,8 @@
     "remon": "^1.0.2",
     "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
-    "ts-jest": "^26.3.0",
-    "ts-node": "^8.6.2",
+    "ts-jest": "^26.5.4",
+    "ts-node": "^9.1.1",
     "tsify": "^4.0.1"
   },
   "peerDependencies": {

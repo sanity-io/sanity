@@ -28,10 +28,10 @@
     "diff-match-patch": "^1.0.4"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "jest": "^26.4.2",
+    "@types/jest": "^26.0.22",
+    "jest": "^26.6.3",
     "rimraf": "^2.7.1",
-    "ts-jest": "^26.3.0"
+    "ts-jest": "^26.5.4"
   },
   "repository": {
     "type": "git",
