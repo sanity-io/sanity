@@ -5,11 +5,12 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
   | {isValid: true; date: Date}
   | {isValid: false; error?: string}
 )
+
 export type CommonProps = {
-  value: string
+  value?: string
   markers: Marker[]
-  readOnly: boolean | null
+  readOnly?: boolean
   level: number
-  onFocus: () => void
-  presence: FormFieldPresence[]
+  onFocus?: () => void
+  presence?: FormFieldPresence[]
 }
