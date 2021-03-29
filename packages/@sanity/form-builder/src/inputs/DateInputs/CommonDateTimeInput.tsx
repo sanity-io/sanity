@@ -1,19 +1,21 @@
 /* eslint-disable no-nested-ternary */
-import React from 'react'
+import React, {useEffect} from 'react'
 import {FormField} from '@sanity/base/components'
 import {Marker} from '@sanity/types'
 import {useId} from '@reach/auto-id'
 import {useForwardedRef, TextInput} from '@sanity/ui'
 import {DateTimeInput} from './base/DateTimeInput'
-import {format, parse} from './legacy'
-import {CommonProps} from './types'
+import {CommonProps, ParseResult} from './types'
 
 type Props = CommonProps & {
   title: string
-  description: string
-  inputFormat: string
-  onChange: (nextDate: Date | null) => void
-  selectTime: boolean
+  description?: string
+  parseInputValue: (inputValue: string) => ParseResult
+  formatInputValue: (date: Date) => string
+  deserialize: (value: string) => ParseResult
+  serialize: (date: Date) => string
+  onChange: (nextDate: string | null) => void
+  selectTime?: boolean
   placeholder?: string
   timeStep?: number
 }
@@ -30,7 +32,10 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     title,
     description,
     placeholder,
-    inputFormat,
+    parseInputValue,
+    formatInputValue,
+    deserialize,
+    serialize,
     selectTime,
     timeStep,
     readOnly,
@@ -40,60 +45,56 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     ...rest
   } = props
 
-  const [parseError, setParseError] = React.useState<string>()
-  const [inputValue, setInputValue] = React.useState<string>()
+  const [localValue, setLocalValue] = React.useState<string | null>(null)
+
+  useEffect(() => {
+    setLocalValue(null)
+  }, [value])
 
   const handleDatePickerInputChange = React.useCallback(
     (event) => {
       const nextInputValue = event.currentTarget.value
-      setParseError(undefined)
-      setInputValue(undefined)
-      if (!nextInputValue) {
+      const result = nextInputValue === '' ? null : parseInputValue(nextInputValue)
+      if (result === null) {
         onChange(null)
-        return
-      }
-      const result = parse(nextInputValue, inputFormat)
-      if (result.isValid) {
-        onChange(result.date)
+      } else if (result.isValid) {
+        onChange(serialize(result.date))
       } else {
-        setParseError(result.error)
-        // keep the input value floating around as long as it's invalid so that the
-        // user can continue to edit
-        setInputValue(nextInputValue)
+        setLocalValue(nextInputValue)
       }
     },
-    [onChange, inputFormat]
+    [serialize, onChange, parseInputValue]
   )
 
   const handleDatePickerChange = React.useCallback(
     (nextDate: Date | null) => {
-      onChange(nextDate)
-      setParseError(undefined)
-      setInputValue(undefined)
+      onChange(nextDate ? serialize(nextDate) : null)
     },
-    [onChange]
+    [serialize, onChange]
   )
 
   const inputRef = useForwardedRef(forwardedRef)
 
   const id = useId()
 
-  const valueAsDate = value ? new Date(value) : undefined
-  const textInputValue = inputValue
-    ? inputValue
-    : valueAsDate
-    ? format(valueAsDate, inputFormat)
-    : ''
+  const parseResult = localValue ? parseInputValue(localValue) : value ? deserialize(value) : null
+
+  const inputValue = localValue
+    ? localValue
+    : parseResult?.isValid
+    ? formatInputValue(parseResult.date)
+    : value
+
   return (
     <FormField
       __unstable_markers={
-        parseError
+        parseResult?.error
           ? [
               ...markers,
               ({
                 type: 'validation',
                 level: 'error',
-                item: {message: parseError, paths: []},
+                item: {message: parseResult.error, paths: []},
               } as unknown) as Marker, // casting to marker to avoid having to implement cloneWithMessage on item
             ]
           : markers
@@ -105,21 +106,21 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
       inputId={id}
     >
       {readOnly ? (
-        <TextInput value={textInputValue} disabled />
+        <TextInput value={inputValue} disabled />
       ) : (
         <DateTimeInput
           {...rest}
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
-          placeholder={placeholder || `e.g. ${format(DEFAULT_PLACEHOLDER_TIME, inputFormat)}`}
+          placeholder={placeholder || `e.g. ${formatInputValue(DEFAULT_PLACEHOLDER_TIME)}`}
           ref={inputRef}
-          value={valueAsDate}
-          inputValue={inputValue ? inputValue : valueAsDate ? format(valueAsDate, inputFormat) : ''}
+          value={parseResult?.date}
+          inputValue={inputValue || ''}
           readOnly={Boolean(readOnly)}
           onInputChange={handleDatePickerInputChange}
           onChange={handleDatePickerChange}
-          customValidity={parseError}
+          customValidity={parseResult?.error}
         />
       )}
     </FormField>

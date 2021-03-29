@@ -2,7 +2,9 @@ import React, {useCallback} from 'react'
 
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CommonProps} from './types'
+import {CommonProps, ParseResult} from './types'
+import {format, parse} from './legacy'
+import {isValidDate} from './utils'
 
 type ParsedOptions = {
   dateFormat: string
@@ -18,12 +20,13 @@ type SchemaOptions = {
 }
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
 const DEFAULT_TIME_FORMAT = 'HH:mm'
-type Props = CommonProps & {
+
+export type Props = CommonProps & {
   onChange: (event: PatchEvent) => void
   type: {
     name: string
     title: string
-    description: string
+    description?: string
     options?: SchemaOptions
     placeholder?: string
   }
@@ -38,6 +41,18 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   }
 }
 
+function serialize(date: Date) {
+  return date.toISOString()
+}
+
+function deserialize(isoString: string): ParseResult {
+  const deserialized = new Date(isoString)
+  if (isValidDate(deserialized)) {
+    return {isValid: true, date: deserialized}
+  }
+  return {isValid: false, error: `Invalid date value: "${isoString}"`}
+}
+
 export const DateTimeInput = React.forwardRef(function DateTimeInput(
   props: Props,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
@@ -48,10 +63,20 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
   const {dateFormat, timeFormat, timeStep} = parseOptions(type.options)
 
   const handleChange = useCallback(
-    (nextDate: Date | null) => {
-      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate.toISOString())]))
+    (nextDate: string | null) => {
+      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate)]))
     },
     [onChange]
+  )
+
+  const formatInputValue = React.useCallback(
+    (date: Date) => format(date, `${dateFormat} ${timeFormat}`),
+    [dateFormat, timeFormat]
+  )
+
+  const parseInputValue = React.useCallback(
+    (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
+    [dateFormat, timeFormat]
   )
 
   return (
@@ -64,7 +89,10 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
       title={title}
       description={description}
       placeholder={placeholder}
-      inputFormat={`${dateFormat} ${timeFormat}`}
+      serialize={serialize}
+      deserialize={deserialize}
+      formatInputValue={formatInputValue}
+      parseInputValue={parseInputValue}
     />
   )
 })
