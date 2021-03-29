@@ -66,7 +66,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   )
 
   const handleDatePickerChange = React.useCallback(
-    (nextDate: Date) => {
+    (nextDate: Date | null) => {
       onChange(nextDate)
       setParseError(undefined)
       setInputValue(undefined)
@@ -78,7 +78,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 
   const id = useId()
 
-  const valueAsDate = value && new Date(value)
+  const valueAsDate = value ? new Date(value) : undefined
   const textInputValue = inputValue
     ? inputValue
     : valueAsDate
@@ -116,7 +116,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
           ref={inputRef}
           value={valueAsDate}
           inputValue={inputValue ? inputValue : valueAsDate ? format(valueAsDate, inputFormat) : ''}
-          readOnly={readOnly}
+          readOnly={Boolean(readOnly)}
           onInputChange={handleDatePickerInputChange}
           onChange={handleDatePickerChange}
           customValidity={parseError}
