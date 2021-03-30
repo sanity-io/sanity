@@ -51,6 +51,9 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/jest-dom": "^5.11.10",
+    "@testing-library/user-event": "^13.0.16",
     "@types/diff-match-patch": "^1.0.32",
     "@types/jest": "^26.0.22",
     "@types/moment": "^2.13.0",
