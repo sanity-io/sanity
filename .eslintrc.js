@@ -30,4 +30,12 @@ module.exports = {
     'sort-imports': 'off', // prefer import/order
   },
   plugins: ['import', '@typescript-eslint', 'prettier', 'react'],
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        'no-undef': 'off',
+      },
+    },
+  ],
 }
