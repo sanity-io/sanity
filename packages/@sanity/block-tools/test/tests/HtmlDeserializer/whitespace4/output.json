@@ -1,0 +1,16 @@
+[
+  {
+    "_type": "block",
+    "_key": "randomKey0",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "hei (på) deg",
+        "_key": "randomKey00"
+      }
+    ]
+  }
+]
