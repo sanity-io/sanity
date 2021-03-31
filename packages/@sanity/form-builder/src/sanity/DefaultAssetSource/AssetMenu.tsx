@@ -1,37 +1,42 @@
 import React from 'react'
 import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {AssetAction} from '../../inputs/files/ImageInput/types'
-import {DropDownButton} from '../../legacyParts'
+import {Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
+import {AssetMenuAction} from './types'
 
-const menuItems: AssetAction[] = [
-  {
-    name: 'showRefs',
-    title: 'Show documents using this',
-    icon: LinkIcon,
-  },
-  {
-    name: 'delete',
-    title: 'Delete',
-    color: 'danger',
-    icon: TrashIcon,
-  },
-]
-
-export default function AssetMenu({
+export function AssetMenu({
   isSelected,
   onAction,
 }: {
   isSelected: boolean
-  onAction: (action: AssetAction) => void
+  onAction: (action: AssetMenuAction) => void
 }) {
   return (
-    <DropDownButton
-      icon={EllipsisVerticalIcon}
-      padding="small"
-      placement="bottom-end"
-      showArrow={false}
-      items={isSelected ? menuItems.filter((item) => item.name !== 'delete') : menuItems}
-      onAction={onAction}
+    <MenuButton
+      button={<Button mode="ghost" icon={EllipsisVerticalIcon} />}
+      id="asset-menu"
+      portal
+      menu={
+        <Menu>
+          <MenuItem
+            text="Find usages"
+            icon={LinkIcon}
+            onClick={() => {
+              onAction({type: 'showUsage'})
+            }}
+          />
+          <MenuItem
+            text="Delete"
+            icon={TrashIcon}
+            tone={isSelected ? undefined : 'critical'}
+            disabled={isSelected}
+            title={isSelected ? 'Cannot delete current image' : undefined}
+            onClick={() => {
+              onAction({type: 'delete'})
+            }}
+          />
+        </Menu>
+      }
+      placement="right"
     />
   )
 }

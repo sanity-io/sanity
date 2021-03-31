@@ -25,6 +25,7 @@ const buildQuery = (start = 0, end = PER_PAGE) => `
   *[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     url,
+    originalFilename,
     metadata {dimensions}
   }
 `
