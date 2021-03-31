@@ -1,13 +1,16 @@
 import type {Subscription} from 'rxjs'
-import classNames from 'classnames'
 import React from 'react'
+import styled from 'styled-components'
+import {Button} from '@sanity/ui'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
-import {AssetAction, AssetRecord} from '../../inputs/files/ImageInput/types'
+import {AssetRecord} from '../../inputs/files/ImageInput/types'
 import {versionedClient} from '../versionedClient'
-import AssetDialog from './AssetDialog'
-import AssetMenu from './AssetMenu'
+import {AssetUsageDialog} from './AssetUsageDialog'
+import {AssetMenu} from './AssetMenu'
 
-import styles from './Asset.css'
+import {AssetDialogAction, AssetMenuAction} from './types'
+import {Checkerboard} from './Checkerboard'
+import {DeleteAssetErrorDialog} from './DeleteAssetErrorDialog'
 
 interface AssetProps {
   asset?: AssetRecord
@@ -19,7 +22,8 @@ interface AssetProps {
 
 interface State {
   isDeleting: boolean
-  dialogType: null | 'showRefs' | 'error'
+  showUsageDialog: boolean
+  deleteError: Error | null
 }
 
 // Get pixel density of the current device
@@ -28,10 +32,46 @@ const DPI =
     ? 1
     : Math.round(window.devicePixelRatio)
 
+const Image = styled.img`
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+`
+
+const Container = styled(Checkerboard)`
+  position: relative;
+  z-index: 1;
+  padding-bottom: 100%;
+`
+
+const Root = styled.div`
+  position: relative;
+  display: inherit;
+`
+
+const MenuContainer = styled.div`
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 2;
+  display: none;
+  top: 3px;
+  right: 3px;
+
+  ${Root}:hover & {
+    display: block;
+  }
+`
+
 export default class Asset extends React.PureComponent<AssetProps, State> {
   state: State = {
     isDeleting: false,
-    dialogType: null,
+    showUsageDialog: false,
+    deleteError: null,
   }
 
   delete$: Subscription
@@ -42,8 +82,8 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
     }
   }
 
-  handleDeleteAsset = (asset) => {
-    const {onDeleteFinished} = this.props
+  handleDeleteAsset = () => {
+    const {onDeleteFinished, asset} = this.props
 
     this.setState({isDeleting: true})
 
@@ -52,8 +92,8 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
         this.setState({isDeleting: false})
         onDeleteFinished(asset._id)
       },
-      error: (err) => {
-        this.setState({isDeleting: false, dialogType: 'error'})
+      error: (err: Error) => {
+        this.setState({isDeleting: false, deleteError: err})
         // eslint-disable-next-line no-console
         console.error('Could not delete asset', err)
       },
@@ -61,65 +101,74 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
   }
 
   handleDialogClose = () => {
-    this.setState({dialogType: null})
+    this.setState({showUsageDialog: false, deleteError: null})
   }
 
-  handleMenuAction = (action: AssetAction) => {
-    if (action.name === 'delete') {
-      this.handleDeleteAsset(this.props.asset)
+  handleMenuAction = (action: AssetMenuAction) => {
+    if (action.type === 'delete') {
+      this.handleDeleteAsset()
     }
 
-    if (action.name === 'showRefs') {
-      this.setState({dialogType: 'showRefs'})
+    if (action.type === 'showUsage') {
+      this.setState({showUsageDialog: true})
     }
   }
 
-  handleDialogAction = (action: AssetAction) => {
-    if (action.name === 'close') {
+  handleDialogAction = (action: AssetDialogAction) => {
+    if (action.type === 'close') {
       this.handleDialogClose()
     }
 
-    if (action.name === 'delete') {
-      this.handleDeleteAsset(this.props.asset)
+    if (action.type === 'delete') {
+      this.handleDeleteAsset()
     }
   }
 
   render() {
     const {asset, onClick, onKeyPress, isSelected} = this.props
-    const {isDeleting, dialogType} = this.state
+    const {isDeleting, showUsageDialog, deleteError} = this.state
     const imgH = 200 * Math.max(1, DPI)
 
     return (
-      <a
-        className={classNames(styles.root, isSelected && styles.selected)}
-        tabIndex={0}
-        data-id={asset._id}
-        onKeyPress={onKeyPress}
-      >
-        <div className={styles.imageContainer}>
-          <img
-            src={`${asset.url}?h=${imgH}&fit=max`}
-            className={styles.image}
-            onClick={onClick}
-            data-id={asset._id}
-          />
-
-          {isDeleting && <FullscreenSpinner />}
-        </div>
-
-        <div className={styles.menuContainer}>
-          <AssetMenu isSelected={isSelected} onAction={this.handleMenuAction} />
-
-          {dialogType && (
-            <AssetDialog
-              asset={asset}
-              dialogType={dialogType}
-              onAction={this.handleDialogAction}
-              onClose={this.handleDialogClose}
+      <Root>
+        <Button
+          tone="primary"
+          selected={isSelected}
+          tabIndex={0}
+          data-id={asset._id}
+          mode="ghost"
+          onKeyPress={onKeyPress}
+          style={{padding: 2}}
+        >
+          <Container>
+            <Image
+              alt={asset.originalFileName}
+              src={`${asset.url}?h=${imgH}&fit=max`}
+              onClick={onClick}
+              data-id={asset._id}
             />
-          )}
-        </div>
-      </a>
+
+            {isDeleting && <FullscreenSpinner />}
+          </Container>
+        </Button>
+        <MenuContainer>
+          <AssetMenu isSelected={isSelected} onAction={this.handleMenuAction} />
+        </MenuContainer>
+        {showUsageDialog && (
+          <AssetUsageDialog
+            asset={asset}
+            onClose={this.handleDialogClose}
+            onDelete={this.handleDeleteAsset}
+          />
+        )}
+        {deleteError && (
+          <DeleteAssetErrorDialog
+            asset={asset}
+            onClose={this.handleDialogClose}
+            error={deleteError}
+          />
+        )}
+      </Root>
     )
   }
 }

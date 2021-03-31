@@ -1,15 +1,6 @@
-import React from 'react'
-
 export interface AssetRecord {
   _id?: string
   referenceCount?: number
+  originalFileName?: string
   url?: string
-}
-
-export interface AssetAction {
-  color?: 'danger'
-  icon?: React.ComponentType
-  inverted?: boolean
-  name: string
-  title: string
 }
