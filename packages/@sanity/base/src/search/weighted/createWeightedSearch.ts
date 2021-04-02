@@ -1,30 +1,38 @@
 /* eslint-disable import/prefer-default-export */
+import type {SanityClient} from '@sanity/client'
+import type {ObjectSchemaType} from '@sanity/types'
+import type {Observable} from 'rxjs'
 import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {map} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
 import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
 import {applyWeights} from './applyWeights'
+import {WeightedHit, WeightedSearchOptions} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
-const toGroqParams = (terms) =>
-  terms.reduce((acc, term, i) => {
+const toGroqParams = (terms: string[]): Record<string, string> => {
+  const params: Record<string, string> = {}
+  return terms.reduce((acc, term, i) => {
     acc[`t${i}`] = `${term}*` // "t" is short for term
     return acc
-  }, {})
+  }, params)
+}
 
-export function createWeightedSearch(types, client, options = {}) {
-  const {filter, params} = options
-  const searchSpec = types.map((type) => {
-    return {
-      typeName: type.name,
-      paths: type.__experimental_search.map((config) => ({
-        weight: config.weight,
-        path: joinPath(config.path),
-      })),
-    }
-  })
+export function createWeightedSearch(
+  types: ObjectSchemaType[],
+  client: SanityClient,
+  options: WeightedSearchOptions = {}
+): (query: string) => Observable<WeightedHit[]> {
+  const {filter, params, includeDrafts} = options
+  const searchSpec = types.map((type) => ({
+    typeName: type.name,
+    paths: type.__experimental_search.map((config) => ({
+      weight: config.weight,
+      path: joinPath(config.path),
+    })),
+  }))
 
   const combinedSearchPaths = combinePaths(
     searchSpec.map((configForType) => configForType.paths.map((opt) => opt.path))
@@ -36,7 +44,7 @@ export function createWeightedSearch(types, client, options = {}) {
   )
 
   // this is the actual search function that takes the search string and returns the hits
-  return function search(queryString, opts = {}) {
+  return function search(queryString: string) {
     const terms = uniq(compact(tokenize(toLower(queryString))))
     const constraints = terms
       .map((term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
@@ -44,7 +52,7 @@ export function createWeightedSearch(types, client, options = {}) {
 
     const filters = [
       '_type in $__types',
-      opts.includeDrafts === false && `!(_id in path('drafts.**'))`,
+      includeDrafts === false && `!(_id in path('drafts.**'))`,
       ...constraints.map((constraint) => `(${constraint.join('||')})`),
       filter ? `(${filter})` : '',
     ].filter(Boolean)
