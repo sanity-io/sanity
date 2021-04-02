@@ -187,8 +187,10 @@ declare module 'part:@sanity/base/schema' {
       path: Array<string | number | {_key: string}>
       problems: {message: string; severity: string}[]
     }[]
+    name: string
     get: (typeName: string) => SchemaType | undefined
     has: (typeName: string) => boolean
+    getTypeNames(): string[]
   }
 
   const schema: Schema
