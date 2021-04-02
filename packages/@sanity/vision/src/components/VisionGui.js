@@ -290,6 +290,8 @@ class VisionGui extends React.PureComponent {
     const url = this.client.getUrl(
       this.client.getDataUrl('query', encodeQueryString(query, params))
     )
+    this.setState({url})
+
     const queryStart = Date.now()
 
     this.subscribers.query = this.client.observable
@@ -298,7 +300,6 @@ class VisionGui extends React.PureComponent {
         next: (res) =>
           this.setState({
             executedQuery: query,
-            url,
             queryTime: res.ms,
             e2eTime: Date.now() - queryStart,
             result: res.result,
