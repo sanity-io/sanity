@@ -102,6 +102,7 @@ let stepStart
 let spinInterval
 
 const client = sanityClient({
+  apiVersion: '1',
   projectId,
   dataset,
   token,
