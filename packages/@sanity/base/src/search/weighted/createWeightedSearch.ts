@@ -8,7 +8,7 @@ import {joinPath} from '../../util/searchUtils'
 import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchHit} from './types'
+import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchPath, SearchHit} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -19,6 +19,9 @@ const toGroqParams = (terms: string[]): Record<string, string> => {
     return acc
   }, params)
 }
+
+const pathWithMapper = ({mapWith, path}: SearchPath): string =>
+  mapWith ? `${mapWith}(${path})` : path
 
 export function createWeightedSearch(
   types: ObjectSchemaType[],
@@ -31,17 +34,19 @@ export function createWeightedSearch(
     paths: type.__experimental_search.map((config) => ({
       weight: config.weight,
       path: joinPath(config.path),
+      mapWith: config.mapWith,
     })),
   }))
 
   const combinedSearchPaths = combinePaths(
-    searchSpec.map((configForType) => configForType.paths.map((opt) => opt.path))
+    searchSpec.map((configForType) => configForType.paths.map((opt) => pathWithMapper(opt)))
   )
 
-  const selections = searchSpec.map(
-    (spec) =>
-      `_type == "${spec.typeName}" => {${spec.paths.map((cfg, i) => `"w${i}": ${cfg.path}`)}}`
-  )
+  const selections = searchSpec.map((spec) => {
+    const constraint = `_type == "${spec.typeName}" => `
+    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+    return `${constraint}${selection}`
+  })
 
   // this is the actual search function that takes the search string and returns the hits
   return function search(queryString: string, searchOpts: SearchOptions = {}) {

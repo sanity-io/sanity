@@ -4,17 +4,27 @@ const stringFieldsSymbol = Symbol('__cachedStringFields')
 
 const isReference = (type) => type.type && type.type.name === 'reference'
 
-function reduceType(type, reducer, accumulator, path = [], maxDepth) {
+const portableTextFields = ['style', 'list']
+const isPortableTextBlock = (type) =>
+  type.name === 'block' || (type.type && isPortableTextBlock(type.type))
+const isPortableTextArray = (type) =>
+  type.jsonType === 'array' && Array.isArray(type.of) && type.of.some(isPortableTextBlock)
+
+function reduceType(type, reducer, acc, path = [], maxDepth) {
   if (maxDepth < 0) {
-    return accumulator
+    return acc
   }
+
+  const accumulator = reducer(acc, type, path)
   if (type.jsonType === 'array' && Array.isArray(type.of)) {
     return reduceArray(type, reducer, accumulator, path, maxDepth)
   }
+
   if (type.jsonType === 'object' && Array.isArray(type.fields) && !isReference(type)) {
     return reduceObject(type, reducer, accumulator, path, maxDepth)
   }
-  return reducer(accumulator, type, path)
+
+  return accumulator
 }
 
 function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
@@ -25,7 +35,13 @@ function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
 }
 
 function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
+  const isPtBlock = isPortableTextBlock(objectType)
   return objectType.fields.reduce((acc, field) => {
+    // Don't include styles and list types as searchable paths for portable text blocks
+    if (isPtBlock && portableTextFields.includes(field.name)) {
+      return acc
+    }
+
     const segment = [field.name].concat(field.type.jsonType === 'array' ? [[]] : [])
     return reduceType(field.type, reducer, acc, path.concat(segment), maxDepth - 1)
   }, accumulator)
@@ -59,6 +75,11 @@ function getCachedStringFieldPaths(type, maxDepth) {
         ...BASE_WEIGHTS,
         ...deriveFromPreview(type),
         ...getStringFieldPaths(type, maxDepth).map((path) => ({weight: 1, path})),
+        ...getPortableTextFieldPaths(type, maxDepth).map((path) => ({
+          weight: 1,
+          path,
+          mapWith: 'pt::text',
+        })),
       ],
       (spec) => spec.path.join('.')
     )
@@ -69,6 +90,13 @@ function getCachedStringFieldPaths(type, maxDepth) {
 function getStringFieldPaths(type, maxDepth) {
   const reducer = (accumulator, childType, path) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
+
+  return reduceType(type, reducer, [], [], maxDepth)
+}
+
+function getPortableTextFieldPaths(type, maxDepth) {
+  const reducer = (accumulator, childType, path) =>
+    isPortableTextArray(childType) ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
 }
