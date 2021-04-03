@@ -20,7 +20,7 @@ function CorsWrapper({result, children}) {
   const response = result && result.error && result.error.response
   const message = response && response.body && response.body.message
   if (!message) {
-    return <>children</>
+    return <>{children}</>
   }
 
   return (
