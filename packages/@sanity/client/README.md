@@ -88,7 +88,7 @@ Likewise, you can also have the client return the document _before_ the mutation
 
 ### Fetch a single document
 
-This will fetch a document from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
+This will fetch a document from the [Doc endpoint](https://www.sanity.io/docs/http-doc). This endpoint cuts through any caching/indexing middleware that may involve delayed processing. Should be used sparingly and performing a query is usually a better option.
 
 ```js
 client.getDocument('bike-123').then((bike) => {
@@ -98,7 +98,7 @@ client.getDocument('bike-123').then((bike) => {
 
 ### Fetch multiple documents in one go
 
-This will fetch multiple documents in one request from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
+This will fetch multiple documents in one request from the [Doc endpoint](https://www.sanity.io/docs/http-doc). his endpoint cuts through any caching/indexing middleware that may involve delayed processing. Should be used sparingly and performing a query is usually a better option.
 
 ```js
 client.getDocuments(['bike123', 'bike345']).then(([bike123, bike345]) => {
