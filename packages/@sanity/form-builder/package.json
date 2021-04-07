@@ -4,7 +4,8 @@
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "test": "jest"
   },
   "keywords": [
     "sanity",
