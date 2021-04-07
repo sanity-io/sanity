@@ -29,7 +29,7 @@
     "@sanity/mutator": "2.2.6",
     "@sanity/portable-text-editor": "0.1.25",
     "@sanity/types": "2.7.4",
-    "@sanity/ui": "^0.33.9",
+    "@sanity/ui": "^0.33.12",
     "@sanity/util": "2.7.4",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
