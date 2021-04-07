@@ -1,7 +1,8 @@
 import {words, uniq, compact, union, intersection, keyBy, toLower} from 'lodash'
+import {SearchHit, WeightedHit, SearchSpec} from './types'
 
 // takes a set of terms and a value and returns a [score, story] pair where score is a value between 0, 1 and story is the explanation
-export const calculateScore = (searchTerms, value): [number, string] => {
+export const calculateScore = (searchTerms: string[], value: string): [number, string] => {
   const uniqueValueTerms = uniq(compact(words(toLower(value))))
   const uniqueSearchTerms = uniq(searchTerms.map(toLower))
   const matches = intersection(uniqueSearchTerms, uniqueValueTerms)
@@ -12,9 +13,14 @@ export const calculateScore = (searchTerms, value): [number, string] => {
     : [fieldScore / 2, `Matched ${matches.length} of ${all.length} terms: [${matches.join(', ')}]`]
 }
 
-const stringify = (value) => (typeof value === 'string' ? value : JSON.stringify(value))
+const stringify = (value: unknown): string =>
+  typeof value === 'string' ? value : JSON.stringify(value)
 
-export function applyWeights(searchSpec, hits, terms = []) {
+export function applyWeights(
+  searchSpec: SearchSpec[],
+  hits: SearchHit[],
+  terms: string[] = []
+): WeightedHit[] {
   const specByType = keyBy(searchSpec, (spec) => spec.typeName)
   return hits.map((hit, index) => {
     const typeSpec = specByType[hit._type]

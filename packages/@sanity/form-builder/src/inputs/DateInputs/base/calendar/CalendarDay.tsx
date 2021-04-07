@@ -3,11 +3,11 @@ import React, {useCallback} from 'react'
 
 interface CalendarDayProps {
   date: Date
-  focused: boolean
+  focused?: boolean
   onSelect: (date: Date) => void
-  isCurrentMonth: boolean
+  isCurrentMonth?: boolean
   isToday: boolean
-  selected: boolean
+  selected?: boolean
 }
 
 export function CalendarDay(props: CalendarDayProps) {

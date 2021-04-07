@@ -6,6 +6,7 @@ const importer = require('../src/import')
 const {getSanityClient} = require('./helpers')
 
 const defaultClient = sanityClient({
+  apiVersion: '1',
   projectId: 'foo',
   dataset: 'bar',
   useCdn: false,

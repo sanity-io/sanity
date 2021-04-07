@@ -4,7 +4,7 @@ import {Calendar} from './calendar/Calendar'
 export const DatePicker = React.forwardRef(function DatePicker(
   props: Omit<React.ComponentProps<'div'>, 'onChange'> & {
     value?: Date
-    onChange: (nextDate?: Date) => void
+    onChange: (nextDate: Date) => void
     selectTime?: boolean
     timeStep?: number
   },

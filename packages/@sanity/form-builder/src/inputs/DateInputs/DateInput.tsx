@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import {format} from './legacy'
+import {format, parse} from './legacy'
 
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {CommonProps} from './types'
@@ -19,12 +19,12 @@ const VALUE_FORMAT = 'YYYY-MM-DD'
 // default to how they are stored
 const DEFAULT_DATE_FORMAT = VALUE_FORMAT
 
-type Props = CommonProps & {
+export type Props = CommonProps & {
   onChange: (event: PatchEvent) => void
   type: {
     name: string
     title: string
-    description: string
+    description?: string
     options?: SchemaOptions
     placeholder?: string
   }
@@ -37,6 +37,9 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   }
 }
 
+const deserialize = (value: string) => parse(value, VALUE_FORMAT)
+const serialize = (date: Date) => format(date, VALUE_FORMAT)
+
 export const DateInput = React.forwardRef(function DateInput(
   props: Props,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
@@ -47,11 +50,17 @@ export const DateInput = React.forwardRef(function DateInput(
   const {dateFormat} = parseOptions(type.options)
 
   const handleChange = useCallback(
-    (nextDate: Date | null) => {
-      onChange(PatchEvent.from([nextDate === null ? unset() : set(format(nextDate, VALUE_FORMAT))]))
+    (nextDate: string | null) => {
+      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate)]))
     },
     [onChange]
   )
+
+  const formatInputValue = React.useCallback((date: Date) => format(date, dateFormat), [dateFormat])
+
+  const parseInputValue = React.useCallback((inputValue: string) => parse(inputValue, dateFormat), [
+    dateFormat,
+  ])
 
   return (
     <CommonDateTimeInput
@@ -62,7 +71,10 @@ export const DateInput = React.forwardRef(function DateInput(
       title={title}
       description={description}
       placeholder={placeholder}
-      inputFormat={dateFormat}
+      parseInputValue={parseInputValue}
+      formatInputValue={formatInputValue}
+      deserialize={deserialize}
+      serialize={serialize}
     />
   )
 })

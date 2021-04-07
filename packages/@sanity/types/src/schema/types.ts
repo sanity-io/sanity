@@ -137,6 +137,11 @@ export interface ObjectSchemaType extends BaseSchemaType {
   fields: ObjectField[]
   fieldsets?: Fieldset[]
   initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
+
+  // Experimentals
+  /* eslint-disable camelcase */
+  __experimental_search?: {path: string; weight: number}[]
+  /* eslint-enable camelcase */
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {

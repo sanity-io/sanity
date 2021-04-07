@@ -8,6 +8,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 const defaultClientOptions = {
+  apiVersion: '1',
   projectId: 'foo',
   dataset: 'bar',
   token: 'abc123',
