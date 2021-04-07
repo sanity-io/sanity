@@ -2,7 +2,8 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverageFrom: ['src/**.js'],
-  testRegex: '(/src/.*__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
+  testRegex:
+    '(src/(.*__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$)|(test/((.*\\.|/)(test|spec))\\.[jt]sx?$)',
   // Setup timezone
   globalSetup: '<rootDir>/test/setup/global.ts',
   setupFiles: ['<rootDir>/test/setup/environment.ts'],
