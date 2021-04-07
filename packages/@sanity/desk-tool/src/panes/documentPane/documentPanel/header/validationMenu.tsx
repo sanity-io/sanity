@@ -48,6 +48,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
       }}
       menu={popoverContent}
       open={isOpen}
+      portal
       placement="bottom"
       setOpen={setOpen}
     />
