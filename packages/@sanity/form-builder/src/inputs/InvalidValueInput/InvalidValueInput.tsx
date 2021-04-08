@@ -28,7 +28,7 @@ type InvalidValueProps = {
   value?: unknown
   onChange?: (event: PatchEvent, valueOverride?: ItemValue) => void
 }
-export default class InvalidValueInput extends React.PureComponent<InvalidValueProps, {}> {
+export default class InvalidValueInput extends React.PureComponent<InvalidValueProps> {
   handleClearClick = () => {
     this.props.onChange(PatchEvent.from(unset()))
   }
