@@ -60,7 +60,21 @@ export default {
       to: {type: 'typeWithNoToplevelStrings'},
     },
     {
+      name: 'someStrongRef',
+      title: 'Strong reference (default)',
+      type: 'reference',
+      to: {type: 'author'},
+    },
+    {
       name: 'someWeakRef',
+      title: 'Weak reference',
+      type: 'reference',
+      weak: true,
+      to: {type: 'author'},
+    },
+    {
+      name: 'anotherWeakRef',
+      title: 'Another weak reference',
       type: 'reference',
       weak: true,
       to: {type: 'author'},
