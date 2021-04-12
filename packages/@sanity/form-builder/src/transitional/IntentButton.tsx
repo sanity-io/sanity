@@ -10,5 +10,6 @@ export function IntentButton(
 ) {
   const router = useRouter()
 
-  return <Button {...props} as="a" href={router.resolveIntentLink(props.intent, props.params)} />
+  const href = props.disabled ? undefined : router.resolveIntentLink(props.intent, props.params)
+  return <Button {...props} as="a" href={href} />
 }
