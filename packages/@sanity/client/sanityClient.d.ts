@@ -554,6 +554,7 @@ export type MutationEvent<R = any> = {
   timestamp: string
   transactionId: string
   transition: 'update' | 'appear' | 'disappear'
+  visibility: 'query' | 'transaction'
 }
 
 export type ChannelErrorEvent = {
