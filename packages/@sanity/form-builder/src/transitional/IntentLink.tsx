@@ -1,4 +1,4 @@
-import React, {ComponentProps} from 'react'
+import React, {ComponentProps, useCallback} from 'react'
 import {useRouter} from '../legacyParts'
 
 export function IntentLink(
@@ -6,5 +6,19 @@ export function IntentLink(
 ) {
   const router = useRouter()
 
-  return <a {...props} href={router.resolveIntentLink(props.intent, props.params)} />
+  const handleClick = useCallback(
+    (event) => {
+      event.preventDefault()
+      router.navigateIntent(props.intent, props.params)
+    },
+    [props.intent, props.params, router]
+  )
+
+  return (
+    <a
+      {...props}
+      href={router.resolveIntentLink(props.intent, props.params)}
+      onClick={handleClick}
+    />
+  )
 }
