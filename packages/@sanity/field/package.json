@@ -31,7 +31,7 @@
     "@sanity/diff": "2.7.4",
     "@sanity/react-hooks": "2.8.0",
     "@sanity/types": "2.8.0",
-    "@sanity/ui": "^0.33.12",
+    "@sanity/ui": "^0.33.18",
     "@sanity/util": "2.8.0",
     "date-fns": "^2.16.1",
     "sanity-diff-patch": "^1.0.9",
