@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "2.7.4",
+  "version": "2.8.0",
   "description": "Type definitions for common Sanity data structures",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,7 @@
     "typescript"
   ],
   "dependencies": {
-    "@sanity/client": "2.7.1",
+    "@sanity/client": "2.8.0",
     "@types/react": "^17.0.0",
     "rxjs": "^6.5.3"
   },
