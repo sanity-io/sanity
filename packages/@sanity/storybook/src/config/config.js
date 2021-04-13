@@ -3,8 +3,6 @@
 
 const {configure, sanity} = require('part:@sanity/storybook')
 
-require('normalize.css')
-
 configure(() => {
   // Trigger loading of stories (side-effect of registering them)
   require('all:part:@sanity/base/component')
