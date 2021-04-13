@@ -3,7 +3,7 @@ import {resolveTypeName} from '../../../../utils/resolveTypeName'
 import {IGNORE_KEYS} from './constants'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function isEmpty(value: any): value is Record<never, never> {
+export function isEmpty(value: Record<string, unknown>): value is Record<never, never> {
   return Object.keys(value).every((key) => IGNORE_KEYS.includes(key))
 }
 

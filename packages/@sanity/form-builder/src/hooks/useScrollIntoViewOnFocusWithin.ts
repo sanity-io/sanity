@@ -11,7 +11,7 @@ const SCROLL_OPTIONS = {scrollMode: 'if-needed'} as const
  * @param hasFocusWithin A boolean indicating whether we have has focus within the currently edited value
  */
 export function useScrollIntoViewOnFocusWithin(
-  elementRef: {current?: HTMLElement | null},
+  elementRef: {current: HTMLElement | null},
   hasFocusWithin: boolean
 ): void {
   return useDidUpdate(

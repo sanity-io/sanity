@@ -11,7 +11,7 @@ import {ArrayMember} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
 import {hasFocusWithinPath} from '../../../../utils/focusUtils'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
-import {getItemType} from './helpers'
+import {getItemType, isEmpty} from './helpers'
 import {EditDialog} from './EditDialog'
 import {ItemRow} from './ItemRow'
 import {ItemCell} from './ItemCell'
@@ -66,7 +66,12 @@ export function ArrayItem(props: ArrayInputListItemProps) {
 
   const handleFocus = useCallback(() => emitFocus(), [emitFocus])
   const handleEditOpen = useCallback(() => emitFocus([FOCUS_TERMINATOR]), [emitFocus])
-  const handleEditClose = useCallback(() => emitFocus(), [emitFocus])
+  const handleEditClose = useCallback(() => {
+    if (isEmpty(value)) {
+      onRemove(value)
+    }
+    emitFocus()
+  }, [value, onRemove, emitFocus])
 
   const handleChange = useCallback(
     (event: PatchEvent, valueOverride?: ArrayMember) =>
