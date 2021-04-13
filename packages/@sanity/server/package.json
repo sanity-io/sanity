@@ -57,7 +57,6 @@
     "find-config": "^1.0.0",
     "json-loader": "^0.5.4",
     "lodash": "^4.17.15",
-    "normalize.css": "^5.0.0",
     "postcss-loader": "^2.0.6",
     "querystring": "^0.2.0",
     "react-hot-loader": "^4.12.11",
