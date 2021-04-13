@@ -30,12 +30,6 @@ const SelectButton = styled(Button)(({theme}: {theme: Theme}) => {
   const border = {width: 1, color: 'var(--card-border-color)'}
 
   return css`
-    //---
-    // Needed because normalize.css in the studio overrides this in Safari.
-    // Safe to remove the following line when when we no longer use normalize.css
-    appearance: none !important;
-    //----
-
     &:not([data-disabled='true']) {
       &:focus-within {
         box-shadow: ${focusRingStyle({
