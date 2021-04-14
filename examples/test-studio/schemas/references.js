@@ -55,6 +55,26 @@ export default {
     },
     {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},
     {
+      name: 'invalidFilter',
+      title: 'Invalid filter',
+      description: 'This will error when trying to search for anything',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: '&',
+      },
+    },
+    {
+      name: 'asyncFilter',
+      title: 'Async filter',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: () =>
+          Promise.resolve({filter: '$param == "something"', params: {param: 'something'}}),
+      },
+    },
+    {
       name: 'refToTypeWithNoToplevelStrings',
       type: 'reference',
       to: {type: 'typeWithNoToplevelStrings'},
