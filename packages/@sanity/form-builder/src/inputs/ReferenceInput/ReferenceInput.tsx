@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import React, {ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
 import {isValidationErrorMarker, Marker, Path, Reference, ReferenceSchemaType} from '@sanity/types'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {LinkIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
@@ -9,6 +8,7 @@ import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} fro
 import {Autocomplete, Box, Card, Flex, Text, Button, Stack, useToast} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Preview from '../../Preview'
 import {useObservableCallback} from '../../utils/useObservableCallback'
@@ -199,65 +199,71 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const placeholder = preview.isLoading ? 'Loading…' : 'Type to search…'
   return (
-    <ChangeIndicatorCompareValueProvider value={value?._ref} compareValue={compareValue?._ref}>
-      <FormField
-        htmlFor={inputId}
-        __unstable_markers={markers}
-        __unstable_presence={presence}
-        title={type.title}
-        level={level}
-        description={type.description}
-      >
-        <div>
-          {hasRef && !isMissing && weakIs !== weakShouldBe && (
-            <Alert
-              title="Reference strength mismatch"
-              status="warning"
-              suffix={
-                <Stack padding={2}>
-                  <Button
-                    onClick={handleFixStrengthMismatch}
-                    text={<>Convert to {weakShouldBe} reference</>}
-                    tone="caution"
-                  />
-                </Stack>
-              }
+    <FormField
+      htmlFor={inputId}
+      __unstable_markers={markers}
+      __unstable_presence={presence}
+      __unstable_changeIndicator={false}
+      title={type.title}
+      level={level}
+      description={type.description}
+    >
+      <div>
+        {hasRef && !isMissing && weakIs !== weakShouldBe && (
+          <Alert
+            title="Reference strength mismatch"
+            status="warning"
+            suffix={
+              <Stack padding={2}>
+                <Button
+                  onClick={handleFixStrengthMismatch}
+                  text={<>Convert to {weakShouldBe} reference</>}
+                  tone="caution"
+                />
+              </Stack>
+            }
+          >
+            This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
+            <em>{weakShouldBe}</em>
+            <Details marginTop={4} title={<>Details</>}>
+              <Stack space={3}>
+                <Text as="p" muted size={1}>
+                  {type.weak ? (
+                    <>
+                      This reference is currently marked as a <em>strong reference</em>. It will not
+                      be possible to delete the "{preview.snapshot?.title}"-document without first
+                      removing this reference.
+                    </>
+                  ) : (
+                    <>
+                      This reference is currently marked as a <em>weak reference</em>. This makes it
+                      possible to delete the "{preview.snapshot?.title}"-document without first
+                      deleting this reference, leaving this field referencing a nonexisting
+                      document.
+                    </>
+                  )}
+                </Text>
+              </Stack>
+            </Details>
+          </Alert>
+        )}
+        {value && isMissing && (
+          <Alert title="Nonexistent document reference" status="warning">
+            <Text as="p" muted size={1}>
+              This field is currently referencing a document that doesn't exist (ID:{' '}
+              <code>{value._ref}</code>). You can either remove the reference or replace it with an
+              existing document.
+            </Text>
+          </Alert>
+        )}
+        <Flex>
+          <Box flex={1}>
+            <ChangeIndicatorWithProvidedFullPath
+              path={[]}
+              hasFocus={focusPath[0] === '_ref'}
+              value={value?._ref}
+              compareValue={compareValue?._ref}
             >
-              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
-              <em>{weakShouldBe}</em>
-              <Details marginTop={4} title={<>Details</>}>
-                <Stack space={3}>
-                  <Text as="p" muted size={1}>
-                    {type.weak ? (
-                      <>
-                        This reference is currently marked as a <em>strong reference</em>. It will
-                        not be possible to delete the "{preview.snapshot?.title}"-document without
-                        first removing this reference.
-                      </>
-                    ) : (
-                      <>
-                        This reference is currently marked as a <em>weak reference</em>. This makes
-                        it possible to delete the "{preview.snapshot?.title}"-document without first
-                        deleting this reference, leaving this field referencing a nonexisting
-                        document.
-                      </>
-                    )}
-                  </Text>
-                </Stack>
-              </Details>
-            </Alert>
-          )}
-          {value && isMissing && (
-            <Alert title="Nonexistent document reference" status="warning">
-              <Text as="p" muted size={1}>
-                This field is currently referencing a document that doesn't exist (ID:{' '}
-                <code>{value._ref}</code>). You can either remove the reference or replace it with
-                an existing document.
-              </Text>
-            </Alert>
-          )}
-          <Flex>
-            <Box flex={1}>
               <Autocomplete
                 loading={searchState.isLoading}
                 ref={forwardedRef}
@@ -300,10 +306,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
                   </Box>
                 }
               />
-            </Box>
-          </Flex>
-        </div>
-      </FormField>
-    </ChangeIndicatorCompareValueProvider>
+            </ChangeIndicatorWithProvidedFullPath>
+          </Box>
+        </Flex>
+      </div>
+    </FormField>
   )
 })
