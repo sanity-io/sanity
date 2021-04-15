@@ -65,7 +65,7 @@ export interface ImageCrop {
 }
 
 export interface ImageHotspot {
-  _type: 'sanity.imageHotspot'
+  _type?: 'sanity.imageHotspot'
   width: number
   height: number
   x: number
