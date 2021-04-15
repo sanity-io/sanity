@@ -40,7 +40,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
-import styled from 'styled-components'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
@@ -56,6 +55,7 @@ import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
+import {RatioBox} from '../common/RatioBox'
 import {urlToFile, base64ToFile} from './utils/image'
 
 export interface Image extends Partial<BaseImage> {
@@ -118,19 +118,6 @@ type ImageInputFieldProps = {
   level: number
   presence: FormFieldPresence[]
 }
-
-const ImageRatio = styled.div`
-  position: relative;
-  padding-bottom: calc(2 / 3 * 100%);
-
-  & > div {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    right: 1px;
-    bottom: 1px;
-  }
-`
 
 function ImageInputField(props: ImageInputFieldProps) {
   const {onChange, field, ...restProps} = props
@@ -670,7 +657,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                   onBlur={this.handleFileTargetBlur}
                   tone="transparent"
                 >
-                  <ImageRatio>
+                  <RatioBox ratio={3 / 2} padding={1}>
                     <Flex align="center" justify="center">
                       {value?._upload && this.renderUploadState(value._upload)}
                       {!value?._upload && value?.asset && this.renderAsset()}
@@ -679,7 +666,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                         <Overlay>Drop to upload</Overlay>
                       )}
                     </Flex>
-                  </ImageRatio>
+                  </RatioBox>
                 </FileTarget>
               </ChangeIndicatorWithProvidedFullPath>
             </ChangeIndicatorCompareValueProvider>
