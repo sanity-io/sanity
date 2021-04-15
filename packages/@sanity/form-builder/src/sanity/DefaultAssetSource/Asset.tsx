@@ -5,11 +5,10 @@ import {Button} from '@sanity/ui'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {AssetRecord} from '../../inputs/files/ImageInput/types'
 import {versionedClient} from '../versionedClient'
+import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
-
 import {AssetDialogAction, AssetMenuAction} from './types'
-import {Checkerboard} from './Checkerboard'
 import {DeleteAssetErrorDialog} from './DeleteAssetErrorDialog'
 
 interface AssetProps {
