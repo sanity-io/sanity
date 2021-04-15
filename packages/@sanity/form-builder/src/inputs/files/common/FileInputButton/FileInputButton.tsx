@@ -4,8 +4,7 @@ import React from 'react'
 import {useId} from '@reach/auto-id'
 import styled, {css} from 'styled-components'
 import {Button, Theme} from '@sanity/ui'
-
-import {focusRingBorderStyle, focusRingStyle} from '../focusringUtils'
+import {focusRingBorderStyle, focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
 type Props = Omit<React.ComponentProps<typeof Button>, 'type' | 'value' | 'onSelect'> & {
   accept?: string

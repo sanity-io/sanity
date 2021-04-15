@@ -48,7 +48,7 @@ import {
   UploaderResolver,
   UploadOptions,
 } from '../../../sanity/uploads/types'
-import ImageToolInput from '../ImageToolInput'
+import {ImageToolInput} from '../ImageToolInput'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
