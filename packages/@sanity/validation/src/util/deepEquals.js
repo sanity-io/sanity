@@ -4,7 +4,7 @@
  **/
 
 /* eslint max-depth: 4 */
-module.exports = function equal(a, b) {
+export default function equal(a, b) {
   if (a === b) {
     return true
   }

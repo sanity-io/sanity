@@ -1,5 +1,5 @@
-const ValidationError = require('../ValidationError')
-const genericValidator = require('./genericValidator')
+import ValidationError from '../ValidationError'
+import genericValidator from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -113,7 +113,7 @@ const email = (options, value, message) => {
   return new ValidationError(message || 'Must be a valid email address')
 }
 
-module.exports = Object.assign({}, genericValidator, {
+export default Object.assign({}, genericValidator, {
   stringCasing,
   presence,
   regex,

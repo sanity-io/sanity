@@ -1,4 +1,4 @@
-const {Rule} = require('../src')
+import {Rule} from '../src'
 
 describe('array', () => {
   test('required constraint', async () => {

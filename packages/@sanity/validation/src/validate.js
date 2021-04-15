@@ -1,19 +1,26 @@
-const {get, flatten} = require('lodash')
-const ValidationError = require('./ValidationError')
-const genericValidator = require('./validators/genericValidator')
+import {get, flatten} from 'lodash'
+import ValidationError from './ValidationError'
+import genericValidator from './validators/genericValidator'
+
+import booleanValidator from './validators/booleanValidator'
+import numberValidator from './validators/numberValidator'
+import stringValidator from './validators/stringValidator'
+import arrayValidator from './validators/arrayValidator'
+import objectValidator from './validators/objectValidator'
+import dateValidator from './validators/dateValidator'
 
 const typeValidators = {
-  Boolean: require('./validators/booleanValidator'),
-  Number: require('./validators/numberValidator'),
-  String: require('./validators/stringValidator'),
-  Array: require('./validators/arrayValidator'),
-  Object: require('./validators/objectValidator'),
-  Date: require('./validators/dateValidator'),
+  Boolean: booleanValidator,
+  Number: numberValidator,
+  String: stringValidator,
+  Array: arrayValidator,
+  Object: objectValidator,
+  Date: dateValidator,
 }
 
 const EMPTY_ARRAY = []
 
-module.exports = (rule, value, options = {}) => {
+export default (rule, value, options = {}) => {
   let rules = rule._rules
 
   const valueIsUndefined = value === null || typeof value === 'undefined'

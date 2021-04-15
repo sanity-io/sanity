@@ -22,4 +22,4 @@ class ValidationError extends ExtendableError {
   }
 }
 
-module.exports = ValidationError
+export default ValidationError

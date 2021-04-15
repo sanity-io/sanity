@@ -1,9 +1,10 @@
-const Type = require('type-of-is')
-const {flatten} = require('lodash')
-const deepEquals = require('../util/deepEquals')
-const pathToString = require('../util/pathToString')
-const handleValidationResult = require('../util/handleValidationResult')
-const ValidationError = require('../ValidationError')
+import Type from 'type-of-is'
+import {flatten} from 'lodash'
+import deepEquals from '../util/deepEquals'
+import pathToString from '../util/pathToString'
+import handleValidationResult from '../util/handleValidationResult'
+import ValidationError from '../ValidationError'
+import validate from '../validate'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
 
@@ -25,8 +26,6 @@ const presence = (expected, value, message) => {
 }
 
 const multiple = (children, value) => {
-  const validate = require('../validate')
-
   const items = children.map((child) => validate(child, value, {isChild: true}))
   return Promise.all(items).then(flatten)
 }
@@ -105,7 +104,7 @@ function formatValidationErrors(message, results, options = {}) {
       )
 }
 
-module.exports = {
+export default {
   all,
   type,
   either,

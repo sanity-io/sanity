@@ -1,5 +1,5 @@
-const ValidationError = require('../ValidationError')
-const genericValidator = require('./genericValidator')
+import ValidationError from '../ValidationError'
+import genericValidator from './genericValidator'
 
 const presence = (flag, value, message) => {
   if (flag === 'required' && typeof value !== 'boolean') {
@@ -9,6 +9,6 @@ const presence = (flag, value, message) => {
   return true
 }
 
-module.exports = Object.assign({}, genericValidator, {
+export default Object.assign({}, genericValidator, {
   presence,
 })

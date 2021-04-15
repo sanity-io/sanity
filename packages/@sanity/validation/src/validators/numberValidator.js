@@ -1,5 +1,5 @@
-const ValidationError = require('../ValidationError')
-const genericValidator = require('./genericValidator')
+import ValidationError from '../ValidationError'
+import genericValidator from './genericValidator'
 
 const precisionRx = /(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/
 
@@ -59,7 +59,7 @@ const lessThan = (maxNum, value, message) => {
   return new ValidationError(message || `Must be less than ${maxNum}`)
 }
 
-module.exports = Object.assign({}, genericValidator, {
+export default Object.assign({}, genericValidator, {
   min,
   max,
   lessThan,

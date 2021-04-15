@@ -1,4 +1,4 @@
-module.exports = function pathToString(path) {
+export default function pathToString(path) {
   return path.reduce((target, segment, i) => {
     const segmentType = typeof segment
     if (segmentType === 'number') {
