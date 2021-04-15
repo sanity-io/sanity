@@ -5,7 +5,7 @@ import {LinkIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Autocomplete, Box, Card, Flex, Text, Button, Stack, useToast} from '@sanity/ui'
+import {Autocomplete, Box, Card, Text, Button, Stack, useToast} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -184,7 +184,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       const memberType = getMemberTypeFor(option.hit._type, type)
       return (
         <Card as="button">
-          <Box padding={1}>
+          <Box paddingX={3} paddingY={2}>
             {memberType ? (
               <Preview type={memberType} value={option.hit} layout="default" />
             ) : (
@@ -208,7 +208,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       level={level}
       description={type.description}
     >
-      <div>
+      <Stack space={3}>
         {hasRef && !isMissing && weakIs !== weakShouldBe && (
           <Alert
             title="Reference strength mismatch"
@@ -223,8 +223,10 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
               </Stack>
             }
           >
-            This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
-            <em>{weakShouldBe}</em>
+            <Text as="p" muted size={1}>
+              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
+              <em>{weakShouldBe}.</em>
+            </Text>
             <Details marginTop={4} title={<>Details</>}>
               <Stack space={3}>
                 <Text as="p" muted size={1}>
@@ -247,6 +249,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
             </Details>
           </Alert>
         )}
+
         {value && isMissing && (
           <Alert title="Nonexistent document reference" status="warning">
             <Text as="p" muted size={1}>
@@ -256,60 +259,59 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
             </Text>
           </Alert>
         )}
-        <Flex>
-          <Box flex={1}>
-            <ChangeIndicatorWithProvidedFullPath
-              path={[]}
-              hasFocus={focusPath[0] === '_ref'}
+
+        <ChangeIndicatorWithProvidedFullPath
+          path={[]}
+          hasFocus={focusPath[0] === '_ref'}
+          value={value?._ref}
+          compareValue={compareValue?._ref}
+        >
+          <div style={{lineHeight: 0}}>
+            <Autocomplete
+              loading={searchState.isLoading}
+              ref={forwardedRef}
+              id={inputId || ''}
+              options={searchState.hits.map((hit) => ({
+                value: hit._id,
+                hit: hit,
+              }))}
+              onFocus={handleFocus}
+              onBlur={onBlur}
+              radius={1}
+              readOnly={readOnly}
               value={value?._ref}
-              compareValue={compareValue?._ref}
-            >
-              <Autocomplete
-                loading={searchState.isLoading}
-                ref={forwardedRef}
-                id={inputId || ''}
-                options={searchState.hits.map((hit) => ({
-                  value: hit._id,
-                  hit: hit,
-                }))}
-                onFocus={handleFocus}
-                onBlur={onBlur}
-                radius={1}
-                readOnly={readOnly}
-                value={value?._ref}
-                placeholder={placeholder}
-                customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-                onQueryChange={handleQueryChange}
-                onChange={handleChange}
-                filterOption={NO_FILTER}
-                renderOption={renderOption}
-                renderValue={renderValue}
-                openButton={{onClick: handleOpenButtonClick}}
-                prefix={
-                  <Box padding={1}>
-                    <IntentButton
-                      disabled={!preview.snapshot}
-                      icon={LinkIcon}
-                      title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
-                      intent="edit"
-                      mode="bleed"
-                      padding={2}
-                      params={
-                        preview.snapshot
-                          ? {
-                              id: preview.snapshot._id,
-                              type: preview.snapshot._type,
-                            }
-                          : EMPTY_OBJECT
-                      }
-                    />
-                  </Box>
-                }
-              />
-            </ChangeIndicatorWithProvidedFullPath>
-          </Box>
-        </Flex>
-      </div>
+              placeholder={placeholder}
+              customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
+              onQueryChange={handleQueryChange}
+              onChange={handleChange}
+              filterOption={NO_FILTER}
+              renderOption={renderOption}
+              renderValue={renderValue}
+              openButton={{onClick: handleOpenButtonClick}}
+              prefix={
+                <Box padding={1}>
+                  <IntentButton
+                    disabled={!preview.snapshot}
+                    icon={LinkIcon}
+                    title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
+                    intent="edit"
+                    mode="bleed"
+                    padding={2}
+                    params={
+                      preview.snapshot
+                        ? {
+                            id: preview.snapshot._id,
+                            type: preview.snapshot._type,
+                          }
+                        : EMPTY_OBJECT
+                    }
+                  />
+                </Box>
+              }
+            />
+          </div>
+        </ChangeIndicatorWithProvidedFullPath>
+      </Stack>
     </FormField>
   )
 })
