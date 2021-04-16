@@ -4,7 +4,6 @@ import calculateStyles from './calculateStyles'
 import Debug from 'debug'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {debounce} from 'lodash'
-import styles from './styles/HotspotImage.css'
 
 const debug = Debug('sanity-imagetool')
 
@@ -15,6 +14,8 @@ function getCropAspect(crop, srcAspect) {
   const cropHeight = origHeight - (crop.top + crop.bottom) * origHeight
   return cropWidth / cropHeight
 }
+
+const ROOT_STYLE = {position: 'relative', width: '100%'}
 
 export default class HotspotImage extends React.PureComponent {
   static propTypes = {
@@ -139,7 +140,7 @@ export default class HotspotImage extends React.PureComponent {
       },
     })
     return (
-      <div className={`${styles.root} ${className}`} style={style} ref={this.setContainerElement}>
+      <div className={className} style={ROOT_STYLE} ref={this.setContainerElement}>
         <div style={targetStyles.container}>
           <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>

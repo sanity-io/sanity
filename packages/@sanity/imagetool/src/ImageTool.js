@@ -7,10 +7,24 @@ import getBackingStoreRatio from './getBackingStoreRatio'
 import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
-import styles from './styles/ImageTool.css'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+
+const ROOT_STYLES = {
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const CANVAS_STYLES = {
+  display: 'block',
+  position: 'relative',
+  userSelect: 'none',
+}
 
 const DragAwareCanvas = makeDragAware('canvas')
 
@@ -702,9 +716,9 @@ export default class ImageTool extends React.PureComponent {
     const {image, readOnly} = this.props
     const ratio = getDevicePixelRatio()
     return (
-      <div className={styles.root}>
+      <div style={ROOT_STYLES}>
         <DragAwareCanvas
-          className={styles.canvas}
+          style={CANVAS_STYLES}
           readOnly={readOnly}
           ref={this.setCanvas}
           onDrag={this.handleDrag}
