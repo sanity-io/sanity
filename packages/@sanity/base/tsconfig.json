@@ -40,6 +40,9 @@
     },
     {
       "path": "../mutator"
+    },
+    {
+      "path": "../transaction-collator"
     }
   ]
 }
