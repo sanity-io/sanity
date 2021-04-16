@@ -1,10 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import {
-  ChangeIndicatorWithProvidedFullPath,
-  FormFieldSet,
-  ImperativeToast,
-} from '@sanity/base/components'
+import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {
   Box,
   Button,
@@ -18,13 +14,15 @@ import {
   Text,
   ToastParams,
 } from '@sanity/ui'
-import {get, partition, uniqueId} from 'lodash'
+import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import {EditIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon, EyeOpenIcon} from '@sanity/icons'
+import {ChangeIndicatorForFieldPath} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {EditIcon, EyeOpenIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import {
+  Asset as AssetDocument,
+  AssetFromSource,
   AssetSource,
   Image as BaseImage,
   ImageAsset,
@@ -33,12 +31,10 @@ import {
   ObjectField,
   Path,
   SanityDocument,
-  AssetFromSource,
-  Asset as AssetDocument,
 } from '@sanity/types'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
+import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
@@ -56,7 +52,8 @@ import {FileTarget, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
-import {urlToFile, base64ToFile} from './utils/image'
+import {EMPTY_ARRAY} from '../../../utils/empty'
+import {base64ToFile, urlToFile} from './utils/image'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -80,7 +77,6 @@ export type Props = {
   presence: FormFieldPresence[]
 }
 
-const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
 const getDevicePixelRatio = () => {
   if (typeof window === 'undefined' || !window.devicePixelRatio) {
     return 1
@@ -95,7 +91,6 @@ type FileInfo = {
 
 type ImageInputState = {
   isUploading: boolean
-  isAdvancedEditOpen: boolean
   selectedAssetSource: AssetSource | null
   // Metadata about files currently over the drop area
   hoveringFiles: FileInfo[]
@@ -104,6 +99,21 @@ type ImageInputState = {
 type Focusable = {
   focus: () => void
 }
+
+interface FieldGroups {
+  asset: ObjectField[]
+  imagetool: ObjectField[]
+  highlighted: ObjectField[]
+  dialog: ObjectField[]
+}
+
+const EMPTY_FIELD_GROUPS: FieldGroups = {
+  asset: [],
+  imagetool: [],
+  highlighted: [],
+  dialog: [],
+}
+const ASSET_FIELD_PATH = ['asset']
 
 type ImageInputFieldProps = {
   field: ObjectField
@@ -114,6 +124,7 @@ type ImageInputFieldProps = {
   onFocus: (path: Path) => void
   readOnly: boolean
   focusPath: Path
+  compareValue: any
   markers: Marker[]
   level: number
   presence: FormFieldPresence[]
@@ -152,7 +163,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   state: ImageInputState = {
     isUploading: false,
-    isAdvancedEditOpen: false,
     selectedAssetSource: null,
     hoveringFiles: [],
   }
@@ -292,12 +302,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  handleStartAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: true})
+  handleOpenDialog = () => {
+    const {type, onFocus} = this.props
+    const groups = this.getGroupedFields(type)
+    const firstDialogField = this.isImageToolEnabled() ? groups.imagetool[0] : groups.dialog[0]
+    if (firstDialogField) {
+      onFocus([firstDialogField.name])
+    }
   }
 
-  handleStopAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: false})
+  handleCloseDialog = () => {
+    this.props.onFocus([])
   }
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
@@ -411,15 +426,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
-  renderAdvancedEdit(fields: ObjectField[]) {
-    const {value, level, type, onChange, readOnly, materialize} = this.props
+  renderDialogFields(fields: ObjectField[]) {
+    const {
+      value,
+      compareValue,
+      focusPath,
+      onFocus,
+      level,
+      type,
+      onChange,
+      readOnly,
+      presence,
+      materialize,
+    } = this.props
+
     const withImageTool = this.isImageToolEnabled() && value && value.asset
+
+    const imageToolPresence = withImageTool
+      ? presence.filter((item) => item.path[0] === 'hotspot')
+      : EMPTY_ARRAY
 
     return (
       <Dialog
         header="Edit details"
         id={`${this._inputId}_dialog`}
-        onClose={this.handleStopAdvancedEdit}
+        onClose={this.handleCloseDialog}
         width={1}
       >
         <PresenceOverlay>
@@ -434,6 +465,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                       readOnly={Boolean(readOnly)}
                       imageUrl={this.getConstrainedImageSrc(imageAsset)}
                       value={value}
+                      focusPath={focusPath}
+                      presence={imageToolPresence}
+                      onFocus={onFocus}
+                      compareValue={compareValue}
                       onChange={onChange}
                     />
                   )}
@@ -467,7 +502,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderField(field: ObjectField) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur, presence, markers} = this.props
+    const {
+      value,
+      level,
+      focusPath,
+      onFocus,
+      readOnly,
+      onBlur,
+      compareValue,
+      presence,
+      markers,
+    } = this.props
     const fieldValue = value?.[field.name]
     const fieldMarkers = markers.filter((marker) => marker.path[0] === field.name)
 
@@ -478,6 +523,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         value={fieldValue}
         onChange={this.handleFieldChange}
         onFocus={onFocus}
+        compareValue={compareValue}
         onBlur={onBlur}
         readOnly={Boolean(readOnly || field.type.readOnly)}
         focusPath={focusPath}
@@ -597,6 +643,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.toast = toast
   }
 
+  getGroupedFields(type: ImageSchemaType): FieldGroups {
+    const fieldGroups = groupBy(type.fields, (field) => {
+      if (field.name === 'asset') {
+        return 'asset'
+      }
+      if (field.name === 'hotspot' || field.name === 'crop') {
+        return 'imagetool'
+      }
+      return (field.type as any)?.options?.isHighlighted ? 'highlighted' : 'dialog'
+    })
+
+    return {...EMPTY_FIELD_GROUPS, ...fieldGroups}
+  }
+
   render() {
     const {
       type,
@@ -606,21 +666,24 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       markers,
       readOnly,
       presence,
+      focusPath = EMPTY_ARRAY,
       directUploads,
     } = this.props
-    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource} = this.state
-    const [highlightedFields, otherFields] = partition(
-      type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
-      'type.options.isHighlighted'
-    )
+    const {hoveringFiles, selectedAssetSource} = this.state
 
     const accept = get(type, 'options.accept', 'image/*')
 
     // Whoever is present at the asset field is who we show on the field itself
     const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
 
+    const fieldGroups = this.getGroupedFields(type)
+
     const showAdvancedEditButton =
-      value && (otherFields.length > 0 || (value?.asset && this.isImageToolEnabled()))
+      value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
+
+    const isDialogOpen =
+      focusPath.length > 0 &&
+      fieldGroups.dialog.concat(fieldGroups.imagetool).some((field) => focusPath[0] === field.name)
 
     return (
       <>
@@ -631,46 +694,39 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           __unstable_presence={assetFieldPresence}
           title={type.title}
           description={type.description}
-          level={highlightedFields.length > 0 ? level : 0}
+          level={fieldGroups.highlighted.length > 0 ? level : 0}
           __unstable_changeIndicator={false}
         >
           <div>
-            <ChangeIndicatorCompareValueProvider
-              value={value?.asset?._ref}
-              compareValue={compareValue?.asset?._ref}
+            <ChangeIndicatorForFieldPath
+              path={ASSET_FIELD_PATH}
+              hasFocus={this.hasFileTargetFocus()}
+              isChanged={value?.asset?._ref !== compareValue?.asset?._ref}
             >
-              <ChangeIndicatorWithProvidedFullPath
-                path={[]}
-                hasFocus={this.hasFileTargetFocus()}
-                value={value?.asset?._ref}
-                compareValue={compareValue?.asset?._ref}
+              <FileTarget
+                tabIndex={readOnly ? undefined : 0}
+                shadow={1}
+                disabled={readOnly === true}
+                ref={this.setFocusElement}
+                onFiles={this.handleSelectFiles}
+                onFilesOver={this.handleFilesOver}
+                onFilesOut={this.handleFilesOut}
+                onFocus={this.handleFileTargetFocus}
+                onBlur={this.handleFileTargetBlur}
+                tone="transparent"
               >
-                <FileTarget
-                  tabIndex={readOnly ? undefined : 0}
-                  shadow={1}
-                  disabled={readOnly === true}
-                  ref={this.setFocusElement}
-                  onFiles={this.handleSelectFiles}
-                  onFilesOver={this.handleFilesOver}
-                  onFilesOut={this.handleFilesOut}
-                  onFocus={this.handleFileTargetFocus}
-                  onBlur={this.handleFileTargetBlur}
-                  tone="transparent"
-                >
-                  <RatioBox ratio={3 / 2} padding={1}>
-                    <Flex align="center" justify="center">
-                      {value?._upload && this.renderUploadState(value._upload)}
-                      {!value?._upload && value?.asset && this.renderAsset()}
-                      {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
-                      {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                        <Overlay>Drop to upload</Overlay>
-                      )}
-                    </Flex>
-                  </RatioBox>
-                </FileTarget>
-              </ChangeIndicatorWithProvidedFullPath>
-            </ChangeIndicatorCompareValueProvider>
-
+                <RatioBox ratio={3 / 2} padding={1}>
+                  <Flex align="center" justify="center">
+                    {value?._upload && this.renderUploadState(value._upload)}
+                    {!value?._upload && value?.asset && this.renderAsset()}
+                    {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
+                    {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
+                      <Overlay>Drop to upload</Overlay>
+                    )}
+                  </Flex>
+                </RatioBox>
+              </FileTarget>
+            </ChangeIndicatorForFieldPath>
             <Grid
               gap={1}
               marginTop={3}
@@ -692,7 +748,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
                   mode="ghost"
-                  onClick={this.handleStartAdvancedEdit}
+                  onClick={this.handleOpenDialog}
                   text={readOnly ? 'View details' : 'Edit details'}
                 />
               )}
@@ -709,8 +765,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             </Grid>
           </div>
 
-          {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-          {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          {this.renderFields(fieldGroups.highlighted)}
+          {isDialogOpen && this.renderDialogFields(fieldGroups.dialog)}
           {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>
       </>
