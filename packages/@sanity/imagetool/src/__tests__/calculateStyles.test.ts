@@ -1,5 +1,4 @@
-import calculateStyles from '../src/calculateStyles'
-require('should')
+import calculateStyles from '../calculateStyles'
 
 // Todo: write test for cropping container too
 
@@ -9,7 +8,7 @@ describe('calculateStyles', () => {
       const style = calculateStyles({
         image: {height: 100, width: 100},
       })
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         height: '100%',
         width: '100%',
       })
@@ -30,11 +29,11 @@ describe('calculateStyles', () => {
           right: 0.1,
         },
       })
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         height: '150%',
         width: '100%',
       })
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         height: '166.67%',
         left: '-12.5%',
         position: 'absolute',
@@ -65,7 +64,7 @@ describe('calculateStyles', () => {
           width: 100,
         },
       })
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         height: '100%',
         width: '100%',
@@ -73,7 +72,7 @@ describe('calculateStyles', () => {
         top: 0,
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -91,7 +90,7 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         height: '100%',
         width: '100%',
@@ -99,7 +98,7 @@ describe('calculateStyles', () => {
         top: 0,
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         height: '66.67%',
         overflow: 'hidden',
         position: 'relative',
@@ -117,7 +116,7 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         height: '100%',
         width: '100%',
@@ -125,7 +124,7 @@ describe('calculateStyles', () => {
         left: 0,
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -156,7 +155,7 @@ describe('calculateStyles', () => {
           width: 100,
         },
       })
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         height: '100%',
         width: '100%',
@@ -164,7 +163,7 @@ describe('calculateStyles', () => {
         top: 0,
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -182,7 +181,7 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         top: 0,
         left: 0,
         position: 'absolute',
@@ -190,7 +189,7 @@ describe('calculateStyles', () => {
         width: '100%',
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -208,7 +207,7 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         height: '100%',
         width: '100%',
@@ -216,7 +215,7 @@ describe('calculateStyles', () => {
         left: 0,
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -247,7 +246,7 @@ describe('calculateStyles', () => {
           width: 100,
         },
       })
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         top: 0,
         left: 0,
@@ -255,7 +254,7 @@ describe('calculateStyles', () => {
         width: '100%',
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -273,7 +272,7 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         position: 'absolute',
         top: 0,
         left: 0,
@@ -281,7 +280,7 @@ describe('calculateStyles', () => {
         width: '100%',
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
@@ -299,14 +298,14 @@ describe('calculateStyles', () => {
         },
       })
 
-      style.image.should.containEql({
+      expect(style.image).toMatchObject({
         top: 0,
         left: 0,
         height: '100%',
         width: '100%',
       })
 
-      style.container.should.containEql({
+      expect(style.container).toMatchObject({
         overflow: 'hidden',
         position: 'relative',
         width: '100%',
