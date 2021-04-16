@@ -1,14 +1,13 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class Resize extends React.Component {
-  static propTypes = {
-    image: PropTypes.instanceOf(HTMLImageElement).isRequired,
-    maxWidth: PropTypes.number.isRequired,
-    maxHeight: PropTypes.number.isRequired,
-    children: PropTypes.func.isRequired,
-  }
-
+interface Props {
+  image: HTMLImageElement
+  maxWidth: number
+  maxHeight: number
+  children: (canvas: HTMLCanvasElement) => React.ReactNode
+}
+export default class Resize extends React.Component<Props> {
+  _canvas?: HTMLCanvasElement
   componentWillUnmount() {
     if (this._canvas) {
       document.body.removeChild(this._canvas)
@@ -24,7 +23,7 @@ export default class Resize extends React.Component {
     return this._canvas
   }
 
-  resize(image, maxHeight, maxWidth) {
+  resize(image: HTMLImageElement, maxHeight: number, maxWidth: number) {
     const canvas = this.getCanvas()
     const ratio = image.width / image.height
     const width = Math.min(image.width, maxWidth)
@@ -39,6 +38,9 @@ export default class Resize extends React.Component {
 
     const ctx = canvas.getContext('2d')
 
+    if (!ctx) {
+      throw new Error('Missing canvas context')
+    }
     ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, targetWidth, targetHeight)
     return canvas
   }

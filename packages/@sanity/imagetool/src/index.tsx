@@ -4,7 +4,11 @@ import ImageLoader from './ImageLoader'
 import ImageTool from './ImageTool'
 import Resize from './Resize'
 
-export default function ImageToolWrapper(props) {
+interface Props {
+  src: string
+}
+
+export default function ImageToolWrapper(props: Props) {
   return (
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {

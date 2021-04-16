@@ -1,23 +1,34 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class ImageLoader extends React.Component {
+interface LoadState {
+  isLoading: boolean
+  image: null | HTMLImageElement
+  error: null | Error
+}
+
+interface Props {
+  src: string
+  children: (loadState: LoadState) => React.ReactNode
+}
+
+export default class ImageLoader extends React.Component<Props> {
   static propTypes = {
     src: PropTypes.string.isRequired,
     children: PropTypes.func.isRequired,
   }
 
-  state = {
+  state: LoadState = {
     isLoading: true,
     image: null,
     error: null,
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.loadImage(this.props.src)
   }
 
-  loadImage(src) {
+  loadImage(src: string) {
     const image = new Image()
     this.setState({
       image: null,
@@ -42,9 +53,9 @@ export default class ImageLoader extends React.Component {
     image.src = src
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.src !== this.props.src) {
-      this.loadImage(nextProps.src)
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.src !== prevProps.src) {
+      this.loadImage(this.props.src)
     }
   }
 
