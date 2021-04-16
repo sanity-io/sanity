@@ -1,6 +1,28 @@
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
-export default function calculateStyles(options = {}) {
+export interface Crop {
+  left: number
+  bottom: number
+  right: number
+  top: number
+}
+
+export interface Hotspot {
+  width: number
+  height: number
+  x: number
+  y: number
+}
+
+interface Options {
+  image?: {aspectRatio: number} | {height: number; width: number}
+  container?: {aspectRatio: number} | {height: number; width: number}
+  hotspot?: Hotspot
+  crop?: Crop
+  align?: string
+}
+
+export default function calculateStyles(options: Options = {}) {
   const imageAspect = readAspectRatio(options.image)
 
   const hotspot = options.hotspot || DEFAULT_HOTSPOT
