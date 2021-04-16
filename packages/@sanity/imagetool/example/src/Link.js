@@ -4,7 +4,7 @@ import history from './history'
 
 function go(event) {
   event.preventDefault()
-  history.push(event.currentTarget.getAttribute('data-url'))
+  history.push(event.currentTarget.pathname)
 }
 
 export default function Link(props) {

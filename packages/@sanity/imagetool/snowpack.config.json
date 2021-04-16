@@ -1,0 +1,22 @@
+{
+  "mount": {
+    "src": "/src",
+    "example": "/"
+  },
+  "plugins": [
+    "@snowpack/plugin-typescript",
+    "@snowpack/plugin-react-refresh",
+    "@snowpack/plugin-babel"
+  ],
+  "devOptions": {
+    "port": 1234
+  },
+  "routes": [{"match": "routes", "src": ".*", "dest": "/index.html"}],
+  "workspaceRoot": "../../../",
+  "alias": {
+    "lodash": "lodash-es"
+  },
+  "packageOptions": {
+    "installTypes": true
+  }
+}

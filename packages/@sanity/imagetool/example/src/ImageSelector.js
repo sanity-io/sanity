@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {StateLink} from '@sanity/state-router'
+import Link from './Link'
 
 export default function ImageSelector(props) {
   return (
@@ -8,9 +8,9 @@ export default function ImageSelector(props) {
       {props.images.map((image, i) => {
         return (
           <li key={image} style={{display: 'inline-block', padding: 2}}>
-            <StateLink state={{imageIndex: i}}>
+            <Link state={{imageIndex: i}}>
               <img src={image} style={{verticalAlign: 'middle', width: props.thumbWidth}} />
-            </StateLink>
+            </Link>
           </li>
         )
       })}
