@@ -1,1 +1,1 @@
-export {default} from './ImageToolInput'
+export {ImageToolInput} from './ImageToolInput'
