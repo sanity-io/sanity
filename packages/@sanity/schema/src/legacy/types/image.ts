@@ -26,7 +26,7 @@ export const ImageType = {
       hotspotFields = hotspotFields.map((field) => ({...field, hidden: true}))
     }
 
-    const fields = (subTypeDef.fields || []).concat(ASSET_FIELD).concat(hotspotFields)
+    const fields = [ASSET_FIELD, ...hotspotFields, ...(subTypeDef.fields || [])]
 
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
