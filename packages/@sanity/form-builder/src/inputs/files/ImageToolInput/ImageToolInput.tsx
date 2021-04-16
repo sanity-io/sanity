@@ -1,16 +1,21 @@
-import React from 'react'
+import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 import {FormField} from '@sanity/base/components'
-import {ImageCrop, ImageHotspot, ObjectSchemaType} from '@sanity/types'
+import {ImageCrop, ImageHotspot, ObjectSchemaType, Path} from '@sanity/types'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 
+import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
+import styled from 'styled-components'
+import {ChangeIndicatorForFieldPath} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import shallowEquals from 'shallow-equals'
+import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../../../PatchEvent'
-import {ImageLoader} from '../../../legacyParts'
-
-import {EMPTY_ARRAY} from '../../../utils/empty'
-import styles from './styles/ImageToolInput.css'
+import {Checkerboard} from '../../../components/Checkerboard'
+import {withFocusRing} from '../../../components/withFocusRing'
+import {RatioBox} from '../common/RatioBox'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {useLoadImage} from './useLoadImage'
 
 interface Value {
   hotspot?: ImageHotspot
@@ -23,12 +28,11 @@ interface ImageToolInputProps {
   compareValue?: Value
   onChange: (event: PatchEvent) => void
   readOnly: boolean | null
+  focusPath: Path
+  presence?: FormFieldPresence[]
+  onFocus: (nextPath: Path) => void
   level: number
   type: ObjectSchemaType
-}
-
-interface ImageToolInputState {
-  value: any
 }
 
 const HOTSPOT_PATH = ['hotspot']
@@ -38,137 +42,165 @@ const PREVIEW_ASPECT_RATIOS = [
   ['Square', 1 / 1],
   ['16:9', 16 / 9],
   ['Panorama', 4 / 1],
-]
+] as const
 
-export default class ImageToolInput extends React.Component<
-  ImageToolInputProps,
-  ImageToolInputState
-> {
-  constructor(props: ImageToolInputProps) {
-    super(props)
-    this.state = {
-      value: props.value,
+const DEFAULT_VALUE: Value = {
+  crop: DEFAULT_CROP,
+  hotspot: DEFAULT_HOTSPOT,
+}
+
+const CheckerboardWithFocusRing = withFocusRing(Checkerboard)
+
+const Placeholder = styled.div`
+  min-height: 6em;
+`
+
+function LoadStatus(props: {children: React.ReactNode}) {
+  return (
+    <Flex align="center" justify="center" padding={4} style={{overflowWrap: 'break-word'}}>
+      {props.children}
+    </Flex>
+  )
+}
+
+export const ImageToolInput = forwardRef(function ImageToolInput(
+  props: ImageToolInputProps,
+  ref: ForwardedRef<HTMLDivElement>
+) {
+  const {
+    imageUrl,
+    value,
+    compareValue,
+    level,
+    readOnly,
+    focusPath,
+    onFocus,
+    presence,
+    onChange,
+    type,
+  } = props
+
+  const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
+
+  const {image, isLoading: isImageLoading, error: imageLoadError} = useLoadImage(imageUrl)
+
+  const forwardedRef = useForwardedRef(ref)
+
+  const handleFocus = useCallback(() => {
+    onFocus(HOTSPOT_PATH)
+  }, [onFocus])
+
+  useEffect(() => {
+    setLocalValue(value || DEFAULT_VALUE)
+  }, [value])
+
+  const hasFocus = focusPath[0] === 'hotspot'
+
+  useDidUpdate(hasFocus, (hadFocus) => {
+    if (!hadFocus && hasFocus) {
+      forwardedRef.current?.focus()
     }
-  }
+  })
 
-  handleChangeEnd = () => {
-    const {onChange, readOnly, type} = this.props
-    const {value} = this.state
-
+  const handleChangeEnd = useCallback(() => {
+    if (readOnly) {
+      return
+    }
     // For backwards compatibility, where hotspot/crop might not have a named type yet
     const cropField = type.fields.find(
       (field) => field.name === 'crop' && field.type.name !== 'object'
     )
 
     const hotspotField = type.fields.find(
-      (field) => field.name === 'hotspot' && field.type.name !== 'object'
+      (field) => field.type.name !== 'object' && field.name === 'hotspot'
     )
 
-    if (!readOnly) {
-      const crop = cropField ? {_type: cropField.type.name, ...value.crop} : value.crop
-      const hotspot = hotspotField
-        ? {_type: hotspotField.type.name, ...value.hotspot}
-        : value.hotspot
+    // Note: when either hotspot or crop change we fill in the default if the other is missing
+    // (we can't have one without the other)
+    const crop = cropField
+      ? {_type: cropField.type.name, ...(localValue.crop || DEFAULT_CROP)}
+      : localValue.crop
 
-      onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
-    }
-  }
+    const hotspot = hotspotField
+      ? {_type: hotspotField.type.name, ...(localValue.hotspot || DEFAULT_HOTSPOT)}
+      : localValue.hotspot
 
-  handleChange = (nextValue: Value) => {
-    this.setState({value: nextValue})
-  }
+    onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
+  }, [localValue, onChange, readOnly, type.fields])
 
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: ImageToolInputProps) {
-    if (nextProps.value !== this.props.value) {
-      this.setState({value: nextProps.value})
-    }
-  }
-
-  render() {
-    const {imageUrl, compareValue, level, readOnly} = this.props
-    const {value} = this.state
-
-    return (
-      // @todo: render presence and markers
-      <ChangeIndicatorProvider
-        path={HOTSPOT_PATH}
-        focusPath={EMPTY_ARRAY}
-        value={value?.current}
-        compareValue={compareValue}
-      >
-        <FormField title="Hotspot &amp; crop" level={level}>
-          <div className={styles.imageToolContainer}>
-            <div>
-              <div>
-                <ImageTool
-                  value={value}
-                  src={imageUrl}
-                  readOnly={Boolean(readOnly)}
-                  onChangeEnd={this.handleChangeEnd}
-                  onChange={this.handleChange}
-                />
+  return (
+    <FormField
+      title="Hotspot &amp; crop"
+      level={level}
+      description="Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible."
+      __unstable_changeIndicator={false}
+      __unstable_presence={presence}
+    >
+      <div>
+        <CheckerboardWithFocusRing tabIndex={0} ref={forwardedRef} onFocus={handleFocus}>
+          <ChangeIndicatorForFieldPath
+            path={HOTSPOT_PATH}
+            hasFocus={focusPath[0] === 'hotspot'}
+            isChanged={
+              !shallowEquals(value?.crop, compareValue?.crop) ||
+              !shallowEquals(compareValue?.hotspot, value?.hotspot)
+            }
+          >
+            <RatioBox ratio={3 / 2}>
+              {(isImageLoading || imageLoadError) && (
+                <LoadStatus>
+                  {imageLoadError ? (
+                    <Card padding={4} radius={2} tone="critical" border>
+                      <Text>Error: {imageLoadError.message}</Text>
+                    </Card>
+                  ) : (
+                    <Text muted>Loading image… </Text>
+                  )}
+                </LoadStatus>
+              )}
+              {!isImageLoading && image && (
+                <Box margin={1}>
+                  <ImageTool
+                    value={localValue}
+                    src={image.src}
+                    readOnly={Boolean(readOnly)}
+                    onChangeEnd={handleChangeEnd}
+                    onChange={setLocalValue}
+                  />
+                </Box>
+              )}
+            </RatioBox>
+          </ChangeIndicatorForFieldPath>
+        </CheckerboardWithFocusRing>
+        <Box marginTop={3}>
+          <Grid columns={PREVIEW_ASPECT_RATIOS.length} gap={1}>
+            {PREVIEW_ASPECT_RATIOS.map(([title, ratio]) => (
+              <div key={ratio}>
+                <Heading as="h4" size={0}>
+                  {title}
+                </Heading>
+                <Box marginTop={2}>
+                  <RatioBox ratio={ratio}>
+                    <Checkerboard>
+                      {!isImageLoading && image ? (
+                        <HotspotImage
+                          aspectRatio={ratio}
+                          src={image.src}
+                          srcAspectRatio={image.width / image.height}
+                          hotspot={localValue.hotspot || DEFAULT_HOTSPOT}
+                          crop={localValue.crop || DEFAULT_CROP}
+                        />
+                      ) : (
+                        <Placeholder />
+                      )}
+                    </Checkerboard>
+                  </RatioBox>
+                </Box>
               </div>
-            </div>
-          </div>
-
-          <div className={styles.previewsContainer}>
-            <ImageToolInputPreviewGrid imageUrl={imageUrl} value={value} />
-          </div>
-        </FormField>
-      </ChangeIndicatorProvider>
-    )
-  }
-}
-
-function ImageToolInputPreviewGrid({imageUrl, value}: {imageUrl: string; value: any}) {
-  return (
-    <div className={styles.previews}>
-      {PREVIEW_ASPECT_RATIOS.map(([title, ratio]) => (
-        <ImageToolInputPreviewItem
-          key={ratio}
-          imageUrl={imageUrl}
-          ratio={ratio}
-          title={title}
-          value={value}
-        />
-      ))}
-    </div>
-  )
-}
-
-function ImageToolInputPreviewItem({
-  imageUrl,
-  ratio,
-  title,
-  value,
-}: {
-  imageUrl: string
-  ratio: string | number
-  title: string | number
-  value: any
-}) {
-  return (
-    <div key={ratio} className={styles.preview}>
-      <h4>{title}</h4>
-
-      <div className={styles.previewImage}>
-        <ImageLoader src={imageUrl}>
-          {({image, error}) =>
-            error ? (
-              <span>Unable to load image: {error.message}</span>
-            ) : (
-              <HotspotImage
-                aspectRatio={ratio}
-                src={image.src}
-                srcAspectRatio={image.width / image.height}
-                hotspot={value.hotspot || DEFAULT_HOTSPOT}
-                crop={value.crop || DEFAULT_CROP}
-              />
-            )
-          }
-        </ImageLoader>
+            ))}
+          </Grid>
+        </Box>
       </div>
-    </div>
+    </FormField>
   )
-}
+})
