@@ -158,8 +158,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   _inputId = uniqueId('ImageInput')
 
   _focusRef: null | Focusable = null
-
-  uploadSubscription: Subscription
+  _fieldGroupsMemo: null | FieldGroups = null
+  uploadSubscription: null | Subscription = null
 
   state: ImageInputState = {
     isUploading: false,
@@ -644,17 +644,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   getGroupedFields(type: ImageSchemaType): FieldGroups {
-    const fieldGroups = groupBy(type.fields, (field) => {
-      if (field.name === 'asset') {
-        return 'asset'
-      }
-      if (field.name === 'hotspot' || field.name === 'crop') {
-        return 'imagetool'
-      }
-      return (field.type as any)?.options?.isHighlighted ? 'highlighted' : 'dialog'
-    })
+    if (!this._fieldGroupsMemo) {
+      const fieldGroups = groupBy(type.fields, (field) => {
+        if (field.name === 'asset') {
+          return 'asset'
+        }
+        if (field.name === 'hotspot' || field.name === 'crop') {
+          return 'imagetool'
+        }
+        return (field.type as any)?.options?.isHighlighted ? 'highlighted' : 'dialog'
+      })
 
-    return {...EMPTY_FIELD_GROUPS, ...fieldGroups}
+      this._fieldGroupsMemo = {...EMPTY_FIELD_GROUPS, ...fieldGroups}
+    }
+    return this._fieldGroupsMemo
   }
 
   render() {
@@ -673,11 +676,16 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     const accept = get(type, 'options.accept', 'image/*')
 
-    // Whoever is present at the asset field is who we show on the field itself
-    const assetFieldPresence = presence.filter((item) => item.path[0] === 'asset')
-
     const fieldGroups = this.getGroupedFields(type)
 
+    // Get presence items for people who are either at the asset field, or at fields shown behind the dialog
+    const fieldPresence = presence.filter(
+      (item) =>
+        item.path[0] === 'asset' ||
+        [...fieldGroups.imagetool, ...fieldGroups.dialog].some(
+          (field) => item.path[0] === field.name
+        )
+    )
     const showAdvancedEditButton =
       value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
 
@@ -691,7 +699,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
         <FormFieldSet
           __unstable_markers={markers}
-          __unstable_presence={assetFieldPresence}
+          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
           title={type.title}
           description={type.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
