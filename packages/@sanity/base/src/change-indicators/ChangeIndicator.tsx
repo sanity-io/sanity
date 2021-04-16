@@ -1,5 +1,5 @@
 import {useLayer} from '@sanity/ui'
-import React, {memo, useMemo} from 'react'
+import React, {memo, ReactNode, useMemo} from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -154,6 +154,41 @@ export const CoreChangeIndicator = ({
       fullPath={fullPath}
       hasFocus={hasFocus}
       disabled={disabled}
+    >
+      {children}
+    </ChangeBarWrapper>
+  )
+}
+
+export const ChangeIndicatorForFieldPath = ({
+  className,
+  disabled,
+  path,
+  hasFocus,
+  isChanged,
+  children,
+}: {
+  path: Path
+  isChanged: boolean
+  children: ReactNode
+  className?: string
+  disabled?: boolean
+  hasFocus?: boolean
+}) => {
+  const parentContext = React.useContext(ChangeIndicatorContext)
+
+  const fullPath = React.useMemo(() => parentContext.fullPath.concat(path), [
+    parentContext.fullPath,
+    path,
+  ])
+
+  return (
+    <ChangeBarWrapper
+      disabled={disabled}
+      className={className}
+      isChanged={isChanged}
+      hasFocus={Boolean(hasFocus)}
+      fullPath={fullPath}
     >
       {children}
     </ChangeBarWrapper>
