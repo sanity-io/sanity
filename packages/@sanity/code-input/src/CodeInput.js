@@ -257,6 +257,7 @@ export default class CodeInput extends PureComponent {
           onLoad={this.handleEditorLoad}
           readOnly={readOnly}
           tabSize={2}
+          wrapEnabled={true}
           setOptions={ACE_SET_OPTIONS}
           editorProps={ACE_EDITOR_PROPS}
         />
