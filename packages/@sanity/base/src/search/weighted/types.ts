@@ -39,5 +39,8 @@ export interface WeightedHit {
 export interface WeightedSearchOptions {
   filter?: string
   params?: Record<string, unknown>
+}
+
+export interface SearchOptions {
   includeDrafts?: boolean
 }

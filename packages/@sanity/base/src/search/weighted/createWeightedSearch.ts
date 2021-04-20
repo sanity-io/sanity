@@ -8,7 +8,7 @@ import {joinPath} from '../../util/searchUtils'
 import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions} from './types'
+import {WeightedHit, WeightedSearchOptions, SearchOptions} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -25,7 +25,7 @@ export function createWeightedSearch(
   client: SanityClient,
   options: WeightedSearchOptions = {}
 ): (query: string) => Observable<WeightedHit[]> {
-  const {filter, params, includeDrafts} = options
+  const {filter, params} = options
   const searchSpec = types.map((type) => ({
     typeName: type.name,
     paths: type.__experimental_search.map((config) => ({
@@ -44,7 +44,7 @@ export function createWeightedSearch(
   )
 
   // this is the actual search function that takes the search string and returns the hits
-  return function search(queryString: string) {
+  return function search(queryString: string, searchOpts: SearchOptions = {}) {
     const terms = uniq(compact(tokenize(toLower(queryString))))
     const constraints = terms
       .map((term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
@@ -52,7 +52,7 @@ export function createWeightedSearch(
 
     const filters = [
       '_type in $__types',
-      includeDrafts === false && `!(_id in path('drafts.**'))`,
+      searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
       ...constraints.map((constraint) => `(${constraint.join('||')})`),
       filter ? `(${filter})` : '',
     ].filter(Boolean)
