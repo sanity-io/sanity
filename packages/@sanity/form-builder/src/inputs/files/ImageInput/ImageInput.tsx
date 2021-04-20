@@ -455,6 +455,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         id={`${this._inputId}_dialog`}
         onClose={this.handleCloseDialog}
         width={1}
+        __unstable_autoFocus={false}
       >
         <PresenceOverlay>
           <Box padding={4}>
