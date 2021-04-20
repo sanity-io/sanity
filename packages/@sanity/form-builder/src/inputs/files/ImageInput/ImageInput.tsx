@@ -54,6 +54,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {base64ToFile, urlToFile} from './utils/image'
+import deepCompare from 'react-fast-compare'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -105,6 +106,7 @@ interface FieldGroups {
   imagetool: ObjectField[]
   highlighted: ObjectField[]
   dialog: ObjectField[]
+  imageToolAndDialog: ObjectField[]
 }
 
 const EMPTY_FIELD_GROUPS: FieldGroups = {
@@ -112,6 +114,7 @@ const EMPTY_FIELD_GROUPS: FieldGroups = {
   imagetool: [],
   highlighted: [],
   dialog: [],
+  imageToolAndDialog: [],
 }
 const ASSET_FIELD_PATH = ['asset']
 
@@ -655,11 +658,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         return (field.type as any)?.options?.isHighlighted ? 'highlighted' : 'dialog'
       })
 
-      this._fieldGroupsMemo = {...EMPTY_FIELD_GROUPS, ...fieldGroups}
+      this._fieldGroupsMemo = {
+        ...EMPTY_FIELD_GROUPS,
+        ...fieldGroups,
+        imageToolAndDialog: [...(fieldGroups.imagetool || []), ...(fieldGroups.dialog || [])],
+      }
     }
     return this._fieldGroupsMemo
   }
+  hasChangeInFields(fields: ObjectField[]) {
+    const {value, compareValue} = this.props
 
+    return fields.some((field) => !deepCompare(value?.[field.name], compareValue?.[field.name]))
+  }
   render() {
     const {
       type,
@@ -682,9 +693,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const fieldPresence = presence.filter(
       (item) =>
         item.path[0] === 'asset' ||
-        [...fieldGroups.imagetool, ...fieldGroups.dialog].some(
-          (field) => item.path[0] === field.name
-        )
+        fieldGroups.imageToolAndDialog.some((field) => item.path[0] === field.name)
     )
     const showAdvancedEditButton =
       value && (fieldGroups.dialog.length > 0 || (value?.asset && this.isImageToolEnabled()))
@@ -709,7 +718,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             <ChangeIndicatorForFieldPath
               path={ASSET_FIELD_PATH}
               hasFocus={this.hasFileTargetFocus()}
-              isChanged={value?.asset?._ref !== compareValue?.asset?._ref}
+              isChanged={
+                value?.asset?._ref !== compareValue?.asset?._ref ||
+                this.hasChangeInFields(fieldGroups.imageToolAndDialog)
+              }
             >
               <FileTarget
                 tabIndex={readOnly ? undefined : 0}
