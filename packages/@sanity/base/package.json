@@ -66,7 +66,7 @@
     "promise-props": "^1.0.0",
     "raf": "^3.4.1",
     "react-click-outside": "^3.0.0",
-    "react-fast-compare": "^2.0.2",
+    "react-fast-compare": "^3.2.0",
     "react-icon-base": "^2.1.2",
     "react-popper": "^2.2.4",
     "react-props-stream": "^1.0.0",
