@@ -1,7 +1,17 @@
-import {ObjectSchemaType, ReferenceSchemaType, SchemaType, TitledListValue} from './types'
+import {
+  ArraySchemaType,
+  ObjectSchemaType,
+  ReferenceSchemaType,
+  SchemaType,
+  TitledListValue,
+} from './types'
 
 export function isObjectSchemaType(type: SchemaType): type is ObjectSchemaType {
   return type.jsonType === 'object'
+}
+
+export function isArraySchemaType(type: SchemaType): type is ArraySchemaType {
+  return type.jsonType === 'array'
 }
 
 export function isReferenceSchemaType(
