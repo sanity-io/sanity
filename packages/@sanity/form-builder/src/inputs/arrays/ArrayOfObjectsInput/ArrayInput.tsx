@@ -8,13 +8,13 @@ import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 import {randomKey, resolveTypeName} from '@sanity/util/content'
-import {ArrayFunctions} from '../../../legacyParts'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../../PatchEvent'
 import {ResolvedUploader, Uploader, UploadEvent} from '../../../sanity/uploads/types'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import ArrayFunctions from '../common/ArrayFunctions'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -34,7 +34,7 @@ function createProtoValue(type: SchemaType): ArrayMember {
   return type.name === 'object' ? {_key} : {_type: type.name, _key}
 }
 
-export type Props = {
+export interface Props {
   type: ArraySchemaType
   value: ArrayMember[]
   compareValue: ArrayMember[]
@@ -47,7 +47,8 @@ export type Props = {
   readOnly: boolean
   directUploads?: boolean
   filterField: () => any
-  resolveUploader?: (type: SchemaType, file: File) => Uploader
+  ArrayFunctionsImpl: typeof ArrayFunctions
+  resolveUploader?: (type: SchemaType, file: File) => Uploader | null
   presence: FormFieldPresence[]
 }
 
@@ -177,7 +178,7 @@ export class ArrayInput extends React.Component<Props> {
         type: memberType,
         uploader: resolveUploader(memberType, file),
       }))
-      .filter((member) => member.uploader)
+      .filter((member) => member.uploader) as ResolvedUploader[]
   }
 
   handleFixMissingKeys = () => {
@@ -233,6 +234,7 @@ export class ArrayInput extends React.Component<Props> {
       compareValue,
       filterField,
       directUploads,
+      ArrayFunctionsImpl,
     } = this.props
 
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
@@ -367,13 +369,13 @@ export class ArrayInput extends React.Component<Props> {
               </List>
             )}
 
-            <ArrayFunctions
+            <ArrayFunctionsImpl
               type={type}
               value={value}
               readOnly={readOnly}
               onAppendItem={this.handleAppend}
               onPrependItem={this.handlePrepend}
-              onFocusItem={onFocus}
+              onFocusItem={this.handleFocusItem}
               onCreateValue={createProtoValue}
               onChange={onChange}
             />

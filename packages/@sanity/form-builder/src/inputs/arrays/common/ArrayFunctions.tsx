@@ -1,28 +1,27 @@
-import {ArraySchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
+import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent from '../../../PatchEvent'
-import {ArrayMember} from '../ArrayOfObjectsInput/types'
 
 // These are the props any implementation of the ArrayFunctions part will receive
-interface ArrayFunctionsProps {
-  /* eslint-disable react/no-unused-prop-types */
+export interface ArrayFunctionsProps<SchemaType extends ArraySchemaType, MemberType> {
   className?: string
-  type: ArraySchemaType
-  children: Node | null
-  value: ArrayMember[]
+  type: SchemaType
+  children?: ReactNode
+  value?: MemberType[]
   readOnly: boolean | null
-  onAppendItem: (itemValue: ArrayMember) => void
-  onPrependItem: (itemValue: ArrayMember) => void
-  onFocusItem: (item: ArrayMember) => void
-  onCreateValue: (type: SchemaType) => ArrayMember
+  onAppendItem: (itemValue: MemberType) => void
+  onPrependItem: (itemValue: MemberType) => void
+  onFocusItem: (item: MemberType, index: number) => void
+  onCreateValue: (type: SchemaType) => MemberType
   onChange: (event: PatchEvent) => void
-  /* eslint-enable react/no-unused-prop-types */
 }
 
-export default function ArrayFunctions(props: ArrayFunctionsProps) {
+export default function ArrayFunctions<MemberType>(
+  props: ArrayFunctionsProps<ArraySchemaType, MemberType>
+) {
   const {type, readOnly, children, onCreateValue, onAppendItem} = props
   const menuButtonId = useId()
 

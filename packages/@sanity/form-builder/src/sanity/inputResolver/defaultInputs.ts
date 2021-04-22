@@ -8,7 +8,7 @@ import TextInput from '../../inputs/TextInput'
 import UrlInput from '../../inputs/UrlInput'
 import SlugInput from '../../inputs/Slug/SlugInput'
 
-import SanityArrayInput from '../inputs/SanityArrayInput'
+import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import Image from '../inputs/SanityImageInput'
 import File from '../inputs/SanityFileInput'
 

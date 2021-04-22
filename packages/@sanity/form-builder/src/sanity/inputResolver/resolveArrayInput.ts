@@ -3,9 +3,8 @@ import {ArraySchemaType} from '@sanity/types'
 import * as is from '../../utils/is'
 import OptionsArray from '../../inputs/arrays/OptionsArrayInput'
 import PortableTextInput from '../../inputs/PortableText/PortableTextInput'
-import ArrayOfPrimitivesInput from '../../inputs/arrays/ArrayOfPrimitivesInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
-import SanityArrayInput from '../inputs/SanityArrayInput'
+import {SanityArrayInput, SanityArrayOfPrimitivesInput} from '../inputs/SanityArrayInput'
 import {Props} from '../../inputs/types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
@@ -45,7 +44,7 @@ export default function resolveArrayInput(type: ArraySchemaType): ComponentType<
   // Special component for array of primitive values
   if (isArrayOfPrimitives(type)) {
     // @todo: fix typing
-    return ArrayOfPrimitivesInput as ComponentType<any>
+    return SanityArrayOfPrimitivesInput as ComponentType<any>
   }
 
   // Use Portable Text editor if portable text.

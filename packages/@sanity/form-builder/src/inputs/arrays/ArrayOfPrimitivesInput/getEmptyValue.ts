@@ -1,6 +1,6 @@
 import {SchemaType} from '@sanity/types'
 
-export default function getEmptyValue(type: SchemaType) {
+export default function getEmptyValue(type: SchemaType): number | string | boolean {
   switch (type.jsonType) {
     case 'string': {
       return ''
@@ -12,6 +12,6 @@ export default function getEmptyValue(type: SchemaType) {
       return false
     }
     default:
-      return undefined
+      throw new Error(`Unable to create value from type "${type.jsonType}"`)
   }
 }
