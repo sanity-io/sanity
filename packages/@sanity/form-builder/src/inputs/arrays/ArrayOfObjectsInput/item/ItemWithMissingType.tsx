@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import React from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {resolveTypeName} from '../../../../utils/resolveTypeName'
+import {resolveTypeName} from '@sanity/util/content'
 
 type Props = {value: any; onFocus?: () => void}
 export function ItemWithMissingType(props: Props) {

@@ -1,7 +1,8 @@
-import hasOwn from '../utils/hasOwn'
 import {findIndex} from 'lodash'
 import applyPatch from './applyPatch'
 import insert from './arrayInsert'
+
+const hasOwn = (obj, property) => Object.prototype.hasOwnProperty.call(obj, property)
 
 function move(arr, from, to) {
   const nextValue = arr.slice()
