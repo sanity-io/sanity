@@ -5,7 +5,7 @@ import {Template} from './Template'
 import {TemplateParameter} from './TemplateParameters'
 import {getDefaultSchema} from './parts/Schema'
 
-export {validateInitialValue, validateTemplates}
+export {validateInitialObjectValue, validateTemplates}
 
 const ALLOWED_REF_PROPS = ['_key', '_ref', '_weak', '_type']
 const REQUIRED_TEMPLATE_PROPS: (keyof Template)[] = ['id', 'title', 'schemaType', 'value']
@@ -33,7 +33,7 @@ function validateTemplates(templates: Template[]) {
 
     if (typeof template.parameters !== 'undefined') {
       if (Array.isArray(template.parameters)) {
-        template.parameters.forEach((param, i) => validateParameter(param, template, i))
+        template.parameters.forEach((param, j) => validateParameter(param, template, j))
       } else {
         throw new Error(`Template ${id} has an invalid "parameters" property; must be an array`)
       }
@@ -61,7 +61,10 @@ function quote(str: string) {
   return str && str.length > 0 ? `"${str}"` : str
 }
 
-function validateInitialValue(value: {[key: string]: any}, template: Template) {
+function validateInitialObjectValue<T extends Record<string, unknown>>(
+  value: T,
+  template: Template
+): T {
   const contextError = (msg: string) => `Template "${template.id}" initial value: ${msg}`
 
   if (!isPlainObject(value)) {

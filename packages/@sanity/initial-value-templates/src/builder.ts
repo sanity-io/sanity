@@ -1,5 +1,6 @@
+import {SchemaType} from '@sanity/types'
 import {Template, TemplateBuilder} from './Template'
-import {Schema, SchemaType, getDefaultSchema} from './parts/Schema'
+import {Schema, getDefaultSchema} from './parts/Schema'
 
 function defaultTemplateForType(
   schemaType: string | SchemaType,
@@ -22,7 +23,7 @@ function defaultTemplateForType(
   })
 }
 
-function defaults(sanitySchema?: Schema) {
+function defaults(sanitySchema?: Schema): TemplateBuilder[] {
   const schema = sanitySchema || getDefaultSchema()
   if (!schema) {
     throw new Error(

@@ -35,6 +35,8 @@
     "oneline": "^1.0.3"
   },
   "devDependencies": {
+    "@sanity/schema": "^2.7.4",
+    "@sanity/types": "^2.8.0",
     "@types/jest": "^26.0.22",
     "jest": "^26.6.3",
     "rimraf": "^2.7.1",
@@ -62,6 +64,11 @@
       "json",
       "node"
     ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },
     "moduleNameMapper": {
       "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
       "^part:@sanity/base/initial-value-templates?": "<rootDir>/test/mocks/templates.js"

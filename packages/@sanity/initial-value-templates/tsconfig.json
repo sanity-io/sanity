@@ -7,5 +7,16 @@
     "noImplicitAny": false,
     "rootDir": "./src",
     "outDir": "./lib"
-  }
+  },
+  "references": [
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../util"
+    },
+    {
+      "path": "../schema"
+    }
+  ]
 }

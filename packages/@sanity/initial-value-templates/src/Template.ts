@@ -1,14 +1,13 @@
+import {InitialValueProperty, SchemaType} from '@sanity/types'
 import {TemplateParameter} from './TemplateParameters'
-
-type ValueResolver = (parameters: {[key: string]: any}) => {[key: string]: any}
 
 export interface Template {
   id: string
   title: string
   description?: string
   schemaType: string
-  icon?: Function
-  value: ValueResolver | {[key: string]: any}
+  icon?: SchemaType['icon']
+  value: InitialValueProperty
   parameters?: TemplateParameter[]
 }
 
@@ -51,7 +50,7 @@ export class TemplateBuilder {
     return this.spec.schemaType
   }
 
-  icon(icon: Function) {
+  icon(icon: SchemaType['icon']) {
     return this.clone({icon})
   }
 
@@ -59,7 +58,7 @@ export class TemplateBuilder {
     return this.spec.icon
   }
 
-  value(value: ValueResolver | {[key: string]: any}) {
+  value(value: InitialValueProperty) {
     return this.clone({value})
   }
 

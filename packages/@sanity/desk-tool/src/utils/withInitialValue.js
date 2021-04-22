@@ -154,7 +154,7 @@ function resolveInitialValueWithParameters(templateName, parameters) {
     return of({isResolving: false, initialValue: undefined})
   }
 
-  return from(resolveInitialValue(getTemplateById(templateName), parameters)).pipe(
+  return from(resolveInitialValue(schema, getTemplateById(templateName), parameters)).pipe(
     map((initialValue) => ({isResolving: false, initialValue}))
   )
 }
