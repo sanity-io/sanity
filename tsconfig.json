@@ -47,6 +47,7 @@
       "@sanity/structure": ["./@sanity/structure/src"],
       "@sanity/transaction-collator": ["./@sanity/transaction-collator/src"],
       "@sanity/util/paths": ["./@sanity/util/src/pathUtils"],
+      "@sanity/util/content": ["./@sanity/util/src/contentUtils"],
       "@sanity/util": ["./@sanity/util/src"],
       "@sanity/types": ["./@sanity/types/src"],
       "@sanity/validation": ["./@sanity/validation/src"]

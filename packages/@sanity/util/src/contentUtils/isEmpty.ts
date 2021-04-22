@@ -1,6 +1,6 @@
 import hasOwn from './hasOwn'
 
-function isEmptyObject(value: {[key: string]: any}): boolean {
+export function isEmptyObject(value: {[key: string]: any}): boolean {
   for (const key in value) {
     if (key === '_type' || key === '_key') {
       continue
@@ -12,7 +12,7 @@ function isEmptyObject(value: {[key: string]: any}): boolean {
   return true
 }
 
-function isEmptyArray(value: Array<any>): boolean {
+export function isEmptyArray(value: unknown[]): boolean {
   for (let i = 0; i < value.length; i++) {
     if (isEmpty(value[i])) {
       return true
@@ -21,7 +21,7 @@ function isEmptyArray(value: Array<any>): boolean {
   return false
 }
 
-export default function isEmpty(value: any): boolean {
+export function isEmpty(value: any): boolean {
   if (value === undefined || value === null) {
     return true
   }

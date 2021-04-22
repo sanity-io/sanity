@@ -1,5 +1,5 @@
 import {ArraySchemaType, SchemaType} from '@sanity/types'
-import {resolveTypeName} from '../../../../utils/resolveTypeName'
+import {resolveTypeName} from '@sanity/util/content'
 import {IGNORE_KEYS} from './constants'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
