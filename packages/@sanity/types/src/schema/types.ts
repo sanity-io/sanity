@@ -31,6 +31,10 @@ export type SortOrdering = {
   }
 }
 
+export type InitialValueParams = Record<string, unknown>
+export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
+export type InitialValueProperty<T = unknown> = T | InitialValueResolver<T> | undefined
+
 export interface BaseSchemaType {
   name: string
   title?: string
@@ -39,6 +43,7 @@ export interface BaseSchemaType {
   readOnly?: boolean
   liveEdit?: boolean
   icon?: React.ComponentType
+  initialValue?: InitialValueProperty
 
   preview?: {
     select?: PreviewValue
@@ -88,7 +93,7 @@ export interface TextSchemaType extends StringSchemaType {
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: EnumListProps<number>
-  initialValue?: ((arg?: any) => Promise<number> | number) | number | undefined
+  initialValue?: InitialValueProperty<number>
 }
 
 export interface BooleanSchemaType extends BaseSchemaType {
@@ -96,7 +101,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
   options?: {
     layout: 'checkbox' | 'switch'
   }
-  initialValue?: ((arg?: any) => Promise<boolean> | boolean) | boolean | undefined
+  initialValue?: InitialValueProperty<boolean>
 }
 
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
@@ -136,7 +141,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   jsonType: 'object'
   fields: ObjectField[]
   fieldsets?: Fieldset[]
-  initialValue?: ((arg?: any) => Promise<any> | any) | any | undefined
+  initialValue?: InitialValueProperty<Record<string, unknown>>
 
   // Experimentals
   /* eslint-disable camelcase */
