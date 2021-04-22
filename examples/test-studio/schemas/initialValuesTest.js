@@ -98,12 +98,25 @@ export const initialValuesTest = {
         {
           type: 'object',
           name: 'slowInitialValue',
-          description: 'the initial title value here takes 3s to load',
+          description: 'the initial title value here takes a bit of time to load',
           fields: [
             {
               name: 'title',
               type: 'string',
               initialValue: () => sleep(2000).then(() => 'Slow title'),
+            },
+          ],
+        },
+        {
+          type: 'object',
+          name: 'errorProneInitialValue',
+          description: 'the initial value here seems to fail',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              initialValue: () =>
+                sleep(1000).then(() => Promise.reject(new Error('Ouch, something went wrong'))),
             },
           ],
         },

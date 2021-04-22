@@ -1,6 +1,7 @@
 import React, {ForwardedRef, forwardRef} from 'react'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
+import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import resolveUploader from '../uploads/resolveUploader'
 import ArrayInput, {Props} from '../../inputs/arrays/ArrayOfObjectsInput'
 import {
@@ -19,6 +20,7 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
       {...props}
       ref={ref}
       resolveUploader={resolveUploader}
+      resolveInitialValue={resolveInitialValueForType}
       ArrayFunctionsImpl={ArrayFunctions}
       directUploads={SUPPORT_DIRECT_UPLOADS}
     />
