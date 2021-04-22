@@ -70,11 +70,15 @@ describe('resolveInitialValue', () => {
 
   test('throws on wrong value type resolved', () => {
     expect(resolveInitialValue(schema, {...example, value: () => null})).rejects.toMatchObject({
-      message: 'Template "author" initial value: resolved to a non-object',
+      message:
+        'Template "author" has invalid "value" property - must be a plain object or a resolver function returning a plain object',
     })
   })
 
-  test('throws on values with sub-objects missing `_type`', () => {
+  // todo: we should validate based on schema type here and reenable this test
+  //  Currently the initial value validator is not schema aware and fails if resolved initial value is missing _type
+  //  but this doesn't account for fields of type object, which is a valid case for omitting _type.
+  xtest('throws on values with sub-objects missing `_type`', () => {
     expect(
       resolveInitialValue(schema, {
         ...example,
