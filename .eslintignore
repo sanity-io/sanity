@@ -12,3 +12,4 @@
 /packages/@sanity/cli/bin/sanity-cli.js
 *.json
 *.css
+*.snap
