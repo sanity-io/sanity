@@ -114,7 +114,8 @@ function validateValue(value: any, path: (string | number)[] = [], parentIsArray
       // In the case of references, we know what the type should be, so apply it
       initial._type = 'reference'
     } else {
-      throw new Error(`missing "_type" property at path "${pathToString(path)}"`)
+      // todo: consider if we need to re-instantiate this. It currently makes the valid case of having an initial object value for a field fail
+      // throw new Error(`missing "_type" property at path "${pathToString(path)}"`)
     }
   }
 
