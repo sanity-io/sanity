@@ -1,9 +1,16 @@
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
+import {
+  ArraySchemaType,
+  isObjectSchemaType,
+  Marker,
+  ObjectSchemaType,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
-import {FormFieldSet} from '@sanity/base/components'
-import {Button, Stack, Text} from '@sanity/ui'
+import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {Button, Stack, Text, Spinner, Flex, Card, Box, ToastParams} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -20,6 +27,8 @@ import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
 
 declare const __DEV__: boolean
+
+type Toast = {push: (params: ToastParams) => void}
 
 const UploadTargetFieldset = uploadTarget(FormFieldSet)
 
@@ -49,7 +58,12 @@ export interface Props {
   filterField: () => any
   ArrayFunctionsImpl: typeof ArrayFunctions
   resolveUploader?: (type: SchemaType, file: File) => Uploader | null
+  resolveInitialValue?: (type: ObjectSchemaType, value: any) => Promise<any>
   presence: FormFieldPresence[]
+}
+
+interface State {
+  isResolvingInitialValue: boolean
 }
 
 export class ArrayInput extends React.Component<Props> {
@@ -58,8 +72,12 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   _focusArea: HTMLElement | null = null
+  toast: Toast | null = null
 
   uploadSubscriptions: Record<string, Subscription> = {}
+  state: State = {
+    isResolvingInitialValue: false,
+  }
 
   insert = (itemValue: ArrayMember, position: 'before' | 'after', atIndex: number) => {
     const {onChange} = this.props
@@ -73,8 +91,31 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   handleAppend = (value: ArrayMember) => {
-    this.insert(value, 'after', -1)
-    this.handleFocusItem(value)
+    const {resolveInitialValue} = this.props
+    this.setState({isResolvingInitialValue: true})
+    const memberType = this.getMemberTypeOfItem(value)
+    const resolvedInitialValue = resolveInitialValue
+      ? resolveInitialValue(memberType as ObjectSchemaType, value)
+      : Promise.resolve({})
+    resolvedInitialValue
+      .then(
+        (initial) => {
+          this.insert({...value, ...initial}, 'after', -1)
+          this.handleFocusItem(value)
+        },
+        (error) => {
+          this.toast?.push({
+            title: `Could not resolve initial value`,
+            description: `Unable to resolve initial value for type: ${memberType.name}: ${error.message}.`,
+            status: 'error',
+          })
+          this.insert(value, 'after', -1)
+          this.handleFocusItem(value)
+        }
+      )
+      .finally(() => {
+        this.setState({isResolvingInitialValue: false})
+      })
   }
 
   handleRemoveItem = (item: ArrayMember) => {
@@ -187,7 +228,9 @@ export class ArrayInput extends React.Component<Props> {
 
     onChange(PatchEvent.from(...patches))
   }
-
+  setToast = (toast: any | null) => {
+    this.toast = toast
+  }
   handleRemoveNonObjectValues = () => {
     const {onChange, value} = this.props
     const nonObjects = value
@@ -236,6 +279,8 @@ export class ArrayInput extends React.Component<Props> {
       directUploads,
       ArrayFunctionsImpl,
     } = this.props
+
+    const {isResolvingInitialValue} = this.state
 
     const hasNonObjectValues = (value || []).some((item) => !isPlainObject(item))
 
@@ -301,6 +346,7 @@ export class ArrayInput extends React.Component<Props> {
         getUploadOptions={this.getUploadOptions}
         onUpload={this.handleUpload}
       >
+        <ImperativeToast ref={this.setToast} />
         <Stack space={3}>
           {hasMissingKeys && (
             <Alert
@@ -337,7 +383,7 @@ export class ArrayInput extends React.Component<Props> {
           )}
 
           <Stack data-ui="ArrayInput__content" space={3}>
-            {value && value.length > 0 && (
+            {(value?.length > 0 || isResolvingInitialValue) && (
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
                 {value.map((item, index) => {
                   return (
@@ -366,6 +412,18 @@ export class ArrayInput extends React.Component<Props> {
                     </Item>
                   )
                 })}
+                {isResolvingInitialValue && (
+                  <Item isGrid={isGrid} index={-1}>
+                    <Card border radius={1} padding={1}>
+                      <Flex align="center" justify="center" padding={3}>
+                        <Box marginX={3}>
+                          <Spinner muted />
+                        </Box>
+                        <Text>Resolving initial value…</Text>
+                      </Flex>
+                    </Card>
+                  </Item>
+                )}
               </List>
             )}
 
