@@ -44,6 +44,7 @@ export interface BaseSchemaType {
   liveEdit?: boolean
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
+  options?: unknown
 
   preview?: {
     select?: PreviewValue
