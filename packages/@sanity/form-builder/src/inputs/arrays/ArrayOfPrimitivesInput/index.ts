@@ -1,1 +1,1 @@
-export {default} from './ArrayOfPrimitivesInput'
+export * from './ArrayOfPrimitivesInput'

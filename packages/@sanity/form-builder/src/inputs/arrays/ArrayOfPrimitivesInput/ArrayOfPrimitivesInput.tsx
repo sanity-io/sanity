@@ -8,7 +8,7 @@ import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
 import {Item, List} from '../common/list'
-import {ArrayFunctions} from '../../../legacyParts'
+import ArrayFunctions from '../common/ArrayFunctions'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 
@@ -16,7 +16,7 @@ type Primitive = string | number | boolean
 
 const NO_MARKERS: Marker[] = []
 
-function move(arr: Primitive[], from: number, to: number): Primitive[] {
+function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
   const val = copy[from]
   copy.splice(from, 1)
@@ -24,14 +24,14 @@ function move(arr: Primitive[], from: number, to: number): Primitive[] {
   return copy
 }
 
-function insertAt(arr: Primitive[], index: number, item: Primitive): Primitive[] {
+function insertAt<T>(arr: T[], index: number, item: T): T[] {
   const copy = arr.slice()
   copy.splice(index + 1, 0, item)
   return copy
 }
 
-type Props = {
-  type?: ArraySchemaType<Primitive>
+export interface Props {
+  type: ArraySchemaType<Primitive>
   value: Primitive[]
   compareValue?: Primitive[]
   level: number
@@ -39,13 +39,14 @@ type Props = {
   onFocus: (path: Path) => void
   onBlur: () => void
   focusPath: Path
+  ArrayFunctionsImpl: typeof ArrayFunctions
   readOnly: boolean | null
   markers: Marker[]
   presence: FormFieldPresence[]
 }
 type Focusable = {focus: () => void}
 
-export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
+export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: Focusable | null = null
   _lastAddedIndex = -1
 
@@ -130,7 +131,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     }
   }
 
-  handleFocusItem = (index: number) => {
+  handleFocusItem = (item: Primitive, index: number) => {
     this.props.onFocus([index])
   }
 
@@ -146,6 +147,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       presence,
       compareValue,
       focusPath,
+      ArrayFunctionsImpl,
       onBlur,
     } = this.props
 
@@ -199,7 +201,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
             </List>
           )}
 
-          <ArrayFunctions
+          <ArrayFunctionsImpl<Primitive>
             type={type}
             value={value}
             readOnly={readOnly}

@@ -1,5 +1,4 @@
 // legacy plugin parts - e.g. parts ids that are documented as overridable
-import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
 import DateTimeInput from 'part:@sanity/form-builder/input/datetime?'
 import EmailInput from 'part:@sanity/form-builder/input/email?'
@@ -42,7 +41,6 @@ import ProgressCirclePart from 'part:@sanity/components/progress/circle'
 import defaultAssetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
 
 export {
-  ArrayFunctions,
   BooleanInput,
   DateTimeInput,
   EmailInput,
