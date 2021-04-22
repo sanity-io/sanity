@@ -61,6 +61,7 @@ import review from './review'
 import gallery from './gallery'
 import presence, {objectWithNestedArray} from './presence'
 import {customBlock, hoistedPt, hoistedPtDocument} from './hoistedPt'
+import {initialValuesTest} from './initialValuesTest'
 
 export default createSchema({
   name: 'test-examples',
@@ -71,6 +72,7 @@ export default createSchema({
     author,
     presence,
     species,
+    initialValuesTest,
     spotifyEmbed,
     focus,
     strings,
