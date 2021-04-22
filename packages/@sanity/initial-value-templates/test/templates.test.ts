@@ -110,6 +110,12 @@ describe('getTemplates', () => {
         schemaType: 'author',
         value: [],
       },
+      {
+        id: 'person',
+        title: 'Person',
+        schemaType: 'person',
+        value: [],
+      },
     ])
 
     const consoleSpy = getConsoleSpyWithAssert()
@@ -126,10 +132,9 @@ describe('getTemplates', () => {
         value: {name: 'Gunnar'},
       },
       {
-        id: 'author',
-        title: 'Developer',
-        schemaType: 'author',
-        value: {role: 'developer'},
+        id: 'person',
+        title: 'Person',
+        schemaType: 'person',
       },
     ])
 

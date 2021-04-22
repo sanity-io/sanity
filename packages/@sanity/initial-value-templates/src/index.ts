@@ -9,3 +9,5 @@ export {
   getParameterlessTemplatesBySchemaType,
   getTemplateErrors,
 } from './templates'
+
+export {resolveInitialValueForType} from './resolveInitialValueForType'

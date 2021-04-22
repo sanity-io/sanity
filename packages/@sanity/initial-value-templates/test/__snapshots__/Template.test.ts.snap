@@ -40,12 +40,32 @@ Array [
   TemplateBuilder {
     "spec": Object {
       "icon": [Function],
+      "id": "person",
+      "schemaType": "person",
+      "title": "Person",
+      "value": Object {
+        "_type": "person",
+      },
+    },
+  },
+  TemplateBuilder {
+    "spec": Object {
+      "icon": [Function],
       "id": "post",
       "schemaType": "post",
       "title": "Post",
       "value": Object {
         "_type": "post",
       },
+    },
+  },
+  TemplateBuilder {
+    "spec": Object {
+      "icon": undefined,
+      "id": "developer",
+      "schemaType": "developer",
+      "title": "Developer",
+      "value": [Function],
     },
   },
 ]
@@ -65,6 +85,17 @@ Array [
   Object {
     "description": undefined,
     "icon": [Function],
+    "id": "person",
+    "parameters": undefined,
+    "schemaType": "person",
+    "title": "Person",
+    "value": Object {
+      "_type": "person",
+    },
+  },
+  Object {
+    "description": undefined,
+    "icon": [Function],
     "id": "post",
     "parameters": undefined,
     "schemaType": "post",
@@ -72,6 +103,15 @@ Array [
     "value": Object {
       "_type": "post",
     },
+  },
+  Object {
+    "description": undefined,
+    "icon": undefined,
+    "id": "developer",
+    "parameters": undefined,
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": [Function],
   },
 ]
 `;

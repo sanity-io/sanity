@@ -1,6 +1,9 @@
 import {omit} from 'lodash'
 import {resolveInitialValue, TemplateBuilder as T} from '../src'
 import {Template} from '../src/Template'
+import {getDefaultSchema} from '../src/parts/Schema'
+
+const schema = getDefaultSchema()
 
 beforeEach(() => {
   jest.resetModules()
@@ -15,56 +18,68 @@ const example = {
 
 describe('resolveInitialValue', () => {
   test('serializes builders', () => {
-    expect(resolveInitialValue(T.template(example))).resolves.toMatchObject({title: 'here'})
-  })
-
-  test('works with raw templates', () => {
-    expect(resolveInitialValue(example)).resolves.toMatchObject({title: 'here'})
-  })
-
-  test('throws on missing template `value` prop', () => {
-    expect(resolveInitialValue(omit(example, ['value']) as Template)).rejects.toMatchObject({
-      message: 'Template "author" has invalid "value" property',
+    expect(resolveInitialValue(schema, T.template(example))).resolves.toMatchObject({
+      title: 'here',
     })
   })
 
+  test('works with raw templates', () => {
+    expect(resolveInitialValue(schema, example)).resolves.toMatchObject({title: 'here'})
+  })
+
+  test('throws on missing template `value` prop', () => {
+    expect(resolveInitialValue(schema, omit(example, ['value']) as Template)).rejects.toMatchObject(
+      {
+        message: 'Template "author" has invalid "value" property',
+      }
+    )
+  })
+
   test('throws on non-function/non-object template `value` prop', () => {
-    expect(resolveInitialValue({...example, value: []})).rejects.toMatchObject({
+    expect(resolveInitialValue(schema, {...example, value: []})).rejects.toMatchObject({
       message:
-        'Template "author" has invalid "value" property - must be a plain object or a resolver function',
+        'Template "author" has invalid "value" property - must be a plain object or a resolver function returning a plain object',
     })
   })
 
   test('throws on wrong `_type`  prop', () => {
-    expect(resolveInitialValue({...example, value: {_type: 'foo'}})).rejects.toMatchObject({
+    expect(resolveInitialValue(schema, {...example, value: {_type: 'foo'}})).rejects.toMatchObject({
       message:
         'Template "author" initial value: includes "_type"-property (foo) that does not match template (author)',
     })
   })
 
   test('should call sync value resolvers', () => {
-    expect(resolveInitialValue({...example, value: () => example.value})).resolves.toMatchObject({
+    expect(
+      resolveInitialValue(schema, {...example, value: () => example.value})
+    ).resolves.toMatchObject({
       title: 'here',
     })
   })
 
   test('should call async value resolvers', () => {
     expect(
-      resolveInitialValue({...example, value: () => Promise.resolve(example.value)})
+      resolveInitialValue(schema, {
+        ...example,
+        value: () => Promise.resolve(example.value),
+      })
     ).resolves.toMatchObject({
       title: 'here',
     })
   })
 
   test('throws on wrong value type resolved', () => {
-    expect(resolveInitialValue({...example, value: () => null})).rejects.toMatchObject({
+    expect(resolveInitialValue(schema, {...example, value: () => null})).rejects.toMatchObject({
       message: 'Template "author" initial value: resolved to a non-object',
     })
   })
 
   test('throws on values with sub-objects missing `_type`', () => {
     expect(
-      resolveInitialValue({...example, value: {image: {_type: 'image', meta: {foo: 'foo'}}}})
+      resolveInitialValue(schema, {
+        ...example,
+        value: {image: {_type: 'image', meta: {foo: 'foo'}}},
+      })
     ).rejects.toMatchObject({
       message: 'Template "author" initial value: missing "_type" property at path "image.meta"',
     })
@@ -72,12 +87,15 @@ describe('resolveInitialValue', () => {
 
   test('applies missing `_type` to references', () => {
     expect(
-      resolveInitialValue({...example, value: {image: {_type: 'image', asset: {_ref: 'foo'}}}})
+      resolveInitialValue(schema, {
+        ...example,
+        value: {image: {_type: 'image', asset: {_ref: 'foo'}}},
+      })
     ).resolves.toMatchObject({image: {_type: 'image', asset: {_ref: 'foo', _type: 'reference'}}})
   })
 
   test('applies missing `_key` to array object children', async () => {
-    const result = await resolveInitialValue({
+    const result = await resolveInitialValue(schema, {
       ...example,
       value: {categories: [{_ref: 'php'}, {_ref: 'js'}]},
     })
@@ -96,7 +114,7 @@ describe('resolveInitialValue', () => {
   })
 
   test('applies missing `_key` to array object children deeply', async () => {
-    const result = await resolveInitialValue({
+    const result = await resolveInitialValue(schema, {
       ...example,
       value: {meta: [{_type: 'holder', categories: [{_ref: 'php'}, {_ref: 'js'}]}]},
     })
