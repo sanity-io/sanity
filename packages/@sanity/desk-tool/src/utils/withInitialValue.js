@@ -14,16 +14,16 @@ import {
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {PaneRouterContext} from '../contexts/PaneRouterContext'
-import {ErrorPane} from '../panes/errorPane'
-import {LoadingPane} from '../panes/loadingPane'
-import BrokenReferences from '../components/BrokenReferences'
 import {
   templateExists,
   getTemplateById,
   getTemplatesBySchemaType,
   resolveInitialValue,
 } from '@sanity/base/initial-value-templates'
+import {PaneRouterContext} from '../contexts/PaneRouterContext'
+import {ErrorPane} from '../panes/errorPane'
+import {LoadingPane} from '../panes/loadingPane'
+import BrokenReferences from '../components/BrokenReferences'
 
 const withInitialValue = (Pane) => {
   const WithInitialValueStream = streamingComponent((props$) =>
