@@ -7,7 +7,6 @@ import {
   PortableTextFeature,
   Type,
 } from '@sanity/portable-text-editor'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {get} from 'lodash'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'
@@ -21,7 +20,6 @@ import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import React from 'react'
-import {Path} from '@sanity/types'
 import CustomIcon from './CustomIcon'
 import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
@@ -155,7 +153,7 @@ function getAnnotationIcon(item: PortableTextFeature, active: boolean): React.Co
 
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
-  onFocus: (path: Path) => void
+  onInsert: (type: Type) => void
 ): PTEToolbarAction[] {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const activeAnnotations = PortableTextEditor.activeAnnotations(editor)
@@ -174,11 +172,8 @@ function getPTEAnnotationActions(
         if (active) {
           PortableTextEditor.removeAnnotation(editor, item.type)
           PortableTextEditor.focus(editor)
-          return
-        }
-        const paths = PortableTextEditor.addAnnotation(editor, item.type)
-        if (paths && paths.markDefPath) {
-          onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
+        } else {
+          onInsert(item.type)
         }
       },
       title: item.title,
@@ -189,13 +184,13 @@ function getPTEAnnotationActions(
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
   selection: EditorSelection,
-  onFocus: (path: Path) => void,
+  onInsertAnnotation: (type: Type) => void,
   hotkeyOpts: HotkeyOptions
 ): PTEToolbarActionGroup[] {
   return [
     {name: 'format', actions: getPTEFormatActions(editor, selection, hotkeyOpts)},
     {name: 'list', actions: getPTEListActions(editor, selection)},
-    {name: 'annotation', actions: getPTEAnnotationActions(editor, onFocus)},
+    {name: 'annotation', actions: getPTEAnnotationActions(editor, onInsertAnnotation)},
   ]
 }
 
@@ -244,7 +239,8 @@ function getInsertMenuIcon(
 export function getInsertMenuItems(
   editor: PortableTextEditor,
   selection: EditorSelection,
-  onFocus: (path: Path) => void
+  onInsertBlock: (type: Type) => void,
+  onInsertInline: (type: Type) => void
 ): BlockItem[] {
   const focusBlock = PortableTextEditor.focusBlock(editor)
   const features = PortableTextEditor.getPortableTextFeatures(editor)
@@ -252,10 +248,7 @@ export function getInsertMenuItems(
   const blockItems = features.types.blockObjects.map(
     (type, index): BlockItem => ({
       disabled: !selection,
-      handle(): void {
-        const path = PortableTextEditor.insertBlock(editor, type)
-        onFocus(path.concat(FOCUS_TERMINATOR))
-      },
+      handle: () => onInsertBlock(type),
       icon: getInsertMenuIcon(type, BlockObjectIcon),
       inline: false,
       key: `block-${index}`,
@@ -266,10 +259,7 @@ export function getInsertMenuItems(
   const inlineItems = features.types.inlineObjects.map(
     (type, index): BlockItem => ({
       disabled: !selection || (focusBlock ? focusBlock._type !== features.types.block.name : true),
-      handle(): void {
-        const path = PortableTextEditor.insertChild(editor, type)
-        onFocus(path.concat(FOCUS_TERMINATOR))
-      },
+      handle: () => onInsertInline(type),
       icon: getInsertMenuIcon(type, InlineObjectIcon),
       inline: true,
       key: `inline-${index}`,

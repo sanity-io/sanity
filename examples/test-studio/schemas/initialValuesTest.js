@@ -55,6 +55,76 @@ export const initialValuesTest = {
       initialValue: () => Promise.resolve('async string'),
     },
     {
+      name: 'portableText',
+      title: 'Portable text',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          of: [
+            {
+              type: 'object',
+              name: 'person',
+              title: 'Inline object with initial value',
+              fields: [
+                {name: 'firstName', type: 'string'},
+                {name: 'lastName', type: 'string'},
+              ],
+              initialValue: {firstName: 'Ada', lastName: 'Lovelace'},
+            },
+            {
+              type: 'object',
+              name: 'species',
+              title: 'Inline object with slow initial',
+              fields: [
+                {name: 'genus', type: 'string'},
+                {name: 'family', type: 'string'},
+                {name: 'commonName', type: 'string'},
+              ],
+              initialValue: () =>
+                sleep(2000).then(() => ({
+                  genus: 'Bradypus',
+                  family: 'Bradypodidae',
+                  commonName: 'Maned sloth',
+                })),
+            },
+            {
+              type: 'object',
+              name: 'errorTest',
+              title: 'Inline object with initial value resolution error',
+              fields: [{name: 'something', type: 'string'}],
+              initialValue: () =>
+                sleep(2000).then(() => Promise.reject(new Error('This took a wrong turn'))),
+            },
+          ],
+          marks: {
+            annotations: [
+              {
+                type: 'object',
+                name: 'link',
+                fields: [{type: 'string', name: 'url', initialValue: 'https://sanity.io'}],
+              },
+              {
+                type: 'object',
+                name: 'test',
+                title: 'Test annotation with initial value',
+                fields: [{type: 'string', name: 'mystring'}],
+                initialValue: {mystring: 'initial!'},
+              },
+            ],
+          },
+        },
+        {
+          type: 'object',
+          name: 'testObject',
+          title: 'Test object with initial value',
+          fields: [{name: 'first', type: 'string'}],
+          initialValue: {first: 'hello'},
+        },
+      ],
+      initialValue: INITIAL_PORTABLE_TEXT_VALUE,
+    },
+    {
       name: 'asyncArray',
       type: 'array',
       of: [
@@ -128,3 +198,90 @@ export const initialValuesTest = {
     },
   ],
 }
+
+const INITIAL_PORTABLE_TEXT_VALUE = [
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'this ',
+      },
+      {
+        _type: 'span',
+        marks: ['strong'],
+        text: 'is',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' the ',
+      },
+      {
+        _type: 'span',
+        marks: ['em'],
+        text: 'initial',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' portable ',
+      },
+      {
+        _type: 'span',
+        marks: ['underline'],
+        text: 'text',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        text: ' value',
+      },
+    ],
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'foo',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: ['code'],
+        text: 'bar',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+  {
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'baz',
+      },
+    ],
+    level: 1,
+    listItem: 'bullet',
+    markDefs: [],
+    style: 'normal',
+  },
+]
