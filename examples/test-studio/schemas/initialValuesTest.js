@@ -2,11 +2,22 @@ import {PlayIcon} from '@sanity/icons'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+export const superlatives = {
+  name: 'superlatives',
+  type: 'object',
+  fields: [
+    {name: 'english', type: 'string', title: 'English'},
+    {name: 'norwegian', type: 'string', title: 'Norwegian'},
+    {name: 'swedish', type: 'string', title: 'Swedish', initialValue: 'Jättebra'},
+  ],
+}
+
 export const initialValuesTest = {
   name: 'initialValuesTest',
   type: 'document',
   title: 'Initial values test',
   icon: PlayIcon,
+  initialValue: {superlatives: {norwegian: 'Kjempebra'}},
   fields: [
     {
       name: 'title',
@@ -14,7 +25,15 @@ export const initialValuesTest = {
       title: 'String (initially set to "initial title")',
       initialValue: 'initial title',
     },
-    {name: 'recursive', type: 'initialValuesTest'},
+    {
+      name: 'superlatives',
+      title: 'Superlatives',
+      type: 'superlatives',
+      initialValue: {
+        // see definition of the superlatives type for initial values defined for other fields
+        english: 'Awesome',
+      },
+    },
     {
       name: 'asyncString',
       type: 'string',
@@ -196,6 +215,7 @@ export const initialValuesTest = {
         {_type: 'simpleObject', title: 'initial 2', primitiveValues: {title: 'inner title'}},
       ],
     },
+    {name: 'recursive', type: 'initialValuesTest'},
   ],
 }
 
