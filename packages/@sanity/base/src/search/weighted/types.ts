@@ -1,18 +1,9 @@
 /**
  * @internal
  */
-export interface SearchPath {
-  weight: number
-  path: string
-  mapWith?: string
-}
-
-/**
- * @internal
- */
 export interface SearchSpec {
   typeName: string
-  paths: SearchPath[]
+  paths: {weight: number; path: string}[]
 }
 
 /**

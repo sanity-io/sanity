@@ -140,7 +140,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
 
   // Experimentals
   /* eslint-disable camelcase */
-  __experimental_search?: {path: string; weight: number; mapWith?: string}[]
+  __experimental_search?: {path: string; weight: number}[]
   /* eslint-enable camelcase */
 }
 
