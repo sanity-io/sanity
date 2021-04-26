@@ -1,6 +1,6 @@
 import {Marker, Path, SchemaType} from '@sanity/types'
-import React, {useMemo, useState} from 'react'
-import {BoundaryElementProvider, Box, Dialog, Layer} from '@sanity/ui'
+import React, {useMemo} from 'react'
+import {Box, Dialog, Layer} from '@sanity/ui'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PopoverDialog} from '../../../../transitional/PopoverDialog'
@@ -50,26 +50,22 @@ export function EditDialog(props: Props) {
     presence,
   ])
 
-  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
-
   const content = (
-    <BoundaryElementProvider element={boundaryElement}>
-      <FormBuilderInput
-        type={type}
-        level={0}
-        value={isEmpty(value) ? undefined : value}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        compareValue={compareValue}
-        focusPath={focusPath}
-        readOnly={readOnly || type.readOnly || false}
-        markers={childMarkers}
-        path={[{_key: value._key}]}
-        filterField={filterField}
-        presence={childPresence}
-      />
-    </BoundaryElementProvider>
+    <FormBuilderInput
+      type={type}
+      level={0}
+      value={isEmpty(value) ? undefined : value}
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      compareValue={compareValue}
+      focusPath={focusPath}
+      readOnly={readOnly || type.readOnly || false}
+      markers={childMarkers}
+      path={[{_key: value._key}]}
+      filterField={filterField}
+      presence={childPresence}
+    />
   )
 
   if (dialogType === 'fullscreen') {
@@ -77,9 +73,7 @@ export function EditDialog(props: Props) {
       <Layer>
         <Dialog width="auto" id={value._key} onClose={onClose} key={value._key} header={title}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <Box padding={4} ref={setBoundaryElement}>
-              {content}
-            </Box>
+            <Box padding={4}>{content}</Box>
           </PresenceOverlay>
         </Dialog>
       </Layer>
@@ -98,9 +92,7 @@ export function EditDialog(props: Props) {
         placement="auto"
         title={title}
       >
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
-          <Box ref={setBoundaryElement}>{content}</Box>
-        </PresenceOverlay>
+        <PresenceOverlay margins={[0, 0, 1, 0]}>{content}</PresenceOverlay>
       </PopoverDialog>
     )
   }
@@ -108,9 +100,7 @@ export function EditDialog(props: Props) {
   return (
     <Dialog width={1} id={value._key} onClose={onClose} key={value._key} header={title}>
       <PresenceOverlay margins={[0, 0, 1, 0]}>
-        <Box padding={4} ref={setBoundaryElement}>
-          {content}
-        </Box>
+        <Box padding={4}>{content}</Box>
       </PresenceOverlay>
     </Dialog>
   )
