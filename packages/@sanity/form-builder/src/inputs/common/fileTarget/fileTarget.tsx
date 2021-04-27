@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {useForwardedRef} from '@sanity/ui'
 import {extractDroppedFiles, extractPastedFiles} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
@@ -51,80 +51,101 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
 
     const enteredElements = React.useRef<Element[]>([])
 
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-      if (
-        event.target === forwardedRef.current &&
-        (event.ctrlKey || event.metaKey) &&
-        event.key === 'v'
-      ) {
-        setShowPasteInput(true)
-      }
-    }
-    const handlePaste = (event: React.ClipboardEvent) => {
-      extractPastedFiles(event.clipboardData)
-        .then((files) => {
-          if (!pasteInput.current) {
-            return []
-          }
-          return files.length > 0
-            ? files
-            : // Invoke Safari hack if we didn't get any files
-              convertImagesToFilesAndClearContentEditable(pasteInput.current, 'image/jpeg')
-        })
-        .then((files) => {
-          emitFiles(files)
-          setShowPasteInput(false)
-          forwardedRef.current?.focus()
-        })
-    }
-    const handleDrop = (event: React.DragEvent) => {
-      enteredElements.current = []
-      event.preventDefault()
-      event.stopPropagation()
-      const dataTransfer = event.nativeEvent.dataTransfer
-      if (onFiles && dataTransfer) {
-        extractDroppedFiles(dataTransfer).then((files) => {
-          if (files) {
-            emitFiles(files)
-          }
-        })
-      }
-      onFilesOut?.()
-    }
+    const emitFiles = useCallback(
+      (files: File[]) => {
+        onFiles?.(files)
+      },
+      [onFiles]
+    )
 
-    const handleDragOver = (event: React.DragEvent) => {
-      if (onFiles) {
+    const handleKeyDown = useCallback(
+      (event: React.KeyboardEvent) => {
+        if (
+          event.target === forwardedRef.current &&
+          (event.ctrlKey || event.metaKey) &&
+          event.key === 'v'
+        ) {
+          setShowPasteInput(true)
+        }
+      },
+      [forwardedRef]
+    )
+    const handlePaste = useCallback(
+      (event: React.ClipboardEvent) => {
+        extractPastedFiles(event.clipboardData)
+          .then((files) => {
+            if (!pasteInput.current) {
+              return []
+            }
+            return files.length > 0
+              ? files
+              : // Invoke Safari hack if we didn't get any files
+                convertImagesToFilesAndClearContentEditable(pasteInput.current, 'image/jpeg')
+          })
+          .then((files) => {
+            emitFiles(files)
+            setShowPasteInput(false)
+            forwardedRef.current?.focus()
+          })
+      },
+      [emitFiles, forwardedRef]
+    )
+    const handleDrop = useCallback(
+      (event: React.DragEvent) => {
+        enteredElements.current = []
         event.preventDefault()
         event.stopPropagation()
-      }
-    }
-
-    const handleDragEnter = (event: React.DragEvent) => {
-      event.stopPropagation()
-      enteredElements.current.push(event.currentTarget)
-      if (onFilesOver && enteredElements.current.length === 1) {
-        const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
-          type: item.type,
-          kind: item.kind,
-        }))
-        onFilesOver(fileTypes)
-      }
-    }
-
-    const handleDragLeave = (event: React.DragEvent) => {
-      event.stopPropagation()
-      const idx = enteredElements.current.indexOf(event.currentTarget)
-      if (idx > -1) {
-        enteredElements.current.splice(idx, 1)
-      }
-      if (enteredElements.current.length === 0) {
+        const dataTransfer = event.nativeEvent.dataTransfer
+        if (onFiles && dataTransfer) {
+          extractDroppedFiles(dataTransfer).then((files) => {
+            if (files) {
+              emitFiles(files)
+            }
+          })
+        }
         onFilesOut?.()
-      }
-    }
+      },
+      [emitFiles, onFiles, onFilesOut]
+    )
 
-    const emitFiles = (files: File[]) => {
-      onFiles?.(files)
-    }
+    const handleDragOver = useCallback(
+      (event: React.DragEvent) => {
+        if (onFiles) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+      },
+      [onFiles]
+    )
+
+    const handleDragEnter = useCallback(
+      (event: React.DragEvent) => {
+        event.stopPropagation()
+        enteredElements.current.push(event.currentTarget)
+        if (onFilesOver && enteredElements.current.length === 1) {
+          const fileTypes = Array.from(event.dataTransfer.items).map((item) => ({
+            type: item.type,
+            kind: item.kind,
+          }))
+          onFilesOver(fileTypes)
+        }
+      },
+      [onFilesOver]
+    )
+
+    const handleDragLeave = useCallback(
+      (event: React.DragEvent) => {
+        event.stopPropagation()
+        const idx = enteredElements.current.indexOf(event.currentTarget)
+        if (idx > -1) {
+          enteredElements.current.splice(idx, 1)
+        }
+        if (enteredElements.current.length === 0) {
+          onFilesOut?.()
+        }
+      },
+      [onFilesOut]
+    )
 
     const prevShowPasteInput = React.useRef(false)
     React.useEffect(() => {
