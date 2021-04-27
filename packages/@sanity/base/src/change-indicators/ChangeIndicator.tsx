@@ -102,7 +102,10 @@ export function ChangeIndicatorProvider(props: {
   const path = props.path
   const focusPath = useMemo(() => props.focusPath || EMPTY_PATH, [props.focusPath])
   const parentFullPath = parentContext.fullPath
-  const fullPath = React.useMemo(() => parentFullPath.concat(path), [parentFullPath, path])
+  const fullPath = React.useMemo(() => PathUtils.pathFor(parentFullPath.concat(path)), [
+    parentFullPath,
+    path,
+  ])
 
   const contextValue = React.useMemo(() => {
     return {
@@ -177,7 +180,7 @@ export const ChangeIndicatorForFieldPath = ({
 }) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
-  const fullPath = React.useMemo(() => parentContext.fullPath.concat(path), [
+  const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
     parentContext.fullPath,
     path,
   ])
@@ -206,7 +209,7 @@ export const ChangeIndicatorWithProvidedFullPath = ({
 }: any) => {
   const parentContext = React.useContext(ChangeIndicatorContext)
 
-  const fullPath = React.useMemo(() => parentContext.fullPath.concat(path), [
+  const fullPath = React.useMemo(() => PathUtils.pathFor(parentContext.fullPath.concat(path)), [
     parentContext.fullPath,
     path,
   ])
