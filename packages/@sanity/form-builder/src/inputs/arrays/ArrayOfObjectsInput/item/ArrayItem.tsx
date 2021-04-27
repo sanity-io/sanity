@@ -4,8 +4,8 @@ import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
 import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ArraySchemaType, isValidationMarker, Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
-import React, {useCallback, useMemo, useRef} from 'react'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import React, {memo, useCallback, useMemo, useRef} from 'react'
+import {FOCUS_TERMINATOR, pathFor, startsWith} from '@sanity/util/paths'
 import PatchEvent from '../../../../PatchEvent'
 import {ArrayMember} from '../types'
 import {EMPTY_ARRAY} from '../../../../utils/empty'
@@ -22,6 +22,7 @@ interface ArrayInputListItemProps {
   index: number
   compareValue?: any[]
   markers: Marker[]
+  itemKey: string | undefined
   layout?: 'media' | 'default'
   onRemove: (value: ArrayMember) => void
   onChange: (event: PatchEvent, value: ArrayMember) => void
@@ -33,12 +34,13 @@ interface ArrayInputListItemProps {
   presence: FormFieldPresence[]
 }
 
-export function ArrayItem(props: ArrayInputListItemProps) {
+export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps) {
   const {
     value,
     markers,
     type,
     index,
+    itemKey,
     readOnly,
     presence,
     focusPath,
@@ -55,13 +57,15 @@ export function ArrayItem(props: ArrayInputListItemProps) {
   const hasFocusWithin = hasFocusWithinPath(props.focusPath, props.value)
   useScrollIntoViewOnFocusWithin(innerElementRef, hasFocusWithin)
 
+  const itemPath = useMemo(() => pathFor([itemKey ? {_key: itemKey} : index]), [index, itemKey])
+
   const emitFocus = useCallback(
     (path: Path = EMPTY_ARRAY) => {
-      if (value._key) {
-        onFocus([{_key: value._key}, ...path])
+      if (itemKey) {
+        onFocus([{_key: itemKey}, ...path])
       }
     },
-    [onFocus, value._key]
+    [onFocus, itemKey]
   )
 
   const handleFocus = useCallback(() => emitFocus(), [emitFocus])
@@ -112,16 +116,27 @@ export function ArrayItem(props: ArrayInputListItemProps) {
   const itemType = getItemType(type, value)
   const LayoutComponent = type.options?.layout === 'grid' ? ItemCell : ItemRow
 
+  const itemMarkers = React.useMemo(
+    () => markers.filter((marker: Marker) => startsWith(itemPath, marker.path)),
+    [itemPath, markers]
+  )
+
+  const itemPresence = useMemo(
+    () =>
+      presence.filter((presenceItem: FormFieldPresence) => startsWith(itemPath, presenceItem.path)),
+    [itemPath, presence]
+  )
+
   return (
     <>
-      <ChangeIndicatorScope path={[value._key ? {_key: value._key} : index]}>
+      <ChangeIndicatorScope path={itemPath}>
         <ContextProvidedChangeIndicator compareDeep disabled={isEditing}>
           <LayoutComponent
             aria-selected={isEditing}
             value={value}
             readOnly={readOnly}
             type={itemType}
-            presence={isEditing ? EMPTY_ARRAY : presence}
+            presence={isEditing ? EMPTY_ARRAY : itemPresence}
             validation={scopedValidation}
             isSortable={isSortable}
             onFocus={handleFocus}
@@ -137,7 +152,7 @@ export function ArrayItem(props: ArrayInputListItemProps) {
         <EditDialog
           onChange={handleChange}
           onClose={handleEditClose}
-          markers={markers}
+          markers={itemMarkers}
           referenceElement={innerElementRef.current}
           filterField={filterField}
           focusPath={focusPath}
@@ -147,10 +162,10 @@ export function ArrayItem(props: ArrayInputListItemProps) {
           dialogType={type?.options?.editModal || 'dialog'}
           value={value}
           readOnly={readOnly || itemType.readOnly || false}
-          presence={presence}
+          presence={itemPresence}
           compareValue={compareValue}
         />
       )}
     </>
   )
-}
+})
