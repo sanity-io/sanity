@@ -1,6 +1,6 @@
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ArraySchemaType, isObjectSchemaType, Marker, Path, SchemaType} from '@sanity/types'
-import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
 import {FormFieldSet} from '@sanity/base/components'
 import {Button, Stack, Text} from '@sanity/ui'
@@ -15,6 +15,7 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import randomKey from '../common/randomKey'
 import {Item, List} from '../common/list'
+import {EMPTY_ARRAY} from '../../../utils/empty'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -22,8 +23,6 @@ import {uploadTarget} from './uploadTarget/uploadTarget'
 declare const __DEV__: boolean
 
 const UploadTargetFieldset = uploadTarget(FormFieldSet)
-
-const NO_MARKERS: Marker[] = []
 
 function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
@@ -284,7 +283,7 @@ export class ArrayInput extends React.Component<Props> {
     const hasMissingKeys = value.some((item) => !item._key)
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
-
+    const fieldPresence = presence.filter((item) => item.path.length === 0)
     return (
       <UploadTargetFieldset
         __unstable_changeIndicator={false}
@@ -294,7 +293,7 @@ export class ArrayInput extends React.Component<Props> {
         onFocus={this.handleFocus}
         onBlur={onBlur}
         level={level - 1}
-        __unstable_presence={presence.filter((item) => item.path[0] === '$')}
+        __unstable_presence={fieldPresence.length > 0 ? fieldPresence : EMPTY_ARRAY}
         __unstable_markers={markers}
         disabled={!directUploads || readOnly}
         ref={this.setFocusArea}
@@ -340,14 +339,6 @@ export class ArrayInput extends React.Component<Props> {
             {value && value.length > 0 && (
               <List onSortEnd={this.handleSortEnd} isSortable={isSortable} isGrid={isGrid}>
                 {value.map((item, index) => {
-                  const isChildMarker = (marker: Marker) =>
-                    startsWith([index], marker.path) ||
-                    startsWith([{_key: item && item._key}], marker.path)
-                  const childMarkers = markers.filter(isChildMarker)
-                  const isChildPresence = (pItem: FormFieldPresence) =>
-                    startsWith([index], pItem.path) ||
-                    startsWith([{_key: item && item._key}], pItem.path)
-                  const childPresence = presence.filter(isChildPresence)
                   return (
                     <Item
                       key={item._key || index}
@@ -359,13 +350,14 @@ export class ArrayInput extends React.Component<Props> {
                         compareValue={compareValue}
                         filterField={filterField}
                         focusPath={focusPath}
+                        itemKey={item._key}
                         index={index}
-                        markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+                        markers={markers}
                         onBlur={onBlur}
                         onChange={this.handleItemChange}
                         onFocus={onFocus}
                         onRemove={this.handleRemoveItem}
-                        presence={childPresence}
+                        presence={presence}
                         readOnly={readOnly || hasMissingKeys}
                         type={type}
                         value={item}
