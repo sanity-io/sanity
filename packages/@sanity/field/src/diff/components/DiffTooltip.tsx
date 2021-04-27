@@ -1,4 +1,4 @@
-import {UserAvatar} from '@sanity/base/components'
+import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useUser, useTimeAgo} from '@sanity/base/hooks'
 import {Path} from '@sanity/types'
 import React from 'react'
@@ -52,14 +52,16 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   )
 
   return (
-    <Tooltip
-      content={content}
-      placement={placement}
-      portal
-      allowedAutoPlacements={['top', 'bottom']}
-    >
-      {children}
-    </Tooltip>
+    <LegacyLayerProvider zOffset="paneFooter">
+      <Tooltip
+        content={content}
+        placement={placement}
+        portal
+        allowedAutoPlacements={['top', 'bottom']}
+      >
+        {children}
+      </Tooltip>
+    </LegacyLayerProvider>
   )
 }
 

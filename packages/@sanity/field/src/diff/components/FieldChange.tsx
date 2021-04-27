@@ -80,44 +80,44 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
           )}
 
           {isComparingCurrent && (
-            <>
-              <div className={styles.revertChangesButtonContainer}>
-                <RevertChangesButton
-                  onClick={handleRevertChangesConfirm}
-                  onMouseEnter={handleRevertButtonMouseEnter}
-                  onMouseLeave={handleRevertButtonMouseLeave}
-                  ref={setRevertButtonElement}
-                  selected={confirmRevertOpen}
-                />
-              </div>
-
-              {confirmRevertOpen && (
-                <PopoverDialog
-                  actions={[
-                    {
-                      color: 'danger',
-                      action: handleRevertChanges,
-                      title: 'Revert change',
-                    },
-                    {
-                      kind: 'simple',
-                      action: closeRevertChangesConfirmDialog,
-                      title: 'Cancel',
-                    },
-                  ]}
-                  onAction={handleConfirmDialogAction}
-                  onClickOutside={closeRevertChangesConfirmDialog}
-                  portal
-                  referenceElement={revertButtonElement}
-                  size="small"
-                >
-                  Are you sure you want to revert the changes?
-                </PopoverDialog>
-              )}
-            </>
+            <div className={styles.revertChangesButtonContainer}>
+              <RevertChangesButton
+                onClick={handleRevertChangesConfirm}
+                onMouseEnter={handleRevertButtonMouseEnter}
+                onMouseLeave={handleRevertButtonMouseLeave}
+                ref={setRevertButtonElement}
+                selected={confirmRevertOpen}
+              />
+            </div>
           )}
         </DiffInspectWrapper>
       </FieldWrapper>
+
+      {confirmRevertOpen && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <PopoverDialog
+            actions={[
+              {
+                color: 'danger',
+                action: handleRevertChanges,
+                title: 'Revert change',
+              },
+              {
+                kind: 'simple',
+                action: closeRevertChangesConfirmDialog,
+                title: 'Cancel',
+              },
+            ]}
+            onAction={handleConfirmDialogAction}
+            onClickOutside={closeRevertChangesConfirmDialog}
+            portal
+            referenceElement={revertButtonElement}
+            size="small"
+          >
+            Are you sure you want to revert the changes?
+          </PopoverDialog>
+        </LegacyLayerProvider>
+      )}
     </div>
   )
 }

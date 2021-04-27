@@ -104,30 +104,32 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               </Button>
             </div>
           )}
-
-          {confirmRevertAllOpen && (
-            <PopoverDialog
-              actions={[
-                {
-                  color: 'danger',
-                  action: revertAllChanges,
-                  title: 'Revert all',
-                },
-                {
-                  kind: 'simple',
-                  action: closeRevertAllChangesConfirmDialog,
-                  title: 'Cancel',
-                },
-              ]}
-              onAction={handleConfirmDialogAction}
-              onClickOutside={closeRevertAllChangesConfirmDialog}
-              referenceElement={revertAllContainerElement}
-              size="small"
-            >
-              Are you sure you want to revert all {changes.length} changes?
-            </PopoverDialog>
-          )}
         </div>
+      )}
+
+      {confirmRevertAllOpen && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <PopoverDialog
+            actions={[
+              {
+                color: 'danger',
+                action: revertAllChanges,
+                title: 'Revert all',
+              },
+              {
+                kind: 'simple',
+                action: closeRevertAllChangesConfirmDialog,
+                title: 'Cancel',
+              },
+            ]}
+            onAction={handleConfirmDialogAction}
+            onClickOutside={closeRevertAllChangesConfirmDialog}
+            referenceElement={revertAllContainerElement}
+            size="small"
+          >
+            Are you sure you want to revert all {changes.length} changes?
+          </PopoverDialog>
+        </LegacyLayerProvider>
       )}
     </div>
   )
