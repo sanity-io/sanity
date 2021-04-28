@@ -1,4 +1,4 @@
-import {color as hues} from '@sanity/color'
+import {hues} from '@sanity/color'
 import {createColorTheme, rgba} from '@sanity/ui'
 import {_multiply, _screen, _isDark} from './helpers'
 import {legacyPalette} from './legacyPalette'

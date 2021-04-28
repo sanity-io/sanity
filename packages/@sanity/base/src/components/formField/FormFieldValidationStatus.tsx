@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {color} from '@sanity/color'
+import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {
   isValidationErrorMarker,
@@ -39,7 +39,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const errors = validation.filter((v) => v.type === 'error')
   const hasErrors = errors.length > 0
   const statusIcon = hasErrors ? ErrorOutlineIcon : WarningOutlineIcon
-  const statusColor = hasErrors ? color.red[500].hex : color.yellow[500].hex
+  const statusColor = hasErrors ? hues.red[500].hex : hues.yellow[500].hex
 
   return (
     <Tooltip
@@ -72,7 +72,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 function FormFieldValidationStatusItem(props: {item: FormFieldValidation}) {
   const {item} = props
   const statusIcon = item.type === 'error' ? ErrorOutlineIcon : WarningOutlineIcon
-  const statusColor = item.type === 'error' ? color.red[500].hex : color.yellow[500].hex
+  const statusColor = item.type === 'error' ? hues.red[500].hex : hues.yellow[500].hex
 
   return (
     <Flex>
