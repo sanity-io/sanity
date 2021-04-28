@@ -95,6 +95,114 @@ test('stashing of changes when unoptimizable operations arrive', (tap) => {
   tap.end()
 })
 
+test('de-duplicate createIfNotExists', (tap) => {
+  const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
+  const sb = new SquashingBuffer(initial)
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
+  patch(sb, {id: '1', set: {a: 'Another value'}})
+  patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
+  patch(sb, {id: '1', set: {a: 'Another value'}})
+  patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
+
+  const tx = sb.purge('txn_id')
+
+  // Check that one of the creates were removed:
+  const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
+  tap.same(1, creates.length, 'Only a single create mutation expected')
+
+  // And that the final state still applies:
+  const final = tx.apply(initial)
+  tap.same(
+    final,
+    {
+      _id: '1',
+      _type: 'test',
+      _rev: 'txn_id',
+      a: {
+        b: 'A wrapped value',
+      },
+      c: 'Some value',
+    },
+    'The mutations did not apply correctly'
+  )
+
+  // Make sure a new patch is respected:
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
+  const tx2 = sb.purge('txn_id')
+  tap.same(1, tx2.mutations.length)
+
+  tap.end()
+})
+
+test('de-duplicate create respects deletes', (tap) => {
+  const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
+  const sb = new SquashingBuffer(initial)
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
+  patch(sb, {id: '1', set: {a: 'Another value'}})
+  patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
+  add(sb, {delete: {id: '1'}})
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
+  patch(sb, {id: '1', set: {a: 'Another value'}})
+  patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
+
+  const tx = sb.purge('txn_id')
+  tx.params.timestamp = '2021-01-01T12:34:55Z'
+
+  const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
+  tap.same(2, creates.length, 'Only a single create mutation expected')
+
+  // And that the final state still applies:
+  const final = tx.apply(initial)
+  tap.same(
+    final,
+    {
+      _id: '1',
+      _type: 'test',
+      _createdAt: '2021-01-01T12:34:55Z',
+      _updatedAt: '2021-01-01T12:34:55Z',
+      _rev: 'txn_id',
+      a: {
+        b: 'A wrapped value',
+      },
+      c: 'Changed',
+    },
+    'The mutations did not apply correctly'
+  )
+
+  tap.end()
+})
+
+test('de-duplicate create respects rebasing', (tap) => {
+  const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
+  const sb = new SquashingBuffer(initial)
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}})
+  sb.rebase(initial)
+
+  add(sb, {createIfNotExists: {_id: '1', _type: 'test', a: 'A string value', c: 'Changed'}})
+  patch(sb, {id: '1', set: {a: 'Another value'}})
+  patch(sb, {id: '1', set: {a: {b: 'A wrapped value'}}})
+
+  const tx = sb.purge('txn_id')
+  const creates = tx.mutations.filter((mut) => !!mut.createIfNotExists)
+  tap.same(1, creates.length, 'Only a single create mutation expected')
+  const final = tx.apply(initial)
+  tap.same(
+    final,
+    {
+      _id: '1',
+      _type: 'test',
+      _rev: 'txn_id',
+      a: {
+        b: 'A wrapped value',
+      },
+      c: 'Some value',
+    },
+    'The mutations did not apply correctly'
+  )
+  tap.end()
+})
+
 test('rebase with generated diff-match-patches', (tap) => {
   const sb = new SquashingBuffer({_id: '1', _type: 'test', a: 'A string value'})
   patch(sb, {id: '1', set: {a: 'A strong value'}})
