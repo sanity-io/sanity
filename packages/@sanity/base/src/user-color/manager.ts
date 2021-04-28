@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs'
 import {filter, shareReplay} from 'rxjs/operators'
-import {color as SanityColor, ColorHueKey, COLOR_HUES} from '@sanity/color'
+import {hues, ColorHueKey, COLOR_HUES} from '@sanity/color'
 import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 export interface UserColorManagerOptions {
@@ -12,41 +12,44 @@ export interface UserColorManagerOptions {
 
 const defaultCurrentUserHue: ColorHueKey = 'purple'
 
-// Remove green and red because they can be confused with "add" and "remove"
-// Remove gray because it looks like "color not found"
+// Exclude green and red because they can be confused with "add" and "remove"
+// Exclude gray because it looks like "color not found"
+const USER_COLOR_EXCLUDE_HUES = ['green', 'red', 'gray']
+
 const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
-  (hue) => hue !== 'green' && hue !== 'red' && hue !== 'gray'
+  (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue)
 )
 
 const defaultColors = defaultHues.reduce((colors, hue) => {
   colors[hue] = {
-    background: SanityColor[hue][100].hex,
-    border: SanityColor[hue][300].hex,
-    text: SanityColor[hue][700].hex,
-    tints: SanityColor[hue],
+    background: hues[hue][100].hex,
+    border: hues[hue][300].hex,
+    text: hues[hue][700].hex,
+    tints: hues[hue],
   }
   return colors
 }, {} as Record<ColorHueKey, UserColor>)
 
 const defaultAnonymousColor: UserColor = {
-  background: SanityColor.gray[100].hex,
-  border: SanityColor.gray[300].hex,
-  text: SanityColor.gray[700].hex,
-  tints: SanityColor.gray,
+  background: hues.gray[100].hex,
+  border: hues.gray[300].hex,
+  text: hues.gray[700].hex,
+  tints: hues.gray,
 }
 
 export function createUserColorManager(options?: UserColorManagerOptions): UserColorManager {
   const userColors = (options && options.colors) || defaultColors
   const anonymousColor = options?.anonymousColor || defaultAnonymousColor
   const currentUserColor = (options && options.currentUserColor) || defaultCurrentUserHue
+
   if (!userColors.hasOwnProperty(currentUserColor)) {
     throw new Error(`'colors' must contain 'currentUserColor' (${currentUserColor})`)
   }
 
-  const colorHues: UserColorHue[] = Object.keys(userColors)
+  const userColorKeys: UserColorHue[] = Object.keys(userColors)
   const subscriptions = new Map<UserId, Observable<UserColor>>()
   const previouslyAssigned = new Map<UserId, UserColorHue>()
-  const assignedCounts: Record<UserColorHue, number> = colorHues.reduce((counts, color) => {
+  const assignedCounts: Record<UserColorHue, number> = userColorKeys.reduce((counts, color) => {
     counts[color] = 0
     return counts
   }, {} as Record<UserColorHue, number>)
@@ -126,7 +129,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   }
 
   function getUnusedColor(): UserColorHue | undefined {
-    return colorHues.find((colorHue) => assignedCounts[colorHue] === 0)
+    return userColorKeys.find((colorHue) => assignedCounts[colorHue] === 0)
   }
 
   function hasUnusedColor(): boolean {
@@ -137,7 +140,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
     let leastUses = +Infinity
     let leastUsed: UserColorHue[] = []
 
-    colorHues.forEach((colorHue) => {
+    userColorKeys.forEach((colorHue) => {
       const uses = assignedCounts[colorHue]
       if (uses === leastUses) {
         leastUsed.push(colorHue)
@@ -174,6 +177,6 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
       // eslint-disable-next-line no-bitwise
       hash = ((hash << 5) - hash + userId.charCodeAt(i)) | 0
     }
-    return colorHues[Math.abs(hash) % colorHues.length]
+    return userColorKeys[Math.abs(hash) % userColorKeys.length]
   }
 }
