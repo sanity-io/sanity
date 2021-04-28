@@ -19,6 +19,9 @@ export default class SquashingBuffer {
   // strings, they are rewritten as diffMatchPatch operations, any new set operations on the same paths overwrites
   // any older set operations. Only set-operations assigning plain values to plain values gets optimized like this.
   setOperations: Object
+  // documentPresent is true whenever we know that the document must be present due to preceeding mutations.
+  // false implies that it may or may not already exist.
+  documentPresent: boolean
   staged: Array<any>
   dmp: DiffMatchPatch.diff_match_patch
 
@@ -30,6 +33,7 @@ export default class SquashingBuffer {
     }
     this.staged = []
     this.setOperations = {}
+    this.documentPresent = false
     this.BASIS = doc
     this.PRESTAGE = doc
     this.dmp = new DiffMatchPatch.diff_match_patch()
@@ -57,6 +61,7 @@ export default class SquashingBuffer {
       })
     }
     this.out = []
+    this.documentPresent = false
     return result
   }
 
@@ -90,6 +95,20 @@ export default class SquashingBuffer {
       }
       return
     }
+
+    // Is this a createIfNotExists for our document?
+    if (op.createIfNotExists && this.PRESTAGE && op.createIfNotExists._id === this.PRESTAGE._id) {
+      if (!this.documentPresent) {
+        // If we don't know that it's present we'll have to stage and stash.
+        this.staged.push(op)
+        this.documentPresent = true
+        this.stashStagedOperations()
+      }
+
+      // Otherwise we can fully ignore it.
+      return
+    }
+
     debug('Unoptimizable mutation detected, purging optimization buffer')
     // console.log("Unoptimizable operation, stashing", JSON.stringify(op))
     // Un-optimisable operations causes everything to be stashed
@@ -186,6 +205,7 @@ export default class SquashingBuffer {
       // If document was just deleted, we must throw out local changes
       this.out = []
       this.PRESTAGE = this.BASIS = newBasis
+      this.documentPresent = false
     } else {
       this.BASIS = newBasis
       if (this.out) {
