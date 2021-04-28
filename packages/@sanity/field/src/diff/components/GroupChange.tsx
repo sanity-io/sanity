@@ -1,4 +1,5 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import classNames from 'classnames'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
@@ -77,29 +78,6 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
               selected={confirmRevertOpen}
             />
           </div>
-
-          {confirmRevertOpen && (
-            <PopoverDialog
-              actions={[
-                {
-                  color: 'danger',
-                  action: handleRevertChanges,
-                  title: 'Revert change',
-                },
-                {
-                  kind: 'simple',
-                  action: closeRevertChangesConfirmDialog,
-                  title: 'Cancel',
-                },
-              ]}
-              onAction={handleConfirmDialogAction}
-              // portal
-              referenceElement={revertButtonElement}
-              size="small"
-            >
-              Are you sure you want to revert the changes?
-            </PopoverDialog>
-          )}
         </>
       )}
     </div>
@@ -116,6 +94,31 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
         <FieldWrapper path={group.path} hasHover={isHoveringRevert}>
           {content}
         </FieldWrapper>
+      )}
+
+      {confirmRevertOpen && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <PopoverDialog
+            actions={[
+              {
+                color: 'danger',
+                action: handleRevertChanges,
+                title: 'Revert change',
+              },
+              {
+                kind: 'simple',
+                action: closeRevertChangesConfirmDialog,
+                title: 'Cancel',
+              },
+            ]}
+            onAction={handleConfirmDialogAction}
+            // portal
+            referenceElement={revertButtonElement}
+            size="small"
+          >
+            Are you sure you want to revert the changes?
+          </PopoverDialog>
+        </LegacyLayerProvider>
       )}
     </div>
   )
