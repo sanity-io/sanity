@@ -97,19 +97,6 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
 
   const options = type.options || {}
   const isSortable = !readOnly && !type.readOnly && options.sortable !== false
-  const scopedValidation = useMemo(
-    () =>
-      markers.length === 0
-        ? EMPTY_ARRAY
-        : markers.filter(isValidationMarker).map((marker) => {
-            if (marker.path.length <= 1) {
-              return marker
-            }
-            const level = marker.level === 'error' ? 'errors' : 'warnings'
-            return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
-          }),
-    [markers]
-  )
 
   const isEditing = hasFocusWithinPath(focusPath, value)
 
@@ -119,6 +106,20 @@ export const ArrayItem = memo(function ArrayItem(props: ArrayInputListItemProps)
   const itemMarkers = React.useMemo(
     () => markers.filter((marker: Marker) => startsWith(itemPath, marker.path)),
     [itemPath, markers]
+  )
+
+  const scopedValidation = useMemo(
+    () =>
+      itemMarkers.length === 0
+        ? EMPTY_ARRAY
+        : itemMarkers.filter(isValidationMarker).map((marker) => {
+            if (marker.path.length <= 1) {
+              return marker
+            }
+            const level = marker.level === 'error' ? 'errors' : 'warnings'
+            return {...marker, item: marker.item.cloneWithMessage(`Contains ${level}`)}
+          }),
+    [itemMarkers]
   )
 
   const itemPresence = useMemo(
