@@ -37,7 +37,7 @@ function getCollapsedWithDefaults(
   }
 }
 
-type ObjectInputProps = {
+export interface Props {
   type: ObjectSchemaTypeWithOptions
   value?: Record<string, unknown>
   compareValue?: Record<string, unknown>
@@ -53,7 +53,7 @@ type ObjectInputProps = {
   presence: FormFieldPresence[]
 }
 
-export default class ObjectInput extends React.PureComponent<ObjectInputProps> {
+export default class ObjectInput extends React.PureComponent<Props> {
   _firstField: any
   static defaultProps = {
     onChange() {
