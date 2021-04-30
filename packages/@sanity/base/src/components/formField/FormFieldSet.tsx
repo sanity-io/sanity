@@ -25,7 +25,7 @@ export interface FormFieldSetProps {
    * @beta
    */
   __unstable_presence?: FormFieldPresence[]
-  children: React.ReactNode
+  children: React.ReactNode | (() => React.ReactNode)
   collapsed?: boolean
   collapsible?: boolean
   columns?: number
@@ -37,6 +37,10 @@ export interface FormFieldSetProps {
   onFocus?: (path: Path) => void
   onToggle?: (collapsed: boolean) => void
   title?: React.ReactNode
+}
+
+function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
+  return typeof children === 'function' ? children() : children
 }
 
 const FOCUS_PATH = [FOCUS_TERMINATOR]
@@ -123,16 +127,19 @@ export const FormFieldSet = forwardRef(
       if (onToggle) onToggle(!collapsed)
     }, [collapsed, onToggle])
 
-    let content = (
+    let getContent = () => (
       <Grid columns={columns} gapX={4} gapY={5}>
-        {children}
+        {getChildren(children)}
       </Grid>
     )
 
     if (changeIndicator) {
       const changeIndicatorProps = typeof changeIndicator === 'object' ? changeIndicator : {}
 
-      content = <ChangeIndicator {...changeIndicatorProps}>{children}</ChangeIndicator>
+      // eslint-disable-next-line react/display-name
+      getContent = () => (
+        <ChangeIndicator {...changeIndicatorProps}>{getChildren(children)}</ChangeIndicator>
+      )
     }
 
     useEffect(() => {
@@ -185,7 +192,7 @@ export const FormFieldSet = forwardRef(
           ref={forwardedRef}
           tabIndex={tabIndex}
         >
-          {!collapsed && content}
+          {!collapsed && getContent()}
         </Content>
       </Root>
     )
