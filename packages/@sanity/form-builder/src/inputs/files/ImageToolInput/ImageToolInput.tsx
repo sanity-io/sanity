@@ -102,31 +102,34 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
     }
   })
 
-  const handleChangeEnd = useCallback(() => {
-    if (readOnly) {
-      return
-    }
-    // For backwards compatibility, where hotspot/crop might not have a named type yet
-    const cropField = type.fields.find(
-      (field) => field.name === 'crop' && field.type.name !== 'object'
-    )
+  const handleChangeEnd = useCallback(
+    (finalValue) => {
+      if (readOnly) {
+        return
+      }
+      // For backwards compatibility, where hotspot/crop might not have a named type yet
+      const cropField = type.fields.find(
+        (field) => field.name === 'crop' && field.type.name !== 'object'
+      )
 
-    const hotspotField = type.fields.find(
-      (field) => field.type.name !== 'object' && field.name === 'hotspot'
-    )
+      const hotspotField = type.fields.find(
+        (field) => field.type.name !== 'object' && field.name === 'hotspot'
+      )
 
-    // Note: when either hotspot or crop change we fill in the default if the other is missing
-    // (we can't have one without the other)
-    const crop = cropField
-      ? {_type: cropField.type.name, ...(localValue.crop || DEFAULT_CROP)}
-      : localValue.crop
+      // Note: when either hotspot or crop change we fill in the default if the other is missing
+      // (we can't have one without the other)
+      const crop = cropField
+        ? {_type: cropField.type.name, ...(finalValue.crop || DEFAULT_CROP)}
+        : finalValue.crop
 
-    const hotspot = hotspotField
-      ? {_type: hotspotField.type.name, ...(localValue.hotspot || DEFAULT_HOTSPOT)}
-      : localValue.hotspot
+      const hotspot = hotspotField
+        ? {_type: hotspotField.type.name, ...(finalValue.hotspot || DEFAULT_HOTSPOT)}
+        : finalValue.hotspot
 
-    onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
-  }, [localValue, onChange, readOnly, type.fields])
+      onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
+    },
+    [onChange, readOnly, type.fields]
+  )
 
   return (
     <FormField
