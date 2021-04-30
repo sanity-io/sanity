@@ -19,6 +19,17 @@ const MARGIN_PX = 8
 const CROP_HANDLE_SIZE = 12
 const HOTSPOT_HANDLE_SIZE = 10
 
+function normalizeRect(rect) {
+  const flippedY = rect.top > rect.bottom
+  const flippedX = rect.left > rect.right
+  return {
+    top: flippedY ? rect.bottom : rect.top,
+    bottom: flippedY ? rect.top : rect.bottom,
+    left: flippedX ? rect.right : rect.left,
+    right: flippedX ? rect.left : rect.right,
+  }
+}
+
 function checkCropBoundaries(value, delta) {
   // Make the experience a little better. Still offsets when dragging back from outside
   if (
@@ -658,7 +669,9 @@ export default class ImageTool extends React.PureComponent {
   handleDragEnd = (pos) => {
     const {onChange, onChangeEnd} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
-    const {hotspot, crop} = this.getClampedValue()
+    const {hotspot, crop: rawCrop} = this.getClampedValue()
+
+    const crop = normalizeRect(rawCrop)
 
     const finalValue = {
       crop: {
