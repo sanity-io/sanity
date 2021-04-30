@@ -676,7 +676,7 @@ export default class ImageTool extends React.PureComponent {
     }
     onChange(finalValue)
     if (onChangeEnd) {
-      onChangeEnd()
+      onChangeEnd(finalValue)
     }
   }
 
