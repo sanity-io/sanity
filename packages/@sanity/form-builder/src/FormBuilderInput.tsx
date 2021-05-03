@@ -92,11 +92,10 @@ export class FormBuilderInput extends React.Component<Props> {
     )
   }
 
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
+  componentDidUpdate(prevProps: Props) {
+    const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
-    if (willHaveFocus && !hasFocus) {
+    if (!hadFocus && hasFocus) {
       this.focus()
     }
   }
