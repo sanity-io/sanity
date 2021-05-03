@@ -57,8 +57,8 @@ interface Props {
   patchChannel: {
     onPatch?: (patch: any) => void
   }
-  resolveInputComponent: (type: SchemaType) => React.ComponentType
-  resolvePreviewComponent: (type: SchemaType) => React.ComponentType
+  resolveInputComponent: (type: SchemaType) => React.ComponentType<any>
+  resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any>
 }
 
 export default class FormBuilderContext extends React.Component<Props> {
