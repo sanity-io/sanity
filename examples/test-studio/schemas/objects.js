@@ -94,6 +94,10 @@ export default {
           name: 'mbwEvent',
           type: 'object',
           preview: {
+            select: {
+              where: 'where',
+              what: 'what',
+            },
             prepare({where, what}) {
               return {
                 title: where,
