@@ -19,7 +19,7 @@ interface Props {
   onChange: (event: PatchEvent) => void
   onFocus: (path: Path) => void
   onBlur: () => void
-  readOnly: boolean
+  readOnly?: boolean
   presence?: FormFieldPresence[]
   focusPath: Path
   markers: Marker[]
