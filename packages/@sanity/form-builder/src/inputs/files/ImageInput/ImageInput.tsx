@@ -160,7 +160,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   _inputId = uniqueId('ImageInput')
 
-  _focusRef: null | Focusable = null
+  _assetElementRef: null | Focusable = null
   _fieldGroupsMemo: null | FieldGroups = null
   uploadSubscription: null | Subscription = null
 
@@ -173,13 +173,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   toast: {push: (params: ToastParams) => void} | null = null
 
   focus() {
-    if (this._focusRef) {
-      this._focusRef.focus()
+    if (this._assetElementRef) {
+      this._assetElementRef.focus()
     }
   }
 
   setFocusElement = (el: HTMLElement | null) => {
-    this._focusRef = el
+    this._assetElementRef = el
   }
 
   isImageToolEnabled() {
@@ -667,6 +667,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
     return this._fieldGroupsMemo
   }
+
+  componentDidUpdate(prevProps: Props) {
+    const {focusPath: prevFocusPath = []} = prevProps
+    const {focusPath: currentFocusPath = []} = this.props
+    if (prevFocusPath[0] !== 'asset' && currentFocusPath[0] === 'asset') {
+      this._assetElementRef?.focus()
+    }
+  }
+
   hasChangeInFields(fields: ObjectField[]) {
     const {value, compareValue} = this.props
 
