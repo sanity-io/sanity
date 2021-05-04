@@ -34,11 +34,11 @@ const NumberInput = React.forwardRef(function NumberInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      markers={markers}
       title={type.title}
       description={type.description}
       inputId={id}
-      __unstable_presence={presence}
+      presence={presence}
     >
       <TextInput
         type="number"

@@ -11,6 +11,7 @@ import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
 import {Props} from './types'
+import {FormFieldValidationStatus} from '@sanity/base/lib/components'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
@@ -62,7 +63,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
             <FormFieldHeaderText
               description={type.description}
               inputId={inputId}
-              __unstable_markers={markers}
+              validation={<FormFieldValidationStatus fontSize={1} markers={markers} />}
               title={type.title}
             />
           </Box>

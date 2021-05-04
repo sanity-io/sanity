@@ -36,10 +36,10 @@ const TextInput = React.forwardRef(function TextInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      markers={markers}
       title={type.title}
       description={type.description}
-      __unstable_presence={presence}
+      presence={presence}
       inputId={inputId}
     >
       <StyledTextArea

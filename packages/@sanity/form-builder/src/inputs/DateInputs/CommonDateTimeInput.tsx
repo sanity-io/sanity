@@ -87,7 +87,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
 
   return (
     <FormField
-      __unstable_markers={
+      markers={
         parseResult?.error
           ? [
               ...markers,
@@ -102,7 +102,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
       title={title}
       level={level}
       description={description}
-      __unstable_presence={presence}
+      presence={presence}
       inputId={id}
     >
       {readOnly ? (

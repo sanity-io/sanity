@@ -1,27 +1,13 @@
-/* eslint-disable camelcase */
-
-import {Marker} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import React, {memo} from 'react'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
-import {FormFieldPresence} from '../../presence'
+import React, {memo, ReactNode} from 'react'
 import {FormFieldHeader} from './FormFieldHeader'
 
 export interface FormFieldProps {
-  /**
-   * @beta
-   */
-  __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
-  /**
-   * @beta
-   */
-  __unstable_markers?: Marker[]
-  /**
-   * @beta
-   */
-  __unstable_presence?: FormFieldPresence[]
-  children: React.ReactNode
-  description?: React.ReactNode
+  validation?: ReactNode
+  presence?: ReactNode
+  description?: ReactNode
+  title?: ReactNode
+  children?: ReactNode
   /**
    * The unique ID used to target the actual input element
    */
@@ -30,31 +16,12 @@ export interface FormFieldProps {
    * The nesting level of the form field
    */
   level?: number
-  title?: React.ReactNode
 }
 
 export const FormField = memo(function FormField(
-  props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
+  props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'title'>
 ) {
-  const {
-    __unstable_changeIndicator: changeIndicator = true,
-    __unstable_markers: markers,
-    __unstable_presence: presence,
-    children,
-    description,
-    inputId,
-    level,
-    title,
-    ...restProps
-  } = props
-
-  let content = children
-
-  if (changeIndicator) {
-    const changeIndicatorProps = typeof changeIndicator === 'object' ? changeIndicator : {}
-
-    content = <ChangeIndicator {...changeIndicatorProps}>{children}</ChangeIndicator>
-  }
+  const {validation, presence, children, description, inputId, level, title, ...restProps} = props
 
   return (
     <Stack {...restProps} data-level={level} space={1}>
@@ -64,15 +31,15 @@ export const FormField = memo(function FormField(
       */}
       {title && (
         <FormFieldHeader
-          __unstable_markers={markers}
-          __unstable_presence={presence}
+          validation={validation}
+          presence={presence}
           description={description}
           inputId={inputId}
           title={title}
         />
       )}
 
-      <div>{content}</div>
+      {children && <div>{children}</div>}
     </Stack>
   )
 })
