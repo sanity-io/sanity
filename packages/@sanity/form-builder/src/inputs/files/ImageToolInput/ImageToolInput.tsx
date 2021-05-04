@@ -1,5 +1,4 @@
 import React, {ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
-import {FormField} from '@sanity/base/components'
 import {ImageCrop, ImageHotspot, ObjectSchemaType, Path} from '@sanity/types'
 import ImageTool from '@sanity/imagetool'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
@@ -10,6 +9,7 @@ import styled from 'styled-components'
 import {ChangeIndicatorForFieldPath} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import shallowEquals from 'shallow-equals'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {FormField} from '../../../components/FormField'
 import PatchEvent, {set} from '../../../PatchEvent'
 import {Checkerboard} from '../../../components/Checkerboard'
 import {withFocusRing} from '../../../components/withFocusRing'
@@ -136,8 +136,8 @@ export const ImageToolInput = forwardRef(function ImageToolInput(
       title="Hotspot &amp; crop"
       level={level}
       description="Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible."
-      __unstable_changeIndicator={false}
-      __unstable_presence={presence}
+      changeIndicator={false}
+      presence={presence}
     >
       <div>
         <CheckerboardWithFocusRing tabIndex={0} ref={forwardedRef} onFocus={handleFocus}>

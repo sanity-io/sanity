@@ -5,13 +5,12 @@ import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
-import {FormFieldHeaderText} from '@sanity/base/components'
+import {FormFieldHeaderText, FormFieldValidationStatus} from '@sanity/base/components'
 import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../PatchEvent'
 import {Props} from './types'
-import {FormFieldValidationStatus} from '@sanity/base/lib/components'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;

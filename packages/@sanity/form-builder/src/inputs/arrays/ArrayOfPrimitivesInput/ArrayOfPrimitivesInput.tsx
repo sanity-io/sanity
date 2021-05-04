@@ -3,7 +3,6 @@ import {get} from 'lodash'
 import {startsWith} from '@sanity/util/paths'
 import {ArraySchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {FormFieldSet} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {resolveTypeName} from '@sanity/util/content'
 import {PatchEvent, set, unset} from '../../../PatchEvent'
@@ -11,6 +10,7 @@ import {Item, List} from '../common/list'
 import ArrayFunctions from '../common/ArrayFunctions'
 import getEmptyValue from './getEmptyValue'
 import {ItemRow} from './ItemRow'
+import {FormFieldSet} from '../../../components/FormFieldSet'
 
 type Primitive = string | number | boolean
 
@@ -165,11 +165,9 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         tabIndex={0}
         onFocus={this.handleFocusRoot}
         ref={this.setElement}
-        __unstable_presence={presence.filter(
-          (item) => item.path[0] === '$' || item.path.length === 0
-        )}
-        __unstable_changeIndicator={false}
-        __unstable_markers={markers}
+        presence={presence.filter((item) => item.path[0] === '$' || item.path.length === 0)}
+        changeIndicator={false}
+        markers={markers}
       >
         <Stack space={3}>
           {value && value.length > 0 && (

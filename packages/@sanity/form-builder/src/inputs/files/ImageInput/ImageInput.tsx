@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {ImperativeToast} from '@sanity/base/components'
 import {
   Box,
   Button,
@@ -56,6 +56,7 @@ import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {DropMessage} from '../common/DropMessage'
 import {handleSelectAssetFromSource} from '../common/assetSource'
+import {FormFieldSet} from '../../../components/FormFieldSet'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -399,7 +400,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         id={`${this._inputId}_dialog`}
         onClose={this.handleCloseDialog}
         width={1}
-        __unstable_autoFocus={false}
+        autoFocus={false}
       >
         <PresenceOverlay>
           <Box padding={4}>
@@ -663,12 +664,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          __unstable_markers={markers}
-          __unstable_presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
+          markers={markers}
+          presence={isDialogOpen ? EMPTY_ARRAY : fieldPresence}
           title={type.title}
           description={type.description}
           level={fieldGroups.highlighted.length > 0 ? level : 0}
-          __unstable_changeIndicator={false}
+          changeIndicator={false}
         >
           <div>
             <ChangeIndicatorForFieldPath

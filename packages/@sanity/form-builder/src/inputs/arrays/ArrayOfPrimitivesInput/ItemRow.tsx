@@ -135,7 +135,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
         <Flex align="center">
           {!readOnly && markers.length > 0 && (
             <Box marginLeft={2}>
-              <FormFieldValidationStatus __unstable_markers={markers} />
+              <FormFieldValidationStatus markers={markers} />
             </Box>
           )}
 
