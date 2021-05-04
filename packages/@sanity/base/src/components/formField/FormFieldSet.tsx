@@ -1,43 +1,27 @@
 /* eslint-disable camelcase */
-
-import {Marker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
+import React, {forwardRef, ReactNode, useCallback} from 'react'
 import styled, {css} from 'styled-components'
-import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
-import {FieldPresence, FormFieldPresence} from '../../presence'
-import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {markersToValidationList} from './helpers'
 import {focusRingStyle} from './styles'
 
 export interface FormFieldSetProps {
-  /**
-   * @beta
-   */
-  __unstable_changeIndicator?: ChangeIndicatorContextProvidedProps | boolean
-  /**
-   * @beta
-   */
-  __unstable_markers?: Marker[]
-  /**
-   * @beta
-   */
-  __unstable_presence?: FormFieldPresence[]
-  children: React.ReactNode | (() => React.ReactNode)
+  validation?: ReactNode
+  presence?: ReactNode
+  children: ReactNode | (() => ReactNode)
   collapsed?: boolean
   collapsible?: boolean
   columns?: number
-  description?: React.ReactNode
+  description?: ReactNode
   /**
    * The nesting level of the form field set
    */
   level?: number
   onToggle?: (collapsed: boolean) => void
-  title?: React.ReactNode
+  title?: ReactNode
 }
 
-function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
+function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
@@ -78,19 +62,16 @@ const Content = styled(Box)<{
   `
 })
 
-const EMPTY_ARRAY = []
-
 export const FormFieldSet = forwardRef(
   (
     props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
     ref
   ) => {
     const {
-      __unstable_changeIndicator: changeIndicator = false,
-      __unstable_markers: markers = EMPTY_ARRAY,
-      __unstable_presence: presence = EMPTY_ARRAY,
+      validation,
+      presence,
       children,
-      collapsed: collapsedProp = false,
+      collapsed = false,
       collapsible,
       columns,
       description,
@@ -101,13 +82,10 @@ export const FormFieldSet = forwardRef(
       title,
       ...restProps
     } = props
-    const [collapsed, setCollapsed] = useState(collapsedProp)
-    const validation = markersToValidationList(markers)
-    const hasValidations = validation.length > 0
+
     const forwardedRef = useForwardedRef(ref)
 
     const handleToggleCollapse = useCallback(() => {
-      setCollapsed(!collapsed)
       if (onToggle) onToggle(!collapsed)
     }, [collapsed, onToggle])
 
@@ -121,27 +99,6 @@ export const FormFieldSet = forwardRef(
       },
       [forwardedRef, onFocus]
     )
-
-    const content = useMemo(() => {
-      if (collapsed) {
-        return null
-      }
-      return (
-        <Grid columns={columns} gapX={4} gapY={5}>
-          {changeIndicator ? (
-            <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
-              {getChildren(children)}
-            </ChangeIndicator>
-          ) : (
-            getChildren(children)
-          )}
-        </Grid>
-      )
-    }, [changeIndicator, children, collapsed, columns])
-
-    useEffect(() => {
-      setCollapsed(collapsedProp)
-    }, [collapsedProp])
 
     return (
       <Root data-level={level} {...restProps}>
@@ -157,11 +114,7 @@ export const FormFieldSet = forwardRef(
                     title={title}
                   />
 
-                  {hasValidations && (
-                    <Box marginLeft={2}>
-                      <FormFieldValidationStatus fontSize={1} __unstable_markers={markers} />
-                    </Box>
-                  )}
+                  {validation && <Box marginLeft={2}>{validation}</Box>}
                 </Flex>
 
                 {description && (
@@ -172,11 +125,7 @@ export const FormFieldSet = forwardRef(
               </Stack>
             </Box>
 
-            {presence.length > 0 && (
-              <Box>
-                <FieldPresence maxAvatars={4} presence={presence} />
-              </Box>
-            )}
+            {presence && <Box>{presence}</Box>}
           </Flex>
         )}
 
@@ -189,7 +138,11 @@ export const FormFieldSet = forwardRef(
           ref={forwardedRef}
           tabIndex={tabIndex}
         >
-          {!collapsed && content}
+          {!collapsed && (
+            <Grid columns={columns} gapX={4} gapY={5}>
+              {getChildren(children)}
+            </Grid>
+          )}
         </Content>
       </Root>
     )

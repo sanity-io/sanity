@@ -1,11 +1,11 @@
 import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
-import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
+import {FormFieldSet} from '../../components/FormFieldSet'
 
 interface FieldType {
   name: string
@@ -65,7 +65,7 @@ export const ObjectInputField = forwardRef(function ObjectInputField(
     const isCompatible = actualType === field.type.jsonType
     if (expectedType !== actualType && !isCompatible) {
       return (
-        <FormFieldSet title={field.type.title} level={level} __unstable_presence={presence}>
+        <FormFieldSet title={field.type.title} level={level} presence={presence}>
           <InvalidValueInput
             value={value}
             onChange={handleChange}
