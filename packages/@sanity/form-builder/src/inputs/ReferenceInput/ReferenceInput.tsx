@@ -5,7 +5,7 @@ import {LinkIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Autocomplete, Box, Card, Text, Button, Stack, useToast} from '@sanity/ui'
+import {Autocomplete, Box, Card, Text, Button, Stack, useToast, useForwardedRef} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -16,6 +16,7 @@ import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {IntentButton} from '../../transitional/IntentButton'
 import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../utils/empty'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {usePreviewSnapshot} from './usePreviewSnapshot'
 
 type SearchState = {
@@ -179,6 +180,13 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const inputId = useId()
 
+  const ref = useForwardedRef(forwardedRef)
+  useDidUpdate(focusPath[0], (prev, current) => {
+    if (prev !== '_ref' && current === '_ref') {
+      ref.current?.focus()
+    }
+  })
+
   const renderOption = useCallback(
     (option) => {
       const memberType = getMemberTypeFor(option.hit._type, type)
@@ -269,7 +277,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
           <div style={{lineHeight: 0}}>
             <Autocomplete
               loading={searchState.isLoading}
-              ref={forwardedRef}
+              ref={ref}
               id={inputId || ''}
               options={searchState.hits.map((hit) => ({
                 value: hit._id,
