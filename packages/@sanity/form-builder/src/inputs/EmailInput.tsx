@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '../components/FormField'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -31,8 +31,8 @@ const EmailInput = React.forwardRef(function EmailInput(
       title={type.title}
       description={type.description}
       inputId={inputId}
-      __unstable_presence={presence}
-      __unstable_markers={markers}
+      presence={presence}
+      markers={markers}
     >
       <TextInput
         type="email"

@@ -11,7 +11,7 @@ import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indic
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '../../components/FormField'
 import {PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
@@ -111,8 +111,8 @@ const SlugInput = React.forwardRef(function SlugInput(
         title={type.title}
         description={type.description}
         level={level}
-        __unstable_markers={markers}
-        __unstable_presence={presence}
+        markers={markers}
+        presence={presence}
         inputId={inputId}
       >
         <Stack space={3}>
