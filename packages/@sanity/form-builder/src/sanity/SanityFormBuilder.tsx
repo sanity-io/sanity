@@ -6,6 +6,7 @@ import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 
 type PatchChannel = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   subscribe: () => () => {}
   receivePatches: (patches: any[]) => void
 }
@@ -29,7 +30,7 @@ type Props = {
 
 const EMPTY = []
 
-export default class SanityFormBuilder extends React.Component<Props, {}> {
+export default class SanityFormBuilder extends React.Component<Props> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
 
   _input: FormBuilderInput | null
