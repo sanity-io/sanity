@@ -133,6 +133,7 @@ export const ObjectInput = memo(
         ) : (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
+            data-testid={`fieldset-${(fieldset as MultiFieldSet).name}`}
             fieldset={fieldset as MultiFieldSet}
             focusPath={focusPath}
             onFocus={onFocus}
