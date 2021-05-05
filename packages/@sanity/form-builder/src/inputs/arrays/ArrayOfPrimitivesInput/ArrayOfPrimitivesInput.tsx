@@ -131,6 +131,10 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     }
   }
 
+  handleFocusRoot = () => {
+    this.props.onFocus([])
+  }
+
   handleFocusItem = (item: Primitive, index: number) => {
     this.props.onFocus([index])
   }
@@ -159,7 +163,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         description={type?.description}
         level={level - 1}
         tabIndex={0}
-        onFocus={onFocus}
+        onFocus={this.handleFocusRoot}
         ref={this.setElement}
         __unstable_presence={presence.filter(
           (item) => item.path[0] === '$' || item.path.length === 0
