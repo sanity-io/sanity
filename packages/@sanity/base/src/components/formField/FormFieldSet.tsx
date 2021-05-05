@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 
-import {Path, Marker} from '@sanity/types'
+import {Marker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import React, {forwardRef, useState, useCallback, useEffect} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
@@ -34,7 +33,6 @@ export interface FormFieldSetProps {
    * The nesting level of the form field set
    */
   level?: number
-  onFocus?: (path: Path) => void
   onToggle?: (collapsed: boolean) => void
   title?: React.ReactNode
 }
@@ -42,8 +40,6 @@ export interface FormFieldSetProps {
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
   return typeof children === 'function' ? children() : children
 }
-
-const FOCUS_PATH = [FOCUS_TERMINATOR]
 
 const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
   border: none;
@@ -86,8 +82,7 @@ const EMPTY_ARRAY = []
 
 export const FormFieldSet = forwardRef(
   (
-    props: FormFieldSetProps &
-      Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'onFocus' | 'ref'>,
+    props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
     ref
   ) => {
     const {
@@ -111,17 +106,6 @@ export const FormFieldSet = forwardRef(
     const hasValidations = validation.length > 0
     const forwardedRef = useForwardedRef(ref)
 
-    const handleFocus = useCallback(
-      (event: React.FocusEvent<HTMLDivElement>) => {
-        const element = forwardedRef.current
-
-        if (element === event.target) {
-          if (onFocus) onFocus(FOCUS_PATH)
-        }
-      },
-      [forwardedRef, onFocus]
-    )
-
     const handleToggleCollapse = useCallback(() => {
       setCollapsed(!collapsed)
       if (onToggle) onToggle(!collapsed)
@@ -131,6 +115,17 @@ export const FormFieldSet = forwardRef(
       <Grid columns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
       </Grid>
+    )
+
+    const handleFocus = useCallback(
+      (event: React.FocusEvent<HTMLDivElement>) => {
+        const element = forwardedRef.current
+
+        if (element === event.target) {
+          if (onFocus) onFocus(event)
+        }
+      },
+      [forwardedRef, onFocus]
     )
 
     if (changeIndicator) {
