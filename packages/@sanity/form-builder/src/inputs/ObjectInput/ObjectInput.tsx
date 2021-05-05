@@ -1,5 +1,13 @@
-import React, {forwardRef, memo, useCallback} from 'react'
-import {Marker, MultiFieldSet, ObjectField, ObjectSchemaTypeWithOptions, Path} from '@sanity/types'
+import React, {ForwardedRef, forwardRef, memo, useCallback} from 'react'
+import {
+  Marker,
+  MultiFieldSet,
+  ObjectField,
+  ObjectSchemaTypeWithOptions,
+  Path,
+  SingleFieldSet,
+  Fieldset,
+} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormFieldSet} from '@sanity/base/components'
 
@@ -14,6 +22,10 @@ import {getCollapsedWithDefaults} from './utils'
 const EMPTY_MARKERS: Marker[] = EMPTY_ARRAY
 const EMPTY_PRESENCE: FormFieldPresence[] = EMPTY_ARRAY
 const EMPTY_PATH: Path = EMPTY_ARRAY
+
+function isSingleFieldset(fieldset: Fieldset): fieldset is SingleFieldSet {
+  return Boolean(fieldset.single)
+}
 
 export interface Props {
   type: ObjectSchemaTypeWithOptions
@@ -44,7 +56,7 @@ const DEFAULT_FILTER_FIELD = () => true
 // disable eslint false positive
 // eslint-disable-next-line react/display-name
 export const ObjectInput = memo(
-  forwardRef(function ObjectInput(props: Props, forwardedRef: React.ForwardedRef<HTMLDivElement>) {
+  forwardRef(function ObjectInput(props: Props, forwardedRef: ForwardedRef<HTMLDivElement>) {
     const {
       type,
       presence = EMPTY_PRESENCE,
@@ -122,14 +134,14 @@ export const ObjectInput = memo(
       ]
     )
 
-    const getRenderedFields = useCallback(() => {
+    const renderFields = useCallback(() => {
       if (!type.fieldsets) {
         // this is a fallback for schema types that are not parsed to be objects, but still has jsonType == 'object'
-        return (type.fields || []).map((field, i) => renderField(field, level + 1, i))
+        return (type.fields || []).map((field, index) => renderField(field, level + 1, index))
       }
-      return type.fieldsets.map((fieldset, index) => {
-        return fieldset.single ? (
-          renderField(fieldset.field, level + 1, index)
+      return type.fieldsets.map((fieldset, fieldsetIndex) => {
+        return isSingleFieldset(fieldset) ? (
+          renderField(fieldset.field, level + 1, fieldsetIndex)
         ) : (
           <ObjectFieldSet
             key={`fieldset-${(fieldset as MultiFieldSet).name}`}
@@ -137,25 +149,21 @@ export const ObjectInput = memo(
             fieldset={fieldset as MultiFieldSet}
             focusPath={focusPath}
             onFocus={onFocus}
-            renderField={renderField}
             level={level + 1}
             presence={presence}
             markers={markers}
-            ref={index === 0 ? forwardedRef : null}
-          />
+          >
+            {() =>
+              // lazy render children
+              // eslint-disable-next-line max-nested-callbacks
+              fieldset.fields.map((field, fieldIndex) =>
+                renderField(field, level + 2, fieldsetIndex + fieldIndex)
+              )
+            }
+          </ObjectFieldSet>
         )
       })
-    }, [
-      focusPath,
-      forwardedRef,
-      level,
-      markers,
-      onFocus,
-      presence,
-      renderField,
-      type.fields,
-      type.fieldsets,
-    ])
+    }, [focusPath, level, markers, onFocus, presence, renderField, type.fields, type.fieldsets])
 
     const renderUnknownFields = useCallback(() => {
       if (!type.fields) {
@@ -184,22 +192,22 @@ export const ObjectInput = memo(
     const renderAllFields = useCallback(() => {
       return (
         <>
-          {getRenderedFields()}
+          {renderFields()}
           {renderUnknownFields()}
         </>
       )
-    }, [getRenderedFields, renderUnknownFields])
+    }, [renderFields, renderUnknownFields])
 
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
-    const isExpanded = focusPath.length > 0
 
-    const [stickyExpanded, setStickyExpanded] = React.useState(!collapsibleOpts.collapsed)
+    const [isCollapsed, setCollapsed] = React.useState(collapsibleOpts.collapsed)
 
     const handleToggleFieldset = React.useCallback(
       (nextCollapsed) => {
         if (nextCollapsed) {
+          setCollapsed(true)
+          // We can now put focus on the object value itself since it's collapsed
           onFocus([])
-          setStickyExpanded(false)
         } else {
           onFocus([type.fields[0].name])
         }
@@ -208,10 +216,11 @@ export const ObjectInput = memo(
     )
 
     React.useEffect(() => {
-      if (isExpanded) {
-        setStickyExpanded(true)
+      const hasFocusWithin = focusPath.length > 0
+      if (hasFocusWithin) {
+        setCollapsed(false)
       }
-    }, [isExpanded])
+    }, [focusPath])
 
     const columns = type.options && type.options.columns
     if (level === 0) {
@@ -226,16 +235,16 @@ export const ObjectInput = memo(
 
     return (
       <FormFieldSet
-        ref={isExpanded ? null : forwardedRef}
+        ref={isCollapsed ? forwardedRef : null}
         level={level}
         title={type.title}
         description={type.description}
         columns={columns}
         collapsible={collapsibleOpts.collapsible}
-        collapsed={!isExpanded && !stickyExpanded}
+        collapsed={isCollapsed}
         onToggle={handleToggleFieldset}
-        __unstable_presence={!isExpanded && !stickyExpanded ? presence : EMPTY_ARRAY}
-        __unstable_markers={!isExpanded && !stickyExpanded ? markers : EMPTY_ARRAY}
+        __unstable_presence={isCollapsed ? presence : EMPTY_ARRAY}
+        __unstable_markers={isCollapsed ? markers : EMPTY_ARRAY}
         __unstable_changeIndicator={false}
       >
         {renderAllFields}
