@@ -1,40 +1,43 @@
 // Render a fieldset inside the object input
-import React, {forwardRef, useMemo} from 'react'
+import React, {ForwardedRef, forwardRef, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {FormFieldSet} from '@sanity/base/components'
-import {Marker, MultiFieldSet, ObjectField, Path} from '@sanity/types'
+import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
+import {Marker, MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
 import {getCollapsedWithDefaults} from './utils'
 
-const EMPTY_PATH: Path = EMPTY_ARRAY
-
-interface Props {
+interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
   fieldset: MultiFieldSet
   focusPath: Path
   onFocus: (focusPath: Path) => void
-  renderField: (field: ObjectField, level: number, index: number) => React.ReactNode
   level: number
   presence: FormFieldPresence[]
   markers: Marker[]
 }
 
-export const ObjectFieldSet = forwardRef(function ObjectFieldSet(props: Props, forwardedRef) {
-  const {fieldset, focusPath, renderField, level, presence, markers, onFocus} = props
+/**
+ * A specialized component for object "fieldsets", e.g. a group of object fields as defined by the fieldsets option
+ * on the object type https://www.sanity.io/docs/object-type#fieldsets-b8b5507db1d3
+ */
+export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
+  props: Props,
+  forwardedRef: ForwardedRef<HTMLElement>
+) {
+  const {fieldset, focusPath, children, level, presence, markers, onFocus, ...rest} = props
   const columns = fieldset.options && fieldset.options.columns
 
   const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
-  const isExpanded =
-    focusPath.length > 0 && fieldset.fields.some((field) => focusPath[0] === field.name)
 
   const fieldNames = useMemo(() => fieldset.fields.map((f) => f.name), [fieldset.fields])
-  const isCollapsed = !isExpanded && collapsibleOpts.collapsed
+
+  const [isCollapsed, setCollapsed] = React.useState(collapsibleOpts.collapsed)
 
   const childPresence = useMemo(() => {
-    return !isCollapsed || presence.length === 0
-      ? EMPTY_ARRAY
-      : presence.filter(
+    return isCollapsed && presence.length > 0
+      ? presence.filter(
           (item) => typeof item.path[0] === 'string' && fieldNames.includes(item.path[0])
         )
+      : EMPTY_ARRAY
   }, [fieldNames, isCollapsed, presence])
 
   const childMarkers = useMemo(() => {
@@ -45,42 +48,49 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(props: Props, f
         )
   }, [fieldNames, markers])
 
-  const [stickyExpanded, setStickyExpanded] = React.useState(!collapsibleOpts.collapsed)
-
   const handleToggleFieldset = React.useCallback(
     (nextCollapsed) => {
       if (nextCollapsed) {
-        setStickyExpanded(false)
-        onFocus(EMPTY_PATH)
+        // note: technically, when collapsing this fieldset we remove focus from whatever field (if any) inside
+        // it that currently has focus, so it might be tempting to emit a new focus path for the "parent object",
+        // e.g. onFocus([]), but this can in some cases have the unintended consequence of creating page jumps, since it
+        // will put focus in the the first field of the parent object input, which may be rendered far away from the current fieldset.
+        // For this reason, keep the focus path where it is, and just "locally" collapse this fieldset
+        setCollapsed(true)
       } else {
-        onFocus([fieldset.fields[0].name])
+        onFocus([fieldNames[0]])
+        setCollapsed(false)
       }
     },
-    [onFocus, fieldset.fields]
+    [onFocus, fieldNames]
   )
 
   React.useEffect(() => {
-    if (isExpanded) {
-      setStickyExpanded(true)
+    const hasFocusWithin =
+      focusPath.length > 0 && fieldNames.some((fieldName) => focusPath[0] === fieldName)
+
+    if (hasFocusWithin) {
+      setCollapsed(false)
     }
-  }, [isExpanded])
+  }, [fieldNames, focusPath])
 
   return (
     <FormFieldSet
+      {...rest}
       key={fieldset.name}
       title={fieldset.title}
       description={fieldset.description}
       level={level + 1}
       columns={columns}
       collapsible={collapsibleOpts.collapsible}
-      collapsed={!isExpanded && !stickyExpanded}
+      collapsed={isCollapsed}
       onToggle={handleToggleFieldset}
       __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
       __unstable_changeIndicator={false}
       __unstable_markers={childMarkers}
-      ref={isExpanded ? null : forwardedRef}
+      ref={isCollapsed ? forwardedRef : null}
     >
-      {fieldset.fields.map((field, i) => renderField(field, level, i))}
+      {children}
     </FormFieldSet>
   )
 })
