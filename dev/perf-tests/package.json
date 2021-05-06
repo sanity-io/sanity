@@ -1,5 +1,5 @@
 {
-  "name": "sanity-monorepo-perf-tests",
+  "name": "perf-tests",
   "description": "A collection of performance tests that can run against a perf-studio url",
   "version": "2.10.2",
   "private": true,

@@ -13,7 +13,7 @@ export function createReportDocs(testName: string, samples: number[]) {
   const workflowInfo = getWorkflowInfo()
 
   const summary = {
-    _id: `perf-test-${hardwareProfile._id}-${deburr(testName.replace(/a-zA-Z0-9._-/, '_'))}\``,
+    _id: `perf-test-${hardwareProfile._id}-${deburr(testName.replace(/[^a-zA-Z0-9._-]/, '_'))}\``,
     _type: 'testResult',
     hardwareProfile: {
       _type: 'reference',

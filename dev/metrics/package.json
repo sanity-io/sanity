@@ -1,6 +1,7 @@
 {
-  "name": "monometa",
-  "version": "1.0.0",
+  "name": "metrics",
+  "private": "true",
+  "version": "2.10.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +10,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "zod": "^1.11.17",
+    "perf-tests": "2.10.2"
+  },
   "devDependencies": {
     "prettier": "^2.2.1",
     "vercel": "^22.0.1"
