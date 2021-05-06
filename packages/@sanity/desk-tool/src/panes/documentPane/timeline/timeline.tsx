@@ -1,5 +1,6 @@
 import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
 import {Chunk} from '@sanity/field/diff'
+import {Stack, Text} from '@sanity/ui'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {Timeline as TimelineModel} from '../documentHistory/history/timeline'
 import {TimelineItem} from './timelineItem'
@@ -78,6 +79,15 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
 
     return (
       <div className={styles.root} ref={setRef} onScroll={checkIfLoadIsNeeded}>
+        {timeline.chunkCount === 0 && (
+          <Stack padding={4} space={3} style={{maxWidth: 200}}>
+            <Text weight="bold">No document history</Text>
+            <Text muted size={1}>
+              When changing the content of the document, the document versions will appear in this
+              menu.
+            </Text>
+          </Stack>
+        )}
         <ol className={styles.list} ref={listRef}>
           {timeline.mapChunks((chunk) => {
             const isSelectionTop = topSelection === chunk
