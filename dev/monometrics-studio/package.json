@@ -1,0 +1,43 @@
+{
+  "name": "monometrics-studio",
+  "private": true,
+  "version": "2.10.2",
+  "description": "Sanity",
+  "main": "package.json",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "sanity start --port 3344",
+    "build": "sanity build"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "clean-studio"
+  ],
+  "dependencies": {
+    "@sanity/base": "2.10.2",
+    "@sanity/cli": "2.10.0",
+    "@sanity/core": "2.10.2",
+    "@sanity/default-layout": "2.10.2",
+    "@sanity/default-login": "2.8.0",
+    "@sanity/desk-tool": "2.10.2",
+    "@sanity/google-maps-input": "2.10.2",
+    "@sanity/types": "2.10.0",
+    "@sanity/vision": "2.10.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/clean-studio"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "sanity-monorepo-perf-tests",
+  "description": "A collection of performance tests that can run against a perf-studio url",
+  "version": "2.10.2",
+  "private": true,
+  "devDependencies": {
+    "@sanity/client": "^2.8.0",
+    "puppeteer": "^9.1.1"
+  }
+}

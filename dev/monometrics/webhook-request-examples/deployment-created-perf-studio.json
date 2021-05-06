@@ -1,0 +1,44 @@
+{
+  "id": "zk_931p0t1Y5Xy6g",
+  "type": "deployment",
+  "clientId": "oac_LwKmuGQsyFtoLcQi5M6dgbqC",
+  "createdAt": 1620307923754,
+  "payload": {
+    "alias": [
+      "perf-studio-git-ui-ch7680poc-slots-based-formfield-an-645355.sanity.build"
+    ],
+    "deployment": {
+      "id": "dpl_2tDbQVq9swEQ7X3Q4YMRQRqUaj7g",
+      "meta": {
+        "githubCommitAuthorName": "Bjørge Næss",
+        "githubCommitMessage": "refactor(form-builder): use package local formfield + formfieldset components",
+        "githubCommitOrg": "sanity-io",
+        "githubCommitRef": "ui/ch7680/poc-slots-based-formfield-and-fieldset-components",
+        "githubCommitRepo": "sanity",
+        "githubCommitRepoId": "79375056",
+        "githubCommitSha": "3f93e7cf05c8fbbd0532d0b01290b8c61e1439ed",
+        "githubDeployment": "1",
+        "githubOrg": "sanity-io",
+        "githubRepo": "sanity",
+        "githubRepoId": "79375056",
+        "githubCommitAuthorLogin": "bjoerge"
+      },
+      "name": "perf-studio",
+      "url": "perf-studio-osvzusbtt.sanity.build",
+      "inspectorUrl": "https://vercel.com/sanity-io/perf-studio/2tDbQVq9swEQ7X3Q4YMRQRqUaj7g"
+    },
+    "deploymentId": "dpl_2tDbQVq9swEQ7X3Q4YMRQRqUaj7g",
+    "name": "perf-studio",
+    "plan": "enterprise",
+    "project": "prj_4eRPBeGOeVIIeD275T1U45y6H78a",
+    "projectId": "prj_4eRPBeGOeVIIeD275T1U45y6H78a",
+    "regions": ["iad1"],
+    "target": null,
+    "type": "LAMBDAS",
+    "url": "perf-studio-osvzusbtt.sanity.build"
+  },
+  "ownerId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "teamId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "userId": "Ggtx0MfDKNBFIaMd9GHjGw0A",
+  "webhookId": "hook_36922e4d346b11dbe52431334b86e5b71eaac858"
+}

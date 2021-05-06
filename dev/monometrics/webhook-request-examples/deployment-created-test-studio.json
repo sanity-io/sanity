@@ -1,0 +1,44 @@
+{
+  "id": "Mn6pC8H_6j_GVLHr",
+  "type": "deployment",
+  "clientId": "oac_LwKmuGQsyFtoLcQi5M6dgbqC",
+  "createdAt": 1620307923126,
+  "payload": {
+    "alias": [
+      "test-studio-git-ui-ch7680poc-slots-based-formfield-an-e03a15.sanity.build"
+    ],
+    "deployment": {
+      "id": "dpl_EsMRSVr5Bdqw3FziUguWrFHAMDP7",
+      "meta": {
+        "githubCommitAuthorName": "Bjørge Næss",
+        "githubCommitMessage": "refactor(form-builder): use package local formfield + formfieldset components",
+        "githubCommitOrg": "sanity-io",
+        "githubCommitRef": "ui/ch7680/poc-slots-based-formfield-and-fieldset-components",
+        "githubCommitRepo": "sanity",
+        "githubCommitRepoId": "79375056",
+        "githubCommitSha": "3f93e7cf05c8fbbd0532d0b01290b8c61e1439ed",
+        "githubDeployment": "1",
+        "githubOrg": "sanity-io",
+        "githubRepo": "sanity",
+        "githubRepoId": "79375056",
+        "githubCommitAuthorLogin": "bjoerge"
+      },
+      "name": "test-studio",
+      "url": "test-studio-cmqlxzsrw.sanity.build",
+      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/EsMRSVr5Bdqw3FziUguWrFHAMDP7"
+    },
+    "deploymentId": "dpl_EsMRSVr5Bdqw3FziUguWrFHAMDP7",
+    "name": "test-studio",
+    "plan": "enterprise",
+    "project": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
+    "projectId": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
+    "regions": ["sfo1"],
+    "target": null,
+    "type": "LAMBDAS",
+    "url": "test-studio-cmqlxzsrw.sanity.build"
+  },
+  "ownerId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "teamId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "userId": "Ggtx0MfDKNBFIaMd9GHjGw0A",
+  "webhookId": "hook_36922e4d346b11dbe52431334b86e5b71eaac858"
+}
