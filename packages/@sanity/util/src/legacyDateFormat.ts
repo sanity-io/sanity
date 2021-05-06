@@ -1,6 +1,10 @@
 /* eslint-disable no-shadow */
 import moment from 'moment'
-import {ParseResult} from './types'
+
+export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
+  | {isValid: true; date: Date}
+  | {isValid: false; error?: string}
+)
 
 // todo: find a way to get rid of moment there.
 // note: the format comes form peoples schemas, so we need to deprecate it for a while and

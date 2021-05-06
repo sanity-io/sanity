@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
+import {format, parse} from '@sanity/util/legacyDateFormat'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import {format, parse} from './legacy'
 
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {CommonProps} from './types'

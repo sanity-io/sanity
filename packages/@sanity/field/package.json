@@ -33,7 +33,6 @@
     "@sanity/types": "2.10.0",
     "@sanity/ui": "^0.33.19",
     "@sanity/util": "2.10.0",
-    "date-fns": "^2.16.1",
     "sanity-diff-patch": "^1.0.9",
     "styled-components": "^5.2.1"
   },
