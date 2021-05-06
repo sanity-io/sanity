@@ -1,9 +1,9 @@
 import React, {useCallback} from 'react'
 
+import {format, parse} from '@sanity/util/legacyDateFormat'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {CommonProps, ParseResult} from './types'
-import {format, parse} from './legacy'
 import {isValidDate} from './utils'
 
 type ParsedOptions = {

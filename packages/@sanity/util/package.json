@@ -37,9 +37,11 @@
     "fs-extra": "^6.0.1",
     "get-random-values": "^1.2.2",
     "lodash": "^4.17.15",
+    "moment": "^2.19.1",
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
+    "@types/moment": "^2.13.0",
     "rimraf": "^2.7.1",
     "tap": "^14.6.1"
   }
