@@ -76,3 +76,5 @@ export interface DeploymentReadyMessage {
 }
 
 export type DeploymentMessage = DeploymentCreatedMessage | DeploymentReadyMessage
+
+declare const m: DeploymentMessage

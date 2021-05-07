@@ -1,11 +1,11 @@
 {
   "root": true,
   "project": {
-    "name": "Perf studio"
+    "name": "Metrics studio"
   },
   "api": {
     "projectId": "ppsg7ml5",
-    "dataset": "perf"
+    "dataset": "metrics"
   },
   "plugins": [
     "@sanity/base",

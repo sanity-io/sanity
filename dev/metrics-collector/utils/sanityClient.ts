@@ -7,5 +7,6 @@ export const sanityClient = createClient({
   token: writeToken,
   projectId: 'ppsg7ml5',
   dataset: 'metrics',
+  apiVersion: '2021-05-07',
   useCdn: false,
 })

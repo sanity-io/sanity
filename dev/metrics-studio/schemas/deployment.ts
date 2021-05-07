@@ -22,15 +22,29 @@ export const deployment = {
   type: 'document',
   name: 'deployment',
   fields: [
-    {name: 'projectName', type: 'string'},
-    {name: 'projectId', type: 'string'},
+    {name: 'name', type: 'string'},
     {name: 'deploymentId', type: 'string'},
+    {name: 'projectId', type: 'string'},
+    {name: 'projectName', type: 'string'},
+    {name: 'status', type: 'string'},
     {name: 'deploymentType', type: 'string'},
     {name: 'meta', type: 'deploymentMetadata'},
-    {name: 'name', type: 'string'},
     {name: 'url', type: 'string'},
     {name: 'inspectorUrl', type: 'string'},
     {name: 'plan', type: 'string'},
     {name: 'regions', type: 'array', of: [{type: 'string'}]},
   ],
+  preview: {
+    fields: {
+      name: 'name',
+      status: 'status',
+      branch: 'meta.githubCommmitRef',
+    },
+    prepare({name, status, branch}) {
+      return {
+        title: `${name} (${status})`,
+        subtitle: branch,
+      }
+    },
+  },
 }
