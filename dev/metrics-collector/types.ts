@@ -1,3 +1,32 @@
+type DeploymentType = 'deployment' | 'deployment-error' | 'deployment-ready'
+/**
+ * https://vercel.com/docs/integrations#webhooks/events
+ */
+interface VercelWebhookEvent<Type extends DeploymentType, Payload> {
+  id: string // event id,
+  type: Type
+  clientId: string
+  createdAt: number
+  payload: Payload
+  ownerId: string // e.g team_xyz
+  teamId: string // e.g team_xyz
+  userId: string
+  webhookId: string
+}
+
+export type VercelDeploymentCreatedEvent = VercelWebhookEvent<
+  'deployment',
+  DeploymentCreatedPayload
+>
+export type VercelDeploymentErrorEvent = VercelWebhookEvent<
+  'deployment-error',
+  DeploymentErrorPayload
+>
+export type VercelDeploymentReadyEvent = VercelWebhookEvent<
+  'deployment-ready',
+  DeploymentReadyPayload
+>
+
 // todo: convert to zod and validate json payload
 interface DeploymentMetadata {
   githubCommitAuthorName: string //"Bjørge Næss"
@@ -14,67 +43,37 @@ interface DeploymentMetadata {
   githubCommitAuthorLogin: string //"bjoerge"
 }
 
-export interface DeploymentCreatedPayload {
-  alias: string[] // ["test-studio-git-ui-ch7680poc-slots-based-formfield-an-e03a15.sanity.build"]
-  deployment: {
-    id: string //"dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX"
-    meta: DeploymentMetadata
-    name: string //"test-studio"
-    url: string //"test-studio-fafktd7wk.sanity.build"
-    inspectorUrl: string //"https://vercel.com/sanity-io/test-studio/2sMLCV4CJcLtQJsqikD62WQMBqAX"
-  }
-  deploymentId: string //"dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX"
+interface DeploymentInfo {
+  id: string //"dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX"
+  meta: DeploymentMetadata
   name: string //"test-studio"
-  plan: string //"enterprise"
-  project: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
-  projectId: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
-  regions: string[] // ["sfo1"]
-  type: string //"LAMBDAS"
   url: string //"test-studio-fafktd7wk.sanity.build"
+  inspectorUrl: string //"https://vercel.com/sanity-io/test-studio/2sMLCV4CJcLtQJsqikD62WQMBqAX"
 }
 
-export interface DeploymentCreatedMessage {
-  id: string //"774oval4PQ9S_-wi"
-  type: 'deployment'
-  clientId: string //"oac_LwKmuGQsyFtoLcQi5M6dgbqC"
-  createdAt: number
-  payload: DeploymentCreatedPayload
-  ownerId: string //"team_oqU06TUi6OGH315dQZ2wFh08"
-  teamId: string //"team_oqU06TUi6OGH315dQZ2wFh08"
-  userId: string //"Ggtx0MfDKNBFIaMd9GHjGw0A"
-  webhookId: string //"hook_36922e4d346b11dbe52431334b86e5b71eaac858"
+export interface DeploymentCreatedPayload {
+  alias: string[] // ["test-studio-git-ui-ch7680poc-slots-based-formfield-an-e03a15.sanity.build"]
+  deployment: DeploymentInfo
+  projectId: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
+  plan: string //"enterprise"
+  regions: string[] // ["sfo1"]
 }
 
 interface DeploymentReadyPayload {
-  deployment: {
-    id: string //"dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX"
-    meta: DeploymentMetadata
-    name: string //"test-studio"
-    url: string //"test-studio-fafktd7wk.sanity.build"
-    inspectorUrl: string //"https://vercel.com/sanity-io/test-studio/2sMLCV4CJcLtQJsqikD62WQMBqAX"
-  }
-  deploymentId: string //"dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX"
-  name: string //"test-studio"
-  plan: string //"enterprise"
-  project: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
+  deployment: DeploymentInfo
   projectId: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
+  plan: string //"enterprise"
   regions: string[] // ["sfo1"]
-  type: string //"LAMBDAS"
-  url: string //"test-studio-fafktd7wk.sanity.build"
 }
 
-export interface DeploymentReadyMessage {
-  id: string //"774oval4PQ9S_-wi"
-  type: 'deployment-ready'
-  clientId: string //"oac_LwKmuGQsyFtoLcQi5M6dgbqC"
-  createdAt: number
-  payload: DeploymentReadyPayload
-  ownerId: string //"team_oqU06TUi6OGH315dQZ2wFh08"
-  teamId: string //"team_oqU06TUi6OGH315dQZ2wFh08"
-  userId: string //"Ggtx0MfDKNBFIaMd9GHjGw0A"
-  webhookId: string //"hook_36922e4d346b11dbe52431334b86e5b71eaac858"
+export interface DeploymentErrorPayload {
+  deployment: DeploymentInfo
+  projectId: string //"QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i"
+  plan: string //"enterprise"
+  regions: string[] // ["sfo1"]
 }
 
-export type DeploymentMessage = DeploymentCreatedMessage | DeploymentReadyMessage
-
-declare const m: DeploymentMessage
+export type VercelDeploymentEvent =
+  | VercelDeploymentCreatedEvent
+  | VercelDeploymentReadyEvent
+  | VercelDeploymentErrorEvent
