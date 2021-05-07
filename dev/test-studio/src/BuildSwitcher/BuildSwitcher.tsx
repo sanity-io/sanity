@@ -148,8 +148,8 @@ export function BuildSwitcher() {
           id="menu-button-example"
           portal
           content={
-            <Box marginBottom={2} marginX={2}>
-              {isLocal && (
+            <Stack space={3} padding={2}>
+              {!isLocal && (
                 <Box marginY={4}>
                   <Button
                     as="a"
