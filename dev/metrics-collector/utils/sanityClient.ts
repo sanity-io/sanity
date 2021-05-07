@@ -1,7 +1,7 @@
 import createClient from '@sanity/client'
-import {getEnv} from './utils/getEnv'
+import {getEnv} from './getEnv'
 
-const writeToken = getEnv('PERF_STUDIO_SANITY_WRITE_TOKEN')
+const writeToken = getEnv('METRICS_WRITE_TOKEN')
 
 export const sanityClient = createClient({
   token: writeToken,

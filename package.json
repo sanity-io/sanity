@@ -32,6 +32,8 @@
     "design-studio": "cd dev/design-studio && npm start",
     "example-studio": "cd dev/example-studio && npm start",
     "perf-studio": "cd dev/perf-studio && npm start",
+    "metrics-collector": "cd dev/metrics-collector && npm start",
+    "metrics-studio": "cd dev/metrics-studio && npm start",
     "movies-studio": "cd examples/movies-studio && npm start",
     "blog-studio": "cd examples/blog-studio && npm start",
     "stylelint": "stylelint \"**/*.css\"",
