@@ -13,8 +13,14 @@ import {
   Text,
 } from '@sanity/ui'
 import {defer} from 'rxjs'
-import {shareReplay, switchMapTo, throttleTime} from 'rxjs/operators'
-import {ArrowTopRightIcon, ChevronRightIcon, ArrowDownIcon, CircleIcon} from '@sanity/icons'
+import {delay, shareReplay, switchMapTo, throttleTime} from 'rxjs/operators'
+import {
+  ArrowDownIcon,
+  ChevronRightIcon,
+  CircleIcon,
+  LaunchIcon,
+  InfoOutlineIcon,
+} from '@sanity/icons'
 import {metricsStudioClient} from './metricsClient'
 
 function listenBuildHistory() {
@@ -25,11 +31,11 @@ function listenBuildHistory() {
   )
   return defer(() =>
     metricsStudioClient.listen(
-      `*[_type=="branch" || _type == "latestDeployments"]`,
+      `*[_type=="branch" || _type == "deployment"]`,
       {},
-      {events: ['mutation', 'welcome']}
+      {events: ['mutation', 'welcome'], visibility: 'query'}
     )
-  ).pipe(throttleTime(50, undefined, {trailing: true}), switchMapTo(fetch$))
+  ).pipe(throttleTime(50, undefined, {trailing: true}), delay(100), switchMapTo(fetch$))
 }
 
 function getGithubUserUrl(username) {
