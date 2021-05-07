@@ -21,8 +21,7 @@ const DEST_DIR = 'dist'
 // or packages that does their own build (e.g. studios)
 const IGNORED_PACKAGES = [
   'dev/workshop',
-  'dev/depcheck-test',
-  /dev\/.*-studio/,
+  /dev\/.*/,
   /examples\/.*-studio/,
   'packages/@sanity/date-input',
   'packages/@sanity/eventsource',
