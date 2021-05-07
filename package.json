@@ -50,9 +50,9 @@
     "prettier": "prettier '**/*.{ts,js,tsx,jsx}'",
     "lint-next": "npm run eslint -- `git diff --name-only next --diff-filter ACMRTUXB`",
     "verify-format": "lerna run clean && npm run prettier -- -c",
-    "postinstall": "npm run bootstrap",
-    "vercel-build": "npm run build:js && cd dev/studios/test-studio && npm run build -- -y",
-    "type-check": "tsc -b ./packages --force",
+    "postinstall": "node ./scripts/validateMonorepoDependencies.js && npm run bootstrap",
+    "vercel-build": "npm run build:js && cd dev/test-studio && npm run build -- -y",
+    "type-check": "tsc -b",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json"
   },
