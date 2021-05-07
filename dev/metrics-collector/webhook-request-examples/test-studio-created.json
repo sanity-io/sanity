@@ -1,22 +1,20 @@
 {
-  "id": "Mn6pC8H_6j_GVLHr",
+  "id": "iZHtg0kJH8OUywDe",
   "type": "deployment",
   "clientId": "oac_LwKmuGQsyFtoLcQi5M6dgbqC",
-  "createdAt": 1620307923126,
+  "createdAt": 1620385990995,
   "payload": {
-    "alias": [
-      "test-studio-git-ui-ch7680poc-slots-based-formfield-an-e03a15.sanity.build"
-    ],
+    "alias": ["test-studio-git-bjoerge-rebuild.sanity.build"],
     "deployment": {
-      "id": "dpl_EsMRSVr5Bdqw3FziUguWrFHAMDP7",
+      "id": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
       "meta": {
         "githubCommitAuthorName": "Bjørge Næss",
-        "githubCommitMessage": "refactor(form-builder): use package local formfield + formfieldset components",
+        "githubCommitMessage": "trigger build",
         "githubCommitOrg": "sanity-io",
-        "githubCommitRef": "ui/ch7680/poc-slots-based-formfield-and-fieldset-components",
+        "githubCommitRef": "bjoerge/rebuild",
         "githubCommitRepo": "sanity",
         "githubCommitRepoId": "79375056",
-        "githubCommitSha": "3f93e7cf05c8fbbd0532d0b01290b8c61e1439ed",
+        "githubCommitSha": "821d7a04ea3ededee91bdfcfda1490806411eb55",
         "githubDeployment": "1",
         "githubOrg": "sanity-io",
         "githubRepo": "sanity",
@@ -24,10 +22,10 @@
         "githubCommitAuthorLogin": "bjoerge"
       },
       "name": "test-studio",
-      "url": "test-studio-cmqlxzsrw.sanity.build",
-      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/EsMRSVr5Bdqw3FziUguWrFHAMDP7"
+      "url": "test-studio-ii8iqigrt.sanity.build",
+      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/AgRr8sA5QSDB7UVEmK3uypGCpmU9"
     },
-    "deploymentId": "dpl_EsMRSVr5Bdqw3FziUguWrFHAMDP7",
+    "deploymentId": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
     "name": "test-studio",
     "plan": "enterprise",
     "project": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
@@ -35,7 +33,7 @@
     "regions": ["sfo1"],
     "target": null,
     "type": "LAMBDAS",
-    "url": "test-studio-cmqlxzsrw.sanity.build"
+    "url": "test-studio-ii8iqigrt.sanity.build"
   },
   "ownerId": "team_oqU06TUi6OGH315dQZ2wFh08",
   "teamId": "team_oqU06TUi6OGH315dQZ2wFh08",

@@ -24,6 +24,7 @@ export const deployment = {
   fields: [
     {name: 'name', type: 'string'},
     {name: 'deploymentId', type: 'string'},
+    {name: 'branch', type: 'reference', to: {type: 'branch'}},
     {name: 'projectId', type: 'string'},
     {name: 'projectName', type: 'string'},
     {name: 'status', type: 'string'},
@@ -38,7 +39,7 @@ export const deployment = {
     fields: {
       name: 'name',
       status: 'status',
-      branch: 'meta.githubCommmitRef',
+      branch: 'meta.githubCommitRef',
     },
     prepare({name, status, branch}) {
       return {

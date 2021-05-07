@@ -114,6 +114,10 @@
     {
       "implements": "part:@sanity/base/tool",
       "path": "parts/tools/test-conditional-tool"
+    },
+    {
+      "implements": "part:@sanity/base/brand-logo",
+      "path": "src/BuildSwitcher"
     }
   ],
   "env": {

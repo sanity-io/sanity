@@ -1,19 +1,19 @@
 {
-  "id": "774oval4PQ9S_-wi",
+  "id": "kccGhq6tavN06fqc",
   "type": "deployment-ready",
   "clientId": "oac_LwKmuGQsyFtoLcQi5M6dgbqC",
-  "createdAt": 1620306431305,
+  "createdAt": 1620386340376,
   "payload": {
     "deployment": {
-      "id": "dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX",
+      "id": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
       "meta": {
         "githubCommitAuthorName": "Bjørge Næss",
-        "githubCommitMessage": "refactor(form-builder): sort out fieldset/focus conundrum",
+        "githubCommitMessage": "trigger build",
         "githubCommitOrg": "sanity-io",
-        "githubCommitRef": "ui/ch1976/migrate-objectinput-to-ui",
+        "githubCommitRef": "bjoerge/rebuild",
         "githubCommitRepo": "sanity",
         "githubCommitRepoId": "79375056",
-        "githubCommitSha": "7eba5de73c6fa7a317f87d66a1dd4a727415296c",
+        "githubCommitSha": "821d7a04ea3ededee91bdfcfda1490806411eb55",
         "githubDeployment": "1",
         "githubOrg": "sanity-io",
         "githubRepo": "sanity",
@@ -21,17 +21,17 @@
         "githubCommitAuthorLogin": "bjoerge"
       },
       "name": "test-studio",
-      "url": "test-studio-fafktd7wk.sanity.build",
-      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/2sMLCV4CJcLtQJsqikD62WQMBqAX"
+      "url": "test-studio-ii8iqigrt.sanity.build",
+      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/AgRr8sA5QSDB7UVEmK3uypGCpmU9"
     },
-    "deploymentId": "dpl_2sMLCV4CJcLtQJsqikD62WQMBqAX",
+    "deploymentId": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
     "name": "test-studio",
     "plan": "enterprise",
     "project": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
     "projectId": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
     "regions": ["sfo1"],
     "type": "LAMBDAS",
-    "url": "test-studio-fafktd7wk.sanity.build"
+    "url": "test-studio-ii8iqigrt.sanity.build"
   },
   "ownerId": "team_oqU06TUi6OGH315dQZ2wFh08",
   "teamId": "team_oqU06TUi6OGH315dQZ2wFh08",
