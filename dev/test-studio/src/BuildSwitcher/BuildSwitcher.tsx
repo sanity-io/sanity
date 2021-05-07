@@ -2,25 +2,32 @@ import React, {useEffect, useState} from 'react'
 import {MenuButton, Button, Menu, MenuItem, MenuDivider, Layer} from '@sanity/ui'
 import {CircleIcon, CheckmarkCircleIcon} from '@sanity/icons'
 import {metricsStudioClient} from './metricsClient'
-import {deployment} from '../../../metrics-studio/schemas/deployment'
 
 function fetchBuildHistory() {
   return metricsStudioClient.fetch(
-    '*[_type=="branch"] | order(updatedAt desc) | {_id, name, "latestDeployment": *[_type == "deployment" && references(^._id)][0]}'
+    '*[_type=="branch"] | order(updatedAt desc) | {_id, name, "latestDeployment": *[_type == "deployment" && name=="test-studio" && references(^._id)][0]}'
   )
 }
 
+const COLORS = {
+  success: '#4fd97f',
+  pending: '#f5a623',
+  error: '#f46e64',
+}
 function getDeploymentStatusColor(deployment: any) {
   if (!deployment) {
-    return 'transparent'
+    return undefined
   }
-  if (deployment.status === 'pending') {
-    return '#ccc970'
+  if (deployment?.status === 'pending') {
+    return COLORS.pending
   }
-  if (deployment.status === 'completed') {
-    return '#70cc70'
+  if (deployment?.status === 'completed') {
+    return COLORS.success
   }
-  return '#e53935'
+  if (deployment?.status === 'error') {
+    return COLORS.error
+  }
+  return 'white'
 }
 
 export function BuildSwitcher() {
@@ -55,11 +62,12 @@ export function BuildSwitcher() {
           {branches.map((branch) => {
             return (
               <MenuItem
+                as="a"
                 icon={() => <CircleIcon fill={getDeploymentStatusColor(branch.latestDeployment)} />}
                 key={branch.name}
-                onClick={() =>
-                  (document.location.href = `https://${branch.latestDeployment.url}${document.location.pathname}`)
-                }
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://${branch.latestDeployment.url}${document.location.pathname}`}
                 text={<>{branch.name}</>}
               />
             )
