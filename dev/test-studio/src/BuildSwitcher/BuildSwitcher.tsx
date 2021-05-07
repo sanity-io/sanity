@@ -150,16 +150,15 @@ export function BuildSwitcher() {
           content={
             <Stack space={3} padding={2}>
               {!isLocal && (
-                <Box marginY={4}>
-                  <Button
-                    as="a"
-                    icon={ArrowDownIcon}
-                    tone="primary"
-                    mode="ghost"
-                    href="http://localhost:3333"
-                    text="Go to localhost"
-                  />
-                </Box>
+                <Button
+                  as="a"
+                  icon={LaunchIcon}
+                  tone="primary"
+                  mode="ghost"
+                  fontSize={1}
+                  href={`http://localhost:3333${getPath()}`}
+                  text="Go to localhost"
+                />
               )}
               <Box marginTop={2} padding={1}>
                 <Text size={2} weight="semibold" muted>
@@ -208,46 +207,6 @@ export function BuildSwitcher() {
                                           {build.meta.githubCommitSha.substring(0, 6)})
                                         </a>
                                       </Text>
-                                    </Box>
-                                    <Box flex={1} marginX={2}>
-                                      <Stack space={2}>
-                                        <Text weight="semibold">
-                                          {build.meta.githubCommitMessage}
-                                        </Text>
-                                        <Text size={1}>
-                                          {build.meta.githubCommitAuthorLogin} (
-                                          <a
-                                            href={getGithubCommitUrlFromMetaData(build.meta)}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                          >
-                                            {build.meta.githubCommitSha.substring(0, 6)})
-                                          </a>
-                                        </Text>
-                                      </Stack>
-                                    </Box>
-                                    <Box>
-                                      <Inline space={2}>
-                                        {build.status === 'error' ? (
-                                          <Button
-                                            as="a"
-                                            icon={ArrowTopRightIcon}
-                                            tone="caution"
-                                            mode="ghost"
-                                            href={build.inspectorUrl}
-                                            title="Show error"
-                                          />
-                                        ) : (
-                                          <Button
-                                            as="a"
-                                            icon={ArrowTopRightIcon}
-                                            tone="primary"
-                                            mode="ghost"
-                                            href={`https://${build.url}${getPath()}`}
-                                            title="Open built studio"
-                                          />
-                                        )}
-                                      </Inline>
                                     </Box>
                                   </Flex>
                                 </Stack>
