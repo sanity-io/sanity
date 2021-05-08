@@ -5,6 +5,7 @@ import DefaultPreview from 'part:@sanity/components/previews/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import RobotIcon from 'part:@sanity/base/robot-icon'
+import userStore from 'part:@sanity/base/user'
 import {versionedClient} from '../../versionedClient'
 import styles from './ProjectUsers.css'
 
@@ -57,10 +58,8 @@ class ProjectUsers extends React.PureComponent {
       })
       .pipe(
         switchMap((project) =>
-          versionedClient.observable
-            .request({
-              uri: `/users/${project.members.map((mem) => mem.id).join(',')}`,
-            })
+          userStore.observable
+            .getUsers(project.members.map((mem) => mem.id))
             .pipe(map((users) => ({project, users})))
         )
       )

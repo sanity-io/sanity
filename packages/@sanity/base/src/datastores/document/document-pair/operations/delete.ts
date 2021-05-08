@@ -8,9 +8,9 @@ export const del = {
     const tx = versionedClient.observable.transaction().delete(idPair.publishedId)
 
     if (isLiveEditEnabled(typeName)) {
-      return tx.commit()
+      return tx.commit({tag: 'document.delete'})
     }
 
-    return tx.delete(idPair.draftId).commit()
+    return tx.delete(idPair.draftId).commit({tag: 'document.delete'})
   },
 }

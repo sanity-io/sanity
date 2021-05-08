@@ -14,6 +14,7 @@ export interface WeakReference extends Reference {
 export type ReferenceFilterSearchOptions = {
   filter?: string
   params?: Record<string, unknown>
+  tag?: string
 }
 
 export type ReferenceFilterResolver = (options: {

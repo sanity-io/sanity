@@ -9,6 +9,7 @@ export default {
       .request({
         uri: '/users/me',
         withCredentials: true,
+        tag: 'users.get-current',
       })
       .then((user) => {
         return user && user.id ? user : null

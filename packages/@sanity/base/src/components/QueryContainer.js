@@ -36,7 +36,7 @@ const createErrorChildProps = (error) => ({
   error,
 })
 
-export const getQueryResults = (receivedProps$) => {
+export const getQueryResults = (receivedProps$, options = {}) => {
   const [onRetry$, onRetry] = createEventHandler()
 
   const queryProps$ = receivedProps$.pipe(
@@ -48,7 +48,7 @@ export const getQueryResults = (receivedProps$) => {
 
   const queryResults$ = queryProps$.pipe(
     switchMap((queryProps) => {
-      const query$ = listenQuery(queryProps.query, queryProps.params).pipe(
+      const query$ = listenQuery(queryProps.query, queryProps.params, options).pipe(
         map(createResultChildProps),
         share()
       )

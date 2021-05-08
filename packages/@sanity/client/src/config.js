@@ -60,6 +60,10 @@ exports.initConfig = (config, prevConfig) => {
     validate.dataset(newConfig.dataset, newConfig.gradientMode)
   }
 
+  if (newConfig.requestTagPrefix) {
+    newConfig.requestTagPrefix = validate.requestTag(newConfig.requestTagPrefix).replace(/\.+$/, '')
+  }
+
   newConfig.apiVersion = `${newConfig.apiVersion}`.replace(/^v/, '')
   newConfig.isDefaultApi = newConfig.apiHost === defaultConfig.apiHost
   newConfig.useCdn = Boolean(newConfig.useCdn) && !newConfig.token && !newConfig.withCredentials

@@ -95,6 +95,7 @@ const checkVersions = (options: {getOutdated?: boolean} = {}): Promise<VersionsR
       // resolving the right client definition seems to be an issue :shrug:
       query: buildQueryString() as any,
       json: true,
+      tag: 'module.version-check',
     })
     .then((result) => ({
       hash,

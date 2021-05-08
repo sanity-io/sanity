@@ -21,6 +21,6 @@ export const unpublish = {
       })
     }
 
-    return tx.commit()
+    return tx.commit({tag: 'document.unpublish'})
   },
 }

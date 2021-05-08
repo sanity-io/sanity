@@ -76,7 +76,7 @@ assign(AssetsClient.prototype, {
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     const options = optionsFromFile(opts, body)
-    const {label, title, description, creditLine, filename, source} = options
+    const {tag, label, title, description, creditLine, filename, source} = options
     const query = {
       label,
       title,
@@ -91,6 +91,7 @@ assign(AssetsClient.prototype, {
       query.sourceUrl = source.url
     }
     const observable = this.client._requestObservable({
+      tag,
       method: 'POST',
       timeout: options.timeout || 0,
       uri: `/assets/${assetEndpoint}/${dataset}`,

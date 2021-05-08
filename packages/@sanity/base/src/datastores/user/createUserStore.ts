@@ -82,6 +82,7 @@ async function loadUsers(userIds: readonly string[]): Promise<(User | null)[]> {
       .request({
         uri: `/users/${missingIds.join(',')}`,
         withCredentials: true,
+        tag: 'users.get',
       })
       .then(arrayify)
 

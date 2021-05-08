@@ -1,6 +1,6 @@
 import {mergeMap, map, catchError} from 'rxjs/operators'
 import {Observable, of as observableOf} from 'rxjs'
-import {FileAsset} from '@sanity/types'
+import {FileAsset, ImageAsset} from '@sanity/types'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 import {UploadOptions} from '../../uploads/types'
 import {observePaths} from '../../../legacyParts'
@@ -8,7 +8,11 @@ import {versionedClient} from '../../versionedClient'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
-function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
+function uploadSanityAsset(
+  assetType: 'file' | 'image',
+  file: File | Blob,
+  options: UploadOptions = {}
+) {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
   const {label, title, description, creditLine, source} = options
@@ -21,7 +25,7 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
       // note: the sanity api will still dedupe unique files, but this saves us from uploading the asset file entirely
       hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null)
     ),
-    mergeMap((existing: any) => {
+    mergeMap((existing: FileAsset | ImageAsset | null) => {
       if (existing) {
         return observableOf({
           // complete with the existing asset document
@@ -32,6 +36,7 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
       }
       return versionedClient.observable.assets
         .upload(assetType, file, {
+          tag: 'asset.upload',
           extract,
           preserveFilename,
           label,
@@ -58,10 +63,13 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)
 
-export const uploadImageAsset = (file, options) => uploadAsset('image', file, options)
-export const uploadFileAsset = (file, options) => uploadAsset('file', file, options)
+export const uploadImageAsset = (file: File | Blob, options: UploadOptions) =>
+  uploadAsset('image', file, options)
 
-export function materializeReference(id) {
+export const uploadFileAsset = (file: File | Blob, options: UploadOptions) =>
+  uploadAsset('file', file, options)
+
+export function materializeReference(id: string): Observable<FileAsset> {
   return observePaths(id, [
     'originalFilename',
     'url',
@@ -74,14 +82,15 @@ export function materializeReference(id) {
   ]) as Observable<FileAsset>
 }
 
-function fetchExisting(type, hash) {
-  return versionedClient.observable.fetch('*[_type == $documentType && sha1hash == $hash][0]', {
-    documentType: type,
-    hash,
-  })
+function fetchExisting(type: string, hash: string): Observable<ImageAsset | FileAsset | null> {
+  return versionedClient.observable.fetch(
+    '*[_type == $documentType && sha1hash == $hash][0]',
+    {documentType: type, hash},
+    {tag: 'asset.find-duplicate'}
+  )
 }
 
-function readFile(file): Observable<ArrayBuffer> {
+function readFile(file: Blob | File): Observable<ArrayBuffer> {
   return new Observable((subscriber) => {
     const reader = new FileReader()
     reader.onload = () => {
@@ -98,7 +107,7 @@ function readFile(file): Observable<ArrayBuffer> {
   })
 }
 
-function hashFile(file) {
+function hashFile(file: File | Blob): Observable<string | null> {
   if (!window.crypto || !window.crypto.subtle || !window.FileReader) {
     return observableOf(null)
   }
@@ -108,7 +117,7 @@ function hashFile(file) {
   )
 }
 
-function hexFromBuffer(buffer: ArrayBuffer) {
+function hexFromBuffer(buffer: ArrayBuffer): string {
   return Array.prototype.map
     .call(new Uint8Array(buffer), (x) => `00${x.toString(16)}`.slice(-2))
     .join('')

@@ -86,7 +86,12 @@ const SanityReferenceInput = forwardRef(function SanityReferenceInput(
     (searchString: string) =>
       from(resolveUserDefinedFilter(type.options, documentRef.current, getValuePath())).pipe(
         mergeMap(({filter, params}) =>
-          adapter.search(searchString, type, {...type.options, filter, params})
+          adapter.search(searchString, type, {
+            ...type.options,
+            filter,
+            params,
+            tag: 'search.reference',
+          })
         ),
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'

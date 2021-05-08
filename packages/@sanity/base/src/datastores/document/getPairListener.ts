@@ -21,11 +21,19 @@ export interface InitialSnapshotEvent {
   document: SanityDocument | null
 }
 
+export interface PairListenerOptions {
+  tag?: string
+}
+
 export {MutationEvent}
 
 export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
-export function getPairListener(client: SanityClient, idPair: IdPair) {
+export function getPairListener(
+  client: SanityClient,
+  idPair: IdPair,
+  options: PairListenerOptions = {}
+) {
   const {publishedId, draftId} = idPair
   return defer(
     () =>
@@ -39,12 +47,13 @@ export function getPairListener(client: SanityClient, idPair: IdPair) {
           includeResult: false,
           events: ['welcome', 'mutation', 'reconnect'],
           effectFormat: 'mendoza',
+          tag: options.tag || 'document.pair-listener',
         }
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
   ).pipe(
     concatMap((event) =>
       event.type === 'welcome'
-        ? fetchInitialDocumentSnapshots({publishedId, draftId}).pipe(
+        ? fetchInitialDocumentSnapshots().pipe(
             concatMap((snapshots) => [
               createSnapshotEvent(draftId, snapshots.draft),
               createSnapshotEvent(publishedId, snapshots.published),
@@ -54,9 +63,9 @@ export function getPairListener(client: SanityClient, idPair: IdPair) {
     )
   )
 
-  function fetchInitialDocumentSnapshots({publishedId, draftId}): Observable<Snapshots> {
+  function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     return client.observable
-      .getDocuments<SanityDocument>([draftId, publishedId])
+      .getDocuments<SanityDocument>([draftId, publishedId], {tag: 'document.snapshots'})
       .pipe(
         map(([draft, published]) => ({
           draft,

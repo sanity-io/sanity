@@ -1,11 +1,11 @@
 const assign = require('object-assign')
 const Observable = require('@sanity/observable/minimal')
 const polyfilledEventSource = require('@sanity/eventsource')
+const generateHelpUrl = require('@sanity/generate-help-url')
 const pick = require('../util/pick')
+const once = require('../util/once')
 const defaults = require('../util/defaults')
 const encodeQueryString = require('./encodeQueryString')
-const generateHelpUrl = require('@sanity/generate-help-url')
-const once = require('../util/once')
 
 const tokenWarning = [
   'Using token with listeners is not supported in browsers. ',
@@ -19,16 +19,24 @@ const EventSource = isWindowEventSource
   ? window.EventSource // Native browser EventSource
   : polyfilledEventSource // Node.js, IE etc
 
-const possibleOptions = ['includePreviousRevision', 'includeResult', 'visibility', 'effectFormat']
+const possibleOptions = [
+  'includePreviousRevision',
+  'includeResult',
+  'visibility',
+  'effectFormat',
+  'tag',
+]
+
 const defaultOptions = {
   includeResult: true,
 }
 
 module.exports = function listen(query, params, opts = {}) {
-  const options = defaults(opts, defaultOptions)
+  const {url, token, withCredentials, requestTagPrefix} = this.clientConfig
+  const tag = opts.tag && requestTagPrefix ? [requestTagPrefix, opts.tag].join('.') : opts.tag
+  const options = {...defaults(opts, defaultOptions), tag}
   const listenOpts = pick(options, possibleOptions)
-  const qs = encodeQueryString({query, params, options: listenOpts})
-  const {url, token, withCredentials} = this.clientConfig
+  const qs = encodeQueryString({query, params, options: listenOpts, tag})
 
   const uri = `${url}${this.getDataUrl('listen', qs)}`
   const listenFor = options.events ? options.events : ['mutation']

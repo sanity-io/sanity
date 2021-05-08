@@ -39,6 +39,7 @@ export interface WeightedHit {
 export interface WeightedSearchOptions {
   filter?: string
   params?: Record<string, unknown>
+  tag?: string
 }
 
 export interface SearchOptions {

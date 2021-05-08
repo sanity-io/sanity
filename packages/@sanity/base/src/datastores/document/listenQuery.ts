@@ -6,15 +6,25 @@ import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
 type Params = Record<string, string>
 
-const fetch = (query: string, params: Params) =>
-  defer(() => versionedClient.observable.fetch(query, params))
+export interface ListenQueryOptions {
+  tag?: string
+}
 
-const listen = (query: string, params: Params) =>
+const fetch = (query: string, params: Params, options: ListenQueryOptions) =>
+  defer(() =>
+    versionedClient.observable.fetch(query, params, {
+      tag: options.tag,
+      filterResponse: true,
+    })
+  )
+
+const listen = (query: string, params: Params, options: ListenQueryOptions) =>
   defer(() =>
     versionedClient.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
       visibility: 'query',
+      tag: options.tag,
     })
   ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
@@ -26,10 +36,14 @@ function isWelcomeEvent(
 
 // todo: promote as building block for better re-use
 // todo: optimize by patching collection in-place
-export const listenQuery = (query: string, params: Params = {}) => {
-  const fetchOnce$ = fetch(query, params)
+export const listenQuery = (
+  query: string,
+  params: Params = {},
+  options: ListenQueryOptions = {}
+) => {
+  const fetchOnce$ = fetch(query, params, options)
 
-  const events$ = listen(query, params).pipe(
+  const events$ = listen(query, params, options).pipe(
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && !isWelcomeEvent(ev)) {
