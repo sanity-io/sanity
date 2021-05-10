@@ -1,109 +1,68 @@
-import {Observable, of, from} from 'rxjs'
+import {Observable, of, from, merge, defer} from 'rxjs'
+import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
 import raf from 'raf'
 import DataLoader from 'dataloader'
-import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-import {versionedClient} from '../../client/versionedClient'
-import {User, CurrentUser, CurrentUserEvent} from './types'
+import {observableCallback} from 'observable-callback'
+import generateHelpUrl from '@sanity/generate-help-url'
+import {versionedClient as sanityClient} from '../../client/versionedClient'
+import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
 
-const userCache: Record<string, User | null> = {}
+const [logout$, logout] = observableCallback()
+const [refresh$, refresh] = observableCallback()
 
-const userChannel = pubsub<CurrentUser | null>()
-const errorChannel = pubsub<Error | null>()
-
-let _initialFetched = false
-let _currentUser: CurrentUser | null = null
-let _currentError: Error | null = null
-
-userChannel.subscribe((val: CurrentUser | null) => {
-  _currentUser = val
-
-  if (val) {
-    const normalized = normalizeOwnUser(val)
-    userCache.me = normalized
-    userCache[val.id] = normalized
-  }
-})
-
-errorChannel.subscribe((val) => {
-  _currentError = val
-})
-
-function fetchInitial(): Promise<CurrentUser> {
-  return authenticationFetcher.getCurrentUser().then(
-    (user) => userChannel.publish(user),
-    (err) => errorChannel.publish(err)
-  )
-}
-
-function logout(): Promise<null> {
-  return authenticationFetcher.logout().then(
-    () => userChannel.publish(null),
-    (err) => errorChannel.publish(err)
-  )
-}
-
-const currentUser = new Observable<CurrentUserEvent>((observer) => {
-  if (_initialFetched) {
-    const emitter = _currentError ? emitError : emitSnapshot
-    emitter(_currentError || _currentUser)
-  } else {
-    _initialFetched = true
-    fetchInitial()
-  }
-
-  const unsubUser = userChannel.subscribe((nextUser) => emitSnapshot(nextUser))
-  const unsubError = errorChannel.subscribe((err) => emitError(err))
-  const unsubscribe = () => {
-    unsubUser()
-    unsubError()
-  }
-
-  return unsubscribe
-
-  function emitError(error) {
-    observer.next({type: 'error', error})
-  }
-
-  function emitSnapshot(user) {
-    observer.next({type: 'snapshot', user})
-  }
-})
-
-const userLoader = new DataLoader(loadUsers, {
-  batchScheduleFn: (cb) => raf(cb),
-})
-
-async function loadUsers(userIds: readonly string[]): Promise<(User | null)[]> {
-  const missingIds = userIds.filter((userId) => !(userId in userCache))
-  let users: User[] = []
-  if (missingIds.length > 0) {
-    users = await versionedClient
-      .request({
-        uri: `/users/${missingIds.join(',')}`,
-        withCredentials: true,
-        tag: 'users.get',
-      })
+const userLoader = new DataLoader(
+  (userIds: readonly string[]) =>
+    fetchApiEndpoint<(User | null)[]>(`/users/${userIds.join(',')}`, {tag: 'users.get'})
       .then(arrayify)
-
-    users.forEach((user) => {
-      userCache[user.id] = user
-    })
+      .then((response) => userIds.map((id) => response.find((user) => user?.id === id) || null)),
+  {
+    batchScheduleFn: (cb) => raf(cb),
   }
+)
 
-  return userIds.map((userId) => {
-    // Try cache first
-    if (userCache[userId]) {
-      return userCache[userId]
-    }
+function fetchCurrentUser(): Observable<CurrentUser | null> {
+  return defer(() => {
+    const currentUserPromise = authenticationFetcher.getCurrentUser() as Promise<CurrentUser>
+    userLoader.prime(
+      'me',
+      // @ts-expect-error although not reflected in typings, priming with a promise is indeed supported, see https://github.com/graphql/dataloader/issues/235#issuecomment-692495153 and this PR for fixing it https://github.com/graphql/dataloader/pull/252
+      currentUserPromise.then((u) => normalizeOwnUser(u))
+    )
+    return currentUserPromise
+  }).pipe(
+    tap((user) => {
+      if (user) {
+        // prime the data loader cache with the id of current user
+        userLoader.prime(user.id, normalizeOwnUser(user))
+      }
+    })
+  )
+}
 
-    // Look up from returned users
-    return users.find((user) => user.id === userId) || null
+const currentUser: Observable<CurrentUser | null> = merge(
+  fetchCurrentUser(), // initial fetch
+  refresh$.pipe(switchMap(() => fetchCurrentUser())), // re-fetch as response to request to refresh current user
+  logout$.pipe(
+    mergeMap(() => authenticationFetcher.logout()),
+    mapTo(null)
+  )
+).pipe(shareReplay({refCount: true, bufferSize: 1}))
+
+const normalizedCurrentUser = currentUser.pipe(
+  map((user) => (user ? normalizeOwnUser(user) : user))
+)
+
+function fetchApiEndpoint<T>(endpoint: string, {tag}: {tag: string}): Promise<T> {
+  return sanityClient.request({
+    uri: endpoint,
+    withCredentials: true,
+    tag,
   })
 }
 
-function getUser(userId: string): Promise<User | null> {
-  return userLoader.load(userId)
+function getUser(userId: string): Observable<User | null> {
+  return userId === 'me' ? normalizedCurrentUser : from(userLoader.load(userId))
 }
 
 async function getUsers(ids: string[]): Promise<User[]> {
@@ -111,12 +70,8 @@ async function getUsers(ids: string[]): Promise<User[]> {
   return users.filter(isUser)
 }
 
-function arrayify(users: User | User[]): User[] {
-  return Array.isArray(users) ? users : [users]
-}
-
-function isUser(thing: unknown): thing is User {
-  return Boolean(thing && thing !== null && typeof (thing as User).id === 'string')
+function arrayify<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
 }
 
 function normalizeOwnUser(user: CurrentUser): User {
@@ -127,26 +82,52 @@ function normalizeOwnUser(user: CurrentUser): User {
   }
 }
 
+function isUser(thing: any): thing is User {
+  return Boolean(typeof thing?.id === 'string')
+}
+
+const currentUserEvents = currentUser.pipe(
+  map((user): CurrentUserSnapshot => ({type: 'snapshot', user})),
+  catchError((error: Error) => of({type: 'error', error} as const))
+)
+
+let warned = false
+function getDeprecatedCurrentUserEvents() {
+  if (!warned) {
+    console.warn(
+      `userStore.currentUser is deprecated. Instead use \`userStore.me\`, which is an observable of the current user (or null if not logged in). ${generateHelpUrl(
+        'studio-user-store-currentuser-deprecated'
+      )}`
+    )
+    warned = true
+  }
+  return currentUserEvents
+}
+
 const observableApi = {
-  currentUser,
-
-  getUser: (userId: string): Observable<User | null> =>
-    typeof userCache[userId] === 'undefined' ? from(getUser(userId)) : of(userCache[userId]),
-
-  getUsers: (userIds: string[]): Observable<User[]> => {
-    const missingIds = userIds.filter((userId) => !(userId in userCache))
-    return missingIds.length === 0
-      ? of(userIds.map((userId) => userCache[userId]).filter(isUser))
-      : from(getUsers(userIds))
+  me: currentUser,
+  getCurrentUser: () => currentUser.pipe(take(1)),
+  getUser: getUser,
+  getUsers: (userIds: string[]) => from(getUsers(userIds)),
+  get currentUser() {
+    return getDeprecatedCurrentUserEvents()
   },
 }
 
-export default function createUserStore() {
+export default function createUserStore(): UserStore {
   return {
-    actions: {logout, retry: fetchInitial},
-    currentUser,
-    getUser,
+    actions: {logout, retry: refresh},
+    me: currentUser,
+    getCurrentUser() {
+      return currentUser.pipe(take(1)).toPromise()
+    },
+    getUser(id: string) {
+      return getUser(id).pipe(take(1)).toPromise()
+    },
     getUsers,
+    get currentUser() {
+      return getDeprecatedCurrentUserEvents()
+    },
     observable: observableApi,
   }
 }
