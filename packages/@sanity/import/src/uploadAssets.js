@@ -6,6 +6,7 @@ const progressStepper = require('./util/progressStepper')
 const getHashedBufferForUri = require('./util/getHashedBufferForUri')
 const retryOnFailure = require('./util/retryOnFailure')
 const urlExists = require('./util/urlExists')
+const suffixTag = require('./util/suffixTag')
 
 const ASSET_UPLOAD_CONCURRENCY = 8
 const ASSET_PATCH_CONCURRENCY = 1
@@ -116,12 +117,19 @@ function downloadAsset(url, i) {
 
 async function ensureAsset(asset, options, i) {
   const {buffer, sha1hash, type, url} = asset
-  const {client, assetMap = {}, replaceAssets} = options
+  const {client, assetMap = {}, replaceAssets, tag} = options
 
   // See if the item exists on the server
   if (!replaceAssets) {
     debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
-    const assetDocId = await getAssetDocumentIdForHash(client, type, sha1hash)
+    const assetDocId = await getAssetDocumentIdForHash(
+      client,
+      type,
+      sha1hash,
+      0,
+      suffixTag(tag, 'asset.get-id')
+    )
+
     if (assetDocId) {
       // Same hash means we want to reuse the asset
       debug('[Asset #%d] Found %s for hash %s', i, type, sha1hash)
@@ -137,22 +145,28 @@ async function ensureAsset(asset, options, i) {
 
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
-  const assetDoc = await client.assets.upload(type, buffer, {filename})
+  const assetDoc = await client.assets.upload(type, buffer, {
+    filename,
+    tag: suffixTag(tag, 'asset.upload'),
+  })
 
   // If we have more metadata to provide, update the asset document
   if (hasNonFilenameMeta) {
-    await client.patch(assetDoc._id).set(assetMeta)
+    await client
+      .patch(assetDoc._id)
+      .set(assetMeta)
+      .commit({visibility: 'async', tag: suffixTag(tag, 'asset.add-meta')})
   }
 
   return assetDoc._id
 }
 
-async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0) {
+async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum, tag) {
   // @todo remove retry logic when client has reintroduced it
   try {
     const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
     const query = '*[_type == $dataType && sha1hash == $sha1hash][0]{_id, url}'
-    const assetDoc = await client.fetch(query, {dataType, sha1hash})
+    const assetDoc = await client.fetch(query, {dataType, sha1hash}, {tag})
     if (!assetDoc || !assetDoc.url) {
       return null
     }
@@ -166,7 +180,7 @@ async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0)
     return assetDoc._id
   } catch (err) {
     if (attemptNum < 3) {
-      return getAssetDocumentIdForHash(client, type, sha1hash, attemptNum + 1)
+      return getAssetDocumentIdForHash(client, type, sha1hash, attemptNum + 1, tag)
     }
 
     err.attempts = attemptNum
@@ -195,7 +209,7 @@ function getUploadFailures(assetRefMap, assetIds) {
 }
 
 function setAssetReferences(assetRefMap, assetIds, options) {
-  const {client} = options
+  const {client, tag} = options
   const lookup = assetRefMap.values()
   const patchTasks = assetIds.reduce((tasks, assetId) => {
     const documents = lookup.next().value
@@ -232,16 +246,16 @@ function setAssetReferences(assetRefMap, assetIds, options) {
 
   // Now perform the batch operations in parallel with a given concurrency
   const mapOptions = {concurrency: ASSET_PATCH_CONCURRENCY}
-  const setAssetRefs = setAssetReferenceBatch.bind(null, client, progress)
+  const setAssetRefs = setAssetReferenceBatch.bind(null, client, progress, tag)
   return pMap(batches, setAssetRefs, mapOptions)
 }
 
-function setAssetReferenceBatch(client, progress, batch) {
+function setAssetReferenceBatch(client, progress, tag, batch) {
   debug('Setting asset references on %d documents', batch.length)
   return retryOnFailure(() =>
     batch
       .reduce(reducePatch, client.transaction())
-      .commit({visibility: 'async'})
+      .commit({visibility: 'async', tag: suffixTag(tag, 'asset.set-refs')})
       .then(progress)
       .then((res) => res.results.length)
   )

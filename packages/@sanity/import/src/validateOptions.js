@@ -8,6 +8,7 @@ const defaultOperation = allowedOperations[0]
 
 function validateOptions(input, opts) {
   const options = defaults({}, opts, {
+    tag: 'sanity.import',
     operation: defaultOperation,
     onProgress: noop,
     allowAssetsInDifferentDataset: false,
@@ -37,12 +38,23 @@ function validateOptions(input, opts) {
     throw new Error('Client is not instantiated with a `token`')
   }
 
+  // We don't want `sanity.cli.sanity.import`, so if this is coming from the CLI, unset the prefix
+  if (clientConfig.requestTagPrefix === 'sanity.cli' && options.tag === 'sanity.import') {
+    options.client.config({requestTagPrefix: undefined})
+  }
+
   if (!allowedOperations.includes(options.operation)) {
     throw new Error(`Operation "${options.operation}" is not supported`)
   }
 
   if (options.assetConcurrency && options.assetConcurrency > 12) {
     throw new Error('`assetConcurrency` must be <= 12')
+  }
+
+  if (typeof options.tag !== 'string' || !/^[a-z0-9._-]{1,75}$/i.test(options.tag)) {
+    throw new Error(
+      `Tag can only contain alphanumeric characters, underscores, dashes and dots, and be between one and 75 characters long.`
+    )
   }
 
   return options
