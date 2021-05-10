@@ -83,6 +83,7 @@
   "devDependencies": {
     "@types/chance": "^1.1.0",
     "@types/element-resize-detector": "1.1.2",
+    "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
     "@types/resize-observer-browser": "^0.1.4",
     "jest": "^26.6.3",
