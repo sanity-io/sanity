@@ -136,6 +136,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
     const {tools, router} = this.props
     const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
     const isOverlayVisible = menuIsOpen || searchIsOpen
+    const tool = router.state?.tool || ''
 
     return (
       <div
@@ -176,7 +177,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
 
         <div className={styles.sideMenuContainer}>
           <SideMenu
-            activeToolName={router.state.tool}
+            activeToolName={tool}
             isOpen={menuIsOpen}
             onClose={this.handleToggleMenu}
             /* eslint-disable-next-line react/jsx-handler-names */
@@ -190,8 +191,8 @@ class DefaultLayout extends React.PureComponent<Props, State> {
 
         <div className={styles.mainArea}>
           <div className={styles.toolContainer}>
-            <RouteScope scope={router.state.tool}>
-              <RenderTool tool={router.state.tool} />
+            <RouteScope scope={tool}>
+              <RenderTool tool={tool} />
             </RouteScope>
           </div>
 

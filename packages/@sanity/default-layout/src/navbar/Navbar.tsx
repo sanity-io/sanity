@@ -62,6 +62,7 @@ export default function Navbar(props: Props) {
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
   const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
   const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
+  const tool = router.state?.tool || ''
 
   return (
     <div className={className} data-search-open={searchIsOpen}>
@@ -127,7 +128,7 @@ export default function Navbar(props: Props) {
             direction="horizontal"
             isVisible={showToolMenu}
             tools={tools}
-            activeToolName={router.state.tool}
+            activeToolName={tool}
             onSwitchTool={onSwitchTool}
             router={router}
             showLabel={showLabel}
