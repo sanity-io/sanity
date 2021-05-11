@@ -20,6 +20,11 @@ module.exports = [
     url: 'https://github.com/sanity-io/plugin-template-chess-input/archive/master.zip',
   },
   {
+    value: 'customInput',
+    name: 'A custom string input starting point',
+    url: 'https://github.com/sanity-io/sanity-plugin-custom-string/archive/refs/heads/main.zip',
+  },
+  {
     value: 'dashboardWidget',
     name: 'A Dashboard widget with cats',
     url: 'https://github.com/sanity-io/plugin-template-dashboard-widget-cats/archive/master.zip',
