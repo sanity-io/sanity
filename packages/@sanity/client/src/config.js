@@ -60,8 +60,11 @@ exports.initConfig = (config, prevConfig) => {
     validate.dataset(newConfig.dataset, newConfig.gradientMode)
   }
 
-  if (newConfig.requestTagPrefix) {
-    newConfig.requestTagPrefix = validate.requestTag(newConfig.requestTagPrefix).replace(/\.+$/, '')
+  if ('requestTagPrefix' in newConfig) {
+    // Allow setting and unsetting request tag prefix
+    newConfig.requestTagPrefix = newConfig.requestTagPrefix
+      ? validate.requestTag(newConfig.requestTagPrefix).replace(/\.+$/, '')
+      : undefined
   }
 
   newConfig.apiVersion = `${newConfig.apiVersion}`.replace(/^v/, '')
