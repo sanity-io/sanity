@@ -195,8 +195,7 @@ export function getPTEToolbarActionGroups(
 }
 
 export function getBlockStyleSelectProps(
-  editor: PortableTextEditor,
-  selectedPath?: string
+  editor: PortableTextEditor
 ): {items: BlockStyleItem[]; value: BlockStyleItem[]} {
   const features = PortableTextEditor.getPortableTextFeatures(editor)
   const items = features.styles.map((style: PortableTextFeature) => {

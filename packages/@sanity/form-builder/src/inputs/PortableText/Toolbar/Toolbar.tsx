@@ -13,7 +13,7 @@ import {
 import classNames from 'classnames'
 import React, {useCallback} from 'react'
 import {Path, SchemaType} from '@sanity/types'
-import {FOCUS_TERMINATOR, toString as pathToString} from '@sanity/util/paths'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {useToast} from '@sanity/ui'
 import ActionMenu from './ActionMenu'
@@ -118,11 +118,7 @@ function PTEToolbar(props: Props) {
     [editor, selection, handleInsertAnnotation, hotkeys]
   )
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
-  const selectedPath = selection?.anchor?.path && pathToString(selection.anchor.path)
-  const blockStyleSelectProps = React.useMemo(
-    () => (editor ? getBlockStyleSelectProps(editor, selectedPath) : null),
-    [editor, selectedPath]
-  )
+  const blockStyleSelectProps = editor ? getBlockStyleSelectProps(editor) : null
 
   const insertMenuItems = React.useMemo(
     () =>
