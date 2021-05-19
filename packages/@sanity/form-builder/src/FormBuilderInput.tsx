@@ -253,7 +253,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
   const presence = presenceProp || context.presence
 
   const childPresenceInfo = useMemo(() => {
-    if (readOnly || !presence || presence.length === 0) {
+    if (!presence || presence.length === 0) {
       return EMPTY_PRESENCE
     }
 
