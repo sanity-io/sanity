@@ -8,8 +8,6 @@ import rxPaths from 'rxjs/_esm5/path-mapping'
 import getStaticBasePath from '../util/getStaticBasePath'
 import {getModulePath} from './getModulePath'
 
-const resolve = (mod) => require.resolve(mod)
-
 // eslint-disable-next-line complexity
 export default (config = {}) => {
   const staticPath = getStaticBasePath(config)
@@ -47,7 +45,7 @@ export default (config = {}) => {
   })
 
   const postcssLoader = {
-    loader: resolve('postcss-loader'),
+    loader: require.resolve('postcss-loader'),
     options: {
       config: {
         path: path.join(__dirname, 'postcss.config.js'),
@@ -55,7 +53,7 @@ export default (config = {}) => {
     },
   }
 
-  const cssLoaderLocation = resolve('@sanity/css-loader')
+  const cssLoaderLocation = require.resolve('@sanity/css-loader')
   const baseCssLoader = `${cssLoaderLocation}?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1`
   const cssLoader =
     isProd && !skipMinify ? `${baseCssLoader}&minimize` : `${baseCssLoader}&sourceMap`
@@ -92,14 +90,14 @@ export default (config = {}) => {
           test: /(\.jsx?|\.tsx?)(\?|$)/,
           exclude: /(node_modules|bower_components)/,
           use: {
-            loader: resolve('babel-loader'),
+            loader: require.resolve('babel-loader'),
             options: babelConfig || {
               presets: [
-                resolve('@babel/preset-typescript'),
-                resolve('@babel/preset-react'),
-                [resolve('@babel/preset-env'), require('./babel-env-config')],
+                require.resolve('@babel/preset-typescript'),
+                require.resolve('@babel/preset-react'),
+                [require.resolve('@babel/preset-env'), require('./babel-env-config')],
               ],
-              plugins: [resolve('@babel/plugin-proposal-class-properties')].filter(Boolean),
+              plugins: [require.resolve('@babel/plugin-proposal-class-properties')].filter(Boolean),
               cacheDirectory: true,
             },
           },
@@ -112,14 +110,14 @@ export default (config = {}) => {
               use: isProd
                 ? ExtractTextPlugin.extract({
                     fallback: {
-                      loader: resolve('style-loader'),
+                      loader: require.resolve('style-loader'),
                       options: {
                         hmr: false,
                       },
                     },
                     use: [
                       {
-                        loader: resolve('@sanity/css-loader'),
+                        loader: require.resolve('@sanity/css-loader'),
                         options: {
                           importLoaders: 1,
                           minimize: true,
@@ -129,9 +127,9 @@ export default (config = {}) => {
                     ],
                   })
                 : [
-                    resolve('style-loader'),
+                    require.resolve('style-loader'),
                     {
-                      loader: resolve('@sanity/css-loader'),
+                      loader: require.resolve('@sanity/css-loader'),
                       options: {
                         importLoaders: 1,
                       },
@@ -141,14 +139,14 @@ export default (config = {}) => {
             {
               use: isProd
                 ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
-                : [resolve('style-loader'), cssLoader, postcssLoader],
+                : [require.resolve('style-loader'), cssLoader, postcssLoader],
             },
           ],
         },
         {
           test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,
           use: {
-            loader: resolve('file-loader'),
+            loader: require.resolve('file-loader'),
             options: {name: 'assets/[name]-[hash].[ext]'},
           },
         },

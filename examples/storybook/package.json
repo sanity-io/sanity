@@ -11,12 +11,10 @@
   },
   "dependencies": {
     "@sanity/base": "2.13.1",
-    "@sanity/core": "2.13.1",
     "@sanity/default-layout": "2.13.1",
     "@sanity/default-login": "2.13.1",
     "@sanity/desk-tool": "2.13.1",
     "@sanity/google-maps-input": "2.13.1",
-    "@sanity/server": "2.13.1",
     "@sanity/storybook": "2.13.1",
     "prop-types": "^15.6.0",
     "react": "17.0.1",

@@ -40,7 +40,6 @@
     "diff-match-patch": "^1.0.4",
     "exif-component": "^1.0.1",
     "get-random-values": "^1.2.2",
-    "humanize-list": "^1.0.1",
     "lodash": "^4.17.15",
     "nano-pubsub": "^2.0.0",
     "pretty-ms": "^7.0.1",
