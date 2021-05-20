@@ -1,4 +1,15 @@
+import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import createButtonLike from './createButtonLike'
 
-export default createButtonLike(IntentLink as any, {displayName: 'IntentButton'})
+const AsLink = createButtonLike(IntentLink as any, {displayName: 'LinkButton'})
+const AsButton = createButtonLike('button', {displayName: 'LinkButton'})
+
+export default function IntentButton(props: any) {
+  const {disabled, intent, params, ...rest} = props
+  return disabled ? (
+    <AsButton disabled {...rest} />
+  ) : (
+    <AsLink intent={intent} params={params} {...rest} />
+  )
+}
