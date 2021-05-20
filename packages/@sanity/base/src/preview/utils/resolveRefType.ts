@@ -7,7 +7,11 @@ const CACHE: Record<string, Promise<string>> = Object.create(null) // todo: use 
 
 function resolveRefTypeName(reference: Reference): Observable<string> {
   if (!(reference._ref in CACHE)) {
-    CACHE[reference._ref] = versionedClient.fetch('*[_id == $id][0]._type', {id: reference._ref})
+    CACHE[reference._ref] = versionedClient.fetch(
+      '*[_id == $id][0]._type',
+      {id: reference._ref},
+      {tag: 'preview.resolve-ref-type'}
+    )
   }
   return observableFrom(CACHE[reference._ref])
 }

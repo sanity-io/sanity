@@ -25,7 +25,7 @@ export function createWeightedSearch(
   client: SanityClient,
   options: WeightedSearchOptions = {}
 ): (query: string) => Observable<WeightedHit[]> {
-  const {filter, params} = options
+  const {filter, params, tag} = options
   const searchSpec = types.map((type) => ({
     typeName: type.name,
     paths: type.__experimental_search.map((config) => ({
@@ -61,12 +61,16 @@ export function createWeightedSearch(
     const query = `*[${filters.join('&&')}][0...$__limit]{_type, _id, ${selection}}`
 
     return client.observable
-      .fetch(query, {
-        ...toGroqParams(terms),
-        __types: searchSpec.map((spec) => spec.typeName),
-        __limit: 1000,
-        ...(params || {}),
-      })
+      .fetch(
+        query,
+        {
+          ...toGroqParams(terms),
+          __types: searchSpec.map((spec) => spec.typeName),
+          __limit: 1000,
+          ...(params || {}),
+        },
+        {tag}
+      )
       .pipe(
         map(removeDupes),
         map((hits) => applyWeights(searchSpec, hits, terms)),

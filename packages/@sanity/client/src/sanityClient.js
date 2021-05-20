@@ -12,6 +12,7 @@ const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
+const validate = require('./validators')
 
 const toPromise = (observable) => observable.toPromise()
 
@@ -73,6 +74,15 @@ assign(SanityClient.prototype, {
       this.clientConfig.useCdn &&
       ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0 &&
       uri.indexOf('/data/') === 0
+
+    const tag =
+      options.tag && this.clientConfig.requestTagPrefix
+        ? [this.clientConfig.requestTagPrefix, options.tag].join('.')
+        : options.tag || this.clientConfig.requestTagPrefix
+
+    if (tag) {
+      options.query = {tag: validate.requestTag(tag), ...options.query}
+    }
 
     const reqOptions = getRequestOptions(
       this.clientConfig,

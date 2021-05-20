@@ -5,6 +5,7 @@ const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
 const progressStepper = require('./util/progressStepper')
 const retryOnFailure = require('./util/retryOnFailure')
+const suffixTag = require('./util/suffixTag')
 
 const STRENGTHEN_CONCURRENCY = 1
 const STRENGTHEN_BATCH_SIZE = 30
@@ -53,7 +54,7 @@ function findStrongRefs(doc) {
 }
 
 function strengthenReferences(strongRefs, options) {
-  const {client} = options
+  const {client, tag} = options
 
   const batches = []
   for (let i = 0; i < strongRefs.length; i += STRENGTHEN_BATCH_SIZE) {
@@ -70,16 +71,16 @@ function strengthenReferences(strongRefs, options) {
   })
 
   const mapOptions = {concurrency: STRENGTHEN_CONCURRENCY}
-  return pMap(batches, unsetWeakBatch.bind(null, client, progress), mapOptions)
+  return pMap(batches, unsetWeakBatch.bind(null, client, progress, tag), mapOptions)
 }
 
-function unsetWeakBatch(client, progress, batch) {
+function unsetWeakBatch(client, progress, tag, batch) {
   debug('Strengthening batch of %d documents', batch.length)
   return retryOnFailure(
     () =>
       batch
         .reduce(reducePatch, client.transaction())
-        .commit({visibility: 'async'})
+        .commit({visibility: 'async', tag: suffixTag(tag, 'ref.strengthen')})
         .then(progress)
         .then((res) => res.results.length)
         .catch((err) => {

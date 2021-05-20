@@ -35,7 +35,12 @@ const getGlobalEvents = () => {
       versionedClient.listen(
         '*[!(_id in path("_.**"))]',
         {},
-        {events: ['welcome', 'mutation'], includeResult: false, visibility: 'query'}
+        {
+          events: ['welcome', 'mutation'],
+          includeResult: false,
+          visibility: 'query',
+          tag: 'preview.global',
+        }
       )
     ).pipe(share())
 
@@ -73,7 +78,7 @@ function listen(id: Id) {
 function fetchAllDocumentPaths(selections: Selection[]) {
   const combinedSelections = combineSelections(selections)
   return versionedClient.observable
-    .fetch(toGradientQuery(combinedSelections))
+    .fetch(toGradientQuery(combinedSelections), {}, {tag: 'preview.document-paths'})
     .pipe(map((result: any) => reassemble(result, combinedSelections)))
 }
 

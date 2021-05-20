@@ -10,7 +10,11 @@ const loadProps = (receivedProps$) =>
       concat(
         of({...receivedProps, referringDocuments: [], isLoading: true}),
         documentStore
-          .listenQuery('*[references($docId)] [0...101]', {docId: receivedProps.id})
+          .listenQuery(
+            '*[references($docId)] [0...101]',
+            {docId: receivedProps.id},
+            {tag: 'with-referring-documents'}
+          )
           .pipe(
             map((docs) => ({
               ...receivedProps,

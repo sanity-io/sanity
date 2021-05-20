@@ -295,7 +295,7 @@ class VisionGui extends React.PureComponent {
     const queryStart = Date.now()
 
     this.subscribers.query = this.client.observable
-      .fetch(query, params, {filterResponse: false})
+      .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
         next: (res) =>
           this.setState({

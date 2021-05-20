@@ -12,10 +12,15 @@ export const duplicate = {
   },
   execute: ({snapshots, typeName}: OperationArgs, dupeId) => {
     const source = snapshots.draft || snapshots.published
-    return versionedClient.create({
-      ...omit(source, omitProps),
-      _id: isLiveEditEnabled(typeName) ? dupeId : getDraftId(dupeId),
-      _type: source._type,
-    })
+    return versionedClient.create(
+      {
+        ...omit(source, omitProps),
+        _id: isLiveEditEnabled(typeName) ? dupeId : getDraftId(dupeId),
+        _type: source._type,
+      },
+      {
+        tag: 'document.duplicate',
+      }
+    )
   },
 }

@@ -259,7 +259,7 @@ export class Controller {
     const dataset = this.client.config().dataset
     const limit = TRANSLOG_ENTRY_LIMIT
 
-    let queryParams = `effectFormat=mendoza&excludeContent=true&excludeMutations=true&includeIdentifiedDocumentsOnly=true&reverse=true&limit=${limit}`
+    let queryParams = `tag=sanity.studio.desk.history&effectFormat=mendoza&excludeContent=true&excludeMutations=true&includeIdentifiedDocumentsOnly=true&reverse=true&limit=${limit}`
     let tid = this._aligner.earliestTransactionId
     if (tid) {
       queryParams += `&toTransaction=${tid}`

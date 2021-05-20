@@ -15,10 +15,20 @@ const projectName = (config.project && config.project.name) || ''
 
 const checkCookies = () => {
   return versionedClient
-    .request({method: 'post', uri: '/auth/testCookie', withCredentials: true})
+    .request({
+      method: 'POST',
+      uri: '/auth/testCookie',
+      withCredentials: true,
+      tag: 'auth.cookie-test',
+    })
     .then(() => {
       return versionedClient
-        .request({uri: '/auth/testCookie', withCredentials: true})
+        .request({
+          method: 'GET',
+          uri: '/auth/testCookie',
+          withCredentials: true,
+          tag: 'auth.cookie-test',
+        })
         .then(() => true)
         .catch(() => false)
     })

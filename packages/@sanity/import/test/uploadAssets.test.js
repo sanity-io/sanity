@@ -29,7 +29,7 @@ test('fails if asset download fails', () => {
 })
 
 test('fails if asset lookup fails', async () => {
-  const options = {client: fetchFailClient, onProgress: noop}
+  const options = {client: fetchFailClient, onProgress: noop, tag: 'my.import'}
   try {
     const result = await uploadAssets([fileAsset], options)
     expect(result).toBeFalsy()
@@ -69,7 +69,9 @@ test('will reuse an existing asset if it exists', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+  return expect(
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+  ).resolves.toMatchObject({
     batches: 1,
     failures: [],
   })
@@ -110,7 +112,9 @@ test('will upload an asset if asset doc exists but file does not', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+  return expect(
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+  ).resolves.toMatchObject({
     batches: 1,
     failures: [],
   })
@@ -141,7 +145,9 @@ test('will upload asset that do not already exist', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+  return expect(
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+  ).resolves.toMatchObject({
     batches: 1,
     failures: [],
   })
@@ -182,6 +188,7 @@ test('will upload once but batch patches', () => {
   const upload = uploadAssets(mockAssets(imgFileUrl), {
     client,
     onProgress: noop,
+    tag: 'my.import',
   })
   return expect(upload).resolves.toMatchObject({
     batches: 60,

@@ -54,13 +54,15 @@ export class DefaultSource extends React.Component<Props, State> {
 
     this.setState({isLoading: true})
 
-    this.fetch$ = versionedClient.observable.fetch(buildQuery(start, end)).subscribe((result) => {
-      this.setState((prevState) => ({
-        isLastPage: result.length < PER_PAGE,
-        assets: prevState.assets.concat(result),
-        isLoading: false,
-      }))
-    })
+    this.fetch$ = versionedClient.observable
+      .fetch(buildQuery(start, end), {}, {tag: 'asset.image-list'})
+      .subscribe((result) => {
+        this.setState((prevState) => ({
+          isLastPage: result.length < PER_PAGE,
+          assets: prevState.assets.concat(result),
+          isLoading: false,
+        }))
+      })
   }
 
   handleDeleteFinished = (id) => {

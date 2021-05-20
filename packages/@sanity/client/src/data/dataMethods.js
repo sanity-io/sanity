@@ -52,8 +52,8 @@ module.exports = {
     return this.isPromiseAPI() ? toPromise(observable) : observable
   },
 
-  getDocument(id) {
-    const options = {uri: this.getDataUrl('doc', id), json: true}
+  getDocument(id, opts = {}) {
+    const options = {uri: this.getDataUrl('doc', id), json: true, tag: opts.tag}
     const observable = this._requestObservable(options).pipe(
       filter(isResponse),
       map((event) => event.body.documents && event.body.documents[0])
@@ -62,8 +62,8 @@ module.exports = {
     return this.isPromiseAPI() ? toPromise(observable) : observable
   },
 
-  getDocuments(ids) {
-    const options = {uri: this.getDataUrl('doc', ids.join(',')), json: true}
+  getDocuments(ids, opts = {}) {
+    const options = {uri: this.getDataUrl('doc', ids.join(',')), json: true, tag: opts.tag}
     const observable = this._requestObservable(options).pipe(
       filter(isResponse),
       map((event) => {
@@ -127,7 +127,7 @@ module.exports = {
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
     const returnFirst = options.returnFirst
-    const {timeout, token} = options
+    const {timeout, token, tag} = options
 
     const uri = this.getDataUrl(endpoint, stringQuery)
 
@@ -139,6 +139,7 @@ module.exports = {
       query: isMutation && getMutationQuery(options),
       timeout,
       token,
+      tag,
     }
 
     return this._requestObservable(reqOptions).pipe(

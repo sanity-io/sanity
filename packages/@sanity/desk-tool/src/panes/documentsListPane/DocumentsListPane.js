@@ -236,7 +236,7 @@ export default class DocumentsListPane extends React.PureComponent {
     const params = this.props.options.params || {}
     const query = this.buildListQuery({fullList})
 
-    this.queryResults$ = getQueryResults(of({query, params}))
+    this.queryResults$ = getQueryResults(of({query, params}), {tag: 'desk.document-list'})
       .pipe(filterEvents(fullList ? ({result}) => result : () => true))
       .subscribe((queryResult) =>
         this.setState({queryResult, isLoadingMore: false, hasFullSubscription: fullList})

@@ -126,6 +126,14 @@ test('throws on invalid dataset names', (t) => {
   t.end()
 })
 
+test('throws on invalid request tag prefix', (t) => {
+  t.throws(
+    () => sanityClient({projectId: 'abc123', dataset: 'foo', requestTagPrefix: 'no#shot'}),
+    /tag can only contain alphanumeric/i
+  )
+  t.end()
+})
+
 test('accepts alias in dataset field', (t) => {
   t.doesNotThrow(
     () => sanityClient({projectId: 'abc123', dataset: '~alias'}),
@@ -336,6 +344,59 @@ test('can query for documents and return full response', (t) => {
     .then(t.end)
 })
 
+test('can query for documents with request tag', (t) => {
+  nock(projectHost())
+    .get(`/v1/data/query/foo?query=*&tag=mycompany.syncjob`)
+    .reply(200, {
+      ms: 123,
+      q: '*',
+      result: [{_id: 'njgNkngskjg', rating: 5}],
+    })
+
+  getClient()
+    .fetch('*', {}, {tag: 'mycompany.syncjob'})
+    .then((res) => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('throws on invalid request tag on request', (t) => {
+  nock(projectHost())
+    .get(`/v1/data/query/foo?query=*&tag=mycompany.syncjob`)
+    .reply(200, {
+      ms: 123,
+      q: '*',
+      result: [{_id: 'njgNkngskjg', rating: 5}],
+    })
+
+  t.throws(() => {
+    getClient().fetch('*', {}, {tag: 'mycompany syncjob ok'}).catch(t.ifError).then(t.end)
+  }, /tag can only contain alphanumeric/i)
+  t.end()
+})
+
+test('can use a tag-prefixed client', (t) => {
+  nock(projectHost())
+    .get(`/v1/data/query/foo?query=*&tag=mycompany.syncjob`)
+    .reply(200, {
+      ms: 123,
+      q: '*',
+      result: [{_id: 'njgNkngskjg', rating: 5}],
+    })
+
+  getClient({requestTagPrefix: 'mycompany'})
+    .fetch('*', {}, {tag: 'syncjob'})
+    .then((res) => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('handles api errors gracefully', (t) => {
   const response = {
     statusCode: 403,
@@ -408,6 +469,23 @@ test('can query for single document', (t) => {
     .then(t.end)
 })
 
+test('can query for single document with request tag', (t) => {
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123?tag=some.tag')
+    .reply(200, {
+      ms: 123,
+      documents: [{_id: 'abc123', mood: 'lax'}],
+    })
+
+  getClient()
+    .getDocument('abc123', {tag: 'some.tag'})
+    .then((res) => {
+      t.equal(res.mood, 'lax', 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('can query for multiple documents', (t) => {
   nock(projectHost())
     .get('/v1/data/doc/foo/abc123,abc321')
@@ -421,6 +499,27 @@ test('can query for multiple documents', (t) => {
 
   getClient()
     .getDocuments(['abc123', 'abc321'])
+    .then(([abc123, abc321]) => {
+      t.equal(abc123.mood, 'lax', 'data should match')
+      t.equal(abc321.mood, 'tense', 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('can query for multiple documents with tag', (t) => {
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123,abc321?tag=mood.docs')
+    .reply(200, {
+      ms: 123,
+      documents: [
+        {_id: 'abc123', mood: 'lax'},
+        {_id: 'abc321', mood: 'tense'},
+      ],
+    })
+
+  getClient()
+    .getDocuments(['abc123', 'abc321'], {tag: 'mood.docs'})
     .then(([abc123, abc321]) => {
       t.equal(abc123.mood, 'lax', 'data should match')
       t.equal(abc321.mood, 'tense', 'data should match')
@@ -544,6 +643,33 @@ test('can create documents without specifying ID', (t) => {
     .then(t.end)
 })
 
+test('can create documents with request tag', (t) => {
+  const doc = {name: 'Raptor'}
+  const expectedBody = {mutations: [{create: Object.assign({}, doc)}]}
+  nock(projectHost())
+    .post(
+      '/v1/data/mutate/foo?tag=dino.import&returnIds=true&returnDocuments=true&visibility=sync',
+      expectedBody
+    )
+    .reply(200, {
+      transactionId: '123abc',
+      results: [
+        {
+          id: 'abc456',
+          document: {_id: 'abc456', name: 'Raptor'},
+        },
+      ],
+    })
+
+  getClient()
+    .create(doc, {tag: 'dino.import'})
+    .then((res) => {
+      t.equal(res._id, 'abc456', 'document id returned')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('can tell create() not to return documents', (t) => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   nock(projectHost())
@@ -613,6 +739,23 @@ test('can tell createIfNotExists() not to return documents', (t) => {
     .then(t.end)
 })
 
+test('can use request tag with createIfNotExists()', (t) => {
+  const doc = {_id: 'abc123', name: 'Raptor'}
+  const expectedBody = {mutations: [{createIfNotExists: doc}]}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?tag=mysync&returnIds=true&visibility=sync', expectedBody)
+    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'create'}]})
+
+  getClient()
+    .createIfNotExists(doc, {returnDocuments: false, tag: 'mysync'})
+    .then((res) => {
+      t.equal(res.transactionId, 'abc123', 'returns transaction ID')
+      t.equal(res.documentId, 'abc123', 'returns document id')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('createOrReplace() sends correct mutation', (t) => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   const expectedBody = {mutations: [{createOrReplace: doc}]}
@@ -664,6 +807,21 @@ test('delete() can use query', (t) => {
     .then(() => t.end())
 })
 
+test('delete() can use request tag', (t) => {
+  const expectedBody = {mutations: [{delete: {id: 'abc123'}}]}
+  nock(projectHost())
+    .post(
+      '/v1/data/mutate/foo?tag=delete.abc&returnIds=true&returnDocuments=true&visibility=sync',
+      expectedBody
+    )
+    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
+
+  getClient()
+    .delete('abc123', {tag: 'delete.abc'})
+    .catch(t.ifError)
+    .then(() => t.end())
+})
+
 test('delete() can be told not to return documents', (t) => {
   const expectedBody = {mutations: [{delete: {id: 'abc123'}}]}
   nock(projectHost())
@@ -704,6 +862,24 @@ test('mutate() accepts multiple mutations', (t) => {
 
   getClient()
     .mutate(mutations)
+    .catch(t.ifError)
+    .then(() => t.end())
+})
+
+test('mutate() accepts request tag', (t) => {
+  const mutations = [{delete: {id: 'abc123'}}]
+
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?tag=foobar&returnIds=true&returnDocuments=true&visibility=sync', {
+      mutations,
+    })
+    .reply(200, {
+      transactionId: 'foo',
+      results: [{id: 'abc123', operation: 'delete', document: {_id: 'abc123'}}],
+    })
+
+  getClient()
+    .mutate(mutations, {tag: 'foobar'})
     .catch(t.ifError)
     .then(() => t.end())
 })
@@ -764,6 +940,37 @@ test('uses POST for long queries', (t) => {
 
   getClient()
     .fetch(query, params)
+    .then((res) => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('uses POST for long queries, but puts request tag as query param', (t) => {
+  // Please dont ever do this. Just... don't.
+  const clause = []
+  const params = {}
+  for (let i = 1866; i <= 2016; i++) {
+    clause.push(`title == $beerName${i}`)
+    params[`beerName${i}`] = `some beer ${i}`
+  }
+
+  // Again, just... don't do this.
+  const query = `*[_type == "beer" && (${clause.join(' || ')})]`
+
+  nock(projectHost())
+    .filteringRequestBody(/.*/, '*')
+    .post('/v1/data/query/foo?tag=myapp.silly-query', '*')
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{_id: 'njgNkngskjg', rating: 5}],
+    })
+
+  getClient()
+    .fetch(query, params, {tag: 'myapp.silly-query'})
     .then((res) => {
       t.equal(res.length, 1, 'length should match')
       t.equal(res[0].rating, 5, 'data should match')
@@ -980,6 +1187,25 @@ test('executes patch when commit() is called', (t) => {
     .inc({count: 1})
     .set({visited: true})
     .commit({returnDocuments: false})
+    .then((res) => {
+      t.equal(res.transactionId, 'blatti', 'applies given patch')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('executes patch with request tag when commit() is called with tag', (t) => {
+  const expectedPatch = {patch: {id: 'abc123', set: {visited: true}}}
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?tag=company.setvisited&returnIds=true&visibility=sync', {
+      mutations: [expectedPatch],
+    })
+    .reply(200, {transactionId: 'blatti'})
+
+  getClient()
+    .patch('abc123')
+    .set({visited: true})
+    .commit({returnDocuments: false, tag: 'company.setvisited'})
     .then((res) => {
       t.equal(res.transactionId, 'blatti', 'applies given patch')
     })
@@ -1260,6 +1486,23 @@ test('executes transaction when commit() is called', (t) => {
     .then(t.end)
 })
 
+test('executes transaction with request tag when commit() is called with tag', (t) => {
+  const mutations = [{create: {_type: 'bar', name: 'Toronado'}}]
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?tag=sfcraft.createbar&returnIds=true&visibility=sync', {mutations})
+    .reply(200, {transactionId: 'blatti'})
+
+  getClient()
+    .transaction()
+    .create({_type: 'bar', name: 'Toronado'})
+    .commit({tag: 'sfcraft.createbar'})
+    .then((res) => {
+      t.equal(res.transactionId, 'blatti', 'applies given transaction')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('throws when passing incorrect input to transaction operations', (t) => {
   const trans = getClient().transaction()
   t.throws(() => trans.create('foo'), /object of prop/, 'throws on create()')
@@ -1393,6 +1636,90 @@ test('listeners connect to listen endpoint, emits events', (t) => {
     })
 })
 
+test('listeners connect to listen endpoint with request tag, emits events', (t) => {
+  const doc = {_id: 'mooblah', _type: 'foo.bar', prop: 'value'}
+  const response = [
+    ':',
+    '',
+    'event: welcome',
+    'data: {"listenerName":"LGFXwOqrf1GHawAjZRnhd6"}',
+    '',
+    'event: mutation',
+    `data: ${JSON.stringify({document: doc})}`,
+    '',
+    'event: disconnect',
+    'data: {"reason":"forcefully closed"}',
+  ].join('\n')
+
+  nock(projectHost())
+    .get(
+      '/v1/data/listen/foo?tag=sfcraft.checkins&query=*%5B_type%20%3D%3D%20%22checkin%22%5D&includeResult=true'
+    )
+    .reply(200, response, {
+      'cache-control': 'no-cache',
+      'content-type': 'text/event-stream; charset=utf-8',
+      'transfer-encoding': 'chunked',
+    })
+
+  const sub = getClient()
+    .listen('*[_type == "checkin"]', {}, {tag: 'sfcraft.checkins'})
+    .subscribe({
+      next: (evt) => {
+        sub.unsubscribe()
+        t.deepEqual(evt.document, doc)
+        t.end()
+      },
+      error: (err) => {
+        sub.unsubscribe()
+        t.ifError(err)
+        t.fail('Should not call error handler')
+        t.end()
+      },
+    })
+})
+
+test('listeners connect to listen endpoint with prefixed request tag, emits events', (t) => {
+  const doc = {_id: 'mooblah', _type: 'foo.bar', prop: 'value'}
+  const response = [
+    ':',
+    '',
+    'event: welcome',
+    'data: {"listenerName":"LGFXwOqrf1GHawAjZRnhd6"}',
+    '',
+    'event: mutation',
+    `data: ${JSON.stringify({document: doc})}`,
+    '',
+    'event: disconnect',
+    'data: {"reason":"forcefully closed"}',
+  ].join('\n')
+
+  nock(projectHost())
+    .get(
+      '/v1/data/listen/foo?tag=sf.craft.checkins&query=*%5B_type%20%3D%3D%20%22checkin%22%5D&includeResult=true'
+    )
+    .reply(200, response, {
+      'cache-control': 'no-cache',
+      'content-type': 'text/event-stream; charset=utf-8',
+      'transfer-encoding': 'chunked',
+    })
+
+  const sub = getClient({requestTagPrefix: 'sf.craft.'})
+    .listen('*[_type == "checkin"]', {}, {tag: 'checkins'})
+    .subscribe({
+      next: (evt) => {
+        sub.unsubscribe()
+        t.deepEqual(evt.document, doc)
+        t.end()
+      },
+      error: (err) => {
+        sub.unsubscribe()
+        t.ifError(err)
+        t.fail('Should not call error handler')
+        t.end()
+      },
+    })
+})
+
 /*****************
  * ASSETS        *
  *****************/
@@ -1406,6 +1733,38 @@ test('uploads images', (t) => {
 
   getClient()
     .assets.upload('image', fs.createReadStream(fixturePath))
+    .then((document) => {
+      t.equal(document.url, 'https://some.asset.url')
+      t.end()
+    }, ifError(t))
+})
+
+test('uploads images with request tag if given', (t) => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = (body) => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo?tag=galaxy.images', isImage)
+    .reply(201, {document: {url: 'https://some.asset.url'}})
+
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath), {tag: 'galaxy.images'})
+    .then((document) => {
+      t.equal(document.url, 'https://some.asset.url')
+      t.end()
+    }, ifError(t))
+})
+
+test('uploads images with prefixed request tag if given', (t) => {
+  const fixturePath = fixture('horsehead-nebula.jpg')
+  const isImage = (body) => bufferFrom(body, 'hex').compare(fs.readFileSync(fixturePath)) === 0
+
+  nock(projectHost())
+    .post('/v1/assets/images/foo?tag=galaxy.images', isImage)
+    .reply(201, {document: {url: 'https://some.asset.url'}})
+
+  getClient({requestTagPrefix: 'galaxy'})
+    .assets.upload('image', fs.createReadStream(fixturePath), {tag: 'images'})
     .then((document) => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()

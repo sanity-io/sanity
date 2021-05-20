@@ -38,12 +38,16 @@ const defaultIsUnique = (slug, options) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient().fetch(`!defined(*[${constraints}][0]._id)`, {
-    docType,
-    draft,
-    published,
-    slug,
-  })
+  return getClient().fetch(
+    `!defined(*[${constraints}][0]._id)`,
+    {
+      docType,
+      draft,
+      published,
+      slug,
+    },
+    {tag: 'validation.slug-is-unique'}
+  )
 }
 
 function warnOnArraySlug(path) {

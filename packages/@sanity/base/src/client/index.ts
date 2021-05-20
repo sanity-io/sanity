@@ -17,6 +17,7 @@ const fallbackConfig = {projectId: 'UNSPECIFIED', dataset: 'UNSPECIFIED'}
 const apiConfig = {
   ...fallbackConfig,
   ...config.api,
+  requestTagPrefix: 'sanity.studio',
   withCredentials: true,
   useCdn: false,
   apiVersion: '1',
