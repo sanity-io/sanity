@@ -306,7 +306,7 @@ export const color = createColorTheme({
         bg: blend(base.bg, tints[50]),
         fg: blend(base.bg, tints[700]),
         border: blend(base.bg, tints[200]),
-        placeholder: blend(base.bg, tints[700]),
+        placeholder: blend(base.bg, tints[400]),
       }
     }
 
@@ -315,7 +315,7 @@ export const color = createColorTheme({
         bg: base.bg,
         fg: base.fg,
         border: blend(base.bg, hues.gray[300].hex),
-        placeholder: blend(base.bg, hues.gray[700].hex),
+        placeholder: blend(base.bg, hues.gray[400].hex),
       }
     }
 
@@ -325,6 +325,15 @@ export const color = createColorTheme({
         fg: blend(base.bg, hues.gray[200].hex),
         border: blend(base.bg, hues.gray[100].hex),
         placeholder: blend(base.bg, hues.gray[100].hex),
+      }
+    }
+
+    if (state === 'readOnly') {
+      return {
+        bg: blend(base.bg, hues.gray[50].hex),
+        fg: blend(base.bg, hues.gray[800].hex),
+        border: blend(base.bg, hues.gray[200].hex),
+        placeholder: blend(base.bg, hues.gray[400].hex),
       }
     }
 
