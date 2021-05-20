@@ -34,9 +34,7 @@
     "@types/jest": "^26.0.22",
     "jest": "^26.6.3",
     "rimraf": "^2.7.1",
-    "rxjs": "^6.5.3",
-    "ts-jest": "^26.5.4",
-    "tslint": "^5.18.0"
+    "ts-jest": "^26.5.4"
   },
   "repository": {
     "type": "git",
