@@ -239,7 +239,7 @@ function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
   return mutations.filter((mut) => {
     return Object.keys(mut)
       .map((key) => {
-        const val = (<any>mut)[key]
+        const val = (mut as any)[key]
         return val['id'] || val['_id'] || (val['document'] && val['document']['_id']) || false
       })
       .some((id) => id && documentIds.includes(id))
