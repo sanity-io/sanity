@@ -47,6 +47,7 @@
     "@sanity/css-loader": "^0.28.12",
     "@sanity/eventsource": "^2.13.0",
     "@sanity/resolver": "2.13.1",
+    "@sanity/util": "2.13.1",
     "@sanity/webpack-integration": "2.13.1",
     "babel-loader": "^8.0.6",
     "eventsource-polyfill": "^0.9.6",

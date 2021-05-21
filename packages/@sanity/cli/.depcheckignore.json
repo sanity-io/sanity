@@ -1,0 +1,4 @@
+{
+  "//": "these are used by template projects and doesn't need to be project dependencies",
+  "ignore": ["react-icons", "react", "prop-types", "react-barcode"]
+}

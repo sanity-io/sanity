@@ -1,0 +1,18 @@
+{
+  "ignore": [
+    "@sanity/types",
+    "@sanity/bifur-client",
+    "@sanity/mutator",
+    "styled-components",
+    "@popperjs/core",
+    "boundless-arrow-key-navigation",
+    "prop-types",
+    "element-resize-detector",
+    "react-sortable-hoc",
+    "@sanity/structure",
+    "@juggle/resize-observer",
+    "nano-pubsub",
+    "@sanity/ui",
+    "@sanity/state-router"
+  ]
+}

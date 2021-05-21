@@ -26,6 +26,7 @@
     "@sanity/default-login": "2.13.1",
     "@sanity/desk-tool": "2.13.1",
     "@sanity/google-maps-input": "2.13.1",
+    "@sanity/icons": "^1.1.3",
     "@sanity/types": "2.13.1",
     "@sanity/ui": "^0.34.7",
     "prop-types": "^15.6.0",
