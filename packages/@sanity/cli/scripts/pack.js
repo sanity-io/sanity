@@ -75,6 +75,11 @@ const compiler = webpack({
 
       // Workaround for rc module console.logging if module.parent does not exist
       'module.parent': JSON.stringify({}),
+
+      // Do _NOT_ set NODE_ENV to production (default with `mode: production`),
+      // as it will make `.env` file loading inconsistent - always loading production
+      // unless `SANITY_ACTIVE_ENV` is set
+      'process.env.NODE_ENV': undefined,
     }),
   ],
   target: 'node',
