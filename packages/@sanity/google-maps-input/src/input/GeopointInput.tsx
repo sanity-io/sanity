@@ -187,24 +187,26 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             </ChangeIndicatorCompareValueProvider>
           )}
 
-          <div className={styles.functions}>
-            <ButtonGrid>
-              <Button
-                inverted
-                onClick={this.handleToggleModal}
-                icon={value && EditIcon}
-                ref={this.setEditButton}
-              >
-                {value ? 'Edit' : 'Set location'}
-              </Button>
-
-              {value && (
-                <Button color="danger" icon={TrashIcon} inverted onClick={this.handleClear}>
-                  Remove
+          {!readOnly && (
+            <div className={styles.functions}>
+              <ButtonGrid>
+                <Button
+                  inverted
+                  onClick={this.handleToggleModal}
+                  icon={value && EditIcon}
+                  ref={this.setEditButton}
+                >
+                  {value ? 'Edit' : 'Set location'}
                 </Button>
-              )}
-            </ButtonGrid>
-          </div>
+
+                {value && (
+                  <Button color="danger" icon={TrashIcon} inverted onClick={this.handleClear}>
+                    Remove
+                  </Button>
+                )}
+              </ButtonGrid>
+            </div>
+          )}
 
           {modalOpen && (
             <DefaultDialog
