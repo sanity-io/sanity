@@ -25,8 +25,9 @@
     "@sanity/default-layout": "2.13.1",
     "@sanity/default-login": "2.13.1",
     "@sanity/desk-tool": "2.13.1",
+    "@sanity/form-builder": "2.13.1",
     "@sanity/google-maps-input": "2.13.1",
-    "@sanity/production-preview": "^2.13.0",
+    "@sanity/production-preview": "2.13.0",
     "@sanity/vision": "2.13.1",
     "react": "17.0.1",
     "react-dom": "17.0.1"

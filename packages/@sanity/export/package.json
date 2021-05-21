@@ -26,7 +26,7 @@
   "dependencies": {
     "agentkeepalive": "^4.1.0",
     "archiver": "^5.0.0",
-    "debug": "^3.1.0",
+    "debug": "^3.2.7",
     "fs-extra": "^6.0.1",
     "lodash": "^4.17.15",
     "mississippi": "^4.0.0",

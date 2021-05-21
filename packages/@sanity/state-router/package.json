@@ -22,6 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.15",
+    "debug": "^3.2.7",
     "nano-pubsub": "^2.0.0"
   },
   "devDependencies": {

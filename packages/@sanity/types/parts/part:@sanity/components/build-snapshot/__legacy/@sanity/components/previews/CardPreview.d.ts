@@ -1,4 +1,3 @@
-/// <reference types="lodash" />
 import elementResizeDetectorMaker from 'element-resize-detector'
 import React from 'react'
 import {MediaDimensions} from '../types'
@@ -50,7 +49,7 @@ export default class CardPreview extends React.PureComponent<CardPreviewProps> {
   UNSAFE_componentWillReceiveProps(nextProps: any): void
   componentWillUnmount(): void
   setDateElement: (element: HTMLDivElement | null) => void
-  onResize: import('lodash').DebouncedFunc<() => void>
+  onResize: () => void
   render(): JSX.Element
 }
 export {}

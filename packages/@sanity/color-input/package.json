@@ -24,6 +24,10 @@
   "devDependencies": {
     "rimraf": "^2.7.1"
   },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.9 || ^17"
+  },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
