@@ -43,7 +43,7 @@ export function EditDialog(props: Props) {
     compareValue,
   } = props
 
-  const title = readOnly ? type.title || '' : `Edit ${type.title || ''}`
+  const title = readOnly ? `View ${type.title || ''}` : `Edit ${type.title || ''}`
 
   const childMarkers = useMemo(() => markers.filter((marker) => marker.path.length > 1), [markers])
   const childPresence = useMemo(() => presence.filter((_presence) => _presence.path.length > 1), [
