@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Debug from 'debug'
-import {omit} from 'lodash'
 
 const debug = Debug('sanity-imagetool')
 const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
@@ -54,7 +53,11 @@ export default function makeDragAware(Component) {
     }
 
     handleDragStart = (event) => {
-      const {onDragStart} = this.props
+      const {onDragStart, readOnly} = this.props
+
+      if (readOnly) {
+        return
+      }
 
       if (this.isDragging) {
         debug('Start cancelled, already a drag in progress')
@@ -72,7 +75,7 @@ export default function makeDragAware(Component) {
     }
 
     handleDrag = (event) => {
-      if (!this.isDragging) {
+      if (!this.isDragging || this.props.readOnly) {
         return
       }
       const {onDrag} = this.props
@@ -84,8 +87,8 @@ export default function makeDragAware(Component) {
     }
 
     handleDragEnd = (event) => {
-      const {onDragEnd} = this.props
-      if (!this.isDragging) {
+      const {onDragEnd, readOnly} = this.props
+      if (!this.isDragging || readOnly) {
         return
       }
       const nextPos = getPos(event)
@@ -98,7 +101,7 @@ export default function makeDragAware(Component) {
     }
 
     handleDragCancel = (event) => {
-      if (!this.isDragging) {
+      if (!this.isDragging || this.props.readOnly) {
         return
       }
       const {onDragEnd} = this.props
@@ -118,14 +121,14 @@ export default function makeDragAware(Component) {
     }
 
     render() {
-      const {readOnly} = this.props
+      const {readOnly, onDragStart, onDragEnd, onDrag, ...rest} = this.props
       return (
         <Component
           ref={this.setDomNode}
-          onTouchStart={!readOnly && this.handleDragStart}
-          onMouseDown={!readOnly && this.handleDragStart}
-          onTouchMove={!readOnly && this.handleDrag}
-          {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])}
+          onTouchStart={readOnly ? undefined : this.handleDragStart}
+          onMouseDown={readOnly ? undefined : this.handleDragStart}
+          onTouchMove={readOnly ? undefined : this.handleDrag}
+          {...rest}
         />
       )
     }
