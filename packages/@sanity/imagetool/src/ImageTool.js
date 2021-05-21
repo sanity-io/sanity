@@ -516,7 +516,7 @@ export default class ImageTool extends React.PureComponent {
     const pxratio = getDevicePixelRatio()
     context.scale(pxratio, pxratio)
 
-    const opacity = this.state.mousePosition ? 0.8 : 0.2
+    const opacity = !readOnly && this.state.mousePosition ? 0.8 : 0.2
 
     this.paintBackground(context)
     //return context.restore();
@@ -586,7 +586,8 @@ export default class ImageTool extends React.PureComponent {
 
   getCursor() {
     const {mousePosition} = this.state
-    if (!mousePosition) {
+    const {readOnly} = this.props
+    if (!mousePosition || readOnly) {
       return 'auto'
     }
 
