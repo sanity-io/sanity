@@ -151,7 +151,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       onBlur,
     } = this.props
 
-    const isSortable = get(type, 'options.sortable') !== false
+    const isSortable = !readOnly && get(type, 'options.sortable') !== false
 
     return (
       <FormFieldSet
