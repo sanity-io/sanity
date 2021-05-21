@@ -124,13 +124,14 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
           {options.map((option, index) => {
             const optionType = this.getMemberTypeOfItem(option)
             const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
-            const disabled = !optionType || readOnly || optionType?.readOnly
+            const disabled = !optionType
             const isTitled = isTitledListValue(option)
             return (
               <Item index={index} isGrid={isGrid} key={index}>
                 <Flex align="center" as="label" muted={disabled}>
                   <Checkbox
                     disabled={disabled}
+                    readOnly={Boolean(readOnly || optionType?.readOnly)}
                     checked={checked}
                     onChange={(e) => this.handleChange(e.currentTarget.checked, option)}
                     onFocus={() => this.handleFocus(index)}
