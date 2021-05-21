@@ -95,7 +95,12 @@ export default class ColorInput extends PureComponent {
             onUnset={this.handleUnset}
           />
         ) : (
-          <Button ref={this.focusRef} inverted onClick={this.handleCreateColor}>
+          <Button
+            ref={this.focusRef}
+            disabled={Boolean(readOnly)}
+            inverted
+            onClick={this.handleCreateColor}
+          >
             Create color
           </Button>
         )}
