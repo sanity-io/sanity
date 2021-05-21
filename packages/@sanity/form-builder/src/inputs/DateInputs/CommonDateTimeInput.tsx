@@ -106,7 +106,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
       inputId={id}
     >
       {readOnly ? (
-        <TextInput value={inputValue} disabled />
+        <TextInput value={inputValue} readOnly />
       ) : (
         <DateTimeInput
           {...rest}
