@@ -27,6 +27,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "tape": "^4.8.0"
+    "tape": "^4.8.0",
+    "eslint-plugin-es5": "^1.5.0"
   }
 }

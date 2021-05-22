@@ -25,6 +25,9 @@
   "devDependencies": {
     "rimraf": "^2.7.1"
   },
+  "peerDependencies": {
+    "react": "^16.9 || ^17"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",

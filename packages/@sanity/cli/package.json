@@ -41,6 +41,7 @@
   "devDependencies": {
     "@sanity/client": "2.8.0",
     "@sanity/resolver": "2.10.0",
+    "@sanity/generate-help-url": "2.2.6",
     "@sanity/util": "2.10.0",
     "boxen": "^4.1.0",
     "chalk": "^2.3.0",

@@ -19,11 +19,14 @@
   ],
   "dependencies": {
     "lodash": "^4.17.15",
-    "react-color": "^2.13.8",
-    "reactcss": "^1.2.0"
+    "react-color": "^2.13.8"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.9 || ^17"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

@@ -20,10 +20,16 @@
   ],
   "dependencies": {
     "lodash": "^4.17.15",
-    "react-ace": "^5.0.1"
+    "react-ace": "^5.0.1",
+    "classnames": "^2.3.1",
+    "brace": "^0.11.1"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.9 || ^17"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

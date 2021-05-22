@@ -1,0 +1,3 @@
+{
+  "ignore": ["@hot-loader/react-dom", "@sanity/ui", "styled-components"]
+}

@@ -36,9 +36,15 @@
     "@storybook/addons": "^3.2.6",
     "@storybook/react": "3.2.8",
     "classnames": "^2.2.5",
+    "express": "^4.17",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6",
     "styled-components": "^5.2.1",
     "webpack": "^3.8.1"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.9 || ^17",
+    "react-dom": "^16.9 || ^17"
   }
 }

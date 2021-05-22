@@ -29,9 +29,7 @@
   "dependencies": {
     "@sanity/util": "2.10.0",
     "@types/lodash": "^4.14.149",
-    "@types/memoize-one": "^3.1.1",
     "lodash": "^4.17.15",
-    "memoize-one": "^3.1.1",
     "oneline": "^1.0.3"
   },
   "devDependencies": {
@@ -40,7 +38,6 @@
     "@types/jest": "^26.0.22",
     "jest": "^26.6.3",
     "rimraf": "^2.7.1",
-    "rxjs": "^6.5.3",
     "ts-jest": "^26.5.4"
   },
   "repository": {

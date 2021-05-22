@@ -29,13 +29,11 @@
   },
   "dependencies": {
     "@sanity/types": "2.10.0",
-    "lodash": "^4.17.15",
     "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
-    "@types/lodash": "^4.14.149",
     "@types/shallow-equals": "^1.0.0",
     "jest": "^26.6.3",
     "react": "17.0.1",

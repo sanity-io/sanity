@@ -12,6 +12,7 @@
     "@sanity/default-layout",
     "@sanity/default-login",
     "@sanity/desk-tool",
+    "@sanity/form-builder",
     "@sanity/google-maps-input",
     "@sanity/vision",
     "@sanity/production-preview"

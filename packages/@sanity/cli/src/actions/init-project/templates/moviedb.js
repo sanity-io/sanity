@@ -2,8 +2,8 @@ export const importPrompt = 'Add a sampling of sci-fi movies to your dataset on 
 export const datasetUrl = 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz'
 
 export const dependencies = {
-  '@sanity/google-maps-input': '^0.99.0',
-  'react-icons': '^3.11.0',
+  '@sanity/google-maps-input': '^1.2.0',
+  '@sanity/icons': '^1.0.9',
 }
 
 export const generateSanityManifest = (base) => ({
