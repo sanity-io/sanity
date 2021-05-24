@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "2.8.0",
+  "version": "2.10.5",
   "description": "Lets the user log in to Sanity.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
