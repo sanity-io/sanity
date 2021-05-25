@@ -1,12 +1,11 @@
 import {useId} from '@reach/auto-id'
-import {useClickOutside} from '@sanity/ui'
+import {useClickOutside, Tooltip, Box} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
 import {Popover} from 'part:@sanity/components/popover'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import React, {createElement, useCallback, useEffect, useRef, useState} from 'react'
 import {ActionStateDialog} from './actionStateDialog'
-
 import styles from './actionMenu.css'
 
 function getNext<T>(array: T[], fromIndex: number, dir = 1): T {
@@ -134,24 +133,34 @@ function ActionMenuListItem({actionState, activeAction, disabled}) {
         aria-label={actionState.label}
         className={styles.menuItemButton}
         disabled={disabled || Boolean(actionState.disabled)}
-        title={actionState.title}
         onClick={actionState.onHandle}
         ref={setButtonElement}
         role="menuitem"
         tabIndex={-1}
         type="button"
       >
-        <div tabIndex={-1}>
-          {actionState.icon && (
-            <span className={styles.menuItemIcon}>{createElement(actionState.icon)}</span>
-          )}
-          <span className={styles.menuItemLabel}>{actionState.label}</span>
-          {actionState.shortcut && (
-            <span className={styles.menuItemHotkeys}>
-              <Hotkeys keys={String(actionState.shortcut).split('+')} size="small" />
-            </span>
-          )}
-        </div>
+        <Tooltip
+          disabled={!actionState.title}
+          content={
+            <Box padding={2} style={{maxWidth: 250}}>
+              {actionState.title}
+            </Box>
+          }
+          portal
+          placement="left-start"
+        >
+          <div tabIndex={-1}>
+            {actionState.icon && (
+              <span className={styles.menuItemIcon}>{createElement(actionState.icon)}</span>
+            )}
+            <span className={styles.menuItemLabel}>{actionState.label}</span>
+            {actionState.shortcut && (
+              <span className={styles.menuItemHotkeys}>
+                <Hotkeys keys={String(actionState.shortcut).split('+')} size="small" />
+              </span>
+            )}
+          </div>
+        </Tooltip>
       </button>
 
       {actionState.dialog && (
