@@ -1,6 +1,11 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
 import React, {useCallback, useMemo} from 'react'
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  useCurrentUser,
+} from '@sanity/base/hooks'
+import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
 
 const DISABLED_REASON_TITLE = {
@@ -23,6 +28,10 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     unpublish.execute()
     onComplete()
   }, [onComplete, unpublish])
+
+  const unpublishPermission = useCheckDocumentPermission(id, type, 'unpublish')
+
+  const {value: currentUser} = useCurrentUser()
 
   const dialog = useMemo(() => {
     if (error) {
@@ -71,6 +80,20 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     onComplete,
     published,
   ])
+
+  if (!unpublishPermission.granted) {
+    return {
+      icon: UnpublishIcon,
+      label: 'Unpublish',
+      title: (
+        <InsufficientPermissionsMessage
+          operationLabel="unpublish this document"
+          currentUser={currentUser}
+        />
+      ),
+      disabled: true,
+    }
+  }
 
   if (liveEdit) {
     return null
