@@ -7,5 +7,5 @@ import sanityClient from 'part:@sanity/base/client'
  * @internal
  */
 export const versionedClient = sanityClient.withConfig({
-  apiVersion: '1',
+  apiVersion: 'X',
 })
