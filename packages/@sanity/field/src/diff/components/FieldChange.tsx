@@ -4,6 +4,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import classNames from 'classnames'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
+import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {FieldChangeNode, OperationsAPI} from '../../types'
@@ -30,6 +31,8 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
   const [confirmRevertOpen, setConfirmRevertOpen] = React.useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
+
+  const updatePermission = useCheckDocumentPermission(documentId, schemaType.name, 'update')
 
   const handleRevertChanges = useCallback(() => {
     undoChange(change, rootDiff, docOperations)
@@ -78,8 +81,7 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
               </DiffContext.Provider>
             </DiffErrorBoundary>
           )}
-
-          {isComparingCurrent && (
+          {isComparingCurrent && updatePermission.granted && (
             <div className={styles.revertChangesButtonContainer}>
               <RevertChangesButton
                 onClick={handleRevertChangesConfirm}

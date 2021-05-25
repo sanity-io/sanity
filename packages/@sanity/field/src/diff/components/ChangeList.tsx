@@ -5,6 +5,7 @@ import UndoIcon from 'part:@sanity/base/undo-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useState, useCallback} from 'react'
+import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -31,6 +32,8 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   if (schemaType.jsonType !== 'object') {
     throw new Error(`Only object schema types are allowed in ChangeList`)
   }
+
+  const updatePermission = useCheckDocumentPermission(documentId, schemaType.name, 'update')
 
   const allChanges = React.useMemo(
     () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields}),
@@ -89,7 +92,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
 
       {showFooter && (
         <div className={styles.footer}>
-          {isComparingCurrent && (
+          {isComparingCurrent && updatePermission.granted && (
             <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
               <Button
                 color="danger"
