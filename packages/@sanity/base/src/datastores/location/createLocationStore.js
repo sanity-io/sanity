@@ -1,11 +1,12 @@
 import {Observable} from 'rxjs'
 import {map, share} from 'rxjs/operators'
 
-import Location from '../utils/Location'
 import {createBrowserHistory} from 'history'
+import Location from '../utils/Location'
 import createActions from '../utils/createActions'
 
-const noop = () => {} // eslint-disable-line no-empty-function
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {}
 const history = createBrowserHistory()
 
 function readLocation() {
@@ -15,6 +16,8 @@ function readLocation() {
 const interceptors = []
 
 function navigate(nextUrl, options) {
+  const currentUrl = readLocation()
+
   if (interceptors.length > 0) {
     let cancelled = false
     const nextNavigation = {
@@ -34,10 +37,17 @@ function navigate(nextUrl, options) {
     }
   }
 
+  // make debug params sticky
+  const debugParams = (currentUrl.hash || '')
+    .substring(1)
+    .split(';')
+    .filter((param) => param.startsWith('_debug_'))
+
+  const finalUrl = nextUrl + (debugParams.length > 0 ? `#${debugParams.join(';')}` : '')
   if (options.replace) {
-    history.replace(nextUrl)
+    history.replace(finalUrl)
   } else {
-    history.push(nextUrl)
+    history.push(finalUrl)
   }
   return {progress: new Observable(noop)}
 }
