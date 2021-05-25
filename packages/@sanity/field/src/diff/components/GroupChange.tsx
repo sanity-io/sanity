@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
+import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {isPTSchemaType} from '../../types/portableText/diff'
@@ -34,6 +35,8 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
+
+  const updatePermission = useCheckDocumentPermission(documentId, schemaType.name, 'update')
 
   const handleRevertChanges = useCallback(() => undoChange(group, rootDiff, docOperations), [
     group,
@@ -69,7 +72,7 @@ export function GroupChange({change: group}: {change: GroupChangeNode}): React.R
         ))}
       </div>
 
-      {isComparingCurrent && (
+      {isComparingCurrent && updatePermission.granted && (
         <>
           <div className={styles.revertChangesButtonContainer}>
             <RevertChangesButton
