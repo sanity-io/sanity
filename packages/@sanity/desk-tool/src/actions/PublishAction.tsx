@@ -2,6 +2,11 @@ import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/r
 import CheckmarkIcon from 'part:@sanity/base/check-icon'
 import PublishIcon from 'part:@sanity/base/publish-icon'
 import React, {useCallback, useEffect, useState} from 'react'
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  useCurrentUser,
+} from '@sanity/base/hooks'
+import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import TimeAgo from '../components/TimeAgo'
 import {useDocumentHistory} from '../panes/documentPane/documentHistory'
 
@@ -15,7 +20,9 @@ function getDisabledReason(reason, publishedAt) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return (
       <>
-        Published <TimeAgo time={publishedAt} />
+        <span>
+          Published <TimeAgo time={publishedAt} />
+        </span>
       </>
     )
   }
@@ -42,6 +49,10 @@ export function PublishAction(props) {
   }, [publish])
 
   const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
+
+  const publishPermission = useCheckDocumentPermission(id, type, 'publish')
+
+  const {value: currentUser} = useCurrentUser()
 
   useEffect(() => {
     if (publishScheduled && isNeitherSyncingNorValidating) {
@@ -99,6 +110,19 @@ export function PublishAction(props) {
       label: 'Publish',
       title:
         'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
+      disabled: true,
+    }
+  }
+
+  if (!publishPermission.granted) {
+    return {
+      label: 'Publish',
+      title: (
+        <InsufficientPermissionsMessage
+          operationLabel="publish this document"
+          currentUser={currentUser}
+        />
+      ),
       disabled: true,
     }
   }

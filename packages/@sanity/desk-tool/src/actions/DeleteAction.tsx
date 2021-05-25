@@ -1,6 +1,12 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import React, {useCallback} from 'react'
+
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  useCurrentUser,
+} from '@sanity/base/hooks'
+import {InsufficientPermissionsMessage} from '@sanity/base/components'
 import ConfirmDelete from '../components/ConfirmDelete'
 
 const DISABLED_REASON_TITLE = {
@@ -28,6 +34,23 @@ export function DeleteAction({id, type, draft, published, onComplete}) {
     setConfirmDialogOpen(true)
   }, [])
 
+  const deletePermission = useCheckDocumentPermission(id, type, 'delete')
+
+  const {value: currentUser} = useCurrentUser()
+
+  if (!deletePermission.granted) {
+    return {
+      icon: TrashIcon,
+      disabled: true,
+      label: 'Delete',
+      title: (
+        <InsufficientPermissionsMessage
+          operationLabel="delete this document"
+          currentUser={currentUser}
+        />
+      ),
+    }
+  }
   return {
     icon: TrashIcon,
     disabled: Boolean(deleteOp.disabled),
