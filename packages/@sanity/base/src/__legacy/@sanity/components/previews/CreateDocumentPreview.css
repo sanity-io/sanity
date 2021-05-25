@@ -1,7 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   display: block;
   text-decoration: none;
   position: relative;
@@ -11,6 +10,11 @@
   height: 100%;
   box-sizing: border-box;
   padding: var(--medium-padding);
+}
+
+.enabledRoot {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: root;
 
   @media (hover: hover) {
     color: var(--text-color-secondary);
@@ -29,6 +33,13 @@
       background-color: var(--selectable-item-color-active);
     }
   }
+}
+
+.disabledRoot {
+  composes: root;
+  opacity: 0.5;
+  color: var(--text-muted);
+  border: 1px solid var(--hairline-color);
 }
 
 .heading {
