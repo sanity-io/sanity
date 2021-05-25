@@ -492,7 +492,9 @@ export class Transaction {
   reset(): this
 }
 
-export interface BaseClientConfig {
+export interface ClientConfig {
+  projectId?: string
+  dataset?: string
   useCdn?: boolean
   token?: string
   apiHost?: string
@@ -522,19 +524,18 @@ export interface BaseClientConfig {
   requester?: GetItRequester
 }
 
-export type ProjectlessClientConfig = BaseClientConfig & {
-  useProjectHostname: false
-  projectId?: string
-  dataset?: string
-}
+/**
+ * @deprecated Don't use
+ */
+export type ProjectlessClientConfig = ClientConfig & {useProjectHostname: false}
 
-export type ProjectClientConfig = BaseClientConfig & {
+/**
+ * @deprecated Don't use
+ */
+export type ProjectClientConfig = ClientConfig & {
   useProjectHostname?: true
   projectId: string
-  dataset?: string
 }
-
-export type ClientConfig = ProjectClientConfig | ProjectlessClientConfig
 
 export interface RequestOptions {
   timeout?: number
