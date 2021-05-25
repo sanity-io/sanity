@@ -7,5 +7,5 @@ interface Props {
 
 export default function TimeAgo({time}: Props) {
   const timeAgo = useTimeAgo(time)
-  return <span title={timeAgo}>{timeAgo}</span>
+  return <span title={timeAgo}>{timeAgo} ago</span>
 }
