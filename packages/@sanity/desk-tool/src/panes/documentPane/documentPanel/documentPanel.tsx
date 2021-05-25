@@ -4,6 +4,10 @@ import classNames from 'classnames'
 import React, {createElement, useCallback, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {LegacyLayerProvider, ScrollContainer} from '@sanity/base/components'
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  useCurrentUser,
+} from '@sanity/base/hooks'
 import {useDeskToolFeatures} from '../../../features'
 import {useDocumentHistory} from '../documentHistory'
 import {Doc, DocumentView} from '../types'
@@ -15,6 +19,7 @@ import {FormView} from './views'
 
 import styles from './documentPanel.css'
 import {DEFAULT_MARGINS, MARGINS_NARROW_SCREEN_WITH_TABS} from './constants'
+import {PermissionCheckBanner} from './permissionCheckBanner'
 
 interface DocumentPanelProps {
   activeViewId: string
@@ -100,6 +105,16 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [openHistory, toggleInspect]
   )
 
+  const {value: currentUser} = useCurrentUser()
+
+  const requiredPermission = props.value._createdAt ? 'update' : 'create'
+
+  const permission = useCheckDocumentPermission(
+    props.documentId,
+    props.documentType,
+    requiredPermission
+  )
+
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement | null = features.splitPanes
     ? portalRef.current || parentPortal.element
@@ -150,6 +165,15 @@ export function DocumentPanel(props: DocumentPanelProps) {
 
       <PortalProvider element={portalElement}>
         <BoundaryElementProvider element={documentViewerContainerElement}>
+          {activeView.type === 'form' && (
+            <Layer>
+              <PermissionCheckBanner
+                permission={permission}
+                requiredPermission={requiredPermission}
+                currentUser={currentUser}
+              />
+            </Layer>
+          )}
           <div className={styles.documentViewerContainer} ref={setDocumentViewerContainerElement}>
             <ScrollContainer className={styles.documentScroller}>
               {activeView.type === 'form' && (
@@ -160,7 +184,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                   onFocus={props.onFormInputFocus}
                   markers={props.markers}
                   onChange={props.onChange}
-                  readOnly={revTime !== null}
+                  readOnly={revTime !== null || !permission.granted}
                   schemaType={props.schemaType}
                   value={displayed}
                   margins={margins}
