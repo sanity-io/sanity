@@ -8,7 +8,7 @@ import {joinPath} from '../../util/searchUtils'
 import {removeDupes} from '../../util/draftUtils'
 import {tokenize} from '../common/tokenize'
 import {applyWeights} from './applyWeights'
-import {WeightedHit, WeightedSearchOptions, SearchOptions} from './types'
+import {WeightedHit, WeightedSearchOptions, SearchOptions, SearchHit} from './types'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -73,7 +73,7 @@ export function createWeightedSearch(
       )
       .pipe(
         map(removeDupes),
-        map((hits) => applyWeights(searchSpec, hits, terms)),
+        map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
         map((hits) => sortBy(hits, (hit) => -hit.score)),
         map((hits) => hits.slice(0, 100))
       )
