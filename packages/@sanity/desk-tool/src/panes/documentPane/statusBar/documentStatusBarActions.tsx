@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react'
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
-import {Tooltip} from 'part:@sanity/components/tooltip'
+import {Box, Flex, Tooltip} from '@sanity/ui'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
@@ -12,33 +12,28 @@ import {DocumentStatusBarActionsProps, HistoryStatusBarActionsProps} from './typ
 
 import styles from './documentStatusBarActions.css'
 
-const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
-
 // eslint-disable-next-line complexity
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   const {states, showMenu} = props
   const [firstActionState, ...menuActionStates] = states
   const [buttonContainerElement, setButtonContainerElement] = useState<HTMLDivElement | null>(null)
-
   return (
     <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
       {firstActionState && (
         <div className={styles.mainAction}>
           <Tooltip
-            disabled={TOUCH_SUPPORT || !(firstActionState.title || firstActionState.shortcut)}
-            className={styles.tooltip}
+            disabled={!(firstActionState.title || firstActionState.shortcut)}
             content={
-              <div className={styles.tooltipBox}>
-                {firstActionState.title && (
-                  <span className={styles.tooltipTitle}>{firstActionState.title}</span>
-                )}
+              <Flex padding={2} style={{maxWidth: 300}}>
+                {firstActionState.title}
                 {firstActionState.shortcut && (
-                  <span className={styles.tooltipHotkeys}>
+                  <Box marginLeft={2}>
                     <Hotkeys keys={String(firstActionState.shortcut).split('+')} size="small" />
-                  </span>
+                  </Box>
                 )}
-              </div>
+              </Flex>
             }
+            portal
             placement="top"
           >
             <div ref={setButtonContainerElement}>

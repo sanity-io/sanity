@@ -20,22 +20,3 @@
 .mainActionButtonWithMoreActions {
   composes: mainActionButton;
 }
-
-.tooltip {
-  display: block !important;
-}
-
-.tooltipBox {
-  padding: calc(var(--medium-padding) - var(--extra-small-padding));
-  max-width: 250px;
-}
-
-.tooltipTitle {
-  padding-right: var(--small-padding);
-}
-
-.tooltipHotkeys {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 0 0 var(--extra-small-padding);
-}
