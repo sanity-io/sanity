@@ -1,6 +1,12 @@
 import {IntentLink} from 'part:@sanity/base/router'
 import React from 'react'
+import {Box, Tooltip} from '@sanity/ui'
+import {
+  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
+  useCurrentUser,
+} from '../../../../hooks'
 import {MediaDimensions} from '../types'
+import {InsufficientPermissionsMessage} from '../../../../components'
 
 import styles from './CreateDocumentPreview.css'
 
@@ -13,6 +19,7 @@ interface CreateDocumentPreviewProps {
   isPlaceholder?: boolean
   params?: {
     intent: 'create'
+    type: string
     template?: string
   }
   templateParams?: Record<string, unknown>
@@ -27,62 +34,80 @@ const DEFAULT_MEDIA_DIMENSION: MediaDimensions = {
   fit: 'crop',
 }
 
-class CreateDocumentPreview extends React.PureComponent<CreateDocumentPreviewProps> {
-  // eslint-disable-next-line complexity
-  render() {
-    const {
-      title = 'Untitled',
-      subtitle,
-      media = this.props.icon,
-      isPlaceholder,
-      mediaDimensions = DEFAULT_MEDIA_DIMENSION,
-      description,
-      params,
-      templateParams,
-    } = this.props
+export default function CreateDocumentPreview(props: CreateDocumentPreviewProps) {
+  const {
+    title = 'Untitled',
+    subtitle,
+    media = props.icon,
+    isPlaceholder,
+    mediaDimensions = DEFAULT_MEDIA_DIMENSION,
+    description,
+    params,
+    templateParams,
+  } = props
 
-    if (isPlaceholder || !params) {
-      return (
-        <div className={styles.placeholder}>
-          <div className={styles.heading}>
-            <h2 className={styles.title}>Loading…</h2>
-            <h3 className={styles.subtitle}>Loading…</h3>
-          </div>
-          {media !== false && <div className={styles.media} />}
-        </div>
-      )
-    }
+  const {value: currentUser} = useCurrentUser()
 
+  const createPermission = useCheckDocumentPermission('dummy-id', params.type, 'create')
+
+  if (isPlaceholder || !params) {
     return (
-      <IntentLink
-        intent="create"
-        params={[params, templateParams]}
-        className={styles.root}
-        title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
-        onClick={this.props.onClick}
-      >
-        {media !== false && (
-          <div className={styles.media}>
-            {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
-            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
-            {React.isValidElement(media) && media}
-          </div>
-        )}
+      <div className={styles.placeholder}>
         <div className={styles.heading}>
-          <h2 className={styles.title}>
-            {typeof title !== 'function' && title}
-            {typeof title === 'function' && title({layout: 'default'})}
-          </h2>
-          {subtitle && (
-            <h3 className={styles.subtitle}>
-              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
-            </h3>
-          )}
+          <h2 className={styles.title}>Loading…</h2>
+          <h3 className={styles.subtitle}>Loading…</h3>
         </div>
-        {description && <p className={styles.description}>{description}</p>}
-      </IntentLink>
+        {media !== false && <div className={styles.media} />}
+      </div>
     )
   }
-}
 
-export default CreateDocumentPreview
+  const content = (
+    <>
+      {media !== false && (
+        <div className={styles.media}>
+          {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
+          {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+          {React.isValidElement(media) && media}
+        </div>
+      )}
+      <div className={styles.heading}>
+        <h2 className={styles.title}>
+          {typeof title !== 'function' && title}
+          {typeof title === 'function' && title({layout: 'default'})}
+        </h2>
+        {subtitle && (
+          <h3 className={styles.subtitle}>
+            {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+          </h3>
+        )}
+      </div>
+      {description && <p className={styles.description}>{description}</p>}
+    </>
+  )
+
+  return createPermission.granted ? (
+    <IntentLink
+      intent="create"
+      params={[params, templateParams]}
+      className={styles.enabledRoot}
+      title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
+      onClick={props.onClick}
+    >
+      {content}
+    </IntentLink>
+  ) : (
+    <Tooltip
+      content={
+        <Box padding={2} style={{maxWidth: 300}}>
+          <InsufficientPermissionsMessage
+            currentUser={currentUser}
+            operationLabel="create this document"
+          />
+        </Box>
+      }
+    >
+      <div className={styles.disabledRoot}>{content}</div>
+    </Tooltip>
+  )
+}
