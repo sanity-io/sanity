@@ -5,8 +5,10 @@ import DataLoader from 'dataloader'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {versionedClient as sanityClient} from '../../client/versionedClient'
+import {versionedClient} from '../../client/versionedClient'
 import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
+
+const sanityClient = versionedClient.withConfig({apiVersion: 'X'})
 
 const [logout$, logout] = observableCallback()
 const [refresh$, refresh] = observableCallback()
