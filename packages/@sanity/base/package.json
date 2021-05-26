@@ -36,7 +36,7 @@
     "@sanity/client": "2.10.5",
     "@sanity/color": "^2.0.15",
     "@sanity/generate-help-url": "2.2.6",
-    "@sanity/icons": "1.0.5",
+    "@sanity/icons": "^1.0.10",
     "@sanity/image-url": "^0.140.19",
     "@sanity/initial-value-templates": "2.10.5",
     "@sanity/mutator": "2.10.2",

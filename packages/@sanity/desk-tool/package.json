@@ -30,6 +30,7 @@
     "@sanity/form-builder": "2.10.5",
     "@sanity/generate-help-url": "2.2.6",
     "@sanity/mutator": "2.10.2",
+    "@sanity/icons": "^1.0.10",
     "@sanity/react-hooks": "2.10.5",
     "@sanity/structure": "2.10.5",
     "@sanity/types": "2.10.5",
