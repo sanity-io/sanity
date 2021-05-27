@@ -1,9 +1,11 @@
 import React from 'react'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import Dropdown from '../components/Dropdown'
+import Dropdown, {DropdownProps} from '../components/Dropdown'
 import styles from '../css/select.css'
 
-function Select(props) {
+export type SelectProps = DropdownProps
+
+function Select(props: SelectProps) {
   return (
     <div className={styles.selectContainer}>
       <Dropdown className={styles.select} {...props} />

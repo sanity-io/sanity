@@ -1,92 +1,59 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable import/no-unassigned-import */
 import React from 'react'
-import PropTypes from 'prop-types'
 import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
-import CodeMirror from 'codemirror'
+import codemirror from 'codemirror'
 
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
 require('codemirror/addon/edit/closebrackets')
 
-class QueryEditor extends React.PureComponent {
-  constructor(props) {
+export interface QueryEditorProps {
+  onExecute: () => void
+  onChange: ({query: string}) => void
+  value?: string
+  schema?: any
+  className?: string
+  onHeightChange?: () => void
+  height?: number
+}
+
+class QueryEditor extends React.PureComponent<QueryEditorProps> {
+  constructor(props: QueryEditorProps) {
     super(props)
-
     this.handleChange = this.handleChange.bind(this)
-    this.getHint = this.getHint.bind(this)
   }
 
-  getHint(cm, option) {
-    const {schema} = this.props
-    const cursor = cm.getCursor()
-    // const line = cm.getLine(cursor.line)
-    const start = cursor.ch
-    const end = cursor.ch
-    const suggestions = [
-      {
-        text: '...',
-        displayText: '... (Includes everything)',
-      },
-    ]
+  handleChange(editor: codemirror.Editor, data: codemirror.EditorChange, value: string) {
+    const {onChange} = this.props
 
-    if (schema) {
-      schema._original.types.forEach((type) => {
-        suggestions.push({
-          text: type.name,
-          displayText: `${type.name} (${type.type}) - ${type.title}`,
-        })
-      })
-    }
-    return {
-      list: suggestions,
-      from: CodeMirror.Pos(cursor.line, start),
-      to: CodeMirror.Pos(cursor.line, end),
-    }
-  }
-
-  handleChange(editor, metadata, value) {
-    this.props.onChange({query: value})
+    onChange({query: value})
   }
 
   render() {
-    const options = {
+    const {className = 'vision_query-editor', onExecute, value} = this.props
+
+    const options: codemirror.EditorConfiguration = {
       lineNumbers: true,
       tabSize: 2,
-      mode: {name: 'javascript', json: true},
-      hintOptions: {hint: this.getHint},
+      mode: {name: 'javascript'},
       extraKeys: {
         'Ctrl-Space': 'autocomplete',
-        'Ctrl-Enter': this.props.onExecute,
+        'Ctrl-Enter': onExecute,
       },
-      autoCloseBrackets: true,
     }
+
     return (
       <ReactCodeMirror
-        value={this.props.value}
+        value={value}
         onChange={this.handleChange}
         options={options}
-        className={this.props.className}
-        onHeightChange={this.props.onHeightChange}
+        className={className}
         autoCursor={false}
         autoScroll
       />
     )
   }
-}
-
-QueryEditor.propTypes = {
-  onExecute: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.string,
-  schema: PropTypes.object,
-  className: PropTypes.string,
-  onHeightChange: PropTypes.func,
-  height: PropTypes.number,
-}
-
-QueryEditor.defaultProps = {
-  className: 'vision_query-editor',
 }
 
 export default QueryEditor

@@ -1,5 +1,7 @@
-export default function isPlainObject(obj) {
+export default function isPlainObject(obj: unknown): obj is Record<string, unknown> {
   return (
-    !!obj && typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]'
+    Boolean(obj) &&
+    typeof obj === 'object' &&
+    Object.prototype.toString.call(obj) === '[object Object]'
   )
 }

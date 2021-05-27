@@ -1,8 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import {VisionError} from '../types'
 import QueryErrorDetails from './QueryErrorDetails'
 
-function QueryErrorDialog(props) {
+function QueryErrorDialog(props: {error: VisionError}) {
   return (
     <div className="vision_query-error">
       <h2>Query error</h2>
@@ -12,10 +12,6 @@ function QueryErrorDialog(props) {
       <QueryErrorDetails error={props.error} />
     </div>
   )
-}
-
-QueryErrorDialog.propTypes = {
-  error: PropTypes.instanceOf(Error),
 }
 
 export default QueryErrorDialog

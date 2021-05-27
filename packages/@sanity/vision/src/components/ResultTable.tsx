@@ -1,17 +1,30 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import calendarDate from '../util/calendarDate'
 
-class ResultTable extends React.PureComponent {
-  constructor(props) {
-    super(props)
+export interface ResultTableProps {
+  query: string
+  documents?: {
+    _id: string
+    _type: string
+    _updatedAt: string
+    _createdAt: string
+  }[]
+}
 
+export interface ResultTableState {
+  expanded: string[]
+}
+
+class ResultTable extends React.PureComponent<ResultTableProps, ResultTableState> {
+  constructor(props: ResultTableProps) {
+    super(props)
     this.state = {expanded: []}
   }
 
-  handleToggleExpandRow(id) {
+  handleToggleExpandRow(id: string) {
     const expanded = this.state.expanded
     const currentIndex = expanded.indexOf(id)
+
     if (currentIndex === -1) {
       expanded.push(id)
     } else {
@@ -19,17 +32,18 @@ class ResultTable extends React.PureComponent {
     }
   }
 
-  getExpandRowHandler(id) {
+  getExpandRowHandler(id: string) {
     return () => this.handleToggleExpandRow(id)
   }
 
-  isExpanded(id) {
+  isExpanded(id: string) {
     return this.state.expanded.indexOf(id) !== -1
   }
 
   render() {
     const docs = this.props.documents
-    if (!docs.length) {
+
+    if (!docs || !docs.length) {
       return (
         <div className="no-results">
           <p>No results found for query:</p>
@@ -61,18 +75,6 @@ class ResultTable extends React.PureComponent {
       </table>
     )
   }
-}
-
-ResultTable.propTypes = {
-  query: PropTypes.string.isRequired,
-  documents: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      _type: PropTypes.string.isRequired,
-      _updatedAt: PropTypes.string.isRequired,
-      _createdAt: PropTypes.string.isRequired,
-    })
-  ),
 }
 
 export default ResultTable

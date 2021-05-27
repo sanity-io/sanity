@@ -1,18 +1,27 @@
 import isPlainObject from './isPlainObject'
 
 const storageKey = 'sanityVision'
-const defaultState = {}
+const defaultState: Record<string, any> = {}
 const hasLocalStorage = supportsLocalStorage()
-let state = null
+let state: Record<string, any> | null = null
 
-export function getState(key, defaultVal) {
+export function getState(key: string, defaultVal?: any): any {
   ensureState()
+
+  if (!state) {
+    return defaultVal
+  }
+
   return typeof state[key] === 'undefined' ? defaultVal : state[key]
 }
 
-export function storeState(key, value) {
+export function storeState(key: string, value: unknown): void {
   ensureState()
-  state[key] = value
+
+  if (state) {
+    state[key] = value
+  }
+
   localStorage.setItem(storageKey, JSON.stringify(state))
 }
 
@@ -28,7 +37,8 @@ function loadState() {
   }
 
   try {
-    const stored = JSON.parse(localStorage.getItem(storageKey))
+    const encodedState = localStorage.getItem(storageKey)
+    const stored = encodedState ? JSON.parse(encodedState) : null
     return isPlainObject(stored) ? stored : defaultState
   } catch (err) {
     return defaultState

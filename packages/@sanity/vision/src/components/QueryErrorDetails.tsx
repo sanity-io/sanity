@@ -1,8 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import {VisionError, VisionErrorDetails} from '../types'
 
-function QueryErrorDetails(props) {
-  const details = {...props.error.details, ...mapToLegacyDetails(props.error.details)}
+function QueryErrorDetails(props: {error: VisionError}) {
+  const details = {...(props.error.details || {}), ...mapToLegacyDetails(props.error.details)}
   if (!details.line) {
     return null
   }
@@ -10,7 +10,7 @@ function QueryErrorDetails(props) {
   return (
     <div>
       <pre>
-        <code>{`${details.line}\n${dashLine(details.column, details.columnEnd)}`}</code>
+        <code>{`${details.line}\n${dashLine(details.column || 0, details.columnEnd || 0)}`}</code>
       </pre>
       <pre>
         <code>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</code>
@@ -19,7 +19,7 @@ function QueryErrorDetails(props) {
   )
 }
 
-function mapToLegacyDetails(details) {
+function mapToLegacyDetails(details?: VisionErrorDetails) {
   if (!details || typeof details.query !== 'string' || typeof details.start !== 'number') {
     return {}
   }
@@ -34,23 +34,10 @@ function mapToLegacyDetails(details) {
   return {line, lineNumber, column, columnEnd}
 }
 
-function dashLine(column, columnEnd) {
+function dashLine(column: number, columnEnd: number) {
   const line = '-'.repeat(column)
   const hats = `^`.repeat(columnEnd ? columnEnd - column : 1)
   return `${line}${hats}`
-}
-
-QueryErrorDetails.propTypes = {
-  error: PropTypes.shape({
-    details: PropTypes.shape({
-      line: PropTypes.string,
-      lineNumber: PropTypes.number,
-      column: PropTypes.number,
-      start: PropTypes.number,
-      end: PropTypes.number,
-      query: PropTypes.string,
-    }),
-  }),
 }
 
 export default QueryErrorDetails

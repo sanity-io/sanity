@@ -1,10 +1,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+// import {SanityClient} from '@sanity/client'
 import VisionContainer from './containers/VisionContainer'
 
 // Passes the given Sanity client and components to use down
 // through context to child components
-class Vision extends React.PureComponent {
+class Vision extends React.PureComponent<{
+  // @todo: Fix typings so that using `SanityClient` works
+  // client: SanityClient
+  client: any
+  components: {
+    Button: React.ComponentType
+  }
+  schema: any
+  styles?: {visionGui: Record<string, string>}
+}> {
+  static childContextTypes = {
+    client: PropTypes.shape({config: PropTypes.func}).isRequired,
+    schema: PropTypes.object,
+    components: PropTypes.object.isRequired,
+    styles: PropTypes.object.isRequired,
+  }
+
   getChildContext() {
     return {
       client: this.props.client,
@@ -15,32 +32,10 @@ class Vision extends React.PureComponent {
   }
 
   render() {
-    return <VisionContainer {...this.props} />
+    const {styles = {visionGui: {}}, ...restProps} = this.props
+
+    return <VisionContainer {...restProps} styles={styles} />
   }
-}
-
-Vision.propTypes = {
-  client: PropTypes.shape({config: PropTypes.func}).isRequired,
-  schema: PropTypes.object,
-  components: PropTypes.shape({
-    Button: PropTypes.func,
-  }).isRequired,
-  styles: PropTypes.shape({
-    visionGui: PropTypes.object,
-  }),
-}
-
-Vision.defaultProps = {
-  styles: {
-    visionGui: {},
-  },
-}
-
-Vision.childContextTypes = {
-  client: PropTypes.shape({config: PropTypes.func}).isRequired,
-  schema: PropTypes.object,
-  components: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired,
 }
 
 export default Vision

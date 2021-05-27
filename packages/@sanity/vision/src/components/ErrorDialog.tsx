@@ -1,24 +1,21 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
-function ErrorDialog(props) {
+export interface ErrorDialogProps {
+  heading?: string
+  error: Error | string
+}
+
+function ErrorDialog(props: ErrorDialogProps) {
+  const {error, heading = 'An error occured'} = props
+
   return (
     <div className="error">
-      <h2>{props.heading}</h2>
+      <h2>{heading}</h2>
       <pre>
-        <code>{props.error.message || props.error}</code>
+        <code>{typeof error === 'string' ? error : error.message}</code>
       </pre>
     </div>
   )
-}
-
-ErrorDialog.propTypes = {
-  heading: PropTypes.string,
-  error: PropTypes.oneOfType([PropTypes.instanceOf(Error), PropTypes.string]).isRequired,
-}
-
-ErrorDialog.defaultProps = {
-  heading: 'An error occured',
 }
 
 export default ErrorDialog

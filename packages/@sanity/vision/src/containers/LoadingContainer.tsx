@@ -3,25 +3,28 @@ import PropTypes from 'prop-types'
 import request from '../util/request'
 
 // Yeah, inheritance and all that. Deal with it.
-class LoadingContainer extends React.PureComponent {
-  constructor() {
-    super()
+// eslint-disable-next-line @typescript-eslint/ban-types
+class LoadingContainer<Props, State extends {}> extends React.PureComponent<Props, State> {
+  subscriptions: any[]
+  stateKeys: string[] = []
+  getSubscriptions: (() => {datasets: {uri: string}}) | null = null
 
-    if (!this.getSubscriptions) {
-      throw new Error(
-        `${this.constructor.name} extended LoadingContainer but did not define a getSubscriptions() method`
-      )
-    }
+  static contextTypes = {
+    client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
+  }
 
+  constructor(props: Props) {
+    super(props)
     this.subscriptions = []
-    this.state = {}
+    this.state = {} as any
   }
 
   componentDidMount() {
-    const subs = this.getSubscriptions()
-    const stateKeys = (this.stateKeys = Object.keys(subs))
+    const subs = this.getSubscriptions ? this.getSubscriptions() : []
 
-    this.subscriptions = stateKeys.reduce((target, key) => {
+    this.stateKeys = Object.keys(subs)
+
+    this.subscriptions = this.stateKeys.reduce((target: any[], key) => {
       target.push(request(this, subs[key], key))
       return target
     }, [])
@@ -36,10 +39,6 @@ class LoadingContainer extends React.PureComponent {
       this.subscriptions.pop().unsubscribe()
     }
   }
-}
-
-LoadingContainer.contextTypes = {
-  client: PropTypes.shape({fetch: PropTypes.func}).isRequired,
 }
 
 export default LoadingContainer

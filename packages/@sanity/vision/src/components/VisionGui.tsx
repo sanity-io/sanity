@@ -6,6 +6,8 @@ import SplitPane from 'react-split-pane'
 import {PlayIcon} from '@sanity/icons'
 import {Flex, Card, Button, Stack, Box, Label, Select, Text, TextInput} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
+// import {SanityClient} from '@sanity/client'
+import {Subscription} from 'rxjs'
 import {storeState, getState} from '../util/localState'
 import parseApiQueryString from '../util/parseApiQueryString'
 import tryParseParams from '../util/tryParseParams'
@@ -24,12 +26,40 @@ import 'codemirror/theme/material.css?raw'
 import 'codemirror/addon/hint/show-hint.css?raw'
 /* eslint-enable import/no-unassigned-import, import/no-unresolved */
 
-const NO_POINTER_EVENTS = {pointerEvents: 'none'}
+export interface VisionGuiProps {
+  datasets: {name: string}[]
+  schema?: any
+}
+
+export interface VisionGuiState {
+  data?: string
+  query: string
+  params?: Record<string, unknown>
+  queryInProgress: boolean
+  dataset: string
+  apiVersion: string
+  rawParams: string
+  customApiVersion?: boolean
+  isValidApiVersion?: boolean
+  listenInProgress?: boolean
+  url?: string
+  listenMutations?: unknown[]
+  error?: Error | null
+  result?: unknown
+  queryTime?: null
+  e2eTime?: number | null
+  executedQuery?: string
+}
+
+const NO_POINTER_EVENTS: React.CSSProperties = {pointerEvents: 'none'}
 const sanityUrl = /\.api\.sanity\.io\/(vx|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const handleCopyUrl = () => {
   const emailLink = document.querySelector('#vision-query-url')
-  emailLink.select()
+
+  if (emailLink instanceof HTMLInputElement) {
+    emailLink.select()
+  }
 
   try {
     document.execCommand('copy')
@@ -39,8 +69,24 @@ const handleCopyUrl = () => {
   }
 }
 
-class VisionGui extends React.PureComponent {
-  constructor(props) {
+class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
+  static contextTypes = {
+    styles: PropTypes.object,
+    components: PropTypes.object,
+  }
+
+  _queryEditorContainer: React.RefObject<HTMLDivElement>
+  _paramsEditorContainer: React.RefObject<HTMLDivElement>
+
+  // @todo: Fix typings so that using `SanityClient` works
+  // client?: SanityClient
+  client?: any
+  subscribers: {
+    query?: Subscription | null
+    listen?: Subscription | null
+  }
+
+  constructor(props: VisionGuiProps) {
     super(props)
 
     const lastQuery = getState('lastQuery')
@@ -203,7 +249,7 @@ class VisionGui extends React.PureComponent {
     )
   }
 
-  handleListenerMutation(mut) {
+  handleListenerMutation(mut: any) {
     // eslint-disable-next-line react/no-access-state-in-setstate
     const listenMutations = [mut].concat(this.state.listenMutations)
     if (listenMutations.length > 50) {
@@ -230,7 +276,7 @@ class VisionGui extends React.PureComponent {
       return
     }
 
-    const paramsError = params instanceof Error && params
+    const paramsError = params instanceof Error ? params : undefined
     const url = this.client.getUrl(
       this.client.getDataUrl('listen', encodeQueryString(query, params))
     )
@@ -244,7 +290,7 @@ class VisionGui extends React.PureComponent {
       listenMutations: [],
       queryInProgress: false,
       listenInProgress: !paramsError && Boolean(query),
-      error: paramsError || undefined,
+      error: paramsError,
       result: undefined,
       queryTime: null,
       e2eTime: null,
@@ -256,7 +302,7 @@ class VisionGui extends React.PureComponent {
 
     this.subscribers.listen = this.client.listen(query, params, {}).subscribe({
       next: this.handleListenerMutation,
-      error: (error) =>
+      error: (error: Error) =>
         this.setState({
           error,
           query,
@@ -329,7 +375,7 @@ class VisionGui extends React.PureComponent {
       error,
       result,
       url,
-      query,
+      // query,
       queryInProgress,
       executedQuery,
       listenInProgress,
@@ -504,10 +550,15 @@ class VisionGui extends React.PureComponent {
               <div className={styles.result}>
                 {queryInProgress && <DelayedSpinner />}
                 {error && <QueryErrorDialog error={error} />}
-                {hasResult && !hasEmptyResult && <ResultView data={result} query={query} />}
+                {hasResult && !hasEmptyResult && (
+                  <ResultView
+                    data={result}
+                    // query={query}
+                  />
+                )}
                 {hasEmptyResult && (
                   <div className={styles.noResult}>
-                    <NoResultsDialog query={executedQuery} dataset={dataset} />
+                    <NoResultsDialog query={executedQuery || ''} dataset={dataset} />
                   </div>
                 )}
                 {listenMutations && listenMutations.length > 0 && (
@@ -520,20 +571,6 @@ class VisionGui extends React.PureComponent {
       </div>
     )
   }
-}
-
-VisionGui.propTypes = {
-  schema: PropTypes.object,
-  datasets: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-    })
-  ),
-}
-
-VisionGui.contextTypes = {
-  styles: PropTypes.object,
-  components: PropTypes.object,
 }
 
 export default VisionGui

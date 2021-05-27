@@ -1,4 +1,4 @@
-const tryParseParams = (val) => {
+const tryParseParams = (val?: string): Record<string, unknown> => {
   try {
     return val ? JSON.parse(val) : {}
   } catch (err) {

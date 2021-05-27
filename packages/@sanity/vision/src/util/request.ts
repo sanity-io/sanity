@@ -1,6 +1,8 @@
-export default (comp, opts, key) => {
+import {Subscription} from 'rxjs'
+
+export default function request(comp: any, opts: any, key: any): Subscription {
   return comp.context.client.observable.request(opts).subscribe({
-    next: (val) => comp.setState({[key]: val}),
-    error: (error) => comp.setState({error}),
+    next: (val: any) => comp.setState({[key]: val}),
+    error: (error: Error) => comp.setState({error}),
   })
 }
