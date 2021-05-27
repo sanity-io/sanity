@@ -6,10 +6,12 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import {Tooltip} from 'part:@sanity/components/tooltip'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import ToolMenu from 'part:@sanity/default-layout/tool-switcher'
-import {LegacyLayerProvider} from '@sanity/base/components'
+import {LegacyLayerProvider, InsufficientPermissionsMessage} from '@sanity/base/components'
+// eslint-disable-next-line camelcase
+import {unstable_useCanCreateAnyOf, useCurrentUser} from '@sanity/base/hooks'
+import {Card, Tooltip} from '@sanity/ui'
 import {DatasetSelect} from '../components'
 import {HAS_SPACES} from '../util/spaces'
 import {Router, Tool} from '../types'
@@ -36,9 +38,8 @@ interface Props {
   showLabel: boolean
   showToolMenu: boolean
   tools: Tool[]
+  documentTypes: string[]
 }
-
-const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
 
 // eslint-disable-next-line complexity
 export default function Navbar(props: Props) {
@@ -55,6 +56,7 @@ export default function Navbar(props: Props) {
     router,
     tools,
     searchIsOpen,
+    documentTypes,
     showLabel,
     showToolMenu,
   } = props
@@ -62,6 +64,8 @@ export default function Navbar(props: Props) {
   const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
   const className = classNames(styles.root, showToolMenu && styles.withToolMenu)
   const searchClassName = classNames(styles.search, searchIsOpen && styles.searchIsOpen)
+  const {value: currentUser} = useCurrentUser()
+  const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
 
   return (
     <div className={className} data-search-open={searchIsOpen}>
@@ -89,13 +93,18 @@ export default function Navbar(props: Props) {
       <div className={styles.createButton}>
         <LegacyLayerProvider zOffset="navbarPopover">
           <Tooltip
-            disabled={TOUCH_DEVICE}
             content={
-              (
+              createAnyPermission.granted ? (
                 <span className={styles.createButtonTooltipContent}>Create new document</span>
-              ) as any
+              ) : (
+                <Card padding={2} radius={1}>
+                  <InsufficientPermissionsMessage
+                    currentUser={currentUser}
+                    operationLabel="create any document"
+                  />
+                </Card>
+              )
             }
-            tone="navbar"
           >
             <div>
               <Button
@@ -105,6 +114,7 @@ export default function Navbar(props: Props) {
                 kind="simple"
                 onClick={onCreateButtonClick}
                 padding="small"
+                disabled={!createAnyPermission.granted}
                 selected={createMenuIsOpen}
                 tone="navbar"
               />

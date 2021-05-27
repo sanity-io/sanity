@@ -138,6 +138,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
     const {tools, router} = this.props
     const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
     const isOverlayVisible = menuIsOpen || searchIsOpen
+    const documentTypes = getNewDocumentModalActions().map((action) => action.schemaType)
 
     return (
       <div
@@ -167,6 +168,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
               onToggleMenu={this.handleToggleMenu}
               onSwitchTool={this.handleSwitchTool}
               router={router}
+              documentTypes={documentTypes}
               searchIsOpen={searchIsOpen}
               /* eslint-disable-next-line react/jsx-handler-names */
               onUserLogout={userStore.actions.logout}
