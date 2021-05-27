@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import {empty} from 'rxjs'
-import {useObservable} from '../util/useObservable'
+import {useMemoObservable} from 'react-rx'
 import {UserColorManagerContext} from './context'
 import {UserColor, UserColorManager} from './types'
 
@@ -11,5 +11,5 @@ export function useUserColorManager(): UserColorManager {
 export function useUserColor(userId: string | null): UserColor {
   const manager = useUserColorManager()
 
-  return useObservable(userId ? manager.listen(userId) : empty(), manager.get(null))
+  return useMemoObservable(userId ? manager.listen(userId) : empty(), [userId], manager.get(null))
 }
