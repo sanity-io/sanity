@@ -34,6 +34,7 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx'],
       rules: {
+        'import/no-unresolved': 'off',
         'no-undef': 'off',
       },
     },
