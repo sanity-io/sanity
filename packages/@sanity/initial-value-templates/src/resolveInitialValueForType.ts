@@ -64,7 +64,7 @@ async function resolveInitialArrayValue(type, params: InitialValueParams, maxDep
       )
     : undefined
 }
-async function resolveInitialObjectValue(
+export async function resolveInitialObjectValue(
   type: ObjectSchemaType,
   params: InitialValueParams,
   maxDepth: number
