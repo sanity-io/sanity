@@ -43,6 +43,9 @@
     },
     {
       "path": "../transaction-collator"
+    },
+    {
+      "path": "../initial-value-templates"
     }
   ]
 }
