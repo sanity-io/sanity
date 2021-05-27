@@ -11,6 +11,7 @@ interface Props {
   onToggleMenu: () => void
   onUserLogout: () => void
   router: Router
+  documentTypes: string[]
   searchIsOpen: boolean
   tools: Tool[]
 }
@@ -154,6 +155,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
       onToggleMenu,
       onUserLogout,
       router,
+      documentTypes,
       searchIsOpen,
       tools,
     } = this.props
@@ -171,6 +173,7 @@ class NavbarContainer extends React.PureComponent<Props, State> {
         onToggleMenu={onToggleMenu}
         onUserLogout={onUserLogout}
         router={router}
+        documentTypes={documentTypes}
         searchIsOpen={searchIsOpen}
         showLabel={showLabel}
         showToolMenu={showToolMenu}
