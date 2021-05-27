@@ -383,6 +383,10 @@
       "path": "datastores/user"
     },
     {
+      "name": "part:@sanity/base/grants",
+      "path": "datastores/grants"
+    },
+    {
       "name": "part:@sanity/base/project",
       "path": "datastores/project"
     },
