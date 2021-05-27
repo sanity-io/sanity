@@ -1,4 +1,4 @@
-import {Observable, of, from, merge, defer} from 'rxjs'
+import {Observable, of, from, merge, defer, concat} from 'rxjs'
 import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
 import raf from 'raf'
 import DataLoader from 'dataloader'
@@ -6,6 +6,8 @@ import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {versionedClient} from '../../client/versionedClient'
+import {debugRolesParam$} from '../debugParams'
+import {getDebugRolesByNames} from '../grants/debug'
 import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
 
 const sanityClient = versionedClient.withConfig({apiVersion: 'X'})
@@ -23,6 +25,8 @@ const userLoader = new DataLoader(
   }
 )
 
+const debugRoles$ = debugRolesParam$.pipe(map(getDebugRolesByNames))
+
 function fetchCurrentUser(): Observable<CurrentUser | null> {
   return defer(() => {
     const currentUserPromise = authenticationFetcher.getCurrentUser() as Promise<CurrentUser>
@@ -38,7 +42,15 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
         // prime the data loader cache with the id of current user
         userLoader.prime(user.id, normalizeOwnUser(user))
       }
-    })
+    }),
+    mergeMap((user) =>
+      concat(
+        of(user),
+        debugRoles$.pipe(
+          map((debugRoles) => (debugRoles.length > 0 ? {...user, roles: debugRoles} : user))
+        )
+      )
+    )
   )
 }
 
