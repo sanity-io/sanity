@@ -1,12 +1,9 @@
 import documentStore from 'part:@sanity/base/datastore/document'
-import {useObservable} from './utils/useObservable'
-import React from 'react'
+import {useMemoObservable} from 'react-rx'
 
 export function useEditState(publishedDocId: string, docTypeName: string) {
-  return useObservable(
-    React.useMemo(() => documentStore.pair.editState(publishedDocId, docTypeName), [
-      publishedDocId,
-      docTypeName,
-    ])
-  )
+  return useMemoObservable(() => documentStore.pair.editState(publishedDocId, docTypeName), [
+    publishedDocId,
+    docTypeName,
+  ])
 }

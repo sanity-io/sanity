@@ -1,5 +1,5 @@
-import {useObservable} from '@sanity/react-hooks'
 import React, {useCallback, useMemo, useState} from 'react'
+import {useMemoObservable} from 'react-rx'
 import {versionedClient} from '../../../versionedClient'
 import {usePaneRouter} from '../../../contexts/PaneRouterContext'
 import {Doc} from '../types'
@@ -28,16 +28,14 @@ export function DocumentHistoryProvider(props: DocumentHistoryProviderProps) {
 
   // note: this emits sync so can never be null
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {historyController} = useObservable(
-    useMemo(
-      () =>
-        createObservableController({
-          timeline,
-          documentId,
-          client: versionedClient,
-        }),
-      [documentId, timeline]
-    )
+  const {historyController} = useMemoObservable(
+    () =>
+      createObservableController({
+        timeline,
+        documentId,
+        client: versionedClient,
+      }),
+    [documentId, timeline]
   )!
 
   const {since, rev} = paneRouter.params as Record<string, string | undefined>

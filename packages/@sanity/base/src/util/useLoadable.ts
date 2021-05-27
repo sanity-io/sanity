@@ -1,9 +1,10 @@
-import * as React from 'react'
-import {Observable, Subscription} from 'rxjs'
+import {Observable, of, OperatorFunction} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
+import {catchError, map} from 'rxjs/operators'
 
-export type LoadableState<T> = LoadingState<T> | LoadedState<T> | ErrorState<T>
+export type LoadableState<T> = LoadingState | LoadedState<T> | ErrorState
 
-export interface LoadingState<T> {
+export interface LoadingState {
   value: undefined
   error: undefined
   isLoading: true
@@ -15,54 +16,32 @@ export interface LoadedState<T> {
   isLoading: false
 }
 
-export interface ErrorState<T> {
+export interface ErrorState {
   value: undefined
   error: Error
   isLoading: false
 }
 
-export function useLoadable<T>(observable$: Observable<T>): LoadableState<T>
+const LOADING_STATE: LoadingState = {isLoading: true, value: undefined, error: undefined}
+
+export function useLoadable<T>(observable$: Observable<T>): LoadableState<T | undefined>
 export function useLoadable<T>(observable$: Observable<T>, initialValue: T): LoadableState<T>
-export function useLoadable<T>(observable$: Observable<T>, initialValue?: T): LoadableState<T> {
-  const subscription = React.useRef<Subscription>()
-  const [value, setState] = React.useState<LoadableState<T>>(() => {
-    let isSync = true
-    let syncVal: LoadableState<T> =
-      typeof initialValue === 'undefined'
-        ? {isLoading: true, value: undefined, error: undefined}
-        : {isLoading: false, value: initialValue, error: undefined}
+export function useLoadable<T>(
+  observable$: Observable<T>,
+  initialValue?: T
+): LoadableState<T | undefined> {
+  const initial: LoadableState<T> =
+    typeof initialValue === 'undefined'
+      ? LOADING_STATE
+      : {isLoading: false, value: initialValue, error: undefined}
 
-    subscription.current = observable$.subscribe(
-      (nextVal) => {
-        const nextState: LoadedState<T> = {
-          isLoading: false,
-          value: nextVal,
-          error: undefined,
-        }
+  return useMemoObservable(() => observable$.pipe(asLoadable()), [observable$], initial)
+}
 
-        if (isSync) {
-          syncVal = nextState
-        } else {
-          setState(nextState)
-        }
-      },
-      (error) => {
-        setState({isLoading: false, error, value: undefined})
-      }
+export function asLoadable<T>(): OperatorFunction<T, LoadableState<T>> {
+  return (input$: Observable<T>) =>
+    input$.pipe(
+      map((val) => ({isLoading: false, value: val, error: undefined} as const)),
+      catchError((error): Observable<ErrorState> => of({isLoading: false, value: undefined, error}))
     )
-
-    isSync = false
-    return syncVal
-  })
-
-  React.useEffect(
-    () => () => {
-      if (subscription.current) {
-        subscription.current.unsubscribe()
-      }
-    },
-    []
-  )
-
-  return value
 }
