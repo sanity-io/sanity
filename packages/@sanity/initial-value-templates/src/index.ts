@@ -10,4 +10,4 @@ export {
   getTemplateErrors,
 } from './templates'
 
-export {resolveInitialValueForType} from './resolveInitialValueForType'
+export {resolveInitialValueForType, resolveInitialObjectValue} from './resolveInitialValueForType'
