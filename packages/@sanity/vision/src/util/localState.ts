@@ -1,4 +1,4 @@
-import isPlainObject from './isPlainObject'
+import {isPlainObject} from './isPlainObject'
 
 const storageKey = 'sanityVision'
 const defaultState: Record<string, any> = {}

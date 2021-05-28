@@ -1,4 +1,4 @@
-export default function parseApiQueryString(
+export function parseApiQueryString(
   qs: Record<string, string | unknown>
 ): {query: unknown; params: Record<string, unknown>} {
   const params = Object.keys(qs)

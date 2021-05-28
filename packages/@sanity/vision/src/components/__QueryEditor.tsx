@@ -4,9 +4,9 @@ import React from 'react'
 import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
 import codemirror from 'codemirror'
 
-require('codemirror/mode/javascript/javascript')
-require('codemirror/addon/hint/show-hint')
-require('codemirror/addon/edit/closebrackets')
+// require('codemirror/mode/javascript/javascript')
+// require('codemirror/addon/hint/show-hint')
+// require('codemirror/addon/edit/closebrackets')
 
 export interface QueryEditorProps {
   onExecute: () => void

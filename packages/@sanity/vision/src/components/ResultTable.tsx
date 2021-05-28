@@ -1,5 +1,5 @@
 import React from 'react'
-import calendarDate from '../util/calendarDate'
+import {calendarDate} from '../util/calendarDate'
 
 export interface ResultTableProps {
   query: string
@@ -15,7 +15,7 @@ export interface ResultTableState {
   expanded: string[]
 }
 
-class ResultTable extends React.PureComponent<ResultTableProps, ResultTableState> {
+export class ResultTable extends React.PureComponent<ResultTableProps, ResultTableState> {
   constructor(props: ResultTableProps) {
     super(props)
     this.state = {expanded: []}
@@ -76,5 +76,3 @@ class ResultTable extends React.PureComponent<ResultTableProps, ResultTableState
     )
   }
 }
-
-export default ResultTable

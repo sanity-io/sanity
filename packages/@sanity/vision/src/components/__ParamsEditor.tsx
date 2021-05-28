@@ -4,8 +4,8 @@ import React from 'react'
 import classNames from 'classnames'
 import codemirror from 'codemirror'
 import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
-import isPlainObject from '../util/isPlainObject'
-import tryParseParams from '../util/tryParseParams'
+import {isPlainObject} from '../util/isPlainObject'
+import {tryParseParams} from '../util/tryParseParams'
 
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')

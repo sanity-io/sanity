@@ -1,30 +1,25 @@
 /* eslint-disable complexity */
 import React from 'react'
-import PropTypes from 'prop-types'
 import queryString from 'query-string'
 import SplitPane from 'react-split-pane'
-import {PlayIcon} from '@sanity/icons'
-import {Flex, Card, Button, Stack, Box, Label, Select, Text, TextInput} from '@sanity/ui'
+import {CopyIcon, PlayIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Label, Layer, Select, Stack, Text, TextInput} from '@sanity/ui'
 import studioClient from 'part:@sanity/base/client'
 // import {SanityClient} from '@sanity/client'
 import {Subscription} from 'rxjs'
 import {storeState, getState} from '../util/localState'
-import parseApiQueryString from '../util/parseApiQueryString'
-import tryParseParams from '../util/tryParseParams'
-import encodeQueryString from '../util/encodeQueryString'
+import {parseApiQueryString} from '../util/parseApiQueryString'
+import {tryParseParams} from '../util/tryParseParams'
+import {encodeQueryString} from '../util/encodeQueryString'
 import {apiVersions} from '../apiVersions'
-import DelayedSpinner from './DelayedSpinner'
-import QueryEditor from './QueryEditor'
-import ParamsEditor from './ParamsEditor'
-import ResultView from './ResultView'
-import NoResultsDialog from './NoResultsDialog'
-import QueryErrorDialog from './QueryErrorDialog'
+import {DelayedSpinner} from './DelayedSpinner'
+import {CodeEditor, CodeEditorCursor} from './codeEditor'
+import {ResultView} from './ResultView'
+import {NoResultsDialog} from './NoResultsDialog'
+import {QueryErrorDialog} from './QueryErrorDialog'
+import './react-split-pane.css'
 
-/* eslint-disable import/no-unassigned-import, import/no-unresolved */
-import 'codemirror/lib/codemirror.css?raw'
-import 'codemirror/theme/material.css?raw'
-import 'codemirror/addon/hint/show-hint.css?raw'
-/* eslint-enable import/no-unassigned-import, import/no-unresolved */
+import styles from './VisionGui.css'
 
 export interface VisionGuiProps {
   datasets: {name: string}[]
@@ -32,6 +27,8 @@ export interface VisionGuiProps {
 }
 
 export interface VisionGuiState {
+  queryCursor: CodeEditorCursor
+  paramsCursor: CodeEditorCursor
   data?: string
   query: string
   params?: Record<string, unknown>
@@ -69,12 +66,7 @@ const handleCopyUrl = () => {
   }
 }
 
-class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
-  static contextTypes = {
-    styles: PropTypes.object,
-    components: PropTypes.object,
-  }
-
+export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
   _queryEditorContainer: React.RefObject<HTMLDivElement>
   _paramsEditorContainer: React.RefObject<HTMLDivElement>
 
@@ -113,9 +105,12 @@ class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
     this.client = studioClient.withConfig({apiVersion, dataset})
 
     this.subscribers = {}
+
     this.state = {
       query: lastQuery,
+      queryCursor: {line: 0, column: 0},
       params: lastParams && tryParseParams(lastParams),
+      paramsCursor: {line: 0, column: 0},
       rawParams: lastParams,
       queryInProgress: false,
       dataset,
@@ -130,7 +125,9 @@ class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
     this.handleListenerMutation = this.handleListenerMutation.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
+    this.handleQueryCursorChange = this.handleQueryCursorChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
+    this.handleParamsCursorChange = this.handleParamsCursorChange.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
   }
 
@@ -361,12 +358,20 @@ class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
       })
   }
 
-  handleQueryChange(data) {
-    this.setState({query: data.query})
+  handleQueryChange(query: string) {
+    this.setState({query})
   }
 
-  handleParamsChange(data) {
-    this.setState({rawParams: data.raw, params: data.parsed})
+  handleQueryCursorChange(queryCursor: CodeEditorCursor) {
+    this.setState({queryCursor})
+  }
+
+  handleParamsChange(data: string) {
+    this.setState({rawParams: data, params: tryParseParams(data)})
+  }
+
+  handleParamsCursorChange(paramsCursor: CodeEditorCursor) {
+    this.setState({paramsCursor})
   }
 
   render() {
@@ -387,175 +392,220 @@ class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
       customApiVersion,
       isValidApiVersion,
     } = this.state
-    const styles = this.context.styles.visionGui
+
     const hasResult = !error && !queryInProgress && typeof result !== 'undefined'
     const hasEmptyResult = hasResult && Array.isArray(result) && result.length === 0
 
     // Note that because of react-json-inspector, we need at least one
     // addressable, non-generated class name. Therefore;
     // leave `sanity-vision` untouched!
-    const visionClass = ['sanity-vision', this.context.styles.visionGui.root]
-      .filter(Boolean)
-      .join(' ')
+    // const visionClass = ['sanity-vision', styles.root].filter(Boolean).join(' ')
 
     return (
-      <div className={visionClass}>
-        <Card className={styles.header}>
-          <Flex>
-            {/* Dataset selector */}
-            <Box padding={1}>
-              <Stack>
-                <Card padding={2}>
-                  <Label>Dataset</Label>
+      <Card
+        // borderTop
+        className="sanity-vision"
+        height="fill"
+        overflow="hidden"
+        // scheme="dark"
+        sizing="border"
+        style={{display: 'flex', flexDirection: 'column'}}
+      >
+        <Layer zOffset={10}>
+          <Card paddingX={3} paddingY={2} shadow={1}>
+            <Flex align="center" gap={2}>
+              {/* Dataset selector */}
+              {datasets && datasets.length > 0 && (
+                <Card padding={1} radius={2} tone="transparent">
+                  <Flex align="center">
+                    <Box padding={2}>
+                      <Label>Dataset</Label>
+                    </Box>
+                    <Select padding={2} value={dataset} onChange={this.handleChangeDataset}>
+                      {datasets.map((ds) => (
+                        <option key={ds.name}>{ds.name}</option>
+                      ))}
+                    </Select>
+                  </Flex>
                 </Card>
-                <Select value={dataset} onChange={this.handleChangeDataset}>
-                  {datasets.map((ds) => (
-                    <option key={ds.name}>{ds.name}</option>
-                  ))}
-                </Select>
-              </Stack>
-            </Box>
+              )}
 
-            {/* API version selector */}
-            <Box padding={1}>
-              <Stack>
-                <Card padding={2}>
-                  <Label>API version</Label>
-                </Card>
-                <Select
-                  value={customApiVersion ? 'other' : apiVersion}
-                  onChange={this.handleChangeApiVersion}
-                >
-                  {apiVersions.map((version) => (
-                    <option key={version}>{version}</option>
-                  ))}
-                  <option key="other" value="other">
-                    Other
-                  </option>
-                </Select>
-              </Stack>
-            </Box>
-
-            {/* Custom API version input */}
-            {customApiVersion && (
-              <Box padding={1}>
-                <Stack>
-                  <Card padding={2}>
-                    <Label>Custom API version</Label>
-                  </Card>
-
-                  <TextInput
-                    value={typeof customApiVersion === 'string' ? customApiVersion : ''}
-                    onChange={this.handleCustomApiVersionChange}
-                    customValidity={isValidApiVersion ? undefined : 'Invalid API version'}
-                  />
-                </Stack>
-              </Box>
-            )}
-
-            {/* Query URL (for copying) */}
-            {typeof url === 'string' ? (
-              <Box padding={1} flex={1}>
-                <Stack>
-                  <Card padding={2}>
-                    <Label>
-                      Query URL&nbsp;
-                      <a onClick={handleCopyUrl} className={styles.queryUrlCopy}>
-                        [copy]
-                      </a>
-                    </Label>
-                  </Card>
-                  <TextInput readOnly id="vision-query-url" value={url} />
-                </Stack>
-              </Box>
-            ) : (
-              <Box flex={1} />
-            )}
-
-            {/* Execution time */}
-            {typeof queryTime === 'number' && (
-              <Box padding={1}>
-                <Stack>
-                  <Card padding={2}>
-                    <Label>Timings</Label>
-                  </Card>
-                  <Stack space={2}>
-                    <Text size={2}>Execution: {queryTime}ms</Text>
-                    <Text size={2}>End-to-end: {e2eTime}ms</Text>
-                  </Stack>
-                </Stack>
-              </Box>
-            )}
-
-            {/* Controls (listen/run) */}
-            <Box padding={1}>
-              <Stack>
-                <Card padding={2}>
-                  <Label align="right">Controls</Label>
-                </Card>
-                <Flex>
-                  <Card onClick={this.handleListenerCancellation}>
-                    <Button
-                      style={listenInProgress ? NO_POINTER_EVENTS : undefined}
-                      onClick={this.handleListenExecution}
-                      loading={listenInProgress}
-                      type="button"
-                      text="Listen"
-                      mode="ghost"
-                    />
-                  </Card>
-
-                  <Card marginLeft={1}>
-                    <Button
-                      onClick={this.handleQueryExecution}
-                      icon={PlayIcon}
-                      loading={queryInProgress}
-                      tone="primary"
-                      text="Run query"
-                    />
-                  </Card>
+              {/* API version selector */}
+              <Card padding={1} radius={2} tone="transparent">
+                <Flex align="center">
+                  <Box padding={2}>
+                    <Label>API version</Label>
+                  </Box>
+                  <Box>
+                    <Select
+                      padding={2}
+                      value={customApiVersion ? 'other' : apiVersion}
+                      onChange={this.handleChangeApiVersion}
+                    >
+                      {apiVersions.map((version) => (
+                        <option key={version}>{version}</option>
+                      ))}
+                      <option key="other" value="other">
+                        Other
+                      </option>
+                    </Select>
+                  </Box>
                 </Flex>
-              </Stack>
-            </Box>
-          </Flex>
-        </Card>
+              </Card>
+
+              {/* Custom API version input */}
+              {customApiVersion && (
+                <Card padding={1} radius={2} tone="transparent">
+                  <Flex align="center">
+                    <Box padding={2}>
+                      <Label>Custom API version</Label>
+                    </Box>
+                    <Box>
+                      <TextInput
+                        padding={2}
+                        value={typeof customApiVersion === 'string' ? customApiVersion : ''}
+                        onChange={this.handleCustomApiVersionChange}
+                        customValidity={isValidApiVersion ? undefined : 'Invalid API version'}
+                      />
+                    </Box>
+                  </Flex>
+                </Card>
+              )}
+
+              {/* Query URL (for copying) */}
+              {
+                <Card flex={1} padding={1} radius={2} tone="transparent">
+                  <Flex align="center">
+                    <Box padding={2}>
+                      <Label>Query URL</Label>
+                    </Box>
+                    <Box flex={1}>
+                      <TextInput
+                        // clearButton={url ? {icon: CopyIcon} : undefined}
+                        disabled={!url}
+                        padding={2}
+                        readOnly={Boolean(url)}
+                        id="vision-query-url"
+                        suffix={
+                          url ? (
+                            <Box padding={1} style={{lineHeight: 0}}>
+                              <Button
+                                as="a"
+                                icon={CopyIcon}
+                                mode="bleed"
+                                onClick={handleCopyUrl}
+                                padding={1}
+                              />
+                            </Box>
+                          ) : undefined
+                        }
+                        value={url || ''}
+                      />
+                    </Box>
+                  </Flex>
+                </Card>
+              }
+
+              {/* Execution time */}
+              {typeof queryTime === 'number' && (
+                <Card padding={1} radius={2} tone="transparent">
+                  <Flex align="center">
+                    <Box padding={2}>
+                      <Label>Timings</Label>
+                    </Box>
+                    <Stack paddingX={2} space={2}>
+                      <Text size={0}>Execution: {queryTime}ms</Text>
+                      <Text size={0}>End-to-end: {e2eTime}ms</Text>
+                    </Stack>
+                  </Flex>
+                </Card>
+              )}
+
+              {/* Controls (listen/run) */}
+              <Flex align="center">
+                <Box hidden padding={2}>
+                  <Label align="right">Controls</Label>
+                </Box>
+                <Flex gap={1}>
+                  <Button
+                    style={listenInProgress ? NO_POINTER_EVENTS : undefined}
+                    onClick={
+                      listenInProgress
+                        ? this.handleListenerCancellation
+                        : this.handleListenExecution
+                    }
+                    loading={listenInProgress}
+                    type="button"
+                    text="Listen"
+                    mode="ghost"
+                  />
+                  <Button
+                    onClick={this.handleQueryExecution}
+                    icon={PlayIcon}
+                    loading={queryInProgress}
+                    tone="primary"
+                    text="Run query"
+                  />
+                </Flex>
+              </Flex>
+            </Flex>
+          </Card>
+        </Layer>
+
         <div className={styles.splitContainer}>
           <SplitPane split="vertical" minSize={150} defaultSize={400}>
+            {/* Edit query and params */}
             <div className={styles.edit}>
-              <SplitPane split="horizontal" defaultSize={'80%'}>
+              <SplitPane split="horizontal" defaultSize="75%">
                 <div className={styles.inputContainer} ref={this._queryEditorContainer}>
-                  <h3 className={styles.inputLabelQuery || 'query'}>Query</h3>
-                  <QueryEditor
+                  <Box padding={4} paddingBottom={0}>
+                    <Label muted>Query</Label>
+                  </Box>
+                  {/* <h3 className={styles.inputLabelQuery || 'query'}>Query</h3> */}
+                  <CodeEditor
                     className={styles.queryEditor}
-                    value={this.state.query}
-                    onExecute={this.handleQueryExecution}
+                    cursor={this.state.queryCursor}
+                    fontSize={1}
+                    language="javascript"
+                    // onExecute={this.handleQueryExecution}
                     onChange={this.handleQueryChange}
-                    schema={this.props.schema}
+                    onCursorChange={this.handleQueryCursorChange}
+                    // onCursorChange={() => undefined}
+                    // schema={this.props.schema}
+                    value={this.state.query}
                   />
                 </div>
-                <div className={styles.inputContainer} ref={this._paramsEditorContainer}>
-                  <h3 className={styles.inputLabelQuery || 'query'}>Params</h3>
-                  <ParamsEditor
+                <Card className={styles.inputContainer} ref={this._paramsEditorContainer}>
+                  <Box padding={4} paddingBottom={0}>
+                    <Label muted>Params</Label>
+                  </Box>
+                  {/* <h3 className={styles.inputLabelQuery || 'query'}>Params</h3> */}
+                  <CodeEditor
+                    className={styles.paramsEditor}
+                    cursor={this.state.paramsCursor}
+                    language="json"
+                    onChange={this.handleParamsChange}
+                    onCursorChange={this.handleParamsCursorChange}
+                    value={this.state.rawParams}
+                  />
+                  {/* <ParamsEditor
                     className={styles.paramsEditor}
                     classNameInvalid={styles.paramsEditorInvalid}
                     value={this.state.rawParams}
                     onExecute={this.handleQueryExecution}
                     onChange={this.handleParamsChange}
-                  />
-                </div>
+                  /> */}
+                </Card>
               </SplitPane>
             </div>
+
+            {/* Result JSON */}
             <div className={styles.resultContainer}>
               <h3 className={styles.inputLabelQuery || 'resultLabel'}>Result</h3>
               <div className={styles.result}>
                 {queryInProgress && <DelayedSpinner />}
                 {error && <QueryErrorDialog error={error} />}
-                {hasResult && !hasEmptyResult && (
-                  <ResultView
-                    data={result}
-                    // query={query}
-                  />
-                )}
+                {hasResult && !hasEmptyResult && <ResultView data={result} />}
                 {hasEmptyResult && (
                   <div className={styles.noResult}>
                     <NoResultsDialog query={executedQuery || ''} dataset={dataset} />
@@ -568,9 +618,7 @@ class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
             </div>
           </SplitPane>
         </div>
-      </div>
+      </Card>
     )
   }
 }
-
-export default VisionGui

@@ -5,7 +5,7 @@ export interface NoResultsDialogProps {
   query: string
 }
 
-function NoResultsDialog(props: NoResultsDialogProps) {
+export function NoResultsDialog(props: NoResultsDialogProps) {
   return (
     <div className="vision_no-results">
       <h1>No matches</h1>
@@ -18,5 +18,3 @@ function NoResultsDialog(props: NoResultsDialogProps) {
     </div>
   )
 }
-
-export default NoResultsDialog

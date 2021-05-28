@@ -1,36 +1,31 @@
-import React from 'react'
-import LoadingSpinner from './LoadingSpinner'
+import {Spinner} from '@sanity/ui'
+import React, {useEffect, useRef, useState} from 'react'
 
 export interface DelayedSpinnerProps {
   delay?: number
+  muted?: boolean
 }
 
 export interface DelayedSpinnerState {
   show?: boolean
 }
 
-// Waits for X ms before showing a spinner
-class DelayedSpinner extends React.PureComponent<DelayedSpinnerProps, DelayedSpinnerState> {
-  timer: NodeJS.Timer | null = null
+export function DelayedSpinner(props: DelayedSpinnerProps) {
+  const {delay = 500, muted} = props
+  const timerRef = useRef<NodeJS.Timer | null>(null)
+  const [visible, setVisible] = useState(false)
 
-  constructor(props: DelayedSpinnerProps) {
-    super(props)
-    this.state = {}
-  }
+  useEffect(() => {
+    // Waits for X ms before showing a spinner
+    timerRef.current = setTimeout(() => setVisible(true), delay)
 
-  componentDidMount() {
-    const {delay = 500} = this.props
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+    }
+  }, [delay])
 
-    this.timer = setTimeout(() => this.setState({show: true}), delay)
-  }
-
-  componentWillUnmount() {
-    if (this.timer) clearTimeout(this.timer)
-  }
-
-  render() {
-    return this.state.show ? <LoadingSpinner /> : null
-  }
+  return visible ? <Spinner muted={muted} /> : null
 }
-
-export default DelayedSpinner

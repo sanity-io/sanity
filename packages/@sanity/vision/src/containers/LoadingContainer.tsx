@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import request from '../util/request'
+import {request} from '../util/request'
 
 // Yeah, inheritance and all that. Deal with it.
 // eslint-disable-next-line @typescript-eslint/ban-types
-class LoadingContainer<Props, State extends {}> extends React.PureComponent<Props, State> {
+export class LoadingContainer<Props, State extends {}> extends React.PureComponent<Props, State> {
   subscriptions: any[]
   stateKeys: string[] = []
   getSubscriptions: (() => {datasets: {uri: string}}) | null = null
@@ -40,5 +40,3 @@ class LoadingContainer<Props, State extends {}> extends React.PureComponent<Prop
     }
   }
 }
-
-export default LoadingContainer

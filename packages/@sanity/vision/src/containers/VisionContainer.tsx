@@ -1,10 +1,11 @@
 import React from 'react'
-import DelayedSpinner from '../components/DelayedSpinner'
-import VisionGui from '../components/VisionGui'
-import LoadingContainer from './LoadingContainer'
+import {DelayedSpinner} from '../components/DelayedSpinner'
+import {VisionGui} from '../components/VisionGui'
+import {LoadingContainer} from './LoadingContainer'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface VisionContainerProps {
-  styles: {visionGui: Record<string, string>}
+  //
 }
 
 export interface VisionContainerState {
@@ -14,7 +15,7 @@ export interface VisionContainerState {
 }
 
 // Loads the most basic data from a Sanity project
-class VisionContainer extends LoadingContainer<VisionContainerProps, VisionContainerState> {
+export class VisionContainer extends LoadingContainer<VisionContainerProps, VisionContainerState> {
   super(props: VisionContainerProps) {
     this.super(props)
     this.getSubscriptions = () => {
@@ -37,5 +38,3 @@ class VisionContainer extends LoadingContainer<VisionContainerProps, VisionConta
     return <VisionGui {...this.state} {...this.props} datasets={datasets} />
   }
 }
-
-export default VisionContainer

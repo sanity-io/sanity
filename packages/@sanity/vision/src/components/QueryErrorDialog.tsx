@@ -1,17 +1,15 @@
+import {Box, Heading} from '@sanity/ui'
 import React from 'react'
 import {VisionError} from '../types'
-import QueryErrorDetails from './QueryErrorDetails'
+import {QueryErrorDetails} from './QueryErrorDetails'
 
-function QueryErrorDialog(props: {error: VisionError}) {
+export function QueryErrorDialog(props: {error: VisionError}) {
   return (
     <div className="vision_query-error">
-      <h2>Query error</h2>
-      <pre>
-        <code>{props.error.message}</code>
-      </pre>
-      <QueryErrorDetails error={props.error} />
+      <Heading as="h2">Query error</Heading>
+      <Box marginTop={4}>
+        <QueryErrorDetails error={props.error} />
+      </Box>
     </div>
   )
 }
-
-export default QueryErrorDialog

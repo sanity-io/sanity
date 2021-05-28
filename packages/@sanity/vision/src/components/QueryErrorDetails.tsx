@@ -1,21 +1,25 @@
+import {Card, Code} from '@sanity/ui'
 import React from 'react'
 import {VisionError, VisionErrorDetails} from '../types'
 
-function QueryErrorDetails(props: {error: VisionError}) {
-  const details = {...(props.error.details || {}), ...mapToLegacyDetails(props.error.details)}
+export function QueryErrorDetails(props: {error: VisionError}) {
+  const {error} = props
+  const details = {...(error.details || {}), ...mapToLegacyDetails(error.details)}
+
   if (!details.line) {
     return null
   }
 
   return (
-    <div>
-      <pre>
-        <code>{`${details.line}\n${dashLine(details.column || 0, details.columnEnd || 0)}`}</code>
-      </pre>
-      <pre>
-        <code>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</code>
-      </pre>
-    </div>
+    <Card padding={4} radius={2} tone="critical">
+      <Code>
+        {[
+          error.message,
+          `${details.line}\n${dashLine(details.column || 0, details.columnEnd || 0)}\n`,
+          `Line:   ${details.lineNumber}\nColumn: ${details.column}`,
+        ].join('\n')}
+      </Code>
+    </Card>
   )
 }
 
@@ -39,5 +43,3 @@ function dashLine(column: number, columnEnd: number) {
   const hats = `^`.repeat(columnEnd ? columnEnd - column : 1)
   return `${line}${hats}`
 }
-
-export default QueryErrorDetails

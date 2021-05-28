@@ -1,4 +1,4 @@
-export default function isPlainObject(obj: unknown): obj is Record<string, unknown> {
+export function isPlainObject(obj: unknown): obj is Record<string, unknown> {
   return (
     Boolean(obj) &&
     typeof obj === 'object' &&
