@@ -4,12 +4,10 @@ import raf from 'raf'
 import DataLoader from 'dataloader'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
-import {versionedClient} from '../../client/versionedClient'
+import {vxClient as sanityClient} from '../../client/versionedClient'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
 import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
-
-const sanityClient = versionedClient.withConfig({apiVersion: 'X'})
 
 const [logout$, logout] = observableCallback()
 const [refresh$, refresh] = observableCallback()

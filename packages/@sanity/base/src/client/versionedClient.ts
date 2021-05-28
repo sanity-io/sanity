@@ -20,3 +20,5 @@ export const versionedClient = sanityClient.withConfig({
    */
   apiVersion: '1',
 })
+
+export const vxClient = sanityClient.withConfig({apiVersion: 'X'})
