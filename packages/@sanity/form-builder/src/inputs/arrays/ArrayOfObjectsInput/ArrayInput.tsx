@@ -30,7 +30,13 @@ declare const __DEV__: boolean
 
 type Toast = {push: (params: ToastParams) => void}
 
-const UploadTargetFieldset = uploadTarget(FormFieldSet)
+let UploadTargetFieldsetMemo: any
+function getUploadTargetFieldset() {
+  if (!UploadTargetFieldsetMemo) {
+    UploadTargetFieldsetMemo = uploadTarget(FormFieldSet)
+  }
+  return UploadTargetFieldsetMemo
+}
 
 function createProtoValue(type: SchemaType): ArrayMember {
   if (!isObjectSchemaType(type)) {
@@ -330,6 +336,7 @@ export class ArrayInput extends React.Component<Props> {
     const isSortable = options.sortable !== false && !hasMissingKeys
     const isGrid = options.layout === 'grid'
     const fieldPresence = presence.filter((item) => item.path.length === 0)
+    const UploadTargetFieldset = getUploadTargetFieldset()
     return (
       <UploadTargetFieldset
         __unstable_changeIndicator={false}
