@@ -174,8 +174,8 @@ export const createObservableBufferedDocument = (
     filter((ev): ev is MutationEvent => ev.type === 'mutation'),
     withLatestFrom(currentBufferedDocument$),
     map(([mutationEvent, bufferedDocument]) => {
-      bufferedDocument.arrive(new Mutation(mutationEvent))
-      return getUpdatedSnapshot(bufferedDocument)
+      bufferedDocument!.arrive(new Mutation(mutationEvent))
+      return getUpdatedSnapshot(bufferedDocument!)
     })
   )
 
@@ -184,10 +184,10 @@ export const createObservableBufferedDocument = (
     withLatestFrom(currentBufferedDocument$),
     tap(([action, bufferedDocument]) => {
       if (action.type === 'mutation') {
-        bufferedDocument.add(new Mutation({mutations: action.mutations}))
+        bufferedDocument!.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        bufferedDocument.commit()
+        bufferedDocument!.commit()
       }
     }),
     // We subscribe to this only for the side effects
@@ -203,14 +203,14 @@ export const createObservableBufferedDocument = (
   const commit = () => {
     return currentBufferedDocument$.pipe(
       take(1),
-      mergeMap((bufferedDocument) => bufferedDocument.commit()),
+      mergeMap((bufferedDocument) => bufferedDocument!.commit()),
       mergeMapTo(EMPTY)
     )
   }
 
   // A stream of this document's snapshot
   const snapshot$ = merge(
-    currentBufferedDocument$.pipe(map((bufferedDocument) => bufferedDocument.LOCAL)),
+    currentBufferedDocument$.pipe(map((bufferedDocument) => bufferedDocument!.LOCAL)),
     mutations$.pipe(map(getDocument)),
     rebase$.pipe(map(getDocument)),
     snapshotAfterSync$
@@ -218,7 +218,7 @@ export const createObservableBufferedDocument = (
 
   const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
     currentBufferedDocument$.pipe(
-      map((bufferedDocument) => bufferedDocument.document.HEAD),
+      map((bufferedDocument) => bufferedDocument!.document.HEAD),
       map(toSnapshotEvent)
     ),
     remoteMutations
