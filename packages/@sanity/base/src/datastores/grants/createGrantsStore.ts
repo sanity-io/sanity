@@ -4,7 +4,7 @@ import {mergeMap, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
-import {versionedClient} from '../../client/versionedClient'
+import {vxClient as sanityClient} from '../../client/versionedClient'
 import {
   DatasetGrants,
   DOCUMENT_FILTER_RULE_KEY,
@@ -14,9 +14,6 @@ import {
   PermissionCheckResult,
 } from './types'
 import {debugGrants$} from './debug'
-
-// todo: pin to stable version
-const sanityClient = versionedClient.withConfig({apiVersion: 'X'})
 
 function fetchApiEndpoint<T>(endpoint: string): Promise<T> {
   return sanityClient.request({
