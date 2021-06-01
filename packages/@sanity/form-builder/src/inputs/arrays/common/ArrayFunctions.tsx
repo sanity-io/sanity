@@ -1,6 +1,6 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useMemo} from 'react'
 import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
 import PatchEvent from '../../../PatchEvent'
@@ -38,6 +38,8 @@ export default function ArrayFunctions<MemberType>(
     insertItem(type.of[0])
   }, [type, insertItem])
 
+  const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
+
   if (readOnly) {
     return null
   }
@@ -71,6 +73,7 @@ export default function ArrayFunctions<MemberType>(
               })}
             </Menu>
           }
+          popover={popoverProps}
         />
       )}
 

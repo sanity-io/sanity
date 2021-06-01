@@ -49,6 +49,66 @@ const arraysInArrays = {
                 },
               ],
             },
+            {
+              type: 'object',
+              name: 'object2',
+              title: 'Object 2',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+            {
+              type: 'object',
+              name: 'object3',
+              title: 'Object 3',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+            {
+              type: 'object',
+              name: 'object4',
+              title: 'Object 4',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+            {
+              type: 'object',
+              name: 'object5',
+              title: 'Object 5',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
+            {
+              type: 'object',
+              name: 'object6',
+              title: 'Object 6',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  title: 'Title',
+                },
+              ],
+            },
           ],
         },
       ],
