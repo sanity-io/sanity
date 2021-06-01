@@ -97,7 +97,7 @@
     "execa": "^1.0.0",
     "git-repo-info": "^2.1.1",
     "glob": "^7.1.2",
-    "globby": "^9.2.0",
+    "globby": "^10.0.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-changed": "^4.0.2",
