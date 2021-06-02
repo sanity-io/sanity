@@ -5,25 +5,17 @@ import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
 import {vxClient as sanityClient} from '../../client/versionedClient'
-import {
-  DatasetGrants,
-  DOCUMENT_FILTER_RULE_KEY,
-  GrantsStore,
-  DocumentPermissionName,
-  DocumentFilterRule,
-  PermissionCheckResult,
-} from './types'
+import {GrantsStore, DocumentPermissionName, Grant, PermissionCheckResult} from './types'
 import {debugGrants$} from './debug'
 
-function fetchApiEndpoint<T>(endpoint: string): Promise<T> {
-  return sanityClient.request({
-    uri: endpoint,
+async function getDatasetGrants(projectId: string, dataset: string): Promise<Grant[]> {
+  // `acl` stands for access control list and returns a list of grants
+  const grants: Grant[] = await sanityClient.request({
+    uri: `/projects/${projectId}/datasets/${dataset}/acl`,
     withCredentials: true,
   })
-}
 
-function getDatasetGrants(projectId: string, dataset: string): Promise<DatasetGrants> {
-  return fetchApiEndpoint(`/projects/${projectId}/datasets/${dataset}/grants`)
+  return grants
 }
 
 const PARSED_FILTERS_MEMO = new Map()
@@ -42,7 +34,7 @@ async function matchesFilter(filter: string, document: SanityDocument) {
 }
 
 export function createGrantsStore(): GrantsStore {
-  const datasetGrants = defer(() => of(sanityClient.config())).pipe(
+  const datasetGrants$ = defer(() => of(sanityClient.config())).pipe(
     mergeMap(({projectId, dataset}) => {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')
@@ -51,7 +43,7 @@ export function createGrantsStore(): GrantsStore {
     })
   )
   const currentUserDatasetGrants = debugGrants$.pipe(
-    switchMap((debugGrants) => (debugGrants ? of(debugGrants) : datasetGrants)),
+    switchMap((debugGrants) => (debugGrants ? of(debugGrants) : datasetGrants$)),
     publishReplay(1),
     refCountDelay(1000)
   )
@@ -73,26 +65,27 @@ export function createGrantsStore(): GrantsStore {
  * @param document the document to check
  */
 async function grantsPermissionOn(
-  grants: DatasetGrants,
+  grants: Grant[],
   permission: DocumentPermissionName,
   document: SanityDocument
 ): Promise<PermissionCheckResult> {
-  if (!(DOCUMENT_FILTER_RULE_KEY in grants)) {
+  if (!grants.length) {
     return {granted: false, reason: 'No document grants'}
   }
-  const matchingRules: DocumentFilterRule[] = []
-  for (const rule of grants[DOCUMENT_FILTER_RULE_KEY]) {
-    const config = rule.config
-    if (config?.filter && (await matchesFilter(config.filter, document))) {
-      matchingRules.push(rule)
+
+  const matchingGrants: Grant[] = []
+
+  for (const grant of grants) {
+    if (await matchesFilter(grant.filter, document)) {
+      matchingGrants.push(grant)
     }
   }
-  const matches = matchingRules.some((rule) =>
-    rule.grants.some((grant) => grant.name === permission)
-  )
+
+  const foundMatch = matchingGrants.some((grant) => grant.permissions.some((p) => p === permission))
+
   return {
-    granted: matches,
-    reason: matches ? `Matching grant` : `No matching grants found`,
+    granted: foundMatch,
+    reason: foundMatch ? `Matching grant` : `No matching grants found`,
   }
 }
 
