@@ -1,2 +1,2 @@
 export {getDebugRolesByNames} from './exampleRoles'
-export {getGrantsForRoles, debugGrants$} from './roleGrants'
+export {debugGrants$} from './roleGrants'
