@@ -4,13 +4,15 @@ import {mergeMap, publishReplay, switchMap} from 'rxjs/operators'
 import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
-import {vxClient as sanityClient} from '../../client/versionedClient'
+import sanityClient from 'part:@sanity/base/client'
 import {GrantsStore, DocumentPermissionName, Grant, PermissionCheckResult} from './types'
 import {debugGrants$} from './debug'
 
+const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
+
 async function getDatasetGrants(projectId: string, dataset: string): Promise<Grant[]> {
   // `acl` stands for access control list and returns a list of grants
-  const grants: Grant[] = await sanityClient.request({
+  const grants: Grant[] = await client.request({
     uri: `/projects/${projectId}/datasets/${dataset}/acl`,
     withCredentials: true,
   })
@@ -34,7 +36,7 @@ async function matchesFilter(filter: string, document: SanityDocument) {
 }
 
 export function createGrantsStore(): GrantsStore {
-  const datasetGrants$ = defer(() => of(sanityClient.config())).pipe(
+  const datasetGrants$ = defer(() => of(client.config())).pipe(
     mergeMap(({projectId, dataset}) => {
       if (!projectId || !dataset) {
         throw new Error('Missing projectId or dataset')

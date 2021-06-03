@@ -5,9 +5,12 @@ import DataLoader from 'dataloader'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
 import generateHelpUrl from '@sanity/generate-help-url'
+import sanityClient from 'part:@sanity/base/client'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
 import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
+
+const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 
 const [logout$, logout] = observableCallback()
 const [refresh$, refresh] = observableCallback()
@@ -65,7 +68,7 @@ const normalizedCurrentUser = currentUser.pipe(
 )
 
 function fetchApiEndpoint<T>(endpoint: string, {tag}: {tag: string}): Promise<T> {
-  return sanityClient.request({
+  return client.request({
     uri: endpoint,
     withCredentials: true,
     tag,
