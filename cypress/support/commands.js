@@ -5,7 +5,7 @@ Cypress.Commands.add('login', (sanitySessionToken) => {
     throw new Error('Missing sanity token')
   }
 
-  cy.intercept({url: 'v1/users/me', method: 'GET'}).as('getUser')
+  cy.intercept({url: '*/**/users/me*', method: 'GET'}).as('getUser')
 
   return cy.visit('/').then(() => {
     cy.wait('@getUser').then((interception) => {
