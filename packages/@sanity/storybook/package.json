@@ -29,7 +29,7 @@
   "dependencies": {
     "@sanity/base": "2.10.5",
     "@sanity/server": "2.10.5",
-    "@sanity/ui": "^0.33.28",
+    "@sanity/ui": "^0.34.1",
     "@sanity/webpack-integration": "2.10.5",
     "@storybook/addon-actions": "^3.4.11",
     "@storybook/addon-knobs": "^3.2.8",

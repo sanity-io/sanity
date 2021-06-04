@@ -34,7 +34,7 @@
     "@sanity/client": "2.10.5",
     "@sanity/generate-help-url": "2.2.6",
     "@sanity/types": "2.10.5",
-    "@sanity/ui": "^0.33.28",
+    "@sanity/ui": "^0.34.1",
     "@sanity/util": "2.10.5",
     "classnames": "^2.2.5",
     "is-hotkey": "^0.1.4",

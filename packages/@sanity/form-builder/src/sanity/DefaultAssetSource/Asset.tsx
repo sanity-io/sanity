@@ -137,6 +137,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
           data-id={asset._id}
           mode="ghost"
           onKeyPress={onKeyPress}
+          padding={0}
           style={{padding: 2}}
         >
           <Container>
