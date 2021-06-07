@@ -5,6 +5,8 @@ import userStore from 'part:@sanity/base/user'
 import LoginDialog from 'part:@sanity/base/login-dialog'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import {of} from 'rxjs'
+import {map, catchError} from 'rxjs/operators'
 import CookieTest from './CookieTest'
 import ErrorDialog from './ErrorDialog'
 import UnauthorizedUser from './UnauthorizedUser'
@@ -40,22 +42,26 @@ export default class LoginWrapper extends React.PureComponent {
     super(props)
 
     let sync = true
-
-    this.userSubscription = userStore.currentUser.subscribe({
-      next: (evt) => {
-        // Because observables _can_ be syncronous, it's not safe to call `setState` as it is a noop
-        // We must therefore explicitly check whether or not we were call syncronously
-        const newState = {user: evt.user, error: evt.error, isLoading: false}
-        if (sync) {
-          // eslint-disable-next-line react/no-direct-mutation-state
-          this.state = {...this.state, ...newState}
-        } else {
-          this.setState(newState)
-        }
-      },
-      error: (error) => this.setState({error, isLoading: false}),
-    })
-
+    this.userSubscription = userStore.me
+      .pipe(
+        map((currentUser) => ({
+          user: currentUser,
+          isLoading: false,
+        })),
+        catchError((error) => of({user: null, error, isLoading: false}))
+      )
+      .subscribe({
+        next: (userState) => {
+          // Because observables _can_ be syncronous, it's not safe to call `setState` as it is a noop
+          // We must therefore explicitly check whether or not we were call syncronously
+          if (sync) {
+            // eslint-disable-next-line react/no-direct-mutation-state
+            this.state = {...this.state, ...userState}
+          } else {
+            this.setState(userState)
+          }
+        },
+      })
     sync = false
   }
 

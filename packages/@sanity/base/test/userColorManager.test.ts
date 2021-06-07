@@ -15,10 +15,7 @@ const colorPreferences = {
 const peopleNames = Object.keys(colorPreferences)
 
 const getMockUserStore = (): ManagerOptions['userStore'] => ({
-  currentUser: new BehaviorSubject({
-    type: 'snapshot' as 'snapshot',
-    user: {id: 'current'},
-  }),
+  me: new BehaviorSubject({id: 'current'}),
 })
 
 const hues = ['blue', 'cyan', 'yellow', 'orange', 'magenta', 'purple']

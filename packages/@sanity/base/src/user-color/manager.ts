@@ -1,11 +1,11 @@
 import {Observable} from 'rxjs'
-import {filter, shareReplay} from 'rxjs/operators'
+import {shareReplay} from 'rxjs/operators'
 import {hues, ColorHueKey, COLOR_HUES} from '@sanity/color'
 import {UserColorHue, UserColorManager, UserColor, UserId} from './types'
 
 export interface UserColorManagerOptions {
   anonymousColor?: UserColor
-  userStore?: {currentUser: Observable<{type: 'snapshot' | 'error'; user?: {id: string} | null}>}
+  userStore?: {me: Observable<{id: string} | null>}
   colors?: Readonly<Record<UserColorHue, UserColor>>
   currentUserColor?: UserColorHue
 }
@@ -61,9 +61,7 @@ export function createUserColorManager(options?: UserColorManagerOptions): UserC
   let currentUserId: UserId | null
 
   if (options?.userStore) {
-    options.userStore.currentUser
-      .pipe(filter((evt) => evt.type === 'snapshot'))
-      .subscribe((evt) => setCurrentUser(evt.user ? evt.user.id : null))
+    options.userStore.me.subscribe((user) => setCurrentUser(user ? user.id : null))
   }
 
   return {get, listen}

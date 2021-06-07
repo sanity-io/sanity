@@ -51,9 +51,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
-    this.userSubscription = userStore.currentUser.subscribe((event) =>
-      this.setState({user: event.type === 'snapshot' ? event.user : null})
-    )
+    this.userSubscription = userStore.me.subscribe((user) => this.setState({user}))
   }
 
   componentDidMount() {
