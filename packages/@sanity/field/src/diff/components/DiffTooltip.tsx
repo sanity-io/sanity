@@ -2,26 +2,22 @@ import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useUser, useTimeAgo} from '@sanity/base/hooks'
 import {Path} from '@sanity/types'
 import React from 'react'
-import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
+import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
 import {Diff, getAnnotationAtPath} from '../../diff'
 import {AnnotationDetails} from '../../types'
 import {useAnnotationColor} from '../annotations'
 
-import styles from './DiffTooltip.css'
-
-interface DiffTooltipProps {
+interface DiffTooltipProps extends TooltipProps {
   children: React.ReactElement
   description?: React.ReactNode
   diff: Diff
   path?: Path | string
-  placement?: TooltipPlacement
 }
 
-interface DiffTooltipWithAnnotationsProps {
+interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
-  placement?: TooltipPlacement
 }
 
 export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotationsProps) {
@@ -43,21 +39,25 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <div className={styles.root}>
-      <div className={styles.description}>{description}</div>
-      {annotations.map((annotation, idx) => (
-        <AnnotationItem annotation={annotation} key={idx} />
-      ))}
-    </div>
+    <Stack padding={3} space={2}>
+      <Label size={1} style={{textTransform: 'uppercase'}} muted>
+        {description}
+      </Label>
+      <Stack space={2}>
+        {annotations.map((annotation, idx) => (
+          <AnnotationItem annotation={annotation} key={idx} />
+        ))}
+      </Stack>
+    </Stack>
   )
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
       <Tooltip
         content={content}
-        placement={placement}
         portal
         allowedAutoPlacements={['top', 'bottom']}
+        placement={placement}
       >
         {children}
       </Tooltip>
@@ -77,16 +77,26 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   }
 
   return (
-    <div className={styles.annotation}>
-      <div className={styles.user} style={{backgroundColor: color.background, color: color.text}}>
-        <span>
-          <UserAvatar userId={author} />
-        </span>
-        <span className={styles.displayName}>{user ? user.displayName : 'Loading…'}</span>
-      </div>
-      <time className={styles.timeAgo} dateTime={timestamp}>
+    <Inline space={2}>
+      <Flex
+        align="center"
+        paddingRight={3}
+        style={{
+          backgroundColor: color.background,
+          color: color.text,
+          borderRadius: 'calc(23px / 2)',
+        }}
+      >
+        <UserAvatar userId={author} />
+        <Inline paddingLeft={2}>
+          <Text muted size={1} style={{color: color.text}}>
+            {user ? user.displayName : 'Loading…'}
+          </Text>
+        </Inline>
+      </Flex>
+      <Text as="time" muted size={1} dateTime={timestamp}>
         {timeAgo}
-      </time>
-    </div>
+      </Text>
+    </Inline>
   )
 }
