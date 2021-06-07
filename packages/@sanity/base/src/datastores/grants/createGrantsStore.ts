@@ -14,6 +14,7 @@ async function getDatasetGrants(projectId: string, dataset: string): Promise<Gra
   // `acl` stands for access control list and returns a list of grants
   const grants: Grant[] = await client.request({
     uri: `/projects/${projectId}/datasets/${dataset}/acl`,
+    tag: 'acl.get',
     withCredentials: true,
   })
 
