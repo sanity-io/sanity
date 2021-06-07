@@ -1,11 +1,12 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import UndoIcon from 'part:@sanity/base/undo-icon'
-import Button from 'part:@sanity/components/buttons/default'
+import {Button, Card, Stack} from '@sanity/ui'
+import {RevertIcon} from '@sanity/icons'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useState, useCallback} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
+import styled from 'styled-components'
 import {ObjectDiff, ObjectSchemaType, ChangeNode, OperationsAPI} from '../../types'
 import {DiffContext} from '../contexts/DiffContext'
 import {buildObjectChangeList} from '../changes/buildChangeList'
@@ -13,13 +14,17 @@ import {undoChange} from '../changes/undoChange'
 import {ChangeResolver} from './ChangeResolver'
 import {DocumentChangeContext} from './DocumentChangeContext'
 import {NoChanges} from './NoChanges'
-import styles from './ChangeList.css'
 
 interface Props {
   schemaType: ObjectSchemaType
   diff: ObjectDiff
   fields?: string[]
 }
+
+const ChangeListWrapper = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+`
 
 export function ChangeList({diff, fields, schemaType}: Props): React.ReactElement | null {
   const {documentId, isComparingCurrent} = React.useContext(DocumentChangeContext)
@@ -80,61 +85,54 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
   const showFooter = isRoot && changes.length > 1
 
   return (
-    <div
-      className={styles.root}
-      data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
-    >
-      <div className={styles.changeList}>
-        {changes.map((change) => (
-          <ChangeResolver change={change} key={change.key} />
-        ))}
-      </div>
+    <Card>
+      <Stack space={5} data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}>
+        <Stack as={ChangeListWrapper} space={5}>
+          {changes.map((change) => (
+            <ChangeResolver change={change} key={change.key} />
+          ))}
+        </Stack>
 
-      {showFooter && (
-        <div className={styles.footer}>
-          {isComparingCurrent && updatePermission.granted && (
-            <div className={styles.revertAllContainer} ref={setRevertAllContainerElement}>
-              <Button
-                color="danger"
-                icon={UndoIcon}
-                kind="secondary"
-                onClick={handleRevertAllChangesClick}
-                onMouseEnter={handleRevertAllChangesMouseEnter}
-                onMouseLeave={handleRevertAllChangesMouseLeave}
-                // selected={confirmRevertAllOpen}
-              >
-                Revert all changes
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+        {showFooter && isComparingCurrent && updatePermission.granted && (
+          <Stack ref={setRevertAllContainerElement}>
+            <Button
+              tone="critical"
+              mode="ghost"
+              text="Revert all changes"
+              icon={RevertIcon}
+              onClick={handleRevertAllChangesClick}
+              onMouseEnter={handleRevertAllChangesMouseEnter}
+              onMouseLeave={handleRevertAllChangesMouseLeave}
+            />
+          </Stack>
+        )}
 
-      {confirmRevertAllOpen && (
-        <LegacyLayerProvider zOffset="paneFooter">
-          <PopoverDialog
-            actions={[
-              {
-                color: 'danger',
-                action: revertAllChanges,
-                title: 'Revert all',
-              },
-              {
-                kind: 'simple',
-                action: closeRevertAllChangesConfirmDialog,
-                title: 'Cancel',
-              },
-            ]}
-            onAction={handleConfirmDialogAction}
-            onClickOutside={closeRevertAllChangesConfirmDialog}
-            referenceElement={revertAllContainerElement}
-            size="small"
-          >
-            Are you sure you want to revert all {changes.length} changes?
-          </PopoverDialog>
-        </LegacyLayerProvider>
-      )}
-    </div>
+        {confirmRevertAllOpen && (
+          <LegacyLayerProvider zOffset="paneFooter">
+            <PopoverDialog
+              actions={[
+                {
+                  color: 'danger',
+                  action: revertAllChanges,
+                  title: 'Revert all',
+                },
+                {
+                  kind: 'simple',
+                  action: closeRevertAllChangesConfirmDialog,
+                  title: 'Cancel',
+                },
+              ]}
+              onAction={handleConfirmDialogAction}
+              onClickOutside={closeRevertAllChangesConfirmDialog}
+              referenceElement={revertAllContainerElement}
+              size="small"
+            >
+              Are you sure you want to revert all {changes.length} changes?
+            </PopoverDialog>
+          </LegacyLayerProvider>
+        )}
+      </Stack>
+    </Card>
   )
 }
 
