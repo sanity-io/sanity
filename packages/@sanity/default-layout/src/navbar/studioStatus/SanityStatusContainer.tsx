@@ -54,16 +54,14 @@ class SanityStatusContainer extends React.PureComponent<Props> {
   }
 }
 
-interface UserEvent {
-  user?: {
-    role: 'administrator'
-  }
+interface CurrentUser {
+  role: string | 'administrator'
 }
 
 export default withPropsStream(
-  userStore.currentUser.pipe(
-    flatMap(((event: UserEvent) => {
-      if (event.user && event.user.role === 'administrator') {
+  userStore.me.pipe(
+    flatMap(((user: CurrentUser) => {
+      if (user && user.role === 'administrator') {
         return VersionChecker.checkVersions().then(({result}) => ({
           versionReply: result,
           showStatus: true,
