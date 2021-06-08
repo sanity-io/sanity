@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  max-width: 100%;
   position: relative;
   border-radius: var(--border-radius-small);
 
