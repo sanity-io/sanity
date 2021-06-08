@@ -1,8 +1,7 @@
 import React, {Fragment} from 'react'
+import {Box, Flex, Text} from '@sanity/ui'
 import {ChangeTitlePath, FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
-
-import styles from './ChangeBreadcrumb.css'
 
 export function ChangeBreadcrumb({
   change,
@@ -12,7 +11,7 @@ export function ChangeBreadcrumb({
   titlePath: ChangeTitlePath
 }): React.ReactElement {
   return (
-    <div className={styles.crumb}>
+    <Flex align="center" paddingBottom={1}>
       {titlePath.map((titleSegment, idx) => {
         const showSegment = typeof titleSegment === 'string' || !change || change.showIndex
         if (!showSegment) {
@@ -21,11 +20,19 @@ export function ChangeBreadcrumb({
 
         return (
           <Fragment key={idx}>
-            {idx > 0 && <em className={styles.change__breadcrumb__separator}> / </em>}
-            <ChangeTitleSegment change={change} segment={titleSegment} />
+            {idx > 0 && (
+              <Box paddingX={1}>
+                <Text size={1} muted as="em">
+                  /
+                </Text>
+              </Box>
+            )}
+            <Text size={1} weight="semibold">
+              <ChangeTitleSegment change={change} segment={titleSegment} />
+            </Text>
           </Fragment>
         )
       })}
-    </div>
+    </Flex>
   )
 }
