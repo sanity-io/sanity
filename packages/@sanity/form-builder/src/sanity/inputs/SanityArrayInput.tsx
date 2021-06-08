@@ -22,7 +22,6 @@ export const SanityArrayInput = forwardRef(function SanityArrayInput(
       resolveUploader={resolveUploader}
       resolveInitialValue={resolveInitialValueForType}
       ArrayFunctionsImpl={ArrayFunctions}
-      directUploads={SUPPORT_DIRECT_UPLOADS}
     />
   )
 })
