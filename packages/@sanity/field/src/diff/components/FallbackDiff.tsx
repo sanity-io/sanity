@@ -1,26 +1,27 @@
 import React from 'react'
 import Preview from 'part:@sanity/base/preview'
+import {Box} from '@sanity/ui'
 import {PreviewComponent} from '../../preview/types'
-import {DiffComponent} from '../../types'
+import {Diff, DiffComponent} from '../../types'
 import {DiffFromTo} from './DiffFromTo'
 
-import styles from './FallbackDiff.css'
-
-const FallbackPreview: PreviewComponent<any> = ({value, schemaType}) => {
+const FallbackPreview: PreviewComponent<React.ReactNode> = ({value, schemaType}) => {
   return (
-    <div className={styles.root}>
+    <Box padding={2}>
       <Preview type={schemaType} value={value} layout="default" />
-    </div>
+    </Box>
   )
 }
 
-export const FallbackDiff: DiffComponent<any> = ({diff, schemaType}) => {
+export const FallbackDiff: DiffComponent<Diff<unknown, Record<string, any>>> = ({
+  diff,
+  schemaType,
+}) => {
   return (
     <DiffFromTo
       diff={diff}
       schemaType={schemaType}
       previewComponent={FallbackPreview}
-      cardClassName={styles.card}
       layout="grid"
     />
   )
