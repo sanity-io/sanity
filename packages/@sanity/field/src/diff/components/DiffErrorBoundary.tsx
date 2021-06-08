@@ -1,6 +1,6 @@
 import * as React from 'react'
-import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import styles from './ValueError.css'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons'
 
 declare const __DEV__: boolean
 
@@ -39,17 +39,25 @@ export class DiffErrorBoundary extends React.Component<BoundaryProps, BoundarySt
 
     const help = isDev ? <p>Check the developer console for more information.</p> : null
     return (
-      <>
-        <div className={styles.root}>
-          <span className={styles.icon}>
-            <ErrorOutlineIcon />
-          </span>
-          <div className={styles.message}>
-            The component responsible for showing the changes to this field has crashed.
-            {help}
-          </div>
-        </div>
-      </>
+      <Card tone="critical" padding={3} paddingBottom={0}>
+        <Flex align="flex-start">
+          <Box>
+            <Text>
+              <ErrorOutlineIcon />
+            </Text>
+          </Box>
+          <Box paddingLeft={3}>
+            <Text size={1} as="p">
+              The component responsible for showing the changes to this field has crashed.
+            </Text>
+            {help && (
+              <Text size={1} as="p">
+                {help}
+              </Text>
+            )}
+          </Box>
+        </Flex>
+      </Card>
     )
   }
 }
