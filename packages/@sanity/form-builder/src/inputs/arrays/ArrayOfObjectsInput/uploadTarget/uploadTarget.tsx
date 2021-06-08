@@ -90,6 +90,11 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
     const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])
     const handleFilesOut = React.useCallback(() => setHoveringFiles([]), [])
 
+    const acceptedFiles = hoveringFiles.filter(
+      (hoverFile) => getUploadOptions(hoverFile).length > 0
+    )
+    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
+
     return (
       <Root>
         <FileTarget
@@ -101,7 +106,28 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
         >
           {hoveringFiles.length > 0 && (
             <Overlay>
-              <Text>Drop to upload</Text>
+              {acceptedFiles.length > 0 ? (
+                <>
+                  <Box>
+                    <Text>
+                      Drop to upload {acceptedFiles.length} file
+                      {acceptedFiles.length > 1 ? 's' : ''}
+                    </Text>
+                  </Box>
+                  <Box marginTop={2}>
+                    {rejectedFilesCount > 0 && (
+                      <Text muted size={1}>
+                        ({rejectedFilesCount} file
+                        {rejectedFilesCount > 1 ? 's' : ''} can't be uploaded here)
+                      </Text>
+                    )}
+                  </Box>
+                </>
+              ) : (
+                <Text>
+                  Can't upload {hoveringFiles.length > 1 ? 'any of these files' : 'this file'} here
+                </Text>
+              )}
             </Overlay>
           )}
           {children}
