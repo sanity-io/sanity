@@ -1,52 +1,82 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import uncaughtErrorHandler from '../util/uncaughtErrorHandler'
+import React, {useMemo} from 'react'
 import generateScriptLoader from '../util/generateScriptLoader'
+import uncaughtErrorHandler from '../util/uncaughtErrorHandler'
 import AppLoadingScreen from './AppLoadingScreen'
 import NoJavascript from './NoJavascript'
 
-function assetUrl(staticPath, item) {
-  const isAbsolute = item.path.match(/^https?:\/\//)
-  if (isAbsolute) {
-    return item.path
-  }
-
-  const base = `${staticPath}/${item.path}`
-  if (!item.hash) {
-    return base
-  }
-
-  const hasQuery = base.indexOf('?') !== -1
-  const separator = hasQuery ? '&' : '?'
-  return `${base}${separator}${item.hash}`
+export interface DocumentAsset {
+  path: string
+  hash?: string
 }
 
-function Document(props) {
-  const basePath = props.basePath.replace(/\/+$/, '')
-  const staticPath = `${basePath}${props.staticPath}`
+export interface DocumentProps {
+  basePath?: string
+  charset?: string
+  title?: string
+  viewport?: string
+  loading?: React.ReactNode
+  staticPath?: string
+  favicons?: DocumentAsset[]
+  stylesheets?: DocumentAsset[]
+  scripts?: DocumentAsset[]
+}
 
-  const stylesheets = props.stylesheets.map((item) => (
-    <link key={item.path} rel="stylesheet" href={assetUrl(staticPath, item)} />
-  ))
+const DEFAULT_FAVICONS: DocumentAsset[] = [{path: 'favicon.ico'}]
 
-  const subresources = props.scripts.map((item) => (
-    <link key={item.path} rel="subresource" href={assetUrl(staticPath, item)} />
-  ))
+export default function Document(props: DocumentProps) {
+  const {
+    basePath: basePathProp = '',
+    charset = 'utf-8',
+    title = 'Sanity',
+    viewport = 'width=device-width, initial-scale=1, viewport-fit=cover',
+    loading = 'Connecting to Sanity.io',
+    staticPath: staticPathProp = '/static',
+    favicons: faviconsProp = DEFAULT_FAVICONS,
+    stylesheets: stylesheetsProp = [],
+    scripts: scriptsProp = [],
+  } = props
 
-  const scripts = props.scripts.map((item) => assetUrl(staticPath, item))
-  const scriptLoader = generateScriptLoader(scripts)
-  const errorHandler = uncaughtErrorHandler()
+  const basePath = basePathProp.replace(/\/+$/, '')
+  const staticPath = `${basePath}${staticPathProp}`
 
-  const favicons = props.favicons.map((item, index) => (
-    <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
-  ))
+  const stylesheets = useMemo(
+    () =>
+      stylesheetsProp.map((item) => (
+        <link key={item.path} rel="stylesheet" href={assetUrl(staticPath, item)} />
+      )),
+    [stylesheetsProp, staticPath]
+  )
+
+  const subresources = useMemo(
+    () =>
+      scriptsProp.map((item) => (
+        <link key={item.path} rel="subresource" href={assetUrl(staticPath, item)} />
+      )),
+    [scriptsProp, staticPath]
+  )
+
+  const scripts = useMemo(() => scriptsProp.map((item) => assetUrl(staticPath, item)), [
+    scriptsProp,
+    staticPath,
+  ])
+
+  const scriptLoader = useMemo(() => generateScriptLoader(scripts), [scripts])
+  const errorHandler = useMemo(() => uncaughtErrorHandler(), [])
+
+  const favicons = useMemo(
+    () =>
+      faviconsProp.map((item) => (
+        <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
+      )),
+    [faviconsProp, staticPath]
+  )
 
   return (
     <html>
       <head>
-        <meta charSet={props.charset} />
-        <title>{props.title}</title>
-        <meta name="viewport" content={props.viewport} />
+        <meta charSet={charset} />
+        <title>{title}</title>
+        <meta name="viewport" content={viewport} />
         <meta name="robots" content="noindex" />
         <style>{`html {background-color: #e4e8ed;}`}</style>
         {stylesheets}
@@ -55,7 +85,7 @@ function Document(props) {
       </head>
       <body id="sanityBody">
         <div id="sanity">
-          <AppLoadingScreen text={props.loading} />
+          <AppLoadingScreen text={loading} />
           <NoJavascript />
         </div>
 
@@ -68,33 +98,21 @@ function Document(props) {
   )
 }
 
-const asset = PropTypes.shape({
-  path: PropTypes.string.isRequired,
-  hash: PropTypes.string,
-})
+function assetUrl(staticPath: string, item: DocumentAsset) {
+  const isAbsolute = item.path.match(/^https?:\/\//)
 
-Document.defaultProps = {
-  basePath: '',
-  charset: 'utf-8',
-  title: 'Sanity',
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-  loading: 'Connecting to Sanity.io',
-  staticPath: '/static',
-  favicons: [{path: 'favicon.ico'}],
-  stylesheets: [],
-  scripts: [],
+  if (isAbsolute) {
+    return item.path
+  }
+
+  const base = `${staticPath}/${item.path}`
+
+  if (!item.hash) {
+    return base
+  }
+
+  const hasQuery = base.indexOf('?') !== -1
+  const separator = hasQuery ? '&' : '?'
+
+  return `${base}${separator}${item.hash}`
 }
-
-Document.propTypes = {
-  basePath: PropTypes.string,
-  charset: PropTypes.string,
-  title: PropTypes.string,
-  viewport: PropTypes.string,
-  loading: PropTypes.node,
-  staticPath: PropTypes.string,
-  favicons: PropTypes.arrayOf(asset),
-  stylesheets: PropTypes.arrayOf(asset),
-  scripts: PropTypes.arrayOf(asset),
-}
-
-export default Document
