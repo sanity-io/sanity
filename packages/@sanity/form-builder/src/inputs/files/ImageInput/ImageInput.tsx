@@ -36,6 +36,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
+import deepCompare from 'react-fast-compare'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
@@ -53,8 +54,8 @@ import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
+import {DropMessage} from '../common/DropMessage'
 import {base64ToFile, urlToFile} from './utils/image'
-import deepCompare from 'react-fast-compare'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -681,6 +682,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return fields.some((field) => !deepCompare(value?.[field.name], compareValue?.[field.name]))
   }
+
   render() {
     const {
       type,
@@ -692,6 +694,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       presence,
       focusPath = EMPTY_ARRAY,
       directUploads,
+      resolveUploader,
     } = this.props
     const {hoveringFiles, selectedAssetSource} = this.state
 
@@ -751,7 +754,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     {!value?._upload && value?.asset && this.renderAsset()}
                     {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
                     {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                      <Overlay>Drop to upload</Overlay>
+                      <Overlay>
+                        <DropMessage
+                          hoveringFiles={hoveringFiles}
+                          resolveUploader={resolveUploader}
+                          types={[type]}
+                        />
+                      </Overlay>
                     )}
                   </Flex>
                 </RatioBox>

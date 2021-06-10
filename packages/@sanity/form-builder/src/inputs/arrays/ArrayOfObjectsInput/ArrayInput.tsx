@@ -263,6 +263,7 @@ export class ArrayInput extends React.Component<Props> {
       presence,
       focusPath,
       onBlur,
+      resolveUploader,
       onFocus,
       compareValue,
       filterField,
@@ -333,7 +334,8 @@ export class ArrayInput extends React.Component<Props> {
         __unstable_markers={markers}
         disabled={readOnly}
         ref={this.setFocusArea}
-        getUploadOptions={this.getUploadOptions}
+        resolveUploader={resolveUploader}
+        types={type.of}
         onUpload={this.handleUpload}
       >
         <ImperativeToast ref={this.setToast} />

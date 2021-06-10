@@ -3,12 +3,19 @@ import React from 'react'
 import {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 import styled from 'styled-components'
-import {FileLike, ResolvedUploader, Uploader} from '../../../../sanity/uploads/types'
+import {
+  FileLike,
+  ResolvedUploader,
+  Uploader,
+  UploaderResolver,
+} from '../../../../sanity/uploads/types'
 import {FileInfo, fileTarget} from '../../../common/fileTarget'
+import {DropMessage} from '../../../files/common/DropMessage'
 import {Overlay} from './styles'
 
 type UploadTargetProps = {
-  getUploadOptions: (file: FileLike) => ResolvedUploader[]
+  types: SchemaType[]
+  resolveUploader?: UploaderResolver
   onUpload?: (event: {type: SchemaType; file: File; uploader: Uploader}) => void
   children?: React.ReactNode
 }
@@ -22,6 +29,18 @@ const Root = styled.div`
   position: relative;
 `
 
+function getUploadCandidates(
+  types: SchemaType[],
+  resolveUploader: UploaderResolver,
+  file: FileLike
+) {
+  return types
+    .map((memberType) => ({
+      type: memberType,
+      uploader: resolveUploader(memberType, file),
+    }))
+    .filter((member) => member.uploader) as ResolvedUploader[]
+}
 export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
   const FileTarget = fileTarget<any>(Component)
 
@@ -29,7 +48,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
     props: UploadTargetProps & Props,
     forwardedRef: React.ForwardedRef<HTMLElement>
   ) {
-    const {children, getUploadOptions, onUpload, ...rest} = props
+    const {children, resolveUploader, onUpload, types, ...rest} = props
     const {push: pushToast} = useToast()
 
     const uploadFile = React.useCallback(
@@ -42,9 +61,12 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
 
     const handleFiles = React.useCallback(
       (files: File[]) => {
+        if (!resolveUploader) {
+          return
+        }
         const tasks: UploadTask[] = files.map((file) => ({
           file,
-          uploaderCandidates: getUploadOptions(file),
+          uploaderCandidates: getUploadCandidates(types, resolveUploader, file),
         }))
         const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
         const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
@@ -84,16 +106,11 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
           )
         })
       },
-      [pushToast, getUploadOptions, uploadFile]
+      [pushToast, resolveUploader, types, uploadFile]
     )
 
     const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])
     const handleFilesOut = React.useCallback(() => setHoveringFiles([]), [])
-
-    const acceptedFiles = hoveringFiles.filter(
-      (hoverFile) => getUploadOptions(hoverFile).length > 0
-    )
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
       <Root>
@@ -104,30 +121,13 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
           onFilesOver={setHoveringFiles}
           onFilesOut={handleFilesOut}
         >
-          {hoveringFiles.length > 0 && (
-            <Overlay>
-              {acceptedFiles.length > 0 ? (
-                <>
-                  <Box>
-                    <Text>
-                      Drop to upload {acceptedFiles.length} file
-                      {acceptedFiles.length > 1 ? 's' : ''}
-                    </Text>
-                  </Box>
-                  <Box marginTop={2}>
-                    {rejectedFilesCount > 0 && (
-                      <Text muted size={1}>
-                        ({rejectedFilesCount} file
-                        {rejectedFilesCount > 1 ? 's' : ''} can't be uploaded here)
-                      </Text>
-                    )}
-                  </Box>
-                </>
-              ) : (
-                <Text>
-                  Can't upload {hoveringFiles.length > 1 ? 'any of these files' : 'this file'} here
-                </Text>
-              )}
+          {resolveUploader && hoveringFiles.length > 0 && (
+            <Overlay zOffset={10}>
+              <DropMessage
+                hoveringFiles={hoveringFiles}
+                types={types}
+                resolveUploader={resolveUploader}
+              />
             </Overlay>
           )}
           {children}
