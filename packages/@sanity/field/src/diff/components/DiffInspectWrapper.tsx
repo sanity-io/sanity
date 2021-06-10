@@ -1,9 +1,9 @@
-import {Box, Card, Code, Label, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {ArrowDownIcon} from '@sanity/icons'
 import {pathToString} from '../../paths'
 import {FieldChangeNode} from '../../types'
+import {FromToArrow} from './FromToArrow'
 
 interface Props {
   children: React.ReactNode
@@ -80,9 +80,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.ReactElement 
         </Code>
       </Card>
       <Card>
-        <Text align="center" size={1} muted>
-          <ArrowDownIcon />
-        </Text>
+        <FromToArrow direction="down" align="center" />
       </Card>
       <Card as={CodeWrapper} tone="positive" padding={3} radius={1}>
         <MetaLabel title="to" />
