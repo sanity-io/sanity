@@ -39,4 +39,4 @@ export interface FileLike {
   name?: string
 }
 
-export type UploaderResolver = (type: SchemaType, file: File) => Uploader | null
+export type UploaderResolver = (type: SchemaType, file: FileLike) => Uploader | null

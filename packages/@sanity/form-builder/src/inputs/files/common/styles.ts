@@ -12,12 +12,13 @@ export const FileTarget = withFocusRing(fileTarget(Card))
 export const Overlay: StyledComponent<'div', DefaultTheme> = styled.div`
   position: absolute;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
   background-color: var(--card-bg-color);
   z-index: 3;
   pointer-events: none;

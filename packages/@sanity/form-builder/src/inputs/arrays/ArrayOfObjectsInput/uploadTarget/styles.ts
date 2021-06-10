@@ -1,6 +1,7 @@
 import styled from 'styled-components'
+import {Layer} from '@sanity/ui'
 
-export const Overlay: React.ComponentType = styled.div`
+export const Overlay = styled(Layer)`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -11,6 +12,5 @@ export const Overlay: React.ComponentType = styled.div`
   right: -2px;
   bottom: -2px;
   background-color: var(--card-bg-color);
-  z-index: 3;
   opacity: 0.8;
 `
