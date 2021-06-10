@@ -1,13 +1,26 @@
+import {Box, Card, Code, Label, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
+import styled from 'styled-components'
+import {ArrowDownIcon} from '@sanity/icons'
 import {pathToString} from '../../paths'
 import {FieldChangeNode} from '../../types'
-import styles from './DiffInspectWrapper.css'
 
 interface Props {
   children: React.ReactNode
   change: FieldChangeNode
   className: string
 }
+
+const CodeWrapper = styled.pre`
+  overflow-x: auto;
+  position: relative;
+`
+
+const Meta = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`
 
 export function DiffInspectWrapper({children, className, change}: Props): React.ReactElement {
   const isHovering = useRef(false)
@@ -36,23 +49,48 @@ export function DiffInspectWrapper({children, className, change}: Props): React.
   )
 }
 
+const MetaLabel = ({title}: {title: string}) => (
+  <Box padding={3} display="inline-block" as={Meta}>
+    <Label size={1} muted>
+      {title}
+    </Label>
+  </Box>
+)
+
 function DiffInspector({change}: {change: FieldChangeNode}): React.ReactElement | null {
   return (
-    <>
-      <div className={styles.meta}>
-        {printMeta({
-          path: pathToString(change.path),
-          fromIndex: change.itemDiff?.fromIndex,
-          toIndex: change.itemDiff?.toIndex,
-          hasMoved: change.itemDiff?.hasMoved,
-          action: change.diff.action,
-          isChanged: change.diff.isChanged,
-        })}
-      </div>
-      <pre className={styles.fromJson}>{jsonify(change.diff.fromValue)}</pre>
-      <div className={styles.arrow}>↓</div>
-      <pre className={styles.toJson}>{jsonify(change.diff.toValue)}</pre>
-    </>
+    <Stack space={3}>
+      <Card padding={3} tone="transparent" as={CodeWrapper} radius={1}>
+        <MetaLabel title="meta" />
+        <Code language="json" size={1}>
+          {printMeta({
+            path: pathToString(change.path),
+            fromIndex: change.itemDiff?.fromIndex,
+            toIndex: change.itemDiff?.toIndex,
+            hasMoved: change.itemDiff?.hasMoved,
+            action: change.diff.action,
+            isChanged: change.diff.isChanged,
+          })}
+        </Code>
+      </Card>
+      <Card as={CodeWrapper} tone="critical" padding={3} radius={1}>
+        <MetaLabel title="from" />
+        <Code language="json" size={1}>
+          {jsonify(change.diff.fromValue)}
+        </Code>
+      </Card>
+      <Card>
+        <Text align="center" size={1} muted>
+          <ArrowDownIcon />
+        </Text>
+      </Card>
+      <Card as={CodeWrapper} tone="positive" padding={3} radius={1}>
+        <MetaLabel title="to" />
+        <Code language="json" size={1}>
+          {jsonify(change.diff.toValue)}
+        </Code>
+      </Card>
+    </Stack>
   )
 }
 
