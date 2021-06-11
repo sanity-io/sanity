@@ -107,7 +107,7 @@ export default class CodeInput extends PureComponent {
 
   handleCodeChange = (code) => {
     const {type, onChange} = this.props
-    const path = ['code']
+    const path = PATH_CODE
     const fixedLanguage = get(type, 'options.language')
 
     onChange(
@@ -172,9 +172,10 @@ export default class CodeInput extends PureComponent {
   }
 
   handleLanguageChange = (event) => {
-    const value = event.currentTarget.value
     const {type, onChange} = this.props
-    const path = ['language']
+    const value = event.currentTarget.value
+    const path = PATH_LANGUAGE
+
     onChange(
       PatchEvent.from([setIfMissing({_type: type.name}), value ? set(value, path) : unset(path)])
     )
@@ -182,13 +183,11 @@ export default class CodeInput extends PureComponent {
 
   handleFilenameChange = (event) => {
     const {type, onChange} = this.props
-    const path = ['filename']
+    const value = event.target.value
+    const path = PATH_FILENAME
 
     onChange(
-      PatchEvent.from([
-        setIfMissing({_type: type.name}),
-        event ? set(event.target.value, path) : unset(path),
-      ])
+      PatchEvent.from([setIfMissing({_type: type.name}), value ? set(value, path) : unset(path)])
     )
   }
 
