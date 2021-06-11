@@ -44,6 +44,7 @@ const rules = {
   '#comparison': [
     {
       token: 'keyword.operator.comparison.groq',
+      // eslint-disable-next-line no-div-regex
       regex: /==|!=|>=|<=|<!=>|<|>/,
     },
   ],
@@ -68,7 +69,7 @@ const rules = {
   '#reference': [
     {
       token: 'keyword.operator.reference.groq',
-      regex: /\->/,
+      regex: /->/,
     },
   ],
   '#pair': [
@@ -83,7 +84,7 @@ const rules = {
     },
     {
       token: 'keyword.operator.pair.groq',
-      regex: /=>/,
+      regex: /[=]>/,
     },
   ],
   '#arraylike': [
@@ -315,7 +316,7 @@ const rules = {
         },
         {
           token: 'invalid.illegal.expected-projection-separator.groq',
-          regex: /[^\s\},]/,
+          regex: /[^\s},]/,
         },
         {
           defaultToken: 'meta.structure.projection.groq',
@@ -377,7 +378,7 @@ const rules = {
   '#stringcontent': [
     {
       token: 'constant.character.escape.groq',
-      regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/,
+      regex: /\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4})/,
     },
     {
       token: 'invalid.illegal.unrecognized-string-escape.groq',
@@ -511,7 +512,7 @@ const rules = {
         'text',
         'keyword.operator.reference.groq',
       ],
-      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(\->)/,
+      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(->)/,
     },
     {
       token: [
