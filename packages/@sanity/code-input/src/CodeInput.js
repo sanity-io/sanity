@@ -1,13 +1,15 @@
+/* eslint-disable no-undef, import/no-unresolved */
+import {Select, TextInput} from '@sanity/ui'
 import classNames from 'classnames'
 import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
+import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import DefaultSelect from 'part:@sanity/components/selects/default'
-import TextInput from 'part:@sanity/components/textinputs/default'
+import * as PathUtils from '@sanity/util/paths'
 import createHighlightMarkers from './createHighlightMarkers'
 import styles from './CodeInput.css'
 
@@ -18,6 +20,9 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
   DEFAULT_THEME,
+  PATH_LANGUAGE,
+  PATH_CODE,
+  PATH_FILENAME,
 } from './config'
 
 /* eslint-disable import/no-unassigned-import */
@@ -59,7 +64,6 @@ function isSupportedLanguage(mode) {
   if (isSupported) {
     return mode
   }
-
   return false
 }
 
@@ -167,25 +171,23 @@ export default class CodeInput extends PureComponent {
     this.editor.on('guttermousedown', this.handleGutterMouseDown)
   }
 
-  handleLanguageChange = (item) => {
+  handleLanguageChange = (event) => {
+    const value = event.currentTarget.value
     const {type, onChange} = this.props
     const path = ['language']
     onChange(
-      PatchEvent.from([
-        setIfMissing({_type: type.name}),
-        item ? set(item.value, path) : unset(path),
-      ])
+      PatchEvent.from([setIfMissing({_type: type.name}), value ? set(value, path) : unset(path)])
     )
   }
 
-  handleFilenameChange = (item) => {
+  handleFilenameChange = (event) => {
     const {type, onChange} = this.props
     const path = ['filename']
 
     onChange(
       PatchEvent.from([
         setIfMissing({_type: type.name}),
-        item ? set(item.target.value, path) : unset(path),
+        event ? set(event.target.value, path) : unset(path),
       ])
     )
   }
@@ -238,7 +240,7 @@ export default class CodeInput extends PureComponent {
   renderEditor = () => {
     // console.log('CodeInput', this.props)
 
-    const {readOnly, value, type} = this.props
+    const {readOnly, value, type, onBlur} = this.props
     const fixedLanguage = get(type, 'options.language')
     const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
@@ -260,13 +262,27 @@ export default class CodeInput extends PureComponent {
           wrapEnabled
           setOptions={ACE_SET_OPTIONS}
           editorProps={ACE_EDITOR_PROPS}
+          onFocus={this.handleCodeFocus}
+          onBlur={onBlur}
         />
       </div>
     )
   }
 
+  handleLanguageFocus = () => {
+    this.props.onFocus(PATH_LANGUAGE)
+  }
+
+  handleCodeFocus = () => {
+    this.props.onFocus(PATH_CODE)
+  }
+
+  handleFilenameFocus = () => {
+    this.props.onFocus(PATH_FILENAME)
+  }
+
   render() {
-    const {value, type, level, readOnly} = this.props
+    const {compareValue, value, type, level, readOnly, presence, onBlur} = this.props
     const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
@@ -281,36 +297,90 @@ export default class CodeInput extends PureComponent {
       value && value.language ? languages.find((item) => item.value === value.language) : undefined
 
     if (!selectedLanguage) {
-      languages.unshift({title: 'Select language'})
+      languages.unshift({title: 'Select language', value: ''})
     }
 
     const languageField = type.fields.find((field) => field.name === 'language')
     const filenameField = type.fields.find((field) => field.name === 'filename')
 
+    const languageCompareValue = PathUtils.get(compareValue, PATH_LANGUAGE)
+    const codeCompareValue = PathUtils.get(compareValue, PATH_CODE)
+    const filenameCompareValue = PathUtils.get(compareValue, PATH_FILENAME)
+
+    const languagePresence = presence.filter((presenceItem) =>
+      PathUtils.startsWith(PATH_LANGUAGE, presenceItem.path)
+    )
+    const codePresence = presence.filter((presenceItem) =>
+      PathUtils.startsWith(PATH_CODE, presenceItem.path)
+    )
+
+    const filenamePresence = presence.filter((presenceItem) =>
+      PathUtils.startsWith(PATH_FILENAME, presenceItem.path)
+    )
+
     return (
-      <Fieldset legend={type.title} description={type.description} level={level}>
-        <FormField level={level + 1} label={languageField.type.title}>
-          <DefaultSelect
-            onChange={this.handleLanguageChange}
-            value={selectedLanguage}
-            items={languages}
-            readOnly={readOnly}
-          />
-        </FormField>
-        {get(type, 'options.withFilename', false) && (
-          <FormField label={filenameField.title || 'Filename'} level={level + 1}>
-            <TextInput
-              type="text"
-              name="filename"
-              value={value.filename}
-              placeholder={filenameField.placeholder}
-              onChange={this.handleFilenameChange}
-            />
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        level={level}
+        changeIndicator={false}
+      >
+        <ChangeIndicatorProvider
+          path={PATH_LANGUAGE}
+          // @todo: Figure out how to get the correct `focusPath`
+          value={selectedLanguage?.value}
+          compareValue={languageCompareValue}
+        >
+          <FormField level={level + 1} label={languageField.type.title} presence={languagePresence}>
+            <Select
+              onChange={this.handleLanguageChange}
+              readOnly={readOnly}
+              value={selectedLanguage?.value || ''}
+              onFocus={this.handleLanguageFocus}
+              onBlur={onBlur}
+            >
+              {languages.map((lang) => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.title}
+                </option>
+              ))}
+            </Select>
           </FormField>
+        </ChangeIndicatorProvider>
+        {get(type, 'options.withFilename', false) && (
+          <ChangeIndicatorProvider
+            path={PATH_FILENAME}
+            // @todo: Figure out how to get the correct `focusPath`
+            // focusPath={focusPath}
+            value={value?.filename}
+            compareValue={filenameCompareValue}
+          >
+            <FormField
+              label={filenameField.title || 'Filename'}
+              level={level + 1}
+              presence={filenamePresence}
+            >
+              <TextInput
+                name="filename"
+                value={value.filename}
+                placeholder={filenameField.placeholder}
+                onChange={this.handleFilenameChange}
+                onFocus={this.handleFilenameFocus}
+                onBlur={onBlur}
+              />
+            </FormField>
+          </ChangeIndicatorProvider>
         )}
-        <FormField label={(selectedLanguage && selectedLanguage.title) || 'Code'} level={level + 1}>
-          <div className={styles.editorContainer}>{this.renderEditor()}</div>
-        </FormField>
+        <ChangeIndicatorProvider
+          path={PATH_CODE}
+          // focusPath={focusPath}
+          value={value?.code}
+          compareValue={codeCompareValue}
+        >
+          <FormField label="Code" level={level + 1} presence={codePresence}>
+            <div className={styles.editorContainer}>{this.renderEditor()}</div>
+          </FormField>
+        </ChangeIndicatorProvider>
       </Fieldset>
     )
   }
