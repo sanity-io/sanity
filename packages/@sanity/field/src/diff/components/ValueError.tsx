@@ -1,15 +1,23 @@
 import * as React from 'react'
-import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
+import {Text, Box, Card, Flex} from '@sanity/ui'
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {FieldValueError} from '../../validation'
-import styles from './ValueError.css'
 
 export function ValueError({error}: {error: FieldValueError}) {
   return (
-    <div className={styles.root}>
-      <span className={styles.icon}>
-        <ErrorOutlineIcon />
-      </span>
-      <span className={styles.message}>Value error: {error.message}</span>
-    </div>
+    <Card tone="critical" padding={3}>
+      <Flex align="flex-start">
+        <Box>
+          <Text>
+            <ErrorOutlineIcon />
+          </Text>
+        </Box>
+        <Box paddingLeft={3}>
+          <Text size={1} as="p">
+            Value error: {error.message}
+          </Text>
+        </Box>
+      </Flex>
+    </Card>
   )
 }
