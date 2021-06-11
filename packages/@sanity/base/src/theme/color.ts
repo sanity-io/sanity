@@ -21,6 +21,10 @@ export const color = createColorTheme({
           penumbra: rgba(dark ? legacyPalette.black : stateTones.default[500], 0.14),
           ambient: rgba(dark ? legacyPalette.black : stateTones.default[500], 0.12),
         },
+        skeleton: {
+          from: stateTones.default[100],
+          to: rgba(stateTones.default[100], 0.5),
+        },
       }
     }
 
@@ -38,6 +42,10 @@ export const color = createColorTheme({
           penumbra: rgba(dark ? legacyPalette.black : tints[500], 0.14),
           ambient: rgba(dark ? legacyPalette.black : tints[500], 0.12),
         },
+        skeleton: {
+          from: tints[200],
+          to: rgba(tints[200], 0.5),
+        },
       }
     }
 
@@ -53,6 +61,10 @@ export const color = createColorTheme({
         umbra: rgba(dark ? legacyPalette.black : tints[500], 0.2),
         penumbra: rgba(dark ? legacyPalette.black : tints[500], 0.14),
         ambient: rgba(dark ? legacyPalette.black : tints[500], 0.12),
+      },
+      skeleton: {
+        from: tints[200],
+        to: rgba(tints[200], 0.5),
       },
     }
   },
@@ -210,6 +222,7 @@ export const color = createColorTheme({
           bg: blend(bg, stateTones.default[950]),
           fg: blend(bg, stateTones.default[300]),
         },
+        skeleton: base.skeleton,
       }
     }
 
@@ -232,6 +245,7 @@ export const color = createColorTheme({
           bg: blend(bg, stateTones.default[50]),
           fg: stateTones.default[600],
         },
+        skeleton: base.skeleton,
       }
     }
 
@@ -252,6 +266,7 @@ export const color = createColorTheme({
           bg: blend(muted.pressed.bg, stateTones.default[50]),
           fg: stateTones.default[700],
         },
+        skeleton: base.skeleton,
       }
     }
 
@@ -271,6 +286,7 @@ export const color = createColorTheme({
           bg: 'transparent',
           fg: muted.disabled.fg,
         },
+        skeleton: base.skeleton,
       }
     }
 
@@ -291,6 +307,7 @@ export const color = createColorTheme({
         bg: blend(base.bg, stateTones.default[50]),
         fg: stateTones.default[700],
       },
+      skeleton: base.skeleton,
     }
   },
 
