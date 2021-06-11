@@ -1,5 +1,6 @@
-import React from 'react'
-import styles from './MetaInfo.css'
+import {Text, Box, Flex, Stack} from '@sanity/ui'
+import React, {createElement} from 'react'
+import styled from 'styled-components'
 
 interface MetaInfoProps {
   title: string
@@ -9,6 +10,10 @@ interface MetaInfoProps {
   markRemoved?: boolean
 }
 
+const MetaText = styled(Text)`
+  color: inherit;
+`
+
 export function MetaInfo({
   title,
   action,
@@ -16,23 +21,29 @@ export function MetaInfo({
   children,
   markRemoved,
 }: MetaInfoProps): React.ReactElement {
-  const Icon = icon
-  const iconClass = markRemoved ? styles.iconRemoved : styles.icon
-  const titleClass = markRemoved ? styles.titleRemoved : styles.title
   return (
-    <div className={styles.root}>
+    <Flex padding={2} align="center">
       {icon && (
-        <div className={iconClass}>
-          <Icon />
-        </div>
+        <Box padding={2}>
+          <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
+            {createElement(icon)}
+          </MetaText>
+        </Box>
       )}
-      <div className={styles.info}>
-        <h3 className={titleClass} title={title}>
+      <Stack space={2} paddingLeft={4}>
+        <MetaText
+          size={1}
+          weight="semibold"
+          forwardedAs={markRemoved ? 'del' : 'h3'}
+          textOverflow="ellipsis"
+        >
           {title}
-        </h3>
+        </MetaText>
         {action && <div>{action}</div>}
-        <div className={styles.children}>{children}</div>
-      </div>
-    </div>
+        <MetaText size={0} textOverflow="ellipsis">
+          {children}
+        </MetaText>
+      </Stack>
+    </Flex>
   )
 }
