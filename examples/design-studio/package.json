@@ -20,7 +20,7 @@
   "dependencies": {
     "@sanity/base": "2.10.5",
     "@sanity/cli": "2.10.5",
-    "@sanity/color": "^2.1.1",
+    "@sanity/color": "^2.1.2",
     "@sanity/core": "2.10.5",
     "@sanity/default-layout": "2.10.5",
     "@sanity/default-login": "2.10.5",
@@ -28,7 +28,7 @@
     "@sanity/google-maps-input": "2.10.5",
     "@sanity/react-hooks": "2.10.5",
     "@sanity/types": "2.10.5",
-    "@sanity/ui": "^0.34.1",
+    "@sanity/ui": "^0.34.2",
     "@sanity/vision": "2.10.5",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
