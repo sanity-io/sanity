@@ -9,13 +9,13 @@ const PaneItemWrapper = (props) => {
   const {ChildLink} = useContext(PaneRouterContext)
   const {id, useGrid, layout, isSelected} = props
   const link = (
-    <ChildLink childId={id} className={isSelected ? styles.linkIsSelected : styles.link}>
-      {props.children}
-    </ChildLink>
+    // <ChildLink childId={id} className={isSelected ? styles.linkIsSelected : styles.link}>
+    <ChildLink childId={id}>{props.children}</ChildLink>
   )
 
   return useGrid ? (
-    <GridListItem className={listStyles[`${layout}ListItem`]}>{link}</GridListItem>
+    // <GridListItem className={listStyles[`${layout}ListItem`]}>{link}</GridListItem>
+    <GridListItem>{link}</GridListItem>
   ) : (
     <div className={isSelected ? styles.selected : styles.item}>{link}</div>
   )

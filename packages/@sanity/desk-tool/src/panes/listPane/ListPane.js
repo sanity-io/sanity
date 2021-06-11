@@ -1,4 +1,5 @@
 import React from 'react'
+import {Box, MenuDivider, Stack} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import listStyles from 'part:@sanity/components/lists/default-style'
@@ -105,22 +106,25 @@ export default class ListPane extends React.PureComponent {
         menuItemGroups={menuItemGroups}
       >
         <ListView layout={defaultLayout}>
-          {items.map((item) =>
-            item.type === 'divider' ? (
-              <hr key={item.id} className={listStyles.divider} />
-            ) : (
-              <PaneItem
-                key={item.id}
-                id={item.id}
-                index={index}
-                value={item}
-                icon={this.shouldShowIconForItem(item)}
-                layout={defaultLayout}
-                isSelected={this.itemIsSelected(item)}
-                schemaType={item.schemaType}
-              />
-            )
-          )}
+          <Stack space={2} paddingY={2} overflow="auto">
+            {items.map((item) =>
+              item.type === 'divider' ? (
+                <hr className={listStyles.divider} key={item.id} />
+              ) : (
+                <Box key={item.id} paddingX={2}>
+                  <PaneItem
+                    id={item.id}
+                    index={index}
+                    value={item}
+                    icon={this.shouldShowIconForItem(item)}
+                    layout={defaultLayout}
+                    isSelected={this.itemIsSelected(item)}
+                    schemaType={item.schemaType}
+                  />
+                </Box>
+              )
+            )}
+          </Stack>
         </ListView>
       </DefaultPane>
     )

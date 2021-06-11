@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {useCallback, useContext} from 'react'
+import {Card} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import folderIcon from 'part:@sanity/base/folder-icon'
@@ -7,12 +8,13 @@ import fileIcon from 'part:@sanity/base/file-icon'
 import DocumentPaneItemPreview from '../../components/DocumentPaneItemPreview'
 import getIconWithFallback from '../../utils/getIconWithFallback'
 import MissingSchemaType from '../../components/MissingSchemaType'
-import PaneItemWrapper from './PaneItemWrapper'
+// import PaneItemWrapper from './PaneItemWrapper'
+import {PaneRouterContext} from '../../contexts/PaneRouterContext'
 
 export default function PaneItem(props) {
   const {id, isSelected, schemaType, layout, icon, value} = props
-  const useGrid = layout === 'card' || layout === 'media'
-
+  // const useGrid = layout === 'card' || layout === 'media'
+  const {ChildLink} = useContext(PaneRouterContext)
   const hasSchemaType = schemaType && schemaType.name && schema.get(schemaType.name)
 
   let preview
@@ -37,10 +39,22 @@ export default function PaneItem(props) {
     )
   }
 
+  const LinkComponent = useCallback(
+    (linkProps) => {
+      return <ChildLink {...linkProps} childId={id} />
+    },
+    [ChildLink, id]
+  )
+
+  // Todo: figure out what to do with useGrid and layout
   return (
-    <PaneItemWrapper id={id} isSelected={isSelected} layout={layout} useGrid={useGrid}>
+    // <PaneItemWrapper id={id} isSelected={isSelected} layout={layout} useGrid={useGrid}>
+    //   {preview}
+    // </PaneItemWrapper>
+
+    <Card padding={2} data-as="a" radius={3} selected={isSelected} as={LinkComponent}>
       {preview}
-    </PaneItemWrapper>
+    </Card>
   )
 }
 
