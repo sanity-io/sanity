@@ -26,23 +26,24 @@ export default {
     const [selectedEmail] = args.argsWithoutOptions
     const flags = args.extOptions
 
-    const client = apiClient()
+    const client = apiClient().clone().config({useProjectHostname: false, apiVersion: '2021-06-07'})
     const {projectId} = client.config()
-    const roles = await client.request({uri: '/roles'})
+    const roles = (await client.request({uri: `/projects/${projectId}/roles`})).filter(
+      (role) => role.appliesToUsers
+    )
     const email = selectedEmail || (await promptForEmail(prompt))
     const selectedRole = flags.role || (await promptForRole(prompt, roles))
-    const role = roles.find(({id}) => id.toLowerCase() === selectedRole.toLowerCase())
+    const role = roles.find(({name}) => name.toLowerCase() === selectedRole.toLowerCase())
     if (!role) {
       throw new Error(`Role name "${selectedRole}" not found`)
     }
 
     await client
       .clone()
-      .config({useProjectHostname: false})
       .request({
         method: 'POST',
         uri: `/invitations/project/${projectId}`,
-        body: {email, role: role.id},
+        body: {email, role: role.name},
         useGlobalApi: true,
         maxRedirects: 0,
       })
@@ -76,8 +77,8 @@ function promptForRole(prompt, roles) {
     type: 'list',
     message: 'Which role should the user have?',
     choices: roles.map((role) => ({
-      value: role.id,
-      name: `${role.name} (${role.description})`,
+      value: role.name,
+      name: `${role.title} (${role.description})`,
     })),
   })
 }
