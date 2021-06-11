@@ -12,9 +12,12 @@ const coreCommands = [
   'deploy',
   'documents',
   'exec',
+  'graphql',
   'hook',
   'start',
+  'undeploy',
   'uninstall',
+  'users',
 ]
 
 const helpText = `
@@ -28,7 +31,7 @@ export default (cmdName, parentGroupName, groups) => {
 
   const isCoreCommand = coreCommands.includes(cmdName)
   if (isCoreCommand) {
-    return `"${cmdName}" is not available outside of a Sanity project context.${helpText}`
+    return `Command "${cmdName}" is not available outside of a Sanity project context.${helpText}`
   }
 
   return suggestCommand(cmdName, groups ? groups.default : [])
