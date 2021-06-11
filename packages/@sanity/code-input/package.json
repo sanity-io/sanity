@@ -21,7 +21,7 @@
   "dependencies": {
     "@sanity/base": "2.10.5",
     "@sanity/form-builder": "2.10.5",
-    "@sanity/ui": "^0.34.1",
+    "@sanity/ui": "^0.34.2",
     "@sanity/util": "2.10.5",
     "lodash": "^4.17.15",
     "react-ace": "^5.0.1"
