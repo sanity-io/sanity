@@ -78,11 +78,6 @@ export default {
   icon: CodeBlockIcon,
   fields: [
     {
-      title: 'Code',
-      name: 'code',
-      type: 'text',
-    },
-    {
       name: 'language',
       title: 'Language',
       type: 'string',
@@ -91,6 +86,11 @@ export default {
       name: 'filename',
       title: 'Filename',
       type: 'string',
+    },
+    {
+      title: 'Code',
+      name: 'code',
+      type: 'text',
     },
     {
       title: 'Highlighted lines',

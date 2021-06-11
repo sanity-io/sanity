@@ -17,6 +17,7 @@ export default {
       description: 'Selectable language',
       type: 'code',
       options: {
+        withFilename: true,
         languageAlternatives: [
           {title: 'LaTeX', value: 'latex'},
           {title: 'JavaScript', value: 'javascript'},

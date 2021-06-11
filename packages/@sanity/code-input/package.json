@@ -19,6 +19,7 @@
     "code-editor"
   ],
   "dependencies": {
+    "@sanity/ui": "^0.34.1",
     "lodash": "^4.17.15",
     "react-ace": "^5.0.1"
   },

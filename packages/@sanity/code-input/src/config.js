@@ -28,3 +28,7 @@ export const ACE_SET_OPTIONS = {
 }
 
 export const ACE_EDITOR_PROPS = {$blockScrolling: true}
+
+export const PATH_LANGUAGE = ['language']
+export const PATH_CODE = ['code']
+export const PATH_FILENAME = ['filename']
