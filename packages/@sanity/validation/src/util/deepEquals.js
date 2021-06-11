@@ -3,7 +3,7 @@
  * MIT-licensed, copyright (c) 2017 Evgeny Poberezkin
  **/
 
-/* eslint max-depth: 4 */
+/* eslint max-depth: ["error", 4] */
 export default function equal(a, b) {
   if (a === b) {
     return true
