@@ -4,7 +4,7 @@ import {distinctUntilChanged, map} from 'rxjs/operators'
 const DEBUG_PREFIX = '_debug_'
 
 export const debugParams$ = concat(of(0), fromEvent(window, 'hashchange')).pipe(
-  map(() => document.location.hash),
+  map(() => (typeof document === 'undefined' ? '#' : document.location.hash)),
   distinctUntilChanged(),
   map((hash) =>
     hash

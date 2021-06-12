@@ -33,7 +33,7 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
     userLoader.prime(
       'me',
       // @ts-expect-error although not reflected in typings, priming with a promise is indeed supported, see https://github.com/graphql/dataloader/issues/235#issuecomment-692495153 and this PR for fixing it https://github.com/graphql/dataloader/pull/252
-      currentUserPromise.then((u) => normalizeOwnUser(u))
+      currentUserPromise.then((u) => (u ? normalizeOwnUser(u) : null))
     )
     return currentUserPromise
   }).pipe(
