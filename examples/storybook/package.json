@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "private": true,
   "description": "",
   "main": "package.json",
@@ -10,14 +10,14 @@
     "start": "sanity start --port 9002"
   },
   "dependencies": {
-    "@sanity/base": "2.11.0",
+    "@sanity/base": "2.11.1",
     "@sanity/core": "2.11.0",
-    "@sanity/default-layout": "2.11.0",
-    "@sanity/default-login": "2.11.0",
-    "@sanity/desk-tool": "2.11.0",
-    "@sanity/google-maps-input": "2.11.0",
+    "@sanity/default-layout": "2.11.1",
+    "@sanity/default-login": "2.11.1",
+    "@sanity/desk-tool": "2.11.1",
+    "@sanity/google-maps-input": "2.11.1",
     "@sanity/server": "2.11.0",
-    "@sanity/storybook": "2.11.0",
+    "@sanity/storybook": "2.11.1",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1"
