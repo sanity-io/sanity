@@ -45,7 +45,7 @@ import {
   UploadOptions,
 } from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
-import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
@@ -55,7 +55,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {DropMessage} from '../common/DropMessage'
-import {base64ToFile, urlToFile} from './utils/image'
+import {handleSelectAssetFromSource} from '../common/assetSource'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -321,71 +321,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
     const {onChange, type, resolveUploader} = this.props
-    if (!assetFromSource) {
-      throw new Error('No asset given')
-    }
-    if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
-      throw new Error('Returned value must be an array with at least one item (asset)')
-    }
-    const firstAsset = assetFromSource[0]
-    const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
-    const label = get(firstAsset, 'assetDocumentProps.label')
-    const title = get(firstAsset, 'assetDocumentProps.title')
-    const description = get(firstAsset, 'assetDocumentProps.description')
-    const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
-    const source = get(firstAsset, 'assetDocumentProps.source')
-    switch (firstAsset.kind) {
-      case 'assetDocumentId':
-        onChange(
-          PatchEvent.from([
-            setIfMissing({
-              _type: type.name,
-            }),
-            unset(['hotspot']),
-            unset(['crop']),
-            set(
-              {
-                _type: 'reference',
-                _ref: firstAsset.value,
-              },
-              ['asset']
-            ),
-          ])
-        )
-        break
-      case 'file': {
-        const uploader = resolveUploader(type, firstAsset.value)
-        if (uploader) {
-          this.uploadWith(uploader, firstAsset.value, {
-            label,
-            title,
-            description,
-            creditLine,
-            source,
-          })
-        }
-        break
-      }
-      case 'base64':
-        base64ToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      case 'url':
-        urlToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      default: {
-        throw new Error('Invalid value returned from asset source plugin')
-      }
-    }
+    handleSelectAssetFromSource({
+      assetFromSource,
+      onChange,
+      type,
+      resolveUploader,
+      uploadWith: this.uploadWith.bind(this),
+      isImage: true,
+    })
     this.setState({selectedAssetSource: null})
   }
 

@@ -47,7 +47,7 @@ import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
-import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
@@ -56,7 +56,7 @@ import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
 import {AssetBackground} from './styles'
-import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
+import {handleSelectAssetFromSource} from '../common/assetSource'
 
 type Field = {
   name: string
@@ -405,69 +405,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
     const {onChange, type, resolveUploader} = this.props
-    if (!assetFromSource) {
-      throw new Error('No asset given')
-    }
-    if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
-      throw new Error('Returned value must be an array with at least one item (asset)')
-    }
-    const firstAsset = assetFromSource[0]
-    const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
-    const label = get(firstAsset, 'assetDocumentProps.label')
-    const title = get(firstAsset, 'assetDocumentProps.title')
-    const description = get(firstAsset, 'assetDocumentProps.description')
-    const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
-    const source = get(firstAsset, 'assetDocumentProps.source')
-    switch (firstAsset.kind) {
-      case 'assetDocumentId':
-        onChange(
-          PatchEvent.from([
-            setIfMissing({
-              _type: type.name,
-            }),
-            set(
-              {
-                _type: 'reference',
-                _ref: firstAsset.value,
-              },
-              ['asset']
-            ),
-          ])
-        )
-        break
-      case 'file': {
-        const uploader = resolveUploader(type, firstAsset.value)
-        if (uploader) {
-          this.uploadWith(uploader, firstAsset.value, {
-            label,
-            title,
-            description,
-            creditLine,
-            source,
-          })
-        }
-        break
-      }
-      case 'base64':
-        base64ToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      case 'url':
-        urlToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      default: {
-        throw new Error('Invalid value returned from asset source plugin')
-      }
-    }
+    handleSelectAssetFromSource({
+      assetFromSource,
+      onChange,
+      type,
+      resolveUploader,
+      uploadWith: this.uploadWith.bind(this),
+    })
     this.setState({selectedAssetSource: null})
   }
 
