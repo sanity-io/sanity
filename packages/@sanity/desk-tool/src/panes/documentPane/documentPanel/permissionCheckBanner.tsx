@@ -11,7 +11,7 @@ interface Props {
 
 export function PermissionCheckBanner(props: Props) {
   const {permission, requiredPermission, currentUser} = props
-  const plural = currentUser?.roles.length !== 1
+  const plural = currentUser?.roles?.length !== 1
   return permission.granted ? null : (
     <Card tone="transparent" padding={2} paddingX={3} shadow={1}>
       <Flex padding={2} align="center">
