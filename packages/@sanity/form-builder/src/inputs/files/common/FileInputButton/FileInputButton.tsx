@@ -1,63 +1,38 @@
-// todo: consider moving this into @sanity/ui and make it exposed as a primitive
-
-import React from 'react'
+import React, {createElement, isValidElement} from 'react'
+import {isValidElementType} from 'react-is'
 import {useId} from '@reach/auto-id'
-import styled, {css} from 'styled-components'
-import {Button, Theme} from '@sanity/ui'
-import {focusRingBorderStyle, focusRingStyle} from '../../../../components/withFocusRing/helpers'
+import {Box, ButtonProps, Flex, Text, useTheme} from '@sanity/ui'
+import {FileButton} from './styles'
 
-type Props = Omit<React.ComponentProps<typeof Button>, 'type' | 'value' | 'onSelect'> & {
+export interface FileInputButtonProps extends ButtonProps {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
   onSelect?: (files: File[]) => void
-  children?: React.ReactNode
 }
 
-const Input = styled.input`
-  overflow: hidden;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  position: absolute;
-`
-
-// Note: this is rendered as a label
-const SelectButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const border = {width: 1, color: 'var(--card-border-color)'}
-
-  return css`
-    &:not([data-disabled='true']) {
-      &:focus-within {
-        box-shadow: ${focusRingStyle({
-          base: theme.sanity.color.base,
-          border,
-          focusRing: theme.sanity.focusRing,
-        })};
-      }
-      &:focus:not(:focus-visible) {
-        box-shadow: ${focusRingBorderStyle(border)};
-      }
-    }
-
-    // This is a little hack to fix wonky @sanity/ui Button rendering where there's a child element.
-    // Can be removed when https://github.com/sanity-io/design/issues/471 is resolved.
-    & span:nth-child(2) {
-      width: 0;
-      flex: none;
-    }
-  `
-})
-
 export const FileInputButton = React.forwardRef(function FileInputButton(
-  props: Props,
+  props: FileInputButtonProps &
+    Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
-  const {children, id: _, accept, capture, multiple, onSelect, ...rest} = props
+  const {
+    icon,
+    id: idProp,
+    accept,
+    capture,
+    fontSize,
+    multiple,
+    onSelect,
+    padding = 3,
+    space = 3,
+    textAlign,
+    text,
+    ...rest
+  } = props
+  const id = useId(idProp)
+  const theme = useTheme()
 
-  const id = useId(props.id)
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (onSelect && event.target.files) {
@@ -67,19 +42,47 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
     [onSelect]
   )
 
+  const content = (
+    <Flex align="center" justify="center" padding={padding}>
+      {/* Icon */}
+      {icon && (
+        <Box marginRight={text ? space : undefined}>
+          <Text size={fontSize}>
+            {isValidElement(icon) && icon}
+            {isValidElementType(icon) && createElement(icon)}
+          </Text>
+        </Box>
+      )}
+
+      {/* Text */}
+      {text && (
+        <Text
+          align={textAlign}
+          size={fontSize}
+          textOverflow="ellipsis"
+          weight={theme.sanity.button.textWeight}
+        >
+          {text}
+        </Text>
+      )}
+    </Flex>
+  )
+
   return (
-    <SelectButton {...rest} forwardedAs="label" inputId={id}>
-      <Input
-        type="file"
-        value=""
-        id={id}
-        onChange={handleChange}
-        ref={forwardedRef}
+    <FileButton {...rest} htmlFor={id} padding={0}>
+      {content}
+
+      {/* Visibly hidden input */}
+      <input
         accept={accept}
         capture={capture}
+        id={id}
         multiple={multiple}
+        onChange={handleChange}
+        ref={forwardedRef}
+        type="file"
+        value=""
       />
-      {children}
-    </SelectButton>
+    </FileButton>
   )
 })
