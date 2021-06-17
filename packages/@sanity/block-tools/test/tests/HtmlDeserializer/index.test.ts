@@ -14,9 +14,10 @@ describe('HtmlDeserializer', () => {
       const dir = path.resolve(__dirname, test)
       const input = fs.readFileSync(path.resolve(dir, 'input.html')).toString()
       const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json'), 'utf-8'))
+      // eslint-disable-next-line import/no-dynamic-require
       const fn = require(path.resolve(dir)).default
       const commonOptions = {
-        parseHtml: (html) => new JSDOM(html).window.document,
+        parseHtml: (html: string) => new JSDOM(html).window.document,
       }
       const output = fn(input, blockTools, commonOptions)
       // console.log(JSON.stringify(output, null, 2))
