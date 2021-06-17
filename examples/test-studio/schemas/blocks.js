@@ -227,6 +227,51 @@ export default {
       ],
     },
     {
+      name: 'reproCH9436',
+      title: 'Images',
+      type: 'array',
+      description: 'Repro case for https://app.clubhouse.io/sanity-io/story/9436/',
+      of: [
+        {type: 'block'},
+        {
+          name: 'imageWithPortableTextCaption',
+          type: 'image',
+          fields: [
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'array',
+              description:
+                'The amount of toolbar buttons here should not affect the width of the PTE input or the width of the dialog which contains it',
+              options: {isHighlighted: true},
+              of: [
+                {
+                  title: 'Block',
+                  type: 'block',
+                  marks: {
+                    decorators: [
+                      // the number of decorators here will currently force the width of the PTE input
+                      // to be wider than the dialog, which again makes the dialog content overflow
+                      {title: 'Strong', value: 'strong'},
+                      {title: 'Emphasis', value: 'em'},
+                      {title: 'Underline', value: 'underline'},
+                      {title: 'Strikethrough', value: 'strikethrough'},
+                      {title: 'Superscript', value: 'superscript'},
+                      {title: 'Subscript', value: 'subscript'},
+                      {title: 'Left', value: 'alignleft'},
+                      {title: 'Center', value: 'aligncenter'},
+                      {title: 'Right', value: 'alignright'},
+                      {title: 'Justify', value: 'alignjustify'},
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'customized',
       title: 'Customized with block types',
       type: 'array',
