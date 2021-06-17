@@ -1,6 +1,5 @@
 import {flatten} from 'lodash'
 import resolveJsType from '../util/resolveJsType'
-import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -16,7 +15,6 @@ import createRules from './rules'
  * A internal variable to keep track of annotation mark definitions
  *
  */
-let _markDefs = []
 
 /**
  * HTML Deserializer
@@ -26,6 +24,7 @@ export default class HtmlDeserializer {
   blockContentType: any
   rules: any[]
   parseHtml: (html: string) => any
+  _markDefs = []
   /**
    * Create a new serializer respecting a Sanity block content type's schema
    *
@@ -60,7 +59,7 @@ export default class HtmlDeserializer {
    * @return {Array}
    */
   deserialize = (html) => {
-    _markDefs = []
+    this._markDefs = []
     const {parseHtml} = this
     const fragment = parseHtml(html)
     const children = Array.from(fragment.childNodes)
@@ -68,13 +67,13 @@ export default class HtmlDeserializer {
     const blocks = trimWhitespace(
       flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
     )
-    if (_markDefs.length > 0) {
+    if (this._markDefs.length > 0) {
       blocks
         .filter((block) => block._type === 'block')
         .forEach((block) => {
           block.markDefs = block.markDefs || []
           block.markDefs = block.markDefs.concat(
-            _markDefs.filter((def) => {
+            this._markDefs.filter((def) => {
               return flatten(block.children.map((child) => child.marks || [])).includes(def._key)
             })
           )
@@ -242,7 +241,7 @@ export default class HtmlDeserializer {
    */
   deserializeAnnotation = (annotation) => {
     const {markDef} = annotation
-    _markDefs.push(markDef)
+    this._markDefs.push(markDef)
     const applyAnnotation = (node) => {
       if (node._type === '__annotation') {
         return this.deserializeAnnotation(node)
