@@ -92,7 +92,8 @@ const SelectInput = React.forwardRef(function SelectInput(
         />
       )
     }
-
+    const listItems =
+      value !== undefined && type?.options?.hideEmptyValue ? items : [EMPTY_ITEM, ...items]
     return (
       <Select
         onChange={handleSelectChange}
@@ -103,7 +104,7 @@ const SelectInput = React.forwardRef(function SelectInput(
         customValidity={errors?.[0]?.item.message}
         value={optionValueFromItem(currentItem)}
       >
-        {[EMPTY_ITEM, ...items].map((item, i) => (
+        {listItems.map((item, i) => (
           <option key={`${i - 1}`} value={i - 1}>
             {item.title}
           </option>
@@ -123,6 +124,7 @@ const SelectInput = React.forwardRef(function SelectInput(
     optionValueFromItem,
     readOnly,
     type.options.direction,
+    type.options.hideEmptyValue,
   ])
 
   return (
