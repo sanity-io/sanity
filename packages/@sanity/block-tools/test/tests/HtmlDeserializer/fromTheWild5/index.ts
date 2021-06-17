@@ -1,13 +1,15 @@
 import {JSDOM} from 'jsdom'
 import defaultSchema from '../../../fixtures/defaultSchema'
 
-const blockContentType = defaultSchema.get('blogPost').fields.find((field) => field.name === 'body')
-  .type
+const blockContentType = defaultSchema
+  .get('blogPost')
+  .fields.find((field: any) => field.name === 'body').type
 
-export default (html, blockTools, commonOptions) => {
-  const findElement = (nodes, target) => nodes.find((i) => i.nodeName.toLowerCase() === target)
+export default (html: string, blockTools: any, commonOptions: any) => {
+  const findElement = (nodes: any, target: any) =>
+    nodes.find((i: ChildNode) => i.nodeName.toLowerCase() === target)
 
-  function getCtaBlock(ctaNodes) {
+  function getCtaBlock(ctaNodes: ChildNode[]) {
     const title = findElement(ctaNodes, 'h2')
     const intro = findElement(ctaNodes, 'div')?.childNodes[0]
     const anchor = findElement(ctaNodes, 'a')
@@ -16,7 +18,7 @@ export default (html, blockTools, commonOptions) => {
       _type: 'promo',
       title: title.textContent,
       intro: blockTools.htmlToBlocks(intro.innerHTML, blockContentType, {
-        parseHtml: (_html) => new JSDOM(_html).window.document,
+        parseHtml: (_html: string) => new JSDOM(_html).window.document,
       }),
       link: {
         _type: 'link',
@@ -28,7 +30,7 @@ export default (html, blockTools, commonOptions) => {
   const rules = [
     {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deserialize(el, next, block) {
+      deserialize(el: Element, next: any, block: any) {
         if (el.tagName.toLowerCase() === 'cta') {
           const items = Array.from(el.childNodes)
           return block(getCtaBlock(items))
