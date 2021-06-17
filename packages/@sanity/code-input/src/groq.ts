@@ -558,16 +558,22 @@ const rules = {
   ],
 }
 
+declare let ace: any
+
 ace.define(
   'ace/mode/groq_highlight_rules',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/text_highlight_rules'],
-  function (acequire, exports, module) {
+  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
     const oop = acequire('../lib/oop')
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules
 
     const GroqHighlightRules = function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
+      // @ts-ignore
       this.$rules = rules
+      // @ts-ignore
       this.normalizeRules()
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }
 
     oop.inherits(GroqHighlightRules, TextHighlightRules)
@@ -588,7 +594,7 @@ ace.define(
     'ace/mode/groq_highlight_rules',
     'ace/mode/folding/cstyle',
   ],
-  function (acequire, exports, module) {
+  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
     // eslint-disable-next-line strict
     'use strict'
     const oop = acequire('../lib/oop')
@@ -598,14 +604,22 @@ ace.define(
     const FoldMode = acequire('./folding/cstyle').FoldMode
 
     const Mode = function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
       const highlighter = new GroqHighlightRules()
+      // @ts-ignore
       this.foldingRules = new FoldMode()
+      // @ts-ignore
       this.$tokenizer = new Tokenizer(highlighter.getRules())
+      // @ts-ignore
       this.$keywordList = highlighter.$keywordList
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }
     oop.inherits(Mode, TextMode)
     ;(function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
+      // @ts-ignore
       this.lineCommentStart = "'"
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }.call(Mode.prototype))
 
     exports.Mode = Mode

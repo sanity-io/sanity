@@ -1,4 +1,6 @@
-export const SUPPORTED_LANGUAGES = [
+import {CodeInputLanguage} from './types'
+
+export const SUPPORTED_LANGUAGES: CodeInputLanguage[] = [
   {title: 'Batch file', value: 'batchfile'},
   {title: 'CSS', value: 'css'},
   {title: 'SASS', value: 'sass'},
@@ -16,7 +18,7 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'GROQ', value: 'groq'},
 ]
 
-export const LANGUAGE_ALIASES = {js: 'javascript'}
+export const LANGUAGE_ALIASES: Record<string, string | undefined> = {js: 'javascript'}
 
 export const SUPPORTED_THEMES = ['github', 'monokai', 'terminal', 'tomorrow']
 

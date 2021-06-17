@@ -1,17 +1,20 @@
 /* eslint-disable no-undef, import/no-unresolved */
+
+import {FormFieldPresence} from '@sanity/base/presence'
+import {Path, Marker} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import React, {PureComponent} from 'react'
-import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import * as PathUtils from '@sanity/util/paths'
 import createHighlightMarkers from './createHighlightMarkers'
 import styles from './CodeInput.css'
+import {CodeInputType, CodeInputValue} from './types'
 
 import {
   LANGUAGE_ALIASES,
@@ -49,13 +52,28 @@ import 'brace/theme/terminal'
 import 'brace/theme/tomorrow'
 /* eslint-enable import/no-unassigned-import */
 
-function compareNumbers(numA, numB) {
+export interface CodeInputProps {
+  compareValue?: CodeInputValue
+  focusPath: Path
+  level: number
+  markers: Marker[]
+  onBlur: () => void
+  onChange: (...args: any[]) => void
+  onFocus: (path: Path) => void
+  presence: FormFieldPresence[]
+  readOnly?: boolean
+  type: CodeInputType
+  value?: CodeInputValue
+}
+
+function compareNumbers(numA: number, numB: number) {
   return numA - numB
 }
 
 // Returns a string with the mode name if supported (because aliases), otherwise false
-function isSupportedLanguage(mode) {
+function isSupportedLanguage(mode: string) {
   const alias = LANGUAGE_ALIASES[mode]
+
   if (alias) {
     return alias
   }
@@ -64,48 +82,23 @@ function isSupportedLanguage(mode) {
   if (isSupported) {
     return mode
   }
+
   return false
 }
 
-export default class CodeInput extends PureComponent {
-  static propTypes = {
-    level: PropTypes.number.isRequired,
-    value: PropTypes.shape({
-      _type: PropTypes.string,
-      code: PropTypes.string,
-      filename: PropTypes.string,
-      language: PropTypes.string,
-      highlightedLines: PropTypes.array,
-    }),
-    type: PropTypes.shape({
-      name: PropTypes.string,
-      title: PropTypes.string,
-      description: PropTypes.string,
-      fields: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-        })
-      ),
-    }).isRequired,
-    onChange: PropTypes.func,
-    readOnly: PropTypes.bool,
-  }
-
-  static defaultProps = {
-    onChange: () => undefined,
-    value: undefined,
-    readOnly: false,
-  }
+export default class CodeInput extends PureComponent<CodeInputProps> {
+  editor: any = null
+  _inputId?: string
 
   focus() {
-    this.editor.focus()
+    this.editor?.focus()
   }
 
   componentWillUnmount() {
-    this.editor.removeListener('guttermousedown', this.handleGutterMouseDown)
+    this.editor?.removeListener('guttermousedown', this.handleGutterMouseDown)
   }
 
-  handleCodeChange = (code) => {
+  handleCodeChange = (code: string) => {
     const {type, onChange} = this.props
     const path = PATH_CODE
     const fixedLanguage = get(type, 'options.language')
@@ -118,9 +111,9 @@ export default class CodeInput extends PureComponent {
     )
   }
 
-  handleToggleSelectLine = (lineNumber) => {
+  handleToggleSelectLine = (lineNumber: number) => {
     const {type, onChange, value} = this.props
-    const path = ['highlightedLines']
+    const path: Array<string | number> = ['highlightedLines']
     const highlightedLines = (value && value.highlightedLines) || []
 
     let position = highlightedLines.indexOf(lineNumber)
@@ -144,9 +137,10 @@ export default class CodeInput extends PureComponent {
 
       // Remove all markers from editor
       ;[true, false].forEach((inFront) => {
-        const currentMarkers = editor.getSession().getMarkers(inFront)
+        const editorSession = editor?.getSession()
+        const currentMarkers = editorSession.getMarkers(inFront)
         Object.keys(currentMarkers).forEach((marker) => {
-          editor.getSession().removeMarker(currentMarkers[marker].id)
+          editorSession.removeMarker(currentMarkers[marker].id)
         })
       })
     } else {
@@ -157,7 +151,7 @@ export default class CodeInput extends PureComponent {
     onChange(PatchEvent.from(patches))
   }
 
-  handleGutterMouseDown = (event) => {
+  handleGutterMouseDown = (event: any) => {
     const target = event.domEvent.target
     if (target.classList.contains('ace_gutter-cell')) {
       const row = event.getDocumentPosition().row
@@ -165,13 +159,14 @@ export default class CodeInput extends PureComponent {
     }
   }
 
-  handleEditorLoad = (editor) => {
+  handleEditorLoad = (editor: any) => {
     this.editor = editor
-    this.editor.focus()
-    this.editor.on('guttermousedown', this.handleGutterMouseDown)
+
+    editor.focus()
+    editor.on('guttermousedown', this.handleGutterMouseDown)
   }
 
-  handleLanguageChange = (event) => {
+  handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const {type, onChange} = this.props
     const value = event.currentTarget.value
     const path = PATH_LANGUAGE
@@ -181,7 +176,7 @@ export default class CodeInput extends PureComponent {
     )
   }
 
-  handleFilenameChange = (event) => {
+  handleFilenameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {type, onChange} = this.props
     const value = event.target.value
     const path = PATH_FILENAME
@@ -191,7 +186,7 @@ export default class CodeInput extends PureComponent {
     )
   }
 
-  getLanguageAlternatives() {
+  getLanguageAlternatives(): {title: string; value: string}[] {
     const languageAlternatives = get(this.props.type, 'options.languageAlternatives')
     if (!languageAlternatives) {
       return SUPPORTED_LANGUAGES
@@ -237,11 +232,10 @@ export default class CodeInput extends PureComponent {
   }
 
   renderEditor = () => {
-    // console.log('CodeInput', this.props)
-
     const {readOnly, value, type, onBlur} = this.props
     const fixedLanguage = get(type, 'options.language')
     const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
+
     return (
       <div className={classNames(styles.aceEditorContainer, readOnly && styles.readOnly)}>
         <AceEditor
@@ -253,7 +247,9 @@ export default class CodeInput extends PureComponent {
           name={`${this._inputId}__aceEditor`}
           value={(value && value.code) || ''}
           markers={
-            value && value.highlightedLines ? createHighlightMarkers(value.highlightedLines) : null
+            value && value.highlightedLines
+              ? createHighlightMarkers(value.highlightedLines)
+              : undefined
           }
           onLoad={this.handleEditorLoad}
           readOnly={readOnly}
@@ -338,7 +334,11 @@ export default class CodeInput extends PureComponent {
           value={selectedLanguage?.value}
           compareValue={languageCompareValue}
         >
-          <FormField level={level + 1} label={languageField.type.title} presence={languagePresence}>
+          <FormField
+            level={level + 1}
+            label={languageField?.title || 'Language'}
+            presence={languagePresence}
+          >
             <Select
               onChange={this.handleLanguageChange}
               readOnly={readOnly}
@@ -362,14 +362,14 @@ export default class CodeInput extends PureComponent {
             compareValue={filenameCompareValue}
           >
             <FormField
-              label={filenameField.title || 'Filename'}
+              label={filenameField?.title || 'Filename'}
               level={level + 1}
               presence={filenamePresence}
             >
               <TextInput
                 name="filename"
-                value={value.filename}
-                placeholder={filenameField.placeholder}
+                value={value?.filename || ''}
+                placeholder={filenameField?.placeholder}
                 onChange={this.handleFilenameChange}
                 onFocus={this.handleFilenameFocus}
                 onBlur={onBlur}

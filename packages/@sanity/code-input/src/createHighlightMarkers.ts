@@ -1,6 +1,7 @@
+import {Marker} from 'react-ace'
 import styles from './HighlightMarkers.css'
 
-export default function createHighlightMarkers(rows) {
+export default function createHighlightMarkers(rows: unknown[]): Marker[] {
   return rows.map((row) => ({
     startRow: Number(row) - 1,
     startCol: 0,
