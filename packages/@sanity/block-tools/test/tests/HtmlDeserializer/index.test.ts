@@ -20,7 +20,7 @@ describe('HtmlDeserializer', () => {
       }
       const output = fn(input, blockTools, commonOptions)
       // console.log(JSON.stringify(output, null, 2))
-      assert.deepEqual(output, expected)
+      assert.deepStrictEqual(output, expected)
     })
   })
 })
