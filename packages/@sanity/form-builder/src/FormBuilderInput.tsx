@@ -11,6 +11,7 @@ import {emptyArray} from './utils/empty'
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
 const EMPTY_PRESENCE: FormFieldPresence[] = emptyArray()
+const WRAPPER_INNER_STYLES = {minWidth: 0}
 
 interface Props {
   value: unknown
@@ -316,7 +317,10 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
   )
 
   return (
-    <div data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(path)}`}>
+    <div
+      data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(path)}`}
+      style={WRAPPER_INNER_STYLES}
+    >
       <FormFieldPresenceContext.Provider value={childPresenceInfo}>
         <ChangeIndicatorProvider
           path={path}
