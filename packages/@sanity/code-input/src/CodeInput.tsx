@@ -281,14 +281,22 @@ export default class CodeInput extends PureComponent {
   }
 
   render() {
-    const {compareValue, value, type, level, readOnly, presence, onBlur} = this.props
+    const {compareValue, value, type, level, readOnly, presence, onBlur, focusPath} = this.props
     const languages = this.getLanguageAlternatives().slice()
 
     if (has(type, 'options.language')) {
+      const codeCompareValue = PathUtils.get(compareValue, PATH_CODE)
       return (
-        <Fieldset legend={type.title} description={type.description} level={level}>
-          {this.renderEditor()}
-        </Fieldset>
+        <ChangeIndicatorProvider
+          path={PATH_CODE}
+          focusPath={focusPath}
+          value={value?.code}
+          compareValue={codeCompareValue}
+        >
+          <Fieldset legend={type.title} description={type.description} level={level}>
+            {this.renderEditor()}
+          </Fieldset>
+        </ChangeIndicatorProvider>
       )
     }
 
@@ -326,7 +334,7 @@ export default class CodeInput extends PureComponent {
       >
         <ChangeIndicatorProvider
           path={PATH_LANGUAGE}
-          // @todo: Figure out how to get the correct `focusPath`
+          focusPath={focusPath}
           value={selectedLanguage?.value}
           compareValue={languageCompareValue}
         >
@@ -349,8 +357,7 @@ export default class CodeInput extends PureComponent {
         {get(type, 'options.withFilename', false) && (
           <ChangeIndicatorProvider
             path={PATH_FILENAME}
-            // @todo: Figure out how to get the correct `focusPath`
-            // focusPath={focusPath}
+            focusPath={focusPath}
             value={value?.filename}
             compareValue={filenameCompareValue}
           >
@@ -372,7 +379,7 @@ export default class CodeInput extends PureComponent {
         )}
         <ChangeIndicatorProvider
           path={PATH_CODE}
-          // focusPath={focusPath}
+          focusPath={focusPath}
           value={value?.code}
           compareValue={codeCompareValue}
         >
