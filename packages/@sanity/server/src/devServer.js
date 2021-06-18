@@ -29,6 +29,7 @@ export default function getDevServer(config = {}) {
       configFile: path.resolve(__dirname, '../.babelrc'),
       // Ignore all files in node_modules except `node_modules/@sanity/base/**/*`
       ignore: [/node_modules\/(?!@sanity\/base).*/],
+      extensions: ['.jsx', '.js', '.mjs', '.ts', '.tsx'],
     })
   } else {
     registerBabel()
