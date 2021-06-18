@@ -9,7 +9,7 @@ import {
 } from '@sanity/types'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {isPlainObject} from 'lodash'
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {ImperativeToast} from '@sanity/base/components'
 import {Button, Stack, Text, Spinner, Flex, Card, Box, ToastParams} from '@sanity/ui'
 import React from 'react'
 import {map} from 'rxjs/operators'
@@ -22,6 +22,7 @@ import {Details} from '../../../components/Details'
 import {Item, List} from '../common/list'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import ArrayFunctions from '../common/ArrayFunctions'
+import {FormFieldSet} from '../../../components/FormFieldSet'
 import {ArrayItem} from './item'
 import {ArrayMember} from './types'
 import {uploadTarget} from './uploadTarget/uploadTarget'
@@ -299,7 +300,7 @@ export class ArrayInput extends React.Component<Props> {
           tabIndex={0}
           onFocus={this.handleFocus}
           ref={this.setFocusArea}
-          __unstable_markers={markers}
+          markers={markers}
         >
           <Alert
             status="error"
@@ -339,15 +340,15 @@ export class ArrayInput extends React.Component<Props> {
     const UploadTargetFieldset = getUploadTargetFieldset()
     return (
       <UploadTargetFieldset
-        __unstable_changeIndicator={false}
+        changeIndicator={false}
         tabIndex={0}
         title={type.title}
         description={type.description}
         onFocus={this.handleFocus}
         onBlur={onBlur}
         level={level - 1}
-        __unstable_presence={fieldPresence.length > 0 ? fieldPresence : EMPTY_ARRAY}
-        __unstable_markers={markers}
+        presence={fieldPresence.length > 0 ? fieldPresence : EMPTY_ARRAY}
+        markers={markers}
         disabled={!directUploads || readOnly}
         ref={this.setFocusArea}
         getUploadOptions={this.getUploadOptions}

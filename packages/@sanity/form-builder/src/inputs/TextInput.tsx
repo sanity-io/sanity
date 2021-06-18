@@ -1,9 +1,9 @@
 import React, {ForwardedRef, useMemo} from 'react'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
 import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
+import {FormField} from '../components/FormField'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -36,10 +36,10 @@ const TextInput = React.forwardRef(function TextInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      markers={markers}
       title={type.title}
       description={type.description}
-      __unstable_presence={presence}
+      presence={presence}
       inputId={inputId}
     >
       <StyledTextArea

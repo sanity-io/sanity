@@ -1,9 +1,10 @@
 // Render a fieldset inside the object input
 import React, {ForwardedRef, forwardRef, ReactNode, useMemo} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {FormFieldSet, FormFieldSetProps} from '@sanity/base/components'
+
 import {Marker, MultiFieldSet, Path} from '@sanity/types'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {FormFieldSet, FormFieldSetProps} from '../../components/FormFieldSet'
 import {getCollapsedWithDefaults} from './utils'
 
 interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
@@ -86,9 +87,9 @@ export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
       collapsible={collapsibleOpts.collapsible}
       collapsed={isCollapsed}
       onToggle={handleToggleFieldset}
-      __unstable_presence={isCollapsed ? childPresence : EMPTY_ARRAY}
-      __unstable_changeIndicator={false}
-      __unstable_markers={childMarkers}
+      presence={isCollapsed ? childPresence : EMPTY_ARRAY}
+      changeIndicator={false}
+      markers={childMarkers}
       ref={isCollapsed ? forwardedRef : null}
     >
       {isCollapsed ? null : children()}

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanSchemaType} from '@sanity/types'
-import {FormFieldHeaderText} from '@sanity/base/components'
+import {FormFieldHeaderText, FormFieldValidationStatus} from '@sanity/base/components'
 import FieldStatus from '@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus'
 import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
 import {FieldPresence} from '@sanity/base/presence'
@@ -62,7 +62,7 @@ const BooleanInput = React.forwardRef(function BooleanInput(
             <FormFieldHeaderText
               description={type.description}
               inputId={inputId}
-              __unstable_markers={markers}
+              validation={<FormFieldValidationStatus fontSize={1} markers={markers} />}
               title={type.title}
             />
           </Box>

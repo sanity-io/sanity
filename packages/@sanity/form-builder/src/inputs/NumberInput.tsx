@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {NumberSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
 import {useId} from '@reach/auto-id'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '../components/FormField'
 import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
@@ -34,11 +34,11 @@ const NumberInput = React.forwardRef(function NumberInput(
   return (
     <FormField
       level={level}
-      __unstable_markers={markers}
+      markers={markers}
       title={type.title}
       description={type.description}
       inputId={id}
-      __unstable_presence={presence}
+      presence={presence}
     >
       <TextInput
         type="number"

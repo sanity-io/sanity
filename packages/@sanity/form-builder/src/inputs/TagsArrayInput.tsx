@@ -1,8 +1,8 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-import {FormField} from '@sanity/base/components'
 import {useId} from '@reach/auto-id'
 import {TagInput} from '../components/tagInput'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 export const TagsArrayInput = forwardRef(function TagsArrayInput(
@@ -32,9 +32,9 @@ export const TagsArrayInput = forwardRef(function TagsArrayInput(
       level={level}
       title={type.title}
       description={type.description}
-      __unstable_presence={presence}
+      presence={presence}
       inputId={id}
-      __unstable_markers={markers}
+      markers={markers}
     >
       <TagInput
         id={id}

@@ -6,10 +6,10 @@ import {concat, Observable, of} from 'rxjs'
 import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Autocomplete, Box, Card, Text, Button, Stack, useToast, useForwardedRef} from '@sanity/ui'
-import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {useObservableCallback} from 'react-rx'
+import {FormField} from '../../components/FormField'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Preview from '../../Preview'
 import {Alert} from '../../components/Alert'
@@ -209,9 +209,9 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   return (
     <FormField
       htmlFor={inputId}
-      __unstable_markers={markers}
-      __unstable_presence={presence}
-      __unstable_changeIndicator={false}
+      markers={markers}
+      presence={presence}
+      changeIndicator={false}
       title={type.title}
       level={level}
       description={type.description}

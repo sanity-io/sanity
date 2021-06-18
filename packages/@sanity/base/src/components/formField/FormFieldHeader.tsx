@@ -1,21 +1,13 @@
 /* eslint-disable camelcase */
 
-import React, {memo} from 'react'
+import React, {memo, ReactNode} from 'react'
 import {Box, Flex} from '@sanity/ui'
-import {Marker} from '@sanity/types'
-import {FieldPresence, FormFieldPresence} from '../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
-  /**
-   * @beta
-   */
-  __unstable_markers?: Marker[]
-  /**
-   * @beta
-   */
-  __unstable_presence?: FormFieldPresence[]
-  description?: React.ReactNode
+  validation?: ReactNode
+  presence?: ReactNode
+  description?: ReactNode
   /**
    * The unique ID used to target the actual input element
    */
@@ -24,30 +16,20 @@ export interface FormFieldHeaderProps {
 }
 
 export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHeaderProps) {
-  const {
-    __unstable_markers: markers,
-    __unstable_presence: presence,
-    description,
-    inputId,
-    title,
-  } = props
+  const {validation, presence, description, inputId, title} = props
 
   return (
     <Flex align="flex-end">
       <Box flex={1} paddingY={2}>
         <FormFieldHeaderText
-          __unstable_markers={markers}
+          validation={validation}
           description={description}
           inputId={inputId}
           title={title}
         />
       </Box>
 
-      {presence && presence.length > 0 && (
-        <Box>
-          <FieldPresence maxAvatars={4} presence={presence} />
-        </Box>
-      )}
+      {presence && <Box>{presence}</Box>}
     </Flex>
   )
 })

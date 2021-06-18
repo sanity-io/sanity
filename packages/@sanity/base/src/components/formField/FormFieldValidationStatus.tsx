@@ -15,10 +15,7 @@ import {markersToValidationList} from './helpers'
 import {FormFieldValidation} from './types'
 
 export interface FormFieldValidationStatusProps {
-  /**
-   * @beta
-   */
-  __unstable_markers?: Marker[]
+  markers?: Marker[]
   /**
    * @beta
    */
@@ -28,12 +25,7 @@ export interface FormFieldValidationStatusProps {
 }
 
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
-  const {
-    __unstable_markers: markers = [],
-    __unstable_showSummary: showSummary,
-    fontSize,
-    placement = 'top',
-  } = props
+  const {markers = [], __unstable_showSummary: showSummary, fontSize, placement = 'top'} = props
   const validationMarkers = markers.filter(isValidationMarker)
   const validation = markersToValidationList(validationMarkers)
   const errors = validation.filter((v) => v.type === 'error')

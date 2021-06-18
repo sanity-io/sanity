@@ -2,8 +2,8 @@ import React, {useMemo} from 'react'
 import {useId} from '@reach/auto-id'
 import {StringSchemaType} from '@sanity/types'
 import {TextInput} from '@sanity/ui'
-import {FormField} from '@sanity/base/components'
 import PatchEvent, {set, unset} from '../PatchEvent'
+import {FormField} from '../components/FormField'
 import {Props} from './types'
 
 const StringInput = React.forwardRef(function StringInput(
@@ -49,8 +49,8 @@ const StringInput = React.forwardRef(function StringInput(
       description={type.description}
       inputId={inputId}
       level={level}
-      __unstable_markers={markers}
-      __unstable_presence={presence}
+      markers={markers}
+      presence={presence}
       title={type.title}
     >
       {input}

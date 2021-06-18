@@ -9,11 +9,11 @@ import {
   Fieldset,
 } from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {FormFieldSet} from '@sanity/base/components'
 
 import {Grid} from '@sanity/ui'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import {EMPTY_ARRAY} from '../../utils/empty'
+import {FormFieldSet} from '../../components/FormFieldSet'
 import {Field} from './Field'
 import {UnknownFields} from './UnknownFields'
 import {ObjectFieldSet} from './ObjectFieldSet'
@@ -56,7 +56,7 @@ const DEFAULT_FILTER_FIELD = () => true
 // disable eslint false positive
 // eslint-disable-next-line react/display-name
 export const ObjectInput = memo(
-  forwardRef(function ObjectInput(props: Props, forwardedRef: ForwardedRef<HTMLDivElement>) {
+  forwardRef(function ObjectInput(props: Props, forwardedRef: ForwardedRef<HTMLElement>) {
     const {
       type,
       presence = EMPTY_PRESENCE,
@@ -243,9 +243,9 @@ export const ObjectInput = memo(
         collapsible={collapsibleOpts.collapsible}
         collapsed={isCollapsed}
         onToggle={handleToggleFieldset}
-        __unstable_presence={isCollapsed ? presence : EMPTY_ARRAY}
-        __unstable_markers={isCollapsed ? markers : EMPTY_ARRAY}
-        __unstable_changeIndicator={false}
+        presence={isCollapsed ? presence : EMPTY_ARRAY}
+        markers={isCollapsed ? markers : EMPTY_ARRAY}
+        changeIndicator={false}
       >
         {renderAllFields}
       </FormFieldSet>

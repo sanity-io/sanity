@@ -3,7 +3,7 @@ import {capitalize} from 'lodash'
 import {useId} from '@reach/auto-id'
 import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Inline, Stack, Card, Text, Select, Flex, Radio, Box} from '@sanity/ui'
-import {FormField} from '@sanity/base/components'
+import {FormField} from '../components/FormField'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Props} from './types'
 
@@ -131,8 +131,8 @@ const SelectInput = React.forwardRef(function SelectInput(
       level={level}
       title={type.title}
       description={type.description}
-      __unstable_markers={markers}
-      __unstable_presence={presence}
+      markers={markers}
+      presence={presence}
     >
       {children}
     </FormField>

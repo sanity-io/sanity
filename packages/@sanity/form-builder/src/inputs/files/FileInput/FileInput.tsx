@@ -4,7 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
-import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
+import {ImperativeToast} from '@sanity/base/components'
 import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
 import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
@@ -29,6 +29,7 @@ import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {AssetBackground} from './styles'
+import {FormFieldSet} from '../../../components/FormFieldSet'
 
 type Field = {
   name: string
@@ -373,12 +374,12 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         <ImperativeToast ref={this.setToast} />
 
         <FormFieldSet
-          __unstable_markers={markers}
+          markers={markers}
           title={type.title}
           description={type.description}
           level={highlightedFields.length > 0 ? level : 0}
-          __unstable_presence={assetFieldPresence}
-          __unstable_changeIndicator={false}
+          presence={assetFieldPresence}
+          changeIndicator={false}
         >
           <div>
             <ChangeIndicatorCompareValueProvider

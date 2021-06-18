@@ -1,6 +1,5 @@
 import React from 'react'
 import {get} from 'lodash'
-import {FormFieldSet} from '@sanity/base/components'
 import {ArraySchemaType, isTitledListValue, Marker, Path} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
@@ -10,10 +9,12 @@ import Preview from '../../../Preview'
 import {ItemWithMissingType} from '../ArrayOfObjectsInput/item/ItemWithMissingType'
 import {Item, List} from '../common/list'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
+import {FormFieldSet} from '../../../components/FormFieldSet'
 
 type Focusable = {focus: () => void}
 
-const changeIndicatorOptions = {compareDeep: true}
+// todo
+const changeIndicatorOptions = false
 
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
@@ -115,10 +116,10 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         ref={this.setElement}
         title={type.title}
         description={type.description}
-        __unstable_presence={presence}
+        presence={presence}
         level={level}
-        __unstable_changeIndicator={changeIndicatorOptions}
-        __unstable_markers={markers}
+        changeIndicator={changeIndicatorOptions}
+        markers={markers}
       >
         <List isGrid={isGrid}>
           {options.map((option, index) => {
