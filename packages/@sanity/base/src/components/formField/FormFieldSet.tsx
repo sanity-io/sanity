@@ -2,7 +2,7 @@
 
 import {Marker} from '@sanity/types'
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useState, useCallback, useEffect} from 'react'
+import React, {forwardRef, useState, useCallback, useEffect, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {ChangeIndicator, ChangeIndicatorContextProvidedProps} from '../../change-indicators'
 import {FieldPresence, FormFieldPresence} from '../../presence'
@@ -111,12 +111,6 @@ export const FormFieldSet = forwardRef(
       if (onToggle) onToggle(!collapsed)
     }, [collapsed, onToggle])
 
-    let getContent = () => (
-      <Grid columns={columns} gapX={4} gapY={5}>
-        {getChildren(children)}
-      </Grid>
-    )
-
     const handleFocus = useCallback(
       (event: React.FocusEvent<HTMLDivElement>) => {
         const element = forwardedRef.current
@@ -128,14 +122,22 @@ export const FormFieldSet = forwardRef(
       [forwardedRef, onFocus]
     )
 
-    if (changeIndicator) {
-      const changeIndicatorProps = typeof changeIndicator === 'object' ? changeIndicator : {}
-
-      // eslint-disable-next-line react/display-name
-      getContent = () => (
-        <ChangeIndicator {...changeIndicatorProps}>{getChildren(children)}</ChangeIndicator>
+    const content = useMemo(() => {
+      if (collapsed) {
+        return null
+      }
+      return (
+        <Grid columns={columns} gapX={4} gapY={5}>
+          {changeIndicator ? (
+            <ChangeIndicator {...(changeIndicator === true ? {} : changeIndicator)}>
+              {getChildren(children)}
+            </ChangeIndicator>
+          ) : (
+            getChildren(children)
+          )}
+        </Grid>
       )
-    }
+    }, [changeIndicator, children, collapsed, columns])
 
     useEffect(() => {
       setCollapsed(collapsedProp)
@@ -187,7 +189,7 @@ export const FormFieldSet = forwardRef(
           ref={forwardedRef}
           tabIndex={tabIndex}
         >
-          {!collapsed && getContent()}
+          {!collapsed && content}
         </Content>
       </Root>
     )
