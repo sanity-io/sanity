@@ -105,13 +105,13 @@ export const InvalidValueInput = forwardRef(
             )}
 
             {validTypes.length !== 1 && (
-              <ul>
+              <Stack as="ul" space={2}>
                 {validTypes.map((validType) => (
                   <Text as="li" key={validType}>
                     <code>{validType}</code>
                   </Text>
                 ))}
-              </ul>
+              </Stack>
             )}
 
             <Stack marginTop={2} space={2}>
