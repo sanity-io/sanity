@@ -262,6 +262,7 @@ export default class DeskToolPanes extends React.Component {
                     isCollapsed={isCollapsed}
                     isSelected={i === panes.length - 1}
                     isClosable={siblingIndex > 0}
+                    isActive={i === panes.length - 2}
                     {...pane}
                   />
                 )}
