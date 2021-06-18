@@ -1,12 +1,14 @@
-/* eslint-disable max-len */
 import React, {PureComponent} from 'react'
 import CodeBlockIcon from 'part:@sanity/base/code-block-icon'
 import JsonLogo from './jsonLogo'
 
-// eslint-disable-next-line react/no-multi-comp
-class Input extends PureComponent {
-  constructor(props) {
+class Input extends PureComponent<import('./CodeInput').CodeInputProps> {
+  CodeInput: typeof import('./CodeInput').default
+  codeInput: React.RefObject<import('./CodeInput').default>
+
+  constructor(props: any) {
     super(props)
+
     this.CodeInput = require('./CodeInput').default
     this.codeInput = React.createRef()
   }
@@ -19,17 +21,18 @@ class Input extends PureComponent {
 
   render() {
     const {CodeInput} = this
+
     return <CodeInput ref={this.codeInput} {...this.props} />
   }
 }
 
-// eslint-disable-next-line react/no-multi-comp
-const Preview = (props) => {
+const Preview = (props: import('./PreviewCode').PreviewCodeProps) => {
   const PreviewCode = require('./PreviewCode').default
+
   return <PreviewCode {...props} />
 }
 
-function getMedia(language) {
+function getMedia(language?: string) {
   if (language === 'jsx') {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
@@ -40,6 +43,7 @@ function getMedia(language) {
       </svg>
     )
   }
+
   if (language === 'javascript') {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
@@ -51,9 +55,11 @@ function getMedia(language) {
       </svg>
     )
   }
+
   if (language === 'json') {
     return <JsonLogo />
   }
+
   if (language === 'php') {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
@@ -67,6 +73,7 @@ function getMedia(language) {
       </svg>
     )
   }
+
   return undefined
 }
 
@@ -78,11 +85,6 @@ export default {
   icon: CodeBlockIcon,
   fields: [
     {
-      title: 'Code',
-      name: 'code',
-      type: 'text',
-    },
-    {
       name: 'language',
       title: 'Language',
       type: 'string',
@@ -91,6 +93,11 @@ export default {
       name: 'filename',
       title: 'Filename',
       type: 'string',
+    },
+    {
+      title: 'Code',
+      name: 'code',
+      type: 'text',
     },
     {
       title: 'Highlighted lines',
@@ -111,7 +118,12 @@ export default {
       filename: 'filename',
       highlightedLines: 'highlightedLines',
     },
-    prepare: (value) => {
+    prepare: (value: {
+      language?: string
+      code?: string
+      filename?: string
+      highlightedLines?: number[]
+    }) => {
       return {
         title: value.filename || (value.language || 'unknown').toUpperCase(),
         media: getMedia(value.language),

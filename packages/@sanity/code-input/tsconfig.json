@@ -1,0 +1,34 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "checkJs": true,
+    "allowJs": true,
+    "jsx": "react"
+    // "plugins": [
+    //   {
+    //     "name": "typescript-plugin-css-modules",
+    //     "options": {
+    //       "customMatcher": "\\.css$"
+    //     }
+    //   }
+    // ],
+  },
+  "references": [
+    {
+      "path": "../base"
+    },
+    {
+      "path": "../form-builder"
+    },
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../util"
+    }
+  ]
+}

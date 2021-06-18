@@ -44,6 +44,7 @@ const rules = {
   '#comparison': [
     {
       token: 'keyword.operator.comparison.groq',
+      // eslint-disable-next-line no-div-regex
       regex: /==|!=|>=|<=|<!=>|<|>/,
     },
   ],
@@ -68,7 +69,7 @@ const rules = {
   '#reference': [
     {
       token: 'keyword.operator.reference.groq',
-      regex: /\->/,
+      regex: /->/,
     },
   ],
   '#pair': [
@@ -83,7 +84,7 @@ const rules = {
     },
     {
       token: 'keyword.operator.pair.groq',
-      regex: /=>/,
+      regex: /[=]>/,
     },
   ],
   '#arraylike': [
@@ -315,7 +316,7 @@ const rules = {
         },
         {
           token: 'invalid.illegal.expected-projection-separator.groq',
-          regex: /[^\s\},]/,
+          regex: /[^\s},]/,
         },
         {
           defaultToken: 'meta.structure.projection.groq',
@@ -377,7 +378,7 @@ const rules = {
   '#stringcontent': [
     {
       token: 'constant.character.escape.groq',
-      regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/,
+      regex: /\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4})/,
     },
     {
       token: 'invalid.illegal.unrecognized-string-escape.groq',
@@ -511,7 +512,7 @@ const rules = {
         'text',
         'keyword.operator.reference.groq',
       ],
-      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(\->)/,
+      regex: /([_A-Za-z][_0-9A-Za-z]*)(\s*)((?:\[\s*\])?)(\s*)(->)/,
     },
     {
       token: [
@@ -557,16 +558,22 @@ const rules = {
   ],
 }
 
+declare let ace: any
+
 ace.define(
   'ace/mode/groq_highlight_rules',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/text_highlight_rules'],
-  function (acequire, exports, module) {
+  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
     const oop = acequire('../lib/oop')
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules
 
     const GroqHighlightRules = function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
+      // @ts-ignore
       this.$rules = rules
+      // @ts-ignore
       this.normalizeRules()
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }
 
     oop.inherits(GroqHighlightRules, TextHighlightRules)
@@ -587,7 +594,7 @@ ace.define(
     'ace/mode/groq_highlight_rules',
     'ace/mode/folding/cstyle',
   ],
-  function (acequire, exports, module) {
+  function (acequire: (id: string) => any, exports: Record<string, unknown>, _module: any) {
     // eslint-disable-next-line strict
     'use strict'
     const oop = acequire('../lib/oop')
@@ -597,14 +604,22 @@ ace.define(
     const FoldMode = acequire('./folding/cstyle').FoldMode
 
     const Mode = function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
       const highlighter = new GroqHighlightRules()
+      // @ts-ignore
       this.foldingRules = new FoldMode()
+      // @ts-ignore
       this.$tokenizer = new Tokenizer(highlighter.getRules())
+      // @ts-ignore
       this.$keywordList = highlighter.$keywordList
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }
     oop.inherits(Mode, TextMode)
     ;(function () {
+      /* eslint-disable @typescript-eslint/ban-ts-comment */
+      // @ts-ignore
       this.lineCommentStart = "'"
+      /* eslint-enable @typescript-eslint/ban-ts-comment */
     }.call(Mode.prototype))
 
     exports.Mode = Mode

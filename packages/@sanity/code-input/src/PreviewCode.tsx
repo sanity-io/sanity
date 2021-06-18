@@ -1,8 +1,10 @@
 import React, {PureComponent} from 'react'
-import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get} from 'lodash'
 import styles from './PreviewCode.css'
+import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
+import createHighlightMarkers from './createHighlightMarkers'
+import {CodeInputType, CodeInputValue} from './types'
 
 /* eslint-disable import/no-unassigned-import */
 import 'brace/mode/batchfile'
@@ -25,10 +27,12 @@ import 'brace/theme/tomorrow'
 import './groq'
 /* eslint-enable import/no-unassigned-import */
 
-import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
-import createHighlightMarkers from './createHighlightMarkers'
+export interface PreviewCodeProps {
+  type?: CodeInputType
+  value?: CodeInputValue
+}
 
-function isSupportedLanguage(mode) {
+function isSupportedLanguage(mode: string) {
   const alias = LANGUAGE_ALIASES[mode]
   if (alias) {
     return alias
@@ -42,26 +46,27 @@ function isSupportedLanguage(mode) {
   return false
 }
 
-export default class PreviewCode extends PureComponent {
-  static propTypes = {
-    type: PropTypes.object,
-    value: PropTypes.shape({
-      _type: PropTypes.string,
-      code: PropTypes.string,
-      language: PropTypes.string,
-      highlightedLines: PropTypes.array,
-    }),
-  }
-
-  ace = React.createRef()
+export default class PreviewCode extends PureComponent<PreviewCodeProps> {
+  ace: AceEditor | null = null
 
   componentDidMount() {
-    // Avoid cursor and focus tracking by Ace
-    const ace = this.ace && this.ace.current
-    if (ace) {
-      ace.editor.renderer.$cursorLayer.element.style.opacity = 0
-      ace.editor.textInput.getElement().disabled = true
+    if (!this.ace) return
+
+    const editor = (this.ace as any).editor
+
+    if (editor) {
+      // Avoid cursor and focus tracking by Ace
+      editor.renderer.$cursorLayer.element.style.opacity = 0
+      editor.textInput.getElement().disabled = true
     }
+  }
+
+  setEditor = (ace: AceEditor | null) => {
+    this.ace = ace
+  }
+
+  handleEditorChange = () => {
+    // do nothing when the editor changes
   }
 
   render() {
@@ -72,13 +77,12 @@ export default class PreviewCode extends PureComponent {
       <div className={styles.root}>
         <div className={styles.aceWrapper}>
           <AceEditor
-            ref={this.ace}
+            ref={this.setEditor}
             focus={false}
             mode={mode}
             theme="monokai"
             width="100%"
-            onChange={() => undefined}
-            height={null}
+            onChange={this.handleEditorChange}
             maxLines={200}
             readOnly
             wrapEnabled
@@ -89,9 +93,8 @@ export default class PreviewCode extends PureComponent {
             markers={
               value && value.highlightedLines
                 ? createHighlightMarkers(value.highlightedLines)
-                : null
+                : undefined
             }
-            onLoad={this.handleEditorLoad}
             tabSize={2}
             showGutter={false}
             setOptions={ACE_SET_OPTIONS}

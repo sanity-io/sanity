@@ -4,6 +4,7 @@
   "references": [
     {"path": "./@sanity/base"},
     {"path": "./@sanity/block-tools"},
+    {"path": "./@sanity/code-input"},
     {"path": "./@sanity/default-layout"},
     {"path": "./@sanity/desk-tool"},
     {"path": "./@sanity/diff"},
