@@ -1,1 +1,1 @@
-export {PatchEvent as default} from '../../PatchEvent'
+export * from '../../PatchEvent'
