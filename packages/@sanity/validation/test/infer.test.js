@@ -39,6 +39,52 @@ describe('schema validation inference', () => {
       )
     })
   })
+  describe('shared validation rule', () => {
+    const fieldValidationInferReproSharedObject = {
+      type: 'object',
+      name: 'someObjectType',
+      fields: [
+        {name: 'first', type: 'string'},
+        {name: 'second', type: 'string'},
+      ],
+    }
+    const fieldValidationInferReproDoc = {
+      name: 'fieldValidationInferReproDoc',
+      type: 'document',
+      title: 'FieldValidationRepro',
+      fields: [
+        {
+          name: 'withValidation',
+          type: 'someObjectType',
+          title: 'Field of someObjectType with validation',
+          description: 'First field should be required',
+          validation: (Rule) =>
+            Rule.fields({
+              first: (fieldRule) => fieldRule.required(),
+            }),
+        },
+        {
+          name: 'withoutValidation',
+          type: 'someObjectType',
+          title: 'Field of someObjectType without validation',
+          description: 'First field should not be required',
+        },
+      ],
+    }
+
+    const schema = Schema.compile({
+      types: [fieldValidationInferReproSharedObject, fieldValidationInferReproDoc],
+    })
+
+    test('should not overwrite field validations for the same field in different types', () => {
+      const type = inferFromSchema(schema).get('fieldValidationInferReproDoc')
+      const fieldWithValidation = type.fields.find((field) => field.name === 'withValidation')
+      const fieldWithoutValidation = type.fields.find((field) => field.name === 'withoutValidation')
+
+      expect(fieldWithValidation.type.fields[0].type.validation).not.toEqual([])
+      expect(fieldWithoutValidation.type.fields[0].type.validation).toEqual([])
+    })
+  })
 })
 
 async function expectNoError(validations, value) {
