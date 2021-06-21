@@ -39,6 +39,42 @@ describe('schema validation inference', () => {
       )
     })
   })
+  describe('field validations', () => {
+    const fieldValidationInferReproDoc = {
+      name: 'fieldValidationInferReproDoc',
+      type: 'document',
+      title: 'FieldValidationRepro',
+      validation: (Rule) =>
+        Rule.fields({
+          stringField: (fieldRule) => fieldRule.required(),
+        }),
+
+      fields: [
+        {
+          name: 'stringField',
+          type: 'string',
+          title: 'Field of someObjectType with validation',
+          description: 'First field should be required',
+        },
+      ],
+    }
+
+    const schema = Schema.compile({
+      types: [fieldValidationInferReproDoc],
+    })
+
+    test('field validations defined on an object type does not affect the field type validation', () => {
+      const documentType = inferFromSchema(schema).get('fieldValidationInferReproDoc')
+      const fieldWithoutValidation = documentType.fields.find(
+        (field) => field.name === 'stringField'
+      )
+
+      // The first field should only have the validation rules that comes with its type
+      expect(
+        fieldWithoutValidation.type.validation.flatMap((validation) => validation._rules)
+      ).toEqual([{flag: 'type', constraint: 'String'}])
+    })
+  })
 })
 
 async function expectNoError(validations, value) {
