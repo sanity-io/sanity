@@ -99,6 +99,10 @@ export const ObjectInput = memo(
 
     const renderField = React.useCallback(
       (field: ObjectField, fieldLevel: number, index: number) => {
+        if (!filterField(type, field) || field.type.hidden) {
+          return null
+        }
+
         const fieldValue = value && value[field.name]
         return (
           <ObjectInputField
@@ -130,6 +134,7 @@ export const ObjectInput = memo(
         onFocus,
         presence,
         readOnly,
+        type,
         value,
       ]
     )
