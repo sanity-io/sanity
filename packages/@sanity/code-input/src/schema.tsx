@@ -1,34 +1,10 @@
-import React, {PureComponent} from 'react'
+import React from 'react'
 import CodeBlockIcon from 'part:@sanity/base/code-block-icon'
 import JsonLogo from './jsonLogo'
+import CodeInput from './CodeInput'
+import PreviewCode, {PreviewCodeProps} from './PreviewCode'
 
-class Input extends PureComponent<import('./CodeInput').CodeInputProps> {
-  CodeInput: typeof import('./CodeInput').default
-  codeInput: React.RefObject<import('./CodeInput').default>
-
-  constructor(props: any) {
-    super(props)
-
-    this.CodeInput = require('./CodeInput').default
-    this.codeInput = React.createRef()
-  }
-
-  focus() {
-    if (this.codeInput && this.codeInput.current) {
-      this.codeInput.current.focus()
-    }
-  }
-
-  render() {
-    const {CodeInput} = this
-
-    return <CodeInput ref={this.codeInput} {...this.props} />
-  }
-}
-
-const Preview = (props: import('./PreviewCode').PreviewCodeProps) => {
-  const PreviewCode = require('./PreviewCode').default
-
+const Preview = (props: PreviewCodeProps) => {
   return <PreviewCode {...props} />
 }
 
@@ -81,7 +57,7 @@ export default {
   name: 'code',
   type: 'object',
   title: 'Code',
-  inputComponent: Input,
+  inputComponent: CodeInput,
   icon: CodeBlockIcon,
   fields: [
     {
