@@ -43,6 +43,26 @@ const schema = Schema.compile({
         },
       ],
     },
+    {
+      title: 'Hidden test',
+      name: 'hiddenTest',
+      type: 'object',
+      fields: [
+        {
+          name: 'thisIsVisible',
+          type: 'string',
+        },
+        {
+          name: 'thisIsHidden',
+          type: 'string',
+          hidden: true,
+        },
+        {
+          name: 'thisMayBeVisible',
+          type: 'string',
+        },
+      ],
+    },
   ],
 })
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
@@ -139,6 +159,34 @@ describe('collapsible behavior', () => {
     expect(onFocus).toHaveBeenLastCalledWith(['collapsibleAndCollapsedByDefault'])
 
     expect(queryByTestId('input-field1')).toBeNull()
+  })
+
+  it('does not show hidden fields', () => {
+    const onFocus = jest.fn()
+
+    const {queryByTestId} = render(
+      <ObjectInputTester onFocus={onFocus} type={schema.get('hiddenTest')} />
+    )
+
+    expect(queryByTestId('input-thisIsVisible')).toBeVisible()
+    expect(queryByTestId('input-thisIsHidden')).toBeNull()
+    expect(queryByTestId('input-thisMayBeVisible')).toBeVisible()
+  })
+
+  it('supports filtering fields based on a predicate', () => {
+    const onFocus = jest.fn()
+
+    const {queryByTestId} = render(
+      <ObjectInputTester
+        onFocus={onFocus}
+        type={schema.get('hiddenTest')}
+        filterField={(type, field) => field.name !== 'thisMayBeVisible'}
+      />
+    )
+
+    expect(queryByTestId('input-thisIsVisible')).toBeVisible()
+    expect(queryByTestId('input-thisIsHidden')).toBeNull()
+    expect(queryByTestId('input-thisMayBeVisible')).toBeNull()
   })
 
   it("expands a field that's been manually collapsed when receiving a focus path that targets it", () => {
