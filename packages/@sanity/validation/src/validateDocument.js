@@ -1,6 +1,7 @@
 const Type = require('type-of-is')
 const {flatten} = require('lodash')
 const ValidationError = require('./ValidationError')
+const Rule = require('./Rule')
 
 /* eslint-disable no-console */
 module.exports = async (doc, schema) => {
@@ -54,14 +55,41 @@ function validateObject(obj, type, path, options) {
 
   // Validate fields within object
   const fields = type.fields || []
+
+  const fieldRules = type.validation
+    .map((rule) => rule._fieldRules)
+    .filter(Boolean)
+    .reduce(Object.assign, {})
+
   const fieldChecks = fields.map((field) => {
+    // field validation from the enclosing object type
+
+    const fieldValidation = fieldRules[field.name]
+    if (!fieldValidation) {
+      return []
+    }
+    const fieldPath = appendPath(path, field.name)
+    const fieldValue = obj[field.name]
+
+    return fieldValidation(new Rule())
+      .validate(fieldValue, {
+        parent: obj,
+        document: options.document,
+        path: fieldPath,
+        type: field.type,
+      })
+      .then((result) => applyPath(result, fieldPath))
+  })
+
+  const fieldTypeChecks = fields.map((field) => {
+    // field validation from field type
+
+    const fieldPath = appendPath(path, field.name)
+    const fieldValue = obj[field.name]
     const validation = field.type && field.type.validation
     if (!validation) {
       return []
     }
-
-    const fieldPath = appendPath(path, field.name)
-    const fieldValue = obj[field.name]
     return validateItem(fieldValue, field.type, fieldPath, {
       parent: obj,
       document: options.document,
@@ -70,7 +98,7 @@ function validateObject(obj, type, path, options) {
     })
   })
 
-  return Promise.all([...objChecks, ...fieldChecks]).then(flatten)
+  return Promise.all([...objChecks, ...fieldChecks, ...fieldTypeChecks]).then(flatten)
 }
 
 function validateArray(items, type, path, options) {
