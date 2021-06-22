@@ -135,7 +135,7 @@ export interface SlugSchemaType extends BaseSchemaType {
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
-  type: T
+  type: T & {hidden?: boolean}
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
