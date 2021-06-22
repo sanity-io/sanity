@@ -1,14 +1,13 @@
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
+import {FormField, FormFieldSet} from '@sanity/base/components'
 import {Path, Marker} from '@sanity/types'
 import {Card, Select, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import AceEditor from 'react-ace'
-import {get, has} from 'lodash'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
-import FormField from 'part:@sanity/components/formfields/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import AceEditor from 'react-ace'
+import {get, has} from 'lodash'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
 import createHighlightMarkers from './createHighlightMarkers'
@@ -375,19 +374,19 @@ const CodeInput = React.forwardRef(
           value={value?.code}
           compareValue={codeCompareValue}
         >
-          <Fieldset legend={type.title} description={type.description} level={level}>
+          <FormFieldSet title={type.title} description={type.description} level={level}>
             {renderEditor()}
-          </Fieldset>
+          </FormFieldSet>
         </ChangeIndicatorProvider>
       )
     }
 
     return (
-      <Fieldset
-        legend={type.title}
+      <FormFieldSet
+        title={type.title}
         description={type.description}
         level={level}
-        changeIndicator={false}
+        __unstable_changeIndicator={false}
       >
         <ChangeIndicatorProvider
           path={PATH_LANGUAGE}
@@ -398,7 +397,7 @@ const CodeInput = React.forwardRef(
           <FormField
             level={level + 1}
             label={languageField?.title || 'Language'}
-            presence={languagePresence}
+            __unstable_presence={languagePresence}
           >
             <Select
               onChange={handleLanguageChange}
@@ -425,7 +424,7 @@ const CodeInput = React.forwardRef(
             <FormField
               label={filenameField?.title || 'Filename'}
               level={level + 1}
-              presence={filenamePresence}
+              __unstable_presence={filenamePresence}
             >
               <TextInput
                 name="filename"
@@ -444,11 +443,11 @@ const CodeInput = React.forwardRef(
           value={value?.code}
           compareValue={codeCompareValue}
         >
-          <FormField label="Code" level={level + 1} presence={codePresence}>
+          <FormField label="Code" level={level + 1} __unstable_presence={codePresence}>
             {renderEditor()}
           </FormField>
         </ChangeIndicatorProvider>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 )
