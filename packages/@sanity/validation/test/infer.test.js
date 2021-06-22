@@ -39,50 +39,40 @@ describe('schema validation inference', () => {
       )
     })
   })
-  describe('shared validation rule', () => {
-    const fieldValidationInferReproSharedObject = {
-      type: 'object',
-      name: 'someObjectType',
-      fields: [
-        {name: 'first', type: 'string'},
-        {name: 'second', type: 'string'},
-      ],
-    }
+  describe('field validations', () => {
     const fieldValidationInferReproDoc = {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
+      validation: (Rule) =>
+        Rule.fields({
+          stringField: (fieldRule) => fieldRule.required(),
+        }),
+
       fields: [
         {
-          name: 'withValidation',
-          type: 'someObjectType',
+          name: 'stringField',
+          type: 'string',
           title: 'Field of someObjectType with validation',
           description: 'First field should be required',
-          validation: (Rule) =>
-            Rule.fields({
-              first: (fieldRule) => fieldRule.required(),
-            }),
-        },
-        {
-          name: 'withoutValidation',
-          type: 'someObjectType',
-          title: 'Field of someObjectType without validation',
-          description: 'First field should not be required',
         },
       ],
     }
 
     const schema = Schema.compile({
-      types: [fieldValidationInferReproSharedObject, fieldValidationInferReproDoc],
+      types: [fieldValidationInferReproDoc],
     })
 
-    test('should not overwrite field validations for the same field in different types', () => {
-      const type = inferFromSchema(schema).get('fieldValidationInferReproDoc')
-      const fieldWithValidation = type.fields.find((field) => field.name === 'withValidation')
-      const fieldWithoutValidation = type.fields.find((field) => field.name === 'withoutValidation')
+    test('field validations defined on an object type does not affect the field type validation', () => {
+      const documentType = inferFromSchema(schema).get('fieldValidationInferReproDoc')
+      const fieldWithoutValidation = documentType.fields.find(
+        (field) => field.name === 'stringField'
+      )
 
-      expect(fieldWithValidation.type.fields[0].type.validation).not.toEqual([])
-      expect(fieldWithoutValidation.type.fields[0].type.validation).toEqual([])
+      // The first field should only have the validation rules that comes with its type
+      expect(
+        fieldWithoutValidation.type.validation.flatMap((validation) => validation._rules)
+      ).toEqual([{flag: 'type', constraint: 'String'}])
     })
   })
 })
