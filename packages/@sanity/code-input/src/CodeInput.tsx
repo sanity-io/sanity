@@ -10,7 +10,7 @@ import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
 import styled from 'styled-components'
 import {useId} from '@reach/auto-id'
-import createHighlightMarkers from './createHighlightMarkers'
+import createHighlightMarkers, {highlightMarkersCSS} from './createHighlightMarkers'
 import {CodeInputType, CodeInputValue} from './types'
 
 import {
@@ -42,7 +42,6 @@ import 'brace/mode/python'
 import 'brace/mode/sh'
 import 'brace/mode/text'
 import './groq'
-
 import 'brace/theme/github'
 import 'brace/theme/monokai'
 import 'brace/theme/terminal'
@@ -60,6 +59,8 @@ const EditorContainer = styled(Card)`
     font-size: ${({theme}) => theme.sanity.fonts.code.sizes[1]};
     line-height: inherit;
   }
+
+  ${highlightMarkersCSS}
 
   &:not([disabled]):not([readonly]) {
     &:focus,
@@ -189,9 +190,8 @@ const CodeInput = React.forwardRef(
 
           // Remove all markers from editor
           ;[true, false].forEach((inFront) => {
-            const editorSession = aceEditorRef.current?.getSession()
+            const editorSession = aceEditorRef.current?.editor?.getSession()
             const currentMarkers = editorSession.getMarkers(inFront)
-            // eslint-disable-next-line max-nested-callbacks
             Object.keys(currentMarkers).forEach((marker) => {
               editorSession.removeMarker(currentMarkers[marker].id)
             })
@@ -224,10 +224,12 @@ const CodeInput = React.forwardRef(
       }
     }, [aceEditorRef, handleGutterMouseDown])
 
-    const handleEditorLoad = useCallback(() => {
-      // editor?.current?.focus()
-      aceEditorRef?.current?.on('guttermousedown', handleGutterMouseDown)
-    }, [aceEditorRef, handleGutterMouseDown])
+    const handleEditorLoad = useCallback(
+      (editor: any) => {
+        editor?.on('guttermousedown', handleGutterMouseDown)
+      },
+      [handleGutterMouseDown]
+    )
 
     const getLanguageAlternatives = useCallback((): {
       title: string

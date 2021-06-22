@@ -1,5 +1,15 @@
 import {Marker} from 'react-ace'
-import styles from './HighlightMarkers.css'
+import {css} from 'styled-components'
+
+export const highlightMarkersCSS = css`
+  .ace_editor_markers_highlight {
+    position: absolute;
+    background-color: ${({theme}) => theme.sanity.color.solid.primary.enabled.bg};
+    opacity: 0.2;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+`
 
 export default function createHighlightMarkers(rows: unknown[]): Marker[] {
   return rows.map((row) => ({
@@ -7,7 +17,7 @@ export default function createHighlightMarkers(rows: unknown[]): Marker[] {
     startCol: 0,
     endRow: Number(row) - 1,
     endCol: +Infinity,
-    className: styles.highlight,
+    className: 'ace_editor_markers_highlight',
     type: 'background',
     inFront: true,
   }))
