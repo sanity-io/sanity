@@ -79,16 +79,7 @@ function inferForFields(typeDef, schema, visited) {
     return
   }
 
-  const fieldRules = typeDef.validation
-    .map((rule) => rule._fieldRules)
-    .filter(Boolean)
-    .reduce((acc, current) => ({fields: {...acc.fields, ...current}, hasRules: true}), {
-      fields: {},
-      hasRules: false,
-    })
-
   typeDef.fields.forEach((field) => {
-    field.type.validation = fieldRules.fields[field.name] || field.type.validation
     inferFromSchemaType(field.type, schema, visited)
   })
 }
