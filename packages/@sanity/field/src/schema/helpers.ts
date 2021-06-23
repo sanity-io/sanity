@@ -1,21 +1,5 @@
-import schema from 'part:@sanity/base/schema'
 import {isTypedObject} from '@sanity/types'
-import {Diff, ArraySchemaType, SchemaType, ReferenceSchemaType} from '../diff'
-
-export function getReferencedType(referenceType: ReferenceSchemaType): SchemaType | undefined {
-  if (!referenceType.to) {
-    return referenceType.type
-      ? getReferencedType(referenceType.type as ReferenceSchemaType)
-      : undefined
-  }
-
-  if (Array.isArray(referenceType.to) && referenceType.to.length !== 1) {
-    return undefined
-  }
-
-  const targetType = schema.get(referenceType.to[0].name) as SchemaType
-  return targetType
-}
+import {Diff, ArraySchemaType, SchemaType} from '../diff'
 
 export function resolveTypeName(value: unknown): string {
   return isTypedObject(value) ? value._type : resolveJSType(value)
