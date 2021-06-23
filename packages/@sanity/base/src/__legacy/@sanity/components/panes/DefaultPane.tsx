@@ -1,4 +1,4 @@
-import {Box, Layer, Tooltip} from '@sanity/ui'
+import {Layer} from '@sanity/ui'
 import {StructureBuilder as S} from '@sanity/structure'
 import {InitialValueTemplateItem} from '@sanity/structure/lib/InitialValueTemplateItem'
 import classNames from 'classnames'
@@ -10,18 +10,13 @@ import {IntentLink} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
-import grantsStore from 'part:@sanity/base/grants'
-import userStore from 'part:@sanity/base/user'
-import {tap} from 'rxjs/operators'
 import React from 'react'
-import {combineLatest} from 'rxjs'
-import type {Subscription} from 'rxjs'
 import {ScrollContainer} from '../../../../components/scroll'
 import {childrenToElementArray} from '../helpers'
 import {MenuItem, MenuItemGroup} from '../menus/types'
 import Styleable from '../utilities/Styleable'
 
-import {LegacyLayerProvider, InsufficientPermissionsMessage} from '../../../../components'
+import {LegacyLayerProvider} from '../../../../components'
 import defaultStyles from './DefaultPane.css'
 
 interface DefaultPaneProps {
@@ -49,16 +44,9 @@ interface DefaultPaneProps {
   styles?: Record<string, string>
 }
 
-interface PermissionCheckResult {
-  granted: boolean
-  reason: string
-}
-
 interface State {
   isInitialValueMenuOpen: boolean
   isMenuOpen: boolean
-  createPermission?: PermissionCheckResult
-  currentUser?: any
 }
 
 function getActionKey(action: MenuItem, index: number) {
@@ -107,7 +95,6 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
 
   templateMenuId: string
   paneMenuId: string
-  subscription: Subscription
 
   constructor(props: DefaultPaneProps) {
     super(props)
@@ -122,26 +109,6 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     this.templateMenuId = Math.random().toString(36).substr(2, 6)
 
     this.paneMenuId = Math.random().toString(36).substr(2, 6)
-  }
-
-  componentDidMount() {
-    this.subscription = combineLatest(
-      grantsStore.checkDocumentPermission('create', {_type: 'any', _id: 'any'}),
-      userStore.me
-    )
-      .pipe(
-        tap(([permission, currentUser]) => {
-          this.setState({
-            createPermission: permission as PermissionCheckResult,
-            currentUser: currentUser,
-          })
-        })
-      )
-      .subscribe()
-  }
-
-  componentWillUnmount() {
-    this.subscription?.unsubscribe()
   }
 
   // Triggered by clicking "outside" of the menu when open, or after triggering action
@@ -200,41 +167,18 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
 
   renderIntentAction = (action: MenuItem, i: number): React.ReactElement => {
     const {styles = {}} = this.props
-    const {currentUser, createPermission} = this.state
 
     return (
-      <Layer zOffset={100000}>
-        <Tooltip
-          disabled={createPermission?.granted}
-          content={
-            <Box padding={2} style={{maxWidth: 250}}>
-              <InsufficientPermissionsMessage
-                currentUser={currentUser}
-                operationLabel="create new documents"
-              />
-            </Box>
-          }
-          portal
-        >
-          <div>
-            <IntentButton
-              className={styles.actionButton}
-              icon={action.icon}
-              disabled={!createPermission?.granted}
-              intent={action.intent && action.intent.type}
-              key={getActionKey(action, i)}
-              kind="simple"
-              padding="small"
-              params={action.intent && action.intent.params}
-              title={
-                createPermission?.granted && typeof action.title === 'string'
-                  ? action.title
-                  : undefined
-              }
-            />
-          </div>
-        </Tooltip>
-      </Layer>
+      <IntentButton
+        className={styles.actionButton}
+        icon={action.icon}
+        intent={action.intent && action.intent.type}
+        key={getActionKey(action, i)}
+        kind="simple"
+        padding="small"
+        params={action.intent && action.intent.params}
+        title={typeof action.title === 'string' ? action.title : undefined}
+      />
     )
   }
 
@@ -273,7 +217,6 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
     if (action.intent) {
       return this.renderIntentAction(action, i)
     }
-    const {currentUser, createPermission} = this.state
 
     const styles = this.props.styles || {}
 
@@ -298,46 +241,28 @@ class DefaultPane extends React.PureComponent<DefaultPaneProps, State> {
         )}
 
         {action.action === 'toggleTemplateSelectionMenu' && (
-          <Layer zOffset={100000}>
-            <Tooltip
-              disabled={createPermission?.granted}
-              content={
-                <Box padding={2} style={{maxWidth: 250}}>
-                  <InsufficientPermissionsMessage
-                    currentUser={currentUser}
-                    operationLabel="create new documents"
-                  />
-                </Box>
-              }
-              portal
-            >
-              <div>
-                <MenuButton
-                  boundaryElement={this.rootElement}
-                  buttonProps={{
-                    'aria-label': 'Menu',
-                    'aria-haspopup': 'menu',
-                    'aria-expanded': this.state.isInitialValueMenuOpen,
-                    'aria-controls': this.templateMenuId,
-                    icon: Icon,
-                    kind: 'simple',
-                    padding: 'small',
-                    selected: this.state.isInitialValueMenuOpen,
-                    title: 'Create new document',
-                    disabled: !createPermission?.granted,
-                  }}
-                  menu={
-                    <div className={styles.initialValueTemplateMenu}>
-                      {items.map((item, index) => this.renderActionMenuItem(item, index))}
-                    </div>
-                  }
-                  open={this.state.isInitialValueMenuOpen}
-                  placement="bottom"
-                  setOpen={this.setInitialValueMenuOpen}
-                />
+          <MenuButton
+            boundaryElement={this.rootElement}
+            buttonProps={{
+              'aria-label': 'Menu',
+              'aria-haspopup': 'menu',
+              'aria-expanded': this.state.isInitialValueMenuOpen,
+              'aria-controls': this.templateMenuId,
+              icon: Icon,
+              kind: 'simple',
+              padding: 'small',
+              selected: this.state.isInitialValueMenuOpen,
+              title: 'Create new document',
+            }}
+            menu={
+              <div className={styles.initialValueTemplateMenu}>
+                {items.map((item, index) => this.renderActionMenuItem(item, index))}
               </div>
-            </Tooltip>
-          </Layer>
+            }
+            open={this.state.isInitialValueMenuOpen}
+            placement="bottom"
+            setOpen={this.setInitialValueMenuOpen}
+          />
         )}
       </div>
     )
