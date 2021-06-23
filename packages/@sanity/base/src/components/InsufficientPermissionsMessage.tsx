@@ -5,7 +5,7 @@ import {AccessDeniedIcon} from '@sanity/icons'
 export interface InsufficientPermissionsMessageProps {
   title?: string
   operationLabel?: string
-  currentUser?: {roles: {name: string; title: string}[]}
+  currentUser?: {roles?: {name: string; title: string}[]}
 }
 
 export function InsufficientPermissionsMessage(props: InsufficientPermissionsMessageProps) {
@@ -14,7 +14,8 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
     title = 'Insufficient permissions',
     operationLabel = 'access this feature',
   } = props
-  const plural = currentUser?.roles.length !== 1
+  const roles = currentUser?.roles || []
+  const plural = roles.length !== 1
   return (
     <Box padding={2}>
       <Inline space={2}>
@@ -27,7 +28,7 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
         <Text size={1}>
           Your role{plural && 's'}{' '}
           {join(
-            currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>),
+            roles.map((r) => <code key={r.name}>{r.title}</code>),
             ', '
           )}{' '}
           do{plural || 'es'} not have permissions to {operationLabel}
