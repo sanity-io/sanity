@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "2.11.0",
+  "version": "2.12.2",
   "description": "Utilities shared across projects of Sanity",
   "main": "lib/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/types": "2.11.0",
+    "@sanity/types": "2.12.2",
     "dotenv": "^8.2.0",
     "fs-extra": "^6.0.1",
     "get-random-values": "^1.2.2",
