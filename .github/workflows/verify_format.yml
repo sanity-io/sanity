@@ -26,7 +26,8 @@ jobs:
 
       - name: Install npm dependencies
         env:
-         PUPPETEER_SKIP_DOWNLOAD: 'true'
+          CYPRESS_INSTALL_BINARY: '0'
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         # --ignore-scripts disables postinstall because it's not needed
         # in this CI step and takes a long time
         run: npm install --ignore-scripts
