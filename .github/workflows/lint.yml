@@ -25,6 +25,7 @@ jobs:
       - name: Install npm dependencies
         env:
          PUPPETEER_SKIP_DOWNLOAD: 'true'
+         CYPRESS_INSTALL_BINARY: '0'
         run: npm install
 
       # Required for import lint rules to work - packages pointing to ex
