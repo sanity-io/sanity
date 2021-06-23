@@ -11,14 +11,14 @@ export const highlightMarkersCSS = css`
   }
 `
 
-export default function createHighlightMarkers(rows: unknown[]): Marker[] {
+export default function createHighlightMarkers(rows: number[]): Marker[] {
   return rows.map((row) => ({
     startRow: Number(row) - 1,
     startCol: 0,
     endRow: Number(row) - 1,
     endCol: +Infinity,
     className: 'ace_editor_markers_highlight',
-    type: 'background',
+    type: 'highlight',
     inFront: true,
   }))
 }

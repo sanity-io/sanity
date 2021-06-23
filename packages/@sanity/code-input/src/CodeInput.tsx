@@ -5,7 +5,7 @@ import {Path, Marker} from '@sanity/types'
 import {Card, Select, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
-import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
 import styled from 'styled-components'
@@ -86,10 +86,6 @@ export interface CodeInputProps {
   value?: CodeInputValue
 }
 
-function compareNumbers(numA: number, numB: number) {
-  return numA - numB
-}
-
 // Returns a string with the mode name if supported (because aliases), otherwise false
 function isSupportedLanguage(mode: string) {
   const alias = LANGUAGE_ALIASES[mode]
@@ -163,47 +159,34 @@ const CodeInput = React.forwardRef(
 
     const handleToggleSelectLine = useCallback(
       (lineNumber: number) => {
-        const path: Array<string | number> = ['highlightedLines']
-        const highlightedLines = (value && value.highlightedLines) || []
-
-        let position = highlightedLines.indexOf(lineNumber)
-        const patches = [setIfMissing({_type: type.name}), setIfMissing([], ['highlightedLines'])]
-        const addLine = position === -1
-
-        if (addLine) {
-          // New element, figure out where to add it so it sorts correctly
-          const sorted = highlightedLines.concat(lineNumber).sort(compareNumbers)
-          position = sorted.indexOf(lineNumber)
-          patches.push(
-            insert(
-              [lineNumber],
-              'before',
-              path.concat(position === sorted.length - 1 ? -1 : position)
+        const editorSession = aceEditorRef.current?.editor?.getSession()
+        const backgroundMarkers = editorSession.getMarkers(true)
+        const currentHighlightedLines = Object.keys(backgroundMarkers)
+          .filter((key) => backgroundMarkers[key].type === 'highlight')
+          .map((key) => backgroundMarkers[key].range.start.row)
+        const currentIndex = currentHighlightedLines.indexOf(lineNumber)
+        if (currentIndex > -1) {
+          // toggle remove
+          currentHighlightedLines.splice(currentIndex, 1)
+        } else {
+          // toggle add
+          currentHighlightedLines.push(lineNumber)
+          currentHighlightedLines.sort()
+        }
+        onChange(
+          PatchEvent.from(
+            set(
+              currentHighlightedLines.map(
+                (line) =>
+                  // ace starts at line (row) 0, but we store it starting at line 1
+                  line + 1
+              ),
+              ['highlightedLines']
             )
           )
-        } else if (highlightedLines.length === 1) {
-          // Last element removed, unset whole path
-          patches.push(unset(path))
-
-          // Temporary workaround for bug in react-ace
-          // (https://github.com/securingsincity/react-ace/issues/229)
-
-          // Remove all markers from editor
-          ;[true, false].forEach((inFront) => {
-            const editorSession = aceEditorRef.current?.editor?.getSession()
-            const currentMarkers = editorSession.getMarkers(inFront)
-            Object.keys(currentMarkers).forEach((marker) => {
-              editorSession.removeMarker(currentMarkers[marker].id)
-            })
-          })
-        } else {
-          // Removed, but not the last element, remove single item
-          patches.push(unset(path.concat(position)))
-        }
-
-        onChange(PatchEvent.from(patches))
+        )
       },
-      [aceEditorRef, onChange, type.name, value]
+      [aceEditorRef, onChange]
     )
 
     const handleGutterMouseDown = useCallback(
@@ -211,7 +194,7 @@ const CodeInput = React.forwardRef(
         const target = event.domEvent.target
         if (target.classList.contains('ace_gutter-cell')) {
           const row = event.getDocumentPosition().row
-          handleToggleSelectLine(row + 1) // Ace starts at row 0
+          handleToggleSelectLine(row)
         }
       },
       [handleToggleSelectLine]
