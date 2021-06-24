@@ -89,7 +89,7 @@
     "@types/raf": "^3.4.0",
     "@types/refractor": "^3.0.0",
     "@types/resize-observer-browser": "^0.1.4",
-    "jest": "^26.6.3",
+    "jest": "^27.0.5",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",

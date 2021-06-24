@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@sanity/schema": "2.10.0",
-    "jest": "^26.6.3"
+    "jest": "^27.0.5"
   },
   "dependencies": {
     "clone-deep": "^2.0.1",

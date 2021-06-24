@@ -6,10 +6,15 @@ import React, {ForwardedRef, forwardRef} from 'react'
 
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import Schema from '@sanity/schema'
-import {SchemaType} from '@sanity/types'
+import {ObjectField, SchemaType, StringSchemaType} from '@sanity/types'
 import {ObjectInput, Props} from '../ObjectInput'
 import FormBuilderContext from '../../../FormBuilderContext'
 import is from '../../../utils/is'
+
+declare const foo: ObjectField<StringSchemaType>
+
+// eslint-disable-next-line no-console
+console.log(foo.type.test)
 
 const schema = Schema.compile({
   name: 'test',
@@ -172,7 +177,6 @@ describe('collapsible behavior', () => {
     expect(queryByTestId('input-thisIsHidden')).toBeNull()
     expect(queryByTestId('input-thisMayBeVisible')).toBeVisible()
   })
-
   it('supports filtering fields based on a predicate', () => {
     const onFocus = jest.fn()
 

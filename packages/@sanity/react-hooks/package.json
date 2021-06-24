@@ -38,7 +38,7 @@
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.149",
     "@types/shallow-equals": "^1.0.0",
-    "jest": "^26.6.3",
+    "jest": "^27.0.5",
     "react": "17.0.1",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3",
