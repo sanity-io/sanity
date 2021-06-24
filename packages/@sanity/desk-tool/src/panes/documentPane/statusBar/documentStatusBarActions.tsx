@@ -1,56 +1,66 @@
 import React, {useCallback, useState} from 'react'
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
-import {Box, Flex, Tooltip} from '@sanity/ui'
-import Button from 'part:@sanity/components/buttons/default'
-import Hotkeys from 'part:@sanity/components/typography/hotkeys'
+import {Box, Flex, Tooltip, Stack, Button, ButtonTone, Hotkeys, Layer, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
+import {ButtonColor} from '@sanity/base/__legacy/@sanity/components'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
 import {ActionMenu} from './actionMenu'
 import {ActionStateDialog} from './actionStateDialog'
 import {DocumentStatusBarActionsProps, HistoryStatusBarActionsProps} from './types'
-
-import styles from './documentStatusBarActions.css'
 
 // eslint-disable-next-line complexity
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   const {states, showMenu} = props
   const [firstActionState, ...menuActionStates] = states
   const [buttonContainerElement, setButtonContainerElement] = useState<HTMLDivElement | null>(null)
+
+  const buttonTone: Record<ButtonColor, ButtonTone> = {
+    primary: 'primary',
+    warning: 'caution',
+    success: 'positive',
+    danger: 'critical',
+    white: 'default',
+  }
+
   return (
-    <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
+    <Flex>
       {firstActionState && (
-        <div className={styles.mainAction}>
-          <Tooltip
-            disabled={!(firstActionState.title || firstActionState.shortcut)}
-            content={
-              <Flex padding={2} style={{maxWidth: 300}}>
-                {firstActionState.title}
-                {firstActionState.shortcut && (
-                  <Box marginLeft={2}>
-                    <Hotkeys keys={String(firstActionState.shortcut).split('+')} size="small" />
-                  </Box>
-                )}
-              </Flex>
-            }
-            portal
-            placement="top"
-          >
-            <div ref={setButtonContainerElement}>
-              <Button
-                className={
-                  showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
-                }
-                icon={firstActionState.icon}
-                color={firstActionState.disabled ? undefined : firstActionState.color || 'success'}
-                disabled={props.disabled || Boolean(firstActionState.disabled)}
-                aria-label={firstActionState.title}
-                onClick={firstActionState.onHandle}
-              >
-                {firstActionState.label}
-              </Button>
-            </div>
-          </Tooltip>
+        <Stack flex={1}>
+          <Layer zOffset={200}>
+            <Tooltip
+              disabled={!(firstActionState.title || firstActionState.shortcut)}
+              content={
+                <Flex padding={2} style={{maxWidth: 300}} align="center">
+                  <Text size={1} muted>
+                    {firstActionState.title}
+                  </Text>
+                  {firstActionState.shortcut && (
+                    <Box marginLeft={firstActionState.title ? 2 : 0}>
+                      <Hotkeys keys={String(firstActionState.shortcut).split('+')} />
+                    </Box>
+                  )}
+                </Flex>
+              }
+              portal
+              placement="top"
+            >
+              <Stack flex={1} ref={setButtonContainerElement}>
+                <Button
+                  icon={firstActionState.icon}
+                  tone={
+                    firstActionState.disabled
+                      ? 'default'
+                      : buttonTone[firstActionState.color] || 'positive'
+                  }
+                  disabled={props.disabled || Boolean(firstActionState.disabled)}
+                  aria-label={firstActionState.title}
+                  onClick={firstActionState.onHandle}
+                  text={firstActionState.label}
+                />
+              </Stack>
+            </Tooltip>
+          </Layer>
 
           {firstActionState.dialog && (
             <ActionStateDialog
@@ -58,7 +68,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
               referenceElement={buttonContainerElement}
             />
           )}
-        </div>
+        </Stack>
       )}
 
       {showMenu && menuActionStates.length > 0 && (
@@ -70,7 +80,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
           disabled={props.disabled}
         />
       )}
-    </div>
+    </Flex>
   )
 }
 
