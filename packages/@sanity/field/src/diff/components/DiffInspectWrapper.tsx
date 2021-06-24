@@ -1,14 +1,14 @@
-import {Box, Card, Code, Label, Stack} from '@sanity/ui'
+import {Box, BoxProps, Card, Code, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import styled from 'styled-components'
+import styled, {DefaultTheme, StyledComponent} from 'styled-components'
 import {pathToString} from '../../paths'
 import {FieldChangeNode} from '../../types'
 import {FromToArrow} from './FromToArrow'
 
-interface Props {
+interface Props extends BoxProps {
   children: React.ReactNode
   change: FieldChangeNode
-  className: string
+  as?: StyledComponent<'div', DefaultTheme>
 }
 
 const CodeWrapper = styled.pre`
@@ -22,7 +22,12 @@ const Meta = styled.div`
   right: 0;
 `
 
-export function DiffInspectWrapper({children, className, change}: Props): React.ReactElement {
+export function DiffInspectWrapper({
+  children,
+  as,
+  change,
+  ...restProps
+}: Props): React.ReactElement {
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
 
@@ -43,9 +48,9 @@ export function DiffInspectWrapper({children, className, change}: Props): React.
   }, [toggleInspect])
 
   return (
-    <div className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <Box as={as} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...restProps}>
       {isInspecting ? <DiffInspector change={change} /> : children}
-    </div>
+    </Box>
   )
 }
 

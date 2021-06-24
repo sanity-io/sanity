@@ -86,10 +86,14 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
 
   return (
     <Card>
-      <Stack space={5} data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}>
+      <Stack space={5}>
         <Stack as={ChangeListWrapper} space={5}>
           {changes.map((change) => (
-            <ChangeResolver change={change} key={change.key} />
+            <ChangeResolver
+              change={change}
+              key={change.key}
+              data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
+            />
           ))}
         </Stack>
 

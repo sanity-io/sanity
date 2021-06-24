@@ -1,10 +1,11 @@
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import classNames from 'classnames'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
+import {rem, Stack} from '@sanity/ui'
+import styled from 'styled-components'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {FieldChangeNode, OperationsAPI} from '../../types'
@@ -16,9 +17,41 @@ import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
 
-import styles from './FieldChange.css'
+const FieldChangeContainer = styled.div`
+  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+  &[data-revert-all-changes-hover] [data-revert-all-hover]::before {
+    border-left: 2px solid var(--field-change-error);
+  }
+`
 
-export function FieldChange({change}: {change: FieldChangeNode}) {
+const DiffBorder = styled.div`
+  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+  --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1])};
+  --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};
+
+  position: relative;
+  padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-left: 1px solid var(--card-border-color);
+  }
+
+  &[data-error]:hover::before,
+  &[data-revert-field-hover]:hover::before {
+    border-left: 2px solid var(--field-change-error);
+  }
+`
+
+export function FieldChange({
+  change,
+  ...restProps
+}: {change: FieldChangeNode} & React.HTMLAttributes<HTMLDivElement>) {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -50,11 +83,6 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
     if (action.action) action.action()
   }, [])
 
-  const rootClass = classNames(
-    change.error ? styles.error : styles.root,
-    revertHovered && styles.revertHovered
-  )
-
   const handleRevertButtonMouseEnter = useCallback(() => {
     setRevertHovered(true)
   }, [])
@@ -64,14 +92,16 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
   }, [])
 
   return (
-    <div className={rootClass}>
-      {change.showHeader && (
-        <div className={styles.header}>
-          <ChangeBreadcrumb change={change} titlePath={change.titlePath} />
-        </div>
-      )}
+    <Stack space={1} as={FieldChangeContainer} {...restProps}>
+      {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
       <FieldWrapper path={change.path} hasHover={revertHovered}>
-        <DiffInspectWrapper change={change} className={styles.change}>
+        <DiffInspectWrapper
+          change={change}
+          as={DiffBorder}
+          data-revert-field-hover={revertHovered ? '' : undefined}
+          data-error={change.error ? '' : undefined}
+          data-revert-all-hover
+        >
           {change.error ? (
             <ValueError error={change.error} />
           ) : (
@@ -82,15 +112,13 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
             </DiffErrorBoundary>
           )}
           {isComparingCurrent && updatePermission.granted && (
-            <div className={styles.revertChangesButtonContainer}>
-              <RevertChangesButton
-                onClick={handleRevertChangesConfirm}
-                onMouseEnter={handleRevertButtonMouseEnter}
-                onMouseLeave={handleRevertButtonMouseLeave}
-                ref={setRevertButtonElement}
-                selected={confirmRevertOpen}
-              />
-            </div>
+            <RevertChangesButton
+              onClick={handleRevertChangesConfirm}
+              onMouseEnter={handleRevertButtonMouseEnter}
+              onMouseLeave={handleRevertButtonMouseLeave}
+              ref={setRevertButtonElement}
+              selected={confirmRevertOpen}
+            />
           )}
         </DiffInspectWrapper>
       </FieldWrapper>
@@ -120,6 +148,6 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
           </PopoverDialog>
         </LegacyLayerProvider>
       )}
-    </div>
+    </Stack>
   )
 }
