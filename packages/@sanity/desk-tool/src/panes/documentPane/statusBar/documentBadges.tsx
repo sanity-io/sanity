@@ -5,7 +5,7 @@
 import React from 'react'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
 import DocumentBadge from 'part:@sanity/components/badges/default'
-import styles from './documentBadges.css'
+import {Flex, Box} from '@sanity/ui'
 import {Badge} from './types'
 
 interface Props {
@@ -18,19 +18,16 @@ function DocumentBadgesInner({states}: Props) {
     (badge) => badge.label && !['Published', 'Draft', 'Live document'].includes(badge.label)
   )
   return (
-    <div className={styles.root}>
-      {customDocumentBadges.length > 0 && (
-        <div className={styles.customDocumentBadges}>
-          {customDocumentBadges.map((badge, index) => (
-            <div className={styles.documentBadge} key={String(index)}>
-              <DocumentBadge color={(badge.color as any) || 'default'} title={badge.title}>
-                {badge.label}
-              </DocumentBadge>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <Flex align="center" paddingX={3}>
+      {customDocumentBadges.length > 0 &&
+        customDocumentBadges.map((badge, index) => (
+          <Box key={String(index)}>
+            <DocumentBadge color={(badge.color as any) || 'default'} title={badge.title}>
+              {badge.label}
+            </DocumentBadge>
+          </Box>
+        ))}
+    </Flex>
   )
 }
 
