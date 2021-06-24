@@ -27,9 +27,7 @@ export function ChangeBreadcrumb({
                 </Text>
               </Box>
             )}
-            <Text size={1} weight="semibold">
-              <ChangeTitleSegment change={change} segment={titleSegment} />
-            </Text>
+            <ChangeTitleSegment change={change} segment={titleSegment} />
           </Fragment>
         )
       })}

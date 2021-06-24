@@ -1,9 +1,20 @@
 import * as React from 'react'
+import {Box, rem, Text} from '@sanity/ui'
+import styled from 'styled-components'
 import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'
 
-import styles from './ChangeTitleSegment.css'
+const RoundedCard = styled.div`
+  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+  padding: ${({theme}) => rem(theme.sanity.space[1])};
+`
+
+const AnnotationText = styled(Text)`
+  &:not([hidden]) {
+    color: inherit;
+  }
+`
 
 export function ChangeTitleSegment({
   change,
@@ -14,9 +25,11 @@ export function ChangeTitleSegment({
 }) {
   if (typeof segment === 'string') {
     return (
-      <strong className={styles.text} title={segment}>
-        {segment}
-      </strong>
+      <Box style={segment.length > 30 ? {maxWidth: 100} : {}}>
+        <Text title={segment} size={1} weight="semibold" textOverflow="ellipsis">
+          {segment}
+        </Text>
+      </Box>
     )
   }
 
@@ -40,7 +53,13 @@ export function ChangeTitleSegment({
 
   // Changed/unchanged
   const readableIndex = (toIndex || 0) + 1
-  return <span className={styles.indexGroup}>#{readableIndex}</span>
+  return (
+    <Box padding={1}>
+      <Text size={1} weight="semibold">
+        #{readableIndex}
+      </Text>
+    </Box>
+  )
 }
 
 function CreatedTitleSegment({
@@ -60,18 +79,24 @@ function CreatedTitleSegment({
 
   if (annotation) {
     return (
-      <DiffCard
-        annotation={annotation}
-        as="ins"
-        className={styles.indexGroup}
-        tooltip={{description}}
-      >
-        {content}
+      <DiffCard annotation={annotation} tooltip={{description}} as={RoundedCard}>
+        <AnnotationText
+          size={1}
+          weight="semibold"
+          forwardedAs="ins"
+          style={{textDecoration: 'none'}}
+        >
+          {content}
+        </AnnotationText>
       </DiffCard>
     )
   }
 
-  return <span className={styles.indexGroup}>{content}</span>
+  return (
+    <Text size={1} weight="semibold">
+      {content}
+    </Text>
+  )
 }
 
 function DeletedTitleSegment({
@@ -84,13 +109,10 @@ function DeletedTitleSegment({
   const readableIndex = fromIndex + 1
   const description = `Removed from position ${readableIndex}`
   return (
-    <DiffCard
-      annotation={annotation || null}
-      className={styles.indexGroup}
-      as="del"
-      tooltip={{description}}
-    >
-      #{readableIndex}
+    <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
+      <AnnotationText size={1} weight="semibold" forwardedAs="del">
+        #{readableIndex}
+      </AnnotationText>
     </DiffCard>
   )
 }
@@ -113,15 +135,16 @@ function MovedTitleSegment({
 
   return (
     <>
-      <span className={styles.indexGroup}>#{toIndex + 1}</span>
-      <DiffCard
-        annotation={annotation}
-        className={styles.indexGroup}
-        as="span"
-        tooltip={{description}}
-      >
-        {indexSymbol}
-        {Math.abs(indexDiff)}
+      <Box padding={1}>
+        <AnnotationText size={1} weight="semibold">
+          #{toIndex + 1}
+        </AnnotationText>
+      </Box>
+      <DiffCard annotation={annotation} as={RoundedCard} tooltip={{description}}>
+        <AnnotationText size={1} weight="semibold">
+          {indexSymbol}
+          {Math.abs(indexDiff)}
+        </AnnotationText>
       </DiffCard>
     </>
   )

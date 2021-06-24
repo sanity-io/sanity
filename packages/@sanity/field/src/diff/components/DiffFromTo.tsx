@@ -1,13 +1,10 @@
-import classNames from 'classnames'
 import {Path, SchemaType} from '@sanity/types'
-import React, {createElement} from 'react'
+import React, {createElement, CSSProperties} from 'react'
 import {getChangeVerb, Diff} from '../../diff'
 import {PreviewComponent} from '../../preview/types'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromTo} from './FromTo'
-
-import styles from './DiffFromTo.css'
 
 interface DiffFromToProps {
   align?: 'top' | 'center' | 'bottom'
@@ -19,6 +16,13 @@ interface DiffFromToProps {
   schemaType: SchemaType
 }
 
+const cardStyles: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  display: 'block',
+  whiteSpace: 'break-spaces',
+}
+
 export function DiffFromTo(props: DiffFromToProps) {
   const {align, cardClassName, diff, layout, path, previewComponent, schemaType} = props
   const {action} = diff
@@ -26,20 +30,20 @@ export function DiffFromTo(props: DiffFromToProps) {
 
   if (action === 'unchanged') {
     return (
-      <DiffCard className={classNames(styles.card, cardClassName)}>
+      <DiffCard className={cardClassName} style={cardStyles}>
         {createElement(previewComponent, {schemaType, value: diff.toValue})}
       </DiffCard>
     )
   }
 
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
-    <DiffCard as="del" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
+    <DiffCard as="del" className={cardClassName} diff={diff} path={path} style={cardStyles}>
       {createElement(previewComponent, {schemaType, value: diff.fromValue})}
     </DiffCard>
   )
 
   const to = diff.toValue !== undefined && diff.toValue !== null && (
-    <DiffCard as="ins" className={classNames(styles.card, cardClassName)} diff={diff} path={path}>
+    <DiffCard as="ins" className={cardClassName} diff={diff} path={path} style={cardStyles}>
       {createElement(previewComponent, {schemaType, value: diff.toValue})}
     </DiffCard>
   )
