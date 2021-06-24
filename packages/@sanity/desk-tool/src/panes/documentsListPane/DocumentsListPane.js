@@ -192,7 +192,7 @@ export default class DocumentsListPane extends React.PureComponent {
   }
 
   renderItem = (item) => (
-    <Box padding={1} paddingBottom={0}>
+    <Box paddingX={2} paddingBottom={0}>
       <PaneItem
         id={getPublishedId(item._id)}
         layout={this.state.layout || this.props.defaultLayout || 'default'}

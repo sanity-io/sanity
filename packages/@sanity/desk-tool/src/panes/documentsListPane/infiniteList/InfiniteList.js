@@ -1,3 +1,4 @@
+import {Box} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import React from 'react'
 import VirtualList from 'react-tiny-virtual-list'
@@ -102,17 +103,19 @@ export default enhanceWithAvailHeight(
       }
 
       return (
-        <VirtualList
-          key={layout} // forcefully re-render the whole list when layout changes
-          data-trigger-update-hack={triggerUpdate} // see componentWillReceiveProps above
-          onScroll={this.handleScroll}
-          className={className || ''}
-          height={height}
-          itemCount={addExtraItem ? items.length + 1 : items.length}
-          itemSize={itemSize}
-          renderItem={this.renderItem}
-          overscanCount={50}
-        />
+        <Box paddingY={2}>
+          <VirtualList
+            key={layout} // forcefully re-render the whole list when layout changes
+            data-trigger-update-hack={triggerUpdate} // see componentWillReceiveProps above
+            onScroll={this.handleScroll}
+            className={className || ''}
+            height={height}
+            itemCount={addExtraItem ? items.length + 1 : items.length}
+            itemSize={itemSize}
+            renderItem={this.renderItem}
+            overscanCount={50}
+          />
+        </Box>
       )
     }
   }

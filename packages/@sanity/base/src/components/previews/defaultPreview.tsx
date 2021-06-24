@@ -9,14 +9,9 @@ const Root = styled(Flex)`
 
 const MediaWrapper = styled(Flex)`
   position: relative;
-  width: 2.5em;
-  height: 2.5em;
-  min-width: 2.5em;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
+  width: 2em;
+  height: 2em;
+  min-width: 2em;
   border-radius: ${({theme}) => theme.sanity.radius[2]}px;
 
   img {
@@ -26,17 +21,19 @@ const MediaWrapper = styled(Flex)`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: inherit;
   }
 
   svg {
     display: block;
-    font-size: calc(24 / 16 * 1em);
+    font-size: calc(24 / 16 * 0.75em);
     color: inherit;
+    opacity: 0.75;
   }
 
   svg[data-sanity-icon='true'] {
-    font-size: calc(36 / 16 * 1em);
-    margin: calc(6 / 36 * -1em);
+    font-size: calc(36 / 16 * 0.75em);
+    margin: calc(6 / 36 * -0.75em);
   }
 `
 
@@ -47,7 +44,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
     <Root align="center">
       {isPlaceholder && (
         <>
-          <Skeleton style={{width: 40, height: 40}} radius={2} marginRight={3} animated />
+          <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={3} animated />
           <Stack space={2} flex={1}>
             <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
             <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />
@@ -57,7 +54,13 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
       {!isPlaceholder && (
         <>
           {media !== false && media !== undefined && (
-            <MediaWrapper align="center" justify="center" marginRight={3}>
+            <MediaWrapper
+              align="center"
+              justify="center"
+              marginRight={3}
+              sizing="border"
+              overflow="hidden"
+            >
               {typeof media === 'function' &&
                 media({
                   dimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'},
@@ -84,7 +87,6 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
             {subtitle && (
               <Text
                 size={1}
-                muted
                 textOverflow="ellipsis"
                 style={{color: 'inherit', opacity: 0.75}}
                 as="h3"
