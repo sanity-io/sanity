@@ -3,11 +3,12 @@ import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
 import getBaseConfig from './webpack.config'
 import {getMonorepoAliases} from './monorepoAliases'
 import {getModulePath} from './getModulePath'
+import {applyLocalWebpackConfig} from './applyLocalWebpackConfig'
 
 export default (config) => {
+  const basePath = config.basePath || process.cwd()
   const baseConfig = getBaseConfig(config)
-
-  return Object.assign({}, baseConfig, {
+  const devConfig = Object.assign({}, baseConfig, {
     devtool: 'cheap-module-source-map',
     output: Object.assign({pathinfo: true}, baseConfig.output),
     entry: Object.assign({}, baseConfig.entry, {
@@ -36,4 +37,6 @@ export default (config) => {
       rules: applyStaticLoaderFix(baseConfig, config),
     }),
   })
+
+  return applyLocalWebpackConfig(devConfig, basePath, 'development')
 }

@@ -1,10 +1,11 @@
 import webpack from 'webpack'
 import getBaseConfig from './webpack.config'
+import {applyLocalWebpackConfig} from './applyLocalWebpackConfig'
 
 export default (config) => {
+  const basePath = config.basePath || process.cwd()
   const baseConfig = getBaseConfig(Object.assign({}, config, {env: 'production'}))
-
-  return Object.assign({}, baseConfig, {
+  const prodConfig = Object.assign({}, baseConfig, {
     devtool: config.sourceMaps ? 'source-map' : undefined,
     plugins: (baseConfig.plugins || []).concat(
       [
@@ -14,4 +15,6 @@ export default (config) => {
       ].filter(Boolean)
     ),
   })
+
+  return applyLocalWebpackConfig(prodConfig, basePath, 'production')
 }
