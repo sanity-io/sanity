@@ -1,5 +1,15 @@
-import {Observable, of, from, merge, defer, concat} from 'rxjs'
-import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
+import {Observable, of, from, merge, defer, concat, NEVER, fromEvent} from 'rxjs'
+import {
+  catchError,
+  map,
+  mergeMap,
+  mapTo,
+  switchMap,
+  shareReplay,
+  tap,
+  take,
+  distinctUntilChanged,
+} from 'rxjs/operators'
 import raf from 'raf'
 import DataLoader from 'dataloader'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
@@ -56,6 +66,15 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
 
 const currentUser: Observable<CurrentUser | null> = merge(
   fetchCurrentUser(), // initial fetch
+  concat(
+    of(true),
+    defer(() => fromEvent(document, 'visibilitychange')).pipe(
+      map((event: any) => !event.target.hidden)
+    )
+  ).pipe(
+    distinctUntilChanged(),
+    switchMap((isVisible) => (isVisible ? fetchCurrentUser() : NEVER))
+  ),
   refresh$.pipe(switchMap(() => fetchCurrentUser())), // re-fetch as response to request to refresh current user
   logout$.pipe(
     mergeMap(() => authenticationFetcher.logout()),
@@ -131,12 +150,12 @@ const observableApi = {
 export default function createUserStore(): UserStore {
   return {
     actions: {logout, retry: refresh},
-    me: currentUser,
+    me: observableApi.me,
     getCurrentUser() {
-      return currentUser.pipe(take(1)).toPromise()
+      return observableApi.getCurrentUser().pipe(take(1)).toPromise()
     },
     getUser(id: string) {
-      return getUser(id).pipe(take(1)).toPromise()
+      return observableApi.getUser(id).pipe(take(1)).toPromise()
     },
     getUsers,
     get currentUser() {
