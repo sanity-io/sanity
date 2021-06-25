@@ -1,4 +1,4 @@
-export type DiffOptions = {}
+export type DiffOptions = Record<string, never>
 
 export type ValueType = 'array' | 'boolean' | 'null' | 'number' | 'object' | 'string' | 'undefined'
 
@@ -74,6 +74,7 @@ type ChangedDiff<A, V> = {
   annotation: A
 }
 
+// eslint-disable-next-line no-unused-vars
 type UnchangedDiff<A, V> = {
   action: 'unchanged'
   isChanged: false
