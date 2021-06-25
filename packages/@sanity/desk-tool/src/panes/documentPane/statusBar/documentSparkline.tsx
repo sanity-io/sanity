@@ -5,43 +5,99 @@
 import React from 'react'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import {useSyncState} from '@sanity/react-hooks'
-import Button from 'part:@sanity/components/buttons/default'
-import {ChunkType} from '@sanity/field/lib/diff'
-import {ContainerQuery} from 'part:@sanity/components/container-query'
 import {useTimeAgo} from '@sanity/base/hooks'
+import {Card, Flex, Stack, Text, Button, rem} from '@sanity/ui'
+import styled from 'styled-components'
+import {PlayIcon, PublishIcon} from '@sanity/icons'
+import {ContainerQuery} from 'part:@sanity/components/container-query'
 import {useDocumentHistory} from '../documentHistory'
-import {HistoryIcon, LiveIcon, PublishIcon} from '../../../badges/icons'
-import {getTimelineEventIconComponent, formatTimelineEventLabel} from '../timeline/helpers'
-import styles from './documentSparkline.css'
+import {formatTimelineEventLabel} from '../timeline/helpers'
 import {Badge} from './types'
 import {SESSION_BADGE_SIZE, SESSION_BADGE_MARGIN, MAX_SESSIONS} from './constants'
 import {DocumentBadges} from './documentBadges'
 import {usePrevious} from './hooks'
+import {SessionBadge} from './sessionBadge'
 
-const SESSION_BADGE_STYLE: React.CSSProperties = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  transform: 'translate(0, 0, 0)',
-}
+const ReviewChangesButton = styled.div`
+  --size: ${({theme}) => rem(theme.sanity.avatar.sizes[0].size)};
+  ${({theme}) => `
+    --draft-bg: ${theme.sanity.color.solid.caution.enabled.bg};
+    --draft-fg: ${theme.sanity.color.solid.caution.enabled.fg};
+  `}
 
-interface SessionBadge extends Badge {
-  type?: 'live' | ChunkType
-  style?: React.CSSProperties
-}
+  @media (hover: hover) {
+    &:not([data-disabled='true']):hover {
+      ${({theme}) => `
+      --card-muted-fg-color: ${theme.sanity.color.button.default.default.enabled.fg};
+      --draft-bg: ${theme.sanity.color.button.default.default.enabled.fg};
+      --draft-fg: ${theme.sanity.color.button.default.default.enabled.bg};
+    `}
 
-const SessionBadge = ({icon, title, type, style = {}}: SessionBadge) => {
-  const iconComponent =
-    type && type !== 'live' ? getTimelineEventIconComponent(type) || <code>{type}</code> : icon
-  return (
-    <div className={styles.badge} data-type={type} title={title} style={style}>
-      <span className={styles.icon}>{React.createElement(icon || iconComponent)}</span>
-      <span className={`${styles.icon} ${styles.hoverIcon}`}>
-        <HistoryIcon />
-      </span>
-    </div>
-  )
-}
+      [data-type] [data-badge-icon] {
+        display: none;
+      }
+
+      [data-type]:last-of-type [data-badge-icon-hover] {
+        display: block;
+      }
+    }
+  }
+
+  &[data-transition='in'] {
+    transform: translate3d(0px, 0, 0);
+  }
+
+  &[data-transition='out'] {
+    pointer-events: none;
+    transform: translate3d(calc(var(--size) * -3), 0, 0);
+    opacity: 0;
+  }
+`
+
+const SessionBadgesWrapper = styled.div`
+  position: relative;
+  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+  line-height: 1;
+  height: ${({theme}) => rem(theme.sanity.avatar.sizes[0].size)};
+`
+
+const ResponsiveDocumentBadges = styled.div`
+  display: none;
+`
+
+const ResponsiveSparkline = styled.div`
+  [data-container-min~='small'] ${ResponsiveDocumentBadges} {
+    display: block;
+  }
+`
+
+const SessionLayout = ({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string
+  subtitle?: string
+  children: React.ReactNode
+}) => (
+  <Card padding={1}>
+    <Flex align="center">
+      {children}
+      <Stack space={1} marginX={2}>
+        <Text size={0} muted weight="semibold">
+          {title}
+        </Text>
+        {subtitle && (
+          <Text size={0} muted>
+            {subtitle}
+          </Text>
+        )}
+      </Stack>
+    </Flex>
+  </Card>
+)
 
 interface DocumentSparklineProps {
   badges: Badge[]
@@ -116,84 +172,89 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
     lastUnpublishOrPublishSession?.type === 'publish' && !isLiveDocument
 
   return (
-    <ContainerQuery className={styles.root} data-disabled={showingRevision}>
-      {showPublishedSessionBadge && (
-        <div className={styles.primarySessionBadgeContainer}>
-          <SessionBadge
-            type="publish"
-            icon={PublishIcon}
-            title={formatTimelineEventLabel('publish')}
-          />
-          <div className={styles.statusDetails}>
-            <div className={styles.label}>Published</div>
-            {lastPublishedTimeAgo && <div>{lastPublishedTimeAgo}</div>}
-          </div>
-        </div>
-      )}
-
-      {isLiveDocument && (
-        <div className={styles.primarySessionBadgeContainer}>
-          <SessionBadge type="live" title="Live document" icon={LiveIcon} />
-          <div className={styles.statusDetails}>
-            <div className={styles.label}>Published</div>
-            {lastUpdated && <div>{lastUpdatedTimeAgo}</div>}
-          </div>
-        </div>
-      )}
-
-      {!isLiveDocument && (
-        <Button
-          kind="simple"
-          padding="small"
-          onClick={openHistory}
-          type="button"
-          disabled={showingRevision || showingChangePanel}
-          className={styles.reviewChangesButton}
-          data-syncing={syncState.isSyncing}
-          title="Review changes"
-          data-transition={filteredSessions.length === 0 ? 'out' : transitionDirection}
-        >
-          <div className={styles.inner}>
-            <div
-              className={styles.sessionBadges}
-              style={{minWidth: sessionContainerWidth}}
-              data-syncing={syncState.isSyncing}
+    <ResponsiveSparkline>
+      <ContainerQuery data-disabled={showingRevision}>
+        <Flex align="center" wrap="wrap" style={{zIndex: 2}}>
+          {(showPublishedSessionBadge || isLiveDocument) && (
+            <SessionLayout
+              title="Published"
+              subtitle={isLiveDocument && lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
             >
-              {sessionsSliced.map((session, i) => {
-                const spacing = i * SESSION_BADGE_MARGIN
-                const title = formatTimelineEventLabel(session.type) || session.type
-                const icon = syncState?.isSyncing ? SyncIcon : undefined
-                return (
-                  <SessionBadge
-                    key={session.index}
-                    title={title}
-                    type="editDraft" // always use editDraft
-                    icon={icon}
-                    style={{
-                      ...SESSION_BADGE_STYLE,
-                      transform: `translate3d(${spacing}px, 0, 0)`,
-                    }}
-                  />
-                )
-              })}
-            </div>
-            <div className={styles.statusDetails}>
-              <div className={styles.label}>Changes</div>
-              {lastUpdated && <div>{lastUpdatedTimeAgo}</div>}
-            </div>
-          </div>
-        </Button>
-      )}
-      <div
-        className={styles.documentBadgesContainer}
-        style={{
-          // TODO: hacky solution. Should probably be fixed.
-          transform:
-            filteredSessions.length > 0 ? `translate3d(0, 0, 0)` : `translate3d(-100px, 0, 0)`,
-        }}
-      >
-        <DocumentBadges editState={editState} badges={badges} />
-      </div>
-    </ContainerQuery>
+              <SessionBadge
+                type={isLiveDocument ? 'live' : 'publish'}
+                icon={isLiveDocument ? PlayIcon : PublishIcon}
+                title={isLiveDocument ? undefined : formatTimelineEventLabel('publish')}
+              />
+            </SessionLayout>
+          )}
+
+          {!isLiveDocument && (
+            <Button
+              as={ReviewChangesButton}
+              mode="ghost"
+              padding={2}
+              onClick={openHistory}
+              type="button"
+              disabled={showingRevision || showingChangePanel}
+              data-syncing={syncState.isSyncing}
+              title="Review changes"
+              data-transition={filteredSessions.length === 0 ? 'out' : transitionDirection}
+            >
+              <Flex align="center">
+                <Flex
+                  as={SessionBadgesWrapper}
+                  wrap="nowrap"
+                  style={{minWidth: sessionContainerWidth}}
+                >
+                  {sessionsSliced.map((session, i) => {
+                    const spacing = i * SESSION_BADGE_MARGIN
+                    const title = formatTimelineEventLabel(session.type) || session.type
+                    const icon = syncState?.isSyncing ? SyncIcon : undefined
+                    return (
+                      <SessionBadge
+                        key={session.index}
+                        title={title}
+                        type="editDraft" // always use editDraft
+                        icon={icon}
+                        data-syncing={syncState.isSyncing}
+                        data-session-badge
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          transform: `translate3d(${spacing}px, 0, 0)`,
+                        }}
+                      />
+                    )
+                  })}
+                </Flex>
+
+                <Flex align="center">
+                  <Stack space={1} marginX={2}>
+                    <Text size={0} muted weight="semibold">
+                      Changes
+                    </Text>
+                    {lastUpdated && (
+                      <Text size={0} muted>
+                        {lastUpdatedTimeAgo}
+                      </Text>
+                    )}
+                  </Stack>
+                </Flex>
+              </Flex>
+            </Button>
+          )}
+          <ResponsiveDocumentBadges
+            style={{
+              // TODO: hacky solution. Should probably be fixed.
+              transform:
+                filteredSessions.length > 0 ? `translate3d(0, 0, 0)` : `translate3d(-100px, 0, 0)`,
+            }}
+          >
+            <DocumentBadges editState={editState} badges={badges} />
+          </ResponsiveDocumentBadges>
+        </Flex>
+      </ContainerQuery>
+    </ResponsiveSparkline>
   )
 }

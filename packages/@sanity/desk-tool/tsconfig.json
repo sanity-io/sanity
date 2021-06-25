@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["src"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually

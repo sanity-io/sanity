@@ -1,10 +1,5 @@
 import {Chunk, ChunkType} from '@sanity/field/diff'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import EditIcon from 'part:@sanity/base/edit-icon'
-import PlusIcon from 'part:@sanity/base/plus-icon'
-import PublishIcon from 'part:@sanity/base/publish-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
+import {TrashIcon, EditIcon, PublishIcon, UnpublishIcon, AddIcon, CloseIcon} from '@sanity/icons'
 
 const LABELS: {[key: string]: string} = {
   create: 'created',
@@ -18,10 +13,10 @@ const LABELS: {[key: string]: string} = {
 }
 
 const ICON_COMPONENTS: {[key: string]: React.ComponentType<Record<string, unknown>>} = {
-  create: PlusIcon,
+  create: AddIcon,
   delete: TrashIcon,
   discardDraft: CloseIcon,
-  initial: PlusIcon,
+  initial: AddIcon,
   editDraft: EditIcon,
   editLive: EditIcon,
   publish: PublishIcon,
