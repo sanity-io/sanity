@@ -1,20 +1,29 @@
 import {merge, Observable} from 'rxjs'
 import {filter, map, share} from 'rxjs/operators'
+import {Mutation as MutatorMutation} from '@sanity/mutator'
 import {versionedClient} from '../../../client/versionedClient'
 import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {RemoteSnapshotEvent} from '../buffered-doc/types'
+import userStore from '../../user'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type !== 'reconnect' && event.documentId === id
 
-function commitMutations(mutations) {
-  return versionedClient.dataRequest('mutate', mutations, {
-    visibility: 'async',
-    returnDocuments: false,
-    tag: 'document.commit',
-  })
+function commitMutations(mutations: MutatorMutation['params']) {
+  return versionedClient
+    .dataRequest('mutate', mutations, {
+      visibility: 'async',
+      returnDocuments: false,
+      tag: 'document.commit',
+    })
+    .then(null, (err) => {
+      if (err.statusCode === 403 || err.statusCode === 401) {
+        userStore.actions.reload()
+      }
+      return Promise.reject(err)
+    })
 }
 
 type WithVersion<T> = T & {version: 'published' | 'draft'}

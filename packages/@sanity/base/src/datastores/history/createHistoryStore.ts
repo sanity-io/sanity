@@ -6,6 +6,7 @@ import {omit, isUndefined} from 'lodash'
 import jsonReduce from 'json-reduce'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
 import {versionedClient} from '../../client/versionedClient'
+import userStore from '../user'
 
 const documentRevisionCache = Object.create(null)
 
@@ -72,7 +73,12 @@ const getTransactions = (documentIds) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const dataset = versionedClient.clientConfig.dataset
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}?excludeContent=true`
-  return versionedClient.request({url}).then(ndjsonToArray)
+  return versionedClient.request({url}).then(ndjsonToArray, (err) => {
+    if (err.statusCode === 403 || err.statusCode === 401) {
+      userStore.actions.reload()
+    }
+    return Promise.reject(err)
+  })
 }
 
 function historyEventsFor(documentId) {

@@ -36,7 +36,7 @@ export interface User {
 }
 
 export interface UserStore {
-  actions: {logout: () => void; retry: () => void}
+  actions: {logout: () => void; retry: () => void; reload: () => void}
   me: Observable<CurrentUser | null>
   getCurrentUser(): Promise<CurrentUser | null>
   getUser(userId: string): Promise<User | null>

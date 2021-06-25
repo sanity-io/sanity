@@ -149,7 +149,7 @@ const observableApi = {
 
 export default function createUserStore(): UserStore {
   return {
-    actions: {logout, retry: refresh},
+    actions: {logout, retry: refresh, reload: refresh},
     me: observableApi.me,
     getCurrentUser() {
       return observableApi.getCurrentUser().pipe(take(1)).toPromise()

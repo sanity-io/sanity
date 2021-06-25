@@ -1,7 +1,8 @@
 import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
-import {mergeMap, throttleTime, share, take} from 'rxjs/operators'
+import {mergeMap, throttleTime, share, take, tap} from 'rxjs/operators'
 import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {versionedClient} from '../../client/versionedClient'
+import userStore from '../user'
 import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
 
 type Params = Record<string, string>
@@ -15,6 +16,14 @@ const fetch = (query: string, params: Params, options: ListenQueryOptions) =>
     versionedClient.observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
+    })
+  ).pipe(
+    tap({
+      error: (err) => {
+        if (err.statusCode === 403 || err.statusCode === 401) {
+          userStore.actions.reload()
+        }
+      },
     })
   )
 

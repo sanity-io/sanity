@@ -3,6 +3,7 @@ import {Annotation} from '@sanity/field/diff'
 import {Observable} from 'rxjs'
 import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'
 import {Diff, ObjectDiff} from '@sanity/diff'
+import userStore from 'part:@sanity/base/user'
 import {Timeline, ParsedTimeRef} from './timeline'
 import {getJsonStream} from './ndjsonStreamer'
 import {RemoteSnapshotVersionEvent, Chunk} from './types'
@@ -277,6 +278,9 @@ export class Controller {
       if (result.done) break
 
       if ('error' in result.value) {
+        if (result.value.error?.type === 'permissionDeniedError') {
+          userStore.actions.reload()
+        }
         throw new Error(result.value.error.description || result.value.error.type)
       }
 

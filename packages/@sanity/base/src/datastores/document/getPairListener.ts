@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {defer, of as observableOf, Observable} from 'rxjs'
-import {concatMap, map} from 'rxjs/operators'
+import {concatMap, map, tap} from 'rxjs/operators'
+import userStore from '../user'
 import {
   IdPair,
   MutationEvent,
@@ -70,7 +71,14 @@ export function getPairListener(
         map(([draft, published]) => ({
           draft,
           published,
-        }))
+        })),
+        tap({
+          error: (err) => {
+            if (err.statusCode === 403 || err.statusCode === 401) {
+              userStore.actions.reload()
+            }
+          },
+        })
       )
   }
 }
