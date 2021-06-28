@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@sanity/image-url": "^0.140.19",
+    "@sanity/ui":"0.34.4",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3"
   },
