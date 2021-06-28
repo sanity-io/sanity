@@ -160,7 +160,7 @@ const CodeInput = React.forwardRef(
     const handleToggleSelectLine = useCallback(
       (lineNumber: number) => {
         const editorSession = aceEditorRef.current?.editor?.getSession()
-        const backgroundMarkers = editorSession.getMarkers(true)
+        const backgroundMarkers = editorSession?.getMarkers(true)
         const currentHighlightedLines = Object.keys(backgroundMarkers)
           .filter((key) => backgroundMarkers[key].type === 'highlight')
           .map((key) => backgroundMarkers[key].range.start.row)
@@ -201,7 +201,7 @@ const CodeInput = React.forwardRef(
     )
 
     useEffect(() => {
-      const editor = aceEditorRef?.current
+      const editor = aceEditorRef?.current?.editor
       return () => {
         editor?.session?.removeListener('guttermousedown', handleGutterMouseDown)
       }
@@ -284,12 +284,9 @@ const CodeInput = React.forwardRef(
 
     const languages = getLanguageAlternatives().slice()
 
-    const selectedLanguage =
-      props?.value && props?.value.language
-        ? languages.find(
-            (item: {value: string | undefined}) => item.value === props?.value?.language
-          )
-        : undefined
+    const selectedLanguage = props?.value?.language
+      ? languages.find((item: {value: string | undefined}) => item.value === props?.value?.language)
+      : undefined
 
     const languageField = type.fields.find((field) => field.name === 'language')
     const filenameField = type.fields.find((field) => field.name === 'filename')

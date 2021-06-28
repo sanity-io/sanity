@@ -72,7 +72,7 @@ export default function PreviewCode(props: PreviewCodeProps) {
   useEffect(() => {
     if (!aceEditorRef?.current) return
 
-    const editor = (aceEditorRef.current as any).editor
+    const editor = aceEditorRef.current?.editor
 
     if (editor) {
       // Avoid cursor and focus tracking by Ace
