@@ -1,16 +1,17 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {LinkIcon, TrashIcon} from '@sanity/icons'
 import {Box, Text, Dialog, Grid, Button, Heading} from '@sanity/ui'
 import styled from 'styled-components'
+import {Asset as AssetType} from '@sanity/types'
 import Preview from '../../Preview'
-import {AssetRecord} from '../../inputs/files/ImageInput/types'
 import {schema, WithReferringDocuments} from '../../legacyParts'
 
 import {SpinnerWithText} from '../../components/SpinnerWithText'
 import {IntentLink} from '../../transitional/IntentLink'
 
 interface Props {
-  asset: AssetRecord
+  assetType?: 'file' | 'image'
+  asset: AssetType
   onClose: () => void
   onDelete: () => void
 }
@@ -23,29 +24,39 @@ const DocumentLink = styled(IntentLink)`
   justify-content: space-between;
 `
 
-export function AssetUsageDialog({asset, onClose, onDelete}: Props) {
+export function AssetUsageDialog({asset, assetType = 'image', onClose, onDelete}: Props) {
+  const [canDelete, setCanDelete] = useState(true)
+  const isImage = assetType === 'image'
   const footer = (
     <Grid padding={2} gap={2} columns={2}>
       <Button text="Close" onClick={onClose} />
-      <Button text="Delete" tone="critical" icon={TrashIcon} onClick={onDelete} />
+      <Button
+        text="Delete"
+        tone="critical"
+        icon={TrashIcon}
+        onClick={onDelete}
+        disabled={!canDelete}
+      />
     </Grid>
   )
 
   return (
     <Dialog
       id="asset-dialog"
-      header="Find usages of image"
+      header={`Find usages of ${assetType}`}
       width={2}
       onClose={onClose}
       footer={footer}
     >
       <Box padding={4}>
-        <Grid gap={2} style={{gridTemplateColumns: 'max-content 1fr'}}>
-          <img
-            src={`${asset.url}?w=200`}
-            style={{maxWidth: '200px'}}
-            alt="The image used by the listed documents"
-          />
+        <Grid gap={isImage ? 2 : 0} style={{gridTemplateColumns: 'max-content 1fr'}}>
+          {assetType === 'image' && (
+            <img
+              src={`${asset.url}?w=200`}
+              style={{maxWidth: '200px'}}
+              alt={`The ${assetType} used by the listed documents`}
+            />
+          )}
 
           <WithReferringDocuments id={asset._id}>
             {({isLoading, referringDocuments}) => {
@@ -58,19 +69,21 @@ export function AssetUsageDialog({asset, onClose, onDelete}: Props) {
                 (doc) => !drafts.includes(doc._id)
               )
 
+              setCanDelete(filteredDocuments.length === 0 && !isLoading)
+
               if (isLoading) {
                 return <SpinnerWithText text="Loading..." />
               }
 
               return (
-                <Box paddingX={4}>
+                <Box paddingX={isImage ? 4 : 0}>
                   {filteredDocuments.length === 0 ? (
                     <Text as="p">
-                      This image is not in use by any of the documents in this dataset
+                      This {assetType} is not in use by any of the documents in this dataset
                     </Text>
                   ) : (
                     <Heading as="h4" size={1}>
-                      This image is in use by the following document
+                      This {assetType} is in use by the following document
                       {filteredDocuments.length > 1 ? 's' : ''}
                     </Heading>
                   )}

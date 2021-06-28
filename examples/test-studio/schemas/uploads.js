@@ -14,6 +14,12 @@ export default {
       type: 'string',
     },
     {
+      name: 'onlyOneFile',
+      title: 'File',
+      description: 'A lonely file',
+      type: 'file',
+    },
+    {
       name: 'imagesOnly',
       title: 'Only images',
       description: 'An array that accepts image',
@@ -61,12 +67,6 @@ export default {
         {type: 'file', title: 'File'},
         {type: 'image', title: 'Image'},
       ],
-    },
-    {
-      name: 'onlyOneFile',
-      title: 'File',
-      description: 'A lonely file',
-      type: 'file',
     },
     {
       name: 'onlyOneFileWithCustomAssetSource',
