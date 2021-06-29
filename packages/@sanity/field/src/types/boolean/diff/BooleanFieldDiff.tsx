@@ -1,3 +1,4 @@
+import {Box, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {
   BooleanDiff,
@@ -7,7 +8,6 @@ import {
   useDiffAnnotationColor,
 } from '../../../diff'
 import {Checkbox, Switch} from '../preview'
-import styles from './BooleanFieldDiff.css'
 
 export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType}) => {
   const {fromValue, toValue} = diff
@@ -18,21 +18,27 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
   const showToValue = toValue !== undefined && toValue !== null
 
   return (
-    <div className={styles.root}>
+    <Flex align="center">
       <DiffTooltip diff={diff}>
-        <div className={styles.preview}>
+        <Flex align="center">
           <Preview checked={fromValue} color={userColor} />
           {showToValue && (
             <>
-              <FromToArrow style={{padding: '0 2px'}} />
+              <Box marginX={2}>
+                <FromToArrow />
+              </Box>
               <Preview checked={toValue} color={userColor} />
             </>
           )}
-        </div>
+        </Flex>
       </DiffTooltip>
-      {showToValue && (
-        <div className={styles.label}>{title && <div className={styles.title}>{title}</div>}</div>
+      {showToValue && title && (
+        <Box marginLeft={2}>
+          <Text size={1} weight="semibold">
+            {title}
+          </Text>
+        </Box>
       )}
-    </div>
+    </Flex>
   )
 }
