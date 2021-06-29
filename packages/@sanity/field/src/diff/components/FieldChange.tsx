@@ -4,7 +4,7 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import PopoverDialog from 'part:@sanity/components/dialogs/popover'
 import React, {useCallback, useContext, useState} from 'react'
 import {unstable_useCheckDocumentPermission as useCheckDocumentPermission} from '@sanity/base/hooks'
-import {rem, Stack} from '@sanity/ui'
+import {rem, Stack, Box} from '@sanity/ui'
 import styled from 'styled-components'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -112,13 +112,15 @@ export function FieldChange({
             </DiffErrorBoundary>
           )}
           {isComparingCurrent && updatePermission.granted && (
-            <RevertChangesButton
-              onClick={handleRevertChangesConfirm}
-              onMouseEnter={handleRevertButtonMouseEnter}
-              onMouseLeave={handleRevertButtonMouseLeave}
-              ref={setRevertButtonElement}
-              selected={confirmRevertOpen}
-            />
+            <Box flex={1}>
+              <RevertChangesButton
+                onClick={handleRevertChangesConfirm}
+                onMouseEnter={handleRevertButtonMouseEnter}
+                onMouseLeave={handleRevertButtonMouseLeave}
+                ref={setRevertButtonElement}
+                selected={confirmRevertOpen}
+              />
+            </Box>
           )}
         </DiffInspectWrapper>
       </FieldWrapper>
