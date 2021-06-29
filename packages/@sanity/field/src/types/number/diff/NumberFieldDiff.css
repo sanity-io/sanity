@@ -1,7 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.card {
-  display: inline-block;
-  padding: calc(var(--small-padding) - 4px) var(--small-padding) calc(var(--small-padding) - 3px);
-  word-break: break-all;
-}
