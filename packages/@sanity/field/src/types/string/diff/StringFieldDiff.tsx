@@ -1,8 +1,12 @@
 import React from 'react'
+import styled from 'styled-components'
 import {DiffComponent, DiffFromTo, DiffString, StringDiff} from '../../../diff'
 import {StringPreview} from '../preview/StringPreview'
 
-import styles from './StringFieldDiff.css'
+const StringWrapper = styled.div`
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`
 
 export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {
   const {options} = schemaType as any
@@ -10,19 +14,12 @@ export const StringFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) =
   if (options?.list) {
     // When the string is considered to be an "enum", don't show individual
     // string segment changes, rather treat is as a "from -> to" diff
-    return (
-      <DiffFromTo
-        cardClassName={styles.card}
-        diff={diff}
-        previewComponent={StringPreview}
-        schemaType={schemaType}
-      />
-    )
+    return <DiffFromTo diff={diff} previewComponent={StringPreview} schemaType={schemaType} />
   }
 
   return (
-    <div className={styles.root}>
+    <StringWrapper>
       <DiffString diff={diff} />
-    </div>
+    </StringWrapper>
   )
 }
