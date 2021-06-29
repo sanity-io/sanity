@@ -1,19 +1,22 @@
 import {useId} from '@reach/auto-id'
-import {useClickOutside, Tooltip, Box} from '@sanity/ui'
-import Button from 'part:@sanity/components/buttons/default'
-import {Popover} from 'part:@sanity/components/popover'
-import Hotkeys from 'part:@sanity/components/typography/hotkeys'
-import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
-import React, {createElement, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  Tooltip,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  Popover,
+  Hotkeys,
+  Inline,
+  Text,
+  Flex,
+  Theme,
+  useClickOutside,
+} from '@sanity/ui'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import styled from 'styled-components'
+import {ChevronDownIcon} from '@sanity/icons'
 import {ActionStateDialog} from './actionStateDialog'
-import styles from './actionMenu.css'
-
-function getNext<T>(array: T[], fromIndex: number, dir = 1): T {
-  const next = fromIndex + dir
-
-  // eslint-disable-next-line no-nested-ternary
-  return array[next >= array.length ? 0 : next < 0 ? array.length - 1 : next]
-}
 
 interface Props {
   actionStates: any[]
@@ -24,10 +27,19 @@ interface Props {
 }
 
 export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Props) {
-  const listRef = useRef<HTMLUListElement>(null)
   const idPrefix = useId()
+  const listRef = useRef<HTMLUListElement>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (listRef.current) {
+      const el: HTMLUListElement | null = listRef.current
+
+      if (el) {
+        el.focus()
+      }
+    }
+  }, [isOpen])
 
   const handleCloseMenu = useCallback(() => {
     if (!isOpen) {
@@ -42,130 +54,100 @@ export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Pr
     }
   }, [actionStates, isOpen, onClose])
 
-  useClickOutside(handleCloseMenu, [rootElement, popoverElement])
-
-  const [activeAction, setActiveAction] = useState(actionStates.find((s) => !s.disabled))
-
-  useEffect(() => {
-    setActiveAction(actionStates.find((s) => !s.disabled))
-  }, [actionStates, isOpen])
-
-  useEffect(() => {
-    if (listRef.current) {
-      const el: HTMLUListElement | null = listRef.current.querySelector('[data-has-focus]')
-
-      if (el) {
-        el.focus()
-      }
-    }
-  }, [activeAction, actionStates])
-
-  const handleKeyDown = useCallback(
-    (event) => {
-      if (event.key === 'Escape') {
-        handleCloseMenu()
-        return
-      }
-
-      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
-        return
-      }
-
-      const dir = event.key === 'ArrowUp' ? -1 : 1
-      const enabledActions = actionStates.filter(
-        (state) => state === activeAction || !state.disabled
-      )
-
-      setActiveAction(getNext(enabledActions, enabledActions.indexOf(activeAction), dir))
-    },
-    [activeAction, actionStates, handleCloseMenu]
-  )
-
-  const popoverContent = (
-    <div className={styles.popoverContent} ref={setPopoverElement}>
-      <ul
-        aria-labelledby={`${idPrefix}-button`}
-        className={styles.menu}
-        id={`${idPrefix}-menu`}
-        role="menu"
-        ref={listRef}
-      >
-        {actionStates.map((actionState, idx) => (
-          <ActionMenuListItem
-            actionState={actionState}
-            activeAction={activeAction}
-            disabled={disabled}
-            // eslint-disable-next-line react/no-array-index-key
-            key={idx}
-          />
-        ))}
-      </ul>
-    </div>
-  )
+  useClickOutside(handleCloseMenu, [popoverElement])
 
   return (
-    <div className={styles.actionsDropDown} onKeyDown={handleKeyDown} ref={setRootElement}>
-      <Popover content={popoverContent} open={isOpen} placement="top-end" portal>
-        <div>
-          <Button
-            aria-controls={`${idPrefix}-menu`}
-            aria-haspopup="true"
-            aria-label="Actions"
-            disabled={disabled}
-            icon={ChevronDownIcon}
-            id={`${idPrefix}-button`}
-            kind="secondary"
-            onClick={isOpen ? onClose : onOpen}
-          />
-        </div>
+    <Box marginLeft={2}>
+      <Popover
+        id={`${idPrefix}-menu`}
+        open={isOpen}
+        placement="top-end"
+        ref={setPopoverElement}
+        content={
+          <Menu paddingY={1} focusLast>
+            {actionStates.map((actionState, idx) => (
+              <ActionMenuListItem
+                actionState={actionState}
+                disabled={disabled}
+                // eslint-disable-next-line react/no-array-index-key
+                key={idx}
+              />
+            ))}
+          </Menu>
+        }
+      >
+        <Button
+          icon={ChevronDownIcon}
+          aria-controls={`${idPrefix}-menu`}
+          aria-haspopup="true"
+          aria-label="Actions"
+          disabled={disabled}
+          id={`${idPrefix}-button`}
+          onClick={isOpen ? onClose : onOpen}
+          mode="ghost"
+        />
       </Popover>
-    </div>
+    </Box>
   )
 }
 
-function ActionMenuListItem({actionState, activeAction, disabled}) {
-  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+// Note: Should this be necessary?
+// Should @sanity/ui instead expose a mode (bleed, ghost) etc. on the menu items
+// to get the same result? Could potentially use a
+// button inside the MenuItem but then the wrong item gets focus when using keyboards
 
+const StyledMenuItem = styled(MenuItem)`
+  ${({theme}: {theme: Theme}) => `
+
+   &:not([hidden]) {
+     --card-bg-color: ${theme.sanity.color.card.enabled.bg};
+     --card-fg-color: ${theme.sanity.color.card.enabled.fg};
+     --card-muted-fg-color: ${theme.sanity.color.card.enabled.fg};
+   }
+
+   &[data-as='button']:not(:disabled):focus  {
+     --card-bg-color: ${theme.sanity.color.muted.default.hovered.bg};
+     --card-fg-color: ${theme.sanity.color.muted.default.hovered.fg};
+     --card-muted-fg-color: ${theme.sanity.color.muted.default.hovered.fg};
+     --card-hairline-hard-color: ${theme.sanity.color.muted.default.enabled.fg};
+     --card-code-fg-color: ${theme.sanity.color.muted.default.enabled.fg};
+   }
+ `}
+`
+
+function ActionMenuListItem({actionState, disabled}) {
+  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   return (
-    <li className={styles.menuItem} role="presentation">
-      <button
-        {...(actionState === activeAction && {'data-has-focus': true})}
-        aria-label={actionState.label}
-        className={styles.menuItemButton}
-        disabled={disabled || Boolean(actionState.disabled)}
-        onClick={actionState.onHandle}
-        ref={setButtonElement}
-        role="menuitem"
-        tabIndex={-1}
-        type="button"
-      >
-        <Tooltip
-          disabled={!actionState.title}
-          content={
-            <Box padding={2} style={{maxWidth: 250}}>
+    <StyledMenuItem
+      disabled={disabled || Boolean(actionState.disabled)}
+      onClick={actionState.onHandle}
+      ref={setButtonElement}
+      paddingY={3}
+    >
+      <Tooltip
+        disabled={!actionState.title}
+        content={
+          <Box padding={2} style={{maxWidth: 260}}>
+            <Text size={1} muted>
               {actionState.title}
-            </Box>
-          }
-          portal
-          placement="left-start"
-        >
-          <div tabIndex={-1}>
-            {actionState.icon && (
-              <span className={styles.menuItemIcon}>{createElement(actionState.icon)}</span>
-            )}
-            <span className={styles.menuItemLabel}>{actionState.label}</span>
-            {actionState.shortcut && (
-              <span className={styles.menuItemHotkeys}>
-                <Hotkeys keys={String(actionState.shortcut).split('+')} size="small" />
-              </span>
-            )}
-          </div>
-        </Tooltip>
-      </button>
+            </Text>
+          </Box>
+        }
+        portal
+        placement="left"
+      >
+        <Flex align="center" justify="flex-start">
+          <Inline space={3}>
+            {actionState.icon && <Text>{React.createElement(actionState.icon)}</Text>}
+            <Text>{actionState.label}</Text>
+            {actionState.shortcut && <Hotkeys keys={String(actionState.shortcut).split('+')} />}
+          </Inline>
+        </Flex>
+      </Tooltip>
 
       {actionState.dialog && (
         <ActionStateDialog dialog={actionState.dialog} referenceElement={buttonElement} />
       )}
-    </li>
+    </StyledMenuItem>
   )
 }
