@@ -1,5 +1,5 @@
 import React from 'react'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import styled from 'styled-components'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
 import {
@@ -12,14 +12,45 @@ import {
   tap,
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
+import {Text, Flex} from '@sanity/ui'
+import {AccessDeniedIcon, WarningOutlineIcon} from '@sanity/icons'
 import {observeForPreview} from '../'
-import {INVALID_PREVIEW_CONFIG} from '../constants'
+import {INVALID_PREVIEW_CONFIG, INSUFFICIENT_PERMISSIONS} from '../constants'
 import {FieldName, SortOrdering, Type} from '../types'
 
+// The `<small>` element is used for more compatibility
+// with the different downstream preview components
+const SmallText = styled.small`
+  color: ${({theme}) => theme.sanity.color.muted.default.enabled.fg};
+`
+
+function IconWrapper({children}: {children: React.ReactNode}) {
+  return (
+    <Flex>
+      <Text muted size={3}>
+        {children}
+      </Text>
+    </Flex>
+  )
+}
+
 const INVALID_PREVIEW_FALLBACK = {
-  title: <span style={{fontStyle: 'italic'}}>Invalid preview config</span>,
-  subtitle: <span style={{fontStyle: 'italic'}}>Check the error log in the console</span>,
-  media: WarningIcon,
+  title: <SmallText>Invalid preview config</SmallText>,
+  subtitle: <SmallText>Check the error log in the console</SmallText>,
+  media: (
+    <IconWrapper>
+      <WarningOutlineIcon />
+    </IconWrapper>
+  ),
+}
+
+const INSUFFICIENT_PERMISSIONS_FALLBACK = {
+  title: <SmallText>Insufficient permissions to access this reference</SmallText>,
+  media: (
+    <IconWrapper>
+      <AccessDeniedIcon />
+    </IconWrapper>
+  ),
 }
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
@@ -89,7 +120,7 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 }
 
 type ReceivedProps<T = unknown> = {
-  snapshot: T | null
+  snapshot: T | typeof INSUFFICIENT_PERMISSIONS | null
   type: Type
   isLoading: boolean
   error?: Error
@@ -98,13 +129,21 @@ type ReceivedProps<T = unknown> = {
 export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
   props: ReceivedProps
 ) {
-  const {snapshot, type, error, isLoading, children} = props
+  const {type, error, isLoading, children} = props
+
+  let snapshot: unknown
+
+  if (props.snapshot === INVALID_PREVIEW_CONFIG) {
+    snapshot = INVALID_PREVIEW_FALLBACK
+  } else if (props.snapshot === INSUFFICIENT_PERMISSIONS) {
+    snapshot = INSUFFICIENT_PERMISSIONS_FALLBACK
+  } else {
+    snapshot = props.snapshot
+  }
+
   return children({
     error,
     isLoading,
-    result: {
-      type,
-      snapshot: snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : snapshot,
-    },
+    result: {type, snapshot},
   })
 })

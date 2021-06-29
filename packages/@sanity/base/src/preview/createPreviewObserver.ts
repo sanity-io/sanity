@@ -3,10 +3,11 @@ import {map, switchMap} from 'rxjs/operators'
 import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import prepareForPreview, {invokePrepare, PrepareInvocationResult} from './prepareForPreview'
 import {FieldName, Path, Reference, PrepareViewOptions} from './types'
+import {INSUFFICIENT_PERMISSIONS} from './constants'
 
 export interface PreviewValue {
   type?: SchemaType
-  snapshot: null | PrepareInvocationResult
+  snapshot: null | PrepareInvocationResult | typeof INSUFFICIENT_PERMISSIONS
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
@@ -15,7 +16,7 @@ export function createPreviewObserver(
   resolveRefType: (
     value: Reference,
     ownerType: ReferenceSchemaType
-  ) => Observable<SchemaType | undefined>
+  ) => Observable<SchemaType | typeof INSUFFICIENT_PERMISSIONS | undefined>
 ) {
   return function observeForPreview(
     value: any,
@@ -33,14 +34,17 @@ export function createPreviewObserver(
       // and preview using the preview config of its type
       // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
       return resolveRefType(value, type).pipe(
-        switchMap((refType) =>
-          refType
-            ? observeForPreview(value, refType, fields)
-            : observableOf<PreviewValue>({
-                type: type,
-                snapshot: null,
-              })
-        )
+        switchMap((refType) => {
+          if (refType === INSUFFICIENT_PERMISSIONS) {
+            return observableOf<PreviewValue>({type, snapshot: INSUFFICIENT_PERMISSIONS})
+          }
+
+          if (!refType) {
+            return observableOf<PreviewValue>({type, snapshot: null})
+          }
+
+          return observeForPreview(value, refType, fields)
+        })
       )
     }
 
