@@ -2,10 +2,12 @@ import {from as observableFrom, Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {versionedClient} from '../../client/versionedClient'
+import {INSUFFICIENT_PERMISSIONS} from '../constants'
 
-const CACHE: Record<string, Promise<string>> = Object.create(null) // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
+// todo: use a LRU cache instead (e.g. hashlru or quick-lru)
+const CACHE: Record<string, Promise<string | null>> = Object.create(null)
 
-function resolveRefTypeName(reference: Reference): Observable<string> {
+function resolveRefTypeName(reference: Reference): Observable<string | null> {
   if (!(reference._ref in CACHE)) {
     CACHE[reference._ref] = versionedClient.fetch(
       '*[_id == $id][0]._type',
@@ -19,8 +21,11 @@ function resolveRefTypeName(reference: Reference): Observable<string> {
 export default function resolveRefType(
   value: Reference,
   type: ReferenceSchemaType
-): Observable<SchemaType | undefined> {
+): Observable<SchemaType | typeof INSUFFICIENT_PERMISSIONS | undefined> {
   return resolveRefTypeName(value).pipe(
-    map((refTypeName) => type.to.find((toType) => toType.name === refTypeName))
+    map((refTypeName) => {
+      if (!refTypeName && !type.weak) return INSUFFICIENT_PERMISSIONS
+      return type.to.find((toType) => toType.name === refTypeName)
+    })
   )
 }
