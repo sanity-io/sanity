@@ -2,6 +2,7 @@ import Preview from 'part:@sanity/base/preview'
 import {useUserColorManager} from '@sanity/base/user-color'
 import {isKeyedObject, TypedObject} from '@sanity/types'
 import React from 'react'
+import {Box, Flex} from '@sanity/ui'
 import {
   Annotation,
   ArrayDiff,
@@ -16,7 +17,6 @@ import {
 } from '../../../diff'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
-import styles from './ArrayOfOptionsFieldDiff.css'
 
 interface NamedListOption {
   title?: string
@@ -51,18 +51,20 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
           const color = getAnnotationColor(colorManager, annotation)
           const action = isPresent ? 'Added' : 'Removed'
           return (
-            <div className={styles.item} key={getItemKey(diff, index)}>
+            <Flex align="center" key={getItemKey(diff, index)}>
               <DiffTooltip annotations={annotation ? [annotation] : []} description={action}>
-                <div className={styles.checkboxes}>
+                <Flex align="center">
                   <Checkbox checked={!isPresent} color={color} />
-                  <FromToArrow />
+                  <Box margin={2}>
+                    <FromToArrow />
+                  </Box>
                   <Checkbox checked={isPresent} color={color} />
-                </div>
+                </Flex>
               </DiffTooltip>
-              <div className={styles.label}>
+              <Flex align="center">
                 <ItemPreview value={title || value} memberType={memberType} />
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           )
         })}
     </div>
@@ -102,13 +104,13 @@ function sortItems(itemA: NormalizedListOption, itemB: NormalizedListOption): nu
 
 function ItemPreview({value, memberType}: {memberType?: SchemaType; value: unknown}) {
   return (
-    <div className={styles.itemPreview}>
+    <Box marginX={2} marginY={1}>
       {typeof value === 'string' || typeof value === 'number' ? (
         value
       ) : (
         <Preview type={memberType} value={value} layout="default" />
       )}
-    </div>
+    </Box>
   )
 }
 
