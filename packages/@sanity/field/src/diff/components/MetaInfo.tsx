@@ -30,7 +30,7 @@ export function MetaInfo({
           </MetaText>
         </Box>
       )}
-      <Stack space={2} paddingLeft={4}>
+      <Stack space={2} paddingLeft={2}>
         <MetaText
           size={1}
           weight="semibold"
