@@ -30,7 +30,8 @@ const DiffBorder = styled.div`
   --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};
 
   position: relative;
-  padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);
+  padding: var(--diff-inspect-padding-xsmall) 0 var(--diff-inspect-padding-xsmall)
+    var(--diff-inspect-padding-small);
 
   &::before {
     content: '';
