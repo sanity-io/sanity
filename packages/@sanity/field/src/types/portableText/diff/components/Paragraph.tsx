@@ -1,6 +1,13 @@
 import React from 'react'
-import styles from './Paragraph.css'
+import styled from 'styled-components'
+
+const StyledParagraph = styled.p`
+  text-transform: none;
+  white-space: wrap;
+  overflow-wrap: break-word;
+  margin: 0;
+`
 
 export default function Paragraph({children}: {children: React.ReactNode}): JSX.Element {
-  return <div className={styles.root}>{children}</div>
+  return <StyledParagraph>{children}</StyledParagraph>
 }
