@@ -1,12 +1,12 @@
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
-import {useClickOutside, useLayer} from '@sanity/ui'
-import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
+import {Card, Flex, Label, useClickOutside, useLayer} from '@sanity/ui'
 import SanityPreview from 'part:@sanity/base/preview'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import styled from 'styled-components'
+import {ChevronDownIcon} from '@sanity/icons'
 import {
   ChangeList,
   DiffContext,
@@ -17,8 +17,7 @@ import {
 } from '../../../../diff'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
-
-import styles from './InlineObject.css'
+import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
   diff?: ObjectDiff
@@ -27,17 +26,29 @@ interface InlineObjectProps {
   schemaType?: ObjectSchemaType
 }
 
-export function InlineObject({
-  diff,
-  object,
-  schemaType,
-  ...restProps
-}: InlineObjectProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+const InlineObjectWrapper = styled(Card)`
+  &:not([hidden]) {
+    display: inline;
+    cursor: pointer;
+    white-space: nowrap;
+    align-items: center;
+
+    &[data-removed] {
+      text-decoration: line-through;
+    }
+
+    ${InlineBox} {
+      display: inline-flex;
+    }
+  }
+`
+
+export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) {
   if (!schemaType) {
     return (
-      <span {...restProps} className={styles.root}>
+      <InlineObjectWrapper {...restProps} border radius={1}>
         Unknown schema type: {object._type}
-      </span>
+      </InlineObjectWrapper>
     )
   }
 
@@ -48,9 +59,9 @@ export function InlineObject({
   }
 
   return (
-    <span {...restProps} className={styles.root}>
+    <InlineObjectWrapper>
       <SanityPreview type={schemaType} value={object} layout="inline" />
-    </span>
+    </InlineObjectWrapper>
   )
 }
 
@@ -67,12 +78,11 @@ function InlineObjectWithDiff({
   path,
   schemaType,
   ...restProps
-}: InlineObjectWithDiffProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+}: InlineObjectWithDiffProps) {
   const {path: fullPath} = React.useContext(DiffContext)
   const {onSetFocus} = React.useContext(ConnectorContext)
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
-  const className = classNames(styles.root, diff.action === 'removed' && styles.removed)
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
   const isRemoved = diff.action === 'removed'
@@ -126,18 +136,29 @@ function InlineObjectWithDiff({
   const annotations = annotation ? [annotation] : []
 
   return (
-    <span {...restProps} className={className} onClick={handleOpenPopup} style={style}>
+    <InlineObjectWrapper
+      {...restProps}
+      onClick={handleOpenPopup}
+      style={style}
+      data-removed={diff.action === 'removed' ? '' : undefined}
+      border
+      radius={2}
+    >
       <Popover content={popoverContent} layer open={open} portal>
-        <span className={styles.previewContainer}>
+        <PreviewContainer>
           <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
-            <span>
+            <InlineBox>
               <SanityPreview type={schemaType} value={object} layout="inline" />
-              <ChevronDownIcon />
-            </span>
+              <Flex align="center" paddingX={1}>
+                <InlineText size={0}>
+                  <ChevronDownIcon />
+                </InlineText>
+              </Flex>
+            </InlineBox>
           </DiffTooltip>
-        </span>
+        </PreviewContainer>
       </Popover>
-    </span>
+    </InlineObjectWrapper>
   )
 }
 
@@ -156,16 +177,21 @@ function PopoverContent({
   const {isTopLayer} = useLayer()
 
   const handleClickOutside = useCallback(() => {
-    if (!isTopLayer) return
+    // Popover doesn't close at all when using this condition
+    // if (!isTopLayer) return
     onClose()
   }, [isTopLayer, onClose])
 
   useClickOutside(handleClickOutside, [popoverElement])
 
   return (
-    <div className={styles.popoverContent} ref={setPopoverElement}>
-      {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
+    <PopoverContainer ref={setPopoverElement} padding={3}>
+      {emptyObject && (
+        <Label size={1} muted>
+          Empty {schemaType.title}
+        </Label>
+      )}
       {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
-    </div>
+    </PopoverContainer>
   )
 }

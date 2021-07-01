@@ -1,11 +1,10 @@
-import {useClickOutside} from '@sanity/ui'
+import {useClickOutside, Label, Popover, Flex} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
-import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
-import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
-import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useEffect, useState} from 'react'
 import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import styled from 'styled-components'
+import {ChevronDownIcon} from '@sanity/icons'
 import {
   ChangeList,
   DiffContext,
@@ -16,15 +15,40 @@ import {
 } from '../../../../diff'
 import {PortableTextChild} from '../types'
 import {isEmptyObject} from '../helpers'
-import styles from './Annotation.css'
+import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {
   diff?: ObjectDiff
   object: PortableTextChild
-  children: JSX.Element
   schemaType?: ObjectSchemaType
   path: Path
+  children: React.ReactNode
 }
+
+const AnnotationWrapper = styled.div`
+  text-decoration: none;
+  display: inline;
+  position: relative;
+  border: 0;
+  padding: 0;
+  border-bottom: 2px dotted currentColor;
+  box-shadow: inset 0 0 0 1px var(--card-border-color);
+  white-space: nowrap;
+  align-items: center;
+  background-color: color(var(--card-fg-color) a(10%));
+
+  &[data-changed] {
+    cursor: pointer;
+  }
+
+  &[data-removed] {
+    text-decoration: line-through;
+  }
+
+  &:hover ${PreviewContainer} {
+    opacity: 1;
+  }
+`
 
 export function Annotation({
   children,
@@ -33,13 +57,9 @@ export function Annotation({
   schemaType,
   path,
   ...restProps
-}: AnnotationProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+}: AnnotationProps) {
   if (!schemaType) {
-    return (
-      <span {...restProps} className={styles.root}>
-        Unknown schema type
-      </span>
-    )
+    return <AnnotationWrapper {...restProps}>Unknown schema type</AnnotationWrapper>
   }
   if (diff && diff.action !== 'unchanged') {
     return (
@@ -54,7 +74,7 @@ export function Annotation({
       </AnnnotationWithDiff>
     )
   }
-  return <span className={styles.root}>{children}</span>
+  return <AnnotationWrapper>{children}</AnnotationWrapper>
 }
 
 interface AnnnotationWithDiffProps {
@@ -62,6 +82,7 @@ interface AnnnotationWithDiffProps {
   object: PortableTextChild
   schemaType: ObjectSchemaType
   path: Path
+  children?: React.ReactNode
 }
 
 function AnnnotationWithDiff({
@@ -71,18 +92,13 @@ function AnnnotationWithDiff({
   schemaType,
   path,
   ...restProps
-}: AnnnotationWithDiffProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+}: AnnnotationWithDiffProps) {
   const {onSetFocus} = React.useContext(ConnectorContext)
   const {path: fullPath} = React.useContext(DiffContext)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const color = useDiffAnnotationColor(diff, [])
   const style = color ? {background: color.background, color: color.text} : {}
   const isRemoved = diff.action === 'removed'
-  const className = classNames(
-    styles.root,
-    styles.isChanged,
-    diff.action === 'removed' && styles.removed
-  )
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
   const markDefPath = [path[0]].concat(['markDefs', {_key: object._key}])
@@ -129,26 +145,40 @@ function AnnnotationWithDiff({
 
   const popoverContent = (
     <DiffContext.Provider value={{path: myPath}}>
-      <div className={styles.popoverContainer}>
-        <div className={styles.popoverContent}>
-          {emptyObject && <span className={styles.empty}>Empty {schemaType.title}</span>}
+      <PopoverContainer padding={3}>
+        <div>
+          {emptyObject && (
+            <Label size={1} muted>
+              Empty {schemaType.title}
+            </Label>
+          )}
           {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
         </div>
-      </div>
+      </PopoverContainer>
     </DiffContext.Provider>
   )
   return (
-    <span {...restProps} className={className} onClick={handleOpenPopup} style={style}>
-      <Popover content={popoverContent} open={open} ref={setPopoverElement}>
-        <span className={styles.previewContainer}>
+    <AnnotationWrapper
+      {...restProps}
+      onClick={handleOpenPopup}
+      style={style}
+      data-changed=""
+      data-removed={diff.action === 'removed' ? '' : undefined}
+    >
+      <Popover content={popoverContent} open={open} ref={setPopoverElement} portal>
+        <PreviewContainer paddingLeft={1}>
           <DiffTooltip annotations={annotations} description={`${diff.action} annotation`}>
-            <span>
+            <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>
-              <ChevronDownIcon />
-            </span>
+              <Flex align="center" paddingX={1}>
+                <InlineText size={0}>
+                  <ChevronDownIcon />
+                </InlineText>
+              </Flex>
+            </InlineBox>
           </DiffTooltip>
-        </span>
+        </PreviewContainer>
       </Popover>
-    </span>
+    </AnnotationWrapper>
   )
 }
