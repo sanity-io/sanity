@@ -7,18 +7,16 @@ import {PreparedValue} from './prepareForPreview'
 export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
 export const INCLUDE_FIELDS = [...INCLUDE_FIELDS_QUERY, '_key']
 
-// The `<small>` element is used for more compatibility
-// with the different downstream preview components
-const SmallText = styled.small`
-  color: ${({theme}) => theme.sanity.color.muted.default.enabled.fg};
+// NOTE: have to use color inherit to make it work correctly with the
+// `isSelected` state in the list pane
+const IconSizer = styled(Text)`
+  color: inherit;
 `
 
 function IconWrapper({children}: {children: React.ReactNode}) {
   return (
     <Flex>
-      <Text muted size={3}>
-        {children}
-      </Text>
+      <IconSizer size={3}>{children}</IconSizer>
     </Flex>
   )
 }
@@ -26,8 +24,10 @@ function IconWrapper({children}: {children: React.ReactNode}) {
 export class InsufficientPermissionsError extends Error {}
 
 export const INVALID_PREVIEW_FALLBACK: PreparedValue = {
-  title: <SmallText>Invalid preview config</SmallText>,
-  subtitle: <SmallText>Check the error log in the console</SmallText>,
+  // The `<small>` element is used for more compatibility
+  // with the different downstream preview components.
+  title: <small>Invalid preview config</small>,
+  subtitle: <small>Check the error log in the console</small>,
   media: (
     <IconWrapper>
       <WarningOutlineIcon />
@@ -37,7 +37,9 @@ export const INVALID_PREVIEW_FALLBACK: PreparedValue = {
 }
 
 export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreparedValue = {
-  title: <SmallText>Insufficient permissions to access this reference</SmallText>,
+  // The `<small>` element is used for more compatibility
+  // with the different downstream preview components.
+  title: <small>Insufficient permissions to access this reference</small>,
   media: (
     <IconWrapper>
       <AccessDeniedIcon />
