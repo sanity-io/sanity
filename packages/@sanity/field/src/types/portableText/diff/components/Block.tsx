@@ -1,9 +1,9 @@
 import React, {useCallback} from 'react'
 import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {Box, Card, Stack, Text} from '@sanity/ui'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {PortableTextBlock, PortableTextDiff} from '../types'
-import styles from './Block.css'
 import Blockquote from './Blockquote'
 import Header from './Header'
 import Paragraph from './Paragraph'
@@ -18,11 +18,6 @@ export default function Block({
   children: JSX.Element
 }): JSX.Element {
   const color = useDiffAnnotationColor(diff, [])
-  const classNames = [
-    styles.root,
-    styles[diff.action],
-    `style_${diff.displayValue.style || 'undefined'}`,
-  ]
   const {path: fullPath} = React.useContext(DiffContext)
   const {onSetFocus} = React.useContext(ConnectorContext)
   const isRemoved = diff.action === 'removed'
@@ -54,27 +49,37 @@ export default function Block({
     diff.origin.fields.style.action === 'changed' &&
     diff.origin.fields.style.annotation
   ) {
-    fromStyle = diff.origin.fromValue.style
-    classNames.push(`changed_from_style_${fromStyle || 'undefined'}`)
+    fromStyle = diff?.origin?.fromValue?.style
     const style = color ? {background: color.background, color: color.text} : {}
 
     returned = (
-      <div className={styles.styleIsChanged}>
-        <div className={styles.changedBlockStyleNotice}>
+      <Card
+        padding={3}
+        border
+        radius={2}
+        style={{borderStyle: 'dotted'}}
+        diff-block-action={diff.action}
+        data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
+      >
+        <Stack space={2}>
           <DiffTooltip
-            annotations={[diff.origin.fields.style.annotation]}
+            annotations={[diff.origin.fields.style?.annotation]}
             diff={diff.origin.fields.style}
           >
-            <div>Changed block style from '{fromStyle}'</div>
+            <Text size={0}>Changed block style from '{fromStyle}'</Text>
           </DiffTooltip>
-        </div>
-        <div style={style}>{returned}</div>
-      </div>
+          <Box style={style}>{returned}</Box>
+        </Stack>
+      </Card>
     )
   }
 
   return (
-    <div onClick={handleClick} className={classNames.join(' ')}>
+    <div
+      onClick={handleClick}
+      diff-block-action={diff.action}
+      data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
+    >
       {returned}
     </div>
   )
