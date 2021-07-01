@@ -1,29 +1,31 @@
 import {of as observableOf, Observable} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
+import {map, switchMap, catchError} from 'rxjs/operators'
 import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
-import prepareForPreview, {invokePrepare, PrepareInvocationResult} from './prepareForPreview'
-import {FieldName, Path, Reference, PrepareViewOptions} from './types'
-import {INSUFFICIENT_PERMISSIONS} from './constants'
+import prepareForPreview, {invokePrepare, PreparedValue} from './prepareForPreview'
+import {FieldName, Reference, PrepareViewOptions} from './types'
+import {INSUFFICIENT_PERMISSIONS_FALLBACK, InsufficientPermissionsError} from './constants'
 
-export interface PreviewValue {
+const INSUFFICIENT_PERMISSIONS = Symbol('INSUFFICIENT_PERMISSIONS')
+
+export interface PreparedSnapshot {
   type?: SchemaType
-  snapshot: null | PrepareInvocationResult | typeof INSUFFICIENT_PERMISSIONS
+  snapshot: null | PreparedValue
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
 export function createPreviewObserver(
-  observePaths: (value: any, paths: Path[]) => any,
+  observePaths: (value: any, paths: Array<string[]>) => any,
   resolveRefType: (
     value: Reference,
     ownerType: ReferenceSchemaType
-  ) => Observable<SchemaType | typeof INSUFFICIENT_PERMISSIONS | undefined>
+  ) => Observable<SchemaType | undefined>
 ) {
   return function observeForPreview(
     value: any,
     type: SchemaType,
     fields: FieldName[],
     viewOptions?: PrepareViewOptions
-  ): Observable<PreviewValue> {
+  ): Observable<PreparedSnapshot> {
     if (isReferenceSchemaType(type)) {
       // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
       // and the most sane thing to do is to return `null` for snapshot
@@ -34,13 +36,22 @@ export function createPreviewObserver(
       // and preview using the preview config of its type
       // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
       return resolveRefType(value, type).pipe(
+        catchError((e) => {
+          if (e instanceof InsufficientPermissionsError) {
+            return observableOf(INSUFFICIENT_PERMISSIONS)
+          }
+          throw e
+        }),
         switchMap((refType) => {
           if (refType === INSUFFICIENT_PERMISSIONS) {
-            return observableOf<PreviewValue>({type, snapshot: INSUFFICIENT_PERMISSIONS})
+            return observableOf<PreparedSnapshot>({
+              type,
+              snapshot: INSUFFICIENT_PERMISSIONS_FALLBACK,
+            })
           }
 
           if (!refType) {
-            return observableOf<PreviewValue>({type, snapshot: null})
+            return observableOf<PreparedSnapshot>({type, snapshot: null})
           }
 
           return observeForPreview(value, refType, fields)
@@ -54,13 +65,20 @@ export function createPreviewObserver(
       return observePaths(value, paths).pipe(
         map((snapshot) => ({
           type: type,
-          snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions),
+          snapshot:
+            snapshot &&
+            prepareForPreview({
+              rawValue: snapshot,
+              type,
+              viewOptions,
+            }),
         }))
       )
     }
+
     return observableOf({
-      type: type,
-      snapshot: invokePrepare(type, value, viewOptions),
+      type,
+      snapshot: invokePrepare(type, value, viewOptions).returnValue,
     })
   }
 }

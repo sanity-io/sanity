@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
 import {
@@ -12,46 +11,9 @@ import {
   tap,
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
-import {Text, Flex} from '@sanity/ui'
-import {AccessDeniedIcon, WarningOutlineIcon} from '@sanity/icons'
 import {observeForPreview} from '../'
-import {INVALID_PREVIEW_CONFIG, INSUFFICIENT_PERMISSIONS} from '../constants'
 import {FieldName, SortOrdering, Type} from '../types'
-
-// The `<small>` element is used for more compatibility
-// with the different downstream preview components
-const SmallText = styled.small`
-  color: ${({theme}) => theme.sanity.color.muted.default.enabled.fg};
-`
-
-function IconWrapper({children}: {children: React.ReactNode}) {
-  return (
-    <Flex>
-      <Text muted size={3}>
-        {children}
-      </Text>
-    </Flex>
-  )
-}
-
-const INVALID_PREVIEW_FALLBACK = {
-  title: <SmallText>Invalid preview config</SmallText>,
-  subtitle: <SmallText>Check the error log in the console</SmallText>,
-  media: (
-    <IconWrapper>
-      <WarningOutlineIcon />
-    </IconWrapper>
-  ),
-}
-
-const INSUFFICIENT_PERMISSIONS_FALLBACK = {
-  title: <SmallText>Insufficient permissions to access this reference</SmallText>,
-  media: (
-    <IconWrapper>
-      <AccessDeniedIcon />
-    </IconWrapper>
-  ),
-}
+import {PreparedValue} from '../prepareForPreview'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -89,57 +51,44 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 
   return sharedProps$.pipe(
     distinctUntilChanged((props, nextProps) => shallowEquals(props.value, nextProps.value)),
-    switchMap(
-      (props): Observable<ReceivedProps> =>
-        concat(
-          of<ReceivedProps>({
-            isLoading: true,
+    switchMap((props) =>
+      concat(
+        of<ReceivedProps>({
+          isLoading: true,
+          type: props.type,
+          snapshot: null,
+          children: props.children,
+        }),
+        observeForPreview(
+          props.value,
+          props.type,
+          props.fields,
+          props.ordering ? {ordering: props.ordering} : {}
+        ).pipe(
+          map((result) => ({
+            isLoading: false,
             type: props.type,
+            snapshot: result.snapshot,
             children: props.children,
-            snapshot: null,
-          }),
-          observeForPreview(
-            props.value,
-            props.type,
-            props.fields,
-            props.ordering ? {ordering: props.ordering} : {}
-          ).pipe(
-            map(
-              (result): ReceivedProps => ({
-                isLoading: false,
-                type: props.type,
-                snapshot: result.snapshot,
-                children: props.children,
-              })
-            )
-          )
+          }))
         )
+      )
     ),
     memoizeBy(isActive$)
   )
 }
 
-type ReceivedProps<T = unknown> = {
-  snapshot: T | typeof INSUFFICIENT_PERMISSIONS | null
+type ReceivedProps = {
+  snapshot: PreparedValue | null
   type: Type
   isLoading: boolean
   error?: Error
-  children: (props: any) => React.ReactElement
+  children: (props: unknown) => React.ReactElement
 }
 export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
   props: ReceivedProps
 ) {
-  const {type, error, isLoading, children} = props
-
-  let snapshot: unknown
-
-  if (props.snapshot === INVALID_PREVIEW_CONFIG) {
-    snapshot = INVALID_PREVIEW_FALLBACK
-  } else if (props.snapshot === INSUFFICIENT_PERMISSIONS) {
-    snapshot = INSUFFICIENT_PERMISSIONS_FALLBACK
-  } else {
-    snapshot = props.snapshot
-  }
+  const {type, error, snapshot, isLoading, children} = props
 
   return children({
     error,
