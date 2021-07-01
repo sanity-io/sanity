@@ -1,10 +1,14 @@
 import React from 'react'
-import styles from './Blockquote.css'
+import styled from 'styled-components'
+
+const Quote = styled.blockquote`
+  margin: 0;
+`
 
 export default function Blockquote({children}: {children: React.ReactNode}): JSX.Element {
   return (
-    <div className={styles.root}>
-      <blockquote className={styles.quote}>{children}</blockquote>
+    <div>
+      <Quote>{children}</Quote>
     </div>
   )
 }
