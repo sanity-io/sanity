@@ -4,8 +4,6 @@ import {DiffComponent, ObjectDiff, ObjectSchemaType} from '../../../diff'
 import PortableText from './components/PortableText'
 import {createPortableTextDiff} from './helpers'
 
-import styles from './PTDiff.css'
-
 export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
   diff,
   schemaType,
@@ -18,6 +16,5 @@ export const PTDiff: DiffComponent<ObjectDiff> = function PTDiff({
     ptDiff,
     schemaType,
   ])
-  const classNames = [styles.root, styles[diff.action]].join(' ')
-  return <div className={classNames}>{portableTextDiff}</div>
+  return <div data-diff-action={diff.action}>{portableTextDiff}</div>
 }
