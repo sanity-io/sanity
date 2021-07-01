@@ -4,9 +4,10 @@ import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import ImagesIcon from 'part:@sanity/base/images-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
+import S from '@sanity/desk-tool/structure-builder'
+import userStore from 'part:@sanity/base/user'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
-import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise((resolve) => setTimeout(resolve, ms, val))
@@ -21,8 +22,34 @@ export const getDefaultDocumentNode = ({schemaType}) => {
   )
 }
 
-export default () =>
-  S.list()
+export default userStore.me.map(({roles}) => {
+  if (roles.map((role) => role.name).includes('restricted')) {
+    return S.list()
+      .id('root')
+      .title('Content')
+      .items([
+        S.documentListItem().id('foo-bar').title('Singleton author').schemaType('author'),
+
+        S.divider(),
+
+        S.listItem()
+          .title('Anything with a title')
+          .icon(() => <span style={{fontSize: '2em'}}>T</span>)
+          .child(() =>
+            delay(
+              S.documentList({
+                id: 'title-list',
+                title: 'Titles!',
+                options: {
+                  filter: 'defined(title)',
+                },
+              })
+            )
+          ),
+      ])
+  }
+
+  return S.list()
     .id('root')
     .title('Content')
     .items([
@@ -54,8 +81,10 @@ export default () =>
             )
           )
         )
-        .showIcon(false),
-
+        .showIcon(false)
+        .hidden(() =>
+          userStore.me.map(({roles}) => roles.map((role) => role.name).includes('read'))
+        ),
       S.documentListItem()
         .id('grrm')
         .schemaType('author')
@@ -162,3 +191,4 @@ export default () =>
 
       S.documentTypeListItem('sanity.imageAsset').title('Images').icon(ImagesIcon),
     ])
+})

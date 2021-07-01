@@ -14,6 +14,7 @@ export interface PermissionCheckResult {
 }
 
 export interface GrantsStore {
+  grants: Observable<Grant[]>
   checkDocumentPermission(
     checkPermissionName: DocumentPermissionName,
     document: Partial<SanityDocument>
