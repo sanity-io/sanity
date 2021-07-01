@@ -1,6 +1,8 @@
 export interface AssetRecord {
   _id?: string
   referenceCount?: number
-  originalFileName?: string
+  originalFilename?: string
+  mimeType?: string
+  extension?: string
   url?: string
 }

@@ -28,7 +28,8 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import formBuilderConfig from 'config:@sanity/form-builder'
-import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import userDefinedImageAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import userDefinedFileAssetSources from 'part:@sanity/form-builder/input/file/asset-sources?'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import ValidationStatusPart from 'part:@sanity/components/validation/status'
 import PopoverDialogPart from 'part:@sanity/components/dialogs/popover'
@@ -72,7 +73,8 @@ export {
   StyleSelect,
   ButtonGrid,
   formBuilderConfig,
-  userDefinedAssetSources,
+  userDefinedImageAssetSources,
+  userDefinedFileAssetSources,
   FullscreenDialog,
   ValidationStatusPart,
   PopoverDialogPart,
