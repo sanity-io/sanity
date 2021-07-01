@@ -1,10 +1,9 @@
-import classNames from 'classnames'
 import {isKeySegment, Path} from '@sanity/types'
 import React, {SyntheticEvent, useCallback} from 'react'
 import {ConnectorContext} from '@sanity/base/lib/change-indicators'
 import {startCase} from 'lodash'
 import {DiffCard, DiffContext, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../diff'
-import styles from './Text.css'
+import {InlineBox} from './styledComponents'
 
 interface TextProps {
   diff?: StringDiff
@@ -32,21 +31,13 @@ export function Text({
       </TextWithDiff>
     )
   }
-  return <span className={styles.root}>{children}</span>
+  return <InlineBox>{children}</InlineBox>
 }
 
-export function TextWithDiff({
-  diff,
-  childDiff,
-  children,
-  path,
-  segment,
-  ...restProps
-}: TextProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+export function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
   const {onSetFocus} = React.useContext(ConnectorContext)
   const {path: fullPath} = React.useContext(DiffContext)
   const spanSegment = path.slice(-2, 1)[0]
-  const className = classNames(styles.root, styles.changed)
   const isRemoved = diff && diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
@@ -83,10 +74,10 @@ export function TextWithDiff({
       </DiffCard>
     ) : null
   return (
-    <span {...restProps} className={className} onClick={handleClick}>
-      <span className={styles.previewContainer}>
+    <InlineBox {...restProps} onClick={handleClick} data-changed="">
+      <span>
         <>{diffCard || children}</>
       </span>
-    </span>
+    </InlineBox>
   )
 }
