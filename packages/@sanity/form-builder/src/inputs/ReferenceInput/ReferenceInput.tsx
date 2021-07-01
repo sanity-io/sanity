@@ -111,17 +111,11 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
+  const hasInsufficientPermissions = preview.snapshot?.meta?.type === 'insufficient_permissions'
   const isMissing =
-    !!value?._ref &&
-    !preview.isLoading &&
-    preview.snapshot &&
-    // TODO: this check would be cleaner if the INSUFFICIENT_PERMISSIONS symbol could be imported directly
-    typeof preview.snapshot !== 'object'
+    !hasInsufficientPermissions && !!value?._ref && !preview.isLoading && preview.snapshot
 
   const hasRef = value && value._ref
-
-  const hasInsufficientPermissions =
-    hasRef && isMissing && weakIs === 'strong' && weakShouldBe === 'strong'
 
   const handleFixStrengthMismatch = useCallback(() => {
     onChange(PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak'])))

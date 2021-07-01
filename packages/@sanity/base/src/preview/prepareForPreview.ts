@@ -1,6 +1,6 @@
-// @flow
+import type {SchemaType} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
-import {INVALID_PREVIEW_CONFIG} from './constants'
+import {INVALID_PREVIEW_FALLBACK} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
 import {PrepareViewOptions, Type} from './types'
 import {keysOf} from './utils/keysOf'
@@ -10,10 +10,19 @@ const EMPTY = []
 
 type SelectedValue = Record<string, unknown>
 
+// TODO: unify types with `@sanity/form-builder`
+// see `PreviewSnapshot` in `usePreviewSnapshot`
 export type PreparedValue = {
-  title: string
-  subtitle: string
-  description: string
+  title?: React.ReactNode
+  subtitle?: React.ReactNode
+  description?: React.ReactNode
+  media?: React.ReactNode
+  /**
+   * optional object used to attach meta data to the prepared result.
+   * currently used to add a flag for the invalid preview error fallback and
+   * insufficient permissions fallback
+   */
+  meta?: {type?: string}
 }
 
 export type PrepareInvocationResult = {
@@ -212,15 +221,25 @@ export function invokePrepare(
   }
 }
 
-function withErrors(result, type, selectedValue) {
+function withErrors(result, type, selectedValue): PreparedValue {
   result.errors.forEach((error) => errorCollector.add(type, selectedValue, error))
   reportErrors()
 
-  return INVALID_PREVIEW_CONFIG
+  return INVALID_PREVIEW_FALLBACK
 }
 
-export default function prepareForPreview(rawValue, type, viewOptions): symbol | PreparedValue {
-  const selection = type.preview.select
+interface PrepareForPreviewOptions {
+  rawValue: unknown
+  type: SchemaType
+  viewOptions?: PrepareViewOptions
+}
+
+export default function prepareForPreview({
+  rawValue,
+  type,
+  viewOptions = {},
+}: PrepareForPreviewOptions): PreparedValue {
+  const selection = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
 
   const selectedValue = targetKeys.reduce((acc, key) => {
@@ -236,5 +255,5 @@ export default function prepareForPreview(rawValue, type, viewOptions): symbol |
   const returnValueResult = validateReturnedPreview(invokePrepare(type, selectedValue, viewOptions))
   return returnValueResult.errors.length > 0
     ? withErrors(returnValueResult, type, selectedValue)
-    : ({...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue} as PreparedValue)
+    : {...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue}
 }

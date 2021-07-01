@@ -18,11 +18,14 @@ const NULL_SNAPSHOT: SnapshotState = {
   snapshot: null,
 }
 
+// TODO: unify types with `@sanity/base`
+// see `PreparedValue` in `prepareForPreview`
 type PreviewSnapshot = {
   _id: string
   _type: string
   title: string
   description: string
+  meta?: {type?: string}
 }
 
 export function usePreviewSnapshot(
