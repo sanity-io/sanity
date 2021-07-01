@@ -1,7 +1,8 @@
 import type {Subscription} from 'rxjs'
 import React from 'react'
 import styled from 'styled-components'
-import {Button} from '@sanity/ui'
+import {Button, Card, Flex, Stack, Heading, Text} from '@sanity/ui'
+import {DocumentIcon} from '@sanity/icons'
 import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {AssetRecord} from '../../inputs/files/ImageInput/types'
 import {versionedClient} from '../versionedClient'
@@ -12,6 +13,7 @@ import {AssetDialogAction, AssetMenuAction} from './types'
 import {DeleteAssetErrorDialog} from './DeleteAssetErrorDialog'
 
 interface AssetProps {
+  assetType?: 'image' | 'file'
   asset?: AssetRecord
   isSelected: boolean
   onClick?: (...args: any[]) => any
@@ -43,6 +45,20 @@ const Image = styled.img`
 `
 
 const Container = styled(Checkerboard)`
+  position: relative;
+  z-index: 1;
+  padding-bottom: 100%;
+`
+
+const AbsoluteFlex = styled(Flex)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
+
+const CardContainer = styled(Card)`
   position: relative;
   z-index: 1;
   padding-bottom: 100%;
@@ -124,9 +140,13 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
   }
 
   render() {
-    const {asset, onClick, onKeyPress, isSelected} = this.props
+    const {asset, assetType = 'image', onClick, onKeyPress, isSelected} = this.props
+    const {originalFilename, _id, mimeType, extension, url} = asset
     const {isDeleting, showUsageDialog, deleteError} = this.state
     const imgH = 200 * Math.max(1, DPI)
+    const isImageType = assetType === 'image'
+    const isImageMimetype = mimeType.includes('image')
+    const isPreviewable = isImageMimetype && !['heic', 'ico'].includes(extension)
 
     return (
       <Root>
@@ -134,22 +154,55 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
           tone="primary"
           selected={isSelected}
           tabIndex={0}
-          data-id={asset._id}
+          data-id={_id}
           mode="ghost"
           onKeyPress={onKeyPress}
           padding={0}
           style={{padding: 2}}
         >
-          <Container>
-            <Image
-              alt={asset.originalFileName}
-              src={`${asset.url}?h=${imgH}&fit=max`}
-              onClick={onClick}
-              data-id={asset._id}
-            />
-
-            {isDeleting && <FullscreenSpinner />}
-          </Container>
+          {isImageType && (
+            <Container>
+              <Image
+                alt={originalFilename}
+                src={`${url}?h=${imgH}&fit=max`}
+                onClick={onClick}
+                data-id={_id}
+              />
+              {isDeleting && <FullscreenSpinner />}
+            </Container>
+          )}
+          {!isImageType && (
+            <CardContainer radius={2} tone="transparent">
+              {isPreviewable && (
+                <Image
+                  alt={originalFilename}
+                  src={`${url}?h=${imgH}&fit=max`}
+                  onClick={onClick}
+                  data-id={_id}
+                />
+              )}
+              {!isPreviewable && (
+                <AbsoluteFlex
+                  title={originalFilename}
+                  onClick={onClick}
+                  data-id={_id}
+                  align="center"
+                  justify="center"
+                  padding={3}
+                >
+                  <Stack space={3}>
+                    <Heading align="center">
+                      <DocumentIcon />
+                    </Heading>
+                    <Text align="center" size={1} textOverflow="ellipsis">
+                      {originalFilename}
+                    </Text>
+                  </Stack>
+                </AbsoluteFlex>
+              )}
+              {isDeleting && <FullscreenSpinner />}
+            </CardContainer>
+          )}
         </Button>
         <MenuContainer>
           <AssetMenu isSelected={isSelected} onAction={this.handleMenuAction} />

@@ -8,24 +8,29 @@ import {versionedClient} from '../versionedClient'
 import Asset from './Asset'
 
 const PER_PAGE = 200
+const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
+const ASSET_TYPE_FILE = 'sanity.fileAsset'
 
 interface AssetType {
   _id: string
   url: string
 }
-
 interface Props {
   onSelect: (arg0: AssetFromSource[]) => void
   onClose: () => void
   selectedAssets: AssetType[]
+  assetType: 'file' | 'image'
   selectionType: boolean
+  dialogHeaderTitle?: string
 }
 
-const buildQuery = (start = 0, end = PER_PAGE) => `
-  *[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {
+const buildQuery = (start = 0, end = PER_PAGE, assetType = ASSET_TYPE_IMAGE) => `
+  *[_type == "${assetType}"] | order(_updatedAt desc) [${start}...${end}] {
     _id,
     url,
     originalFilename,
+    mimeType,
+    extension,
     metadata {dimensions}
   }
 `
@@ -36,7 +41,7 @@ type State = {
   isLoading: boolean
 }
 
-export class DefaultSource extends React.Component<Props, State> {
+export class DefaultSource extends React.PureComponent<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
@@ -49,13 +54,17 @@ export class DefaultSource extends React.Component<Props, State> {
   fetch$: Subscription
 
   fetchPage(pageNo: number) {
+    const {assetType = 'image'} = this.props
     const start = pageNo * PER_PAGE
     const end = start + PER_PAGE
+    const isImageAssetType = assetType === 'image'
+    const tag = isImageAssetType ? 'asset.image-list' : 'asset.file-list'
+    const assetTypeParam = isImageAssetType ? ASSET_TYPE_IMAGE : ASSET_TYPE_FILE
 
     this.setState({isLoading: true})
 
     this.fetch$ = versionedClient.observable
-      .fetch(buildQuery(start, end), {}, {tag: 'asset.image-list'})
+      .fetch(buildQuery(start, end, assetTypeParam), {}, {tag})
       .subscribe((result) => {
         this.setState((prevState) => ({
           isLastPage: result.length < PER_PAGE,
@@ -113,15 +122,16 @@ export class DefaultSource extends React.Component<Props, State> {
   }
 
   render() {
-    const {selectedAssets} = this.props
+    const {assetType = 'image', selectedAssets, dialogHeaderTitle = 'Select image'} = this.props
     const {assets, isLastPage, isLoading} = this.state
 
     return (
-      <Dialog id={this._elementId} header="Select image" width={2} onClose={this.handleClose}>
+      <Dialog id={this._elementId} header={dialogHeaderTitle} width={2} onClose={this.handleClose}>
         <Box padding={4}>
           <Grid gap={2} style={{gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'}}>
             {assets.map((asset) => (
               <Asset
+                assetType={assetType}
                 key={asset._id}
                 asset={asset}
                 isSelected={selectedAssets.some((selected) => selected._id === asset._id)}

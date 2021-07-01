@@ -1,12 +1,18 @@
 import React from 'react'
-
 import ImageInput from '../../inputs/files/ImageInput'
 import resolveUploader from '../uploads/resolveUploader'
 import withDocument from '../../utils/withDocument'
-import {defaultAssetSources, formBuilderConfig, userDefinedAssetSources} from '../../legacyParts'
+import {
+  defaultAssetSources,
+  formBuilderConfig,
+  userDefinedImageAssetSources,
+} from '../../legacyParts'
 import {materializeReference} from './client-adapters/assets'
+import {AssetSource} from '@sanity/types'
 
-const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : defaultAssetSources
+const globalAssetSources = userDefinedImageAssetSources
+  ? userDefinedImageAssetSources
+  : defaultAssetSources
 
 const SUPPORT_DIRECT_UPLOADS = formBuilderConfig?.images?.directUploads !== false
 
@@ -19,7 +25,7 @@ export default React.forwardRef(function SanityImageInput(props: Props, forwarde
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = React.useMemo(
     () =>
-      (sourcesFromSchema || globalAssetSources).map((source) => ({
+      (sourcesFromSchema || globalAssetSources).map((source: AssetSource) => ({
         ...source,
         // Note: The asset source plugin get's passed the enclosing document by default.
         // This is a potential performance hog, so we should consider some alternatives here
