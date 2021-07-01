@@ -1,7 +1,0 @@
-.root {
-}
-
-.quote {
-  /* composes: blockquote from 'part:@sanity/base/theme/typography/text-blocks-style'; */
-  margin: 0;
-}
