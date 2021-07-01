@@ -111,7 +111,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
-  const hasInsufficientPermissions = preview.snapshot?.meta?.type === 'insufficient_permissions'
+  const hasInsufficientPermissions = preview.snapshot?._meta?.type === 'insufficient_permissions'
   const isMissing =
     !hasInsufficientPermissions && !!value?._ref && !preview.isLoading && preview.snapshot
 

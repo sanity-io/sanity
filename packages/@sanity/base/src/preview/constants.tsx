@@ -33,7 +33,7 @@ export const INVALID_PREVIEW_FALLBACK: PreparedValue = {
       <WarningOutlineIcon />
     </IconWrapper>
   ),
-  meta: {type: 'invalid_preview'},
+  _meta: {type: 'invalid_preview'},
 }
 
 export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreparedValue = {
@@ -45,5 +45,5 @@ export const INSUFFICIENT_PERMISSIONS_FALLBACK: PreparedValue = {
       <AccessDeniedIcon />
     </IconWrapper>
   ),
-  meta: {type: 'insufficient_permissions'},
+  _meta: {type: 'insufficient_permissions'},
 }
