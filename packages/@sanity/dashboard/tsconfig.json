@@ -1,0 +1,26 @@
+{
+    "extends": "../../../tsconfig.settings",
+    "include": ["src"],
+    "compilerOptions": {
+      "composite": true,
+      "outDir": "./lib",
+      "rootDir": "./src",
+      "jsx": "react",
+      "noImplicitAny": false,
+      "plugins": [
+        {
+          "name": "typescript-plugin-css-modules",
+          "options": {
+            "customMatcher": "\\.css$"
+          }
+        }
+      ],
+    },
+    "references": [
+      {
+        "path": "../base"
+      },
+    ]
+  }
+  
+  
