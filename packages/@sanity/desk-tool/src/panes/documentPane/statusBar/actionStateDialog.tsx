@@ -19,6 +19,8 @@ interface ModalDialogProps {
   content: React.ReactNode
   onClose: () => void
   showCloseButton: true
+  size?: 'small' | 'medium' | 'large' | 'auto'
+  padding?: 'none' | 'small' | 'medium' | 'large'
 }
 
 // Todo: move these to action spec/core types
@@ -139,8 +141,8 @@ export function ActionStateDialog(props: Props) {
         onClose={dialog.onClose}
         onClickOutside={dialog.onClose}
         showCloseButton={dialog.showCloseButton}
-        size="medium"
-        padding="large"
+        size={dialog.size ?? 'medium'}
+        padding={dialog.padding ?? 'large'}
       >
         {dialog.content}
       </Dialog>
