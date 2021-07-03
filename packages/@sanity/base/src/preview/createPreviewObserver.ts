@@ -2,7 +2,7 @@ import {of as observableOf, Observable} from 'rxjs'
 import {map, switchMap, catchError} from 'rxjs/operators'
 import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import prepareForPreview, {invokePrepare, PreparedValue} from './prepareForPreview'
-import {FieldName, Reference, PrepareViewOptions} from './types'
+import {Reference, PrepareViewOptions} from './types'
 import {INSUFFICIENT_PERMISSIONS_FALLBACK, InsufficientPermissionsError} from './constants'
 
 const INSUFFICIENT_PERMISSIONS = Symbol('INSUFFICIENT_PERMISSIONS')
@@ -23,7 +23,6 @@ export function createPreviewObserver(
   return function observeForPreview(
     value: any,
     type: SchemaType,
-    fields: FieldName[],
     viewOptions?: PrepareViewOptions
   ): Observable<PreparedSnapshot> {
     if (isReferenceSchemaType(type)) {
@@ -54,14 +53,14 @@ export function createPreviewObserver(
             return observableOf<PreparedSnapshot>({type, snapshot: null})
           }
 
-          return observeForPreview(value, refType, fields)
+          return observeForPreview(value, refType)
         })
       )
     }
 
     const selection = type.preview?.select
     if (selection) {
-      const paths = Object.keys(selection).map((key) => selection[key].split('.'))
+      const paths = Object.keys(selection).map((key) => (selection[key] as string).split('.'))
       return observePaths(value, paths).pipe(
         map((snapshot) => ({
           type: type,
@@ -76,9 +75,16 @@ export function createPreviewObserver(
       )
     }
 
+    // Note: this case is typically rare (or non-existent) and occurs only if
+    // the SchemaType doesn't have a `select` field. The schema compiler
+    // provides a default `preview` implementation for `object`s, `image`s,
+    // `file`s, and `document`s
     return observableOf({
       type,
-      snapshot: invokePrepare(type, value, viewOptions).returnValue,
+      snapshot:
+        value && typeof value === 'object'
+          ? invokePrepare(type, value, viewOptions).returnValue
+          : null,
     })
   }
 }

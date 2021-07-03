@@ -62,7 +62,6 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
         observeForPreview(
           props.value,
           props.type,
-          props.fields,
           props.ordering ? {ordering: props.ordering} : {}
         ).pipe(
           map((result) => ({
