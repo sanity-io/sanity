@@ -21,6 +21,11 @@
     "hints",
     "sanity-plugin"
   ],
+  "dependencies": {
+    "@sanity/ui": "^0.34.2",
+    "@sanity/icons": "^1.1.2"
+
+  },
   "devDependencies": {
     "rimraf": "^2.7.1"
   },
