@@ -1,43 +1,37 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import LaunchIcon from 'part:@sanity/base/launch-icon'
-import styles from './HintCard.css'
+import {Card, Text, Heading, Stack, Flex} from '@sanity/ui'
+import {LaunchIcon} from '@sanity/icons'
 import {resolveUrl} from './utils'
 
 function HintCard(props) {
   const {card, repoId} = props
-  /**
-   * Hint cards currently only link to external sources.
-   * In future iterations a hint card may have it's own page
-   * that opens by clicking the card (onCardClick prop), that
-   * then renders a page component.
-   */
-  /*
-  <div className={styles.root} onClick={() => onCardClick(card._id)}>
-    <h4 className={styles.cardTitle}>
-      {card.title} <ArrowRight />
-    </h4>
-    <p className={styles.cardSummary}>{card.summary}</p>
-  </div>
-  */
-  return (
-    <li>
-      <a
-        href={resolveUrl(card.hint, repoId)}
-        className={styles.root}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div>
-          <span className={styles.cardTitle}>{card.titleOverride || card.hint.title}</span>
-          <p className={styles.cardSummary}>{card.hint.description}</p>
-        </div>
 
-        <span className={styles.externalIcon}>
-          <LaunchIcon />
-        </span>
-      </a>
-    </li>
+  return (
+    <Card
+      tone="inherit"
+      border
+      radius={2}
+      padding={4}
+      as="a"
+      href={resolveUrl(card.hint, repoId)}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Stack space={3}>
+        <Flex justify="space-between">
+          <Heading size={1} muted as="h4">
+            {card.titleOverride || card.hint.title}
+          </Heading>
+          <Text muted>
+            <LaunchIcon />
+          </Text>
+        </Flex>
+        <Text size={1} muted>
+          {card.hint.description}
+        </Text>
+      </Stack>
+    </Card>
   )
 }
 
