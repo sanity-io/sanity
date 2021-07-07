@@ -76,7 +76,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   } = props
   const rootRef = useRef<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
-  const {historyController, setTimelineMode, timelineMode, open} = useDocumentHistory()
+  const {historyController, setTimelineMode, timelineMode, open, displayed} = useDocumentHistory()
   const historyState = historyController.selectionState
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
   const paneRouter = usePaneRouter()
@@ -163,6 +163,8 @@ export function DocumentPane(props: DocumentPaneProps) {
   const isTimelineOpen = timelineMode !== 'closed'
 
   const zOffsets = useZIndex()
+
+  const inspectValue = displayed || initialValue
 
   return (
     <LegacyLayerProvider zOffset="pane">
@@ -266,7 +268,11 @@ export function DocumentPane(props: DocumentPaneProps) {
 
         <LegacyLayerProvider zOffset="fullscreen">
           {isInspectOpen && (
-            <InspectDialog idPrefix={paneKey} onClose={handleInspectClose} value={value as any} />
+            <InspectDialog
+              idPrefix={paneKey}
+              onClose={handleInspectClose}
+              value={inspectValue as any}
+            />
           )}
         </LegacyLayerProvider>
       </DocumentActionShortcuts>
