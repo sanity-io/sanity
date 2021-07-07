@@ -1,5 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.error a {
-  color: var(--white);
-}
