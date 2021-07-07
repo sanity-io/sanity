@@ -1,10 +1,11 @@
 // @todo: remove the following line when part imports has been removed from this file
 ///<reference types="@sanity/types/parts" />
 
-import {MenuButton} from 'part:@sanity/components/menu-button'
-import ValidationList from 'part:@sanity/components/validation/list'
-import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
+import {ValidationList} from '@sanity/base/components'
+import {ErrorOutlineIcon} from '@sanity/icons'
 import React, {useCallback} from 'react'
+import {Button, Menu, MenuButton} from '@sanity/ui'
+import {useId} from '@reach/auto-id'
 
 interface ValidationMenuProps {
   boundaryElement: HTMLDivElement | null
@@ -21,6 +22,7 @@ export function ValidationMenu(props: ValidationMenuProps) {
   const validationMarkers = markers.filter((marker) => marker.type === 'validation')
   const validationErrorMarkers = validationMarkers.filter((marker) => marker.level === 'error')
   const validationWarningwarnings = validationMarkers.filter((marker) => marker.level === 'warning')
+  const id = useId()
 
   const handleClose = useCallback(() => setOpen(false), [setOpen])
 
@@ -34,26 +36,29 @@ export function ValidationMenu(props: ValidationMenuProps) {
       markers={validationMarkers}
       onClose={handleClose}
       onFocus={setFocusPath}
-      // showLink
     />
   )
 
   return (
     <MenuButton
-      boundaryElement={boundaryElement}
-      buttonProps={{
-        color: validationErrorMarkers.length > 0 ? 'danger' : 'warning',
-        kind: 'simple',
-        icon: ErrorOutlineIcon,
-        padding: 'small',
-        selected: isOpen,
-        title: 'Show validation issues',
+      id={id || ''}
+      button={
+        <Button
+          icon={ErrorOutlineIcon}
+          title="Show validation issues"
+          mode="bleed"
+          tone="critical"
+        />
+      }
+      menu={<Menu open={isOpen}>{popoverContent}</Menu>}
+      popover={{
+        portal: true,
+        boundaryElement: boundaryElement,
+        constrainSize: true,
+        preventOverflow: true,
+        width: 0,
       }}
-      menu={popoverContent}
-      open={isOpen}
-      portal
-      placement="bottom"
-      setOpen={setOpen}
+      placement="bottom-end"
     />
   )
 }
