@@ -1,6 +1,6 @@
 # Form Builder
 
-## Big fat disclaimer: Work in progress
+## Disclaimer: Work in progress
 
 There is an example of a consumer app in the `./example` that can be started with `npm start`
 
