@@ -1,28 +1,39 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message'
-import Button from 'part:@sanity/components/buttons/default'
+import {Dialog as UIDialog, Box, Text, Button, Stack} from '@sanity/ui'
+import styled from 'styled-components'
 import CorsCheck from './CorsCheck'
 
+const Dialog = styled(UIDialog)`
+  /* @todo: Temp solution. Update sanity/ui with option to hide close button */
+  [aria-label='Close dialog'] {
+    display: none;
+  }
+`
 export default function ErrorDialog(props) {
   const isNetworkError = props.error.isNetworkError
 
   return (
-    <FullscreenMessageDialog
-      buttons={<Button onClick={props.onRetry}>Retry</Button>}
-      color="danger"
-      title="Error"
-      isOpen
-      centered
+    <Dialog
+      header="Error"
+      cardShadow={2}
+      width={1}
+      footer={
+        <Box padding={3}>
+          <Button text="Retry" onClick={props.onRetry} style={{width: '100%'}} />
+        </Box>
+      }
     >
-      {!isNetworkError && <p>{props.error.message}</p>}
-      {isNetworkError && (
-        <>
-          <p>An error occured while attempting to reach the Sanity API.</p>
-          <CorsCheck />
-        </>
-      )}
-    </FullscreenMessageDialog>
+      <Box padding={4}>
+        {!isNetworkError && <Text accent>{props.error.message}</Text>}
+        {isNetworkError && (
+          <Stack space={4}>
+            <Text accent>An error occurred while attempting to reach the Sanity API.</Text>
+            <CorsCheck />
+          </Stack>
+        )}
+      </Box>
+    </Dialog>
   )
 }
 
