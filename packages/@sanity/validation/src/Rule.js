@@ -1,6 +1,6 @@
-const cloneDeep = require('clone-deep')
-const escapeRegex = require('./util/escapeRegex')
-const validate = require('./validate')
+import cloneDeep from 'clone-deep'
+import escapeRegex from './util/escapeRegex'
+import validate from './validate'
 
 const knownTypes = ['Object', 'String', 'Number', 'Boolean', 'Array', 'Date']
 const isExclusive = ['type', 'uri', 'email']
@@ -279,4 +279,4 @@ function getBaseType(type) {
   return type && type.type ? getBaseType(type.type) : type
 }
 
-module.exports = Rule
+export default Rule

@@ -1,6 +1,13 @@
-module.exports = {
-  Rule: require('./Rule'),
-  validateDocument: require('./validateDocument'),
-  inferFromSchema: require('./inferFromSchema'),
-  inferFromSchemaType: require('./inferFromSchemaType'),
+import Rule from './Rule'
+import validateDocument from './validateDocument'
+import inferFromSchema from './inferFromSchema'
+import inferFromSchemaType from './inferFromSchemaType'
+
+export default {
+  Rule,
+  validateDocument,
+  inferFromSchema,
+  inferFromSchemaType,
 }
+
+export {Rule, validateDocument, inferFromSchema, inferFromSchemaType}

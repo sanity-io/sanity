@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
-const ValidationError = require('../ValidationError')
-const pathToString = require('./pathToString')
+import ValidationError from '../ValidationError'
+import pathToString from './pathToString'
 
-module.exports = (result, message, options) => {
+export default (result, message, options) => {
   if (Array.isArray(result)) {
     if (result.length === 0) {
       return true

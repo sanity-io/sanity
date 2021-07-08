@@ -1,6 +1,5 @@
-const validateDocument = require('../validateDocument')
-const {validateItem} = validateDocument
-const {flatten} = require('lodash')
+import {flatten} from 'lodash'
+import {validateItem} from '../validateDocument'
 
 // eslint-disable-next-line import/prefer-default-export
 export const blockValidator = async (value, options) => {

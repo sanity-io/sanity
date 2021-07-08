@@ -1,4 +1,4 @@
-const inferFromSchemaType = require('./inferFromSchemaType')
+import inferFromSchemaType from './inferFromSchemaType'
 
 // Note: Mutates schema. Refactor when @sanity/schema supports middlewares
 function inferFromSchema(schema) {
@@ -9,4 +9,4 @@ function inferFromSchema(schema) {
   return schema
 }
 
-module.exports = inferFromSchema
+export default inferFromSchema

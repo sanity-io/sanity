@@ -1,6 +1,6 @@
-const Rule = require('./Rule')
-const {slugValidator} = require('./validators/slugValidator')
-const {blockValidator} = require('./validators/blockValidator')
+import Rule from './Rule'
+import {slugValidator} from './validators/slugValidator'
+import {blockValidator} from './validators/blockValidator'
 
 // eslint-disable-next-line complexity
 function inferFromSchemaType(typeDef, schema, visited = new Set()) {
@@ -127,4 +127,4 @@ function inferValidation(field, baseRule) {
   return Array.isArray(validation) ? validation : [validation]
 }
 
-module.exports = inferFromSchemaType
+export default inferFromSchemaType

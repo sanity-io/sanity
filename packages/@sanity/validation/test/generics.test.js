@@ -1,4 +1,4 @@
-const {Rule} = require('../src')
+import {Rule} from '../src'
 
 describe('generics', () => {
   test('should be able to construct an empty rule', () => {

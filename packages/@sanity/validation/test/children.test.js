@@ -1,4 +1,4 @@
-const {Rule} = require('../src')
+import {Rule} from '../src'
 
 describe('child rules', () => {
   // --- ALL ---

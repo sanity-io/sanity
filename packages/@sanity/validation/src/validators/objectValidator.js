@@ -1,7 +1,7 @@
-const ValidationError = require('../ValidationError')
-const pathToString = require('../util/pathToString')
-const handleValidationResult = require('../util/handleValidationResult')
-const genericValidator = require('./genericValidator')
+import ValidationError from '../ValidationError'
+import pathToString from '../util/pathToString'
+import handleValidationResult from '../util/handleValidationResult'
+import genericValidator from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
 
@@ -52,7 +52,7 @@ const assetRequired = (flag, value, message) => {
   return true
 }
 
-module.exports = Object.assign({}, genericValidator, {
+export default Object.assign({}, genericValidator, {
   presence,
   reference,
   block,

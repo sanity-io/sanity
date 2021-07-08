@@ -1,10 +1,10 @@
-const Type = require('type-of-is')
-const {flatten} = require('lodash')
-const ValidationError = require('./ValidationError')
-const Rule = require('./Rule')
+import Type from 'type-of-is'
+import {flatten} from 'lodash'
+import ValidationError from './ValidationError'
+import Rule from './Rule'
 
 /* eslint-disable no-console */
-module.exports = async (doc, schema) => {
+export default async (doc, schema) => {
   const documentType = schema.get(doc._type)
   if (!documentType) {
     console.warn('Schema type for object type "%s" not found, skipping validation', doc._type)
@@ -19,7 +19,7 @@ module.exports = async (doc, schema) => {
   }
 }
 
-function validateItem(item, type, path, options) {
+export function validateItem(item, type, path, options) {
   if (Array.isArray(item)) {
     return validateArray(item, type, path, options)
   }
@@ -30,8 +30,6 @@ function validateItem(item, type, path, options) {
 
   return validatePrimitive(item, type, path, options)
 }
-
-module.exports.validateItem = validateItem
 
 function validateObject(obj, type, path, options) {
   if (!type) {

@@ -1,5 +1,5 @@
-const {get, memoize} = require('lodash')
-const getClient = require('../getClient')
+import {get, memoize} from 'lodash'
+import getClient from '../getClient'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 

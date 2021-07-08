@@ -1,6 +1,6 @@
-const deepEquals = require('../util/deepEquals')
-const ValidationError = require('../ValidationError')
-const genericValidator = require('./genericValidator')
+import deepEquals from '../util/deepEquals'
+import ValidationError from '../ValidationError'
+import genericValidator from './genericValidator'
 
 const min = (minLength, value, message) => {
   if (!value || value.length >= minLength) {
@@ -94,7 +94,7 @@ const unique = (flag, value, message) => {
     : true
 }
 
-module.exports = Object.assign({}, genericValidator, {
+export default Object.assign({}, genericValidator, {
   presence,
   unique,
   length,

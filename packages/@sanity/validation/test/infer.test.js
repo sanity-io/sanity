@@ -1,5 +1,5 @@
-const Schema = require('@sanity/schema').default
-const inferFromSchema = require('../src/inferFromSchema')
+import Schema from '@sanity/schema'
+import inferFromSchema from '../src/inferFromSchema'
 
 describe('schema validation inference', () => {
   describe('object with `options.list` and `value` field', () => {
