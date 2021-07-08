@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import definitions from 'all:part:@sanity/dashboard/widget?'
 import NotFoundWidget from '../components/NotFoundWidget'
+import {definitions} from '../legacyParts'
 
 function WidgetContainer(props) {
   const config = props.config || {}
