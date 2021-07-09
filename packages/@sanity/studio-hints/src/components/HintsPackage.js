@@ -1,13 +1,11 @@
 /* eslint-disable no-console, class-methods-use-this */
 import React from 'react'
-import LinkButton from 'part:@sanity/components/buttons/anchor'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import {Card, Text, Heading, Stack, Flex, Inline, Spinner, Button, Box} from '@sanity/ui'
+import {WarningOutlineIcon, InfoOutlineIcon} from '@sanity/icons'
 import {getHints} from '../datastore'
 import {resolveUrl} from './utils'
 import LinksList from './LinksList'
-import styles from './HintsPackage.css'
 
 const removeHintsArticleSlug = 'remove-this-sidebar'
 
@@ -83,15 +81,19 @@ export default class HintsPackage extends React.PureComponent {
 
   renderError(title, message) {
     return (
-      <div className={`${styles.root} ${styles.withError}`}>
-        <div className={styles.errorWrapper}>
-          <h2 className={styles.errorTitle}>
-            <WarningIcon />
-            {title}
-          </h2>
-          <p className={styles.errorMessage}>{message}</p>
-        </div>
-      </div>
+      <Stack space={4} paddingX={4} paddingY={5}>
+        <Flex justify="center" align="center">
+          <Inline space={2}>
+            <Heading size={1}>
+              <WarningOutlineIcon />
+            </Heading>
+            <Heading size={1}>{title}</Heading>
+          </Inline>
+        </Flex>
+        <Text size={1} align="center">
+          {message}
+        </Text>
+      </Stack>
     )
   }
 
@@ -110,9 +112,16 @@ export default class HintsPackage extends React.PureComponent {
 
     if (isLoading) {
       return (
-        <div className={styles.root}>
-          <Spinner message="Loading hints" />
-        </div>
+        <Flex justify="center" align="center" paddingX={4} paddingY={5} flex={1}>
+          <Stack space={3}>
+            <Text size={1} muted align="center">
+              <Spinner />
+            </Text>
+            <Text size={1} muted>
+              Loading hints
+            </Text>
+          </Stack>
+        </Flex>
       )
     }
 
@@ -126,34 +135,40 @@ export default class HintsPackage extends React.PureComponent {
 
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
-      <div className={styles.root}>
-        <div className={styles.header}>
-          <h2 className={styles.trayTitle}>{title}</h2>
-        </div>
+      <Flex direction="column">
+        <Card padding={4} borderBottom tone="inherit" sizing="border">
+          <Heading size={1} as="h2">
+            {title}
+          </Heading>
+        </Card>
 
-        <div className={styles.content}>
-          <div>
-            <LinksList title={linksTitle} links={links} repoId={repoId} />
-          </div>
-          <div>
-            <LinksList type="card" title={hintsTitle} links={hints} repoId={repoId} />
-          </div>
-        </div>
+        <Box overflow="auto" paddingX={4} paddingY={5} flex={1}>
+          <Stack space={5}>
+            <Box>
+              <LinksList title={linksTitle} links={links} repoId={repoId} />
+            </Box>
+            <Box>
+              <LinksList type="card" title={hintsTitle} links={hints} repoId={repoId} />
+            </Box>
+          </Stack>
+        </Box>
 
-        <div className={styles.footer}>
-          {sidebarRemovalInstructions && (
-            <LinkButton
-              color="primary"
+        {sidebarRemovalInstructions && (
+          <Card borderTop padding={3} tone="inherit">
+            <Button
+              as="a"
+              text="How to remove this?"
               href={resolveUrl(sidebarRemovalInstructions)}
               rel="noopener noreferrer"
-              tone="navbar"
               target="_blank"
-            >
-              How to remove this?
-            </LinkButton>
-          )}
-        </div>
-      </div>
+              tone="primary"
+              style={{width: '100%'}}
+              mode="bleed"
+              icon={InfoOutlineIcon}
+            />
+          </Card>
+        )}
+      </Flex>
     )
   }
 }
