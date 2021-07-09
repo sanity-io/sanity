@@ -9,6 +9,7 @@ const OVERRIDABLE_FIELDS = [
   ...DEFAULT_OVERRIDEABLE_FIELDS,
   'orderings',
   '__experimental_search',
+  'blockEditor',
   'icon',
 ]
 
