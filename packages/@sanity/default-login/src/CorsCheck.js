@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {Text, Container, Flex, Spinner, Stack} from '@sanity/ui'
 import {versionedClient} from './versionedClient'
 
 const checkCors = () =>
@@ -25,7 +25,7 @@ function CorsWrapper({result, children}) {
 
   return (
     <div>
-      <p>Error message:</p>
+      <Text>Error message:</Text>
       <pre>
         <code>{response.body.message}</code>
       </pre>
@@ -52,7 +52,15 @@ export default function CorsCheck() {
     window.location.href.replace(new RegExp(`${window.location.pathname}$`), '')
 
   if (isLoading) {
-    return <Spinner fullscreen center />
+    return (
+      <Container width={4} padding={4} height="fill">
+        <Flex align="center" justify="center" height="fill">
+          <Text>
+            <Spinner />
+          </Text>
+        </Flex>
+      </Container>
+    )
   }
 
   const tld = versionedClient.config().apiHost.replace(/.*?sanity\.([a-z]+).*/, '$1')
@@ -65,12 +73,12 @@ export default function CorsCheck() {
     const errType = response.body.attributes && response.body.attributes.type
     if (is404 && errType === 'project') {
       return (
-        <div>
-          <p>{response.body.message || response.statusCode}</p>
-          <p>
+        <Stack space={4}>
+          <Text accent>{response.body.message || response.statusCode}</Text>
+          <Text accent>
             Double-check that your <code>sanity.json</code> points to the right project ID!
-          </p>
-        </div>
+          </Text>
+        </Stack>
       )
     }
   }
@@ -78,7 +86,7 @@ export default function CorsCheck() {
   if (result.isCorsError) {
     return (
       <CorsWrapper result={state.result}>
-        <p>
+        <Text accent>
           It looks like the error is being caused by the current origin (<code>{origin}</code>) not
           being allowed for this project. If you are a project administrator or developer, you can
           head to{' '}
@@ -94,7 +102,7 @@ export default function CorsCheck() {
             <em>CORS Origins</em>
           </a>{' '}
           section. Do remember to <code>allow credentials</code>!
-        </p>
+        </Text>
       </CorsWrapper>
     )
   }
@@ -102,22 +110,22 @@ export default function CorsCheck() {
   if (result.pingResponded) {
     return (
       <CorsWrapper result={state.result}>
-        <p>
+        <Text accent>
           Our diagnostics cannot quite determine why this happened. If it was a network glitch you
           could try hitting the <strong>Retry</strong> button below. If you are working as a
           developer on this project, you could also have a look at the browser's dev console and see
           if any issues are listed there.
-        </p>
+        </Text>
       </CorsWrapper>
     )
   }
 
   return (
     <CorsWrapper result={state.result}>
-      <p>
+      <Text accent>
         It might be that your internet connection is unstable or down. You could try hitting the{' '}
         <strong>Retry</strong> button to see if it was just a temporary glitch.
-      </p>
+      </Text>
     </CorsWrapper>
   )
 }

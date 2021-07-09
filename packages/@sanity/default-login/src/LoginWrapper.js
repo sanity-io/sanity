@@ -1,16 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import userStore from 'part:@sanity/base/user'
-
-import LoginDialog from 'part:@sanity/base/login-dialog'
-import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import {SanityLogo as SanityLogotype} from '@sanity/logos'
+import {Spinner, Container, Flex} from '@sanity/ui'
 import {of} from 'rxjs'
 import {map, catchError} from 'rxjs/operators'
 import CookieTest from './CookieTest'
 import ErrorDialog from './ErrorDialog'
 import UnauthorizedUser from './UnauthorizedUser'
 import {versionedClient} from './versionedClient'
+import {userStore, LoginDialog} from './legacyParts'
 
 const isProjectLogin = versionedClient.config().useProjectHostname
 const projectId =
@@ -30,8 +28,14 @@ export default class LoginWrapper extends React.PureComponent {
     title: 'Choose a login provider',
     description: null,
     sanityLogo: null,
-    SanityLogo: SanityStudioLogo,
-    LoadingScreen: Spinner,
+    SanityLogo: SanityLogotype,
+    LoadingScreen: (
+      <Container padding={4} height="fill">
+        <Flex justify="center" align="center" height="fill">
+          <Spinner />
+        </Flex>
+      </Container>
+    ),
   }
 
   state = {isLoading: true, user: null, error: null}
@@ -52,8 +56,8 @@ export default class LoginWrapper extends React.PureComponent {
       )
       .subscribe({
         next: (userState) => {
-          // Because observables _can_ be syncronous, it's not safe to call `setState` as it is a noop
-          // We must therefore explicitly check whether or not we were call syncronously
+          // Because observables _can_ be synchronous, it's not safe to call `setState` as it is a noop
+          // We must therefore explicitly check whether or not we were call synchronously
           if (sync) {
             // eslint-disable-next-line react/no-direct-mutation-state
             this.state = {...this.state, ...userState}

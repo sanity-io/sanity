@@ -1,13 +1,22 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import PropTypes from 'prop-types'
-import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
-import pluginConfig from 'config:@sanity/default-login'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import LoginDialogContent from 'part:@sanity/base/login-dialog-content'
 import generateHelpUrl from '@sanity/generate-help-url'
-import styles from './styles/LoginDialog.css'
+import {Dialog as UIDialog, Text, Box, Stack, Container} from '@sanity/ui'
+import styled, {css} from 'styled-components'
 import cancelWrap from './cancelWrap'
+import {authenticationFetcher, pluginConfig, LoginDialogContent} from './legacyParts'
+
+const Dialog = styled(UIDialog)`
+  ${({hideClose}) =>
+    hideClose &&
+    css`
+      /* @todo: Temp solution. Update sanity/ui with option to hide close button */
+      [aria-label='Close dialog'] {
+        display: none;
+      }
+    `}
+`
 
 export default class LoginDialog extends React.Component {
   static propTypes = {
@@ -92,38 +101,46 @@ export default class LoginDialog extends React.Component {
 
     if (error) {
       return (
-        <FullscreenDialog
-          color="danger"
-          title="Error"
-          isOpen
-          centered
-          onClose={error.hideClose ? undefined : this.handleErrorDialogClosed}
+        <Dialog
+          header="Error"
+          width={5}
+          onClose={error?.hideClose ? undefined : this.handleErrorDialogClosed}
+          onClickOutside={error?.hideClose ? undefined : this.handleErrorDialogClosed}
+          cardShadow={2}
         >
-          <div className={styles.error}>
-            {error.message}
-            {error.link && (
-              <p>
-                <a href={error.link}>Read more</a>
-              </p>
-            )}
-          </div>
-        </FullscreenDialog>
+          <Box padding={4}>
+            <Stack space={4}>
+              <Text>{error?.message}</Text>
+              {error?.link && (
+                <Text>
+                  <a href={error.link}>Read more</a>
+                </Text>
+              )}
+            </Stack>
+          </Box>
+        </Dialog>
       )
     }
 
-    if (isLoaded && providers.length === 0) {
-      return <div>No providers configured</div>
+    if (isLoaded && providers?.length === 0) {
+      return (
+        <Container padding={4} width={4}>
+          <Text>No providers configured</Text>
+        </Container>
+      )
     }
 
     if (isLoaded && !shouldRedirect) {
       return (
-        <LoginDialogContent
-          title={title}
-          description={description}
-          providers={providers}
-          SanityLogo={SanityLogo}
-          onLoginButtonClick={this.handleLoginButtonClicked}
-        />
+        <Dialog header="Sign in" width={1} cardShadow={2} hideClose>
+          <LoginDialogContent
+            title={title}
+            description={description}
+            providers={providers}
+            SanityLogo={SanityLogo}
+            onLoginButtonClick={this.handleLoginButtonClicked}
+          />
+        </Dialog>
       )
     }
     return null

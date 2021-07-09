@@ -1,15 +1,24 @@
 import PropTypes from 'prop-types'
 import React, {PureComponent} from 'react'
 import config from 'config:sanity'
-import Button from 'part:@sanity/components/buttons/default'
-import BrandLogo from 'part:@sanity/base/brand-logo?'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import {of} from 'rxjs'
 import {mapTo, catchError, finalize} from 'rxjs/operators'
-import styles from './styles/CookieTest.css'
+import {Container, Text, Button, Heading, Flex, Stack, Spinner} from '@sanity/ui'
+import styled from 'styled-components'
+import {BrandLogo} from './legacyParts'
 
 import {openCenteredPopup} from './util/openWindow'
 import {versionedClient} from './versionedClient'
+
+const BrandLogoWrapper = styled(Flex)`
+  height: 3em;
+
+  svg {
+    height: 4em;
+    width: auto;
+    max-width: 70vw;
+  }
+`
 
 const projectName = (config.project && config.project.name) || ''
 
@@ -93,46 +102,65 @@ class CookieTest extends PureComponent {
   }
 
   renderCookieAcceptContent() {
-    // eslint-disable-line class-methods-use-this
     const {SanityLogo, sanityLogo} = this.props
     return (
-      <div className={styles.root}>
-        <div className={styles.inner}>
+      <Container width={1} paddingX={3} paddingY={6}>
+        <Stack space={7}>
           {SanityLogo && (
-            <div className={styles.sanityLogo}>
-              <SanityLogo />
-            </div>
+            <Flex justify="center">
+              <Text>
+                <SanityLogo />
+              </Text>
+            </Flex>
           )}
-          {sanityLogo && !SanityLogo && <div className={styles.sanityLogo}>{sanityLogo}</div>}
-          <div className={styles.branding}>
-            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>
-              {projectName}
-            </h1>
-            {BrandLogo && (
-              <div className={styles.brandLogoContainer}>
-                <BrandLogo projectName={projectName} />
-              </div>
-            )}
-          </div>
+          {sanityLogo && !SanityLogo && (
+            <Flex justify="center">
+              <Text>
+                <SanityLogo />
+              </Text>
+            </Flex>
+          )}
 
-          <div className={styles.title}>
-            <h3>We couldn{"'"}t log you in</h3>
-          </div>
-          <div className={styles.description}>
-            <p>Your browser wouldn{"'"}t accept our cookie.</p>
-          </div>
-          <div className={styles.button}>
-            <Button
-              color="success"
-              inverted
-              type="submit"
-              onClick={this.handleAcceptCookieButtonClicked}
-            >
-              Try Again
-            </Button>
-          </div>
-        </div>
-      </div>
+          {!BrandLogo && projectName && (
+            <Heading align="center" as="h1" size={4}>
+              {projectName}
+            </Heading>
+          )}
+
+          {BrandLogo && projectName && (
+            <BrandLogoWrapper justify="center">
+              <BrandLogo projectName={projectName} />
+            </BrandLogoWrapper>
+          )}
+
+          <Stack space={5}>
+            <Stack space={4}>
+              <Text
+                align="center"
+                as="h2"
+                size={3}
+                weight="semibold"
+                style={{textTransform: 'uppercase'}}
+              >
+                We couldn't log you in
+              </Text>
+
+              <Text size={1} muted align="center">
+                Your browser wouldn't accept our cookie.
+              </Text>
+            </Stack>
+
+            <Flex justify="center">
+              <Button
+                text="Try again"
+                tone="positive"
+                mode="ghost"
+                onClick={this.handleAcceptCookieButtonClicked}
+              />
+            </Flex>
+          </Stack>
+        </Stack>
+      </Container>
     )
   }
 
@@ -140,7 +168,15 @@ class CookieTest extends PureComponent {
     const {isLoading, isCookieError} = this.state
 
     if (isLoading) {
-      return <Spinner fullscreen center />
+      return (
+        <Container width={4} padding={4} height="fill">
+          <Flex align="center" justify="center" height="fill">
+            <Text>
+              <Spinner />
+            </Text>
+          </Flex>
+        </Container>
+      )
     }
 
     if (isCookieError) {

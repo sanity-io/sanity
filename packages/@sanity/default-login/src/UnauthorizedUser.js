@@ -1,8 +1,15 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message'
 import userStore from 'part:@sanity/base/user'
-import Button from 'part:@sanity/components/buttons/default'
+import {Dialog as UIDialog, Box, Text, Button, Stack} from '@sanity/ui'
+import styled from 'styled-components'
+
+const Dialog = styled(UIDialog)`
+  /* @todo: Temp solution. Update sanity/ui with option to hide close button */
+  [aria-label='Close dialog'] {
+    display: none;
+  }
+`
 
 function handleLogout() {
   userStore.actions.logout()
@@ -10,22 +17,32 @@ function handleLogout() {
 
 export default function UnauthorizedUser(props) {
   return (
-    <FullscreenMessageDialog
-      buttons={<Button onClick={handleLogout}>Logout</Button>}
-      title="Unauthorized"
+    <Dialog
+      header="Unauthorized"
+      width={1}
+      cardShadow={2}
+      footer={
+        <Box padding={3}>
+          <Button text="Logout" onClick={handleLogout} style={{width: '100%'}} />
+        </Box>
+      }
     >
-      <p>
-        You are not authorized to access this studio. Maybe you could ask someone to invite you to
-        collaborate on this project?
-      </p>
-      <p>
-        If you think this is an error, verify that you are logged in with the correct account. You
-        are currently logged in as{' '}
-        <span>
-          {props.user.name} ({props.user.email})
-        </span>
-      </p>
-    </FullscreenMessageDialog>
+      <Box paddingX={4} paddingY={5}>
+        <Stack space={4}>
+          <Text>
+            You are not authorized to access this studio. Maybe you could ask someone to invite you
+            to collaborate on this project?
+          </Text>
+          <Text>
+            If you think this is an error, verify that you are logged in with the correct account.
+            You are currently logged in as{' '}
+            <span>
+              {props.user.name} ({props.user.email})
+            </span>
+          </Text>
+        </Stack>
+      </Box>
+    </Dialog>
   )
 }
 
