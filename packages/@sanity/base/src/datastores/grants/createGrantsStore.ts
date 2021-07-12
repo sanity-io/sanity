@@ -5,7 +5,14 @@ import {evaluate, parse} from 'groq-js'
 import {SanityDocument} from '@sanity/types'
 import {refCountDelay} from 'rxjs-etc/operators'
 import sanityClient from 'part:@sanity/base/client'
-import {GrantsStore, DocumentPermissionName, Grant, PermissionCheckResult} from './types'
+import userStore from '../user'
+import {
+  GrantsStore,
+  DocumentPermissionName,
+  Grant,
+  PermissionCheckResult,
+  EvaluationParams,
+} from './types'
 import {debugGrants$} from './debug'
 
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
@@ -21,6 +28,16 @@ async function getDatasetGrants(projectId: string, dataset: string): Promise<Gra
   return grants
 }
 
+async function getParams(): Promise<EvaluationParams> {
+  const params: EvaluationParams = {}
+  const user = await userStore.getCurrentUser()
+  if (user !== null) {
+    params.identity = user.id
+  }
+
+  return params
+}
+
 const PARSED_FILTERS_MEMO = new Map()
 async function matchesFilter(filter: string, document: SanityDocument) {
   if (!PARSED_FILTERS_MEMO.has(filter)) {
@@ -32,7 +49,9 @@ async function matchesFilter(filter: string, document: SanityDocument) {
     PARSED_FILTERS_MEMO.set(filter, parse(`*[${filter}]`))
   }
   const parsed = PARSED_FILTERS_MEMO.get(filter)
-  const data = await (await evaluate(parsed, {dataset: [document]})).get()
+
+  const params = await getParams()
+  const data = await (await evaluate(parsed, {dataset: [document], params})).get()
   return data?.length === 1
 }
 

@@ -52,7 +52,7 @@ export function unstable_useCheckDocumentPermission(
             return canUpdate(id, type)
           }
           if (permission === 'create') {
-            return canCreateType(type)
+            return canCreateType(id, type)
           }
           if (permission === 'publish') {
             return canPublish(id, type)
