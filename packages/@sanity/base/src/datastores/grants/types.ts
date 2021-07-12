@@ -19,3 +19,7 @@ export interface GrantsStore {
     document: Partial<SanityDocument>
   ): Observable<PermissionCheckResult>
 }
+
+export interface EvaluationParams {
+  identity?: string
+}

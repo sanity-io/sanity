@@ -18,13 +18,13 @@ function getSchemaType(typeName: string): SchemaType {
   return type
 }
 
-export function canCreateType(typeName: string) {
+export function canCreateType(id: string, typeName: string) {
   const type = getSchemaType(typeName)
   return from(resolveInitialValueForType(type)).pipe(
     mergeMap((initialValue: any) => {
       return grantsStore.checkDocumentPermission('create', {
         ...initialValue,
-        _id: type.liveEdit ? 'dummy-id' : 'drafts.dummy-id',
+        _id: type.liveEdit ? id : `drafts.${id}`,
         _type: typeName,
       })
     })
@@ -32,7 +32,7 @@ export function canCreateType(typeName: string) {
 }
 
 export function canCreateAnyOf(types: string[]) {
-  return combineLatest(types.map((typeName) => canCreateType(typeName))).pipe(
+  return combineLatest(types.map((typeName) => canCreateType('dummy-id', typeName))).pipe(
     map((results) => {
       const granted = results.some((res) => res.granted)
       return {
