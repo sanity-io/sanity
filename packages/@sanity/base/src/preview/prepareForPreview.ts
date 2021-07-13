@@ -224,6 +224,16 @@ export default function prepareForPreview(rawValue, type, viewOptions): symbol |
   const targetKeys = Object.keys(selection)
 
   const selectedValue = targetKeys.reduce((acc, key) => {
+    // Find the field the value belongs to
+    const valueField = type?.fields?.find((f) => f.name === selection[key])
+    // Check if predefined options exist
+    const listOptions = valueField?.type?.options?.list
+    if (listOptions) {
+      // Find the selected option that matches the raw value
+      const selectedOption = listOptions.find((opt) => opt.value === rawValue[selection[key]])
+      acc[key] = get(selectedOption, key)
+      return acc
+    }
     acc[key] = get(rawValue, selection[key])
     return acc
   }, {})
