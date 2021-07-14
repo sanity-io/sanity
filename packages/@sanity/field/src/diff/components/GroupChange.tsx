@@ -54,7 +54,7 @@ export function GroupChange({
   ...restProps
 }: {change: GroupChangeNode; readOnly?: boolean} & React.HTMLAttributes<
   HTMLDivElement
->): React.ReactElement {
+>): React.ReactElement | null {
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useContext(
@@ -130,7 +130,7 @@ export function GroupChange({
     </Stack>
   )
 
-  return (
+  return group?.schemaType?.hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || !FieldWrapper ? (

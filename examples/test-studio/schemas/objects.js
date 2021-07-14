@@ -45,12 +45,14 @@ export default {
       description:
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       // readOnly: true,
+      // hidden: true,
       fields: [
         {
           name: 'field1',
           type: 'string',
           description: 'This is a string field',
           // readOnly: true,
+          hidden: true,
         },
         {
           name: 'field2',
@@ -65,6 +67,7 @@ export default {
           title: 'A field of myObject 2',
           description: 'This is another field of "myObject"',
           // readOnly: true,
+          hidden: true,
         },
       ],
     },

@@ -93,7 +93,7 @@ export function FieldChange({
     setRevertHovered(false)
   }, [])
 
-  return (
+  return change.schemaType.hidden ? null : (
     <Stack space={1} as={FieldChangeContainer} {...restProps}>
       {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
       <FieldWrapper path={change.path} hasHover={revertHovered}>
@@ -121,7 +121,7 @@ export function FieldChange({
                 onMouseLeave={handleRevertButtonMouseLeave}
                 ref={setRevertButtonElement}
                 selected={confirmRevertOpen}
-                disabled={change.schemaType.readOnly || change?.parentSchema?.readOnly || readOnly}
+                disabled={readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly}
               />
             </Box>
           )}
