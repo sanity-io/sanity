@@ -80,6 +80,7 @@ export function buildObjectChangeList(
       path,
       titlePath,
       changes: reduceTitlePaths(changes, titlePath.length),
+      schemaType,
     },
   ]
 }
@@ -222,6 +223,7 @@ export function buildArrayChangeList(
         path,
         titlePath,
         changes: reduceTitlePaths(changes, titlePath.length),
+        schemaType,
       },
     ]
   }
@@ -280,6 +282,7 @@ function getFieldChange(
       showIndex: true,
       key: pathToString(path) || 'root',
       diffComponent: error ? undefined : component,
+      parentSchema,
     },
   ]
 }

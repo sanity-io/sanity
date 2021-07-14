@@ -51,8 +51,9 @@ const DiffBorder = styled.div`
 
 export function FieldChange({
   change,
+  readOnly,
   ...restProps
-}: {change: FieldChangeNode} & React.HTMLAttributes<HTMLDivElement>) {
+}: {change: FieldChangeNode; readOnly?: boolean} & React.HTMLAttributes<HTMLDivElement>) {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -120,6 +121,7 @@ export function FieldChange({
                 onMouseLeave={handleRevertButtonMouseLeave}
                 ref={setRevertButtonElement}
                 selected={confirmRevertOpen}
+                disabled={change.schemaType.readOnly || change?.parentSchema?.readOnly || readOnly}
               />
             </Box>
           )}

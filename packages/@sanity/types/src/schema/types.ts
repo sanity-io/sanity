@@ -45,6 +45,7 @@ export interface BaseSchemaType {
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
   options?: unknown
+  hidden?: boolean
 
   preview?: {
     select?: PreviewValue
