@@ -2,10 +2,10 @@
 import React from 'react'
 import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
-import AnchorButton from 'part:@sanity/components/buttons/anchor'
-import WidgetContainer from 'part:@sanity/dashboard/widget-container'
+import {Box, Card, Stack, Heading, Grid, Label, Text, Code, Button} from '@sanity/ui'
 import {versionedClient} from '../../versionedClient'
-import styles from './ProjectInfo.css'
+import {DashboardWidget} from '../../DashboardTool'
+import {WidgetContainer} from '../../legacyParts'
 
 const {projectId, dataset} = versionedClient.config()
 
@@ -147,54 +147,84 @@ class ProjectInfo extends React.PureComponent {
 
   render() {
     return (
-      <div className={styles.parentWrapper}>
+      <>
         {this.props.__experimental_before &&
           this.props.__experimental_before.map((widgetConfig, idx) => (
             <WidgetContainer key={String(idx)} config={widgetConfig} />
           ))}
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h2 className={styles.title}>Project info</h2>
-          </header>
+        <Box height="fill" marginTop={this.props.__experimental_before?.length > 0 ? 4 : 0}>
+          <DashboardWidget
+            footer={
+              <Button
+                style={{width: '100%'}}
+                paddingX={2}
+                paddingY={4}
+                mode="bleed"
+                tone="primary"
+                text="Manage project"
+                as="a"
+                href={getManageUrl()}
+              />
+            }
+          >
+            <Card
+              paddingY={4}
+              radius={2}
+              role="table"
+              aria-label="Project info"
+              aria-describedby="project_info_table"
+            >
+              <Stack space={4}>
+                <Box paddingX={3} as="header">
+                  <Heading size={1} as="h2" id="project_info_table">
+                    Project info
+                  </Heading>
+                </Box>
+                {this.assembleTableRows().map((item) => {
+                  if (!item || !item.rows) {
+                    return null
+                  }
 
-          <table className={styles.table}>
-            {this.assembleTableRows().map((item) => {
-              if (!item || !item.rows) {
-                return null
-              }
-
-              return (
-                <tbody key={item.title}>
-                  <tr className={styles.sectionHeaderRow}>
-                    <th colSpan="2">{item.title}</th>
-                  </tr>
-                  {item.rows.map((row) => {
-                    return (
-                      <tr key={row.title}>
-                        <th className={styles.rowTitle}>{row.title}</th>
-                        {isPlainObject(row.value) && (
-                          <td className={styles.apiError}>{row.value.error}</td>
-                        )}
-                        {!isPlainObject(row.value) && (
-                          <td>
-                            {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
-                          </td>
-                        )}
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              )
-            })}
-          </table>
-
-          <div className={styles.footer}>
-            <AnchorButton href={getManageUrl()} bleed color="primary" kind="simple">
-              Manage project
-            </AnchorButton>
-          </div>
-        </div>
-      </div>
+                  return (
+                    <Stack key={item.title} space={3}>
+                      <Card borderBottom padding={3}>
+                        <Label size={0} muted role="columnheader">
+                          {item.title}
+                        </Label>
+                      </Card>
+                      <Stack space={4} paddingX={3} role="rowgroup">
+                        {item.rows.map((row) => {
+                          return (
+                            <Grid key={row.title} columns={2} role="row">
+                              <Text weight="medium" role="rowheader">
+                                {row.title}
+                              </Text>
+                              {isPlainObject(row.value) && <Text size={1}>{row.value.error}</Text>}
+                              {!isPlainObject(row.value) && (
+                                <>
+                                  {isUrl(row.value) ? (
+                                    <Text size={1} role="cell" style={{wordBreak: 'break-word'}}>
+                                      <a href={row.value}>{row.value}</a>
+                                    </Text>
+                                  ) : (
+                                    <Code size={1} role="cell" style={{wordBreak: 'break-word'}}>
+                                      {row.value}
+                                    </Code>
+                                  )}
+                                </>
+                              )}
+                            </Grid>
+                          )
+                        })}
+                      </Stack>
+                    </Stack>
+                  )
+                })}
+              </Stack>
+            </Card>
+          </DashboardWidget>
+        </Box>
+      </>
     )
   }
 }

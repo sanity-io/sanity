@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {get} from 'lodash'
+import {Flex} from '@sanity/ui'
+import {DashboardWidget} from '../../DashboardTool'
 import Tutorial from './Tutorial'
-import styles from './SanityTutorials.css'
 import dataAdapter from './dataAdapter'
 
 const {urlBuilder, getFeed} = dataAdapter
@@ -49,12 +50,9 @@ class SanityTutorials extends React.Component {
     const title = 'Learn about Sanity'
 
     return (
-      <div className={styles.root}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{title}</h1>
-        </header>
-        <ul className={styles.grid}>
-          {feedItems.map((feedItem) => {
+      <DashboardWidget header={title}>
+        <Flex as="ul" overflow="auto" align="stretch" paddingY={2}>
+          {feedItems?.map((feedItem, index) => {
             if (!feedItem.title || (!feedItem.guideOrTutorial && !feedItem.externalLink)) {
               return null
             }
@@ -62,7 +60,15 @@ class SanityTutorials extends React.Component {
             const subtitle = get(feedItem, 'category')
             const {guideOrTutorial = {}} = feedItem
             return (
-              <li key={feedItem._id}>
+              <Flex
+                as="li"
+                key={feedItem._id}
+                paddingRight={index < feedItems?.length - 1 ? 1 : 3}
+                paddingLeft={index === 0 ? 3 : 0}
+                align="stretch"
+                flex="0 0 27.5%"
+                style={{minWidth: 272, width: '30%'}}
+              >
                 <Tutorial
                   title={feedItem.title}
                   href={
@@ -73,11 +79,11 @@ class SanityTutorials extends React.Component {
                   showPlayIcon={feedItem.hasVideo}
                   posterURL={urlBuilder.image(feedItem.poster).height(360).url()}
                 />
-              </li>
+              </Flex>
             )
           })}
-        </ul>
-      </div>
+        </Flex>
+      </DashboardWidget>
     )
   }
 }

@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import styles from './DashboardLayout.css'
+import {Container} from '@sanity/ui'
 
 function DashboardLayout(props) {
   return (
-    <div className={styles.root}>
-      <div className={styles.inner}>{props.children}</div>
-    </div>
+    <Container width={4} padding={4} sizing="border" style={{minHeight: '100%'}}>
+      {props.children}
+    </Container>
   )
 }
 

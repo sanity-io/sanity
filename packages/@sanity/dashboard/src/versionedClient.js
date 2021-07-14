@@ -1,4 +1,4 @@
-import sanityClient from 'part:@sanity/base/client'
+import {sanityClient} from './legacyParts'
 
 /**
  * Only for use inside of @sanity/dashboard

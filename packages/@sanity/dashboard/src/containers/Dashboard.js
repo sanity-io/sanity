@@ -1,9 +1,9 @@
 import React from 'react'
-import dashboardConfig from 'part:@sanity/dashboard/config?'
 import DashboardLayout from '../components/DashboardLayout'
 import WidgetGroup from '../components/WidgetGroup'
+import {dashboardConfig} from '../legacyParts'
 
-function Dashboard(props) {
+function Dashboard() {
   if (!dashboardConfig) {
     return null
   }

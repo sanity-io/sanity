@@ -1,16 +1,28 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {Card, Stack, Heading, Box} from '@sanity/ui'
+import styled from 'styled-components'
 
-import styles from './NotFoundWidget.css'
+const Root = styled(Card)`
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  height: 100%;
+`
 
 function NotFoundWidget(props) {
+  const {title, children} = props
   return (
-    <div className={styles.root}>
-      <div>
-        {props.title && <h2 className={styles.title}>{props.title}</h2>}
-        <div className={styles.content}>{props.children}</div>
-      </div>
-    </div>
+    <Root radius={3} paddingX={3} paddingY={4} tone="critical">
+      <Stack space={2}>
+        {title && (
+          <Heading size={1} as="h2">
+            {title}
+          </Heading>
+        )}
+        {children && <Box>{children}</Box>}
+      </Stack>
+    </Root>
   )
 }
 

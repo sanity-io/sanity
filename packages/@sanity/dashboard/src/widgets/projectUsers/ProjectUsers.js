@@ -1,13 +1,25 @@
 import React from 'react'
 import {map, switchMap} from 'rxjs/operators'
-import Spinner from 'part:@sanity/components/loading/spinner'
-import DefaultPreview from 'part:@sanity/components/previews/default'
-import {List, Item} from 'part:@sanity/components/lists/default'
-import AnchorButton from 'part:@sanity/components/buttons/anchor'
-import RobotIcon from 'part:@sanity/base/robot-icon'
-import userStore from 'part:@sanity/base/user'
+import {Stack, Spinner, Card, Box, Text, Button} from '@sanity/ui'
+import {RobotIcon} from '@sanity/icons'
+import styled from 'styled-components'
 import {versionedClient} from '../../versionedClient'
-import styles from './ProjectUsers.css'
+import {DashboardWidget} from '../../DashboardTool'
+import {DefaultPreview, userStore} from '../../legacyParts'
+
+const AvatarWrapper = styled(Card)`
+  box-sizing: border-box;
+  border-radius: 50%;
+  border-color: transparent;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  & > img {
+    width: 100%;
+    height: auto;
+  }
+`
 
 function getInviteUrl(projectId) {
   return `https://manage.sanity.io/projects/${projectId}/team/invite`
@@ -85,64 +97,80 @@ class ProjectUsers extends React.PureComponent {
 
     if (error) {
       return (
-        <div>
-          Something went wrong while fetching data. You could{' '}
-          <a className={styles.retry} onClick={this.handleRetryFetch} title="Retry users fetch">
-            retry
-          </a>
-          ..?
-        </div>
+        <DashboardWidget header="Project users">
+          <Box padding={4}>
+            <Text>
+              Something went wrong while fetching data. You could{' '}
+              <a
+                onClick={this.handleRetryFetch}
+                title="Retry users fetch"
+                style={{cursor: 'pointer'}}
+              >
+                retry
+              </a>
+              ..?
+            </Text>
+          </Box>
+        </DashboardWidget>
       )
     }
 
     return (
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h2 className={styles.title}>Project users</h2>
-        </header>
-
+      <DashboardWidget
+        header="Project users"
+        footer={
+          <Button
+            style={{width: '100%'}}
+            paddingX={2}
+            paddingY={4}
+            mode="bleed"
+            tone="primary"
+            text="Invite members"
+            as="a"
+            loading={isLoading}
+            href={isLoading ? undefined : getInviteUrl(project.id)}
+          />
+        }
+      >
         {isLoading && (
-          <List className={styles.list}>
-            <Spinner center message="Loading items…" />
-          </List>
+          <Box paddingY={5} paddingX={2}>
+            <Stack space={4}>
+              <Text align="center" muted size={1}>
+                <Spinner />
+              </Text>
+              <Text align="center" size={1} muted>
+                Loading items...
+              </Text>
+            </Stack>
+          </Box>
         )}
 
         {!isLoading && (
-          <List className={styles.list}>
+          <Stack space={3} padding={3}>
             {users.map((user) => {
               const membership = project.members.find((member) => member.id === user.id)
               const media = membership.isRobot ? (
-                <RobotIcon className={styles.profileImage} />
+                <Text size={3}>
+                  <RobotIcon />
+                </Text>
               ) : (
-                <div className={styles.avatar}>
-                  {user.imageUrl && <img src={user.imageUrl} alt={user.displayName} />}
-                </div>
+                <AvatarWrapper tone="transparent">
+                  {user?.imageUrl && <img src={user.imageUrl} alt={user?.displayName} />}
+                </AvatarWrapper>
               )
               return (
-                <Item key={user.id} className={styles.item}>
+                <Box key={user.id}>
                   <DefaultPreview
                     title={user.displayName}
                     subtitle={membership.role}
                     media={media}
                   />
-                </Item>
+                </Box>
               )
             })}
-          </List>
+          </Stack>
         )}
-
-        <div className={styles.footer}>
-          <AnchorButton
-            disabled={isLoading}
-            href={isLoading ? undefined : getInviteUrl(project.id)}
-            bleed
-            color="primary"
-            kind="simple"
-          >
-            Invite members
-          </AnchorButton>
-        </div>
-      </div>
+      </DashboardWidget>
     )
   }
 }
