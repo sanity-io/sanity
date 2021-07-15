@@ -5,6 +5,7 @@ export const myObject = {
   name: 'myObject',
   title: 'My object',
   icon,
+  // readOnly: true,
   fields: [
     {
       name: 'first',
@@ -23,6 +24,7 @@ export default {
   name: 'objectsTest',
   type: 'document',
   title: 'Objects test',
+  // readOnly: true,
   preview: {
     select: {
       title: 'myObject.first',
@@ -42,13 +44,30 @@ export default {
       type: 'object',
       description:
         'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+      // readOnly: true,
+      // hidden: true,
       fields: [
-        {name: 'field1', type: 'string', description: 'This is a string field'},
+        {
+          name: 'field1',
+          type: 'string',
+          description: 'This is a string field',
+          // readOnly: true,
+          hidden: true,
+        },
         {
           name: 'field2',
           type: 'myObject',
-          title: 'A field of myObject',
+          title: 'A field of myObject 1',
           description: 'This is another field of "myObject"',
+          readOnly: true,
+        },
+        {
+          name: 'field3',
+          type: 'myObject',
+          title: 'A field of myObject 2',
+          description: 'This is another field of "myObject"',
+          // readOnly: true,
+          hidden: true,
         },
       ],
     },

@@ -194,6 +194,7 @@ export interface GroupChangeNode {
   key: string
   path: Path
   titlePath: ChangeTitlePath
+  schemaType?: SchemaType
 }
 
 export interface FieldChangeNode {
@@ -209,6 +210,7 @@ export interface FieldChangeNode {
   showHeader: boolean
   showIndex: boolean
   diffComponent?: DiffComponent
+  parentSchema?: ArraySchemaType | ObjectSchemaType
 }
 
 export type ChangeNode = GroupChangeNode | FieldChangeNode

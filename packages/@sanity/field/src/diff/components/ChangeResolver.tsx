@@ -6,7 +6,7 @@ import {GroupChange} from './GroupChange'
 export function ChangeResolver({
   change,
   ...restProps
-}: {change: ChangeNode} & React.HTMLAttributes<HTMLDivElement>) {
+}: {change: ChangeNode; readOnly?: boolean} & React.HTMLAttributes<HTMLDivElement>) {
   if (change.type === 'field') {
     return <FieldChange change={change} {...restProps} />
   }

@@ -93,6 +93,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               change={change}
               key={change.key}
               data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
+              readOnly={schemaType.readOnly}
             />
           ))}
         </Stack>
@@ -107,6 +108,7 @@ export function ChangeList({diff, fields, schemaType}: Props): React.ReactElemen
               onClick={handleRevertAllChangesClick}
               onMouseEnter={handleRevertAllChangesMouseEnter}
               onMouseLeave={handleRevertAllChangesMouseLeave}
+              disabled={schemaType?.readOnly}
             />
           </Stack>
         )}

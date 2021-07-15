@@ -51,8 +51,9 @@ const DiffBorder = styled.div`
 
 export function FieldChange({
   change,
+  readOnly,
   ...restProps
-}: {change: FieldChangeNode} & React.HTMLAttributes<HTMLDivElement>) {
+}: {change: FieldChangeNode; readOnly?: boolean} & React.HTMLAttributes<HTMLDivElement>) {
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -92,7 +93,7 @@ export function FieldChange({
     setRevertHovered(false)
   }, [])
 
-  return (
+  return change.schemaType.hidden ? null : (
     <Stack space={1} as={FieldChangeContainer} {...restProps}>
       {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
       <FieldWrapper path={change.path} hasHover={revertHovered}>
@@ -120,6 +121,7 @@ export function FieldChange({
                 onMouseLeave={handleRevertButtonMouseLeave}
                 ref={setRevertButtonElement}
                 selected={confirmRevertOpen}
+                disabled={readOnly || change?.parentSchema?.readOnly || change.schemaType.readOnly}
               />
             </Box>
           )}

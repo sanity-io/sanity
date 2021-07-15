@@ -50,8 +50,11 @@ const GroupChangeContainer = styled.div`
 
 export function GroupChange({
   change: group,
+  readOnly,
   ...restProps
-}: {change: GroupChangeNode} & React.HTMLAttributes<HTMLDivElement>): React.ReactElement {
+}: {change: GroupChangeNode; readOnly?: boolean} & React.HTMLAttributes<
+  HTMLDivElement
+>): React.ReactElement | null {
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useContext(
@@ -107,23 +110,27 @@ export function GroupChange({
     >
       <Stack as={ChangeListWrapper} space={5}>
         {changes.map((change) => (
-          <ChangeResolver key={change.key} change={change} />
+          <ChangeResolver
+            key={change.key}
+            change={change}
+            readOnly={readOnly || group?.schemaType?.readOnly}
+          />
         ))}
       </Stack>
-
       {isComparingCurrent && updatePermission.granted && (
         <Box>
           <RevertChangesButton
             onClick={handleRevertChangesConfirm}
             ref={setRevertButtonRef}
             selected={confirmRevertOpen}
+            disabled={group?.schemaType?.readOnly || readOnly}
           />
         </Box>
       )}
     </Stack>
   )
 
-  return (
+  return group?.schemaType?.hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || !FieldWrapper ? (
