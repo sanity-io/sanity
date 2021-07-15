@@ -48,15 +48,11 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 
 ## Publishing official releases
 
-When `next` is ready for release, run `npm run publish` and select version. After a successful release, remember to rebase `next` against `current`.
+When `next` is ready for release, run `npm run publish` in the `next` branch and select version. After a successful release, remember to rebase `next` against `current`.
 
 ## Publishing a hotfix release from `current`
 
 If we need to publish a hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `current` after the release is completed.
-
-## Publishing _prerelease_ versions from `next`
-
-This is done by running `npm run publish` from the project root, selecting "Prerelease" from the menu and choosing a _Prerelease identifier_ (e.g. **alpha**, **beta** or **rc**). A prerelease can be tested in the studio by running e.g. `sanity upgrade --tag=beta --save-exact`
 
 ## Publishing _canary_ versions from feature branches
 
