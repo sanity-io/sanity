@@ -54,14 +54,18 @@ export function canUpdate(id: string, typeName: string) {
   const idPair = getIdPairFromPublished(id)
   return snapshotPair(idPair).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
-    map(([draft, published]) => [
-      draft || stub(idPair.draftId, typeName),
-      published || stub(idPair.publishedId, typeName),
-    ]),
     switchMap(([draft, published]) => {
       return type.liveEdit
-        ? grantsStore.checkDocumentPermission('update', published)
-        : grantsStore.checkDocumentPermission('update', draft)
+        ? grantsStore.checkDocumentPermission(
+            'update',
+            published || stub(idPair.publishedId, typeName)
+          )
+        : grantsStore.checkDocumentPermission(
+            'update',
+            // note: we check against the published document (if it exist) here since that's the
+            // document that will be created as new draft when user edits it
+            draft || published || stub(idPair.draftId, typeName)
+          )
     })
   )
 }
