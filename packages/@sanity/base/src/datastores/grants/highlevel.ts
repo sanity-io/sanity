@@ -54,14 +54,16 @@ export function canUpdate(id: string, typeName: string) {
   const idPair = getIdPairFromPublished(id)
   return snapshotPair(idPair).pipe(
     mergeMap((pair) => combineLatest([pair.draft.snapshots$, pair.published.snapshots$])),
-    map(([draft, published]) => [
-      draft || stub(idPair.draftId, typeName),
-      published || stub(idPair.publishedId, typeName),
-    ]),
     switchMap(([draft, published]) => {
       return type.liveEdit
-        ? grantsStore.checkDocumentPermission('update', published)
-        : grantsStore.checkDocumentPermission('update', draft)
+        ? grantsStore.checkDocumentPermission(
+            'update',
+            published || stub(idPair.publishedId, typeName)
+          )
+        : grantsStore.checkDocumentPermission(
+            'update',
+            draft || published || stub(idPair.draftId, typeName)
+          )
     })
   )
 }
