@@ -1,0 +1,32 @@
+{
+  "client_msg_id": "cd8162a5-8edd-41bc-9bb9-01c2863beca4",
+  "type": "message",
+  "text": "Welcome!",
+  "user": "U02AAERAK",
+  "ts": "1578672467.001500",
+  "team": "T02AAEL0P",
+  "blocks": [
+    {
+      "type": "rich_text",
+      "block_id": "tJ7DH",
+      "elements": [
+        {
+          "type": "rich_text_section",
+          "elements": [
+            {
+              "type": "text",
+              "text": "Welcome!"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reactions": [
+    {
+      "name": "tada",
+      "users": ["U02AAERAK"],
+      "count": 1
+    }
+  ]
+}

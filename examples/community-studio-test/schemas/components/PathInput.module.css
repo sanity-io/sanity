@@ -1,0 +1,23 @@
+.wrapper {
+  display: flex;
+}
+
+.wrapper > *:not(.url) {
+  flex: 1;
+}
+
+.url {
+  padding: 0 0.75em;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgb(190, 187, 168);
+  background-color: #f2f2f2;
+  border-right-color: transparent;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.wrapper input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

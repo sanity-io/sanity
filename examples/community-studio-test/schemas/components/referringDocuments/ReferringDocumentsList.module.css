@@ -1,0 +1,21 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  text-decoration: inherit;
+  outline: none;
+  height: 100%;
+  margin: 0;
+  padding: 8px 16px;
+  padding: 0.5rem 1rem;
+}
+
+.link:hover,
+.link:focus {
+  background-color: var(--brand-faded, rgba(30, 30, 30, 0.1));
+}
+
+.item {
+  font-size: 1em;
+  line-height: 2.5em;
+}

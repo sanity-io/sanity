@@ -1,0 +1,9 @@
+{
+  "parts": [
+    {
+      "name": "part:@sanity/dashboard/widget/cats",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "index.js"
+    }
+  ]
+}

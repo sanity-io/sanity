@@ -1,0 +1,17 @@
+{
+  "token": "y9Jmip8Ci6588GOUJIuNl0JJ",
+  "team_id": "T02AAEL0P",
+  "api_app_id": "ASHEFTTT2",
+  "event": {
+    "type": "reaction_added",
+    "user": "U02AAERAK",
+    "item": {"type": "message", "channel": "CS7A41YHF", "ts": "1578672467.001500"},
+    "reaction": "tada",
+    "item_user": "U02AAERAK",
+    "event_ts": "1578672481.001900"
+  },
+  "type": "event_callback",
+  "event_id": "EvSKNM1VFY",
+  "event_time": 1578672481,
+  "authed_users": ["U02AAERAK"]
+}
