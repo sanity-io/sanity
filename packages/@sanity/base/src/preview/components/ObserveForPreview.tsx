@@ -1,5 +1,4 @@
 import React from 'react'
-import WarningIcon from 'part:@sanity/base/warning-icon'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
 import {
@@ -13,14 +12,8 @@ import {
 } from 'rxjs/operators'
 import {concat, of, Observable} from 'rxjs'
 import {observeForPreview} from '../'
-import {INVALID_PREVIEW_CONFIG} from '../constants'
 import {FieldName, SortOrdering, Type} from '../types'
-
-const INVALID_PREVIEW_FALLBACK = {
-  title: <span style={{fontStyle: 'italic'}}>Invalid preview config</span>,
-  subtitle: <span style={{fontStyle: 'italic'}}>Check the error log in the console</span>,
-  media: WarningIcon,
-}
+import {PreparedValue} from '../prepareForPreview'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -58,53 +51,47 @@ const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
 
   return sharedProps$.pipe(
     distinctUntilChanged((props, nextProps) => shallowEquals(props.value, nextProps.value)),
-    switchMap(
-      (props): Observable<ReceivedProps> =>
-        concat(
-          of<ReceivedProps>({
-            isLoading: true,
+    switchMap((props) =>
+      concat(
+        of<ReceivedProps>({
+          isLoading: true,
+          type: props.type,
+          snapshot: null,
+          children: props.children,
+        }),
+        observeForPreview(
+          props.value,
+          props.type,
+          props.ordering ? {ordering: props.ordering} : {}
+        ).pipe(
+          map((result) => ({
+            isLoading: false,
             type: props.type,
+            snapshot: result.snapshot,
             children: props.children,
-            snapshot: null,
-          }),
-          observeForPreview(
-            props.value,
-            props.type,
-            props.fields,
-            props.ordering ? {ordering: props.ordering} : {}
-          ).pipe(
-            map(
-              (result): ReceivedProps => ({
-                isLoading: false,
-                type: props.type,
-                snapshot: result.snapshot,
-                children: props.children,
-              })
-            )
-          )
+          }))
         )
+      )
     ),
     memoizeBy(isActive$)
   )
 }
 
-type ReceivedProps<T = unknown> = {
-  snapshot: T | null
+type ReceivedProps = {
+  snapshot: PreparedValue | null
   type: Type
   isLoading: boolean
   error?: Error
-  children: (props: any) => React.ReactElement
+  children: (props: unknown) => React.ReactElement
 }
 export default withPropsStream<OuterProps, ReceivedProps>(connect, function ObserveForPreview(
   props: ReceivedProps
 ) {
-  const {snapshot, type, error, isLoading, children} = props
+  const {type, error, snapshot, isLoading, children} = props
+
   return children({
     error,
     isLoading,
-    result: {
-      type,
-      snapshot: snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : snapshot,
-    },
+    result: {type, snapshot},
   })
 })
