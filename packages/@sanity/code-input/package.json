@@ -22,7 +22,7 @@
     "@sanity/base": "^2.13.0",
     "@sanity/form-builder": "^2.13.0",
     "@sanity/types": "^2.13.0",
-    "@sanity/ui": "^0.34.2",
+    "@sanity/ui": "^0.34.5",
     "@sanity/util": "^2.13.0",
     "lodash": "^4.17.15",
     "react-ace": "^5.0.1"
