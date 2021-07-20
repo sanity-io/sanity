@@ -1,8 +1,7 @@
-import {LegacyLayerProvider} from '@sanity/base/components'
+import {LegacyLayerProvider, CreateDocumentList} from '@sanity/base/components'
 import FileIcon from 'part:@sanity/base/file-icon'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import React from 'react'
+import {Box, Dialog} from '@sanity/ui'
 
 interface Props {
   actions: {icon?: React.ComponentType; key: string}[]
@@ -14,25 +13,27 @@ function ActionModal(props: Props) {
 
   return (
     <LegacyLayerProvider zOffset="navbarDialog">
-      <DefaultDialog
+      <Dialog
         data-testid="default-layout-global-create-dialog"
-        onClickOutside={onClose}
+        id="default-layout-global-create-dialog"
         onClose={onClose}
-        size="large"
-        title="Create new document"
+        width={2}
+        header="Create new document"
       >
-        {actions.length > 0 ? (
-          <CreateDocumentList
-            items={actions.map((action) => ({
-              ...action,
-              icon: action.icon || FileIcon,
-              onClick: onClose,
-            }))}
-          />
-        ) : (
-          <h3>No initial value templates are configured.</h3>
-        )}
-      </DefaultDialog>
+        <Box padding={4}>
+          {actions.length > 0 ? (
+            <CreateDocumentList
+              items={actions.map((action) => ({
+                ...action,
+                icon: action.icon || FileIcon,
+                onClick: onClose,
+              }))}
+            />
+          ) : (
+            <h3>No initial value templates are configured.</h3>
+          )}
+        </Box>
+      </Dialog>
     </LegacyLayerProvider>
   )
 }
