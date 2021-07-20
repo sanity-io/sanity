@@ -97,8 +97,6 @@ class DataAspectsResolver {
     return this.getType(typeName).icon
   }
 
-  // TODO: limit and offset is not yet implemented i gradient and only works partly because of a fluke
-  // fix this when gql support limit, offset and order
   getListConstraints(typeName) {
     const typeOption = this.config.typeOptions[typeName]
     if (!typeOption) {
