@@ -43,6 +43,48 @@ export default {
       type: 'string',
     },
     {
+      name: 'predefinedStringArray',
+      title: 'Array of strings',
+      description: 'First field in object is string with list options',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Cats', value: 'cats4ever'},
+          {title: 'Dogs', value: 'dogs4ever'},
+        ],
+      },
+    },
+    {
+      name: 'objectArrayWithPrefinedStringField',
+      title: 'Array of objects',
+      description: 'First field in object is string with list options',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'stringOptions',
+              title: 'String options',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Cats', value: 'cats4ever'},
+                  {title: 'Sweden', value: 'swe'},
+                ],
+              },
+            },
+            {
+              title: 'test',
+              name: 'testImage',
+              type: 'image',
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'arrayOfMultipleTypes',
       title: 'Array of multiple types',
       type: 'array',
