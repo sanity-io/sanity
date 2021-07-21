@@ -15,6 +15,11 @@ module.exports = [
     url: 'https://github.com/sanity-io/plugin-template-tool-with-routing/archive/master.zip',
   },
   {
+    value: 'customInput',
+    name: 'A custom string input starting point',
+    url: 'https://github.com/sanity-io/sanity-plugin-custom-string/archive/refs/heads/main.zip',
+  },
+  {
     value: 'chessInput',
     name: 'Chess board input component w/ block preview',
     url: 'https://github.com/sanity-io/plugin-template-chess-input/archive/master.zip',
