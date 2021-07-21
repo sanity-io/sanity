@@ -2,7 +2,7 @@
 
 ## Build with Structured Content
 
-> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
+> **Sanity is the platform for structured content that lets you build better digital experiences. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript, and a real-time hosted data store: the Content Lake. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
 
 ![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![Join us on Slack](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) [![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)](https://twitter.com/sanity_io)
 
@@ -25,9 +25,9 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 - [Quickstart](#quickstart)
 - [Table of contents](#table-of-contents)
 - [Key Features](#key-features)
+  - [Content Lake](#content-lake)
   - [Sanity Studio](#sanity-studio)
   - [Developer experience](#developer-experience)
-  - [Structured Content](#structured-content)
 - [Stay up to date](#stay-up-to-date)
 - [Code of Conduct](#code-of-conduct)
 - [Want to contribute?](#want-to-contribute)
@@ -35,18 +35,32 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 
 ## Key Features
 
+![Structured content](https://cdn.sanity.io/images/3do82whm/next/746588538438b2ab05895aeb9e2436fd381e1562-5760x3840.png?w=1200&fit=max&auto=format)
+
+### [Content Lake](https://www.sanity.io/docs/datastore)
+
+- Distribute from a single source of truth, in real-time
+- Unlock programmatic approaches to workflows and design
+- Access with the Sanity API by using one of our [client libraries](https://www.sanity.io/docs/client-libraries) or directly via the HTTP API
+- Create or modify documents with the [mutations API](https://www.sanity.io/docs/http-mutations)
+- [Upload images and transform them on demand](https://www.sanity.io/docs/asset-pipeline)
+- Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata
+- [See how rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text), and learn about the [Sanity Rich Text Editor](https://www.sanity.io/docs/what-you-need-to-know-about-block-text)
+
+
 ![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/c52560979929878cd96412ca7d14a7fa0b02aee0-3200x2400.png?w=1200&fit=max&auto=format)
 
 ### [Sanity Studio](https://www.sanity.io/studio)
 
 [Sanity Studio](https://www.sanity.io/studio) is an open source headless real-time CMS, that you can customize with JavaScript and React.
 
-- Efficient editing, instant UI for complex fields.
-- Responsive, works on small screens.
-- [Plug-in architecture](https://www.sanity.io/plugins) and [custom input components](https://www.sanity.io/guides/how-to-make-a-custom-input-component).
-- [Style with your own branding](https://www.sanity.io/guides/how-to-brand-your-studio).
-- [Advanced block editor for structured content](https://www.sanity.io/docs/block-content).
-- Use JavaScript to add [field validations](https://www.sanity.io/docs/validation), [organize documents](https://www.sanity.io/docs/overview-structure-builder), and set [initial values](https://www.sanity.io/guides/getting-started-with-initial-values-for-new-documents).
+- Efficient editing, instant UI for complex fields
+- [Customizable previews](https://www.sanity.io/blog/evolve-authoring-experiences-with-views-and-split-panes)
+- Responsive, works on small screens
+- [Plug-in architecture](https://www.sanity.io/plugins) and [custom input components](https://www.sanity.io/guides/how-to-make-a-custom-input-component)
+- [Style with your own branding](https://www.sanity.io/guides/how-to-brand-your-studio)
+- [Advanced block editor for structured content](https://www.sanity.io/docs/block-content)
+- Use JavaScript to add [field validations](https://www.sanity.io/docs/validation), [organize documents](https://www.sanity.io/docs/overview-structure-builder), and set [initial values](https://www.sanity.io/guides/getting-started-with-initial-values-for-new-documents)
 
 ![Developer Experience](https://cdn.sanity.io/images/3do82whm/next/a41b3d9056d5354aa648d83f764e7415849f91f6-5760x3840.png?w=1200&fit=max&auto=format)
 
@@ -57,16 +71,6 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 - [Secure, scalable and GDPR compliant](https://www.sanity.io/security).
 - [Zero config Graph Oriented Query Language (GROQ)](https://www.sanity.io/docs/how-queries-work), and [GraphQL API](https://www.sanity.io/docs/graphql).
 - [Helpful and friendly developer community](https://slack.sanity.io).
-
-![Structured content](https://cdn.sanity.io/images/3do82whm/next/746588538438b2ab05895aeb9e2436fd381e1562-5760x3840.png?w=1200&fit=max&auto=format)
-
-### [Structured Content](https://www.sanity.io/structured-content)
-
-- Distribute from a single source of truth, in real-time.
-- Unlock programmatic approaches to workflows and design.
-- [Upload images and transform them on demand](https://www.sanity.io/docs/asset-pipeline).
-- Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
-- [Rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text).
 
 ## Stay up to date
 
