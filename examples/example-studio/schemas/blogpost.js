@@ -25,7 +25,8 @@ export default {
       author: 'authorRef.name',
     },
     prepare(value) {
-      const timeSince = formatDistanceToNow(value.createdAt, {addSuffix: true})
+      const createdAt = new Date(value.createdAt)
+      const timeSince = createdAt && formatDistanceToNow(createdAt, {addSuffix: true})
       return Object.assign({}, value, {
         title: value.title ? pickFirst(value.title, LANGUAGE_PRIORITY) : '',
         subtitle: value.author ? `By ${value.author}, ${timeSince}` : timeSince,

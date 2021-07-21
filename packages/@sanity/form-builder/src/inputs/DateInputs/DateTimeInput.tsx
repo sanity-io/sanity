@@ -1,4 +1,5 @@
 import React, {useCallback} from 'react'
+import {getMinutes, setMinutes, parseISO} from 'date-fns'
 
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import PatchEvent, {set, unset} from '../../PatchEvent'
@@ -44,13 +45,29 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
 function serialize(date: Date) {
   return date.toISOString()
 }
-
 function deserialize(isoString: string): ParseResult {
   const deserialized = new Date(isoString)
   if (isValidDate(deserialized)) {
     return {isValid: true, date: deserialized}
   }
   return {isValid: false, error: `Invalid date value: "${isoString}"`}
+}
+
+// enforceTimeStep takes a dateString and datetime schema options and enforces the time
+// to be within the configured timeStep
+function enforceTimeStep(dateString: string, timeStep: number) {
+  if (!timeStep || timeStep === 1) {
+    return dateString
+  }
+
+  const date = parseISO(dateString)
+  const minutes = getMinutes(date)
+  const leftOver = minutes % timeStep
+  if (leftOver !== 0) {
+    return serialize(setMinutes(date, minutes - leftOver))
+  }
+
+  return serialize(date)
 }
 
 export const DateTimeInput = React.forwardRef(function DateTimeInput(
@@ -64,9 +81,14 @@ export const DateTimeInput = React.forwardRef(function DateTimeInput(
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
-      onChange(PatchEvent.from([nextDate === null ? unset() : set(nextDate)]))
+      let date = nextDate
+      if (date !== null && timeStep > 1) {
+        date = enforceTimeStep(date, timeStep)
+      }
+
+      onChange(PatchEvent.from([date === null ? unset() : set(date)]))
     },
-    [onChange]
+    [onChange, timeStep]
   )
 
   const formatInputValue = React.useCallback(
