@@ -9,6 +9,8 @@ export default {
   title: 'Custom input tests',
   type: 'document',
   icon,
+  // this should make a validation warning to appear in the console
+  inputComponent: 'NOT A REACT COMPONENT',
   fields: [
     {
       name: 'author',
@@ -38,6 +40,14 @@ export default {
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
       inputComponent: CustomFontStringInput,
+    },
+    {
+      name: 'Undefined',
+      title: 'Undefined input componnet',
+      description: 'This should be a schema warning',
+      type: 'string',
+      // this should make a validation warning to appear in the console
+      inputComponent: undefined,
     },
     {
       name: 'taskEstimate',

@@ -1,6 +1,8 @@
 import {isPlainObject} from 'lodash'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
+import {isReactComponentIsh} from '../utils/isReactComponentIsh'
+import {validateInputComponent} from '../utils/validateInputComponent'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
@@ -66,10 +68,14 @@ export function validateField(field, _visitorContext) {
     ]
   }
 
-  const {name} = field
-  return 'name' in field
-    ? validateFieldName(name)
-    : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]
+  const problems = []
+  problems.push(
+    ...('name' in field
+      ? validateFieldName(field.name)
+      : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)])
+  )
+  problems.push(...validateInputComponent(field))
+  return problems
 }
 
 function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {

@@ -1,4 +1,6 @@
 import {error, HELP_IDS, warning} from '../createValidationResult'
+import {inspect} from 'util'
+import {validateInputComponent} from '../utils/validateInputComponent'
 
 export default (typeDef, visitorContext) => {
   const hasName = Boolean(typeDef.name)
@@ -38,6 +40,8 @@ export default (typeDef, visitorContext) => {
       )
     )
   }
+
+  problems.push(...validateInputComponent(typeDef))
 
   if (!('title' in typeDef)) {
     problems.push(
