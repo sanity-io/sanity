@@ -1,5 +1,3 @@
-import {CSSProperties} from 'react'
-
 export interface DocumentStatusBarActionsProps {
   id: string
   type: string
@@ -24,7 +22,7 @@ export interface DocumentStatusBarProps {
 }
 
 export interface Badge {
-  title: string
+  title?: string
   label?: string | undefined
   color?: string
   icon?: any
