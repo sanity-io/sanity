@@ -20,7 +20,7 @@ import {Box, Button, Container, Dialog, Flex, Grid, Stack, Text, ToastParams} fr
 import {PresenceOverlay} from '@sanity/base/presence'
 import {FormFieldPresence} from '@sanity/base/lib/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../../sanity/uploads/types'
+import {Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -28,6 +28,7 @@ import {FileInputButton} from '../common/FileInputButton/FileInputButton'
 import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
+import {DropMessage} from '../common/DropMessage'
 import {AssetBackground} from './styles'
 
 type Field = {
@@ -342,12 +343,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this._focusRef = ref
   }
 
-  getUploadOptions = (file: globalThis.File): ResolvedUploader[] => {
-    const {type, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(type, file)
-    return uploader ? [{type: type, uploader}] : []
-  }
-
   handleUpload = ({file, uploader}: {file: DOMFile; uploader: Uploader}) => {
     this.uploadWith(uploader, file)
   }
@@ -357,7 +352,16 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   render() {
-    const {type, value, compareValue, level, markers, readOnly, presence} = this.props
+    const {
+      type,
+      value,
+      compareValue,
+      level,
+      markers,
+      resolveUploader,
+      readOnly,
+      presence,
+    } = this.props
     const {isAdvancedEditOpen, hoveringFiles} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
@@ -408,7 +412,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                       {!value?._upload && value?.asset && this.renderAsset()}
                       {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
                       {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                        <Overlay>Drop top upload</Overlay>
+                        <Overlay>
+                          <DropMessage
+                            hoveringFiles={hoveringFiles}
+                            resolveUploader={resolveUploader}
+                            types={[type]}
+                          />
+                        </Overlay>
                       )}
                     </Container>
                   </AssetBackground>

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 export const Overlay: React.ComponentType = styled.div`
   position: absolute;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   top: -2px;
