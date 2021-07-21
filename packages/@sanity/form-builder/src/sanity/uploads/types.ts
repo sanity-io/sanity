@@ -32,4 +32,11 @@ export type Uploader = {
   priority: number
 }
 
-export type UploaderResolver = (type: SchemaType, file: File) => Uploader | null
+export interface FileIsh {
+  // mime type
+  type: string
+  // file name (e.g. somefile.jpg)
+  name?: string
+}
+
+export type UploaderResolver = (type: SchemaType, file: FileIsh) => Uploader | null

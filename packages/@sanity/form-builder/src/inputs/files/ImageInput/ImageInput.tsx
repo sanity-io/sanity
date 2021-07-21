@@ -36,6 +36,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {FormFieldPresence, PresenceOverlay} from '@sanity/base/presence'
 import * as PathUtils from '@sanity/util/paths'
+import deepCompare from 'react-fast-compare'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {
   ResolvedUploader,
@@ -44,7 +45,7 @@ import {
   UploadOptions,
 } from '../../../sanity/uploads/types'
 import {ImageToolInput} from '../ImageToolInput'
-import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
+import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {FileInputButton} from '../common/FileInputButton/FileInputButton'
@@ -53,8 +54,8 @@ import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
-import {base64ToFile, urlToFile} from './utils/image'
-import deepCompare from 'react-fast-compare'
+import {DropMessage} from '../common/DropMessage'
+import {handleSelectAssetFromSource} from '../common/assetSource'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -223,7 +224,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) {
+  uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
     const {type, onChange} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
@@ -320,71 +321,14 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
     const {onChange, type, resolveUploader} = this.props
-    if (!assetFromSource) {
-      throw new Error('No asset given')
-    }
-    if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
-      throw new Error('Returned value must be an array with at least one item (asset)')
-    }
-    const firstAsset = assetFromSource[0]
-    const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
-    const label = get(firstAsset, 'assetDocumentProps.label')
-    const title = get(firstAsset, 'assetDocumentProps.title')
-    const description = get(firstAsset, 'assetDocumentProps.description')
-    const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
-    const source = get(firstAsset, 'assetDocumentProps.source')
-    switch (firstAsset.kind) {
-      case 'assetDocumentId':
-        onChange(
-          PatchEvent.from([
-            setIfMissing({
-              _type: type.name,
-            }),
-            unset(['hotspot']),
-            unset(['crop']),
-            set(
-              {
-                _type: 'reference',
-                _ref: firstAsset.value,
-              },
-              ['asset']
-            ),
-          ])
-        )
-        break
-      case 'file': {
-        const uploader = resolveUploader(type, firstAsset.value)
-        if (uploader) {
-          this.uploadWith(uploader, firstAsset.value, {
-            label,
-            title,
-            description,
-            creditLine,
-            source,
-          })
-        }
-        break
-      }
-      case 'base64':
-        base64ToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      case 'url':
-        urlToFile(firstAsset.value, originalFilename).then((file) => {
-          const uploader = resolveUploader(type, file)
-          if (uploader) {
-            this.uploadWith(uploader, file, {label, title, description, creditLine, source})
-          }
-        })
-        break
-      default: {
-        throw new Error('Invalid value returned from asset source plugin')
-      }
-    }
+    handleSelectAssetFromSource({
+      assetFromSource,
+      onChange,
+      type,
+      resolveUploader,
+      uploadWith: this.uploadWith,
+      isImage: true,
+    })
     this.setState({selectedAssetSource: null})
   }
 
@@ -681,6 +625,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
     return fields.some((field) => !deepCompare(value?.[field.name], compareValue?.[field.name]))
   }
+
   render() {
     const {
       type,
@@ -692,6 +637,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       presence,
       focusPath = EMPTY_ARRAY,
       directUploads,
+      resolveUploader,
     } = this.props
     const {hoveringFiles, selectedAssetSource} = this.state
 
@@ -751,7 +697,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                     {!value?._upload && value?.asset && this.renderAsset()}
                     {!value?._upload && !value?.asset && this.renderUploadPlaceholder()}
                     {!value?._upload && !readOnly && hoveringFiles.length > 0 && (
-                      <Overlay>Drop to upload</Overlay>
+                      <Overlay>
+                        <DropMessage
+                          hoveringFiles={hoveringFiles}
+                          resolveUploader={resolveUploader}
+                          types={[type]}
+                        />
+                      </Overlay>
                     )}
                   </Flex>
                 </RatioBox>

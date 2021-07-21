@@ -113,6 +113,8 @@ export type AssetFromSource = {
 }
 
 export interface AssetSourceComponentProps {
+  assetType?: 'file' | 'image'
+  dialogHeaderTitle?: string
   selectedAssets: Asset[]
   selectionType: 'single' | 'multiple'
   onClose: () => void

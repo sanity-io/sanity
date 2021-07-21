@@ -9,6 +9,7 @@ import {
   differenceInMonths,
   differenceInYears,
 } from 'date-fns'
+import pluralize from 'pluralize'
 
 interface TimeSpec {
   timestamp: string
@@ -76,6 +77,8 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   }
 
   const diffWeeks = differenceInWeeks(now, parsedDate)
+  const weekSuffix = pluralize('week', diffWeeks)
+
   if (diffWeeks) {
     if (opts.minimal) {
       return {
@@ -85,12 +88,14 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
     }
 
     return {
-      timestamp: opts.agoSuffix ? `${diffWeeks} weeks ago` : `${diffWeeks} weeks`,
+      timestamp: opts.agoSuffix ? `${diffWeeks} ${weekSuffix} ago` : `${diffWeeks} ${weekSuffix}`,
       refreshInterval: ONE_HOUR,
     }
   }
 
   const diffDays = differenceInDays(now, parsedDate)
+  const daysSuffix = pluralize('days', diffDays)
+
   if (diffDays) {
     if (opts.minimal) {
       const daysSince = opts.agoSuffix ? `${diffDays}d ago` : `${diffDays}d`
@@ -99,7 +104,7 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
         refreshInterval: ONE_HOUR,
       }
     }
-    const daysSince = opts.agoSuffix ? `${diffDays} days ago` : `${diffDays} days`
+    const daysSince = opts.agoSuffix ? `${diffDays} ${daysSuffix} ago` : `${diffDays} ${daysSuffix}`
     return {
       timestamp: diffDays === 1 ? 'yesterday' : daysSince,
       refreshInterval: ONE_HOUR,
@@ -107,6 +112,8 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   }
 
   const diffHours = differenceInHours(now, parsedDate)
+  const hoursSuffix = pluralize('hour', diffHours)
+
   if (diffHours) {
     if (opts.minimal) {
       return {
@@ -114,13 +121,16 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
         refreshInterval: ONE_MINUTE,
       }
     }
+
     return {
-      timestamp: opts.agoSuffix ? `${diffHours} hours ago` : `${diffHours} hours`,
+      timestamp: opts.agoSuffix ? `${diffHours} ${hoursSuffix} ago` : `${diffHours} ${hoursSuffix}`,
       refreshInterval: ONE_MINUTE,
     }
   }
 
   const diffMins = differenceInMinutes(now, parsedDate)
+  const minsSuffix = pluralize('minute', diffMins)
+
   if (diffMins) {
     if (opts.minimal) {
       return {
@@ -129,12 +139,14 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
       }
     }
     return {
-      timestamp: opts.agoSuffix ? `${diffMins} minutes ago` : `${diffMins} minutes`,
+      timestamp: opts.agoSuffix ? `${diffMins} ${minsSuffix} ago` : `${diffMins} ${minsSuffix}`,
       refreshInterval: TWENTY_SECONDS,
     }
   }
 
   const diffSeconds = differenceInSeconds(now, parsedDate)
+  const secsSuffix = pluralize('second', diffSeconds)
+
   if (diffSeconds > 10) {
     if (opts.minimal) {
       return {
@@ -144,7 +156,9 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
     }
 
     return {
-      timestamp: opts.agoSuffix ? `${diffSeconds} seconds ago` : `${diffSeconds} seconds`,
+      timestamp: opts.agoSuffix
+        ? `${diffSeconds} ${secsSuffix} ago`
+        : `${diffSeconds} ${secsSuffix}`,
       refreshInterval: FIVE_SECONDS,
     }
   }

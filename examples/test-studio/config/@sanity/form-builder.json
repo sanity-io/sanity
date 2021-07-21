@@ -1,5 +1,8 @@
 {
   "images": {
     "directUploads": true
+  },
+  "files": {
+    "directUploads": true
   }
 }

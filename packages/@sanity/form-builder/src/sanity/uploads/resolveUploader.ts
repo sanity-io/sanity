@@ -2,9 +2,9 @@ import {SchemaType} from '@sanity/types'
 import accept from 'attr-accept'
 import * as is from '../../utils/is'
 import uploaders from './uploaders'
-import {Uploader} from './types'
+import {FileIsh, Uploader} from './types'
 
-export default function resolveUploader(type: SchemaType, file: File): Uploader | null {
+export default function resolveUploader(type: SchemaType, file: FileIsh): Uploader | null {
   return uploaders.find((uploader) => {
     return (
       is.type(uploader.type, type) &&

@@ -132,6 +132,11 @@
       "name": "part:@sanity/form-builder/input/image/asset-source-default",
       "implements": "part:@sanity/form-builder/input/image/asset-source",
       "path": "sanity/legacyPartImplementations/asset-source-default"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/file/asset-source-default",
+      "implements": "part:@sanity/form-builder/input/file/asset-source",
+      "path": "sanity/legacyPartImplementations/asset-source-default"
     }
   ]
 }

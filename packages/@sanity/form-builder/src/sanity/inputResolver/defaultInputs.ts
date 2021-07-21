@@ -10,7 +10,7 @@ import SlugInput from '../../inputs/Slug/SlugInput'
 
 import {SanityArrayInput} from '../inputs/SanityArrayInput'
 import Image from '../inputs/SanityImageInput'
-import File from '../inputs/SanityFileInput'
+import SanityFileInput from '../inputs/SanityFileInput'
 
 export default {
   object: ObjectInput,
@@ -23,7 +23,7 @@ export default {
   date: DateInput,
   url: UrlInput,
   image: Image,
-  file: File,
+  file: SanityFileInput,
   string: StringInput,
   slug: SlugInput,
 }

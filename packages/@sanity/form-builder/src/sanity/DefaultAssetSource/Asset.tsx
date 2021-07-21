@@ -12,6 +12,7 @@ import {AssetDialogAction, AssetMenuAction} from './types'
 import {DeleteAssetErrorDialog} from './DeleteAssetErrorDialog'
 
 interface AssetProps {
+  assetType?: 'image' | 'file'
   asset?: AssetRecord
   isSelected: boolean
   onClick?: (...args: any[]) => any
@@ -125,6 +126,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
 
   render() {
     const {asset, onClick, onKeyPress, isSelected} = this.props
+    const {originalFilename, _id, url} = asset
     const {isDeleting, showUsageDialog, deleteError} = this.state
     const imgH = 200 * Math.max(1, DPI)
 
@@ -134,7 +136,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
           tone="primary"
           selected={isSelected}
           tabIndex={0}
-          data-id={asset._id}
+          data-id={_id}
           mode="ghost"
           onKeyPress={onKeyPress}
           padding={0}
@@ -142,12 +144,11 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
         >
           <Container>
             <Image
-              alt={asset.originalFileName}
-              src={`${asset.url}?h=${imgH}&fit=max`}
+              alt={originalFilename}
+              src={`${url}?h=${imgH}&fit=max`}
               onClick={onClick}
-              data-id={asset._id}
+              data-id={_id}
             />
-
             {isDeleting && <FullscreenSpinner />}
           </Container>
         </Button>
