@@ -4,12 +4,15 @@ const chalk = require('chalk')
 const boxen = require('boxen')
 const semver = require('semver')
 
-const commitMsgPath = path.join(__dirname, '..', process.env.GIT_PARAMS)
+// eslint-disable-next-line no-process-env
+const commitMsgPath = path.join(__dirname, '..', process.env.HUSKY_GIT_PARAMS)
+// eslint-disable-next-line no-sync
 const msg = fs.readFileSync(commitMsgPath, 'utf8').trim()
 
-const template = /^\[[a-z-\/]+]\s[A-Z0-9]\w+/
+const template = /^\[[a-z-/]+]\s[A-Z0-9]\w+/
 
 if (!template.test(msg) && !semver.valid(msg)) {
+  // eslint-disable-next-line no-console
   console.error(
     boxen(
       [
@@ -22,5 +25,6 @@ if (!template.test(msg) && !semver.valid(msg)) {
       {padding: 1, margin: 1, borderStyle: 'double', borderColor: 'red'}
     )
   )
+  // eslint-disable-next-line no-process-exit
   process.exit(1)
 }
