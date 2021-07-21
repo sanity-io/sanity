@@ -22,12 +22,15 @@ export default async (args, context) => {
   const {port, hostname} = config
   const httpHost = flags.host === 'all' ? '0.0.0.0' : flags.host || hostname
   const httpPort = flags.port || port
+  const https = flags.https || false
+  const protocol = `http${https ? 's' : ''}`
 
   const serverOptions = {
     staticPath: resolveStaticPath(workDir, config),
     basePath: workDir,
     httpHost,
     httpPort,
+    https,
     context,
     project: sanityConfig.get('project'),
   }
@@ -72,7 +75,9 @@ export default async (args, context) => {
 
     if (!hasErrors && !hasWarnings) {
       output.print(
-        chalk.green(`Content Studio successfully compiled! Go to http://${httpHost}:${httpPort}`) // eslint-disable-line max-len
+        chalk.green(
+          `Content Studio successfully compiled! Go to ${protocol}://${httpHost}:${httpPort}`
+        ) // eslint-disable-line max-len
       )
       return
     }
@@ -88,7 +93,7 @@ export default async (args, context) => {
       printWarnings(output, warnings)
     }
 
-    output.print(chalk.green(`Content Studio listening on http://${httpHost}:${httpPort}`))
+    output.print(chalk.green(`Content Studio listening on ${protocol}://${httpHost}:${httpPort}`))
   })
 
   function resetSpinner() {
