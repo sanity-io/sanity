@@ -1,4 +1,6 @@
 import memoizeOne from 'memoize-one'
+import {map} from 'rxjs/operators'
+import grantsStore from 'part:@sanity/base/grants'
 import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getListIcon, getDetailsIcon} from './parts/Icon'
@@ -51,6 +53,20 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
       }
 
       return list
+    })
+    .hidden(() => {
+      return grantsStore.grants.pipe(
+        // TODO: add correct types
+        map((grants: any[]) =>
+          grants.some(
+            (grant) =>
+              // TODO: implement this
+              // this should utilize the new GROQ.js compare function to return
+              // whether or not the user has the ability to read this schema type
+              true
+          )
+        )
+      )
     })
 }
 

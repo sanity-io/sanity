@@ -54,7 +54,7 @@ function fetchCurrentUser(): Observable<CurrentUser | null> {
   )
 }
 
-const currentUser: Observable<CurrentUser | null> = merge(
+const originalCurrentUser = merge(
   fetchCurrentUser(), // initial fetch
   refresh$.pipe(switchMap(() => fetchCurrentUser())), // re-fetch as response to request to refresh current user
   logout$.pipe(
@@ -62,6 +62,10 @@ const currentUser: Observable<CurrentUser | null> = merge(
     mapTo(null)
   )
 ).pipe(shareReplay({refCount: true, bufferSize: 1}))
+
+const currentUser = Object.assign(originalCurrentUser, {
+  map: (fn: <T, R>(t: T) => R) => originalCurrentUser.pipe(map(fn)),
+})
 
 const normalizedCurrentUser = currentUser.pipe(
   map((user) => (user ? normalizeOwnUser(user) : user))
@@ -132,6 +136,7 @@ export default function createUserStore(): UserStore {
   return {
     actions: {logout, retry: refresh},
     me: currentUser,
+
     getCurrentUser() {
       return currentUser.pipe(take(1)).toPromise()
     },

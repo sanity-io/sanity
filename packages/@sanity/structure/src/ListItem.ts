@@ -1,4 +1,5 @@
 import {camelCase} from 'lodash'
+import {Observable} from 'rxjs'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
 import {getDefaultSchema, SchemaType} from './parts/Schema'
 import {ChildResolver} from './ChildResolver'
@@ -13,6 +14,14 @@ import {validateId} from './util/validateId'
 type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
 type ListItemChild = Collection | ChildResolver | undefined
+
+type ListItemHidden =
+  | boolean
+  | Promise<boolean>
+  | Observable<boolean>
+  | (() => boolean)
+  | (() => Promise<boolean>)
+  | (() => Observable<boolean>)
 
 interface ListItemSerializeOptions extends SerializeOptions {
   titleIsOptional?: boolean
@@ -39,6 +48,7 @@ export interface ListItem {
   child?: ListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType
+  hidden?: ListItemHidden
 }
 
 export interface UnserializedListItem {
@@ -48,6 +58,7 @@ export interface UnserializedListItem {
   child?: UnserializedListItemChild
   displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
+  hidden?: ListItemHidden
 }
 
 type PartialListItem = Partial<UnserializedListItem>
@@ -99,6 +110,14 @@ export class ListItemBuilder implements Serializable {
 
   getChild() {
     return this.spec.child
+  }
+
+  hidden(hidden: ListItemHidden): ListItemBuilder {
+    return this.clone({hidden})
+  }
+
+  getHidden() {
+    return this.spec.hidden
   }
 
   schemaType(schemaType: SchemaType | string): ListItemBuilder {

@@ -71,6 +71,7 @@ export function createGrantsStore(): GrantsStore {
   )
 
   return {
+    grants: currentUserDatasetGrants,
     checkDocumentPermission(permission: DocumentPermissionName, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
         switchMap((grants) => grantsPermissionOn(grants, permission, document))
