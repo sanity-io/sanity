@@ -1,6 +1,15 @@
 import {Box, Button, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {
+  addDays,
+  addMonths,
+  getMinutes,
+  setDate,
+  setHours,
+  setMinutes,
+  setMonth,
+  setYear,
+} from 'date-fns'
 import {range} from 'lodash'
 import React, {forwardRef, useCallback, useEffect} from 'react'
 import {CalendarMonth} from './CalendarMonth'
@@ -9,12 +18,12 @@ import {features} from './features'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
+export type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
   onSelect: (date: Date) => void
-  focusedDate: Date
+  focusedDate?: Date
   onFocusedDateChange: (index: Date) => void
 }
 
@@ -150,6 +159,18 @@ export const Calendar = forwardRef(function Calendar(
       focusCurrentWeekDay()
     }
   }, [ref, focusCurrentWeekDay, focusedDate])
+
+  useEffect(() => {
+    if (!timeStep || timeStep === 1 || selectTime !== true) {
+      return
+    }
+
+    const minutes = getMinutes(selectedDate)
+    const leftOver = minutes % timeStep
+    if (leftOver !== 0) {
+      onSelect(setMinutes(selectedDate, minutes - leftOver))
+    }
+  }, [onSelect, selectedDate, timeStep, selectTime])
 
   const handleYesterdayClick = useCallback(() => handleDateChange(addDays(new Date(), -1)), [
     handleDateChange,
