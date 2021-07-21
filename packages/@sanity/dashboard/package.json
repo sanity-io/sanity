@@ -28,11 +28,13 @@
   },
   "devDependencies": {
     "prop-types": "^15.6.0",
-    "rimraf": "^2.7.1"
+    "rimraf": "^2.7.1",
+    "@sanity/base": "2.12.2"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.9 || ^17"
+    "react": "^16.9 || ^17",
+    "@sanity/base": "2.12.2"
   },
   "repository": {
     "type": "git",
