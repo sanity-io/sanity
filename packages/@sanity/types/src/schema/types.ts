@@ -76,6 +76,7 @@ interface EnumListProps<V = unknown> {
   list?: TitledListValue<V>[] | V[]
   layout?: 'radio' | 'dropdown'
   direction?: 'horizontal' | 'vertical'
+  hideEmptyValue?: boolean
 }
 
 export interface StringSchemaType extends BaseSchemaType {

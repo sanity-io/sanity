@@ -52,6 +52,30 @@ export default {
       },
     },
     {
+      name: 'selectWithoutEmptyValue',
+      type: 'string',
+      title: 'Select string, without empty value',
+      description:
+        'Select a single string value from a set of predefined options. It should NOT be possible to unset a selected value.',
+      options: {
+        hideEmptyValue: true,
+        list: [
+          {
+            title: 'One (1)',
+            value: 'one',
+          },
+          {
+            title: 'Two (2)',
+            value: 'two',
+          },
+          {
+            title: 'Three (3)',
+            value: 'three',
+          },
+        ],
+      },
+    },
+    {
       name: 'radioSelectHorizontal',
       title: 'Select (layout: radio, direction: horizontal)',
       type: 'string',
