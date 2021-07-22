@@ -109,9 +109,12 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
 
   const preview = usePreviewSnapshot(value, getPreviewSnapshot)
 
-  const weakIs = value && value._weak ? 'weak' : 'strong'
+  const weakIs = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = type.weak === true ? 'weak' : 'strong'
-  const isMissing = value?._ref && !preview.isLoading && preview.snapshot === null
+  const hasInsufficientPermissions =
+    preview.snapshot?._internalMeta?.type === 'insufficient_permissions'
+  const isMissing =
+    !hasInsufficientPermissions && !!value?._ref && !preview.isLoading && preview.snapshot
 
   const hasRef = value && value._ref
 
@@ -170,12 +173,15 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       if (autocompleteValue === '') {
         return ''
       }
+      if (hasInsufficientPermissions) {
+        return '<insufficient permissions>'
+      }
       if (isMissing) {
-        return `<nonexistent document>`
+        return '<nonexistent document>'
       }
       return preview.isLoading ? 'Loading…' : preview.snapshot?.title || 'Untitled'
     },
-    [isMissing, preview]
+    [isMissing, hasInsufficientPermissions, preview]
   )
 
   const inputId = useId()
@@ -217,6 +223,15 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
       description={type.description}
     >
       <Stack space={3}>
+        {hasInsufficientPermissions && (
+          <Alert title="Insufficient permissions to access this reference" status="warning">
+            <Text as="p" muted size={1}>
+              You don't have access to the referenced document. Please contact an admin for access
+              or remove this reference.
+            </Text>
+          </Alert>
+        )}
+
         {hasRef && !isMissing && weakIs !== weakShouldBe && (
           <Alert
             title="Reference strength mismatch"
@@ -258,7 +273,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
           </Alert>
         )}
 
-        {value && isMissing && (
+        {value && isMissing && !hasInsufficientPermissions && (
           <Alert title="Nonexistent document reference" status="warning">
             <Text as="p" muted size={1}>
               This field is currently referencing a document that doesn't exist (ID:{' '}
