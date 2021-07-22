@@ -23,7 +23,7 @@ import {
 import {PaneRouterContext} from '../contexts/PaneRouterContext'
 import {ErrorPane} from '../panes/errorPane'
 import {LoadingPane} from '../panes/loadingPane'
-import BrokenReferences from '../components/BrokenReferences'
+import {BrokenReferences} from '../components/BrokenReferences'
 
 const withInitialValue = (Pane) => {
   const WithInitialValueStream = streamingComponent((props$) =>

@@ -3,7 +3,7 @@
 
 import React from 'react'
 import Structure from '../structure-builder'
-import MissingDocumentTypesMessage from './components/MissingDocumentTypesMessage'
+import {MissingDocumentTypesMessage} from './components/MissingDocumentTypesMessage'
 
 export default () => {
   const pane = Structure.defaults()

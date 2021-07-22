@@ -1,16 +1,10 @@
-/* eslint-disable complexity */
-
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import React from 'react'
-import WarningIcon from 'part:@sanity/base/warning-icon'
-import Alert from 'part:@sanity/components/alerts/alert'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
-
-import styles from './ConfirmDelete.css'
 
 export default enhanceWithReferringDocuments(
   class ConfirmDelete extends React.PureComponent {
@@ -23,78 +17,92 @@ export default enhanceWithReferringDocuments(
       isCheckingReferringDocuments: PropTypes.bool,
     }
 
-    handleAction = (action) => {
-      const {onCancel, onConfirm} = this.props
-      if (action.name === 'confirm') {
-        onConfirm()
-      }
-      if (action.name === 'cancel') {
-        onCancel()
-      }
-    }
-
     render() {
-      const {isCheckingReferringDocuments, referringDocuments, draft, published} = this.props
+      const {
+        isCheckingReferringDocuments,
+        referringDocuments,
+        draft,
+        published,
+        onCancel,
+        onConfirm,
+      } = this.props
 
       const hasReferringDocuments = referringDocuments.length > 0
-
-      const canContinue = !isCheckingReferringDocuments
-
-      const actions = [
-        canContinue && {
-          name: 'confirm',
-          title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now',
-          color: 'danger',
-        },
-        {name: 'cancel', title: 'Cancel', inverted: true},
-      ].filter(Boolean)
-
+      const showConfirmButton = !isCheckingReferringDocuments
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
-
       const docTitle = <DocTitle document={draft || published} />
 
       return (
-        <FullscreenDialog
-          cardClassName={styles.card}
-          isOpen
-          showHeader
-          color="danger"
-          centered
-          title={title}
-          onAction={this.handleAction}
-          actions={actions}
-        >
-          {isCheckingReferringDocuments && <Spinner message="Looking for referring documents…" />}
+        <Dialog header={title} id="confirm-delete-dialog" width={1}>
+          <Flex direction="column">
+            <Box flex={1} overflow="auto" padding={4}>
+              {isCheckingReferringDocuments && (
+                <Flex align="center" direction="column">
+                  <Spinner muted />
+                  <Box marginTop={3}>
+                    <Text align="center" muted size={1}>
+                      Looking for referring documents…
+                    </Text>
+                  </Box>
+                </Flex>
+              )}
 
-          {hasReferringDocuments && (
-            <>
-              <Alert color="warning" icon={WarningIcon}>
-                Warning: Found{' '}
-                {referringDocuments.length === 1 ? (
-                  <>a document</>
-                ) : (
-                  <>{referringDocuments.length} documents</>
-                )}{' '}
-                that refer{referringDocuments.length === 1 ? <>s</> : ''} to “{docTitle}”.
-              </Alert>
+              {hasReferringDocuments && (
+                <>
+                  <Card padding={3} radius={2} tone="caution">
+                    <Flex>
+                      <Text size={1}>
+                        <WarningOutlineIcon />
+                      </Text>
+                      <Box flex={1} marginLeft={3}>
+                        <Text size={1}>
+                          Warning: Found{' '}
+                          {referringDocuments.length === 1 ? (
+                            <>a document</>
+                          ) : (
+                            <>{referringDocuments.length} documents</>
+                          )}{' '}
+                          that refer{referringDocuments.length === 1 ? <>s</> : ''} to “{docTitle}”.
+                        </Text>
+                      </Box>
+                    </Flex>
+                  </Card>
 
-              <p>
-                You may not be able to delete “{docTitle}” because{' '}
-                {referringDocuments.length === 1 ? <>this document</> : <>these documents</>} refer
-                {referringDocuments.length === 1 ? <>s</> : ''} to it:
-              </p>
+                  <Box marginY={4}>
+                    <Text as="p" muted>
+                      You may not be able to delete “{docTitle}” because{' '}
+                      {referringDocuments.length === 1 ? <>this document</> : <>these documents</>}{' '}
+                      refer
+                      {referringDocuments.length === 1 ? <>s</> : ''} to it:
+                    </Text>
+                  </Box>
 
-              <ReferringDocumentsList documents={referringDocuments} />
-            </>
-          )}
-          {!isCheckingReferringDocuments && !hasReferringDocuments && (
-            <>
-              <p>
-                Are you sure you want to delete <strong>“{docTitle}”</strong>?
-              </p>
-            </>
-          )}
-        </FullscreenDialog>
+                  <ReferringDocumentsList documents={referringDocuments} />
+                </>
+              )}
+
+              {!isCheckingReferringDocuments && !hasReferringDocuments && (
+                <Text as="p">
+                  Are you sure you want to delete <strong>“{docTitle}”</strong>?
+                </Text>
+              )}
+            </Box>
+
+            <Card borderTop paddingX={4} paddingY={3}>
+              <Grid columns={showConfirmButton ? 2 : 1} gap={2}>
+                <Button mode="ghost" onClick={onCancel} text="Cancel" />
+
+                {showConfirmButton && (
+                  <Button
+                    onClick={onConfirm}
+                    text={hasReferringDocuments ? 'Delete anyway' : 'Delete now'}
+                    tone="critical"
+                  />
+                )}
+              </Grid>
+            </Card>
+          </Flex>
+        </Dialog>
       )
     }
   }
