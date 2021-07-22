@@ -22,7 +22,7 @@ export type PreparedValue = {
    * currently used to add a flag for the invalid preview error fallback and
    * insufficient permissions fallback
    */
-  _meta?: {type?: string}
+  _internalMeta?: {type?: string}
 }
 
 export type PrepareInvocationResult = {

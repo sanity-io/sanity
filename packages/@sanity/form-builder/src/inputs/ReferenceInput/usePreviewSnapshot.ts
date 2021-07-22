@@ -25,7 +25,7 @@ type PreviewSnapshot = {
   _type: string
   title: string
   description: string
-  _meta?: {type?: string}
+  _internalMeta?: {type?: string}
 }
 
 export function usePreviewSnapshot(
