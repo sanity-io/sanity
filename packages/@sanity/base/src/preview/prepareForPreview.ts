@@ -228,28 +228,28 @@ function withErrors(result, type, selectedValue): PreparedValue {
   return INVALID_PREVIEW_FALLBACK
 }
 
-interface PrepareForPreviewOptions {
-  rawValue: unknown
-  type: SchemaType
-  viewOptions?: PrepareViewOptions
-}
-
-export default function prepareForPreview({
-  rawValue,
-  type,
-  viewOptions = {},
-}: PrepareForPreviewOptions): PreparedValue {
+export default function prepareForPreview(
+  rawValue: unknown,
+  type: SchemaType,
+  viewOptions: PrepareViewOptions = {}
+): PreparedValue {
   const selection = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
 
   const selectedValue = targetKeys.reduce((acc, key) => {
     // Find the field the value belongs to
-    const valueField = type?.fields?.find((f) => f.name === selection[key])
+    const typeWithFields = 'fields' in type ? type : null
+    const valueField = typeWithFields?.fields?.find((f) => f.name === selection[key])
+
     // Check if predefined options exist
-    const listOptions = valueField?.type?.options?.list
+    const options = valueField?.type?.options
+    const listOptions = options && typeof options === 'object' ? (options as any).list : null
+
     if (listOptions) {
       // Find the selected option that matches the raw value
-      const selectedOption = listOptions.find((opt) => opt.value === rawValue[selection[key]])
+      const selectedOption = listOptions.find(
+        (opt) => opt.value === (rawValue as any)[selection[key]]
+      )
       acc[key] = get(selectedOption, key)
       return acc
     }

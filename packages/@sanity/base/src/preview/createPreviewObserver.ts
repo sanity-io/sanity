@@ -64,13 +64,7 @@ export function createPreviewObserver(
       return observePaths(value, paths).pipe(
         map((snapshot) => ({
           type: type,
-          snapshot:
-            snapshot &&
-            prepareForPreview({
-              rawValue: snapshot,
-              type,
-              viewOptions,
-            }),
+          snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions),
         }))
       )
     }
