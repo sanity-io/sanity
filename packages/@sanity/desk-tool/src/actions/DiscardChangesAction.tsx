@@ -1,6 +1,7 @@
+import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import ResetIcon from 'part:@sanity/base/reset-icon'
-import React, {useCallback, useMemo} from 'react'
+import {ResetIcon} from '@sanity/icons'
+import React, {useCallback, useMemo, useState} from 'react'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
@@ -13,12 +14,16 @@ const DISABLED_REASON_TITLE = {
   NOT_PUBLISHED: 'This document is not published',
 }
 
-export function DiscardChangesAction({id, type, published, liveEdit, onComplete}) {
+export const DiscardChangesAction: DocumentActionComponent = ({
+  id,
+  type,
+  published,
+  liveEdit,
+  onComplete,
+}) => {
   const {discardChanges}: any = useDocumentOperation(id, type)
-  const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
-
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const deleteDraftPermission = useCheckDocumentPermission(id, type, 'delete')
-
   const {value: currentUser} = useCurrentUser()
 
   const handleConfirm = useCallback(() => {
@@ -30,7 +35,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog = useMemo(
+  const dialog: DocumentActionDialogProps | false = useMemo(
     () =>
       isConfirmDialogOpen && {
         type: 'confirm',

@@ -1,7 +1,8 @@
+import {DocumentActionComponent} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useCallback} from 'react'
 
-export function SaveAction({id, type, onComplete}) {
+export const SaveAction: DocumentActionComponent = ({id, type, onComplete}) => {
   const {commit}: any = useDocumentOperation(id, type)
 
   const handle = useCallback(async () => {

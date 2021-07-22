@@ -1,6 +1,7 @@
+import {DocumentActionComponent} from '@sanity/base'
 import {useEffect, useState} from 'react'
 
-export const FOO = () => {
+export const FOO: DocumentActionComponent = () => {
   const [isDisabled, setDisabled] = useState(true)
   const [counter, setCounter] = useState(0)
 
@@ -19,17 +20,17 @@ export const FOO = () => {
   }
 }
 
-export const BAR = () => ({
+export const BAR: DocumentActionComponent = () => ({
   label: 'Hello2',
   disabled: true,
 })
 
-export const BAZ = () => ({
+export const BAZ: DocumentActionComponent = () => ({
   label: 'Hello [enabled]',
   disabled: false,
 })
 
-export const QUX = () => {
+export const QUX: DocumentActionComponent = () => {
   const [isDisabled, setDisabled] = useState(false)
   const [counter, setCounter] = useState(0)
 

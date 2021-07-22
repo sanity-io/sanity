@@ -1,13 +1,14 @@
+import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from 'part:@sanity/base/router'
-import HistoryIcon from 'part:@sanity/base/history-icon'
-import React, {useCallback, useMemo} from 'react'
+import {RestoreIcon} from '@sanity/icons'
+import React, {useCallback, useMemo, useState} from 'react'
 
-export function HistoryRestoreAction({id, type, revision, onComplete}) {
+export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
   const {restore}: any = useDocumentOperation(id, type)
   const router = useRouter()
-  const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
-  const [error, setError] = React.useState<Error | null>(null)
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision)
@@ -19,7 +20,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog = useMemo(() => {
+  const dialog: DocumentActionDialogProps | null = useMemo(() => {
     if (!error && isConfirmDialogOpen) {
       return {
         type: 'confirm',
@@ -51,7 +52,7 @@ export function HistoryRestoreAction({id, type, revision, onComplete}) {
     title: isRevisionInitialVersion
       ? "You can't restore to the initial version"
       : 'Restore to this version',
-    icon: HistoryIcon,
+    icon: RestoreIcon,
     dialog,
     disabled: isRevisionInitialVersion,
   }

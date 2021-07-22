@@ -1,7 +1,8 @@
+import {DocumentActionComponent} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useCallback} from 'react'
 
-export function WriteTitleAction(docInfo) {
+export const WriteTitleAction: DocumentActionComponent = (docInfo) => {
   const {patch, commit}: any = useDocumentOperation(docInfo.id, docInfo.type)
 
   const handle = useCallback(() => {
@@ -9,7 +10,7 @@ export function WriteTitleAction(docInfo) {
     commit.execute()
   }, [commit, patch])
 
-  if (docInfo.isLiveEditEnabled) {
+  if (docInfo.liveEdit) {
     return null
   }
 

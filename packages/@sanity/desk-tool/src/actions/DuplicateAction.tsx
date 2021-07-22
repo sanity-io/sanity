@@ -1,8 +1,9 @@
+import {DocumentActionComponent} from '@sanity/base'
+import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import {useRouter} from 'part:@sanity/base/router'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
   useCurrentUser,
@@ -13,14 +14,11 @@ const DISABLED_REASON_TITLE = {
   NOTHING_TO_DUPLICATE: "This document doesn't yet exist so there's nothing to duplicate",
 }
 
-export function DuplicateAction({id, type, onComplete}) {
+export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
   const {duplicate}: any = useDocumentOperation(id, type)
   const router = useRouter()
-
-  const [isDuplicating, setDuplicating] = React.useState(false)
-
+  const [isDuplicating, setDuplicating] = useState(false)
   const createPermission = useCheckDocumentPermission('dummy-id', type, 'create')
-
   const {value: currentUser} = useCurrentUser()
 
   const handle = useCallback(() => {
@@ -34,7 +32,7 @@ export function DuplicateAction({id, type, onComplete}) {
 
   if (!createPermission.granted) {
     return {
-      icon: ContentCopyIcon,
+      icon: CopyIcon,
       disabled: true,
       label: 'Duplicate',
       title: (
@@ -47,7 +45,7 @@ export function DuplicateAction({id, type, onComplete}) {
   }
 
   return {
-    icon: ContentCopyIcon,
+    icon: CopyIcon,
     disabled: Boolean(isDuplicating || duplicate.disabled),
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
     title: (duplicate.disabled && DISABLED_REASON_TITLE[duplicate.disabled]) || '',

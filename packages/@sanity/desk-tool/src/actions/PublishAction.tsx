@@ -1,13 +1,13 @@
+import {DocumentActionComponent} from '@sanity/base'
 import {useSyncState, useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
-import CheckmarkIcon from 'part:@sanity/base/check-icon'
-import PublishIcon from 'part:@sanity/base/publish-icon'
+import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useState} from 'react'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
-import TimeAgo from '../components/TimeAgo'
+import {TimeAgo} from '../components/TimeAgo'
 import {useDocumentHistory} from '../panes/documentPane/documentHistory'
 
 const DISABLED_REASON_TITLE = {
@@ -30,29 +30,33 @@ function getDisabledReason(reason, publishedAt) {
 }
 
 // eslint-disable-next-line complexity
-export function PublishAction(props) {
+export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish}: any = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id)
   const {open: historyOpen, historyController} = useDocumentHistory()
-
   const hasValidationErrors = validationStatus.markers.some((marker) => marker.level === 'error')
-
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
+  const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
+  const publishPermission = useCheckDocumentPermission(id, type, 'publish')
+  const {value: currentUser} = useCurrentUser()
+
+  // eslint-disable-next-line no-nested-ternary
+  const title = publish.disabled
+    ? getDisabledReason(publish.disabled, (published || {})._updatedAt) || ''
+    : hasValidationErrors
+    ? 'There are validation errors that need to be fixed before this document can be published'
+    : ''
+
+  const hasDraft = Boolean(draft)
 
   const doPublish = useCallback(() => {
     publish.execute()
     setPublishState('publishing')
   }, [publish])
-
-  const isNeitherSyncingNorValidating = !syncState.isSyncing && !validationStatus.isValidating
-
-  const publishPermission = useCheckDocumentPermission(id, type, 'publish')
-
-  const {value: currentUser} = useCurrentUser()
 
   useEffect(() => {
     if (publishScheduled && isNeitherSyncingNorValidating) {
@@ -63,15 +67,6 @@ export function PublishAction(props) {
       setPublishScheduled(false)
     }
   }, [isNeitherSyncingNorValidating, doPublish, hasValidationErrors, publishScheduled])
-
-  // eslint-disable-next-line no-nested-ternary
-  const title = publish.disabled
-    ? getDisabledReason(publish.disabled, (published || {})._updatedAt) || ''
-    : hasValidationErrors
-    ? 'There are validation errors that need to be fixed before this document can be published'
-    : ''
-
-  const hasDraft = Boolean(draft)
 
   useEffect(() => {
     const didPublish = publishState === 'publishing' && !hasDraft
@@ -88,14 +83,6 @@ export function PublishAction(props) {
     }, delay)
     return () => clearTimeout(timer)
   }, [publishState, hasDraft, historyController, historyOpen])
-
-  const disabled = Boolean(
-    publishScheduled ||
-      publishState === 'publishing' ||
-      publishState === 'published' ||
-      hasValidationErrors ||
-      publish.disabled
-  )
 
   const handle = useCallback(() => {
     if (syncState.isSyncing || validationStatus.isValidating) {
@@ -128,6 +115,14 @@ export function PublishAction(props) {
       disabled: true,
     }
   }
+
+  const disabled = Boolean(
+    publishScheduled ||
+      publishState === 'publishing' ||
+      publishState === 'published' ||
+      hasValidationErrors ||
+      publish.disabled
+  )
 
   return {
     disabled,
