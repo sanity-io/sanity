@@ -41,6 +41,7 @@ export type ChunkType =
   | 'publish'
   | 'unpublish'
   | 'discardDraft'
+  | 'editLive'
 
 export type Chunk = {
   index: number

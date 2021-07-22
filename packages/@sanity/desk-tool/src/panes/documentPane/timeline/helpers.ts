@@ -12,6 +12,7 @@ const LABELS: {[key: string]: string} = {
   discardDraft: 'discarded draft',
   initial: 'created',
   editDraft: 'edited',
+  editLive: 'live edited',
   publish: 'published',
   unpublish: 'unpublished',
 }
@@ -22,6 +23,7 @@ const ICON_COMPONENTS: {[key: string]: React.ComponentType<Record<string, unknow
   discardDraft: CloseIcon,
   initial: PlusIcon,
   editDraft: EditIcon,
+  editLive: EditIcon,
   publish: PublishIcon,
   unpublish: UnpublishIcon,
 }

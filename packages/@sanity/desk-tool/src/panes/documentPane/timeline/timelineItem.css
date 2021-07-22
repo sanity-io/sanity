@@ -146,6 +146,11 @@
     color: var(--timeline-event-enabled-icon-edited-fg);
   }
 
+  @nest .root[data-type='editLive'] & {
+    background-color: var(--timeline-event-enabled-icon-published-bg);
+    color: var(--timeline-event-enabled-icon-published-fg);
+  }
+
   @nest .root[data-type='publish'] & {
     background-color: var(--timeline-event-enabled-icon-published-bg);
     color: var(--timeline-event-enabled-icon-published-fg);
