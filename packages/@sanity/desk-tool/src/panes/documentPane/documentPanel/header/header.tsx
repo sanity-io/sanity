@@ -1,16 +1,13 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Chunk} from '@sanity/field/diff'
+import {CloseIcon, SelectIcon, SplitHorizontalIcon} from '@sanity/icons'
 import {Path} from '@sanity/types'
-import {Layer} from '@sanity/ui'
+import {Button, Layer} from '@sanity/ui'
 import classNames from 'classnames'
 import {negate, upperFirst} from 'lodash'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
-import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import React, {useCallback, useMemo, useState} from 'react'
-import {DropdownButton} from '../../../../components/DropdownButton'
 import {useDeskToolFeatures} from '../../../../features'
 import {formatTimelineEventLabel} from '../../timeline'
 import {DocumentView} from '../../types'
@@ -147,7 +144,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                 icon={SplitHorizontalIcon}
                 kind="simple"
                 onClick={onSplitPane}
-                padding="small"
+                padding={2}
                 title="Split pane right"
                 type="button"
               />
@@ -160,7 +157,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
                 icon={CloseIcon}
                 kind="simple"
                 onClick={onCloseView}
-                padding="small"
+                padding={2}
                 title="Close pane"
                 type="button"
               />
@@ -190,20 +187,24 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
     () =>
       showVersionMenu && (
         <div className={styles.versionSelectContainer} ref={versionSelectRef}>
-          <DropdownButton
+          <Button
+            fontSize={1}
+            iconRight={SelectIcon}
+            mode="bleed"
             onMouseUp={ignoreClickOutside}
             onClick={onTimelineOpen}
             selected={isTimelineOpen && timelineMode === 'rev'}
-          >
-            {/* eslint-disable-next-line no-nested-ternary */}
-            {menuOpen ? (
-              <>Select version</>
-            ) : rev ? (
-              <TimelineButtonLabel rev={rev} />
-            ) : (
-              <>Current version</>
-            )}
-          </DropdownButton>
+            text={
+              // eslint-disable-next-line no-nested-ternary
+              menuOpen ? (
+                <>Select version</>
+              ) : rev ? (
+                <TimelineButtonLabel rev={rev} />
+              ) : (
+                <>Current version</>
+              )
+            }
+          />
         </div>
       ),
     [

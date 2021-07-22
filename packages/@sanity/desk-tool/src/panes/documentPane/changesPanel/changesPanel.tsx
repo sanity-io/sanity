@@ -12,11 +12,9 @@ import {
 } from '@sanity/field/diff'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar, ScrollContainer} from '@sanity/base/components'
-import Button from 'part:@sanity/components/buttons/default'
-import {AvatarStack} from 'part:@sanity/components/avatar'
-import {TooltipProvider} from 'part:@sanity/components/tooltip'
+import {SelectIcon} from '@sanity/icons'
+import {AvatarStack, BoundaryElementProvider, Button, Card} from '@sanity/ui'
 import React, {useCallback, useRef} from 'react'
-import {DropdownButton} from '../../../components/DropdownButton'
 import {useDocumentHistory} from '../documentHistory'
 import {formatTimelineEventLabel} from '../timeline'
 import {LoadingContent} from './content/loading'
@@ -75,18 +73,16 @@ export function ChangesPanel({
   const menuOpen = isTimelineOpen && timelineMode === 'since'
 
   return (
-    <div className={styles.root}>
+    <Card className={styles.root}>
       <header className={styles.header}>
         <div className={styles.mainNav}>
           <h2 className={styles.title}>Changes</h2>
           <div className={styles.closeButtonContainer}>
             <Button
               icon={CloseIcon}
-              kind="simple"
+              mode="bleed"
               onClick={closeHistory}
-              padding="small"
               title="Hide changes panel"
-              type="button"
             />
           </div>
         </div>
@@ -94,20 +90,24 @@ export function ChangesPanel({
         <div className={styles.versionSelectContainer}>
           <div className={styles.changesSinceSelectContainer}>
             <div ref={changesSinceSelectRef}>
-              <DropdownButton
-                onMouseUp={ignoreClickOutside}
+              <Button
+                fontSize={1}
+                iconRight={SelectIcon}
+                mode="bleed"
                 onClick={onTimelineOpen}
+                onMouseUp={ignoreClickOutside}
                 selected={isTimelineOpen && timelineMode === 'since'}
-              >
-                {/* eslint-disable-next-line no-nested-ternary */}
-                {menuOpen ? (
-                  <>Review changes since</>
-                ) : since ? (
-                  <SinceText since={since} />
-                ) : (
-                  <>Since unknown version</>
-                )}
-              </DropdownButton>
+                text={
+                  // eslint-disable-next-line no-nested-ternary
+                  menuOpen ? (
+                    <>Review changes since</>
+                  ) : since ? (
+                    <SinceText since={since} />
+                  ) : (
+                    <>Since unknown version</>
+                  )
+                }
+              />
             </div>
           </div>
 
@@ -120,11 +120,7 @@ export function ChangesPanel({
               <div className={styles.changeAuthorsContainer}>
                 <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
                   {changeAnnotations.map(({author}) => (
-                    <UserAvatar
-                      key={author}
-                      userId={author}
-                      // position="bottom"
-                    />
+                    <UserAvatar key={author} userId={author} />
                   ))}
                 </AvatarStack>
               </div>
@@ -132,7 +128,7 @@ export function ChangesPanel({
           )}
         </div>
       </header>
-      <TooltipProvider boundaryElement={scrollRef.current}>
+      <BoundaryElementProvider element={scrollRef.current}>
         <ScrollContainer className={styles.body} ref={scrollRef}>
           <Content
             diff={diff}
@@ -141,8 +137,8 @@ export function ChangesPanel({
             schemaType={schemaType}
           />
         </ScrollContainer>
-      </TooltipProvider>
-    </div>
+      </BoundaryElementProvider>
+    </Card>
   )
 }
 

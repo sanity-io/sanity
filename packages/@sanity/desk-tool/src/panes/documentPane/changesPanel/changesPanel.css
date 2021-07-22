@@ -1,9 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background: var(--component-bg);
   height: 100%;
-  display: flex;
+  &:not([hidden]) {
+    display: flex;
+  }
   flex-direction: column;
 }
 
@@ -41,15 +42,19 @@
 }
 
 .closeButtonContainer {
-  padding: var(--small-padding);
+  padding: calc(var(--small-padding) - 1px);
+  line-height: 0;
 }
 
 .changesSinceSelectContainer {
   flex: 1;
   min-width: 0;
+  margin-right: var(--small-padding);
 
   @nest & > div {
-    display: inline-block;
+    & > button {
+      max-width: 100%;
+    }
   }
 }
 
