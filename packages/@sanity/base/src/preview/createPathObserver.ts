@@ -87,6 +87,10 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     {...value}
   )
 
+  // NOTE: there may be a bug here.
+  // if an object is passed into `observePaths` and that object contains every
+  // path, those selections will never be sent to `observeFields` and will not
+  // receive update
   return observableOf(next).pipe(props({wait: true}))
 }
 

@@ -6,6 +6,7 @@ import {
   from as observableFrom,
   merge,
   Observable,
+  Subject,
   of as observableOf,
 } from 'rxjs'
 import {
@@ -16,6 +17,7 @@ import {
   publishReplay,
   refCount,
   share,
+  takeUntil,
   switchMap,
   tap,
 } from 'rxjs/operators'
@@ -27,6 +29,9 @@ import {FieldName, Id, Selection} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'
+
+const close$ = new Subject<void>()
+export const __INTERNAL_CLOSE = close$.next.bind(close$)
 
 let _globalListener
 const getGlobalEvents = () => {
@@ -53,11 +58,6 @@ const getGlobalEvents = () => {
       refCount()
     )
 
-    // This will keep the listener active forever and in turn reduce the number of initial fetches
-    // as less 'welcome' events will be emitted.
-    // @todo: see if we can delay unsubscribing or connect with some globally defined shared listener
-    welcome$.subscribe()
-
     const mutations$ = allEvents$.pipe(filter((event: any) => event.type === 'mutation'))
     _globalListener = {
       welcome$,
@@ -72,6 +72,13 @@ function listen(id: Id) {
   return merge(
     globalEvents.welcome$,
     globalEvents.mutations$.pipe(filter((event: any) => event.documentId === id))
+  ).pipe(
+    // This will keep the listener active until a global close (used internally
+    // for testing) and in turn reduce the number of initial fetches as less
+    // 'welcome' events will be emitted.
+    // @todo: see if we can delay unsubscribing or connect with some globally
+    // defined shared listener
+    takeUntil(close$)
   )
 }
 
