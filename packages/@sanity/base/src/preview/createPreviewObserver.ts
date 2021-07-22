@@ -2,7 +2,7 @@ import {of as observableOf, Observable} from 'rxjs'
 import {map, switchMap, catchError} from 'rxjs/operators'
 import {isReferenceSchemaType, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import prepareForPreview, {invokePrepare, PreparedValue} from './prepareForPreview'
-import {Reference, PrepareViewOptions} from './types'
+import {Reference, PrepareViewOptions, Path} from './types'
 import {INSUFFICIENT_PERMISSIONS_FALLBACK, InsufficientPermissionsError} from './constants'
 
 const INSUFFICIENT_PERMISSIONS = Symbol('INSUFFICIENT_PERMISSIONS')
@@ -14,7 +14,7 @@ export interface PreparedSnapshot {
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
 export function createPreviewObserver(
-  observePaths: (value: any, paths: Array<string[]>) => any,
+  observePaths: (value: any, paths: Path[]) => any,
   resolveRefType: (
     value: Reference,
     ownerType: ReferenceSchemaType
