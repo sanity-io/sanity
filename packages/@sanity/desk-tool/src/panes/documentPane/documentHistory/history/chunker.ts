@@ -76,6 +76,8 @@ export function chunkFromTransaction(transaction: Transaction): Chunk {
     // We don't really know anything more at this point since the actual
     // behavior depends on the earlier state.
     type = 'delete'
+  } else if (modifiedPublished) {
+    type = 'editLive'
   }
 
   return {
