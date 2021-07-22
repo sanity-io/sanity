@@ -250,7 +250,7 @@ export default function prepareForPreview(
       const selectedOption = listOptions.find(
         (opt) => opt.value === (rawValue as any)[selection[key]]
       )
-      acc[key] = get(selectedOption, key)
+      selectedOption ? acc[key] = selectedOption.title : delete acc[key];
       return acc
     }
     acc[key] = get(rawValue, selection[key])
