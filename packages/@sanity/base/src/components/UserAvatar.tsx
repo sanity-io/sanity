@@ -1,14 +1,14 @@
-/* eslint-disable react/require-default-props */
-
+import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from '@sanity/ui'
 import React, {useState} from 'react'
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from 'part:@sanity/components/avatar'
 import {User} from '../datastores/user/types'
 import {useUser, useUserColor} from '../hooks'
+
+type LegacyAvatarSize = 'small' | 'medium' | 'large'
 
 interface BaseProps {
   position?: AvatarPosition
   animateArrowFrom?: AvatarPosition
-  size?: AvatarSize
+  size?: LegacyAvatarSize
   status?: AvatarStatus
   tone?: 'navbar'
 }
@@ -27,6 +27,12 @@ type UserProps = LoadedUserProps | UnloadedUserProps
 
 const symbols = /[^\p{Alpha}\p{White_Space}]/gu
 const whitespace = /\p{White_Space}+/u
+
+const LEGACY_TO_UI_AVATAR_SIZES: {[key: string]: AvatarSize | undefined} = {
+  small: 0,
+  medium: 1,
+  large: 2,
+}
 
 function nameToInitials(fullName: string) {
   const namesArray = fullName.replace(symbols, '').split(whitespace)
@@ -55,17 +61,14 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
     <Avatar
       animateArrowFrom={animateArrowFrom}
       arrowPosition={position}
-      color={{
-        dark: userColor.tints[400].hex,
-        light: userColor.tints[500].hex,
-      }}
+      color={userColor.name}
+      data-legacy-tone={tone}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
       onImageLoadError={setImageLoadError}
-      size={size}
+      size={size && LEGACY_TO_UI_AVATAR_SIZES[size]}
       status={status}
       title={user?.displayName}
-      tone={tone}
     />
   )
 }
