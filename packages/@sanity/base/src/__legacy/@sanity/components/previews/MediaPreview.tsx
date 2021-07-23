@@ -46,7 +46,7 @@ export default class MediaPreview extends React.PureComponent<MediaPreviewProps>
     }
 
     return (
-      <div className={styles.root} title={title}>
+      <div className={styles.root} title={typeof title === 'string' ? title : undefined}>
         <div className={styles.padder} style={{paddingTop: `${100 / aspect}%`}} />
 
         <div className={styles.mediaContainer}>
