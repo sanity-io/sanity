@@ -1,5 +1,11 @@
 import icon from 'part:@sanity/base/user-icon'
 
+const AUTHOR_ROLES = [
+  {value: 'developer', title: 'Developer'},
+  {value: 'designer', title: 'Designer'},
+  {value: 'ops', title: 'Operations'},
+]
+
 export default {
   name: 'author',
   type: 'document',
@@ -12,13 +18,15 @@ export default {
     select: {
       title: 'name',
       awards: 'awards',
+      role: 'role',
       relatedAuthors: 'relatedAuthors',
       lastUpdated: '_updatedAt',
       media: 'image',
     },
-    prepare({title, media, awards}) {
+    prepare({title, media, awards, role}) {
+      const roleName = role ? AUTHOR_ROLES.find((option) => option.value === role) : undefined
       return {
-        title: title,
+        title: roleName ? `${title} (${roleName})` : title,
         media: media,
         subtitle: awards && awards.join(', '),
       }
@@ -42,11 +50,7 @@ export default {
       title: 'Role',
       type: 'string',
       options: {
-        list: [
-          {value: 'developer', title: 'Developer'},
-          {value: 'designer', title: 'Designer'},
-          {value: 'ops', title: 'Operations'},
-        ],
+        list: AUTHOR_ROLES,
       },
     },
     {
