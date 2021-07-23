@@ -89,7 +89,7 @@ export default (config = {}) => {
     module: {
       rules: [
         {
-          test: /(\.jsx?|\.tsx?)/,
+          test: /(\.jsx?|\.tsx?)(\?|$)/,
           exclude: /(node_modules|bower_components)/,
           use: {
             loader: resolve('babel-loader'),
