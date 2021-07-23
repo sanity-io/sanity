@@ -1,10 +1,11 @@
-import {IdPair, SanityDocument, Mutation, ReconnectEvent} from '../types'
+import {SanityDocument} from '@sanity/types'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
-import {memoizedPair} from './memoizedPair'
+import {Observable} from 'rxjs'
+import {IdPair, Mutation, ReconnectEvent} from '../types'
 import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
 import {SnapshotEvent} from '../buffered-doc/types'
 import {memoize} from '../utils/createMemoizer'
-import {Observable} from 'rxjs'
+import {memoizedPair} from './memoizedPair'
 import {DocumentVersion} from './checkoutPair'
 
 // return true if the event comes with a document snapshot

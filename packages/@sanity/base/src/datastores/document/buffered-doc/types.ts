@@ -1,5 +1,5 @@
 import {Mutation} from '@sanity/mutator'
-import {SanityDocument} from '../types'
+import {SanityDocument} from '@sanity/types'
 
 export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 

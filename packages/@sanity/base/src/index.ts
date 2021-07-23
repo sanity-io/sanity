@@ -4,3 +4,14 @@ export * from './theme'
 
 // Export document badges typings
 export {DocumentBadgeComponent, DocumentBadgeDescription} from './badges/types'
+
+// Export document actions typings
+export {
+  DocumentActionComponent,
+  ActionDescription as DocumentActionDescription,
+  DocumentActionConfirmDialogProps,
+  DocumentActionDialogProps,
+  DocumentActionModalDialogProps,
+  DocumentActionPopoverDialogProps,
+  DocumentActionProps,
+} from './actions/utils/types'
