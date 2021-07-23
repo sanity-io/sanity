@@ -11,9 +11,14 @@ import {useStructure} from '../utils/resolvePanes'
 import {LOADING_PANE} from '../constants'
 import StructureError from './StructureError'
 
+export interface IntentResolverProps {
+  params: {type: string; id: string; [key: string]: unknown}
+  payload: unknown
+}
+
 const FALLBACK_ID = '__fallback__'
 
-function removeDraftPrefix(documentId) {
+function removeDraftPrefix(documentId: string) {
   const publishedId = getPublishedId(documentId)
   if (publishedId !== documentId) {
     // eslint-disable-next-line no-console
@@ -28,7 +33,7 @@ function removeDraftPrefix(documentId) {
 /**
  *
  * This is a *very naive* implementation of an intent resolver:
- * - If type is missing from params, it'lltry to resolve from document
+ * - If type is missing from params, it'll try to resolve from document
  * - It manually builds a pane segment path: "<typeName>;<documentId>"
  * - Tries to resolve that to a structure
  * - Checks if the last pane segment is an editor, and if so; is it the right type/id?
@@ -36,7 +41,7 @@ function removeDraftPrefix(documentId) {
  *   - No : Resolves to fallback edit pane (context-less)
  */
 // eslint-disable-next-line complexity
-const IntentResolver = React.memo(function IntentResolver({params, payload}) {
+const IntentResolver = React.memo(function IntentResolver({params, payload}: IntentResolverProps) {
   const {type: specifiedSchemaType, id, ...otherParams} = params || {}
 
   const documentId = id || FALLBACK_ID
@@ -106,8 +111,11 @@ function Redirect({panes}) {
   return <Spinner center message="Redirecting…" delay={600} />
 }
 
-function useDocumentType(documentId, specifiedType) {
-  const [{documentType, isLoaded}, setDocumentType] = useState({isLoaded: false})
+function useDocumentType(documentId: string, specifiedType: string) {
+  const [{documentType, isLoaded}, setDocumentType] = useState<{
+    documentType?: string
+    isLoaded: boolean
+  }>({isLoaded: false})
   useEffect(() => {
     const sub = resolveTypeForDocument(documentId, specifiedType).subscribe((typeName) =>
       setDocumentType({documentType: typeName, isLoaded: true})
@@ -117,7 +125,7 @@ function useDocumentType(documentId, specifiedType) {
   return {documentType, isLoaded}
 }
 
-function resolveTypeForDocument(id, specifiedType) {
+function resolveTypeForDocument(id: string, specifiedType: string) {
   if (specifiedType) {
     return of(specifiedType)
   }

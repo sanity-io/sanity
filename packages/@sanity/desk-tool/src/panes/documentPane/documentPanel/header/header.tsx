@@ -142,11 +142,10 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             <div>
               <Button
                 icon={SplitHorizontalIcon}
-                kind="simple"
+                mode="bleed"
                 onClick={onSplitPane}
                 padding={2}
                 title="Split pane right"
-                type="button"
               />
             </div>
           )}
@@ -155,11 +154,10 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             <div>
               <Button
                 icon={CloseIcon}
-                kind="simple"
+                mode="bleed"
                 onClick={onCloseView}
                 padding={2}
                 title="Close pane"
-                type="button"
               />
             </div>
           )}
@@ -193,6 +191,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
             mode="bleed"
             onMouseUp={ignoreClickOutside}
             onClick={onTimelineOpen}
+            padding={2}
             selected={isTimelineOpen && timelineMode === 'rev'}
             text={
               // eslint-disable-next-line no-nested-ternary

@@ -82,6 +82,7 @@ export function ChangesPanel({
               icon={CloseIcon}
               mode="bleed"
               onClick={closeHistory}
+              padding={2}
               title="Hide changes panel"
             />
           </div>

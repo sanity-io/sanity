@@ -1,9 +1,10 @@
 import React from 'react'
-import styles from './MissingDocumentTypesMessage.css'
 
-export default function MissingDocumentTypesMessage(props) {
+export default function MissingDocumentTypesMessage() {
   return (
-    <div className={styles.root}>
+    <div
+    // className={styles.root}
+    >
       <h2>Empty schema</h2>
       <p>
         Your schema does not contain any document types. If it did, those types would be listed

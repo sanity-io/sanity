@@ -1,9 +1,13 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 
-const getUnknownTypeFallback = (id, typeName) => ({
+export interface MissingSchemaTypeProps {
+  layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
+  value: Record<string, any>
+}
+
+const getUnknownTypeFallback = (id: string, typeName: string) => ({
   title: (
     <span style={{fontStyle: 'italic'}}>
       No schema found for type &quot;
@@ -15,18 +19,10 @@ const getUnknownTypeFallback = (id, typeName) => ({
   media: WarningIcon,
 })
 
-export default class MissingSchemaType extends React.Component {
-  render() {
-    const {layout, value} = this.props
-    return (
-      <SanityDefaultPreview
-        value={getUnknownTypeFallback(value._id, value._type)}
-        layout={layout}
-      />
-    )
-  }
-}
-MissingSchemaType.propTypes = {
-  layout: PropTypes.string,
-  value: PropTypes.object,
+export default function MissingSchemaType(props: MissingSchemaTypeProps) {
+  const {layout, value} = props
+
+  return (
+    <SanityDefaultPreview value={getUnknownTypeFallback(value._id, value._type)} layout={layout} />
+  )
 }

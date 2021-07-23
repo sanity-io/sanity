@@ -1,17 +1,33 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 
-export default function enhanceWithReferringDocuments(Component) {
-  function EnhancedWithReferringDocuments(props) {
-    // eslint-disable-next-line react/no-multi-comp
-    const renderChild = ({isLoading, referringDocuments}) => (
-      <Component
-        {...props}
-        referringDocuments={referringDocuments}
-        isCheckingReferringDocuments={isLoading}
-      />
-    )
+export interface WithReferringDocumentsProps {
+  referringDocuments: Record<string, any>[]
+  isCheckingReferringDocuments: boolean
+  published?: Record<string, any>
+}
+
+export default function enhanceWithReferringDocuments<
+  ComponentProps extends WithReferringDocumentsProps
+>(WrappedComponent: React.ComponentType<ComponentProps>) {
+  function EnhancedWithReferringDocuments(
+    props: Omit<ComponentProps, 'referringDocuments' | 'isCheckingReferringDocuments'>
+  ) {
+    const renderChild = (renderProps: {
+      isLoading: boolean
+      referringDocuments: Record<string, any>
+    }) => {
+      const {isLoading, referringDocuments} = renderProps
+
+      const componentProps: ComponentProps = {
+        ...(props as ComponentProps),
+        referringDocuments,
+        isCheckingReferringDocuments: isLoading,
+      }
+
+      return <WrappedComponent {...componentProps} />
+    }
+
     return props.published ? (
       <WithReferringDocuments id={props.published._id}>{renderChild}</WithReferringDocuments>
     ) : (
@@ -20,10 +36,8 @@ export default function enhanceWithReferringDocuments(Component) {
   }
 
   EnhancedWithReferringDocuments.displayName = `enhanceWithReferringDocuments(${
-    Component.displayName || Component.name
+    WrappedComponent.displayName || WrappedComponent.name || 'WrappedComponent'
   })`
-  EnhancedWithReferringDocuments.propTypes = {
-    published: PropTypes.object,
-  }
+
   return EnhancedWithReferringDocuments
 }

@@ -1,11 +1,18 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
 import React from 'react'
-import PropTypes from 'prop-types'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {SerializeError} from '@sanity/structure'
-import ErrorIcon from 'part:@sanity/base/error-icon'
-import styles from './StructureError.css'
 
-function formatStack(stack) {
+export interface StructureErrorProps {
+  error: {
+    message: string
+    stack: string
+    path?: Array<string | number>
+    helpId?: string
+  }
+}
+
+function formatStack(stack: string) {
   return (
     stack
       // Prettify builder functions
@@ -19,7 +26,7 @@ function formatStack(stack) {
   )
 }
 
-export default function StructureError(props) {
+export default function StructureError(props: StructureErrorProps) {
   const {path, helpId, message, stack} = props.error
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
@@ -29,30 +36,63 @@ export default function StructureError(props) {
     !(props.error instanceof SerializeError) && !message.includes('Module build failed:')
 
   return (
-    <div className={styles.root}>
-      <h2 className={styles.title}>Encountered an error while reading structure</h2>
+    <div
+    // className={styles.root}
+    >
+      <h2
+      // className={styles.title}
+      >
+        Encountered an error while reading structure
+      </h2>
 
-      <div className={styles.body}>
-        <h2 className={styles.path}>
+      <div
+      // className={styles.body}
+      >
+        <h2
+        // className={styles.path}
+        >
           {path &&
             path.map((segment, i) => (
-              <span key={i} className={styles.segment}>
-                <span className={styles.pathSegmentProperty}>{segment}</span>
+              <span
+                key={i}
+                // className={styles.segment}
+              >
+                <span
+                // className={styles.pathSegmentProperty}
+                >
+                  {segment}
+                </span>
               </span>
             ))}
         </h2>
-        <div className={styles.problem}>
-          <div className={styles.problemSeverity}>
-            <span className={styles.problemSeverityIcon}>
-              <ErrorIcon />
+        <div
+        // className={styles.problem}
+        >
+          <div
+          // className={styles.problemSeverity}
+          >
+            <span
+            // className={styles.problemSeverityIcon}
+            >
+              <ErrorOutlineIcon />
             </span>
-            <span className={styles.problemSeverityText}>Error</span>
+            <span
+            // className={styles.problemSeverityText}
+            >
+              Error
+            </span>
           </div>
-          <div className={styles.problemContent}>
-            <div className={styles.problemMessage}>{showStack ? formatStack(stack) : message}</div>
+          <div
+          // className={styles.problemContent}
+          >
+            <div
+            // className={styles.problemMessage}
+            >
+              {showStack ? formatStack(stack) : message}
+            </div>
             {helpId && (
               <a
-                className={styles.problemLink}
+                // className={styles.problemLink}
                 href={generateHelpUrl(helpId)}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -65,13 +105,4 @@ export default function StructureError(props) {
       </div>
     </div>
   )
-}
-
-StructureError.propTypes = {
-  error: PropTypes.shape({
-    message: PropTypes.string.isRequired,
-    stack: PropTypes.string.isRequired,
-    path: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
-    helpId: PropTypes.string,
-  }).isRequired,
 }

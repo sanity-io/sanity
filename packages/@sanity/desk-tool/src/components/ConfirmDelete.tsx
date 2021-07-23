@@ -1,22 +1,23 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
-import PropTypes from 'prop-types'
 import React from 'react'
-import enhanceWithReferringDocuments from './enhanceWithReferringDocuments'
+import enhanceWithReferringDocuments, {
+  WithReferringDocumentsProps,
+} from './enhanceWithReferringDocuments'
 import DocTitle from './DocTitle'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
-export default enhanceWithReferringDocuments(
-  class ConfirmDelete extends React.PureComponent {
-    static propTypes = {
-      onCancel: PropTypes.func.isRequired,
-      onConfirm: PropTypes.func.isRequired,
-      published: PropTypes.object,
-      draft: PropTypes.object,
-      referringDocuments: PropTypes.array,
-      isCheckingReferringDocuments: PropTypes.bool,
-    }
+export interface ConfirmDeleteProps extends WithReferringDocumentsProps {
+  onCancel: () => void
+  onConfirm: () => void
+  published?: Record<string, any>
+  draft?: Record<string, any>
+  // referringDocuments: Record<string, any>[]
+  // isCheckingReferringDocuments?: boolean
+}
 
+export default enhanceWithReferringDocuments(
+  class ConfirmDelete extends React.PureComponent<ConfirmDeleteProps> {
     render() {
       const {
         isCheckingReferringDocuments,
@@ -30,7 +31,7 @@ export default enhanceWithReferringDocuments(
       const hasReferringDocuments = referringDocuments.length > 0
       const showConfirmButton = !isCheckingReferringDocuments
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
-      const docTitle = <DocTitle document={draft || published} />
+      const docTitle = <DocTitle document={(draft || published) as any} />
 
       return (
         <Dialog header={title} id="confirm-delete-dialog" width={1}>

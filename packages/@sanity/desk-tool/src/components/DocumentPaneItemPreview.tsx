@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import React from 'react'
-import PropTypes from 'prop-types'
-import {combineLatest, concat, of} from 'rxjs'
+import {combineLatest, concat, of, Subscription} from 'rxjs'
 import {assignWith} from 'lodash'
 import {map} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -9,9 +10,25 @@ import {SanityDefaultPreview, observeForPreview} from 'part:@sanity/base/preview
 import NotPublishedStatus from './NotPublishedStatus'
 import DraftStatus from './DraftStatus'
 
-const isLiveEditEnabled = (schemaType) => schemaType.liveEdit === true
+export interface DocumentPaneItemPreviewProps {
+  icon: React.FunctionComponent | boolean
+  layout: 'inline' | 'block' | 'default' | 'card' | 'media'
+  schemaType: any
+  value: Record<string, any>
+}
 
-const getStatusIndicator = (draft, published) => {
+export interface DocumentPaneItemPreviewState {
+  isLoading?: boolean
+  draft?: Record<string, any> | null
+  published?: Record<string, any> | null
+}
+
+const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
+
+const getStatusIndicator = (
+  draft?: Record<string, any> | null,
+  published?: Record<string, any> | null
+) => {
   if (draft) {
     return DraftStatus
   }
@@ -28,8 +45,17 @@ const getMissingDocumentFallback = (item) => ({
   media: WarningIcon,
 })
 
-const getValueWithFallback = ({value, draft, published}) => {
+const getValueWithFallback = ({
+  value,
+  draft,
+  published,
+}: {
+  value: Record<string, any>
+  draft?: Record<string, any> | null
+  published?: Record<string, any> | null
+}): Record<string, any> => {
   const snapshot = draft || published
+
   if (!snapshot) {
     return getMissingDocumentFallback(value)
   }
@@ -39,11 +65,16 @@ const getValueWithFallback = ({value, draft, published}) => {
   })
 }
 
-export default class DocumentPaneItemPreview extends React.Component {
-  state = {}
+export default class DocumentPaneItemPreview extends React.Component<
+  DocumentPaneItemPreviewProps,
+  DocumentPaneItemPreviewState
+> {
+  state: DocumentPaneItemPreviewState = {}
 
-  constructor(props) {
-    super()
+  subscription: Subscription
+
+  constructor(props: DocumentPaneItemPreviewProps) {
+    super(props)
     const {value, schemaType} = props
     const {title} = value
     let sync = true
@@ -52,12 +83,32 @@ export default class DocumentPaneItemPreview extends React.Component {
       combineLatest([
         isLiveEditEnabled(schemaType)
           ? of({snapshot: null})
-          : observeForPreview({_id: getDraftId(value._id)}, schemaType),
-        observeForPreview({_id: getPublishedId(value._id)}, schemaType),
+          : observeForPreview(
+              // @todo: fix typings
+              {_id: getDraftId(value._id)} as any,
+              schemaType
+            ),
+        observeForPreview(
+          // @todo: fix typings
+          {_id: getPublishedId(value._id)} as any,
+          schemaType
+        ),
       ]).pipe(
         map(([draft, published]) => ({
-          draft: draft.snapshot ? {title, ...draft.snapshot} : null,
-          published: published.snapshot ? {title, ...published.snapshot} : null,
+          draft: draft.snapshot
+            ? {
+                // @ts-ignore
+                title,
+                ...draft.snapshot,
+              }
+            : null,
+          published: published.snapshot
+            ? {
+                // @ts-ignore
+                title,
+                ...published.snapshot,
+              }
+            : null,
           isLoading: false,
         }))
       )
@@ -83,7 +134,7 @@ export default class DocumentPaneItemPreview extends React.Component {
 
     return (
       <SanityDefaultPreview
-        value={getValueWithFallback({isLoading, value, schemaType, draft, published})}
+        value={getValueWithFallback({value, draft, published})}
         isPlaceholder={isLoading}
         icon={icon}
         layout={layout}
@@ -92,11 +143,4 @@ export default class DocumentPaneItemPreview extends React.Component {
       />
     )
   }
-}
-
-DocumentPaneItemPreview.propTypes = {
-  layout: PropTypes.string,
-  icon: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-  value: PropTypes.object,
-  schemaType: PropTypes.object,
 }

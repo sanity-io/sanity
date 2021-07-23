@@ -1,11 +1,16 @@
-import PropTypes from 'prop-types'
 import {streamingComponent} from 'react-props-stream'
 import {map, switchMap, scan, filter} from 'rxjs/operators'
-import {merge} from 'rxjs'
+import {merge, Observable} from 'rxjs'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 
-const DocumentSnapshots = streamingComponent((props$) => {
+export interface DocumentSnapshotsProps {
+  id: string
+  paths: string[]
+  children: (props: {draft: Record<string, any>; published: Record<string, any>}) => React.ReactNode
+}
+
+const DocumentSnapshots = streamingComponent((props$: Observable<DocumentSnapshotsProps>) => {
   return props$.pipe(
     switchMap((props) =>
       merge(
@@ -14,16 +19,10 @@ const DocumentSnapshots = streamingComponent((props$) => {
       ).pipe(
         scan((prev, res) => ({...prev, ...res}), {}),
         filter((res) => 'draft' in res && 'published' in res),
-        map((res) => props.children(res))
+        map((res) => props.children(res as any))
       )
     )
   )
 })
-
-DocumentSnapshots.propTypes = {
-  id: PropTypes.string.isRequired,
-  paths: PropTypes.arrayOf(PropTypes.string),
-  children: PropTypes.func.isRequired,
-}
 
 export default DocumentSnapshots

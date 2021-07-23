@@ -1,7 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {streamingComponent} from 'react-props-stream'
-import {merge, from, of} from 'rxjs'
+import {merge, from, of, Observable} from 'rxjs'
 import {map, switchMap, scan, filter, mergeMap} from 'rxjs/operators'
 import {uniq, uniqBy} from 'lodash'
 import DefaultPane from 'part:@sanity/components/panes/default'
@@ -12,11 +11,35 @@ import PanePopover from 'part:@sanity/components/dialogs/pane-popover'
 import styles from './BrokenReferences.css'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
-function BrokenRefs(props) {
+interface DocRef {
+  id: string
+  type: string
+  hasDraft: boolean
+}
+
+export interface BrokenRefsProps {
+  schema?: any
+  type?: any
+  document?: any
+  documents: DocRef[]
+  // BrokenRefs.propTypes = {
+  //   schema: PropTypes.any,
+  //   type: PropTypes.any,
+  //   document: PropTypes.any,
+  //   documents: PropTypes.arrayOf(
+  //     PropTypes.shape({
+  //       id: PropTypes.string.isRequired,
+  //       hasDraft: PropTypes.bool.isRequired,
+  //     })
+  //   ),
+  // }
+}
+
+function BrokenRefs(props: BrokenRefsProps) {
   const {documents, type, schema} = props
   const schemaType = schema.get(type)
   const {unpublished, nonExistent} = documents.reduce(
-    (groups, doc) => {
+    (groups: {unpublished: DocRef[]; nonExistent: DocRef[]}, doc: DocRef) => {
       const group = doc.hasDraft ? groups.unpublished : groups.nonExistent
       group.push(doc)
       return groups
@@ -60,9 +83,9 @@ function BrokenRefs(props) {
             a new document.`}
           >
             <ReferringDocumentsList
-              documents={unpublished.map(({id, type, hasDraft}) => ({
+              documents={unpublished.map(({id, type: _type, hasDraft}) => ({
                 _id: `drafts.${id}`,
-                _type: type,
+                _type: _type,
                 _hasDraft: hasDraft,
               }))}
             />
@@ -76,55 +99,44 @@ function BrokenRefs(props) {
   )
 }
 
-BrokenRefs.propTypes = {
-  schema: PropTypes.any,
-  type: PropTypes.any,
-  document: PropTypes.any,
-  documents: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      hasDraft: PropTypes.bool.isRequired,
-    })
-  ),
-}
-
 // @todo consider adding a progress indicator instead?
-const BrokenReferences = streamingComponent((props$) =>
-  props$.pipe(
-    switchMap((props) => {
-      const ids = findReferences(props.document)
-      const {type, schema} = props
-      if (!ids.length) {
-        return of(props.children)
-      }
+const BrokenReferences = streamingComponent(
+  (props$: Observable<{children?: React.ReactNode; document: any; schema: any; type: any}>) =>
+    props$.pipe(
+      switchMap((props) => {
+        const ids = findReferences(props.document)
+        const {type, schema} = props
+        if (!ids.length) {
+          return of(props.children)
+        }
 
-      return from(ids).pipe(
-        mergeMap(checkExistance),
-        scan((prev, curr) => uniqBy([curr, ...prev], 'id'), []),
-        filter((docs) => docs.length === ids.length),
-        map((docs) => docs.filter(isMissingPublished)),
-        map((broken) =>
-          broken.length > 0 ? (
-            <BrokenRefs documents={broken} type={type} schema={schema} />
-          ) : (
-            props.children
+        return from(ids).pipe(
+          mergeMap(checkExistance) as any,
+          scan((prev, curr) => uniqBy([curr, ...prev], 'id') as any, []),
+          filter((docs) => docs.length === ids.length),
+          map((docs) => docs.filter(isMissingPublished)),
+          map((broken) =>
+            broken.length > 0 ? (
+              <BrokenRefs documents={broken} type={type} schema={schema} />
+            ) : (
+              props.children
+            )
           )
         )
-      )
-    })
-  )
+      })
+    )
 )
 
-function checkExistance(id) {
+function checkExistance(id: string) {
   return merge(
     observePaths(getDraftId(id), ['_type']).pipe(map((draft) => ({draft}))),
     observePaths(getPublishedId(id), ['_type']).pipe(map((published) => ({published})))
   ).pipe(
-    scan((prev, res) => ({...prev, ...res}), {}),
+    scan((prev: Record<string, any>, res: Record<string, any>) => ({...prev, ...res}), {}),
     filter((res) => 'draft' in res && 'published' in res),
     map((res) => ({
       id,
-      type: getDocumentType(res),
+      type: getDocumentType(res as any),
       hasDraft: Boolean(res.draft),
       hasPublished: Boolean(res.published),
     }))
@@ -156,7 +168,7 @@ function extractStrongReferences(value) {
     return Object.keys(value).reduce(
       (refs, key) =>
         key === '_ref' && !value._weak
-          ? [...refs, value[key]]
+          ? ([...refs, value[key]] as any)
           : [...refs, ...extractStrongReferences(value[key])],
       []
     )

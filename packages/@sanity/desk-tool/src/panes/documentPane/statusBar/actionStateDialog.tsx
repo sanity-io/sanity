@@ -1,13 +1,20 @@
-import {ButtonColor, DialogAction} from '@sanity/base/__legacy/@sanity/components'
-import {useToast} from '@sanity/ui'
+import {Box, Button, ButtonTone, Dialog, DialogProps, Popover, useToast} from '@sanity/ui'
 import React, {useCallback, useEffect} from 'react'
-import Dialog from 'part:@sanity/components/dialogs/default'
-import PopoverDialog from 'part:@sanity/components/dialogs/popover'
+
+// @todo: rename these to @sanity/ui button tones when possible (breaking change)
+type LegacyButtonColor = 'primary' | 'success' | 'danger' | 'white' | 'warning'
+
+const LEGACY_DIALOG_COLOR: {[key: string]: ButtonTone | undefined} = {
+  primary: 'primary',
+  success: 'positive',
+  danger: 'critical',
+  warning: 'caution',
+}
 
 // Todo: move these to action spec/core types
 interface ConfirmDialogProps {
   type: 'confirm'
-  color: ButtonColor
+  color: LegacyButtonColor
   message: React.ReactNode
   onConfirm: () => void
   onCancel: () => void
@@ -17,8 +24,16 @@ interface ConfirmDialogProps {
 interface ModalDialogProps {
   type: 'modal'
   content: React.ReactNode
+  /**
+   * @beta
+   */
+  header?: DialogProps['header']
   onClose: () => void
   showCloseButton: true
+  /**
+   * @beta
+   */
+  width?: DialogProps['width']
 }
 
 // Todo: move these to action spec/core types
@@ -61,26 +76,23 @@ interface Props {
 
 export function ActionStateDialog(props: Props) {
   const {dialog, referenceElement} = props
-  const {push} = useToast()
+  const {push: pushToast} = useToast()
 
-  const handleDialogAction = useCallback(
-    (action: DialogAction) => {
-      if (dialog.type === 'confirm') {
-        if (action.key === 'cancel') {
-          dialog.onCancel()
-        }
+  const handleCancel = useCallback(() => {
+    if (dialog.type === 'confirm') {
+      dialog.onCancel()
+    }
+  }, [dialog])
 
-        if (action.key === 'confirm') {
-          dialog.onConfirm()
-        }
-      }
-    },
-    [dialog]
-  )
+  const handleConfirm = useCallback(() => {
+    if (dialog.type === 'confirm') {
+      dialog.onConfirm()
+    }
+  }, [dialog])
 
   useEffect(() => {
     if (dialog.type === 'success') {
-      push({
+      pushToast({
         closable: true,
         status: 'success',
         title: dialog.title,
@@ -90,7 +102,7 @@ export function ActionStateDialog(props: Props) {
     }
 
     if (dialog.type === 'error') {
-      push({
+      pushToast({
         closable: true,
         status: 'error',
         onClose: dialog.onClose,
@@ -98,7 +110,7 @@ export function ActionStateDialog(props: Props) {
         description: dialog.content,
       })
     }
-  }, [dialog, push])
+  }, [dialog, pushToast])
 
   if (dialog.type === 'legacy') {
     return <>{dialog.content}</>
@@ -106,59 +118,81 @@ export function ActionStateDialog(props: Props) {
 
   if (dialog.type === 'confirm') {
     return (
-      <PopoverDialog
-        actions={[
-          {
-            key: 'confirm',
-            color: dialog.color || 'danger',
-            title: 'Confirm',
-          },
-          {
-            key: 'cancel',
-            kind: 'simple',
-            title: 'Cancel',
-          },
-        ]}
-        hasAnimation
-        onAction={handleDialogAction}
-        onClickOutside={dialog.onCancel}
-        onEscape={dialog.onCancel}
+      <Popover
+        content={
+          <div>
+            <div>{dialog.message}</div>
+            <div>
+              <Button onClick={handleCancel} mode="ghost" text="Cancel" />
+              <Button
+                onClick={handleConfirm}
+                text="Confirm"
+                tone={LEGACY_DIALOG_COLOR[dialog.color] || 'critical'}
+              />
+            </div>
+          </div>
+        }
+        open
         placement="auto-end"
         referenceElement={referenceElement}
-        size="small"
-        useOverlay={false}
-      >
-        <div>{dialog.message}</div>
-      </PopoverDialog>
+      />
     )
+    // return (
+    //   <PopoverDialog
+    //     actions={[
+    //       {
+    //         key: 'confirm',
+    //         color: dialog.color || 'danger',
+    //         title: 'Confirm',
+    //       },
+    //       {
+    //         key: 'cancel',
+    //         kind: 'simple',
+    //         title: 'Cancel',
+    //       },
+    //     ]}
+    //     hasAnimation
+    //     onAction={handleDialogAction}
+    //     onClickOutside={dialog.onCancel}
+    //     onEscape={dialog.onCancel}
+    //     placement="auto-end"
+    //     referenceElement={referenceElement}
+    //     size="small"
+    //     useOverlay={false}
+    //   >
+    //     <div>{dialog.message}</div>
+    //   </PopoverDialog>
+    // )
   }
 
   if (dialog.type === 'modal') {
     return (
       <Dialog
+        header={dialog.header}
+        id="modal"
         onClose={dialog.onClose}
         onClickOutside={dialog.onClose}
-        showCloseButton={dialog.showCloseButton}
-        size="medium"
-        padding="large"
+        // __unstable_hideCloseButton={!dialog.showCloseButton}
+        width={dialog.width}
       >
-        {dialog.content}
+        <Box padding={4}>{dialog.content}</Box>
       </Dialog>
     )
   }
 
   if (dialog.type === 'popover') {
     return (
-      <PopoverDialog
-        onClickOutside={dialog.onClose}
-        onEscape={dialog.onClose}
-        placement="auto-end"
-        useOverlay={false}
-        hasAnimation
-        referenceElement={referenceElement}
-      >
-        {dialog.content}
-      </PopoverDialog>
+      <Popover content={dialog.content} placement="auto-end" referenceElement={referenceElement} />
+      // <PopoverDialog
+      //   onClickOutside={dialog.onClose}
+      //   onEscape={dialog.onClose}
+      //   placement="auto-end"
+      //   useOverlay={false}
+      //   hasAnimation
+      //   referenceElement={referenceElement}
+      // >
+      //   {dialog.content}
+      // </PopoverDialog>
     )
   }
 
@@ -177,10 +211,11 @@ export function ActionStateDialog(props: Props) {
 
   return (
     <Dialog
+      id="dialog"
       onClose={unknownDialog.onClose}
       onClickOutside={unknownDialog.onClose}
-      size="medium"
-      padding="large"
+      // size="medium"
+      // padding="large"
     >
       {unknownDialog.content || (
         <>

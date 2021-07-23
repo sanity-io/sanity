@@ -1,11 +1,12 @@
 import React from 'react'
 import {useTimeAgo} from '@sanity/base/hooks'
 
-interface Props {
+export interface TimeAgoProps {
   time: string | Date
 }
 
-export default function TimeAgo({time}: Props) {
+export default function TimeAgo({time}: TimeAgoProps) {
   const timeAgo = useTimeAgo(time)
+
   return <span title={timeAgo}>{timeAgo} ago</span>
 }

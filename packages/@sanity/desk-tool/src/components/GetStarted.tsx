@@ -1,11 +1,16 @@
 import React from 'react'
-import styles from './GetStarted.css'
+// import styles from './GetStarted.css'
 
 const GetStarted = () => {
   return (
-    <div className={styles.content}>
+    <div
+    // className={styles.content}
+    >
       <h1>Get started</h1>
-      <p className={styles.lead}>
+
+      <p
+      // className={styles.lead}
+      >
         Your schema needs a <code>type</code> or two for us to have anything to show here.
       </p>
 

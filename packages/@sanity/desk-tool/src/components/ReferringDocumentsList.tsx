@@ -1,11 +1,15 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {EditIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import Preview from 'part:@sanity/base/preview'
 import schema from 'part:@sanity/base/schema'
 import {useRouter} from 'part:@sanity/base/router'
-import DraftStatus from './DraftStatus'
 
-export default function ReferringDocumentsList(props) {
+export interface ReferringDocumentsListProps {
+  documents: Record<string, any>[]
+}
+
+export default function ReferringDocumentsList(props: ReferringDocumentsListProps) {
   const {documents} = props
 
   return (
@@ -19,7 +23,11 @@ export default function ReferringDocumentsList(props) {
   )
 }
 
-function DocumentPreviewLink(props) {
+export interface DocumentPreviewLinkProps {
+  document: Record<string, any>
+}
+
+function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   const {document} = props
   const router = useRouter()
   const intent = useMemo(
@@ -48,7 +56,18 @@ function DocumentPreviewLink(props) {
 
   return (
     <Card as="a" href={href} onClick={handleClick} padding={1} radius={2}>
-      <Preview status={document._hasDraft && <DraftStatus />} type={schemaType} value={document} />
+      <Flex align="center">
+        <Box flex={1}>
+          <Preview layout="default" type={schemaType} value={document} />
+        </Box>
+        {document._hasDraft && (
+          <Box marginLeft={3}>
+            <Text muted>
+              <EditIcon />
+            </Text>
+          </Box>
+        )}
+      </Flex>
     </Card>
   )
 }

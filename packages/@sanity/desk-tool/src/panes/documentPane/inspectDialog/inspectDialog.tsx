@@ -58,12 +58,16 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
   return (
     <FullScreenDialog
       title={
-        <span>
-          Inspecting{' '}
-          <em>
-            <DocTitle document={value} />
-          </em>
-        </span>
+        value ? (
+          <span>
+            Inspecting{' '}
+            <em>
+              <DocTitle document={value} />
+            </em>
+          </span>
+        ) : (
+          <em>No value</em>
+        )
       }
       onClose={onClose}
     >
