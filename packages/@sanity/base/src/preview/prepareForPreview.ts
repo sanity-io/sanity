@@ -1,4 +1,4 @@
-import type {SchemaType} from '@sanity/types'
+import {isTitledListValue, SchemaType, TitledListValue} from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_FALLBACK} from './constants'
 import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
@@ -228,32 +228,63 @@ function withErrors(result, type, selectedValue): PreparedValue {
   return INVALID_PREVIEW_FALLBACK
 }
 
+interface EnumListOptions {
+  list: TitledListValue[] | unknown[]
+}
+
+function hasEnumListOptions(
+  type: SchemaType
+): type is SchemaType & {options: SchemaType['options'] & EnumListOptions} {
+  const options = type.options && typeof type.options === 'object' ? type.options : false
+  if (!options || !('list' in options)) {
+    return false
+  }
+
+  const listOptions = (options as EnumListOptions).list
+  return Array.isArray(listOptions)
+}
+
+function getListOptions(type: SchemaType): TitledListValue[] | undefined {
+  if (!hasEnumListOptions(type)) {
+    return undefined
+  }
+
+  const listOptions = type.options.list as EnumListOptions['list']
+  return listOptions.map((option) =>
+    isTitledListValue(option) ? option : {title: option, value: option}
+  )
+}
+
 export default function prepareForPreview(
   rawValue: unknown,
   type: SchemaType,
   viewOptions: PrepareViewOptions = {}
 ): PreparedValue {
+  const hasCustomPrepare = typeof type.preview?.prepare === 'function'
   const selection = type.preview?.select || {}
   const targetKeys = Object.keys(selection)
 
   const selectedValue = targetKeys.reduce((acc, key) => {
     // Find the field the value belongs to
     const typeWithFields = 'fields' in type ? type : null
-    const valueField = typeWithFields?.fields?.find((f) => f.name === selection[key])
+    const targetFieldName = selection[key]
+    const valueField = typeWithFields?.fields?.find((f) => f.name === targetFieldName)
+    const listOptions = valueField && getListOptions(valueField.type)
 
-    // Check if predefined options exist
-    const options = valueField?.type?.options
-    const listOptions = options && typeof options === 'object' ? (options as any).list : null
-
-    if (listOptions) {
+    // If the user has _not_ specified a `prepare()` function for the preview, and the
+    // field type has an `options.list`, we want to use the title of the selected item
+    // as the preview value. If, however, there _is_ a custom `prepare()`, we leave this
+    // mapping up to the user to perform should they want to. This is both to maintain
+    // backwards compatiblity, but also to allow using the raw value for prepare operations
+    if (!hasCustomPrepare && listOptions) {
       // Find the selected option that matches the raw value
-      const selectedOption = listOptions.find(
-        (opt) => opt.value === (rawValue as any)[selection[key]]
-      )
-      selectedOption ? acc[key] = selectedOption.title : delete acc[key];
-      return acc
+      const selectedOption =
+        listOptions && listOptions.find((opt) => opt.value === get(rawValue, selection[key]))
+      acc[key] = selectedOption ? selectedOption.title : get(rawValue, selection[key])
+    } else {
+      acc[key] = get(rawValue, selection[key])
     }
-    acc[key] = get(rawValue, selection[key])
+
     return acc
   }, {})
 
