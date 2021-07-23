@@ -9,7 +9,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import {versionedClient} from '../versionedClient'
 import {useStructure} from '../utils/resolvePanes'
 import {LOADING_PANE} from '../constants'
-import StructureError from './StructureError'
+import {StructureError} from './StructureError'
 
 export interface IntentResolverProps {
   params: {type: string; id: string; [key: string]: unknown}
@@ -41,7 +41,10 @@ function removeDraftPrefix(documentId: string) {
  *   - No : Resolves to fallback edit pane (context-less)
  */
 // eslint-disable-next-line complexity
-const IntentResolver = React.memo(function IntentResolver({params, payload}: IntentResolverProps) {
+export const IntentResolver = React.memo(function IntentResolver({
+  params,
+  payload,
+}: IntentResolverProps) {
   const {type: specifiedSchemaType, id, ...otherParams} = params || {}
 
   const documentId = id || FALLBACK_ID
@@ -137,5 +140,3 @@ function resolveTypeForDocument(id: string, specifiedType: string) {
     .fetch(query, {documentId, draftId})
     .pipe(map((types) => types[0]))
 }
-
-export default IntentResolver

@@ -6,19 +6,19 @@ import {interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
   resolvePanes,
   loadStructure,
   maybeSerialize,
   setStructureResolveError,
 } from '../utils/resolvePanes'
-import DeskToolPanes from './DeskToolPanes'
-import StructureError from '../components/StructureError'
+import {StructureError} from '../components/StructureError'
 import {calculatePanesEquality} from '../utils/calculatePanesEquality'
 import isNarrowScreen from '../utils/isNarrowScreen'
 import windowWidth$ from '../utils/windowWidth'
 import {LOADING_PANE} from '../constants'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import DeskToolPanes from './DeskToolPanes'
 
 const EMPTY_PANE_KEYS = []
 

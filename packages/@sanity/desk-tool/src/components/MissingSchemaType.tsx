@@ -1,25 +1,28 @@
+import {WarningOutlineIcon} from '@sanity/icons'
+import {SanityDocument} from '@sanity/types'
 import React from 'react'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
-import WarningIcon from 'part:@sanity/base/warning-icon'
 
 export interface MissingSchemaTypeProps {
   layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
-  value: Record<string, any>
+  value: SanityDocument
 }
 
 const getUnknownTypeFallback = (id: string, typeName: string) => ({
   title: (
-    <span style={{fontStyle: 'italic'}}>
-      No schema found for type &quot;
-      {typeName}
-      &quot;
-    </span>
+    <em>
+      No schema found for type <code>{typeName}</code>
+    </em>
   ),
-  subtitle: <span style={{fontStyle: 'italic'}}>Document: {id}</span>,
-  media: WarningIcon,
+  subtitle: (
+    <em>
+      Document: <code>{id}</code>
+    </em>
+  ),
+  media: WarningOutlineIcon,
 })
 
-export default function MissingSchemaType(props: MissingSchemaTypeProps) {
+export function MissingSchemaType(props: MissingSchemaTypeProps) {
   const {layout, value} = props
 
   return (

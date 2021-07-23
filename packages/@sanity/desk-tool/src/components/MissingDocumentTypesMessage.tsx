@@ -1,12 +1,11 @@
+import {Heading, Stack, Text} from '@sanity/ui'
 import React from 'react'
 
-export default function MissingDocumentTypesMessage() {
+export function MissingDocumentTypesMessage() {
   return (
-    <div
-    // className={styles.root}
-    >
-      <h2>Empty schema</h2>
-      <p>
+    <Stack space={4}>
+      <Heading as="h2">Empty schema</Heading>
+      <Text as="p">
         Your schema does not contain any document types. If it did, those types would be listed
         here.{' '}
         <a
@@ -18,7 +17,7 @@ export default function MissingDocumentTypesMessage() {
           Read more about how to add schema types
         </a>
         .
-      </p>
-    </div>
+      </Text>
+    </Stack>
   )
 }

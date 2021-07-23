@@ -5,7 +5,7 @@ export interface TimeAgoProps {
   time: string | Date
 }
 
-export default function TimeAgo({time}: TimeAgoProps) {
+export function TimeAgo({time}: TimeAgoProps) {
   const timeAgo = useTimeAgo(time)
 
   return <span title={timeAgo}>{timeAgo} ago</span>

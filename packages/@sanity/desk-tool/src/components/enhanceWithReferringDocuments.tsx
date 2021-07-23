@@ -1,15 +1,18 @@
+import {SanityDocument} from '@sanity/types'
 import React from 'react'
 import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 
 export interface WithReferringDocumentsProps {
   referringDocuments: Record<string, any>[]
   isCheckingReferringDocuments: boolean
-  published?: Record<string, any>
+  published?: SanityDocument | null
 }
 
-export default function enhanceWithReferringDocuments<
-  ComponentProps extends WithReferringDocumentsProps
->(WrappedComponent: React.ComponentType<ComponentProps>) {
+export function enhanceWithReferringDocuments<ComponentProps extends WithReferringDocumentsProps>(
+  WrappedComponent: React.ComponentType<ComponentProps>
+): React.ComponentType<
+  Omit<ComponentProps, 'referringDocuments' | 'isCheckingReferringDocuments'>
+> {
   function EnhancedWithReferringDocuments(
     props: Omit<ComponentProps, 'referringDocuments' | 'isCheckingReferringDocuments'>
   ) {

@@ -7,17 +7,15 @@ export interface DocTitleProps {
   document: SanityDocument
 }
 
-function ShowTitle({title}: {title?: string}) {
-  return <span>{title}</span>
-}
+const renderTitle = ({title}: {title?: string}) => <span>{title}</span>
 
-export default function DocTitle(props: DocTitleProps) {
+export function DocTitle(props: DocTitleProps) {
   const {document} = props
   const type = schema.get(document._type)
 
   return (
     <PreviewFields document={document} type={type} fields={['title']}>
-      {ShowTitle}
+      {renderTitle}
     </PreviewFields>
   )
 }

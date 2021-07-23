@@ -1,3 +1,4 @@
+import {Box, Card, Inline, Text} from '@sanity/ui'
 import React from 'react'
 import {streamingComponent} from 'react-props-stream'
 import {merge, from, of, Observable} from 'rxjs'
@@ -8,8 +9,7 @@ import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import FormBuilder from 'part:@sanity/form-builder'
 import PanePopover from 'part:@sanity/components/dialogs/pane-popover'
-import styles from './BrokenReferences.css'
-import ReferringDocumentsList from './ReferringDocumentsList'
+import {ReferringDocumentsList} from './ReferringDocumentsList'
 
 interface DocRef {
   id: string
@@ -20,24 +20,13 @@ interface DocRef {
 export interface BrokenRefsProps {
   schema?: any
   type?: any
-  document?: any
   documents: DocRef[]
-  // BrokenRefs.propTypes = {
-  //   schema: PropTypes.any,
-  //   type: PropTypes.any,
-  //   document: PropTypes.any,
-  //   documents: PropTypes.arrayOf(
-  //     PropTypes.shape({
-  //       id: PropTypes.string.isRequired,
-  //       hasDraft: PropTypes.bool.isRequired,
-  //     })
-  //   ),
-  // }
 }
 
 function BrokenRefs(props: BrokenRefsProps) {
   const {documents, type, schema} = props
   const schemaType = schema.get(type)
+
   const {unpublished, nonExistent} = documents.reduce(
     (groups: {unpublished: DocRef[]; nonExistent: DocRef[]}, doc: DocRef) => {
       const group = doc.hasDraft ? groups.unpublished : groups.nonExistent
@@ -49,9 +38,10 @@ function BrokenRefs(props: BrokenRefsProps) {
 
   const renderNonExisting = nonExistent.length > 0
   const renderUnpublished = !renderNonExisting
+
   return (
     <DefaultPane title={`New ${type}`} isScrollable={false}>
-      <div className={styles.brokenReferences}>
+      <Box>
         {renderNonExisting && (
           <PanePopover
             icon
@@ -62,15 +52,16 @@ function BrokenRefs(props: BrokenRefsProps) {
               nonExistent.length === 1 ? 'A document' : 'Documents'
             } with the following ID${nonExistent.length === 1 ? ' was' : 's were'} not found:`}
           >
-            <ul className={styles.tagList}>
+            <Inline space={1}>
               {nonExistent.map((doc) => (
-                <li className={styles.tagItem} key={doc.id}>
-                  {doc.id}
-                </li>
+                <Card key={doc.id} padding={2} radius={2} tone="critical">
+                  <Text>{doc.id}</Text>
+                </Card>
               ))}
-            </ul>
+            </Inline>
           </PanePopover>
         )}
+
         {renderUnpublished && (
           <PanePopover
             icon
@@ -91,16 +82,17 @@ function BrokenRefs(props: BrokenRefsProps) {
             />
           </PanePopover>
         )}
-      </div>
-      <form className={styles.editor}>
+      </Box>
+
+      <Box as="form" paddingX={4}>
         <FormBuilder readOnly type={schemaType} schema={schema} />
-      </form>
+      </Box>
     </DefaultPane>
   )
 }
 
 // @todo consider adding a progress indicator instead?
-const BrokenReferences = streamingComponent(
+export const BrokenReferences = streamingComponent(
   (props$: Observable<{children?: React.ReactNode; document: any; schema: any; type: any}>) =>
     props$.pipe(
       switchMap((props) => {
@@ -111,7 +103,7 @@ const BrokenReferences = streamingComponent(
         }
 
         return from(ids).pipe(
-          mergeMap(checkExistance) as any,
+          mergeMap(checkExistence) as any,
           scan((prev, curr) => uniqBy([curr, ...prev], 'id') as any, []),
           filter((docs) => docs.length === ids.length),
           map((docs) => docs.filter(isMissingPublished)),
@@ -127,7 +119,7 @@ const BrokenReferences = streamingComponent(
     )
 )
 
-function checkExistance(id: string) {
+function checkExistence(id: string) {
   return merge(
     observePaths(getDraftId(id), ['_type']).pipe(map((draft) => ({draft}))),
     observePaths(getPublishedId(id), ['_type']).pipe(map((published) => ({published})))
@@ -180,5 +172,3 @@ function extractStrongReferences(value) {
 function dedupeReferences(refs) {
   return uniq(refs.map((ref) => (ref || '').replace(/^drafts\./, '')))
 }
-
-export default BrokenReferences

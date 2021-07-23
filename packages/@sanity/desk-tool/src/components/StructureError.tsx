@@ -1,7 +1,8 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {SerializeError} from '@sanity/structure'
+import {Box, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
+import React from 'react'
+import styled from 'styled-components'
 
 export interface StructureErrorProps {
   error: {
@@ -11,6 +12,13 @@ export interface StructureErrorProps {
     helpId?: string
   }
 }
+
+const PathSegment = styled.span`
+  &:not(:last-child)::after {
+    content: ' ➝ ';
+    opacity: 0.5;
+  }
+`
 
 function formatStack(stack: string) {
   return (
@@ -26,8 +34,8 @@ function formatStack(stack: string) {
   )
 }
 
-export default function StructureError(props: StructureErrorProps) {
-  const {path, helpId, message, stack} = props.error
+export function StructureError(props: StructureErrorProps) {
+  const {path = [], helpId, message, stack} = props.error
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
   // usually not helpful. Build errors in dev (with HMR) usually also contains a bunch of garbage
@@ -36,73 +44,38 @@ export default function StructureError(props: StructureErrorProps) {
     !(props.error instanceof SerializeError) && !message.includes('Module build failed:')
 
   return (
-    <div
-    // className={styles.root}
-    >
-      <h2
-      // className={styles.title}
-      >
-        Encountered an error while reading structure
-      </h2>
+    <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
+      <Container>
+        <Heading as="h2">Encountered an error while reading structure</Heading>
 
-      <div
-      // className={styles.body}
-      >
-        <h2
-        // className={styles.path}
-        >
-          {path &&
-            path.map((segment, i) => (
-              <span
-                key={i}
-                // className={styles.segment}
-              >
-                <span
-                // className={styles.pathSegmentProperty}
-                >
-                  {segment}
-                </span>
-              </span>
-            ))}
-        </h2>
-        <div
-        // className={styles.problem}
-        >
-          <div
-          // className={styles.problemSeverity}
-          >
-            <span
-            // className={styles.problemSeverityIcon}
-            >
-              <ErrorOutlineIcon />
-            </span>
-            <span
-            // className={styles.problemSeverityText}
-            >
-              Error
-            </span>
-          </div>
-          <div
-          // className={styles.problemContent}
-          >
-            <div
-            // className={styles.problemMessage}
-            >
-              {showStack ? formatStack(stack) : message}
-            </div>
-            {helpId && (
-              <a
-                // className={styles.problemLink}
-                href={generateHelpUrl(helpId)}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                View documentation
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+        <Card marginTop={4} padding={4} radius={2} shadow={1} tone="inherit">
+          {path.length > 0 && (
+            <Stack space={2}>
+              <Label>Structure path</Label>
+              <Code>
+                {path.map((segment, i) => (
+                  <PathSegment key={i}>{segment}</PathSegment>
+                ))}
+              </Code>
+            </Stack>
+          )}
+
+          <Stack marginTop={4} space={2}>
+            <Label>Error</Label>
+            <Code>{showStack ? formatStack(stack) : message}</Code>
+          </Stack>
+
+          {helpId && (
+            <Box marginTop={4}>
+              <Text>
+                <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
+                  View documentation
+                </a>
+              </Text>
+            </Box>
+          )}
+        </Card>
+      </Container>
+    </Card>
   )
 }

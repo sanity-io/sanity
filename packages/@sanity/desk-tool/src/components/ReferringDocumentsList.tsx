@@ -9,7 +9,7 @@ export interface ReferringDocumentsListProps {
   documents: Record<string, any>[]
 }
 
-export default function ReferringDocumentsList(props: ReferringDocumentsListProps) {
+export function ReferringDocumentsList(props: ReferringDocumentsListProps) {
   const {documents} = props
 
   return (
@@ -23,7 +23,7 @@ export default function ReferringDocumentsList(props: ReferringDocumentsListProp
   )
 }
 
-export interface DocumentPreviewLinkProps {
+interface DocumentPreviewLinkProps {
   document: Record<string, any>
 }
 

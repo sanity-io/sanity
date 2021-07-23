@@ -1,82 +1,24 @@
-import {Box, Button, ButtonTone, Dialog, DialogProps, Popover, useToast} from '@sanity/ui'
+import {useId} from '@reach/auto-id'
+import {DocumentActionDialogProps} from '@sanity/base'
+import {Box, Button, ButtonTone, Dialog, Popover, useToast} from '@sanity/ui'
 import React, {useCallback, useEffect} from 'react'
 
-// @todo: rename these to @sanity/ui button tones when possible (breaking change)
-type LegacyButtonColor = 'primary' | 'success' | 'danger' | 'white' | 'warning'
-
-const LEGACY_DIALOG_COLOR: {[key: string]: ButtonTone | undefined} = {
-  primary: 'primary',
+const LEGACY_DIALOG_TO_UI_COLOR: {[key: string]: ButtonTone | undefined} = {
+  info: 'primary',
   success: 'positive',
   danger: 'critical',
   warning: 'caution',
 }
 
-// Todo: move these to action spec/core types
-interface ConfirmDialogProps {
-  type: 'confirm'
-  color: LegacyButtonColor
-  message: React.ReactNode
-  onConfirm: () => void
-  onCancel: () => void
-}
-
-// Todo: move these to action spec/core types
-interface ModalDialogProps {
-  type: 'modal'
-  content: React.ReactNode
-  /**
-   * @beta
-   */
-  header?: DialogProps['header']
-  onClose: () => void
-  showCloseButton: true
-  /**
-   * @beta
-   */
-  width?: DialogProps['width']
-}
-
-// Todo: move these to action spec/core types
-interface PopoverDialogProps {
-  type: 'popover'
-  content: React.ReactNode
-  onClose: () => void
-}
-
-interface LegacyDialogProps {
-  type: 'legacy'
-  content: React.ReactNode
-  onClose: () => void
-}
-
-interface ErrorDialogProps {
-  type: 'error'
-  title: string
-  content: React.ReactNode
-  onClose: () => void
-}
-
-interface SuccessDialogProps {
-  type: 'success'
-  title: string
-  content: React.ReactNode
-  onClose: () => void
-}
-
-interface Props {
-  dialog:
-    | ConfirmDialogProps
-    | LegacyDialogProps
-    | ModalDialogProps
-    | PopoverDialogProps
-    | ErrorDialogProps
-    | SuccessDialogProps
+export interface ActionStateDialogProps {
+  dialog: DocumentActionDialogProps
   referenceElement: HTMLElement | null
 }
 
-export function ActionStateDialog(props: Props) {
+export function ActionStateDialog(props: ActionStateDialogProps) {
   const {dialog, referenceElement} = props
   const {push: pushToast} = useToast()
+  const dialogId = useId() || ''
 
   const handleCancel = useCallback(() => {
     if (dialog.type === 'confirm') {
@@ -127,7 +69,7 @@ export function ActionStateDialog(props: Props) {
               <Button
                 onClick={handleConfirm}
                 text="Confirm"
-                tone={LEGACY_DIALOG_COLOR[dialog.color] || 'critical'}
+                tone={dialog.color ? LEGACY_DIALOG_TO_UI_COLOR[dialog.color] : 'critical'}
               />
             </div>
           </div>
@@ -169,7 +111,7 @@ export function ActionStateDialog(props: Props) {
     return (
       <Dialog
         header={dialog.header}
-        id="modal"
+        id={dialogId}
         onClose={dialog.onClose}
         onClickOutside={dialog.onClose}
         // __unstable_hideCloseButton={!dialog.showCloseButton}
@@ -211,17 +153,18 @@ export function ActionStateDialog(props: Props) {
 
   return (
     <Dialog
-      id="dialog"
+      id={dialogId}
       onClose={unknownDialog.onClose}
       onClickOutside={unknownDialog.onClose}
-      // size="medium"
-      // padding="large"
+      width={2}
     >
-      {unknownDialog.content || (
-        <>
-          Unexpected dialog type (<code>{unknownDialog.type}</code>)
-        </>
-      )}
+      <Box padding={4}>
+        {unknownDialog.content || (
+          <>
+            Unexpected dialog type (<code>{unknownDialog.type}</code>)
+          </>
+        )}
+      </Box>
     </Dialog>
   )
 }

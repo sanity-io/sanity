@@ -10,19 +10,21 @@ export interface DocumentSnapshotsProps {
   children: (props: {draft: Record<string, any>; published: Record<string, any>}) => React.ReactNode
 }
 
-const DocumentSnapshots = streamingComponent((props$: Observable<DocumentSnapshotsProps>) => {
-  return props$.pipe(
-    switchMap((props) =>
-      merge(
-        observePaths(getDraftId(props.id), props.paths).pipe(map((draft) => ({draft}))),
-        observePaths(getPublishedId(props.id), props.paths).pipe(map((published) => ({published})))
-      ).pipe(
-        scan((prev, res) => ({...prev, ...res}), {}),
-        filter((res) => 'draft' in res && 'published' in res),
-        map((res) => props.children(res as any))
+export const DocumentSnapshots = streamingComponent(
+  (props$: Observable<DocumentSnapshotsProps>) => {
+    return props$.pipe(
+      switchMap((props) =>
+        merge(
+          observePaths(getDraftId(props.id), props.paths).pipe(map((draft) => ({draft}))),
+          observePaths(getPublishedId(props.id), props.paths).pipe(
+            map((published) => ({published}))
+          )
+        ).pipe(
+          scan((prev, res) => ({...prev, ...res}), {}),
+          filter((res) => 'draft' in res && 'published' in res),
+          map((res) => props.children(res as any))
+        )
       )
     )
-  )
-})
-
-export default DocumentSnapshots
+  }
+)
