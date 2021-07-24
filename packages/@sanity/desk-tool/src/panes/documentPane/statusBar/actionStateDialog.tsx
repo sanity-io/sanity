@@ -1,14 +1,12 @@
 import {useId} from '@reach/auto-id'
 import {DocumentActionDialogProps} from '@sanity/base'
-import {Box, Button, ButtonTone, Dialog, Popover, useToast} from '@sanity/ui'
-import React, {useCallback, useEffect} from 'react'
-
-const LEGACY_DIALOG_TO_UI_COLOR: {[key: string]: ButtonTone | undefined} = {
-  info: 'primary',
-  success: 'positive',
-  danger: 'critical',
-  warning: 'caution',
-}
+import {Box, Dialog} from '@sanity/ui'
+import React from 'react'
+import {ConfirmDialog} from './dialogs/ConfirmDialog'
+import {DeprecatedErrorDialog} from './dialogs/DeprecatedErrorDialog'
+import {DeprecatedSuccessDialog} from './dialogs/DeprecatedSuccessDialog'
+import {ModalDialog} from './dialogs/ModalDialog'
+import {PopoverDialog} from './dialogs/PopoverDialog'
 
 export interface ActionStateDialogProps {
   dialog: DocumentActionDialogProps
@@ -17,133 +15,31 @@ export interface ActionStateDialogProps {
 
 export function ActionStateDialog(props: ActionStateDialogProps) {
   const {dialog, referenceElement} = props
-  const {push: pushToast} = useToast()
   const dialogId = useId() || ''
 
-  const handleCancel = useCallback(() => {
-    if (dialog.type === 'confirm') {
-      dialog.onCancel()
-    }
-  }, [dialog])
-
-  const handleConfirm = useCallback(() => {
-    if (dialog.type === 'confirm') {
-      dialog.onConfirm()
-    }
-  }, [dialog])
-
-  useEffect(() => {
-    if (dialog.type === 'success') {
-      pushToast({
-        closable: true,
-        status: 'success',
-        title: dialog.title,
-        description: dialog.content,
-        onClose: dialog.onClose,
-      })
-    }
-
-    if (dialog.type === 'error') {
-      pushToast({
-        closable: true,
-        status: 'error',
-        onClose: dialog.onClose,
-        title: dialog.title,
-        description: dialog.content,
-      })
-    }
-  }, [dialog, pushToast])
-
+  // @todo: rename this type type "component" or "node"?
   if (dialog.type === 'legacy') {
     return <>{dialog.content}</>
   }
 
   if (dialog.type === 'confirm') {
-    return (
-      <Popover
-        content={
-          <div>
-            <div>{dialog.message}</div>
-            <div>
-              <Button onClick={handleCancel} mode="ghost" text="Cancel" />
-              <Button
-                onClick={handleConfirm}
-                text="Confirm"
-                tone={dialog.color ? LEGACY_DIALOG_TO_UI_COLOR[dialog.color] : 'critical'}
-              />
-            </div>
-          </div>
-        }
-        open
-        placement="auto-end"
-        referenceElement={referenceElement}
-      />
-    )
-    // return (
-    //   <PopoverDialog
-    //     actions={[
-    //       {
-    //         key: 'confirm',
-    //         color: dialog.color || 'danger',
-    //         title: 'Confirm',
-    //       },
-    //       {
-    //         key: 'cancel',
-    //         kind: 'simple',
-    //         title: 'Cancel',
-    //       },
-    //     ]}
-    //     hasAnimation
-    //     onAction={handleDialogAction}
-    //     onClickOutside={dialog.onCancel}
-    //     onEscape={dialog.onCancel}
-    //     placement="auto-end"
-    //     referenceElement={referenceElement}
-    //     size="small"
-    //     useOverlay={false}
-    //   >
-    //     <div>{dialog.message}</div>
-    //   </PopoverDialog>
-    // )
+    return <ConfirmDialog dialog={dialog} referenceElement={referenceElement} />
   }
 
   if (dialog.type === 'modal') {
-    return (
-      <Dialog
-        header={dialog.header}
-        id={dialogId}
-        onClose={dialog.onClose}
-        onClickOutside={dialog.onClose}
-        // __unstable_hideCloseButton={!dialog.showCloseButton}
-        width={dialog.width}
-      >
-        <Box padding={4}>{dialog.content}</Box>
-      </Dialog>
-    )
+    return <ModalDialog dialog={dialog} />
   }
 
   if (dialog.type === 'popover') {
-    return (
-      <Popover content={dialog.content} placement="auto-end" referenceElement={referenceElement} />
-      // <PopoverDialog
-      //   onClickOutside={dialog.onClose}
-      //   onEscape={dialog.onClose}
-      //   placement="auto-end"
-      //   useOverlay={false}
-      //   hasAnimation
-      //   referenceElement={referenceElement}
-      // >
-      //   {dialog.content}
-      // </PopoverDialog>
-    )
+    return <PopoverDialog dialog={dialog} referenceElement={referenceElement} />
   }
 
   if (dialog.type === 'success') {
-    return null
+    return <DeprecatedSuccessDialog dialog={dialog} />
   }
 
   if (dialog.type === 'error') {
-    return null
+    return <DeprecatedErrorDialog dialog={dialog} />
   }
 
   const unknownDialog: any = dialog
