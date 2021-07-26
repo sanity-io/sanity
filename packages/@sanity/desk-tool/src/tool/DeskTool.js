@@ -57,7 +57,12 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired,
     }
 
-    state = {isResolving: true, hasNarrowScreen: isNarrowScreen(), panes: null}
+    state = {
+      // eslint-disable-next-line react/no-unused-state
+      isResolving: true,
+      hasNarrowScreen: isNarrowScreen(),
+      panes: null,
+    }
 
     constructor(props) {
       super(props)
@@ -69,7 +74,11 @@ export default withRouterHOC(
       const router = this.props.router
       const paneSegments = router.state.panes || []
 
-      this.setState({panes, isResolving: false})
+      this.setState({
+        panes,
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: false,
+      })
 
       if (panes.length < paneSegments.length) {
         router.navigate(
@@ -85,7 +94,11 @@ export default withRouterHOC(
       // Log error for proper stacktraces
       console.error(error) // eslint-disable-line no-console
 
-      this.setState({error, isResolving: false})
+      this.setState({
+        error,
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: false,
+      })
     }
 
     derivePanes(props, fromIndex = [0, 0]) {
@@ -93,7 +106,10 @@ export default withRouterHOC(
         this.paneDeriver.unsubscribe()
       }
 
-      this.setState({isResolving: true})
+      this.setState({
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: true,
+      })
       this.paneDeriver = loadStructure()
         .pipe(
           distinctUntilChanged(),
