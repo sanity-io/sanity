@@ -66,6 +66,7 @@ import {
   fieldValidationInferReproSharedObject,
   fieldValidationInferReproDoc,
 } from './fieldValidationInferRepro'
+import conditionalFields from './conditionalFields'
 
 export default createSchema({
   name: 'test-examples',
@@ -90,6 +91,7 @@ export default createSchema({
     customNumber,
     booleans,
     objects,
+    conditionalFields,
     fieldsets,
     datetime,
     date,
