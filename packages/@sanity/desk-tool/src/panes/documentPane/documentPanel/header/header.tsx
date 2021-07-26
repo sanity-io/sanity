@@ -1,7 +1,7 @@
 import {useTimeAgo} from '@sanity/base/hooks'
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import {Chunk} from '@sanity/field/diff'
-import {CloseIcon, SelectIcon, SplitHorizontalIcon} from '@sanity/icons'
+import {CloseIcon, SelectIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Path} from '@sanity/types'
 import {Button, Layer} from '@sanity/ui'
 import classNames from 'classnames'
@@ -141,7 +141,7 @@ export function DocumentPanelHeader(props: DocumentPanelHeaderProps) {
           {onSplitPane && views.length > 1 && (
             <div>
               <Button
-                icon={SplitHorizontalIcon}
+                icon={SplitVerticalIcon}
                 mode="bleed"
                 onClick={onSplitPane}
                 padding={2}
