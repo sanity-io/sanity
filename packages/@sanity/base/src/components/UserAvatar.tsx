@@ -68,7 +68,6 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
       onImageLoadError={setImageLoadError}
       size={size && LEGACY_TO_UI_AVATAR_SIZES[size]}
       status={status}
-      title={user?.displayName}
     />
   )
 }
