@@ -52,7 +52,6 @@ export default {
           type: 'string',
           description: 'This is a string field',
           // readOnly: true,
-          hidden: true,
         },
         {
           name: 'field2',
@@ -66,8 +65,7 @@ export default {
           type: 'myObject',
           title: 'A field of myObject 2',
           description: 'This is another field of "myObject"',
-          // readOnly: true,
-          hidden: true,
+          hidden: ({parent}) => parent?.field1 === 'hide-field-3',
         },
       ],
     },
