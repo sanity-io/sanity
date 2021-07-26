@@ -97,6 +97,7 @@ export function ChangesPanel({
                 mode="bleed"
                 onClick={onTimelineOpen}
                 onMouseUp={ignoreClickOutside}
+                padding={2}
                 selected={isTimelineOpen && timelineMode === 'since'}
                 text={
                   // eslint-disable-next-line no-nested-ternary
@@ -116,15 +117,14 @@ export function ChangesPanel({
             <DiffTooltip
               annotations={changeAnnotations}
               description="Changes by"
-              placement="bottom"
+              placement="bottom-end"
+              fallbackPlacements={['top-end', 'bottom-end']}
             >
-              <div className={styles.changeAuthorsContainer}>
-                <AvatarStack className={styles.changeAuthorsAvatarStack} maxLength={4}>
-                  {changeAnnotations.map(({author}) => (
-                    <UserAvatar key={author} userId={author} />
-                  ))}
-                </AvatarStack>
-              </div>
+              <AvatarStack maxLength={4}>
+                {changeAnnotations.map(({author}) => (
+                  <UserAvatar key={author} userId={author} />
+                ))}
+              </AvatarStack>
             </DiffTooltip>
           )}
         </div>

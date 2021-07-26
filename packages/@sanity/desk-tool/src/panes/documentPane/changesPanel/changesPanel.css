@@ -61,20 +61,12 @@
 .versionSelectContainer {
   padding: var(--extra-small-padding) var(--small-padding);
   padding-right: calc(var(--medium-padding) - var(--extra-small-padding) + 1px);
-  margin-top: calc(0 - var(--small-padding));
   display: flex;
   align-items: center;
 
   @nest & > button {
     display: block;
   }
-}
-
-.changeAuthorsContainer {
-  margin-left: auto;
-}
-
-.changeAuthorsAvatarStack {
 }
 
 .body {
