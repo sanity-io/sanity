@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import {Transaction, MendozaPatch, ChunkType, Chunk} from './types'
+import {Transaction, MendozaEffectPair, MendozaPatch, ChunkType, Chunk} from './types'
 
 function canMergeEdit(type: ChunkType) {
   return type === 'create' || type === 'editDraft'
@@ -60,25 +60,76 @@ export function mergeChunk(left: Chunk, right: Chunk): Chunk | [Chunk, Chunk] {
   return [left, {...right, draftState, publishedState}]
 }
 
+type ChunkState = 'unedited' | 'deleted' | 'upsert'
+function getChunkState(effect?: MendozaEffectPair): ChunkState {
+  const modified = Boolean(effect)
+  const deleted = effect && isDeletePatch(effect?.apply)
+
+  if (deleted) {
+    return 'deleted'
+  }
+
+  if (modified) {
+    return 'upsert'
+  }
+
+  return 'unedited'
+}
+
+/*
+ * getChunkType tries to determine what effect the given transaction had on the document
+ * More information about the logic can be found here https://github.com/sanity-io/sanity/pull/2633#issuecomment-886461812
+ *
+ * |                    | draft unedited | draft deleted | draft upsert |
+ * |--------------------|----------------|---------------|--------------|
+ * | published unedited | X              | delete        | editDraft    |
+ * | published deleted  | delete         | delete        | delete       |
+ * | published upsert   | liveEdit       | publish       | liveEdit     |
+ */
+function getChunkType(transaction: Transaction): ChunkType {
+  const draftState = getChunkState(transaction.draftEffect)
+  const publishedState = getChunkState(transaction.publishedEffect)
+
+  if (publishedState === 'unedited') {
+    if (draftState === 'deleted') {
+      return 'delete'
+    }
+
+    if (draftState === 'upsert') {
+      return 'editDraft'
+    }
+  }
+
+  if (publishedState === 'deleted') {
+    return 'delete'
+  }
+
+  if (publishedState === 'upsert') {
+    if (draftState === 'unedited') {
+      return 'editLive'
+    }
+
+    if (draftState === 'deleted') {
+      return 'publish'
+    }
+
+    if (draftState === 'upsert') {
+      return 'editLive'
+    }
+  }
+
+  return 'editLive'
+}
+
 export function chunkFromTransaction(transaction: Transaction): Chunk {
-  const modifiedDraft = Boolean(transaction.publishedEffect)
+  const modifiedDraft = Boolean(transaction.draftEffect)
   const modifiedPublished = Boolean(transaction.publishedEffect)
 
   const draftDeleted = transaction.draftEffect && isDeletePatch(transaction.draftEffect.apply)
   const publishedDeleted =
     transaction.publishedEffect && isDeletePatch(transaction.publishedEffect.apply)
 
-  let type: ChunkType = 'editDraft'
-
-  if (draftDeleted && modifiedPublished && !publishedDeleted) {
-    type = 'publish'
-  } else if (draftDeleted || publishedDeleted) {
-    // We don't really know anything more at this point since the actual
-    // behavior depends on the earlier state.
-    type = 'delete'
-  } else if (modifiedPublished) {
-    type = 'editLive'
-  }
+  const type = getChunkType(transaction)
 
   return {
     index: 0,
