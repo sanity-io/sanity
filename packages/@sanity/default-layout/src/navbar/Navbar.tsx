@@ -69,7 +69,7 @@ export default function Navbar(props: Props) {
   const createAnyPermission = unstable_useCanCreateAnyOf(documentTypes)
 
   return (
-    <div className={className} data-search-open={searchIsOpen}>
+    <Card className={className} data-search-open={searchIsOpen} scheme="dark">
       <div className={styles.hamburger}>
         <Button
           aria-label="Open menu"
@@ -170,6 +170,6 @@ export default function Navbar(props: Props) {
           tone="navbar"
         />
       </div>
-    </div>
+    </Card>
   )
 }
