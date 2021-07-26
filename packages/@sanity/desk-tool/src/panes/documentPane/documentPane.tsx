@@ -1,5 +1,5 @@
 import {MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
-import {DialogProvider, Layer} from '@sanity/ui'
+import {BoundaryElementProvider, DialogProvider, Layer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import classNames from 'classnames'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -74,7 +74,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     compareValue,
     views = [],
   } = props
-  const rootRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
   const {historyController, setTimelineMode, timelineMode, open, displayed} = useDocumentHistory()
   const historyState = historyController.selectionState
@@ -177,7 +177,7 @@ export function DocumentPane(props: DocumentPaneProps) {
           isCollapsed && styles.isCollapsed,
           isSelected ? styles.isActive : styles.isDisabled,
         ])}
-        rootRef={rootRef}
+        rootRef={setRootElement}
       >
         <DialogProvider position={['fixed', 'absolute']} zOffset={zOffsets.portal}>
           <ChangeConnectorRoot
@@ -211,7 +211,7 @@ export function DocumentPane(props: DocumentPaneProps) {
                 onTimelineOpen={handleTimelineRev}
                 paneTitle={paneTitle}
                 published={published}
-                rootElement={rootRef.current}
+                rootElement={rootElement}
                 schemaType={schemaType}
                 timelineMode={timelineMode}
                 toggleInspect={toggleInspect}
@@ -224,16 +224,18 @@ export function DocumentPane(props: DocumentPaneProps) {
 
             {features.reviewChanges && !isCollapsed && isChangesOpen && (
               <div className={styles.changesContainer}>
-                <ChangesPanel
-                  changesSinceSelectRef={changesSinceSelectRef}
-                  documentId={documentId}
-                  isTimelineOpen={isTimelineOpen}
-                  loading={historyState === 'loading'}
-                  onTimelineOpen={handleTimelineSince}
-                  schemaType={schemaType}
-                  since={historyController.sinceTime}
-                  timelineMode={timelineMode}
-                />
+                <BoundaryElementProvider element={rootElement}>
+                  <ChangesPanel
+                    changesSinceSelectRef={changesSinceSelectRef}
+                    documentId={documentId}
+                    isTimelineOpen={isTimelineOpen}
+                    loading={historyState === 'loading'}
+                    onTimelineOpen={handleTimelineSince}
+                    schemaType={schemaType}
+                    since={historyController.sinceTime}
+                    timelineMode={timelineMode}
+                  />
+                </BoundaryElementProvider>
               </div>
             )}
           </ChangeConnectorRoot>

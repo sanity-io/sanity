@@ -5,11 +5,11 @@ import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
 import {ActionStateDialog} from '../statusBar'
 
-interface ResponderProps extends React.ComponentProps<'div'> {
+interface KeyboardShortcutResponderProps extends React.ComponentProps<'div'> {
   states: any[]
   activeIndex: number
   onActionStart: (index: number) => void
-  rootRef: React.MutableRefObject<HTMLDivElement | null>
+  rootRef: React.Ref<HTMLDivElement>
 }
 
 function KeyboardShortcutResponder({
@@ -20,7 +20,7 @@ function KeyboardShortcutResponder({
   onActionStart,
   rootRef,
   ...rest
-}: ResponderProps) {
+}: KeyboardShortcutResponderProps) {
   const active = states[activeIndex]
 
   const handleKeyDown = useCallback(
@@ -64,14 +64,14 @@ function KeyboardShortcutResponder({
   )
 }
 
-interface Props {
+interface DocumentActionShortcutsProps {
   id: string
   type: string
-  rootRef: React.MutableRefObject<HTMLDivElement | null>
+  rootRef: React.Ref<HTMLDivElement>
 }
 
 export const DocumentActionShortcuts = React.memo(
-  (props: Props & React.HTMLProps<HTMLDivElement>) => {
+  (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
     const {id, type, children, ...rest} = props
     const editState = useEditState(id, type)
     const [activeIndex, setActiveIndex] = useState(-1)
