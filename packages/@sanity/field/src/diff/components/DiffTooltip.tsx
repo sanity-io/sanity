@@ -32,7 +32,7 @@ export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotations
 }
 
 function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
-  const {annotations, children, description = 'Changed', placement = 'auto'} = props
+  const {annotations, children, description = 'Changed', ...restProps} = props
 
   if (!annotations) {
     return children
@@ -55,9 +55,10 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
     <LegacyLayerProvider zOffset="paneFooter">
       <Tooltip
         content={content}
+        data-placement={restProps.placement}
         portal
         allowedAutoPlacements={['top', 'bottom']}
-        placement={placement}
+        {...restProps}
       >
         {children}
       </Tooltip>
