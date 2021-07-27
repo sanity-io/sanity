@@ -99,7 +99,7 @@ export const ObjectInput = memo(
 
     const renderField = React.useCallback(
       (field: ObjectField, fieldLevel: number, index: number) => {
-        if (!filterField(type, field) || field.type.hidden) {
+        if (!filterField(type, field) || field.type.hidden === true) {
           return null
         }
 
