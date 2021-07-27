@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
-import {Schema, SchemaType} from '@sanity/types'
+import {Path, SanityDocument, Schema, SchemaType} from '@sanity/types'
 import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
+import {DocumentContext} from './contexts/document'
+import {NodePathContext} from './contexts/nodePath'
+import {emptyArray} from './utils/empty'
+
+const EMPTY_PATH: Path = emptyArray()
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -51,7 +56,7 @@ function memoize(method) {
 
 interface Props {
   schema: Schema
-  value?: unknown
+  value: SanityDocument
   children: any
   filterField?: any
   patchChannel: {
@@ -61,11 +66,13 @@ interface Props {
   resolvePreviewComponent: (type: SchemaType) => React.ComponentType<any>
 }
 
+export const createPatchChannel = () => {
+  const channel = pubsub<{snapshot: SanityDocument; patches: Patch[]}>()
+  return {onPatch: channel.subscribe, receivePatches: channel.publish}
+}
+
 export default class FormBuilderContext extends React.Component<Props> {
-  static createPatchChannel = () => {
-    const channel = pubsub<{snapshot: any; patches: Patch[]}>()
-    return {onPatch: channel.subscribe, receivePatches: channel.publish}
-  }
+  static createPatchChannel = createPatchChannel
 
   static childContextTypes = {
     getValuePath: PropTypes.func,
@@ -74,12 +81,7 @@ export default class FormBuilderContext extends React.Component<Props> {
     formBuilder: PropTypes.shape({
       schema: PropTypes.object,
       resolveInputComponent: PropTypes.func,
-      document: PropTypes.any,
     }),
-  }
-
-  getDocument = () => {
-    return this.props.value
   }
 
   resolveInputComponent = memoizeMap((type) => {
@@ -96,7 +98,7 @@ export default class FormBuilderContext extends React.Component<Props> {
     const {schema, filterField, patchChannel} = this.props
     return {
       filterField: filterField,
-      getValuePath: () => [],
+      getValuePath: () => EMPTY_PATH,
       formBuilder: {
         onPatch: patchChannel
           ? patchChannel.onPatch
@@ -112,12 +114,17 @@ export default class FormBuilderContext extends React.Component<Props> {
         schema,
         resolveInputComponent: this.resolveInputComponent,
         resolvePreviewComponent: this.resolvePreviewComponent,
-        getDocument: this.getDocument,
       },
     }
   })
 
   render() {
-    return this.props.children
+    return (
+      <DocumentContext.Provider value={this.props.value}>
+        <NodePathContext.Provider value={EMPTY_PATH}>
+          {this.props.children}
+        </NodePathContext.Provider>
+      </DocumentContext.Provider>
+    )
   }
 }

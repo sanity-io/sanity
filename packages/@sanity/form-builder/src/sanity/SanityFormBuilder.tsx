@@ -1,9 +1,10 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import {Marker, Path, Schema, SchemaType} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormBuilderInput} from '../FormBuilderInput'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import {DelegateInput, setFrom} from '../../DelegateInput'
 
 type PatchChannel = {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -30,7 +31,32 @@ type Props = {
 
 const EMPTY = []
 
-export default class SanityFormBuilder extends React.Component<Props> {
+function Input(props) {
+  const {onChange} = props
+  const handleChange = useCallback(
+    (event) => {
+      onChange(setFrom(event.currentTarget.value, event))
+    },
+    [onChange]
+  )
+  return <input type="string" onChange={handleChange} />
+}
+
+export default function SanityFormBuilder(props: Props) {
+  return (
+    <DelegateInput
+      type={props.type}
+      path={['myObject', 'first']}
+      value={undefined}
+      onChange={() => {}}
+      input={Input}
+    />
+  )
+}
+
+SanityFormBuilder.createPatchChannel = SanityFormBuilderContext.createPatchChannel
+
+class _SanityFormBuilder extends React.Component<Props> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
 
   _input: FormBuilderInput | null

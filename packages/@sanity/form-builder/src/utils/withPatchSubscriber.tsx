@@ -4,6 +4,7 @@ import React from 'react'
 import shallowEquals from 'shallow-equals'
 import {get, find} from 'lodash'
 import {Patch} from '../patch/types'
+import {NodePathContext} from '../contexts/nodePath'
 
 function isSegmentEqual(segment1, segment2) {
   const segment1Type = typeof segment1
@@ -59,7 +60,7 @@ export default function withPatchSubscriber(ComposedComponent: any) {
     _input: typeof ComposedComponent
     static displayName = `withPatches(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
-      getValuePath: PropTypes.func,
+      getValuePath: NodePathContext,
       formBuilder: PropTypes.any,
     }
     subscribe = (subscriber: Subscriber) => {

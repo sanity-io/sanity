@@ -29,6 +29,7 @@ import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {AssetBackground} from './styles'
+import {NodePathContext} from '../../../contexts/nodePath'
 
 type Field = {
   name: string
@@ -72,7 +73,7 @@ type Focusable = {
 
 export default class FileInput extends React.PureComponent<Props, FileInputState> {
   static contextTypes = {
-    getValuePath: PropTypes.func,
+    getValuePath: NodePathContext,
   }
 
   dialogId = uniqueId('fileinput-dialog')

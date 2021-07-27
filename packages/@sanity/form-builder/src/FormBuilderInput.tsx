@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useContext, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
@@ -7,6 +7,7 @@ import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
+import {NodePathContext} from './contexts/nodePath'
 
 const EMPTY_MARKERS: Marker[] = emptyArray()
 const EMPTY_PATH: Path = emptyArray()
@@ -51,10 +52,6 @@ export class FormBuilderInput extends React.Component<Props> {
   static contextTypes = {
     presence: ENABLE_CONTEXT,
     formBuilder: ENABLE_CONTEXT,
-    getValuePath: ENABLE_CONTEXT,
-  }
-  static childContextTypes = {
-    getValuePath: ENABLE_CONTEXT,
   }
   static defaultProps = {
     focusPath: EMPTY_PATH,
@@ -62,16 +59,6 @@ export class FormBuilderInput extends React.Component<Props> {
     markers: EMPTY_MARKERS,
   }
   _input: FormBuilderInput | HTMLDivElement | null
-
-  getValuePath = () => {
-    return this.context.getValuePath().concat(this.props.path)
-  }
-
-  getChildContext() {
-    return {
-      getValuePath: this.getValuePath,
-    }
-  }
 
   componentDidMount() {
     const {focusPath, path} = this.props
@@ -315,21 +302,25 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
     ]
   )
 
+  const fullPath = PathUtils.pathFor(useContext(NodePathContext).concat(props.path))
+
   return (
     <div
-      data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(path)}`}
+      data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(fullPath)}`}
       style={WRAPPER_INNER_STYLES}
     >
-      <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-        <ChangeIndicatorProvider
-          path={path}
-          focusPath={focusPath}
-          value={value}
-          compareValue={childCompareValue}
-        >
-          {input}
-        </ChangeIndicatorProvider>
-      </FormFieldPresenceContext.Provider>
+      <NodePathContext.Provider value={fullPath}>
+        <FormFieldPresenceContext.Provider value={childPresenceInfo}>
+          <ChangeIndicatorProvider
+            path={path}
+            focusPath={focusPath}
+            value={value}
+            compareValue={childCompareValue}
+          >
+            {input}
+          </ChangeIndicatorProvider>
+        </FormFieldPresenceContext.Provider>
+      </NodePathContext.Provider>
     </div>
   )
 }

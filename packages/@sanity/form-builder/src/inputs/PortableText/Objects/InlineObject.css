@@ -10,7 +10,7 @@
 
 .previewContainer {
   position: relative;
-  display: inline-block;;
+  display: inline-block;
   cursor: move;
   box-sizing: border-box;
   background-color: var(--form-builder-block-background);

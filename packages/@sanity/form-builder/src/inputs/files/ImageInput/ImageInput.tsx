@@ -55,6 +55,7 @@ import {RatioBox} from '../common/RatioBox'
 import {EMPTY_ARRAY} from '../../../utils/empty'
 import {base64ToFile, urlToFile} from './utils/image'
 import deepCompare from 'react-fast-compare'
+import {NodePathContext} from '../../../contexts/nodePath'
 
 export interface Image extends Partial<BaseImage> {
   _upload?: UploadState
@@ -155,7 +156,7 @@ function ImageInputField(props: ImageInputFieldProps) {
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   static contextTypes = {
-    getValuePath: PropTypes.func,
+    getValuePath: NodePathContext,
   }
 
   _inputId = uniqueId('ImageInput')
