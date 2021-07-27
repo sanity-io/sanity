@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {SanityDocument} from '@sanity/types'
 
 function getDisplayName(component) {
   return component.displayName || component.name || '<Anonymous>'
@@ -14,8 +15,14 @@ function warnMissingFocusMethod(ComposedComponent) {
   )
 }
 
-export default function withDocument(ComposedComponent: any) {
-  return class WithDocument extends React.PureComponent {
+interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
+  document: Doc
+}
+
+export default function withDocument<T extends WithDocumentProps = WithDocumentProps>(
+  ComposedComponent: React.ComponentType<T>
+) {
+  return class WithDocument extends React.PureComponent<Omit<T, 'document'>> {
     _input: any
     _didShowFocusWarning = false
     static displayName = `withDocument(${ComposedComponent.displayName || ComposedComponent.name})`
@@ -23,10 +30,10 @@ export default function withDocument(ComposedComponent: any) {
       formBuilder: PropTypes.any,
     }
     state: {
-      document: Record<string, any>
+      document: Record<string, unknown>
     }
     unsubscribe: () => void
-    constructor(props: any, context: any) {
+    constructor(props: T, context: any) {
       super(props)
       const {formBuilder} = context
       this.state = {document: formBuilder.getDocument()}
@@ -48,12 +55,16 @@ export default function withDocument(ComposedComponent: any) {
         this._didShowFocusWarning = true
       }
     }
-    setInput = (input) => {
+    setRef = (input) => {
       this._input = input
     }
     render() {
       return (
-        <ComposedComponent ref={this.setInput} document={this.state.document} {...this.props} />
+        <ComposedComponent
+          ref={this.setRef}
+          document={this.state.document}
+          {...(this.props as T)}
+        />
       )
     }
   }
