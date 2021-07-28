@@ -3,6 +3,7 @@ import React from 'react'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
+import {Observable} from 'rxjs'
 import {SanityDocument} from '../documents'
 
 export interface Schema {
@@ -38,8 +39,19 @@ export interface HiddenOptionCallbackContext {
   value: unknown
 }
 
-export type HiddenOption = boolean | HiddenOptionCallback
+export type HiddenOption = boolean | HiddenOptionCallback | HiddenOptionReactive
 export type HiddenOptionCallback = (context: HiddenOptionCallbackContext) => boolean
+
+export interface HiddenOptionReactive {
+  stream: ReactiveHiddenOptionCallback
+}
+export type ReactiveHiddenOptionCallback = (
+  context$: Observable<HiddenOptionCallbackContext>
+) => Observable<boolean>
+
+export type HiddenOptionPredicate =
+  | ((context: HiddenOptionCallbackContext) => boolean)
+  | ((context: HiddenOptionCallbackContext) => Promise<boolean>)
 
 export type InitialValueParams = Record<string, unknown>
 export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
