@@ -1,17 +1,20 @@
 import {DocumentActionComponent} from '@sanity/base'
-import {Box, Button, Dialog, Grid, Text} from '@sanity/ui'
+import {Box, Button, Dialog, Grid, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 
 export const TestLegacyDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const {push: pushToast} = useToast()
 
   const handleOpen = useCallback(() => {
     setDialogOpen(true)
-  }, [])
+    pushToast({title: '[Legacy] Opened'})
+  }, [pushToast])
 
   const handleClose = useCallback(() => {
     setDialogOpen(false)
-  }, [])
+    pushToast({title: '[Legacy] Closed'})
+  }, [pushToast])
 
   return useMemo(
     () => ({

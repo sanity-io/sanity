@@ -1,17 +1,20 @@
 import {DocumentActionComponent} from '@sanity/base'
-import {Button, Grid, Text} from '@sanity/ui'
+import {Button, Grid, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 
 export const TestModalDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const {push: pushToast} = useToast()
 
   const handleOpen = useCallback(() => {
     setDialogOpen(true)
-  }, [])
+    pushToast({title: '[Modal] Opened'})
+  }, [pushToast])
 
   const handleClose = useCallback(() => {
     setDialogOpen(false)
-  }, [])
+    pushToast({title: '[Modal] Opened'})
+  }, [pushToast])
 
   return useMemo(
     () => ({
