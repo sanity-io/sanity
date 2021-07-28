@@ -30,7 +30,7 @@
     "@sanity/mutator": "^2.13.0",
     "@sanity/portable-text-editor": "0.1.25",
     "@sanity/types": "2.13.1",
-    "@sanity/ui": "^0.34.6",
+    "@sanity/ui": "^0.34.7",
     "@sanity/util": "2.13.1",
     "@sanity/uuid": "^3.0.1",
     "attr-accept": "^1.1.0",
