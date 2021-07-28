@@ -99,13 +99,14 @@ export const ObjectInput = memo(
 
     const renderField = React.useCallback(
       (field: ObjectField, fieldLevel: number, index: number) => {
-        if (!filterField(type, field) || field.type.hidden === true) {
+        const fieldValue = value?.[field.name]
+        if (!filterField(type, field)) {
           return null
         }
 
-        const fieldValue = value && value[field.name]
         return (
           <ObjectInputField
+            parent={value}
             key={`field-${field.name}`}
             field={field}
             value={fieldValue}
