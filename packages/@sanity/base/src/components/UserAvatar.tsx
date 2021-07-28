@@ -8,7 +8,7 @@ type LegacyAvatarSize = 'small' | 'medium' | 'large'
 interface BaseProps {
   position?: AvatarPosition
   animateArrowFrom?: AvatarPosition
-  size?: LegacyAvatarSize
+  size?: LegacyAvatarSize | AvatarSize
   status?: AvatarStatus
   tone?: 'navbar'
 }
@@ -66,7 +66,7 @@ function StaticUserAvatar({user, animateArrowFrom, position, size, status, tone}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
       onImageLoadError={setImageLoadError}
-      size={size && LEGACY_TO_UI_AVATAR_SIZES[size]}
+      size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
       status={status}
     />
   )
