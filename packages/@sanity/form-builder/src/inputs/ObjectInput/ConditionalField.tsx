@@ -1,33 +1,37 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import {
   BaseSchemaType,
   HiddenOptionCallbackContext,
   HiddenOptionCallback,
-  SanityDocument,
+  HiddenOptionReactive,
 } from '@sanity/types'
-
+import {combineLatest, from, Observable, of} from 'rxjs'
+import {rxComponent} from 'react-rx'
+import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 import withDocument from '../../utils/withDocument'
 
-type HiddenOption = BaseSchemaType['hidden']
+export type HiddenOption = BaseSchemaType['hidden']
 
-function isThenable(value: any) {
-  return typeof value?.then === 'function'
+function normalizeReturnValue(returnValue: boolean | Promise<boolean> | Observable<boolean>) {
+  return !returnValue || typeof returnValue === 'boolean'
+    ? of(Boolean(returnValue))
+    : from(returnValue)
 }
 
 function checkCondition(
   schemaHiddenOption: HiddenOptionCallback | undefined | boolean,
   context: HiddenOptionCallbackContext
-): boolean {
-  const result =
-    typeof schemaHiddenOption === 'function' ? schemaHiddenOption(context) : schemaHiddenOption
-
-  if (isThenable(result)) {
-    console.warn(
-      '[Warning]: The hidden option is either a promise or a promise returning function. Async callbacks for `hidden` option is not currently supported.'
-    )
-    return false
+) {
+  if (!schemaHiddenOption || typeof schemaHiddenOption === 'boolean') {
+    return of(schemaHiddenOption)
   }
-  return Boolean(result)
+  return normalizeReturnValue(schemaHiddenOption(context))
+}
+
+function isReactiveHiddenOption(
+  hiddenOption: HiddenOption | undefined
+): hiddenOption is HiddenOptionReactive {
+  return hiddenOption !== undefined && typeof hiddenOption !== 'boolean' && 'stream' in hiddenOption
 }
 
 interface Props {
@@ -37,25 +41,43 @@ interface Props {
   children?: React.ReactNode
 }
 
-export const ConditionalField = ({hidden, ...rest}: Props) => {
-  return typeof hidden === 'function' ? (
-    <ConditionalFieldWithDocument {...rest} hidden={hidden} />
-  ) : (
-    <>{hidden === true ? null : rest.children}</>
-  )
+export const ConditionalField = (props: Props) => {
+  if (!props.hidden || props.hidden === true) {
+    return <>{props.hidden === true ? null : props.children}</>
+  }
+  return <ConditionalFieldWithDocument {...props} />
 }
 
-const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithDocument(
-  props: Omit<Props, 'hidden'> & {document: SanityDocument; hidden: HiddenOptionCallback}
-) {
-  const {document, parent, value, hidden, children} = props
+const ConditionalFieldWithDocument = withDocument(
+  rxComponent(function ConditionalFieldWithDocument(props$: Observable<Props & {document: any}>) {
+    const hiddenProp$ = props$.pipe(
+      map((props) => props.hidden),
+      distinctUntilChanged()
+    )
 
-  const shouldHide = useMemo(() => checkCondition(hidden, {document, parent, value}), [
-    hidden,
-    document,
-    parent,
-    value,
-  ])
+    const childrenProp$ = props$.pipe(
+      map((props) => props.children),
+      distinctUntilChanged()
+    )
 
-  return <>{shouldHide ? null : children}</>
-})
+    // A stream of arguments passed to the hidden callback
+    const contextArg$ = props$.pipe(map(({document, parent, value}) => ({document, parent, value})))
+
+    const isHidden$ = hiddenProp$.pipe(
+      switchMap((hiddenProp) => {
+        if (!hiddenProp) {
+          return of(false)
+        }
+        if (isReactiveHiddenOption(hiddenProp)) {
+          return hiddenProp.stream(contextArg$)
+        }
+        return contextArg$.pipe(switchMap((context) => checkCondition(hiddenProp, context)))
+      }),
+      distinctUntilChanged()
+    )
+
+    return combineLatest(childrenProp$, isHidden$).pipe(
+      map(([children, shouldHide]) => <>{shouldHide ? null : children}</>)
+    )
+  })
+)
