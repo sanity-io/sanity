@@ -3,6 +3,7 @@ import React from 'react'
 import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
+import {SanityDocument} from '../documents'
 
 export interface Schema {
   name: string
@@ -31,6 +32,15 @@ export type SortOrdering = {
   }
 }
 
+export interface HiddenOptionCallbackContext {
+  parent?: Record<string, unknown>
+  document: SanityDocument
+  value: unknown
+}
+
+export type HiddenOption = boolean | HiddenOptionCallback
+export type HiddenOptionCallback = (context: HiddenOptionCallbackContext) => boolean
+
 export type InitialValueParams = Record<string, unknown>
 export type InitialValueResolver<T> = (params?: InitialValueParams) => Promise<T> | T
 export type InitialValueProperty<T = unknown> = T | InitialValueResolver<T> | undefined
@@ -45,7 +55,7 @@ export interface BaseSchemaType {
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
   options?: unknown
-  hidden?: boolean
+  hidden?: HiddenOption
 
   preview?: {
     select?: PreviewValue
