@@ -1,11 +1,14 @@
-import React from 'react'
-import {BaseSchemaType, HiddenPredicateContext, HiddenOptionPredicate} from '@sanity/types'
-import {combineLatest, Observable, of} from 'rxjs'
-import {rxComponent} from 'react-rx'
-import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+import React, {useMemo} from 'react'
+import {
+  BaseSchemaType,
+  HiddenPredicateContext,
+  HiddenOptionPredicate,
+  SanityDocument,
+} from '@sanity/types'
+
 import withDocument from '../../utils/withDocument'
 
-export type HiddenOption = BaseSchemaType['hidden']
+type HiddenOption = BaseSchemaType['hidden']
 
 function isThenable(value: any) {
   return typeof value?.then === 'function'
@@ -41,32 +44,17 @@ export const ConditionalField = (props: Props) => {
   return <ConditionalFieldWithDocument {...props} />
 }
 
-const ConditionalFieldWithDocument = withDocument(
-  rxComponent(function ConditionalFieldWithDocument(props$: Observable<Props & {document: any}>) {
-    const hiddenProp$ = props$.pipe(
-      map((props) => props.hidden),
-      distinctUntilChanged()
-    )
+const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithDocument(
+  props: Props & {document: SanityDocument}
+) {
+  const {document, parent, value, hidden, children} = props
 
-    const childrenProp$ = props$.pipe(
-      map((props) => props.children),
-      distinctUntilChanged()
-    )
+  const contextArg = useMemo(() => ({document, parent, value}), [document, parent, value])
 
-    // A stream of arguments passed to the hidden callback
-    const contextArg$ = props$.pipe(map(({document, parent, value}) => ({document, parent, value})))
+  const isHidden = useMemo(
+    () => (!hidden || typeof hidden === 'boolean' ? hidden : checkCondition(hidden, contextArg)),
+    [hidden, contextArg]
+  )
 
-    const isHidden$ = hiddenProp$.pipe(
-      switchMap((hiddenProp) =>
-        !hiddenProp || typeof hiddenProp === 'boolean'
-          ? of(hiddenProp)
-          : contextArg$.pipe(map((context) => checkCondition(hiddenProp, context)))
-      ),
-      distinctUntilChanged()
-    )
-
-    return combineLatest(childrenProp$, isHidden$).pipe(
-      map(([children, isHidden]) => <>{isHidden ? null : children}</>)
-    )
-  })
-)
+  return <>{isHidden ? null : children}</>
+})
