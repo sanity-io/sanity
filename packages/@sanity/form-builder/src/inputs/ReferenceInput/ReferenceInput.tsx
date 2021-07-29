@@ -114,7 +114,7 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
   const hasInsufficientPermissions =
     preview.snapshot?._internalMeta?.type === 'insufficient_permissions'
   const isMissing =
-    !hasInsufficientPermissions && !!value?._ref && !preview.isLoading && preview.snapshot
+    !hasInsufficientPermissions && !!value?._ref && !preview.isLoading && preview.snapshot === null
 
   const hasRef = value && value._ref
 
