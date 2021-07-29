@@ -1,19 +1,30 @@
 import React from 'react'
 import {BaseSchemaType, HiddenPredicateContext, HiddenOptionPredicate} from '@sanity/types'
-import {combineLatest, Observable} from 'rxjs'
+import {combineLatest, Observable, of} from 'rxjs'
 import {rxComponent} from 'react-rx'
-import {distinctUntilChanged, map} from 'rxjs/operators'
+import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 import withDocument from '../../utils/withDocument'
 
 export type HiddenOption = BaseSchemaType['hidden']
+
+function isThenable(value: any) {
+  return typeof value?.then === 'function'
+}
 
 function checkCondition(
   schemaHiddenOption: HiddenOptionPredicate | undefined | boolean,
   context: HiddenPredicateContext
 ): boolean {
-  return Boolean(
+  const result =
     typeof schemaHiddenOption === 'function' ? schemaHiddenOption(context) : schemaHiddenOption
-  )
+
+  if (isThenable(result)) {
+    console.warn(
+      '[Warning]: The hidden option is either a promise or a promise returning function. Async callbacks for `hidden` option is not currently supported.'
+    )
+    return false
+  }
+  return Boolean(result)
 }
 
 interface Props {
