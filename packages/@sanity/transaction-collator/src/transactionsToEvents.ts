@@ -27,11 +27,7 @@ export function transactionsToEvents(
   )
 }
 
-function mapToEvents(
-  transaction: Transaction,
-  documentIds: string[],
-  index: number = 0
-): HistoryEvent {
+function mapToEvents(transaction: Transaction, documentIds: string[], index = 0): HistoryEvent {
   const {type, documentId} = mutationsToEventTypeAndDocumentId(
     filterRelevantMutations(transaction.mutations, documentIds),
     index
@@ -240,7 +236,7 @@ function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
     return Object.keys(mut)
       .map((key) => {
         const val = (mut as any)[key]
-        return val['id'] || val['_id'] || (val['document'] && val['document']['_id']) || false
+        return val.id || val._id || (val.document && val.document._id) || false
       })
       .some((id) => id && documentIds.includes(id))
   })
