@@ -1,3 +1,6 @@
+import {timer, of} from 'rxjs'
+import {map, distinctUntilChanged, switchMap} from 'rxjs/operators'
+
 export default {
   name: 'conditionalFieldsTest',
   type: 'document',
@@ -43,6 +46,29 @@ export default {
           type: 'string',
           description: 'This will be hidden if its value becomes "hideme"',
           hidden: ({value}) => value === 'hideme',
+        },
+        {
+          name: 'async',
+          type: 'string',
+          description: 'This will hidden be after a second if its value is "hideme"',
+          hidden: ({value}) =>
+            new Promise((resolve) => setTimeout(resolve, 1000)).then(() => value === 'hideme'),
+        },
+        {
+          name: 'reactive',
+          type: 'string',
+          description:
+            'This will hide and show every other second, but only if the document is published',
+          hidden: {
+            stream: (context$) =>
+              context$.pipe(
+                map(({document}) => document.isPublished),
+                distinctUntilChanged(),
+                switchMap((isPublished) =>
+                  isPublished ? timer(0, 1000).pipe(map((n) => n % 2 === 0)) : of(false)
+                )
+              ),
+          },
         },
       ],
     },
