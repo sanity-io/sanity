@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import pubsub from 'nano-pubsub'
-import {Schema, SchemaType} from '@sanity/types'
+import {SanityDocument, Schema, SchemaType} from '@sanity/types'
 import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
+import {DocumentProvider} from './contexts/document'
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -51,7 +52,7 @@ function memoize(method) {
 
 interface Props {
   schema: Schema
-  value?: unknown
+  value: SanityDocument
   children: any
   filterField?: any
   patchChannel: {
@@ -74,12 +75,7 @@ export default class FormBuilderContext extends React.Component<Props> {
     formBuilder: PropTypes.shape({
       schema: PropTypes.object,
       resolveInputComponent: PropTypes.func,
-      document: PropTypes.any,
     }),
-  }
-
-  getDocument = () => {
-    return this.props.value
   }
 
   resolveInputComponent = memoizeMap((type) => {
@@ -112,12 +108,11 @@ export default class FormBuilderContext extends React.Component<Props> {
         schema,
         resolveInputComponent: this.resolveInputComponent,
         resolvePreviewComponent: this.resolvePreviewComponent,
-        getDocument: this.getDocument,
       },
     }
   })
 
   render() {
-    return this.props.children
+    return <DocumentProvider document={this.props.value}>{this.props.children}</DocumentProvider>
   }
 }
