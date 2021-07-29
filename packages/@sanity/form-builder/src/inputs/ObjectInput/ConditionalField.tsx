@@ -1,19 +1,22 @@
-import React from 'react'
-import {BaseSchemaType, HiddenPredicateContext, HiddenOptionPredicate} from '@sanity/types'
-import {combineLatest, Observable, of} from 'rxjs'
-import {rxComponent} from 'react-rx'
-import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+import React, {useMemo} from 'react'
+import {
+  BaseSchemaType,
+  HiddenOptionCallbackContext,
+  HiddenOptionCallback,
+  SanityDocument,
+} from '@sanity/types'
+
 import withDocument from '../../utils/withDocument'
 
-export type HiddenOption = BaseSchemaType['hidden']
+type HiddenOption = BaseSchemaType['hidden']
 
 function isThenable(value: any) {
   return typeof value?.then === 'function'
 }
 
 function checkCondition(
-  schemaHiddenOption: HiddenOptionPredicate | undefined | boolean,
-  context: HiddenPredicateContext
+  schemaHiddenOption: HiddenOptionCallback | undefined | boolean,
+  context: HiddenOptionCallbackContext
 ): boolean {
   const result =
     typeof schemaHiddenOption === 'function' ? schemaHiddenOption(context) : schemaHiddenOption
@@ -34,39 +37,25 @@ interface Props {
   children?: React.ReactNode
 }
 
-export const ConditionalField = (props: Props) => {
-  if (!props.hidden || props.hidden === true) {
-    return <>{props.hidden === true ? null : props.children}</>
-  }
-  return <ConditionalFieldWithDocument {...props} />
+export const ConditionalField = ({hidden, ...rest}: Props) => {
+  return typeof hidden === 'function' ? (
+    <ConditionalFieldWithDocument {...rest} hidden={hidden} />
+  ) : (
+    <>{hidden === true ? null : rest.children}</>
+  )
 }
 
-const ConditionalFieldWithDocument = withDocument(
-  rxComponent(function ConditionalFieldWithDocument(props$: Observable<Props & {document: any}>) {
-    const hiddenProp$ = props$.pipe(
-      map((props) => props.hidden),
-      distinctUntilChanged()
-    )
+const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithDocument(
+  props: Omit<Props, 'hidden'> & {document: SanityDocument; hidden: HiddenOptionCallback}
+) {
+  const {document, parent, value, hidden, children} = props
 
-    const childrenProp$ = props$.pipe(
-      map((props) => props.children),
-      distinctUntilChanged()
-    )
+  const shouldHide = useMemo(() => checkCondition(hidden, {document, parent, value}), [
+    hidden,
+    document,
+    parent,
+    value,
+  ])
 
-    // A stream of arguments passed to the hidden callback
-    const contextArg$ = props$.pipe(map(({document, parent, value}) => ({document, parent, value})))
-
-    const isHidden$ = hiddenProp$.pipe(
-      switchMap((hiddenProp) =>
-        !hiddenProp || typeof hiddenProp === 'boolean'
-          ? of(hiddenProp)
-          : contextArg$.pipe(map((context) => checkCondition(hiddenProp, context)))
-      ),
-      distinctUntilChanged()
-    )
-
-    return combineLatest(childrenProp$, isHidden$).pipe(
-      map(([children, isHidden]) => <>{isHidden ? null : children}</>)
-    )
-  })
-)
+  return <>{shouldHide ? null : children}</>
+})
