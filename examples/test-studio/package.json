@@ -41,6 +41,7 @@
     "lodash": "^4.17.15",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
+    "rxjs": "^6.5.3",
     "react-dom": "17.0.1",
     "react-icons": "^3.11.0",
     "react-json-pretty": "^2.2.0",
