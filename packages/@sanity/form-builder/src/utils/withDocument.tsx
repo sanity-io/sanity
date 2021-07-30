@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {forwardRef, useImperativeHandle, useRef} from 'react'
 import {SanityDocument} from '@sanity/types'
+import {useDocument} from './useDocument'
 
 function getDisplayName(component) {
   return component.displayName || component.name || '<Anonymous>'
@@ -10,62 +10,40 @@ function warnMissingFocusMethod(ComposedComponent) {
   console.warn(
     `withDocument(${getDisplayName(
       ComposedComponent
-    )}): The passed component did not expose a ".focus()" method. Either implement an imperative focus method on the component instance, or forward it's received ref to an element that exposes a .focus() method. The component passed to withDocument was: %O`,
+    )}): The passed component did not expose a ".focus()" method. Either implement an imperative ` +
+      `focus method on the component instance, or forward it's received ref to an element that ` +
+      `exposes a .focus() method. The component passed to withDocument was: %O`,
     ComposedComponent
   )
 }
 
-interface WithDocumentProps<Doc extends SanityDocument = SanityDocument> {
-  document: Doc
-}
+type SanityDocumentLike = Pick<SanityDocument, '_id' | '_type'>
 
-export default function withDocument<T extends WithDocumentProps = WithDocumentProps>(
-  ComposedComponent: React.ComponentType<T>
-) {
-  return class WithDocument extends React.PureComponent<Omit<T, 'document'>> {
-    _input: any
-    _didShowFocusWarning = false
-    static displayName = `withDocument(${ComposedComponent.displayName || ComposedComponent.name})`
-    static contextTypes = {
-      formBuilder: PropTypes.any,
-    }
-    state: {
-      document: Record<string, unknown>
-    }
-    unsubscribe: () => void
-    constructor(props: T, context: any) {
-      super(props)
-      const {formBuilder} = context
-      this.state = {document: formBuilder.getDocument()}
-      this.unsubscribe = formBuilder.onPatch(({snapshot}) => {
-        // we will also receive "delete"-patches, with {snapshot: null}. Don't pass null documents.
-        if (snapshot) {
-          this.setState({document: snapshot})
+export default function withDocument<Props extends {document: SanityDocumentLike}>(
+  ComposedComponent: React.ComponentType<Props>
+): React.ComponentType<Omit<Props, 'document'>> {
+  const WithDocument = forwardRef((props: Props, ref) => {
+    const nextRef = useRef<{focus?: unknown}>()
+    const didShowFocusWarningRef = useRef(false)
+    const document = useDocument()
+
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        if (typeof nextRef.current?.focus === 'function') {
+          nextRef.current.focus()
+        } else if (!didShowFocusWarningRef.current) {
+          warnMissingFocusMethod(ComposedComponent)
+          didShowFocusWarningRef.current = true
         }
-      })
-    }
-    componentWillUnmount() {
-      this.unsubscribe()
-    }
-    focus() {
-      if (typeof this._input?.focus === 'function') {
-        this._input.focus()
-      } else if (!this._didShowFocusWarning) {
-        warnMissingFocusMethod(ComposedComponent)
-        this._didShowFocusWarning = true
-      }
-    }
-    setRef = (input) => {
-      this._input = input
-    }
-    render() {
-      return (
-        <ComposedComponent
-          ref={this.setRef}
-          document={this.state.document}
-          {...(this.props as T)}
-        />
-      )
-    }
-  }
+      },
+    }))
+
+    return <ComposedComponent ref={ref} document={document} {...props} />
+  })
+
+  WithDocument.displayName = `withDocument(${
+    ComposedComponent.displayName || ComposedComponent.name
+  })`
+
+  return (WithDocument as unknown) as React.ComponentType<Omit<Props, 'document'>>
 }

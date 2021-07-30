@@ -4,6 +4,7 @@ import pubsub from 'nano-pubsub'
 import {Schema, SchemaType} from '@sanity/types'
 import type {Patch} from './patch/types'
 import {fallbackInputs} from './fallbackInputs'
+import {DocumentProvider} from './DocumentProvider'
 
 const RESOLVE_NULL = (arg: any) => null
 
@@ -118,6 +119,6 @@ export default class FormBuilderContext extends React.Component<Props> {
   })
 
   render() {
-    return this.props.children
+    return <DocumentProvider>{this.props.children}</DocumentProvider>
   }
 }

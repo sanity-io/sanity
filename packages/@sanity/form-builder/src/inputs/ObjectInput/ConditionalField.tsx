@@ -1,12 +1,7 @@
 import React, {useMemo, useRef} from 'react'
-import {
-  HiddenOption,
-  HiddenOptionCallbackContext,
-  HiddenOptionCallback,
-  SanityDocument,
-} from '@sanity/types'
+import {HiddenOption, HiddenOptionCallbackContext, HiddenOptionCallback} from '@sanity/types'
 
-import withDocument from '../../utils/withDocument'
+import {useDocument} from '../../utils/useDocument'
 
 function isThenable(value: any) {
   return typeof value?.then === 'function'
@@ -50,12 +45,13 @@ export const ConditionalField = ({hidden, ...rest}: Props) => {
   )
 }
 
-const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithDocument(
-  props: Omit<Props, 'hidden'> & {document: SanityDocument; hidden: HiddenOptionCallback}
+function ConditionalFieldWithDocument(
+  props: Omit<Props, 'hidden'> & {hidden: HiddenOptionCallback}
 ) {
-  const {document, parent, value, hidden, children} = props
+  const {parent, value, hidden, children} = props
 
+  const document = useDocument()
   const shouldHide = useCheckCondition(hidden, {document, parent, value})
 
   return <>{shouldHide ? null : children}</>
-})
+}
