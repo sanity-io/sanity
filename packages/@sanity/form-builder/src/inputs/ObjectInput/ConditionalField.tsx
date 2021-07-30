@@ -1,14 +1,12 @@
 import React, {useMemo, useRef} from 'react'
 import {
-  BaseSchemaType,
+  HiddenOption,
   HiddenOptionCallbackContext,
   HiddenOptionCallback,
   SanityDocument,
 } from '@sanity/types'
 
 import withDocument from '../../utils/withDocument'
-
-type HiddenOption = BaseSchemaType['hidden']
 
 function isThenable(value: any) {
   return typeof value?.then === 'function'
