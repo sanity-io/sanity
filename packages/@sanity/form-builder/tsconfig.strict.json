@@ -15,6 +15,5 @@
         }
       }
     ]
-  },
-  "references": [{"path": "../imagetool"}, {"path": "../types"}, {"path": "../base"}, {"path": "../util"}]
+  }
 }
