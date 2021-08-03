@@ -105,6 +105,10 @@
     {
       "implements": "part:@sanity/base/tool",
       "path": "src/tools/test-ui-error/tool"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/tools/ui-test-bed-tool/tool"
     }
   ],
   "env": {
