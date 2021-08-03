@@ -3,11 +3,14 @@ import {createColorTheme, rgba} from '@sanity/ui'
 import {_multiply, _screen, _isDark} from './helpers'
 import {legacyPalette} from './legacyPalette'
 import {legacyTones} from './legacyTones'
+import {Tints} from './types'
 
 export const color = createColorTheme({
   base: ({dark: navbar, name}) => {
     const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
     const dark = stateTones.dark
+    const blend = navbar ? _screen : _multiply
+    const tints = stateTones[name] || stateTones.default
 
     if (name === 'default') {
       return {
@@ -29,11 +32,12 @@ export const color = createColorTheme({
     }
 
     if (name === 'transparent') {
-      const tints = stateTones.default
+      const bg = tints[50]
+      const skeletonFrom = blend(bg, tints[100])
 
       return {
         fg: tints[900],
-        bg: tints[50],
+        bg,
         border: tints[300],
         focusRing: legacyPalette.focus.base,
         shadow: {
@@ -43,17 +47,19 @@ export const color = createColorTheme({
           ambient: rgba(dark ? legacyPalette.black : tints[500], 0.12),
         },
         skeleton: {
-          from: tints[200],
-          to: rgba(tints[200], 0.5),
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
         },
       }
     }
 
-    const tints = stateTones[name] || stateTones.default
+    // const tints = stateTones[name] || stateTones.default
+    const bg = tints[50]
+    const skeletonFrom = blend(bg, tints[100])
 
     return {
       fg: tints[900],
-      bg: tints[50],
+      bg,
       border: tints[200],
       focusRing: tints[500],
       shadow: {
@@ -63,55 +69,159 @@ export const color = createColorTheme({
         ambient: rgba(dark ? legacyPalette.black : tints[500], 0.12),
       },
       skeleton: {
-        from: tints[200],
-        to: rgba(tints[200], 0.5),
+        from: skeletonFrom,
+        to: rgba(skeletonFrom, 0.5),
       },
     }
   },
 
   solid: ({base, dark: navbar, state, tone}) => {
+    const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
     const buttonTones = navbar ? legacyTones.button.navbar : legacyTones.button.default
     const dark = buttonTones.dark
     const blend = dark ? _screen : _multiply
-    const tints = buttonTones[tone] || buttonTones.default
+    const blendInvert = dark ? _multiply : _screen
+    let tints = buttonTones[tone] || buttonTones.default
 
     if (state === 'disabled') {
+      const bg = blend(base.bg, buttonTones.default[200])
+      const skeletonFrom = blendInvert(bg, buttonTones.default[800])
+
       return {
-        bg: blend(base.bg, buttonTones.default[200]),
+        bg,
         border: blend(base.bg, buttonTones.default[200]),
         fg: blend(base.bg, buttonTones.bg),
+        muted: {
+          fg: blend(base.bg, buttonTones.default[50]),
+        },
+        accent: {
+          fg: blend(base.bg, buttonTones.default[50]),
+        },
+        link: {
+          fg: blend(base.bg, buttonTones.default[50]),
+        },
+        code: {
+          bg,
+          fg: blend(base.bg, buttonTones.default[50]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'hovered') {
+      const bg = blend(base.bg, tints[600])
+      const skeletonFrom = blendInvert(bg, tints[800])
+
       return {
-        bg: blend(base.bg, tints[600]),
+        bg,
         border: blend(base.bg, tints[600]),
         fg: blend(base.bg, buttonTones.bg),
+        muted: {
+          fg: blend(base.bg, tints[200]),
+        },
+        accent: {
+          fg: blendInvert(bg, stateTones.critical[200]),
+        },
+        link: {
+          fg: blendInvert(bg, stateTones.primary[200]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[200]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'pressed') {
+      const bg = blend(base.bg, tints[800])
+      const skeletonFrom = blendInvert(bg, tints[800])
+
       return {
-        bg: blend(base.bg, tints[800]),
+        bg,
         border: blend(base.bg, tints[800]),
         fg: blend(base.bg, buttonTones.bg),
+        muted: {
+          fg: blend(base.bg, tints[200]),
+        },
+        accent: {
+          fg: blendInvert(bg, stateTones.critical[200]),
+        },
+        link: {
+          fg: blendInvert(bg, stateTones.primary[200]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[200]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'selected') {
+      tints = ['default', 'transparent'].includes(tone) ? stateTones.primary : tints
+
+      const bg = blend(base.bg, tints[800])
+      const skeletonFrom = blendInvert(bg, tints[800])
+
       return {
-        bg: blend(base.bg, tints[800]),
+        bg,
         border: blend(base.bg, tints[800]),
         fg: blend(base.bg, buttonTones.bg),
+        muted: {
+          fg: blend(base.bg, tints[200]),
+        },
+        accent: {
+          fg: blendInvert(bg, stateTones.critical[200]),
+        },
+        link: {
+          fg: blendInvert(bg, stateTones.primary[200]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[200]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     // state: "enabled" | unknown
+    const bg = blend(base.bg, tints[500])
+    const skeletonFrom = blendInvert(bg, tints[800])
+
     return {
-      bg: blend(base.bg, tints[500]),
+      bg,
       border: blend(base.bg, tints[500]),
       fg: blend(base.bg, buttonTones.bg),
+      muted: {
+        fg: blend(base.bg, tints[200]),
+      },
+      accent: {
+        fg: blendInvert(bg, stateTones.critical[200]),
+      },
+      link: {
+        fg: blendInvert(bg, stateTones.primary[200]),
+      },
+      code: {
+        bg: blend(bg, tints[50]),
+        fg: blend(base.bg, tints[200]),
+      },
+      skeleton: {
+        from: skeletonFrom,
+        to: rgba(skeletonFrom, 0.5),
+      },
     }
   },
 
@@ -119,44 +229,150 @@ export const color = createColorTheme({
     const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
     const dark = stateTones.dark
     const blend = dark ? _screen : _multiply
-    const tints = stateTones[tone] || stateTones.default
+
+    let tints: Tints = stateTones[tone] || stateTones.default
 
     if (state === 'disabled') {
+      tints = stateTones.default
+
+      const bg = blend(base.bg, stateTones.default[50])
+      const skeletonFrom = blend(bg, tints[100])
+
       return {
-        bg: blend(base.bg, stateTones.default[50]),
-        border: blend(base.bg, stateTones.default[50]),
-        fg: blend(base.bg, stateTones.default[200]),
+        bg,
+        border: blend(base.bg, tints[50]),
+        fg: blend(base.bg, tints[200]),
+        muted: {
+          fg: blend(bg, tints[100]),
+        },
+        accent: {
+          fg: blend(bg, tints[100]),
+        },
+        link: {
+          fg: blend(bg, tints[100]),
+        },
+        code: {
+          bg,
+          fg: blend(bg, tints[100]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'hovered') {
+      const bg = blend(base.bg, tints[50])
+      const skeletonFrom = blend(bg, tints[100])
+
       return {
-        bg: blend(base.bg, tints[50]),
+        bg,
         border: blend(base.bg, tints[50]),
         fg: blend(base.bg, tints[900]),
+        muted: {
+          fg: blend(base.bg, tints[700]),
+        },
+        accent: {
+          fg: blend(base.bg, stateTones.critical[700]),
+        },
+        link: {
+          fg: blend(base.bg, stateTones.primary[700]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[700]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'pressed') {
+      const bg = blend(base.bg, tints[100])
+      const skeletonFrom = blend(bg, tints[100])
+
       return {
-        bg: blend(base.bg, tints[100]),
+        bg,
         border: blend(base.bg, tints[100]),
         fg: blend(base.bg, tints[900]),
+        muted: {
+          fg: blend(base.bg, tints[700]),
+        },
+        accent: {
+          fg: blend(base.bg, stateTones.critical[700]),
+        },
+        link: {
+          fg: blend(base.bg, stateTones.primary[700]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[700]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
     if (state === 'selected') {
+      tints = ['default', 'transparent'].includes(tone) ? stateTones.primary : tints
+
+      const bg = blend(base.bg, tints[100])
+      const skeletonFrom = blend(bg, tints[100])
+
       return {
-        bg: blend(base.bg, tints[100]),
+        bg,
         border: blend(base.bg, tints[100]),
         fg: blend(base.bg, tints[900]),
+        muted: {
+          fg: blend(base.bg, tints[700]),
+        },
+        accent: {
+          fg: blend(base.bg, stateTones.critical[700]),
+        },
+        link: {
+          fg: blend(base.bg, stateTones.primary[700]),
+        },
+        code: {
+          bg: blend(bg, tints[50]),
+          fg: blend(base.bg, tints[700]),
+        },
+        skeleton: {
+          from: skeletonFrom,
+          to: rgba(skeletonFrom, 0.5),
+        },
       }
     }
 
+    // enabled
+    const bg = blend(base.bg, tints[100])
+    const skeletonFrom = blend(base.bg, tints[100])
+
     return {
-      bg: blend(base.bg, tints[100]),
+      bg,
       border: blend(base.bg, tints[100]),
       fg: blend(base.bg, tints[700]),
+      muted: {
+        fg: blend(base.bg, tints[700]),
+      },
+      accent: {
+        fg: blend(base.bg, stateTones.critical[700]),
+      },
+      link: {
+        fg: blend(base.bg, stateTones.primary[700]),
+      },
+      code: {
+        bg: blend(base.bg, tints[50]),
+        fg: blend(base.bg, tints[700]),
+      },
+      skeleton: {
+        from: skeletonFrom,
+        to: rgba(skeletonFrom, 0.5),
+      },
     }
   },
 
@@ -180,7 +396,11 @@ export const color = createColorTheme({
     if (mode === 'ghost') {
       return {
         ...solid,
-        enabled: {...muted.enabled, bg: base.bg, border: base.border},
+        enabled: {
+          ...muted.enabled,
+          bg: base.bg,
+          border: base.border,
+        },
         disabled: {
           ...muted.disabled,
           bg: base.bg,
@@ -193,13 +413,13 @@ export const color = createColorTheme({
 
   card: ({base, dark: navbar, muted, name, state}) => {
     const stateTones = navbar ? legacyTones.state.navbar : legacyTones.state.default
+    const tints: Tints = stateTones[name] || stateTones.default
 
     let dark = stateTones.dark
     let blend = dark ? _screen : _multiply
 
     if (state === 'selected') {
-      const tint = ['default', 'transparent'].includes(name) ? stateTones.primary : stateTones[name]
-      const bg = tint[500]
+      const bg = tints[500]
       const fg = stateTones.bg
 
       dark = _isDark(bg, fg)
@@ -208,9 +428,9 @@ export const color = createColorTheme({
       return {
         bg,
         fg,
-        border: tint[400],
+        border: tints[400],
         muted: {
-          fg: blend(bg, stateTones.default[300]),
+          fg: blend(bg, tints[300]),
         },
         accent: {
           fg: blend(bg, stateTones.critical[500]),
@@ -219,8 +439,8 @@ export const color = createColorTheme({
           fg: blend(bg, stateTones.primary[300]),
         },
         code: {
-          bg: blend(bg, stateTones.default[950]),
-          fg: blend(bg, stateTones.default[300]),
+          bg: blend(bg, tints[950]),
+          fg: blend(bg, tints[300]),
         },
         skeleton: base.skeleton,
       }
@@ -233,7 +453,7 @@ export const color = createColorTheme({
         ...muted.hovered,
         border: blend(bg, base.border),
         muted: {
-          fg: blend(bg, stateTones.default[700]),
+          fg: blend(bg, tints[700]),
         },
         accent: {
           fg: blend(bg, stateTones.critical[500]),
@@ -242,8 +462,8 @@ export const color = createColorTheme({
           fg: blend(bg, stateTones.primary[700]),
         },
         code: {
-          bg: blend(bg, stateTones.default[50]),
-          fg: stateTones.default[600],
+          bg: blend(bg, tints[50]),
+          fg: tints[600],
         },
         skeleton: base.skeleton,
       }
@@ -254,7 +474,7 @@ export const color = createColorTheme({
         ...muted.pressed,
         fg: base.fg,
         muted: {
-          fg: blend(muted.pressed.bg, stateTones.default[700]),
+          fg: blend(muted.pressed.bg, tints[700]),
         },
         accent: {
           fg: blend(muted.pressed.bg, stateTones.critical[500]),
@@ -263,8 +483,8 @@ export const color = createColorTheme({
           fg: blend(muted.pressed.bg, stateTones.primary[700]),
         },
         code: {
-          bg: blend(muted.pressed.bg, stateTones.default[50]),
-          fg: stateTones.default[700],
+          bg: blend(muted.pressed.bg, tints[50]),
+          fg: tints[700],
         },
         skeleton: base.skeleton,
       }
@@ -295,7 +515,7 @@ export const color = createColorTheme({
       fg: base.fg,
       border: base.border,
       muted: {
-        fg: blend(base.bg, stateTones.default[700]),
+        fg: blend(base.bg, tints[700]),
       },
       accent: {
         fg: blend(base.bg, stateTones.critical[500]),
@@ -304,8 +524,8 @@ export const color = createColorTheme({
         fg: blend(base.bg, stateTones.primary[700]),
       },
       code: {
-        bg: blend(base.bg, stateTones.default[50]),
-        fg: stateTones.default[700],
+        bg: blend(base.bg, tints[50]),
+        fg: tints[700],
       },
       skeleton: base.skeleton,
     }
@@ -360,6 +580,40 @@ export const color = createColorTheme({
       border: base.border,
       placeholder: blend(base.bg, hues.gray[700].hex),
     }
+  },
+
+  selectable: ({base, muted, tone, solid, state}) => {
+    if (state === 'enabled') {
+      return {
+        ...muted[tone].enabled,
+        bg: base.bg,
+      }
+    }
+
+    if (state === 'pressed') {
+      if (tone === 'default') {
+        return solid.primary.pressed
+      }
+
+      return solid[tone].pressed
+    }
+
+    if (state === 'selected') {
+      if (tone === 'default') {
+        return solid.primary.enabled
+      }
+
+      return solid[tone].enabled
+    }
+
+    if (state === 'disabled') {
+      return {
+        ...muted[tone].disabled,
+        bg: base.bg,
+      }
+    }
+
+    return muted[tone][state]
   },
 
   spot: ({base, key}) => {
