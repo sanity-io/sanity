@@ -118,8 +118,11 @@ function sanityJSONParser(filePath, deps, dir) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    const allPlugins = sanityConfig.plugins.concat(
+      Object.keys(sanityConfig.env || {}).flatMap((env) => sanityConfig.env[env].plugins || [])
+    )
     return deps
-      .concat(sanityConfig.plugins.filter(isLocalPlugin(filePath)))
+      .concat(allPlugins.filter(isLocalPlugin(filePath)))
       .filter((dep) =>
         sanityConfig.plugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`)
       )
