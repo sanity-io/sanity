@@ -142,10 +142,12 @@ export interface SlugSchemaType extends BaseSchemaType {
   options?: SlugOptions
 }
 
+export type ObjectFieldType<T extends SchemaType = SchemaType> = T & {hidden?: HiddenOption}
+
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
-  type: T & {hidden?: HiddenOption}
+  type: ObjectFieldType<T>
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
