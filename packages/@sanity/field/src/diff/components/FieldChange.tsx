@@ -96,7 +96,7 @@ export function FieldChange({
     setRevertHovered(false)
   }, [])
 
-  return change.schemaType.hidden ? null : (
+  return change.schemaType.hidden === true ? null : (
     <Stack space={1} as={FieldChangeContainer} {...restProps}>
       {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
       <FieldWrapper path={change.path} hasHover={revertHovered}>

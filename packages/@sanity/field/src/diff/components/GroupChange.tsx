@@ -133,7 +133,7 @@ export function GroupChange({
     </Stack>
   )
 
-  return group?.schemaType?.hidden ? null : (
+  return (group?.schemaType as any)?.hidden ? null : (
     <Stack space={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || !FieldWrapper ? (
