@@ -11,6 +11,7 @@ import {
   NumberSchemaType as BaseNumberSchemaType,
   ObjectSchemaType as BaseObjectSchemaType,
   StringSchemaType as BaseStringSchemaType,
+  ObjectFieldType,
 } from '@sanity/types'
 import {ComponentType} from 'react'
 import {
@@ -164,12 +165,6 @@ export interface BlockSchemaType<O> extends BaseBlockSchemaType {
   diffComponent?: DiffComponent<ObjectDiff<Block<O>>> | DiffComponentOptions<ObjectDiff<Block<O>>>
 }
 
-export interface ObjectField<T extends SchemaType = SchemaType> {
-  name: string
-  fieldset?: string
-  type: T
-}
-
 export interface ObjectSchemaType<T extends object = Record<string, any>>
   extends BaseObjectSchemaType {
   diffComponent?: DiffComponent<ObjectDiff<T>> | DiffComponentOptions<ObjectDiff<T>>
@@ -207,7 +202,7 @@ export interface FieldChangeNode {
   path: Path
   error?: FieldValueError
   titlePath: ChangeTitlePath
-  schemaType: SchemaType
+  schemaType: ObjectFieldType
   showHeader: boolean
   showIndex: boolean
   diffComponent?: DiffComponent
