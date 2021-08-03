@@ -55,7 +55,6 @@ export interface BaseSchemaType {
   icon?: React.ComponentType
   initialValue?: InitialValueProperty
   options?: unknown
-  hidden?: HiddenOption
 
   preview?: {
     select?: PreviewValue
@@ -146,7 +145,7 @@ export interface SlugSchemaType extends BaseSchemaType {
 export interface ObjectField<T extends SchemaType = SchemaType> {
   name: string
   fieldset?: string
-  type: T & {hidden?: boolean}
+  type: T & {hidden?: HiddenOption}
 }
 
 export interface ObjectSchemaType extends BaseSchemaType {
