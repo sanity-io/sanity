@@ -1,4 +1,4 @@
-import {Path, MultiFieldSet} from '@sanity/types'
+import {Path, MultiFieldSet, ObjectField} from '@sanity/types'
 import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
 import {getValueError} from '../../validation'
 import {getArrayDiffItemType} from '../../schema/helpers'
@@ -13,7 +13,6 @@ import {
   FieldChangeNode,
   ItemDiff,
   ObjectDiff,
-  ObjectField,
   ObjectSchemaType,
   SchemaType,
 } from '../../types'

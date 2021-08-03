@@ -2,7 +2,7 @@ import React, {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {FormFieldSet} from '@sanity/base/components'
 import {resolveTypeName} from '@sanity/util/content'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {Marker, Path, SchemaType} from '@sanity/types'
+import {Marker, ObjectFieldType, Path, SchemaType} from '@sanity/types'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {InvalidValueInput} from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
@@ -10,7 +10,7 @@ import {ConditionalField} from './ConditionalField'
 
 interface FieldType {
   name: string
-  type: SchemaType
+  type: ObjectFieldType
 }
 interface FieldProps {
   field: FieldType
