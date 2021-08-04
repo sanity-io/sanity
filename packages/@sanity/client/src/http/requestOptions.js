@@ -6,6 +6,7 @@ module.exports = (config, overrides = {}) => {
   const headers = {}
 
   const token = overrides.token || config.token
+  const proxy = config.proxy || "";
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }
@@ -26,5 +27,6 @@ module.exports = (config, overrides = {}) => {
     timeout: typeof timeout === 'undefined' ? 5 * 60 * 1000 : timeout,
     json: true,
     withCredentials,
+    proxy
   })
 }
