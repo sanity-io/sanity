@@ -23,6 +23,7 @@ export function CalendarDay(props: CalendarDayProps) {
         aria-label={date.toDateString()}
         aria-pressed={selected}
         as="button"
+        __unstable_focusRing
         data-weekday
         data-focused={focused ? 'true' : ''}
         role="button"
@@ -30,10 +31,11 @@ export function CalendarDay(props: CalendarDayProps) {
         onClick={handleClick}
         padding={3}
         radius={2}
-        tone={isToday ? 'primary' : 'default'}
+        selected={selected}
+        tone={isToday || selected ? 'primary' : 'default'}
       >
         <Text
-          muted={!isCurrentMonth}
+          muted={!selected && !isCurrentMonth}
           style={{textAlign: 'center'}}
           weight={isCurrentMonth ? 'medium' : 'regular'}
         >
