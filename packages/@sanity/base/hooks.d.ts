@@ -1,3 +1,3 @@
-import * as hooks from './src/hooks'
+import * as hooks from './lib/hooks'
 
 export = hooks

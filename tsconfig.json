@@ -26,6 +26,7 @@
       "@sanity/base/lib/util/resizeObserver": ["./@sanity/base/src/util/resizeObserver"],
       "@sanity/base/presence": ["./@sanity/base/src/presence"],
       "@sanity/base/structure-builder": ["./@sanity/base/structure-builder"],
+      "@sanity/base/user-color": ["./@sanity/base/user-color"],
       "@sanity/base": ["./@sanity/base/src"],
       "@sanity/block-tools": ["./@sanity/block-tools/src"],
       "@sanity/components/lib/fieldsets/FieldStatus": ["./@sanity/base/src/__legacy/@sanity/components/fieldsets/FieldStatus"],

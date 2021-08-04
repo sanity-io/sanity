@@ -1,3 +1,3 @@
-import * as presence from './src/presence'
+import * as presence from './lib/presence'
 
 export = presence
