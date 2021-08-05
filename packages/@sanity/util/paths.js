@@ -1,1 +1,1 @@
-module.exports = require('./lib/pathUtils')
+export * from './src/pathUtils'

@@ -1,1 +1,1 @@
-module.exports = require('./lib/components')
+export * from './src/components'

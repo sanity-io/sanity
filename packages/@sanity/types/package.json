@@ -3,6 +3,7 @@
   "version": "2.13.1",
   "description": "Type definitions for common Sanity data structures",
   "main": "lib/index.js",
+  "module": "src/index.ts",
   "types": "lib/index.d.ts",
   "sideEffects": false,
   "author": "Sanity.io <hello@sanity.io>",
