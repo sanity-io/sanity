@@ -5,7 +5,7 @@
     "composite": true,
     "jsx": "react",
     "rootDir": "./src",
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "allowJs": true
   }
 }

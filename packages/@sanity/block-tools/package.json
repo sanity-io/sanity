@@ -2,7 +2,8 @@
   "name": "@sanity/block-tools",
   "version": "2.14.0",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",

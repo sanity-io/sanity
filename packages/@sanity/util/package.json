@@ -2,7 +2,8 @@
   "name": "@sanity/util",
   "version": "2.14.0",
   "description": "Utilities shared across projects of Sanity",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "scripts": {
     "build": "babel src --copy-files --extensions '.js,.jsx,.ts,.tsx' --out-dir lib",
     "clean": "rimraf lib",

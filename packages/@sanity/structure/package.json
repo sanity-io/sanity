@@ -3,7 +3,7 @@
   "version": "2.14.0",
   "description": "Build a navigation structure programatically",
   "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=10.0.0"

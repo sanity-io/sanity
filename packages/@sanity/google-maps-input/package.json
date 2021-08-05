@@ -3,6 +3,7 @@
   "version": "2.14.0",
   "description": "Sanity plugin providing input handlers for geo-related input types using Google Maps",
   "main": "lib/index.js",
+  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {

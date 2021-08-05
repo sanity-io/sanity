@@ -2,7 +2,8 @@
   "name": "@sanity/validation",
   "version": "2.14.0",
   "description": "Validation and warning infrastructure for Sanity projects",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",

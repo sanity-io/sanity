@@ -6,6 +6,6 @@
     "strict": false,
     "noUnusedLocals": false,
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./dist/dts"
   }
 }

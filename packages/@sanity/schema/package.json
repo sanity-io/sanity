@@ -2,7 +2,8 @@
   "name": "@sanity/schema",
   "version": "2.14.0",
   "description": "",
-  "main": "lib/legacy/index.js",
+  "main": "./lib/legacy/index.js",
+  "types": "./dist/dts/legacy/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",

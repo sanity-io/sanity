@@ -2,7 +2,8 @@
   "name": "@sanity/state-router",
   "version": "2.14.0",
   "description": "A path pattern => state object bidirectional mapper",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "scripts": {
     "start": "remon --require ts-node/register demo-server/app.ts",
     "test": "jest",

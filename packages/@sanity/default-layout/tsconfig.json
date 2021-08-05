@@ -9,7 +9,7 @@
     "strictFunctionTypes": false,
     // --
     "rootDir": "src",
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "jsx": "react",
     "plugins": [
       {
