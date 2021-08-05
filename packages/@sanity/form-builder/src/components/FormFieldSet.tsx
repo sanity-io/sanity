@@ -1,15 +1,13 @@
-import {FormFieldSet as BaseFormFieldSet, FormFieldValidationStatus} from '@sanity/base/components'
-import {ChangeIndicator} from '@sanity/base/lib/change-indicators'
+import {FormFieldSet as BaseFormFieldSet} from '@sanity/base/components'
 import React, {ComponentProps, ForwardedRef, forwardRef, useMemo} from 'react'
-import {isValidationMarker, Marker} from '@sanity/types'
+import {Marker} from '@sanity/types'
 
-import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import {EMPTY_ARRAY} from '../utils/empty'
 
 export interface FormFieldSetProps extends ComponentProps<typeof BaseFormFieldSet> {
   changeIndicator?: boolean
   markers?: Marker[]
-  presence?: FormFieldPresence[]
+  presence?: any[]
 }
 
 function resolveChildren<T>(children: T | (() => T)): T {
@@ -29,20 +27,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     ...rest
   } = props
 
-  const validationMarkers = useMemo(() => markers.filter(isValidationMarker), [markers])
-
   return (
-    <BaseFormFieldSet
-      {...rest}
-      ref={ref}
-      presence={presence.length > 0 && <FieldPresence maxAvatars={4} presence={presence} />}
-      validation={
-        validationMarkers.length > 0 && <FormFieldValidationStatus fontSize={1} markers={markers} />
-      }
-    >
-      {changeIndicator
-        ? () => <ChangeIndicator>{resolveChildren(childrenProp)}</ChangeIndicator>
-        : childrenProp}
+    <BaseFormFieldSet {...rest} ref={ref}>
+      {resolveChildren(childrenProp)}
     </BaseFormFieldSet>
   )
 })

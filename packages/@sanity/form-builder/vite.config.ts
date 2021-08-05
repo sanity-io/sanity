@@ -7,4 +7,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@sanity/generate-help-url', '@sanity/schema'],
   },
+  define: {
+    __DEV__: true,
+  },
 })

@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {Session, Status, User} from '../datastores/presence/types'
+import {User} from '../datastores/presence/types'
 
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
@@ -16,12 +16,6 @@ export type FieldPresenceData = {
   element: HTMLElement
   presence: FormFieldPresence[]
   maxAvatars: number
-}
-
-export type PresentUser = {
-  user: User
-  status?: Status
-  sessions?: Session[]
 }
 
 export interface Location {

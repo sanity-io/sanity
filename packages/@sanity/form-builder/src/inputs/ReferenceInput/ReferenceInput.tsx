@@ -7,14 +7,12 @@ import {useId} from '@reach/auto-id'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Autocomplete, Box, Card, Text, Button, Stack, useToast, useForwardedRef} from '@sanity/ui'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
 import {useObservableCallback} from 'react-rx'
 import {FormField} from '../../components/FormField'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Preview from '../../Preview'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {IntentButton} from '../../transitional/IntentButton'
 import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../utils/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {usePreviewSnapshot} from './usePreviewSnapshot'
@@ -283,57 +281,50 @@ export const ReferenceInput = forwardRef(function ReferenceInput(
           </Alert>
         )}
 
-        <ChangeIndicatorWithProvidedFullPath
-          path={[]}
-          hasFocus={focusPath[0] === '_ref'}
-          value={value?._ref}
-          compareValue={compareValue?._ref}
-        >
-          <div style={{lineHeight: 0}}>
-            <Autocomplete
-              loading={searchState.isLoading}
-              ref={ref}
-              id={inputId || ''}
-              options={searchState.hits.map((hit) => ({
-                value: hit._id,
-                hit: hit,
-              }))}
-              onFocus={handleFocus}
-              onBlur={onBlur}
-              radius={1}
-              readOnly={readOnly}
-              value={value?._ref}
-              placeholder={readOnly ? '' : placeholder}
-              customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-              onQueryChange={handleQueryChange}
-              onChange={handleChange}
-              filterOption={NO_FILTER}
-              renderOption={renderOption}
-              renderValue={renderValue}
-              openButton={{onClick: handleOpenButtonClick}}
-              prefix={
-                <Box padding={1}>
-                  <IntentButton
-                    disabled={!preview.snapshot}
-                    icon={LinkIcon}
-                    title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
-                    intent="edit"
-                    mode="bleed"
-                    padding={2}
-                    params={
-                      preview.snapshot
-                        ? {
-                            id: preview.snapshot._id,
-                            type: preview.snapshot._type,
-                          }
-                        : EMPTY_OBJECT
-                    }
-                  />
-                </Box>
-              }
-            />
-          </div>
-        </ChangeIndicatorWithProvidedFullPath>
+        <div style={{lineHeight: 0}}>
+          <Autocomplete
+            loading={searchState.isLoading}
+            ref={ref}
+            id={inputId || ''}
+            options={searchState.hits.map((hit) => ({
+              value: hit._id,
+              hit: hit,
+            }))}
+            onFocus={handleFocus}
+            onBlur={onBlur}
+            radius={1}
+            readOnly={readOnly}
+            value={value?._ref}
+            placeholder={readOnly ? '' : placeholder}
+            customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
+            onQueryChange={handleQueryChange}
+            onChange={handleChange}
+            filterOption={NO_FILTER}
+            renderOption={renderOption}
+            renderValue={renderValue}
+            openButton={{onClick: handleOpenButtonClick}}
+            // prefix={
+            //   <Box padding={1}>
+            //     <IntentButton
+            //       disabled={!preview.snapshot}
+            //       icon={LinkIcon}
+            //       title={preview.snapshot ? `Open ${preview.snapshot?.title}` : 'Loading…'}
+            //       intent="edit"
+            //       mode="bleed"
+            //       padding={2}
+            //       params={
+            //         preview.snapshot
+            //           ? {
+            //               id: preview.snapshot._id,
+            //               type: preview.snapshot._type,
+            //             }
+            //           : EMPTY_OBJECT
+            //       }
+            //     />
+            //   </Box>
+            // }
+          />
+        </div>
       </Stack>
     </FormField>
   )

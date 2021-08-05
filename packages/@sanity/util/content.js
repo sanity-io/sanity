@@ -1,1 +1,1 @@
-module.exports = require('./lib/contentUtils')
+export * from './src/contentUtils'
