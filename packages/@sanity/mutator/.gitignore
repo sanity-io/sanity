@@ -11,3 +11,5 @@ coverage
 node_modules
 
 .vscode
+
+dist

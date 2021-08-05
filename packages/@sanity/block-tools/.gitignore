@@ -8,3 +8,4 @@ coverage
 form-builder-old
 plugins/@sanity
 examples/schema-testbed/plugins/@sanity
+dist

@@ -16,3 +16,4 @@ umd
 
 # Lockfiles
 yarn.lock
+dist
