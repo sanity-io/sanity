@@ -63,6 +63,7 @@
     "nano-pubsub": "^2.0.0",
     "nanoid": "^3.1.9",
     "observable-callback": "^1.0.1",
+    "pluralize": "^7.0.0",
     "polished": "^4.0.5",
     "popper-max-size-modifier": "^0.2.0",
     "raf": "^3.4.1",
