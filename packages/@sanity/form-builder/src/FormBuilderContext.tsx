@@ -3,10 +3,10 @@ import React from 'react'
 import pubsub from 'nano-pubsub'
 import {Path, SanityDocument, Schema, SchemaType} from '@sanity/types'
 import type {Patch} from './patch/types'
-import {fallbackInputs} from './fallbackInputs'
 import {DocumentContext} from './contexts/document'
 import {NodePathContext} from './contexts/nodePath'
 import {emptyArray} from './utils/empty'
+import {SchemaContext} from './contexts/schema'
 
 const EMPTY_PATH: Path = emptyArray()
 
@@ -56,7 +56,7 @@ function memoize(method) {
 
 interface Props {
   schema: Schema
-  value: SanityDocument
+  value: Pick<SanityDocument, '_id' | '_type'>
   children: any
   filterField?: any
   patchChannel: {
@@ -86,7 +86,7 @@ export default class FormBuilderContext extends React.Component<Props> {
 
   resolveInputComponent = memoizeMap((type) => {
     const {resolveInputComponent} = this.props
-    return resolve(type, resolveInputComponent) || fallbackInputs[type.jsonType]
+    return resolve(type, resolveInputComponent)
   })
 
   resolvePreviewComponent = memoizeMap((type) => {
@@ -122,7 +122,9 @@ export default class FormBuilderContext extends React.Component<Props> {
     return (
       <DocumentContext.Provider value={this.props.value}>
         <NodePathContext.Provider value={EMPTY_PATH}>
-          {this.props.children}
+          <SchemaContext.Provider value={this.props.schema}>
+            {this.props.children}
+          </SchemaContext.Provider>
         </NodePathContext.Provider>
       </DocumentContext.Provider>
     )

@@ -1,14 +1,16 @@
 import React, {useCallback, useMemo} from 'react'
 import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import Schema from '@sanity/schema'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {schema} from '../../legacyParts'
 import PatchEvent, {setIfMissing, unset} from '../../PatchEvent'
+import {withSchema} from '../../utils/withSchema'
 
 declare const __DEV__: boolean
 
-interface UntypedValueInputProps {
+export interface UntypedValueInputProps {
   validTypes?: string[]
+  schema: Schema
   value?: Record<string, unknown>
   onChange?: (event: PatchEvent, value?: Record<string, unknown>) => void
 }
@@ -65,7 +67,12 @@ function UnsetItemButton({
  * When the value does not have an `_type` property,
  * but the schema has a named type
  */
-export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) {
+export const UntypedValueInput = withSchema(function UntypedValueInput({
+  validTypes,
+  value,
+  schema,
+  onChange,
+}: UntypedValueInputProps) {
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])
 
@@ -128,4 +135,4 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
       </Details>
     </Alert>
   )
-}
+})

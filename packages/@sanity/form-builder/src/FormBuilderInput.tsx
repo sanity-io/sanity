@@ -1,10 +1,9 @@
 import React, {useContext, useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {Marker, Path, SchemaType} from '@sanity/types'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'
+import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent from './PatchEvent'
 import {emptyArray} from './utils/empty'
 import {NodePathContext} from './contexts/nodePath'
@@ -309,18 +308,7 @@ function FormBuilderInputInner(props: FormBuilderInputInnerProps & Props) {
       data-testid={path.length === 0 ? 'input-$root' : `input-${PathUtils.toString(fullPath)}`}
       style={WRAPPER_INNER_STYLES}
     >
-      <NodePathContext.Provider value={fullPath}>
-        <FormFieldPresenceContext.Provider value={childPresenceInfo}>
-          <ChangeIndicatorProvider
-            path={path}
-            focusPath={focusPath}
-            value={value}
-            compareValue={childCompareValue}
-          >
-            {input}
-          </ChangeIndicatorProvider>
-        </FormFieldPresenceContext.Provider>
-      </NodePathContext.Provider>
+      <NodePathContext.Provider value={fullPath}>{input}</NodePathContext.Provider>
     </div>
   )
 }
