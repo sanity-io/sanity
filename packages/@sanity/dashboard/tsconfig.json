@@ -3,7 +3,7 @@
     "include": ["src"],
     "compilerOptions": {
       "composite": true,
-      "outDir": "./lib",
+      "outDir": "./dist/dts",
       "rootDir": "./src",
       "jsx": "react",
       "noImplicitAny": false,
@@ -22,5 +22,4 @@
       },
     ]
   }
-  
-  
+

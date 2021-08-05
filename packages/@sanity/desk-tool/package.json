@@ -2,7 +2,8 @@
   "name": "@sanity/desk-tool",
   "version": "2.14.0",
   "description": "Tool for managing all sorts of content in a structured manner",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {

@@ -7,7 +7,7 @@
     "noImplicitAny": false,
     "jsx": "react",
     "rootDir": "./src",
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",

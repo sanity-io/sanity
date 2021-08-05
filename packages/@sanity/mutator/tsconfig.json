@@ -5,6 +5,6 @@
     "composite": true,
     "strict": false,
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./dist/dts"
   }
 }

@@ -8,6 +8,6 @@
     "emitDeclarationOnly": true,
     "jsx": "react",
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./dist/dts"
   }
 }

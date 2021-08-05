@@ -2,7 +2,8 @@
   "name": "@sanity/default-login",
   "version": "2.14.0",
   "description": "Lets the user log in to Sanity.",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {

@@ -2,7 +2,8 @@
   "name": "@sanity/mutator",
   "version": "2.14.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "scripts": {
     "build": "babel src --extensions '.js,.jsx,.ts,.tsx' --copy-files --out-dir lib",
     "clean": "rimraf lib",

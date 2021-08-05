@@ -2,7 +2,8 @@
   "name": "@sanity/code-input",
   "version": "2.14.0",
   "description": "Ace editor for editing code",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "types": "./dist/dts",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {

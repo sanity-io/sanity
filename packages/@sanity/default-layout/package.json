@@ -2,7 +2,8 @@
   "name": "@sanity/default-layout",
   "version": "2.14.0",
   "description": "The default layout components for Sanity",
-  "main": "lib/default-layout.js",
+  "main": "./lib/default-layout.js",
+  "types": "./dist/dts",
   "scripts": {
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",

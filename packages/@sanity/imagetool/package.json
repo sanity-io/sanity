@@ -2,7 +2,8 @@
   "name": "@sanity/imagetool",
   "version": "2.14.0",
   "description": "The image hotspot selector / cropper used in Sanity",
-  "main": "index.js",
+  "main": "./index.js",
+  "types": "./dist/dts",
   "scripts": {
     "clean": "rimraf lib",
     "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",

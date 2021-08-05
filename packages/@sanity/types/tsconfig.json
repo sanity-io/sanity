@@ -3,7 +3,7 @@
   "include": ["src", "parts"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "rootDir": "./src",
     "jsx": "react",
     "esModuleInterop": true

@@ -8,7 +8,7 @@
     "strictNullChecks": false,
     // --
     "jsx": "react",
-    "outDir": "./lib",
+    "outDir": "./dist/dts",
     "rootDir": "./src"
   }
 }
