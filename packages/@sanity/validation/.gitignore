@@ -2,3 +2,4 @@
 coverage
 yarn.lock
 lib
+dist

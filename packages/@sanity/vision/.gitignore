@@ -10,3 +10,4 @@ node_modules
 
 # Built files
 lib
+dist

@@ -13,3 +13,4 @@ node_modules
 # Built vendor files
 /vendor
 !/vendor/README.md
+dist

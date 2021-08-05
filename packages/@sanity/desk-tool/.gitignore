@@ -14,3 +14,4 @@ node_modules
 # Compiled version
 lib
 
+dist
