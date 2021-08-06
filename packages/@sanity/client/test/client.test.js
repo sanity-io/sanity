@@ -6,11 +6,11 @@
 // eslint-disable-next-line import/no-unassigned-import
 require('hard-rejection/register')
 
+const path = require('path')
+const fs = require('fs')
 const test = require('tape')
 const nock = require('nock')
 const assign = require('xtend')
-const path = require('path')
-const fs = require('fs')
 const validators = require('../src/validators')
 const observableOf = require('rxjs').of
 const {filter} = require('rxjs/operators')
@@ -160,6 +160,24 @@ test('can use request() for API-relative requests (custom api version)', (t) => 
     .then((res) => t.equal(res.pong, true))
     .catch(t.ifError)
     .then(t.end)
+})
+
+test('can use request() to specify API version on requests', (t) => {
+  nock(projectHost()).get('/vX/ping').reply(200, {pong: true})
+
+  getClient()
+    .request({uri: '/ping', apiVersion: 'X'})
+    .then((res) => t.equal(res.pong, true))
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('thows on invalid API version with request()', (t) => {
+  t.throws(
+    () => getClient().request({uri: '/ping', apiVersion: 'invalid version'}),
+    /Invalid api version string/i
+  )
+  t.end()
 })
 
 test('can use getUrl() to get API-relative paths', (t) => {

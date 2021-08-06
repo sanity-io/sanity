@@ -72,24 +72,8 @@ exports.initConfig = (config, prevConfig) => {
   newConfig.useCdn = Boolean(newConfig.useCdn) && !newConfig.token && !newConfig.withCredentials
 
   exports.validateApiVersion(newConfig.apiVersion)
-
-  if (newConfig.gradientMode) {
-    newConfig.url = newConfig.apiHost
-    newConfig.cdnUrl = newConfig.apiHost
-  } else {
-    const hostParts = newConfig.apiHost.split('://', 2)
-    const protocol = hostParts[0]
-    const host = hostParts[1]
-    const cdnHost = newConfig.isDefaultApi ? defaultCdnHost : host
-
-    if (newConfig.useProjectHostname) {
-      newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v${newConfig.apiVersion}`
-      newConfig.cdnUrl = `${protocol}://${newConfig.projectId}.${cdnHost}/v${newConfig.apiVersion}`
-    } else {
-      newConfig.url = `${newConfig.apiHost}/v${newConfig.apiVersion}`
-      newConfig.cdnUrl = newConfig.url
-    }
-  }
+  newConfig.url = exports.formatBaseUrl(newConfig)
+  newConfig.cdnUrl = exports.formatBaseUrl(newConfig, {cdn: true})
 
   return newConfig
 }
@@ -106,4 +90,26 @@ exports.validateApiVersion = function validateApiVersion(apiVersion) {
   if (!apiVersionValid) {
     throw new Error('Invalid API version string, expected `1` or date in format `YYYY-MM-DD`')
   }
+}
+
+exports.formatBaseUrl = function formatBaseUrl(
+  config,
+  overrides = {cdn: false, apiVersion: undefined}
+) {
+  if (config.gradientMode) {
+    return config.apiHost
+  }
+
+  const hostParts = config.apiHost.split('://', 2)
+  const protocol = hostParts[0]
+  const host = hostParts[1]
+  const cdnHost = config.isDefaultApi ? defaultCdnHost : host
+  const apiVersion = overrides.apiVersion || config.apiVersion
+
+  if (config.useProjectHostname) {
+    return overrides.cdn
+      ? `${protocol}://${config.projectId}.${cdnHost}/v${apiVersion}`
+      : `${protocol}://${config.projectId}.${host}/v${apiVersion}`
+  }
+  return overrides.cdn ? config.url : `${config.apiHost}/v${apiVersion}`
 }

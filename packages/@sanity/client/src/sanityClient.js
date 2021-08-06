@@ -11,7 +11,7 @@ const UsersClient = require('./users/usersClient')
 const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
-const {defaultConfig, initConfig} = require('./config')
+const {defaultConfig, initConfig, validateApiVersion, formatBaseUrl} = require('./config')
 const validate = require('./validators')
 
 const toPromise = (observable) => observable.toPromise()
@@ -64,6 +64,17 @@ assign(SanityClient.prototype, {
     return `${base}/${uri.replace(/^\//, '')}`
   },
 
+  getUrlWithVersion(uri, apiVersion, canUseCdn = false) {
+    if (apiVersion) {
+      validateApiVersion(apiVersion)
+      const base = canUseCdn
+        ? formatBaseUrl(this.clientConfig, {apiVersion, cdn: true})
+        : formatBaseUrl(this.clientConfig, {apiVersion})
+      return `${base}/${uri.replace(/^\//, '')}`
+    }
+    return this.getUrl(uri, canUseCdn)
+  },
+
   isPromiseAPI() {
     return this.clientConfig.isPromiseAPI
   },
@@ -87,7 +98,7 @@ assign(SanityClient.prototype, {
     const reqOptions = getRequestOptions(
       this.clientConfig,
       assign({}, options, {
-        url: this.getUrl(uri, canUseCdn),
+        url: this.getUrlWithVersion(uri, options.apiVersion, canUseCdn),
       })
     )
 
