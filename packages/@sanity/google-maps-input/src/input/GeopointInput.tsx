@@ -3,6 +3,7 @@
 
 import React from 'react'
 import classNames from 'classnames'
+import {Grid} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
 import Button from 'part:@sanity/components/buttons/default'
@@ -191,7 +192,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
           {!readOnly && (
             <div className={styles.functions}>
-              <ButtonGrid>
+              <Grid columns={2} gap={2}>
                 <Button
                   inverted
                   onClick={this.handleToggleModal}
@@ -206,7 +207,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                     Remove
                   </Button>
                 )}
-              </ButtonGrid>
+              </Grid>
             </div>
           )}
 
