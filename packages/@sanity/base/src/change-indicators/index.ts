@@ -1,20 +1,23 @@
 export {ChangeIndicatorContext} from './ChangeIndicatorContext'
 export {ConnectorContext} from './ConnectorContext'
 
+export {ChangeFieldWrapper} from './ChangeFieldWrapper'
+
 export {
   ChangeIndicator,
   ChangeIndicatorProvider,
   ChangeIndicatorScope,
   CoreChangeIndicator,
   ChangeIndicatorWithProvidedFullPath,
-  ChangeIndicatorContextProvidedProps,
+  ContextProvidedChangeIndicator,
+  ChangeIndicatorCompareValueProvider,
+  ChangeIndicatorForFieldPath,
 } from './ChangeIndicator'
 
-export {
-  Tracker,
-  useReportedValues,
-  useReporter,
-  TrackedArea,
-  TrackedChange,
-  Reported,
-} from './tracker'
+export type {ChangeIndicatorContextProvidedProps} from './ChangeIndicator'
+
+export {ChangeConnectorRoot} from './overlay/ChangeConnectorRoot'
+
+export {Tracker, useReportedValues, useReporter} from './tracker'
+export type {TrackedArea, TrackedChange} from './tracker'
+export type {Reported} from './tracker'

@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {createScope, Reported} from '../components/react-track-elements'
+import {createScope} from '../components/react-track-elements'
 import {ENABLED} from './constants'
 import {createNoopTracker} from './noop-tracker'
 
@@ -21,4 +21,5 @@ const {Tracker, useReportedValues, useReporter} = ENABLED
   ? createScope<TrackedChange | TrackedArea>()
   : createNoopTracker<TrackedChange | TrackedArea>()
 
-export {Tracker, useReportedValues, useReporter, Reported}
+export {Tracker, useReportedValues, useReporter}
+export type {Reported} from '../components/react-track-elements'

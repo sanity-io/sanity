@@ -1,4 +1,4 @@
-import {Schema} from '@sanity/types'
+import type {Schema} from '@sanity/types'
 import getDefaultModule from './getDefaultModule'
 
 // We are lazy-loading the part to work around typescript trying to resolve it
@@ -7,4 +7,5 @@ const getDefaultSchema = (): Schema => {
   return schema
 }
 
-export {Schema, getDefaultSchema}
+export {getDefaultSchema}
+export type {Schema}

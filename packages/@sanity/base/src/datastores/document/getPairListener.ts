@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {SanityDocument} from '@sanity/types'
+import type {SanityDocument} from '@sanity/types'
 import {defer, of as observableOf, Observable} from 'rxjs'
 import {concatMap, map} from 'rxjs/operators'
-import {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
+import type {IdPair, MutationEvent, ReconnectEvent, SanityClient, WelcomeEvent} from './types'
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -19,7 +19,7 @@ export interface PairListenerOptions {
   tag?: string
 }
 
-export {MutationEvent}
+export type {MutationEvent}
 
 export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
