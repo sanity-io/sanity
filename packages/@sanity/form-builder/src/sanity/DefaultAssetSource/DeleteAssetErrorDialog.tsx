@@ -2,15 +2,15 @@ import React from 'react'
 import {LinkIcon} from '@sanity/icons'
 import {Box, Text, Dialog, Grid, Card, Heading} from '@sanity/ui'
 import styled from 'styled-components'
+import {Asset as AssetType} from '@sanity/types'
 import Preview from '../../Preview'
-import {AssetRecord} from '../../inputs/files/ImageInput/types'
 import {schema, WithReferringDocuments} from '../../legacyParts'
 
 import {SpinnerWithText} from '../../components/SpinnerWithText'
 import {IntentLink} from '../../transitional/IntentLink'
 
 interface Props {
-  asset: AssetRecord
+  asset: AssetType
   onClose: () => void
   error: Error
 }
