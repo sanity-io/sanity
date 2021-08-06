@@ -6,6 +6,10 @@
     "outDir": "./dist/dts",
     "rootDir": "./src",
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "paths": {
+      "_self_": ["./src"]
+    }
   }
 }

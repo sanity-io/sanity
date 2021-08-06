@@ -1,5 +1,5 @@
 import React from 'react'
-import {Marker, Path} from '@sanity/types'
+import {Marker, Path} from '_self_'
 import {ChangeIndicatorContextProvidedProps} from '../../../../change-indicators'
 import {FormFieldPresence} from '../../../../presence'
 interface FieldsetProps {

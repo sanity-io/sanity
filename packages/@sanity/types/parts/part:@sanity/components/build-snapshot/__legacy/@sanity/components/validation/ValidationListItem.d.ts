@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import {Marker, Path} from '@sanity/types'
+import {Marker, Path} from '_self_'
 interface ValidationListItemProps {
   hasFocus?: boolean
   kind?: 'simple'

@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import {Path, Marker} from '@sanity/types'
+import {Path, Marker} from '_self_'
 export interface DefaultTextInputProps extends React.HTMLProps<HTMLInputElement> {
   markers?: Marker[]
   focusPath?: Path
