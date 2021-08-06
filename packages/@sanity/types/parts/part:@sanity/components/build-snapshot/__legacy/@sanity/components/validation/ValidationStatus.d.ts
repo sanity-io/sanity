@@ -1,5 +1,5 @@
 import React from 'react'
-import {Marker} from '@sanity/types'
+import {Marker} from '_self_'
 import {Placement} from '../types'
 interface ValidationStatusProps {
   hideTooltip?: boolean

@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import {Path} from '_self_'
 import {User} from '../user'
 export declare type Status = 'online' | 'editing' | 'inactive'
 export interface Session {

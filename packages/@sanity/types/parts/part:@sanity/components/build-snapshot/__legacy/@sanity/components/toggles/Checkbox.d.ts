@@ -1,5 +1,5 @@
 import React from 'react'
-import {Marker} from '@sanity/types'
+import {Marker} from '_self_'
 interface CheckboxProps {
   children?: React.ReactNode
   description?: React.ReactNode

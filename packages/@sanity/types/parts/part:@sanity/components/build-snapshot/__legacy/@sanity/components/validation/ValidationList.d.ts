@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import {ObjectSchemaType, Path, Marker} from '@sanity/types'
+import {ObjectSchemaType, Path, Marker} from '_self_'
 interface ValidationListProps {
   documentType?: ObjectSchemaType
   kind?: 'simple'

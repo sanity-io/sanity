@@ -1,5 +1,5 @@
 import React from 'react'
-import {Path} from '@sanity/types'
+import {Path} from '_self_'
 interface Props {
   isReviewChangesOpen: boolean
   onOpenReviewChanges: () => void

@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import {Path} from '@sanity/types'
+import {Path} from '_self_'
 import {Reported} from '../components/react-track-elements'
 export interface TrackedChange {
   element: HTMLElement

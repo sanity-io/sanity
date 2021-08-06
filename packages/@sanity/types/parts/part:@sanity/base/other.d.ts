@@ -119,7 +119,7 @@ declare module 'part:@sanity/base/new-document-structure?' {
 }
 
 declare module 'part:@sanity/base/preview' {
-  import type {Reference, SchemaType} from '@sanity/types'
+  import type {Reference, SchemaType} from '_self_'
   import type {Observable} from 'rxjs'
 
   declare const PreviewBase: React.ComponentType<{
@@ -152,7 +152,7 @@ declare module 'part:@sanity/base/preview' {
 }
 
 declare module 'part:@sanity/base/preview?' {
-  import type {SchemaType} from '@sanity/types'
+  import type {SchemaType} from '_self_'
   const Preview: React.ComponentType<{
     layout: 'default'
     status: React.ReactNode
@@ -190,7 +190,7 @@ declare module 'part:@sanity/base/sanity-logo-alpha'
 declare module 'part:@sanity/base/sanity-root'
 declare module 'part:@sanity/base/sanity-studio-logo'
 declare module 'part:@sanity/base/schema' {
-  import type {SchemaType} from '@sanity/types'
+  import type {SchemaType} from '_self_'
 
   interface Schema {
     _validation: {

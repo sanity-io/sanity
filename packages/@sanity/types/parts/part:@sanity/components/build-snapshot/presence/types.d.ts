@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import {Path} from '_self_'
 import {Session, Status, User} from '../datastores/presence/types'
 export declare type Position = 'top' | 'bottom' | 'inside' | null
 export declare type Size = 'xsmall' | 'small' | 'medium'
