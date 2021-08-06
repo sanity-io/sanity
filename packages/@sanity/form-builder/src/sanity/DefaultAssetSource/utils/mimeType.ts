@@ -45,7 +45,7 @@ const MIME_TYPES: Record<string, MimeTypeInfo> = {
     title: 'OGG Audio',
   },
   'audio/wav': {
-    title: 'WAW Audio',
+    title: 'WAV Audio',
   },
   'audio/webm': {
     title: 'WebM Audio',
