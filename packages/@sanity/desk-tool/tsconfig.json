@@ -5,16 +5,8 @@
     "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
-    "outDir": "./dist/dts",
-    "jsx": "react",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "customMatcher": "\\.css$"
-        }
-      }
-    ]
+    "outDir": "./dist/ts",
+    "jsx": "react"
   },
   "references": [
     {

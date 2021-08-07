@@ -12,15 +12,7 @@
     // --
     "checkJs": true,
     "allowJs": true,
-    "jsx": "react",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "customMatcher": "\\.css$"
-        }
-      }
-    ]
+    "jsx": "react"
   },
   "references": [
     {
