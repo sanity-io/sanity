@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "typeRoots": ["./node_modules/@sanity/types/parts"]
+    "jsx": "react"
   }
 }
