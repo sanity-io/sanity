@@ -22,7 +22,8 @@
     "react-color": "^2.13.8"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^2.7.1",
+    "@sanity/types": "2.14.0"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
