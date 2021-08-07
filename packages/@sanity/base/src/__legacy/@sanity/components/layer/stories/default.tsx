@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Layer, LayerProvider, useLayer} from 'part:@sanity/components/layer'
 import React, {useCallback, useState} from 'react'
 

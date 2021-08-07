@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 import {versionedClient} from '../../client/versionedClient'
 import {checkoutPair} from './document-pair/checkoutPair'

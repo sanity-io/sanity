@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Chance from 'chance'
 import {range} from 'lodash'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'

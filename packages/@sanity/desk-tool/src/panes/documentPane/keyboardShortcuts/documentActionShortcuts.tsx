@@ -1,4 +1,6 @@
-import {DocumentActionDescription} from '@sanity/base'
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+import type {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useEditState} from '@sanity/react-hooks'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'

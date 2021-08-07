@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {isKeySegment, Path} from '@sanity/types'
 import {Card, Flex, Label, useClickOutside, useLayer} from '@sanity/ui'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {LegacyLayerProvider} from '@sanity/base/components'
 import FileIcon from 'part:@sanity/base/file-icon'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'

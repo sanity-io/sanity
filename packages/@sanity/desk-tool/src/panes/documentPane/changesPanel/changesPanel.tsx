@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {useTimeAgo} from '@sanity/base/hooks'
 import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
 import {

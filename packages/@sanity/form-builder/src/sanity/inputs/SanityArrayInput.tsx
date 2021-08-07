@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {ForwardedRef, forwardRef} from 'react'
 import formBuilderConfig from 'config:@sanity/form-builder'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'

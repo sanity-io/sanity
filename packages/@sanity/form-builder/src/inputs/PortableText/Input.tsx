@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import classNames from 'classnames'
 import {Subject} from 'rxjs'
 import React, {useEffect, useState, useMemo, useCallback} from 'react'

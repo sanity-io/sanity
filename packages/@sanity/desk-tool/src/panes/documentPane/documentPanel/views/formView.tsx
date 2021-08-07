@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import React from 'react'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable react/no-unused-prop-types */
 
 import {Portal, useLayer} from '@sanity/ui'

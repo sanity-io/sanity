@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {take} from 'rxjs/operators'
 import settings from 'part:@sanity/base/settings'
 

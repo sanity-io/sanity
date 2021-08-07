@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {DialogAction} from '@sanity/base/__legacy/@sanity/components'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {useDocumentOperation} from '@sanity/react-hooks'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Observable, of, from, merge, defer, concat} from 'rxjs'
 import {catchError, map, mergeMap, mapTo, switchMap, shareReplay, tap, take} from 'rxjs/operators'
 import raf from 'raf'

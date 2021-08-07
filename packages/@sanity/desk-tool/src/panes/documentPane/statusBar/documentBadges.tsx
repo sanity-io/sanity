@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {DocumentBadgeDescription} from '@sanity/base'
 import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
 import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {createElement} from 'react'
 import styles from 'part:@sanity/default-layout/branding-style'
 import BrandLogo from 'part:@sanity/base/brand-logo?'

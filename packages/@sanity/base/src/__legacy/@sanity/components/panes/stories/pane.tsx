@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import ComposeIcon from 'part:@sanity/base/compose-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import Button from 'part:@sanity/components/buttons/default'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Tooltip, TooltipPlacement} from 'part:@sanity/components/tooltip'
 import React from 'react'
 import {UserAvatar} from '../components/UserAvatar'

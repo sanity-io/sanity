@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Autocomplete from 'part:@sanity/components/autocomplete/default'
 import {action} from 'part:@sanity/storybook'
 import {CenteredContainer} from 'part:@sanity/storybook/components'

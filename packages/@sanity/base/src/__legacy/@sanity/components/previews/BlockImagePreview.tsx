@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import styles from 'part:@sanity/components/previews/block-image-style'
 import {MediaDimensions} from '../types'

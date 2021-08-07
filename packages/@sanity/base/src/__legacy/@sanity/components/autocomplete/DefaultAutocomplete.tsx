@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {uniqueId} from 'lodash'
 import styles from 'part:@sanity/components/autocomplete/default-style'
 import FormField from 'part:@sanity/components/formfields/default'

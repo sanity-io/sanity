@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import {action} from 'part:@sanity/storybook/addons/actions'

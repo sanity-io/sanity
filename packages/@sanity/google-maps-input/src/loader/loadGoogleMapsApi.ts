@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Observable, BehaviorSubject} from 'rxjs'
 import config from 'config:@sanity/google-maps-input'
 

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
 import {action} from 'part:@sanity/storybook/addons/actions'

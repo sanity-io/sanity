@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import pluginConfig from 'config:@sanity/default-login'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {MenuButton} from 'part:@sanity/components/menu-button'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'

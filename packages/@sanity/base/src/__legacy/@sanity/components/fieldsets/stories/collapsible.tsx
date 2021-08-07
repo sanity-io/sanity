@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Chance from 'chance'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultTextField from 'part:@sanity/components/textfields/default'

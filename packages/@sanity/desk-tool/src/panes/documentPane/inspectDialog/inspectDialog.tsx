@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {SanityDocument} from '@sanity/types'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Tab from 'part:@sanity/components/tabs/tab'

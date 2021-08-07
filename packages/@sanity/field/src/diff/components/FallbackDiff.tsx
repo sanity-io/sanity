@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import Preview from 'part:@sanity/base/preview'
 import {Box} from '@sanity/ui'

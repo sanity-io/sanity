@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Button from 'part:@sanity/components/buttons/default'
 import {Popover} from 'part:@sanity/components/popover'
 import {select} from 'part:@sanity/storybook/addons/knobs'

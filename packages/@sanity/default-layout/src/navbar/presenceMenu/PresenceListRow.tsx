@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable react/require-default-props */
 
 import {UserAvatar} from '@sanity/base/components'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {useSyncState} from '@sanity/react-hooks'
 import {DocumentBadgeDescription} from '@sanity/base'
 import {useTimeAgo} from '@sanity/base/hooks'

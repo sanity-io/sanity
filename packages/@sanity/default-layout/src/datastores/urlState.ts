@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import locationStore from 'part:@sanity/base/location'
 import {Observable} from 'rxjs'
 import {map, filter, scan, publishReplay, refCount, tap} from 'rxjs/operators'

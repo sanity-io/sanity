@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable react/prop-types, react/no-multi-comp */
 import React, {useContext, useMemo} from 'react'
 import {isEqual, pick, omit} from 'lodash'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {useCallback} from 'react'
 import Tab from 'part:@sanity/components/tabs/tab'
 import TabList from 'part:@sanity/components/tabs/tab-list'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {LayerProvider, useLayer} from '@sanity/ui'
 import Chance from 'chance'
 import {range} from 'lodash'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {range} from 'lodash'
 import Pane from 'part:@sanity/components/panes/default'
 import SplitController from 'part:@sanity/components/panes/split-controller'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {action} from 'part:@sanity/storybook'
 import DefaultTextArea from 'part:@sanity/components/textareas/default'
 import {number, text, boolean} from 'part:@sanity/storybook/addons/knobs'

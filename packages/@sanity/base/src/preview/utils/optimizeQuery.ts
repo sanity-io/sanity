@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {identity, sortBy, values} from 'lodash'
 import {escapeField, fieldNeedsEscape} from 'part:@sanity/base/util/search-utils'
 import {FieldName, Id, Selection} from '../types'

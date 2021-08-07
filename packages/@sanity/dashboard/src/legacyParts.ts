@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import WidgetContainer from 'part:@sanity/dashboard/widget-container'
 import dashboardConfig from 'part:@sanity/dashboard/config?'
 import sanityClient from 'part:@sanity/base/client'

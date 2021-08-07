@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import DefaultPreview from 'part:@sanity/components/previews/default'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {ContainerQuery} from 'part:@sanity/components/container-query'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import React from 'react'

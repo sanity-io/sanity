@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {SanityDocument} from '@sanity/types'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import React from 'react'

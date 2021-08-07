@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import Sanity from 'part:@sanity/storybook/addons/sanity'

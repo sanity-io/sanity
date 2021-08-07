@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import FullscreenExitIcon from 'part:@sanity/base/fullscreen-exit-icon'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import Button from 'part:@sanity/components/buttons/default'

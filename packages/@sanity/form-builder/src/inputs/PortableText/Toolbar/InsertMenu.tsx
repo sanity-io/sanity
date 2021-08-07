@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {ButtonProps} from '@sanity/base/__legacy/@sanity/components'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import Button from 'part:@sanity/components/buttons/default'
