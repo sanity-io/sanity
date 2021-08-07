@@ -1,3 +1,5 @@
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable id-length */
 import React, {PureComponent} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
