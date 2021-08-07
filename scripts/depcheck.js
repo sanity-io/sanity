@@ -35,6 +35,7 @@ const options = {
     depcheck.detector.requireResolveCallExpression,
     depcheck.detector.typescriptImportEqualsDeclaration,
     depcheck.detector.typescriptImportType,
+    typeScriptReferencesDirective,
   ],
   specials: [
     depcheck.special.bin,
@@ -114,6 +115,13 @@ function getProjectIgnores(baseDir) {
   }
 }
 
+function typeScriptReferencesDirective(node) {
+  let match
+  if (node.type === 'CommentLine' && (match = node.value.match(/\/<reference types="(.+)" \/>/))) {
+    return [match[1]]
+  }
+  return []
+}
 function sanityJSONParser(filePath, deps, dir) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {

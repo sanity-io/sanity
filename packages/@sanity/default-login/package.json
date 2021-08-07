@@ -27,7 +27,8 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1"
+    "rimraf": "^2.7.1",
+    "@sanity/types": "2.14.0"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17"

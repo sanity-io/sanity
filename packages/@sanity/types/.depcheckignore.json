@@ -1,5 +1,6 @@
 {
   "ignore": [
+    "_self_",
     "@sanity/types",
     "@sanity/bifur-client",
     "@sanity/mutator",
