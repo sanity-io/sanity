@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import classNames from 'classnames'
 import DragHandleIcon from 'part:@sanity/base/drag-handle-icon'
 import React, {forwardRef} from 'react'

@@ -1,4 +1,7 @@
-import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
+import type {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from 'part:@sanity/base/router'
 import {RestoreIcon} from '@sanity/icons'

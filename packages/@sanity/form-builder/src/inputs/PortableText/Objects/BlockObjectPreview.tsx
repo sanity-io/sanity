@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
 import {Path} from '@sanity/types'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {ValidationMarker} from '@sanity/types'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {boolean, text} from 'part:@sanity/storybook/addons/knobs'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Tab from 'part:@sanity/components/tabs/tab'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
 import TabList from 'part:@sanity/components/tabs/tab-list'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import FileIcon from 'part:@sanity/base/file-icon'
 import React, {useMemo} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'

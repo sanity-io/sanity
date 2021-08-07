@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Preview from 'part:@sanity/base/preview'
 import {useUserColorManager} from '@sanity/base/user-color'
 import {isKeyedObject, TypedObject} from '@sanity/types'

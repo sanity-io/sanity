@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {RootTheme, studioTheme as defaults} from '@sanity/ui'
 import legacyTheme from 'sanity:css-custom-properties'
 import {color} from './color'

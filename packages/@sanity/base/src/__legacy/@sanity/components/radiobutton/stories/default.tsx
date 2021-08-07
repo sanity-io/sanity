@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import RadioButton from 'part:@sanity/components/radiobutton/default'
 import {action} from 'part:@sanity/storybook/addons/actions'
 import {object, boolean, text} from 'part:@sanity/storybook/addons/knobs'

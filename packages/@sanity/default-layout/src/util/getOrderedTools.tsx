@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import pluginConfig from 'config:@sanity/default-layout'
 import tools from 'all:part:@sanity/base/tool'
 import {Tool} from '../types'

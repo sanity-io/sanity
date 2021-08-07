@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {PortalProvider} from 'part:@sanity/components/portal'
 import {Tooltip} from 'part:@sanity/components/tooltip'
 import {boolean, select, text} from 'part:@sanity/storybook/addons/knobs'

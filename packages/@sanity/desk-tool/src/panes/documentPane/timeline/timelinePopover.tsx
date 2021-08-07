@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Placement} from '@popperjs/core'
 import {Chunk} from '@sanity/field/diff'
 import {ClickOutside} from 'part:@sanity/components/click-outside'

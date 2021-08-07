@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import DefaultBadge from 'part:@sanity/components/badges/default'
 import {Container} from 'part:@sanity/storybook/components'
 import React from 'react'

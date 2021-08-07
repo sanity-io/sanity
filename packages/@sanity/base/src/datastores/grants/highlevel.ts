@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {SanityDocument, SchemaType} from '@sanity/types'
 import {resolveInitialValueForType} from '@sanity/initial-value-templates'
 import {map, mergeMap, switchMap} from 'rxjs/operators'

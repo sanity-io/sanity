@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 /**
  * @internal INTERNAL! Don't use outside of @sanity/base!
  *

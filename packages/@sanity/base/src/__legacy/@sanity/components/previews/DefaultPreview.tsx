@@ -1,4 +1,7 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
 /** Deprecated. The new DefaultPreview component is located in @sanity/base/components/previews */
+
 import classNames from 'classnames'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
 import React from 'react'

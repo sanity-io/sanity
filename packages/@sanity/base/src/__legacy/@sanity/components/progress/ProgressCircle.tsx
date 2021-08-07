@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import styles from 'part:@sanity/components/progress/circle-style'
 import React from 'react'
 

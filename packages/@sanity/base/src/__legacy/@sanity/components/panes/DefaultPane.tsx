@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Layer} from '@sanity/ui'
 import {StructureBuilder as S} from '@sanity/structure'
 import {InitialValueTemplateItem} from '@sanity/structure/lib/InitialValueTemplateItem'

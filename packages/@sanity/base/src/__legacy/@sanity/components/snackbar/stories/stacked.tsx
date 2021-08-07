@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/item'
 import {action} from 'part:@sanity/storybook/addons/actions'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import {List, Item, DragHandle} from 'part:@sanity/components/lists/sortable'
 import {arrayMove} from 'react-sortable-hoc'

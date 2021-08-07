@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 // legacy plugin parts - e.g. parts ids that are documented as overridable
 import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
 import DateTimeInput from 'part:@sanity/form-builder/input/datetime?'

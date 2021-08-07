@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import Chance from 'chance'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {action} from 'part:@sanity/storybook/addons/actions'

@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {studioTheme as defaults, ThemeFonts} from '@sanity/ui'
 import cssCustomProperties from 'sanity:css-custom-properties'
 

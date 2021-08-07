@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {MenuItem, MenuItemGroup} from '@sanity/base/__legacy/@sanity/components'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {MenuButton} from 'part:@sanity/components/menu-button'

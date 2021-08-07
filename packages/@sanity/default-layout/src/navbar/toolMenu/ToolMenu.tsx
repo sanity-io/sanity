@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {LegacyLayerProvider} from '@sanity/base/components'
 import StateButton from 'part:@sanity/components/buttons/state'
 import {Tooltip} from 'part:@sanity/components/tooltip'

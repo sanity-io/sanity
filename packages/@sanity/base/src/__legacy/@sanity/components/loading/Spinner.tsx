@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import classNames from 'classnames'
 import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 import styles from 'part:@sanity/components/loading/spinner-style'

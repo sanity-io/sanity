@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {useMemo} from 'react'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import {isKeySegment, Marker, Path} from '@sanity/types'

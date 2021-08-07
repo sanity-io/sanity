@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {Modifier} from '@popperjs/core'
 import {Layer, Portal, useLayer} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useState} from 'react'

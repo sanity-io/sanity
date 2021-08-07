@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {useCallback, useEffect, useImperativeHandle, useRef} from 'react'
 import {FormFieldPresence} from '@sanity/base/presence'
 import {FormField, FormFieldSet} from '@sanity/base/components'

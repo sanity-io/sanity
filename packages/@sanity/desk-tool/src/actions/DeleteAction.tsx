@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import {DocumentActionComponent} from '@sanity/base'
 import {TrashIcon} from '@sanity/icons'
 import {useDocumentOperation} from '@sanity/react-hooks'

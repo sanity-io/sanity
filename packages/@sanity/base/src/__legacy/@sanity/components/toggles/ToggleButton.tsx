@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React, {forwardRef} from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import {ButtonProps} from '../buttons/types'

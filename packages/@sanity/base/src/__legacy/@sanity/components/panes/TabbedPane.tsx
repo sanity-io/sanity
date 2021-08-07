@@ -1,3 +1,6 @@
+// @todo: remove the following line when part imports has been removed from this file
+///<reference types="@sanity/types/parts" />
+
 import React from 'react'
 import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
