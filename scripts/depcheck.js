@@ -17,7 +17,6 @@ const package = require(`${cwd}/package.json`)
 const options = {
   ignoreMatches: [
     '@types/jest',
-    'typescript-plugin-css-modules',
     'ts-node',
     'config:*',
     'part:*',

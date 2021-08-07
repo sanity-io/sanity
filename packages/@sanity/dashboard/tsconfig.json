@@ -6,15 +6,7 @@
       "outDir": "./dist/dts",
       "rootDir": "./src",
       "jsx": "react",
-      "noImplicitAny": false,
-      "plugins": [
-        {
-          "name": "typescript-plugin-css-modules",
-          "options": {
-            "customMatcher": "\\.css$"
-          }
-        }
-      ],
+      "noImplicitAny": false
     },
     "references": [
       {
