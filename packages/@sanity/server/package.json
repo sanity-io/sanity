@@ -66,13 +66,13 @@
     "strip-ansi": "^5.2.0",
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
-    "tsconfig": "^7.0.0",
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^2.0.5",
     "webpack-hot-middleware": "2.25.0"
   },
   "devDependencies": {
     "find-config": "^1.0.0",
+    "json5": "^2.2.0",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
