@@ -1,2 +1,2 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-module.exports = require('@sanity/initial-value-templates')
+// Legacy package export for non-esm environments
+module.exports = require('./lib/_exports/initial-value-templates')

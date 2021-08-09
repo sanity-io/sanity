@@ -1,1 +1,2 @@
-module.exports = require('./lib/components')
+// Legacy package export for non-esm environments
+module.exports = require('./lib/_exports/components')
