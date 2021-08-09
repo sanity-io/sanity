@@ -1,56 +1,40 @@
-// This config is read by the IDE and not used during build / typecheck
 {
-  "extends": "./tsconfig.settings",
+  "files": [],
   "compilerOptions": {
-    "baseUrl": "./packages",
-    // prettier-ignore
-    "paths": {
-      // These paths are here to support IDE jump to source, and is also read by webpack in monorepo dev mode
-      // Todo: Look into a better way of solving this issue, e.g. by using package exports
+    "composite": true,
+    "module": "commonjs",
+    "target": "es2020",
+    "lib": ["dom", "es2020"],
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
 
-      // Documented paths
-      "@sanity/base/initial-value-template-builder": ["./@sanity/base/initial-value-template-builder"],
-      "@sanity/desk-tool/structure-builder": ["./@sanity/desk-tool/structure-builder"],
-
-      // Internal paths (order matters)
-      "@sanity/base/__legacy/@sanity/components": ["./@sanity/base/src/__legacy/@sanity/components"],
-      "@sanity/base/components": ["./@sanity/base/src/components"],
-      "@sanity/base/hooks": ["./@sanity/base/src/hooks"],
-      "@sanity/base/initial-value-templates": ["./@sanity/base/initial-value-templates"],
-      "@sanity/base/lib/__legacy/@sanity/components/fieldsets/FieldStatus": ["./@sanity/base/src/__legacy/@sanity/components/fieldsets/FieldStatus"],
-      "@sanity/base/lib/change-indicators": ["./@sanity/base/src/change-indicators"],
-      "@sanity/base/lib/change-indicators/ChangeFieldWrapper": ["./@sanity/base/src/change-indicators/ChangeFieldWrapper"],
-      "@sanity/base/lib/change-indicators/ChangeIndicator": ["./@sanity/base/src/change-indicators/ChangeIndicator"],
-      "@sanity/base/lib/datastores/document/document-pair/remoteSnapshots": ["./@sanity/base/src/datastores/document/document-pair/remoteSnapshots"],
-      "@sanity/base/lib/theme/legacyTones": ["./@sanity/base/src/theme/legacyTones"],
-      "@sanity/base/lib/util/resizeObserver": ["./@sanity/base/src/util/resizeObserver"],
-      "@sanity/base/presence": ["./@sanity/base/src/presence"],
-      "@sanity/base/structure-builder": ["./@sanity/base/structure-builder"],
-      "@sanity/base": ["./@sanity/base/src"],
-      "@sanity/block-tools": ["./@sanity/block-tools/src"],
-      "@sanity/components/lib/fieldsets/FieldStatus": ["./@sanity/base/src/__legacy/@sanity/components/fieldsets/FieldStatus"],
-      "@sanity/components": ["./@sanity/components/src"],
-      "@sanity/diff": ["./@sanity/diff/src"],
-      "@sanity/desk-tool": ["./@sanity/desk-tool/src"],
-      "@sanity/field/lib/diff/resolve/diffResolver": ["./@sanity/field/src/diff/resolve/diffResolver"],
-      "@sanity/field": ["./@sanity/field/src"],
-      "@sanity/form-builder/PatchEvent": ["./@sanity/form-builder/src/PatchEvent"],
-      "@sanity/form-builder": ["./@sanity/form-builder/src"],
-      "@sanity/imagetool": ["./@sanity/imagetool/src"],
-      "@sanity/initial-value-templates": ["./@sanity/initial-value-templates/src"],
-      "@sanity/mutator": ["./@sanity/mutator/src"],
-      "@sanity/react-hooks": ["./@sanity/react-hooks/src"],
-      "@sanity/schema/lib": ["./@sanity/schema/src"],
-      "@sanity/schema": ["./@sanity/schema/src/legacy"],
-      "@sanity/state-router/components": ["./@sanity/state-router/src/components"],
-      "@sanity/state-router": ["./@sanity/state-router/src"],
-      "@sanity/structure": ["./@sanity/structure/src"],
-      "@sanity/transaction-collator": ["./@sanity/transaction-collator/src"],
-      "@sanity/util/paths": ["./@sanity/util/src/pathUtils"],
-      "@sanity/util/content": ["./@sanity/util/src/contentUtils"],
-      "@sanity/util": ["./@sanity/util/src"],
-      "@sanity/types": ["./@sanity/types/src"],
-      "@sanity/validation": ["./@sanity/validation/src"]
-    }
-  }
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "references": [
+    {"path": "./packages/@sanity/base"},
+    {"path": "./packages/@sanity/block-tools"},
+    {"path": "./packages/@sanity/code-input"},
+    {"path": "./packages/@sanity/default-layout"},
+    {"path": "./packages/@sanity/desk-tool"},
+    {"path": "./packages/@sanity/diff"},
+    {"path": "./packages/@sanity/field"},
+    {"path": "./packages/@sanity/form-builder"},
+    {"path": "./packages/@sanity/google-maps-input"},
+    {"path": "./packages/@sanity/imagetool"},
+    {"path": "./packages/@sanity/initial-value-templates"},
+    {"path": "./packages/@sanity/mutator"},
+    {"path": "./packages/@sanity/react-hooks"},
+    {"path": "./packages/@sanity/schema"},
+    {"path": "./packages/@sanity/state-router"},
+    {"path": "./packages/@sanity/structure"},
+    {"path": "./packages/@sanity/transaction-collator"},
+    {"path": "./packages/@sanity/types"}
+  ]
 }

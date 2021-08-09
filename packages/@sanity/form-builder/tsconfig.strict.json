@@ -1,12 +1,10 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["src/**/*"],
+  "extends": "../../../tsconfig",
+  "include": ["./src/**/*"],
   "compilerOptions": {
-    "composite": true,
-    "jsx": "react",
-
     "rootDir": "./src",
-    "outDir": "./lib"
-  },
-  "references": [{"path": "../imagetool"}, {"path": "../types"}, {"path": "../base"}, {"path": "../util"}]
+    "outDir": "./dist/ts",
+    "composite": true,
+    "jsx": "react"
+  }
 }

@@ -16,7 +16,7 @@ const getProjectEnv = (projectPath) => {
 exports.runTsc = function runTsc(projectPath, watch) {
   const proc = childProcess.spawn(
     'tsc',
-    ['-b', './packages', '--pretty', '--force', ...(watch ? ['--watch'] : [])],
+    ['-b', '--pretty', '--force', ...(watch ? ['--watch'] : [])],
     {
       shell: isWindows,
       cwd: projectPath,

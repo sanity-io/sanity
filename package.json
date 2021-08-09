@@ -52,7 +52,7 @@
     "verify-format": "lerna run clean && npm run prettier -- -c",
     "postinstall": "npm run bootstrap",
     "vercel-build": "npm run build:js && cd examples/test-studio && npm run build -- -y",
-    "type-check": "tsc -b ./packages --force",
+    "type-check": "tsc -b --force",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
     "cypress:run": "cypress run --config-file cypress/cypress.json"
   },

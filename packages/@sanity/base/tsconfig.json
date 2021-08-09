@@ -1,10 +1,10 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "../../../tsconfig",
   "include": ["src/**/*"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "./dist/dts",
     "rootDir": "./src",
+    "outDir": "./dist/dts",
     // -- strictness options we need to disable in a transition period.
     "noImplicitAny": false,
     "strictNullChecks": false,
@@ -15,29 +15,13 @@
     "jsx": "react"
   },
   "references": [
-    {
-      "path": "../structure"
-    },
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../util"
-    },
-    {
-      "path": "../state-router"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../mutator"
-    },
-    {
-      "path": "../transaction-collator"
-    },
-    {
-      "path": "../initial-value-templates"
-    }
+    {"path": "../structure"},
+    {"path": "../types"},
+    {"path": "../util"},
+    {"path": "../state-router"},
+    {"path": "../validation"},
+    {"path": "../mutator"},
+    {"path": "../transaction-collator"},
+    {"path": "../initial-value-templates"}
   ]
 }
