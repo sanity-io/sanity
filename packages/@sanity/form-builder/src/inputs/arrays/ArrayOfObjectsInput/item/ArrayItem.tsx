@@ -1,7 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import {ChangeIndicatorScope} from '@sanity/base/lib/change-indicators'
-import {ContextProvidedChangeIndicator} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorScope, ContextProvidedChangeIndicator} from '@sanity/base/change-indicators'
 import {ArraySchemaType, isValidationMarker, Marker, Path} from '@sanity/types'
 import {FormFieldPresence} from '@sanity/base/presence'
 import React, {memo, useCallback, useMemo, useRef} from 'react'

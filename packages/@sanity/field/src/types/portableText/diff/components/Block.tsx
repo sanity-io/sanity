@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import {ConnectorContext} from '@sanity/base/lib/change-indicators'
+import {ConnectorContext} from '@sanity/base/change-indicators'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'

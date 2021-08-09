@@ -1,7 +1,7 @@
 import type {SanityClient} from '@sanity/client'
 import {Annotation} from '@sanity/field/diff'
 import {Observable} from 'rxjs'
-import {remoteSnapshots} from '@sanity/base/lib/datastores/document/document-pair/remoteSnapshots'
+import {remoteSnapshots} from '@sanity/base/_internal'
 import {Diff, ObjectDiff} from '@sanity/diff'
 import {Timeline, ParsedTimeRef} from './timeline'
 import {getJsonStream} from './ndjsonStreamer'

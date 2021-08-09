@@ -7,7 +7,7 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '@sanity/imagetool/constants'
 
 import {Box, Card, Flex, Text, Grid, Heading, useForwardedRef} from '@sanity/ui'
 import styled from 'styled-components'
-import {ChangeIndicatorForFieldPath} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import shallowEquals from 'shallow-equals'
 import {FormFieldPresence} from '@sanity/base/presence'
 import PatchEvent, {set} from '../../../PatchEvent'

@@ -1,4 +1,4 @@
-import {DocumentActionSuccessDialogProps} from '@sanity/base/lib/actions/utils/types'
+import {DocumentActionSuccessDialogProps} from '@sanity/base/_internal'
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 
