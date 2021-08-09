@@ -11,6 +11,7 @@ import {
   ThemeColorButtonState,
   ThemeColorButtonStates,
   ThemeColorButtonTones,
+  ThemeColorCard,
   ThemeColorMuted,
   ThemeColorMutedTone,
   ThemeColorProvider,
@@ -24,6 +25,10 @@ import {
 import React, {createContext, useContext, useMemo} from 'react'
 
 interface Features {
+  light: boolean
+  dark: boolean
+
+  base: boolean
   button: boolean
   card: boolean
   input: boolean
@@ -34,11 +39,15 @@ interface Features {
 }
 
 const defaultFeatures: Features = {
-  button: false,
+  light: true,
+  dark: false,
+
+  base: false,
+  button: true,
   card: false,
   input: false,
   muted: false,
-  selectable: true,
+  selectable: false,
   solid: false,
   spot: false,
 }
@@ -56,14 +65,18 @@ export function ColorCanvas(props: {features?: Partial<Features>}) {
 
   return (
     <FeaturesContext.Provider value={features}>
-      <Flex gap={1}>
-        <ThemeColorProvider scheme="light">
-          <ColorScheme scheme={theme.color.light} />
-        </ThemeColorProvider>
+      <Flex>
+        {features.light && (
+          <ThemeColorProvider scheme="light">
+            <ColorScheme scheme={theme.color.light} />
+          </ThemeColorProvider>
+        )}
 
-        <ThemeColorProvider scheme="dark">
-          <ColorScheme scheme={theme.color.dark} />
-        </ThemeColorProvider>
+        {features.dark && (
+          <ThemeColorProvider scheme="dark">
+            <ColorScheme scheme={theme.color.dark} />
+          </ThemeColorProvider>
+        )}
       </Flex>
     </FeaturesContext.Provider>
   )
@@ -73,7 +86,7 @@ function ColorScheme(props: {scheme: ThemeColorScheme}) {
   const {scheme} = props
 
   return (
-    <Flex direction="column" flex={1} gap={1}>
+    <Flex direction="column" flex={1}>
       <Color color={scheme.default} tone="default" />
       <Color color={scheme.transparent} tone="transparent" />
       <Color color={scheme.primary} tone="primary" />
@@ -89,40 +102,41 @@ function Color(props: {color: ThemeColor; tone: CardTone}) {
   const features = useFeatures()
 
   return (
-    <Card padding={[3, 4, 5]} tone={tone}>
-      <Stack space={[3, 4, 5]}>
-        <Stack
-          padding={3}
-          space={2}
-          style={{
-            borderRadius: 3,
-            boxShadow: `inset 0 0 0 1px ${color.base.border}`,
-          }}
-        >
-          <Text>Text</Text>
-          <Text muted>Muted</Text>
-          <Text accent>Accent</Text>
-          <Text>
-            <a href="#">Link</a>
-          </Text>
-          <Text>
-            <code>Code</code>
-          </Text>
-          <div
+    <Card padding={[3, 4]} tone={tone}>
+      <Stack
+        space={[3, 4]}
+        // style={{outline: '1px solid #ccc'}}
+      >
+        {features.base && (
+          <Stack
+            padding={3}
+            space={2}
             style={{
-              height: 9,
-              background: `linear-gradient(to right, ${color.base.skeleton?.from}, ${color.base.skeleton?.to})`,
+              borderRadius: 3,
+              boxShadow: `inset 0 0 0 1px ${color.base.border}`,
             }}
-          />
-        </Stack>
+          >
+            <Text>Text</Text>
+            <Text muted>Muted</Text>
+            <Text accent>Accent</Text>
+            <Text>
+              <a href="#">Link</a>
+            </Text>
+            <Text>
+              <code>Code</code>
+            </Text>
+            <div
+              style={{
+                height: 9,
+                background: `linear-gradient(to right, ${color.base.skeleton?.from}, ${color.base.skeleton?.to})`,
+              }}
+            />
+          </Stack>
+        )}
 
         {features.button && <ColorButton color={color.button} />}
 
-        {features.card && (
-          <Box padding={2} style={{backgroundColor: color.card.enabled.bg}}>
-            <Text style={{color: 'inherit'}}>Card</Text>
-          </Box>
-        )}
+        {features.card && <ColorCard color={color.card} />}
 
         {features.input && (
           <Box padding={2} style={{backgroundColor: color.input.default.enabled.bg}}>
@@ -138,7 +152,7 @@ function Color(props: {color: ThemeColor; tone: CardTone}) {
         {features.solid && <ColorSolid color={color.solid} />}
 
         {features.spot && (
-          <Flex gap={1} padding={2}>
+          <Flex gap={1}>
             <Box flex={1} style={{backgroundColor: color.spot.blue, width: 25, height: 25}} />
             <Box flex={1} style={{backgroundColor: color.spot.purple, width: 25, height: 25}} />
             <Box flex={1} style={{backgroundColor: color.spot.magenta, width: 25, height: 25}} />
@@ -151,6 +165,16 @@ function Color(props: {color: ThemeColor; tone: CardTone}) {
         )}
       </Stack>
     </Card>
+  )
+}
+
+function ColorCard(props: {color: ThemeColorCard}) {
+  const {color} = props
+
+  return (
+    <Box style={{backgroundColor: color.enabled.bg}}>
+      <ColorGenericStates color={color} />
+    </Box>
   )
 }
 
@@ -198,16 +222,16 @@ function ColorButtonMode(props: {color: ThemeColorButtonTones}) {
           </Text>
         </Box>
       </Grid>
-      <ColorButtonModeStates color={color.default} />
-      <ColorButtonModeStates color={color.primary} />
-      <ColorButtonModeStates color={color.positive} />
-      <ColorButtonModeStates color={color.caution} />
-      <ColorButtonModeStates color={color.critical} />
+      <ColorGenericStates color={color.default} />
+      <ColorGenericStates color={color.primary} />
+      <ColorGenericStates color={color.positive} />
+      <ColorGenericStates color={color.caution} />
+      <ColorGenericStates color={color.critical} />
     </Stack>
   )
 }
 
-function ColorButtonModeStates(props: {color: ThemeColorButtonStates}) {
+function ColorGenericStates(props: {color: ThemeColorButtonStates}) {
   const {color} = props
 
   return (
