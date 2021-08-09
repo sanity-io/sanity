@@ -1,4 +1,4 @@
-import React, {useCallback, useContext} from 'react'
+import React, {forwardRef, useContext, useMemo} from 'react'
 import PropTypes from 'prop-types'
 import {Card, Text} from '@sanity/ui'
 import {ChevronRightIcon} from '@sanity/icons'
@@ -42,22 +42,25 @@ PaneItem.defaultProps = {
 export default function PaneItem(props) {
   const {id, isSelected, schemaType, layout, icon, value, isActive} = props
   const {ChildLink} = useContext(PaneRouterContext)
-  const hasSchemaType = schemaType && schemaType.name && schema.get(schemaType.name)
+  const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
 
-  let preview
-  if (value && value._id) {
-    preview = hasSchemaType ? (
-      <DocumentPaneItemPreview
-        icon={getIconWithFallback(icon, schemaType, fileIcon)}
-        layout={layout}
-        schemaType={schemaType}
-        value={value}
-      />
-    ) : (
-      <MissingSchemaType value={value} />
-    )
-  } else {
-    preview = (
+  const preview = useMemo(() => {
+    if (value && value._id) {
+      if (!hasSchemaType) {
+        return <MissingSchemaType value={value} />
+      }
+
+      return (
+        <DocumentPaneItemPreview
+          icon={getIconWithFallback(icon, schemaType, fileIcon)}
+          layout={layout}
+          schemaType={schemaType}
+          value={value}
+        />
+      )
+    }
+
+    return (
       <SanityDefaultPreview
         status={
           <Text muted size={1}>
@@ -69,25 +72,30 @@ export default function PaneItem(props) {
         value={value}
       />
     )
-  }
+  }, [hasSchemaType, icon, layout, schemaType, value])
 
-  const LinkComponent = useCallback(
-    (linkProps) => {
-      return <ChildLink {...linkProps} childId={id} />
-    },
+  const LinkComponent = useMemo(
+    () =>
+      // eslint-disable-next-line no-shadow
+      forwardRef(function LinkComponent(linkProps, ref) {
+        return <ChildLink {...linkProps} childId={id} ref={ref} />
+      }),
     [ChildLink, id]
   )
 
-  return (
-    <Card
-      as={LinkComponent}
-      data-as="a"
-      padding={2}
-      radius={2}
-      pressed={!isActive && isSelected}
-      selected={isActive && isSelected}
-    >
-      {preview}
-    </Card>
+  return useMemo(
+    () => (
+      <Card
+        as={LinkComponent}
+        data-as="a"
+        padding={2}
+        radius={2}
+        pressed={!isActive && isSelected}
+        selected={isActive && isSelected}
+      >
+        {preview}
+      </Card>
+    ),
+    [LinkComponent, isActive, isSelected, preview]
   )
 }
