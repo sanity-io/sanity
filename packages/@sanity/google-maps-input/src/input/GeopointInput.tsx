@@ -3,10 +3,10 @@
 
 import React from 'react'
 import classNames from 'classnames'
-import {Grid} from '@sanity/ui'
+import {Grid, Button} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
-import Button from 'part:@sanity/components/buttons/default'
+//import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
@@ -193,18 +193,21 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             <div className={styles.functions}>
               <Grid columns={2} gap={2}>
                 <Button
-                  inverted
-                  onClick={this.handleToggleModal}
+                  mode="ghost"
                   icon={value && EditIcon}
                   ref={this.setEditButton}
-                >
-                  {value ? 'Edit' : 'Set location'}
-                </Button>
+                  text={value ? 'Edit' : 'Set location'}
+                  onClick={this.handleToggleModal}
+                />
 
                 {value && (
-                  <Button color="danger" icon={TrashIcon} inverted onClick={this.handleClear}>
-                    Remove
-                  </Button>
+                  <Button
+                    tone="critical"
+                    icon={TrashIcon}
+                    mode="ghost"
+                    text={'Remove'}
+                    onClick={this.handleClear}
+                  />
                 )}
               </Grid>
             </div>
