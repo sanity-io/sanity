@@ -8,7 +8,7 @@ import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} fro
 import {Autocomplete, Box, Card, Text, Button, Stack, useToast, useForwardedRef} from '@sanity/ui'
 import {FormField} from '@sanity/base/components'
 import {FormFieldPresence} from '@sanity/base/presence'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import {useObservableCallback} from 'react-rx'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import Preview from '../../Preview'

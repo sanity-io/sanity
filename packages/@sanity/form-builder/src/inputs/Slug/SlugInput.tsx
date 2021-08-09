@@ -7,7 +7,7 @@ import {
   Marker,
   isValidationErrorMarker,
 } from '@sanity/types'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorCompareValueProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import {TextInput, Button, Flex, Box, Card, Stack} from '@sanity/ui'
 import {useId} from '@reach/auto-id'

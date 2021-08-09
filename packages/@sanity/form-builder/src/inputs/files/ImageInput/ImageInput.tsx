@@ -16,7 +16,7 @@ import {
 } from '@sanity/ui'
 import {get, groupBy, uniqueId} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
-import {ChangeIndicatorForFieldPath} from '@sanity/base/lib/change-indicators/ChangeIndicator'
+import {ChangeIndicatorForFieldPath} from '@sanity/base/change-indicators'
 import {EditIcon, EyeOpenIcon, ImageIcon, SearchIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'

@@ -1,6 +1,6 @@
 import {Marker, SchemaType} from '@sanity/types'
 import React from 'react'
-import {FormFieldPresence} from '@sanity/base/lib/presence'
+import {FormFieldPresence} from '@sanity/base/presence'
 
 export interface ItemLayoutProps {
   isSortable: boolean

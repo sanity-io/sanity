@@ -1,6 +1,6 @@
-import {RemoteSnapshotVersionEvent} from '@sanity/base/lib/datastores/document/document-pair/checkoutPair'
+import {RemoteSnapshotVersionEvent} from '@sanity/base/_internal'
 
-export {DocumentRemoteMutationEvent} from '@sanity/base/lib/datastores/document/buffered-doc/types'
+export {DocumentRemoteMutationEvent} from '@sanity/base/_internal'
 export {ChunkType, Chunk} from '@sanity/field/diff'
 export {Doc} from '../../types'
 export {RemoteSnapshotVersionEvent}

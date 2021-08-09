@@ -10,7 +10,7 @@ import {
   SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {FormFieldPresence} from '@sanity/base/lib/presence'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {ReferenceInput} from '../../inputs/ReferenceInput'

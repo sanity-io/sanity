@@ -1,6 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/change-indicators'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import {isKeySegment, Marker, Path} from '@sanity/types'
 import {

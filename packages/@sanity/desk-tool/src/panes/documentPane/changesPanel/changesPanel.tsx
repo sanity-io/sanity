@@ -1,5 +1,5 @@
 import {useTimeAgo} from '@sanity/base/hooks'
-import {ChangeFieldWrapper} from '@sanity/base/lib/change-indicators/ChangeFieldWrapper'
+import {ChangeFieldWrapper} from '@sanity/base/change-indicators'
 import {
   ChangeList,
   Chunk,

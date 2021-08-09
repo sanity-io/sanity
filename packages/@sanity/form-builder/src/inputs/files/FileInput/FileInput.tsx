@@ -6,8 +6,10 @@ import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
 import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
-import {ChangeIndicatorCompareValueProvider} from '@sanity/base/lib/change-indicators/ChangeIndicator'
-import {ChangeIndicatorWithProvidedFullPath} from '@sanity/base/lib/change-indicators'
+import {
+  ChangeIndicatorCompareValueProvider,
+  ChangeIndicatorWithProvidedFullPath,
+} from '@sanity/base/change-indicators'
 import {
   BinaryDocumentIcon,
   DownloadIcon,
@@ -17,8 +19,7 @@ import {
   UploadIcon,
 } from '@sanity/icons'
 import {Box, Button, Container, Dialog, Flex, Grid, Stack, Text, ToastParams} from '@sanity/ui'
-import {PresenceOverlay} from '@sanity/base/presence'
-import {FormFieldPresence} from '@sanity/base/lib/presence'
+import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
 import {Uploader, UploaderResolver} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'

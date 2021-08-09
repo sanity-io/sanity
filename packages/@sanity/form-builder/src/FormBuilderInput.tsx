@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import shallowEquals from 'shallow-equals'
 import {Marker, Path, SchemaType} from '@sanity/types'
-import {ChangeIndicatorProvider} from '@sanity/base/lib/change-indicators'
+import {ChangeIndicatorProvider} from '@sanity/base/change-indicators'
 import * as PathUtils from '@sanity/util/paths'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {FormFieldPresence, FormFieldPresenceContext} from '@sanity/base/presence'

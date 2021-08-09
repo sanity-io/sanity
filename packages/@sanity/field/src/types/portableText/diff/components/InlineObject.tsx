@@ -4,7 +4,7 @@ import {Card, Flex, Label, useClickOutside, useLayer} from '@sanity/ui'
 import SanityPreview from 'part:@sanity/base/preview'
 import {Popover} from 'part:@sanity/components/popover'
 import React, {useCallback, useState, useEffect} from 'react'
-import {ConnectorContext, useReportedValues} from '@sanity/base/lib/change-indicators'
+import {ConnectorContext, useReportedValues} from '@sanity/base/change-indicators'
 import styled from 'styled-components'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
