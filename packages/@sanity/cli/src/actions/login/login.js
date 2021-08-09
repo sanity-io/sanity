@@ -1,8 +1,8 @@
 import os from 'os'
 import urlParser from 'url'
+import crypto from 'crypto'
 import open from 'opn'
 import chalk from 'chalk'
-import crypto from 'crypto'
 import EventSource from 'eventsource'
 import {parseJson} from '@sanity/util/lib/safeJson'
 import getUserConfig from '../../util/getUserConfig'
@@ -10,13 +10,15 @@ import canLaunchBrowser from '../../util/canLaunchBrowser'
 
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
+  const {sso, experimental} = args.extOptions
   const client = apiClient({requireUser: false, requireProject: false})
 
-  // Fetch and prompt for login provider to use
-  let spin = output.spinner('Fetching providers...').start()
-  const {providers} = await client.request({uri: '/auth/providers'})
-  spin.stop()
-  const provider = await promptProviders(prompt, providers)
+  // Get the desired authentication provider
+  const provider = await getProvider({client, sso, experimental, output, prompt})
+  if (provider === undefined) {
+    output.print(chalk.red('No authentication providers found'))
+    return
+  }
 
   // Open an authentication listener channel and wait for secret
   const iv = crypto.randomBytes(8).toString('hex')
@@ -33,7 +35,9 @@ export default async function login(args, context) {
   const actionText = shouldLaunchBrowser ? 'Opening browser at' : 'Please open a browser at'
 
   output.print(`\n${actionText} ${loginUrl}\n`)
-  spin = output.spinner('Waiting for browser login to complete... Press Ctrl + C to cancel').start()
+  const spin = output
+    .spinner('Waiting for browser login to complete... Press Ctrl + C to cancel')
+    .start()
   open(loginUrl, {wait: false})
 
   // Wait for a success/error on the listener channel
@@ -61,15 +65,25 @@ export default async function login(args, context) {
 
 function getAuthChannel(baseUrl, provider, iv) {
   const uuid = crypto.randomBytes(16).toString('hex')
-  const listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}?iv=${iv}`
+  let listenUrl
+  if (provider.type === 'saml') {
+    listenUrl = `${baseUrl}/vX/auth/saml/listen/${provider.id}/${uuid}?iv=${iv}`
+  } else {
+    listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}?iv=${iv}`
+  }
   return new EventSource(listenUrl)
 }
 
 function getAuthInfo(es) {
   const wantedProps = ['secret', 'url']
   const values = {}
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let numProps = 0
+    es.addEventListener('error', (err) => {
+      es.close()
+      reject(new Error(`Unable to get authorization info: ${err.message}`))
+    })
+
     es.addEventListener('message', (msg) => {
       const data = parseJson(msg.data, {})
       if (!wantedProps.includes(data.type)) {
@@ -108,6 +122,52 @@ function decryptToken(token, secret, iv) {
   const decipher = crypto.createDecipheriv('aes-256-cbc', secret, iv)
   const dec = decipher.update(token, 'hex', 'utf8')
   return `${dec}${decipher.final('utf8')}`
+}
+
+async function getProvider({output, client, sso, experimental, prompt}) {
+  if (sso) {
+    return getSSOProvider({client, prompt, slug: sso})
+  }
+
+  // Fetch and prompt for login provider to use
+  const spin = output.spinner('Fetching providers...').start()
+  let {providers} = await client.request({uri: '/auth/providers'})
+  if (experimental) {
+    providers = [...providers, {name: 'sso', title: 'SSO'}]
+  }
+  spin.stop()
+
+  const provider = await promptProviders(prompt, providers)
+  if (provider.name === 'sso') {
+    const slug = await prompt.single({
+      type: 'input',
+      message: 'Organization slug:',
+    })
+    return getSSOProvider({client, prompt, slug})
+  }
+
+  return provider
+}
+
+async function getSSOProvider({client, prompt, slug}) {
+  const providers = await client.withConfig({apiVersion: 'X'}).request({
+    uri: `/auth/organizations/by-slug/${slug}/providers`,
+  })
+
+  const enabledProviders = providers.filter((provider) => !provider.disabled)
+  if (enabledProviders.length === 0) {
+    return undefined
+  } else if (enabledProviders.length === 1) {
+    return enabledProviders[0]
+  }
+
+  const choice = await prompt.single({
+    type: 'list',
+    message: 'Select SSO provider',
+    choices: enabledProviders.map((provider) => provider.name),
+  })
+
+  return enabledProviders.find((provider) => provider.name === choice)
 }
 
 function promptProviders(prompt, providers) {
