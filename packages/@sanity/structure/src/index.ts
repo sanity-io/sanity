@@ -98,4 +98,6 @@ function getDefaultStructure(): ListBuilder {
     .showIcons(items.some((item) => hasIcon(item.getSchemaType())))
 }
 
+export type {InitialValueTemplateItem} from './InitialValueTemplateItem'
+
 export {StructureBuilder, SerializeError}

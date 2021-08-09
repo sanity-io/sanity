@@ -3,7 +3,7 @@
 
 import {Layer} from '@sanity/ui'
 import {StructureBuilder as S} from '@sanity/structure'
-import {InitialValueTemplateItem} from '@sanity/structure/lib/InitialValueTemplateItem'
+import type {InitialValueTemplateItem} from '@sanity/structure'
 import classNames from 'classnames'
 import {negate} from 'lodash'
 import {MenuButton} from 'part:@sanity/components/menu-button'
