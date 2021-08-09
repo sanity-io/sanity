@@ -21,6 +21,7 @@
   "dependencies": {
     "@sanity/field": "2.14.0",
     "@sanity/types": "2.14.0",
+    "@sanity/ui": "^0.34.8",
     "classnames": "^2.2.5",
     "rxjs": "^6.5.3"
   },
