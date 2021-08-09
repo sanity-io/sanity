@@ -1,5 +1,5 @@
 {
-    "extends": "../../../tsconfig.settings",
+    "extends": "../../../tsconfig",
     "include": ["src"],
     "compilerOptions": {
       "composite": true,

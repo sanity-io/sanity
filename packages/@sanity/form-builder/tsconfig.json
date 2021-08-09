@@ -5,9 +5,8 @@
     "noImplicitAny": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
-
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
-    "noImplicitThis": false
+    "noImplicitThis": false,
   }
 }
