@@ -3,10 +3,9 @@
 
 import React from 'react'
 import classNames from 'classnames'
-import {Grid, Button} from '@sanity/ui'
+import {Grid, Button, Dialog} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import EditIcon from 'part:@sanity/base/edit-icon'
@@ -213,14 +212,12 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
           )}
 
           {modalOpen && (
-            <DefaultDialog
+            <Dialog
+              id="geo"
               title="Place the marker on the map"
               onClose={this.handleCloseModal}
-              onCloseClick={this.handleCloseModal}
-              message="Select location by dragging the marker or search for a place"
-              isOpen={modalOpen}
-              padding="none"
-              size="large"
+              header="Place the marker on the map"
+              width={1}
             >
               <div className={styles.dialogInner}>
                 <GoogleMapsLoadProxy>
@@ -235,7 +232,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                   )}
                 </GoogleMapsLoadProxy>
               </div>
-            </DefaultDialog>
+            </Dialog>
           )}
         </div>
       </Fieldset>
