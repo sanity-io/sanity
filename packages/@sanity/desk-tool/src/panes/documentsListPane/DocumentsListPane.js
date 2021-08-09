@@ -192,17 +192,15 @@ export default class DocumentsListPane extends React.PureComponent {
   }
 
   renderItem = (item) => (
-    <Box paddingX={2} paddingBottom={0}>
-      <PaneItem
-        id={getPublishedId(item._id)}
-        layout={this.state.layout || this.props.defaultLayout || 'default'}
-        value={item}
-        icon={this.props.displayOptions.showIcons === false ? false : undefined}
-        schemaType={schema.get(item._type)}
-        isSelected={this.itemIsSelected(item)}
-        isActive
-      />
-    </Box>
+    <PaneItem
+      id={getPublishedId(item._id)}
+      layout={this.state.layout || this.props.defaultLayout || 'default'}
+      value={item}
+      icon={this.props.displayOptions.showIcons === false ? false : undefined}
+      schemaType={schema.get(item._type)}
+      isSelected={this.itemIsSelected(item)}
+      isActive
+    />
   )
 
   handleAction = (item) => {

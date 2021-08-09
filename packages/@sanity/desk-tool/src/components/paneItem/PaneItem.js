@@ -1,6 +1,6 @@
 import React, {forwardRef, useContext, useMemo} from 'react'
 import PropTypes from 'prop-types'
-import {Card, Text} from '@sanity/ui'
+import {Box, Card, Text} from '@sanity/ui'
 import {ChevronRightIcon} from '@sanity/icons'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
@@ -85,16 +85,18 @@ export default function PaneItem(props) {
 
   return useMemo(
     () => (
-      <Card
-        as={LinkComponent}
-        data-as="a"
-        padding={2}
-        radius={2}
-        pressed={!isActive && isSelected}
-        selected={isActive && isSelected}
-      >
-        {preview}
-      </Card>
+      <Box paddingX={2}>
+        <Card
+          as={LinkComponent}
+          data-as="a"
+          padding={2}
+          radius={2}
+          pressed={!isActive && isSelected}
+          selected={isActive && isSelected}
+        >
+          {preview}
+        </Card>
+      </Box>
     ),
     [LinkComponent, isActive, isSelected, preview]
   )
