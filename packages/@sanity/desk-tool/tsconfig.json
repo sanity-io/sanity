@@ -5,10 +5,14 @@
     "composite": true,
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false,
-    "outDir": "./dist/ts",
+    "rootDir": "./src",
+    "outDir": "./dist/dts",
     "jsx": "react"
   },
   "references": [
+    {
+      "path": "../base"
+    },
     {
       "path": "../react-hooks"
     },
