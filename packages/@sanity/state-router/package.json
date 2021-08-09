@@ -4,6 +4,18 @@
   "description": "A path pattern => state object bidirectional mapper",
   "main": "./lib/index.js",
   "types": "./dist/dts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "dist/dts/index.d.ts": [
+        "dist/dts/index.d.ts"
+      ],
+      "components": [
+        "dist/dts/components/index.d.ts"
+      ]
+    }
+  },
+
   "scripts": {
     "start": "remon --require ts-node/register demo-server/app.ts",
     "test": "jest",
