@@ -214,7 +214,6 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
           {modalOpen && (
             <Dialog
               id="geo"
-              title="Place the marker on the map"
               onClose={this.handleCloseModal}
               header="Place the marker on the map"
               width={1}
