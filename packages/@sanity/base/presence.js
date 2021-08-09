@@ -1,2 +1,2 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-module.exports = require('./lib/presence')
+// Legacy package export for non-esm environments
+module.exports = require('./lib/_exports/presence')
