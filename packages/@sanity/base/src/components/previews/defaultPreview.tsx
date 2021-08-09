@@ -4,14 +4,14 @@ import styled from 'styled-components'
 import {PreviewProps} from './types'
 
 const Root = styled(Flex)`
-  height: 40px;
+  height: 35px;
 `
 
 const MediaWrapper = styled(Flex)`
   position: relative;
-  width: 2em;
-  height: 2em;
-  min-width: 2em;
+  width: 35px;
+  height: 35px;
+  min-width: 35px;
   border-radius: ${({theme}) => theme.sanity.radius[2]}px;
 
   img {
@@ -26,14 +26,12 @@ const MediaWrapper = styled(Flex)`
 
   svg {
     display: block;
-    font-size: calc(24 / 16 * 0.75em);
-    color: inherit;
-    opacity: 0.75;
+    font-size: calc(24 / 16 * 1em);
   }
 
   svg[data-sanity-icon='true'] {
-    font-size: calc(36 / 16 * 0.75em);
-    margin: calc(6 / 36 * -0.75em);
+    font-size: calc(36 / 16 * 1em);
+    margin: calc(6 / 36 * -1em);
   }
 `
 
@@ -51,6 +49,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
           </Stack>
         </>
       )}
+
       {!isPlaceholder && (
         <>
           {media !== false && media !== undefined && (
@@ -74,7 +73,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
           )}
 
           <Stack space={2} flex={1}>
-            <Text textOverflow="ellipsis" style={{color: 'inherit'}} as="h2">
+            <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
               {title && (
                 <>
                   {typeof title !== 'function' && title}
@@ -85,12 +84,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
             </Text>
 
             {subtitle && (
-              <Text
-                size={1}
-                textOverflow="ellipsis"
-                style={{color: 'inherit', opacity: 0.75}}
-                as="h3"
-              >
+              <Text muted size={1} textOverflow="ellipsis">
                 {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
               </Text>
             )}
@@ -99,7 +93,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
           </Stack>
 
           {status && (
-            <Box marginLeft={3}>
+            <Box padding={3}>
               {(typeof status === 'function' && status({layout: 'default'})) || status}
             </Box>
           )}
