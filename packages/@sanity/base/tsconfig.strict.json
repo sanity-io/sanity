@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "compilerOptions": {
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true
-  }
-}
