@@ -1,6 +1,4 @@
-/* eslint-disable import/no-unresolved */
-import {FitMode} from '@sanity/image-url/lib/types/types'
-import {SchemaType} from '@sanity/types'
+import {SchemaType, ImageUrlFitMode} from '@sanity/types'
 
 export type Id = string
 
@@ -30,7 +28,7 @@ export type PreviewLayoutKey = 'default' | 'card' | 'media' | 'detail' | 'inline
 export type MediaDimensions = {
   width?: number
   height?: number
-  fit?: FitMode
+  fit?: ImageUrlFitMode
   aspect?: number
 }
 
