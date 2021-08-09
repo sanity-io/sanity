@@ -38,7 +38,7 @@
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "build-and-serve": "cd examples/test-studio && npm run build && history-server -p 3333 -a dist",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
-    "test-all": "npm run type-check && lerna run test --concurrency=2 --stream",
+    "test-all": "lerna run test --concurrency=2 --stream",
     "test-e2e": "start-server-and-test build-and-serve http://localhost:3333 'npm run cypress:run'",
     "test-perf": "start-server-and-test perf-studio http://localhost:3344 'ts-node -r dotenv/config perf/suite'",
     "updated": "lerna updated",
