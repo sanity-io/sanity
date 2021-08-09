@@ -2,21 +2,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {Dialog as UIDialog, Text, Box, Stack, Container} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {Dialog, Text, Box, Stack, Container} from '@sanity/ui'
 import cancelWrap from './cancelWrap'
 import {authenticationFetcher, pluginConfig, LoginDialogContent} from './legacyParts'
-
-const Dialog = styled(UIDialog)`
-  ${({hideClose}) =>
-    hideClose &&
-    css`
-      /* @todo: Temp solution. Update sanity/ui with option to hide close button */
-      [aria-label='Close dialog'] {
-        display: none;
-      }
-    `}
-`
 
 export default class LoginDialog extends React.Component {
   static propTypes = {
@@ -132,7 +120,7 @@ export default class LoginDialog extends React.Component {
 
     if (isLoaded && !shouldRedirect) {
       return (
-        <Dialog header="Sign in" width={1} cardShadow={2} hideClose>
+        <Dialog header="Sign in" width={1} cardShadow={2}>
           <LoginDialogContent
             title={title}
             description={description}

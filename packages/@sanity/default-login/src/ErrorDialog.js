@@ -1,15 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {Dialog as UIDialog, Box, Text, Button, Stack} from '@sanity/ui'
-import styled from 'styled-components'
+import {Dialog, Box, Text, Button, Stack} from '@sanity/ui'
 import CorsCheck from './CorsCheck'
 
-const Dialog = styled(UIDialog)`
-  /* @todo: Temp solution. Update sanity/ui with option to hide close button */
-  [aria-label='Close dialog'] {
-    display: none;
-  }
-`
 export default function ErrorDialog(props) {
   const isNetworkError = props.error.isNetworkError
 

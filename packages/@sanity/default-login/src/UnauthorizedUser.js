@@ -1,15 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import userStore from 'part:@sanity/base/user'
-import {Dialog as UIDialog, Box, Text, Button, Stack} from '@sanity/ui'
-import styled from 'styled-components'
-
-const Dialog = styled(UIDialog)`
-  /* @todo: Temp solution. Update sanity/ui with option to hide close button */
-  [aria-label='Close dialog'] {
-    display: none;
-  }
-`
+import {Dialog, Box, Text, Button, Stack} from '@sanity/ui'
 
 function handleLogout() {
   userStore.actions.logout()
