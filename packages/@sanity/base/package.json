@@ -3,7 +3,21 @@
   "version": "2.14.0",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "./lib/index.js",
-  "types": "./dist/dts",
+  "types": "index.d.ts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "__legacy/*": [
+        "__legacy/*"
+      ],
+      "index.d.ts": [
+        "./dist/dts/_exports/index.d.ts"
+      ],
+      "*": [
+        "dist/dts/_exports/*"
+      ]
+    }
+  },
   "scripts": {
     "clean": "rimraf lib",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
