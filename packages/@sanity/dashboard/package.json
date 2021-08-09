@@ -21,7 +21,7 @@
   "dependencies": {
     "@sanity/icons": "^1.1.4",
     "@sanity/image-url": "^0.140.19",
-    "@sanity/ui": "^0.34.8",
+    "@sanity/ui": "^0.35.0",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3",
     "styled-components": "^5.2.1"

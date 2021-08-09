@@ -33,7 +33,7 @@
     "@sanity/base": "2.13.1",
     "@sanity/client": "^2.13.0",
     "@sanity/generate-help-url": "^2.13.0",
-    "@sanity/ui": "^0.34.8",
+    "@sanity/ui": "^0.35.0",
     "@sanity/util": "2.13.1",
     "classnames": "^2.2.5",
     "is-hotkey": "^0.1.4",

@@ -28,7 +28,7 @@
     "@sanity/google-maps-input": "2.13.1",
     "@sanity/icons": "^1.1.4",
     "@sanity/types": "2.13.1",
-    "@sanity/ui": "^0.34.8",
+    "@sanity/ui": "^0.35.0",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
