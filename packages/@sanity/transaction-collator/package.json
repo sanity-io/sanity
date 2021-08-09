@@ -62,7 +62,8 @@
       "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js"
     },
     "testPathIgnorePatterns": [
-      "/lib/"
+      "/lib/",
+      "/dist/"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
