@@ -4,6 +4,17 @@
   "description": "Diff utilities and preview components",
   "main": "./lib/index.js",
   "types": "./dist/dts",
+  "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
+  "typesVersions": {
+    "*": {
+      "dist/dts/index.d.ts": [
+        "dist/dts/index.d.ts"
+      ],
+      "diff": [
+        "dist/dts/diff/index.d.ts"
+      ]
+    }
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
     "node": ">=10.0.0"
