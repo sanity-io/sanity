@@ -35,6 +35,7 @@
     {"path": "./packages/@sanity/state-router"},
     {"path": "./packages/@sanity/structure"},
     {"path": "./packages/@sanity/transaction-collator"},
-    {"path": "./packages/@sanity/types"}
+    {"path": "./packages/@sanity/types"},
+    {"path": "./packages/@sanity/util"}
   ]
 }
