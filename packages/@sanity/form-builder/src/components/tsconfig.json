@@ -1,3 +1,0 @@
-// this conditionally enables strict mode for everything in this folder
-// (Note: only applies to the typescript compiler service, not when using tsc for build)
-{"extends": "../../tsconfig.strict"}
