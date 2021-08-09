@@ -1,2 +1,56 @@
-export {StructureBuilder as default} from '@sanity/structure'
+import {StructureBuilder} from '@sanity/structure'
 export type {InitialValueTemplateItem} from '@sanity/structure'
+
+export default StructureBuilder
+
+const {
+  initialValueTemplateItem,
+  defaultInitialValueTemplateItems,
+  document,
+  component,
+  defaultDocument,
+  defaults,
+  divider,
+  documentList,
+  documentListItem,
+  documentTypeList,
+  documentTypeListItem,
+  documentTypeListItems,
+  documentWithInitialValueTemplate,
+  editorWithInitialValueTemplate,
+  editor,
+  list,
+  listItem,
+  menuItem,
+  menuItemGroup,
+  menuItemsFromInitialValueTemplateItems,
+  orderingMenuItem,
+  orderingMenuItemsForType,
+  view,
+} = StructureBuilder
+
+export {
+  initialValueTemplateItem,
+  defaultInitialValueTemplateItems,
+  document,
+  component,
+  defaultDocument,
+  defaults,
+  divider,
+  documentList,
+  documentListItem,
+  documentTypeList,
+  documentTypeListItem,
+  documentTypeListItems,
+  documentWithInitialValueTemplate,
+  editorWithInitialValueTemplate,
+  editor,
+  list,
+  listItem,
+  menuItem,
+  menuItemGroup,
+  menuItemsFromInitialValueTemplateItems,
+  orderingMenuItem,
+  orderingMenuItemsForType,
+  view,
+}
