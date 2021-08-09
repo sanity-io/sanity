@@ -61,6 +61,10 @@
       "json",
       "node"
     ],
+    "testPathIgnorePatterns": [
+      "/lib/",
+      "/dist/"
+    ],
     "globals": {
       "ts-jest": {
         "diagnostics": false
