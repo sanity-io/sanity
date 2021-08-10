@@ -1,4 +1,5 @@
 import {useId} from '@reach/auto-id'
+import {DocumentActionDescription} from '@sanity/base'
 import {LegacyLayerProvider} from '@sanity/base/components'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
@@ -19,7 +20,7 @@ import {ActionStateDialog} from './actionStateDialog'
 import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
 export interface ActionMenuButtonProps {
-  actionStates: any[]
+  actionStates: DocumentActionDescription[]
   disabled: boolean
 }
 
@@ -86,7 +87,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
 }
 
 interface ActionMenuListItemProps {
-  actionState: any
+  actionState: DocumentActionDescription
   disabled: boolean
   index: number
   onAction: (idx: number) => void

@@ -10,11 +10,11 @@ import {PopoverDialog} from './dialogs/PopoverDialog'
 
 export interface ActionStateDialogProps {
   dialog: DocumentActionDialogProps
-  referenceElement: HTMLElement | null
+  referenceElement?: HTMLElement | null
 }
 
 export function ActionStateDialog(props: ActionStateDialogProps) {
-  const {dialog, referenceElement} = props
+  const {dialog, referenceElement = null} = props
   const dialogId = useId() || ''
 
   // @todo: rename this type type "component" or "node"?
@@ -42,6 +42,7 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
     return <DeprecatedErrorDialog dialog={dialog} />
   }
 
+  // @todo: add validation?
   const unknownDialog: any = dialog
 
   // eslint-disable-next-line no-console
