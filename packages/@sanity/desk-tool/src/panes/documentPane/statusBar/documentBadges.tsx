@@ -22,7 +22,7 @@ const BADGE_TONES: Record<string, BadgeTone | undefined> = {
 
 function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
   return (
-    <Inline paddingX={3} space={1}>
+    <Inline space={1}>
       {states.map((badge, index) => (
         <Tooltip
           content={
@@ -46,6 +46,7 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
             paddingY={1}
             radius={4}
             tone={badge.color ? BADGE_TONES[badge.color] : undefined}
+            style={{whiteSpace: 'nowrap'}}
           >
             {badge.label}
           </Badge>

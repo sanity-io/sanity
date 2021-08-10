@@ -15,37 +15,86 @@ import {usePrevious} from './hooks'
 import {SessionBadge} from './sessionBadge'
 
 const ReviewChangesButton = styled(Button)`
-  transition: opacity 100ms, transform 200ms;
+  transition: opacity 200ms;
+
+  &[data-transition='out'] {
+    pointer-events: none;
+    opacity: 0;
+  }
+`
+
+const MetadataBox = styled(ElementQuery)`
+  --session-layout-width: 92px;
+
+  transition: transform 200ms;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+
   &[data-transition='in'] {
     transform: translate3d(0, 0, 0);
   }
+
   &[data-transition='out'] {
-    pointer-events: none;
-    transform: translate3d(-40px, 0, 0);
-    opacity: 0;
+    transform: translate3d(calc(0px - var(--session-layout-width) - 12px), 0, 0);
+  }
+
+  /* Transition a smaller distance on smaller screens */
+  &[data-eq-max~='0'] {
+    --session-layout-width: 25px;
   }
 `
 
 const BadgesBox = styled(Box)`
   line-height: 0;
+
   /* Hide on small screens */
-  [data-eq-max~='0'] > div > & {
+  [data-eq-max~='1'] > & {
     display: none;
   }
 `
 
+const ReviewChangesBadgeBox = styled.div`
+  display: none;
+  transition: opacity 100ms;
+
+  [data-transition='out'] > & {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* Show on small screens */
+  [data-eq-max~='0'] > & {
+    display: block;
+  }
+`
+
 const ReviewChangesButtonBox = styled(Box)`
+  width: var(--session-layout-width);
+
   /* Hide on small screens */
-  [data-eq-max~='0'] > div > & {
+  [data-eq-max~='0'] > & {
     display: none;
   }
 `
 
 const BadgeStack = styled.div`
   display: flex;
+
   & > div:not(:first-child) {
     margin-left: -18px;
   }
+`
+
+const SessionLayoutBox = styled(Flex)`
+  white-space: nowrap;
+  width: var(--session-layout-width);
+`
+
+const SessionLayoutBadgeBox = styled.div`
+  margin: -3px;
+  min-width: 0;
 `
 
 const SessionLayout = ({
@@ -57,8 +106,8 @@ const SessionLayout = ({
   subtitle?: React.ReactNode
   title: React.ReactNode
 }) => (
-  <Flex align="center" padding={2}>
-    <Box style={{margin: -3}}>{badge}</Box>
+  <SessionLayoutBox align="center" data-ui="SessionLayout" padding={2} sizing="border">
+    <SessionLayoutBadgeBox>{badge}</SessionLayoutBadgeBox>
 
     <Stack flex={1} marginLeft={2} space={1}>
       <Text muted size={0} weight="semibold">
@@ -70,7 +119,7 @@ const SessionLayout = ({
         </Text>
       )}
     </Stack>
-  </Flex>
+  </SessionLayoutBox>
 )
 
 interface DocumentSparklineProps {
@@ -78,6 +127,8 @@ interface DocumentSparklineProps {
   editState: EditStateFor | null
   lastUpdated: string | undefined | null
 }
+
+const ELEMENT_QUERY_MEDIA = [92, 225]
 
 // eslint-disable-next-line complexity
 export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSparklineProps) {
@@ -134,78 +185,94 @@ export function DocumentSparkline({badges, lastUpdated, editState}: DocumentSpar
   const showPublishedSessionBadge =
     lastUnpublishOrPublishSession?.type === 'publish' && !isLiveDocument
 
+  const transition = filteredSessions.length === 0 ? 'out' : transitionDirection
+
   return (
-    <ElementQuery data-disabled={showingRevision} data-ui="DocumentSparkline" media={[240]}>
+    <div data-disabled={showingRevision} data-ui="DocumentSparkline">
       <Flex align="center">
         {(showPublishedSessionBadge || isLiveDocument) && (
-          <SessionLayout
-            badge={
-              <SessionBadge
-                icon={isLiveDocument ? PlayIcon : PublishIcon}
-                title={isLiveDocument ? undefined : formatTimelineEventLabel('publish')}
-                tone={isLiveDocument ? 'critical' : 'positive'}
-              />
-            }
-            subtitle={isLiveDocument && lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
-            title="Published"
-          />
+          <Box paddingRight={1}>
+            <SessionLayout
+              badge={
+                <SessionBadge
+                  icon={isLiveDocument ? PlayIcon : PublishIcon}
+                  title={isLiveDocument ? undefined : formatTimelineEventLabel('publish')}
+                  tone={isLiveDocument ? 'critical' : 'positive'}
+                />
+              }
+              subtitle={isLiveDocument && lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
+              title="Published"
+            />
+          </Box>
         )}
 
-        {!isLiveDocument && (
-          <ReviewChangesButtonBox marginLeft={1} overflow="hidden">
-            <ReviewChangesButton
-              disabled={showingRevision}
-              data-syncing={syncState.isSyncing}
-              data-transition={filteredSessions.length === 0 ? 'out' : transitionDirection}
-              mode="ghost"
-              onClick={openHistory}
-              padding={0}
-              selected={showingChangePanel}
-              title="Review changes"
-              tone="caution"
-              type="button"
-            >
-              {sessionsSliced.length === 0 && (
-                <SessionLayout
-                  badge={<SessionBadge icon={EditIcon} iconHover={RestoreIcon} tone="caution" />}
-                  subtitle={<>&nbsp;</>}
-                  title="Changes"
-                />
-              )}
+        <MetadataBox data-transition={transition} media={ELEMENT_QUERY_MEDIA}>
+          {!isLiveDocument && (
+            <>
+              <ReviewChangesBadgeBox>
+                <SessionBadge icon={EditIcon} tone="caution" />
+              </ReviewChangesBadgeBox>
 
-              {sessionsSliced.length > 0 && (
-                <SessionLayout
-                  badge={
-                    <BadgeStack>
-                      {sessionsSliced.map((session) => {
-                        const title = formatTimelineEventLabel(session.type) || session.type
+              <ReviewChangesButtonBox>
+                <ReviewChangesButton
+                  disabled={showingRevision}
+                  data-syncing={syncState.isSyncing}
+                  data-transition={transition}
+                  mode="ghost"
+                  onClick={openHistory}
+                  padding={0}
+                  selected={showingChangePanel}
+                  title="Review changes"
+                  tone="caution"
+                  type="button"
+                >
+                  {/* NO CHANGES */}
+                  {sessionsSliced.length === 0 && (
+                    <SessionLayout
+                      badge={
+                        <SessionBadge icon={EditIcon} iconHover={RestoreIcon} tone="caution" />
+                      }
+                      subtitle={<>&nbsp;</>}
+                      title="Changes"
+                    />
+                  )}
 
-                        return (
-                          <SessionBadge
-                            data-syncing={syncState.isSyncing}
-                            data-session-badge
-                            icon={syncState?.isSyncing ? SyncIcon : EditIcon}
-                            iconHover={syncState?.isSyncing ? undefined : RestoreIcon}
-                            key={session.index}
-                            title={title}
-                            tone="caution"
-                          />
-                        )
-                      })}
-                    </BadgeStack>
-                  }
-                  subtitle={lastUpdatedTimeAgo}
-                  title="Changes"
-                />
-              )}
-            </ReviewChangesButton>
-          </ReviewChangesButtonBox>
-        )}
+                  {/* THERE ARE CHANGES */}
+                  {sessionsSliced.length > 0 && (
+                    <SessionLayout
+                      badge={
+                        <BadgeStack>
+                          {sessionsSliced.map((session) => {
+                            const title = formatTimelineEventLabel(session.type) || session.type
 
-        <BadgesBox flex={1}>
-          <DocumentBadges editState={editState} badges={badges} />
-        </BadgesBox>
+                            return (
+                              <SessionBadge
+                                data-syncing={syncState.isSyncing}
+                                data-session-badge
+                                icon={syncState?.isSyncing ? SyncIcon : EditIcon}
+                                iconHover={syncState?.isSyncing ? undefined : RestoreIcon}
+                                key={session.index}
+                                title={title}
+                                tone="caution"
+                              />
+                            )
+                          })}
+                        </BadgeStack>
+                      }
+                      subtitle={lastUpdatedTimeAgo}
+                      title="Changes"
+                    />
+                  )}
+                </ReviewChangesButton>
+              </ReviewChangesButtonBox>
+            </>
+          )}
+
+          <BadgesBox data-ui="BadgesBox" flex={1} paddingX={3}>
+            <DocumentBadges editState={editState} badges={badges} />
+          </BadgesBox>
+        </MetadataBox>
       </Flex>
-    </ElementQuery>
+    </div>
   )
 }

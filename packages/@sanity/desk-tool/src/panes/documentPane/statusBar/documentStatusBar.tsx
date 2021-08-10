@@ -29,7 +29,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const revision = historyController.revTime?.id || ''
 
   return (
-    <Card paddingX={[3, 4]} paddingY={[3, 3]}>
+    <Card paddingLeft={3} paddingRight={[3, 4]} paddingY={[3, 3]}>
       <Flex align="center">
         <Box flex={[1, 2]}>
           <DocumentSparkline badges={badges} editState={editState} lastUpdated={lastUpdated} />
