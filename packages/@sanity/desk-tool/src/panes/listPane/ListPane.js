@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import listStyles from 'part:@sanity/components/lists/default-style'
@@ -108,10 +108,10 @@ export default class ListPane extends React.PureComponent {
         menuItemGroups={menuItemGroups}
       >
         <ListView layout={defaultLayout}>
-          <Box paddingY={2} overflow="auto">
+          <Stack overflow="auto" paddingY={2} space={1}>
             {items.map((item) =>
               item.type === 'divider' ? (
-                <Box marginY={2} key={item.id}>
+                <Box paddingY={1} key={item.id}>
                   <hr className={listStyles.divider} />
                 </Box>
               ) : (
@@ -129,7 +129,7 @@ export default class ListPane extends React.PureComponent {
                 </Box>
               )
             )}
-          </Box>
+          </Stack>
         </ListView>
       </DefaultPane>
     )
