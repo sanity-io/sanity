@@ -1,37 +1,23 @@
 import {Chunk, ChunkType} from '@sanity/field/diff'
-import {TrashIcon, EditIcon, PublishIcon, UnpublishIcon, AddIcon, CloseIcon} from '@sanity/icons'
+import {IconComponent} from '@sanity/icons'
+import {TIMELINE_ICON_COMPONENTS, TIMELINE_LABELS} from './constants'
 
-const LABELS: {[key: string]: string} = {
-  create: 'created',
-  delete: 'deleted',
-  discardDraft: 'discarded draft',
-  initial: 'created',
-  editDraft: 'edited',
-  editLive: 'live edited',
-  publish: 'published',
-  unpublish: 'unpublished',
+export function formatTimelineEventLabel(type: ChunkType): string | undefined {
+  return TIMELINE_LABELS[type]
 }
 
-const ICON_COMPONENTS: {[key: string]: React.ComponentType<Record<string, unknown>>} = {
-  create: AddIcon,
-  delete: TrashIcon,
-  discardDraft: CloseIcon,
-  initial: AddIcon,
-  editDraft: EditIcon,
-  editLive: EditIcon,
-  publish: PublishIcon,
-  unpublish: UnpublishIcon,
+export function getTimelineEventIconComponent(type: ChunkType): IconComponent | undefined {
+  return TIMELINE_ICON_COMPONENTS[type]
 }
 
-export function formatTimelineEventLabel(type: ChunkType) {
-  return LABELS[type]
-}
-
-export function getTimelineEventIconComponent(type: ChunkType) {
-  return ICON_COMPONENTS[type]
-}
-
-export function sinceTimelineProps(since: Chunk, rev: Chunk) {
+export function sinceTimelineProps(
+  since: Chunk,
+  rev: Chunk
+): {
+  topSelection: Chunk
+  bottomSelection: Chunk
+  disabledBeforeSelection: boolean
+} {
   return {
     topSelection: rev,
     bottomSelection: since,
@@ -39,7 +25,12 @@ export function sinceTimelineProps(since: Chunk, rev: Chunk) {
   }
 }
 
-export function revTimelineProps(rev: Chunk) {
+export function revTimelineProps(
+  rev: Chunk
+): {
+  topSelection: Chunk
+  bottomSelection: Chunk
+} {
   return {
     topSelection: rev,
     bottomSelection: rev,
