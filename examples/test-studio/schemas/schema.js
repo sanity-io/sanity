@@ -66,6 +66,7 @@ import {
   fieldValidationInferReproSharedObject,
   fieldValidationInferReproDoc,
 } from './fieldValidationInferRepro'
+import {previewSelectBugRepro} from './previewSelectBugRepro'
 
 export default createSchema({
   name: 'test-examples',
@@ -127,6 +128,7 @@ export default createSchema({
     reservedFieldNames,
     previewImageUrlTest,
     previewMediaTest,
+    previewSelectBugRepro,
     invalidPreviews,
     readOnly,
     empty,

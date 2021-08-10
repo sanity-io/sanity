@@ -53,7 +53,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
           return observePaths(
             {
               ...createEmpty(nextHeads),
-              ...(isRef ? {} : value),
+              ...(isRef ? {_ref: value._ref} : value),
               ...snapshot,
             },
             paths,
@@ -76,8 +76,8 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
 
   const next = Object.keys(leads).reduce(
     (res: Record<string, unknown>, head) => {
-      const tails = leads[head]
-      if (tails.every((tail) => tail.length === 0)) {
+      const tails = leads[head].filter((tail) => tail.length > 0)
+      if (tails.length === 0) {
         res[head] = value[head]
       } else {
         res[head] = observePaths(value[head], tails, observeFields)
