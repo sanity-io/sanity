@@ -86,6 +86,7 @@ export default function PaneItem(props) {
   return useMemo(
     () => (
       <Card
+        __unstable_focusRing
         as={LinkComponent}
         data-as="a"
         data-ui="PaneItem"
