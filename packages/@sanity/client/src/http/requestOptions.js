@@ -24,6 +24,7 @@ module.exports = (config, overrides = {}) => {
   return assign({}, overrides, {
     headers: assign({}, headers, overrides.headers || {}),
     timeout: typeof timeout === 'undefined' ? 5 * 60 * 1000 : timeout,
+    proxy: overrides.proxy || config.proxy,
     json: true,
     withCredentials,
   })
