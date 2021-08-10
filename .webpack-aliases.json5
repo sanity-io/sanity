@@ -18,6 +18,7 @@
   '@sanity/form-builder': './packages/@sanity/form-builder/src',
   '@sanity/imagetool': './packages/@sanity/imagetool/src',
   '@sanity/initial-value-templates': './packages/@sanity/initial-value-templates/src',
+  '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/react-hooks': './packages/@sanity/react-hooks/src',
 

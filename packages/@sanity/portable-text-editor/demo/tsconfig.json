@@ -1,0 +1,21 @@
+{
+  "include": ["demo/**/*.ts", "demo/**/*.tsx"],
+  "compilerOptions": {
+    "strict": false,
+    "noUnusedLocals": false,
+    "outDir": "./demo/lib",
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "exclude": ["node_modules"]
+}
