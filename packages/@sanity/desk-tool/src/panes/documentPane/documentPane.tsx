@@ -75,6 +75,7 @@ export function DocumentPane(props: DocumentPaneProps) {
     views = [],
   } = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
   const features = useDeskToolFeatures()
   const {historyController, setTimelineMode, timelineMode, open, displayed} = useDocumentHistory()
   const historyState = historyController.selectionState
@@ -169,6 +170,7 @@ export function DocumentPane(props: DocumentPaneProps) {
   return (
     <LegacyLayerProvider zOffset="pane">
       <DocumentActionShortcuts
+        actionsBoxElement={actionsBoxElement}
         id={documentIdRaw}
         type={documentType}
         onKeyUp={handleKeyUp}
@@ -244,6 +246,7 @@ export function DocumentPane(props: DocumentPaneProps) {
         <LegacyLayerProvider zOffset="paneFooter">
           <Layer className={styles.footerContainer}>
             <DocumentStatusBar
+              actionsBoxRef={setActionsBoxElement}
               id={documentId}
               type={documentType}
               lastUpdated={value && value._updatedAt}
