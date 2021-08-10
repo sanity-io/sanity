@@ -1,42 +1,70 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/no-array-index-key */
-
-import React from 'react'
+import {DocumentBadgeDescription} from '@sanity/base'
+import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
+import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
 import {RenderBadgeCollectionState} from 'part:@sanity/base/actions/utils'
-import DocumentBadge from 'part:@sanity/components/badges/default'
-import {Flex, Box} from '@sanity/ui'
-import {Badge} from './types'
+import React from 'react'
 
-interface Props {
-  states: Badge[]
+export interface DocumentBadgesProps {
+  badges: DocumentBadgeDescription[]
+  editState: EditStateFor | null
 }
 
-function DocumentBadgesInner({states}: Props) {
-  // TODO: filter out higher up
-  const customDocumentBadges = states.filter(
-    (badge) => badge.label && !['Published', 'Draft', 'Live document'].includes(badge.label)
-  )
+interface DocumentBadgesInnerProps {
+  states: DocumentBadgeDescription[]
+}
+
+const BADGE_TONES: Record<string, BadgeTone | undefined> = {
+  primary: 'primary',
+  success: 'positive',
+  warning: 'caution',
+  danger: 'critical',
+}
+
+function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
   return (
-    <Flex align="center" paddingX={3}>
-      {customDocumentBadges.length > 0 &&
-        customDocumentBadges.map((badge, index) => (
-          <Box key={String(index)}>
-            <DocumentBadge color={(badge.color as any) || 'default'} title={badge.title}>
-              {badge.label}
-            </DocumentBadge>
-          </Box>
-        ))}
-    </Flex>
+    <Inline paddingX={3} space={1}>
+      {states.map((badge, index) => (
+        <Tooltip
+          content={
+            badge.title && (
+              <Box padding={2}>
+                <Text muted size={1}>
+                  {badge.title}
+                </Text>
+              </Box>
+            )
+          }
+          disabled={!badge.title}
+          key={String(index)}
+          placement="top"
+          portal
+        >
+          <Badge
+            fontSize={1}
+            mode="outline"
+            paddingX={2}
+            paddingY={1}
+            radius={4}
+            tone={badge.color ? BADGE_TONES[badge.color] : undefined}
+          >
+            {badge.label}
+          </Badge>
+        </Tooltip>
+      ))}
+    </Inline>
   )
 }
 
-export function DocumentBadges(props: {badges: Badge[]; editState: any}) {
-  return props.badges ? (
+export function DocumentBadges(props: DocumentBadgesProps) {
+  const {badges, editState} = props
+
+  if (!badges) return null
+
+  return (
     <RenderBadgeCollectionState
       component={DocumentBadgesInner}
-      badges={props.badges}
-      badgeProps={props.editState}
+      badges={badges}
+      badgeProps={editState}
     />
-  ) : null
+  )
 }
