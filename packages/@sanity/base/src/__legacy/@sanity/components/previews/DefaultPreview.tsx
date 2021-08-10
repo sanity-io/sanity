@@ -45,7 +45,7 @@ class DefaultPreview extends React.PureComponent<DefaultPreviewProps> {
   componentDidMount() {
     // eslint-disable-next-line no-console
     console.warn(
-      'DefaultPreview from `part:@sanity/components/previews/default` is deprecated. Please import from `@sanity/base/components` instead'
+      "DefaultPreview from `part:@sanity/components/previews/default` is deprecated. Please `import { DefaultPreview } from '@sanity/base/components'` instead"
     )
   }
 
