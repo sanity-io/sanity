@@ -14,7 +14,7 @@ const MediaWrapper = styled(Flex)`
   min-width: 35px;
   border-radius: ${({theme}) => theme.sanity.radius[2]}px;
 
-  img {
+  & img {
     position: absolute;
     top: 0;
     left: 0;
@@ -24,14 +24,23 @@ const MediaWrapper = styled(Flex)`
     border-radius: inherit;
   }
 
-  svg {
+  & svg {
     display: block;
-    font-size: calc(24 / 16 * 1em);
+    font-size: calc(21 / 16 * 1em);
+
+    &[data-sanity-icon] {
+      font-size: calc(33 / 16 * 1em);
+      margin: calc(6 / 36 * -1em);
+    }
   }
 
-  svg[data-sanity-icon='true'] {
-    font-size: calc(36 / 16 * 1em);
-    margin: calc(6 / 36 * -1em);
+  & img + span {
+    display: block;
+    position: absolute;
+    inset: 0 0 0 0;
+    box-shadow: inset 0 0 0 1px var(--card-fg-color);
+    opacity: 0.2;
+    border-radius: inherit;
   }
 `
 
@@ -56,7 +65,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
             <MediaWrapper
               align="center"
               justify="center"
-              marginRight={3}
+              marginRight={2}
               sizing="border"
               overflow="hidden"
             >
@@ -69,6 +78,8 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
               {typeof media === 'string' && <div>{media}</div>}
 
               {React.isValidElement(media) && media}
+
+              <span />
             </MediaWrapper>
           )}
 
