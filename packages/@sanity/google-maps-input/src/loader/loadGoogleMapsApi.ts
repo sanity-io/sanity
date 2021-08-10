@@ -28,7 +28,7 @@ export type GoogleLoadState = LoadingState | LoadedState | LoadErrorState | Auth
 let subject: BehaviorSubject<GoogleLoadState>
 
 export function loadGoogleMapsApi(): Observable<GoogleLoadState> {
-  const selectedLocale = locale || 'en-US'
+  const selectedLocale = config.defaultLocale || locale || 'en-US'
 
   if (subject) {
     return subject
