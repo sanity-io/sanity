@@ -83,6 +83,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
 
   if (!unpublishPermission.granted) {
     return {
+      color: 'danger',
       icon: UnpublishIcon,
       label: 'Unpublish',
       title: (
@@ -100,6 +101,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
   }
 
   return {
+    color: 'danger',
     icon: UnpublishIcon,
     disabled: Boolean(unpublish.disabled),
     label: 'Unpublish',

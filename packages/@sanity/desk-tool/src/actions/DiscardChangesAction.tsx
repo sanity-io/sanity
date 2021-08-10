@@ -48,6 +48,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
 
   if (!deleteDraftPermission.granted) {
     return {
+      color: 'warning',
       icon: ContentCopyIcon,
       disabled: true,
       label: 'Duplicate',
@@ -61,6 +62,7 @@ export function DiscardChangesAction({id, type, published, liveEdit, onComplete}
   }
 
   return {
+    color: 'danger',
     icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled),
     title: (discardChanges.disabled && DISABLED_REASON_TITLE[discardChanges.disabled]) || '',

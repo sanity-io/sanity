@@ -40,6 +40,7 @@ export function DeleteAction({id, type, draft, published, onComplete}) {
 
   if (!deletePermission.granted) {
     return {
+      color: 'danger',
       icon: TrashIcon,
       disabled: true,
       label: 'Delete',
@@ -52,6 +53,7 @@ export function DeleteAction({id, type, draft, published, onComplete}) {
     }
   }
   return {
+    color: 'danger',
     icon: TrashIcon,
     disabled: Boolean(deleteOp.disabled),
     title: (deleteOp.disabled && DISABLED_REASON_TITLE[deleteOp.disabled]) || '',
