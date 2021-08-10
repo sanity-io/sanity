@@ -15,8 +15,9 @@ export function ConfirmDialog(props: {
       content={<ConfirmDialogContent dialog={dialog} />}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open
-      placement="left-end"
+      placement="top"
       portal
+      preventOverflow
       referenceElement={referenceElement}
     />
   )
@@ -53,7 +54,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
           <Button
             onClick={onConfirm}
             text="Confirm"
-            tone={color ? LEGACY_DIALOG_TO_UI_COLOR[color] : 'critical'}
+            tone={color ? LEGACY_DIALOG_TO_UI_COLOR[color] : 'primary'}
           />
         </Grid>
       </Box>
