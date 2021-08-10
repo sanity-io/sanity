@@ -1,5 +1,4 @@
-/* eslint-disable react/no-multi-comp */
-import * as React from 'react'
+import React from 'react'
 import {DocumentActionDescription, DocumentActionProps} from './types'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
