@@ -8,8 +8,8 @@ export {DocumentBadgeComponent, DocumentBadgeDescription} from './badges/types'
 // Export document actions typings
 export {
   DocumentActionComponent,
-  ActionDescription as DocumentActionDescription,
   DocumentActionConfirmDialogProps,
+  DocumentActionDescription,
   DocumentActionDialogProps,
   DocumentActionModalDialogProps,
   DocumentActionPopoverDialogProps,

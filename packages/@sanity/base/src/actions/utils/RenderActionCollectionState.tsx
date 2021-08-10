@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import * as React from 'react'
-import {ActionDescription, DocumentActionProps} from './types'
+import {DocumentActionDescription, DocumentActionProps} from './types'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
 interface Action<Args, Description> {
@@ -8,10 +8,10 @@ interface Action<Args, Description> {
 }
 
 interface RenderActionCollectionProps {
-  actions: Action<DocumentActionProps, ActionDescription>[]
+  actions: Action<DocumentActionProps, DocumentActionDescription>[]
   actionProps: DocumentActionProps
   onActionComplete: () => void
-  component: (args: {states: ActionDescription[]}) => React.ReactNode
+  component: (args: {states: DocumentActionDescription[]}) => React.ReactNode
 }
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
