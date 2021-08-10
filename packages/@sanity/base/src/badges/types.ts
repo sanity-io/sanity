@@ -3,8 +3,8 @@ import {EditStateFor} from '../datastores/document/document-pair/editState'
 export interface DocumentBadgeDescription {
   title?: string
   label?: string | undefined
-  color?: string
-  icon?: any
+  color?: 'primary' | 'success' | 'warning' | 'danger'
+  icon?: React.ReactNode | React.ComponentType
 }
 
 export interface DocumentBadgeComponent {
