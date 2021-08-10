@@ -272,11 +272,7 @@ export const color = createColorTheme({
     }
 
     if (state === 'hovered') {
-      if (isNeutral) {
-        tints = stateTones.primary
-      }
-
-      const bg = blend(base.bg, tints[100])
+      const bg = blend(base.bg, tints[50])
       const skeletonFrom = blend(bg, tints[100])
 
       return {
