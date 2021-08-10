@@ -15,13 +15,13 @@ function OnlyWhenPublishedAction() {
 export default function resolveDocumentActions(props) {
   if (props.type === 'documentActionsTest') {
     return [
-      // ...defaultResolve(props),
       TestConfirmDialogAction,
       TestErrorDialogAction,
       TestLegacyDialogAction,
       TestModalDialogAction,
       TestPopoverDialogAction,
       TestSuccessDialogAction,
+      ...defaultResolve(props),
     ]
   }
 
