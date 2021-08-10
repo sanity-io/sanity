@@ -1,92 +1,92 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
+import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
 import {useEditState, useConnectionState} from '@sanity/react-hooks'
-import {Box, Flex, Tooltip, Stack, Button, ButtonTone, Hotkeys, Layer, Text} from '@sanity/ui'
+import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
-import {ButtonColor} from '@sanity/base/__legacy/@sanity/components'
 import {HistoryRestoreAction} from '../../../actions/HistoryRestoreAction'
-import {ActionMenu} from './actionMenu'
+import {ActionMenuButton} from './actionMenu'
 import {ActionStateDialog} from './actionStateDialog'
-import {DocumentStatusBarActionsProps, HistoryStatusBarActionsProps} from './types'
+import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
-// eslint-disable-next-line complexity
+export interface DocumentStatusBarActionsProps {
+  disabled: boolean
+  showMenu: boolean
+  states: any[]
+}
+
+export interface HistoryStatusBarActionsProps {
+  id: string
+  type: string
+  revision: string
+}
+
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
-  const {states, showMenu} = props
+  const {disabled, showMenu, states} = props
   const [firstActionState, ...menuActionStates] = states
-  const [buttonContainerElement, setButtonContainerElement] = useState<HTMLDivElement | null>(null)
+  const [buttonElement, setButtonElement] = useState<HTMLDivElement | null>(null)
 
-  const buttonTone: Record<ButtonColor, ButtonTone> = {
-    primary: 'primary',
-    warning: 'caution',
-    success: 'positive',
-    danger: 'critical',
-    white: 'default',
-  }
+  const tooltipContent = useMemo(() => {
+    if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
+
+    return (
+      <Flex padding={2} style={{maxWidth: 300}} align="center">
+        <Text size={1} muted>
+          {firstActionState.title}
+        </Text>
+        {firstActionState.shortcut && (
+          <Box marginLeft={firstActionState.title ? 2 : 0}>
+            <Hotkeys
+              keys={String(firstActionState.shortcut)
+                .split('+')
+                .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
+            />
+          </Box>
+        )}
+      </Flex>
+    )
+  }, [firstActionState])
 
   return (
     <Flex>
       {firstActionState && (
-        <Stack flex={1}>
-          <Layer zOffset={200}>
-            <Tooltip
-              disabled={!(firstActionState.title || firstActionState.shortcut)}
-              content={
-                <Flex padding={2} style={{maxWidth: 300}} align="center">
-                  <Text size={1} muted>
-                    {firstActionState.title}
-                  </Text>
-                  {firstActionState.shortcut && (
-                    <Box marginLeft={firstActionState.title ? 2 : 0}>
-                      <Hotkeys keys={String(firstActionState.shortcut).split('+')} />
-                    </Box>
-                  )}
-                </Flex>
-              }
-              portal
-              placement="top"
-            >
-              <Stack flex={1} ref={setButtonContainerElement}>
-                <Button
-                  icon={firstActionState.icon}
-                  tone={
-                    firstActionState.disabled
-                      ? 'default'
-                      : buttonTone[firstActionState.color] || 'positive'
-                  }
-                  disabled={props.disabled || Boolean(firstActionState.disabled)}
-                  aria-label={firstActionState.title}
-                  onClick={firstActionState.onHandle}
-                  text={firstActionState.label}
-                />
-              </Stack>
-            </Tooltip>
-          </Layer>
-
-          {firstActionState.dialog && (
-            <ActionStateDialog
-              dialog={firstActionState.dialog}
-              referenceElement={buttonContainerElement}
-            />
-          )}
-        </Stack>
+        <LayerProvider zOffset={200}>
+          <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
+            <Stack flex={1}>
+              <Button
+                disabled={disabled || Boolean(firstActionState.disabled)}
+                icon={firstActionState.icon}
+                onClick={firstActionState.onHandle}
+                ref={setButtonElement}
+                text={firstActionState.label}
+                tone={
+                  firstActionState.color
+                    ? LEGACY_BUTTON_COLOR_TO_TONE[firstActionState.color]
+                    : 'primary'
+                }
+              />
+            </Stack>
+          </Tooltip>
+        </LayerProvider>
       )}
 
       {showMenu && menuActionStates.length > 0 && (
-        <ActionMenu
-          actionStates={menuActionStates}
-          isOpen={props.isMenuOpen}
-          onOpen={props.onMenuOpen}
-          onClose={props.onMenuClose}
-          disabled={props.disabled}
-        />
+        <Box marginLeft={1}>
+          <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
+        </Box>
+      )}
+
+      {firstActionState && firstActionState.dialog && (
+        <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
     </Flex>
   )
 }
 
 export function DocumentStatusBarActions(props: {id: string; type: string}) {
-  const editState: any = useEditState(props.id, props.type)
-  const connectionState = useConnectionState(props.id, props.type)
+  const {id, type} = props
+  const editState: EditStateFor | null = useEditState(id, type) as any
+  const connectionState = useConnectionState(id, type)
   const [isMenuOpen, setMenuOpen] = useState(false)
   const actions = editState ? resolveDocumentActions(editState) : null
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
@@ -115,15 +115,21 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
 const historyActions = [HistoryRestoreAction]
 
 export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
-  const editState: any = useEditState(props.id, props.type)
-  const connectionState = useConnectionState(props.id, props.type)
+  const {id, revision, type} = props
+  const editState: EditStateFor | null = useEditState(id, type) as any
+  const connectionState = useConnectionState(id, type)
+  const disabled = (editState?.draft || editState?.published || {})._rev === revision
+  const actionProps = useMemo(
+    () => ({
+      ...(editState || {}),
+      revision,
+    }),
+    [editState, revision]
+  )
 
   if (!editState) {
     return null
   }
-
-  const disabled = (editState.draft || editState.published || {})._rev === props.revision
-  const actionProps = {...editState, revision: props.revision}
 
   return (
     <RenderActionCollectionState

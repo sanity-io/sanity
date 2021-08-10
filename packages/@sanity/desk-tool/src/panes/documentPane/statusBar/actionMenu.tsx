@@ -1,153 +1,153 @@
 import {useId} from '@reach/auto-id'
+import {LegacyLayerProvider} from '@sanity/base/components'
+import {ChevronDownIcon} from '@sanity/icons'
 import {
-  Tooltip,
   Box,
   Button,
-  Menu,
-  MenuItem,
-  Popover,
-  Hotkeys,
-  Inline,
-  Text,
   Flex,
-  Theme,
-  useClickOutside,
+  Hotkeys,
+  Menu,
+  MenuButton,
+  MenuItem,
+  PopoverProps,
+  Text,
+  Tooltip,
 } from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import styled from 'styled-components'
-import {ChevronDownIcon} from '@sanity/icons'
+import React, {createElement, isValidElement, useCallback, useRef, useState, useMemo} from 'react'
+import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './actionStateDialog'
+import {LEGACY_BUTTON_COLOR_TO_TONE} from './constants'
 
-interface Props {
+export interface ActionMenuButtonProps {
   actionStates: any[]
-  onOpen: () => void
-  onClose: () => void
-  isOpen: boolean
   disabled: boolean
 }
 
-export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Props) {
-  const idPrefix = useId()
-  const listRef = useRef<HTMLUListElement>(null)
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+export function ActionMenuButton(props: ActionMenuButtonProps) {
+  const {actionStates, disabled} = props
+  const idPrefix = useId() || ''
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const [actionIndex, setActionIndex] = useState(-1)
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null)
 
-  useEffect(() => {
-    if (listRef.current) {
-      const el: HTMLUListElement | null = listRef.current
+  const handleAction = useCallback((idx: number) => {
+    setActionIndex(idx)
+  }, [])
 
-      if (el) {
-        el.focus()
-      }
-    }
-  }, [isOpen])
+  const popoverProps: PopoverProps = useMemo(
+    () => ({
+      placement: 'top-end',
+      portal: true,
+      preventOverflow: true,
+    }),
+    []
+  )
 
-  const handleCloseMenu = useCallback(() => {
-    if (!isOpen) {
-      return
-    }
-
-    // this is a bit hacky, but if there is a modal open, we should not close on outside clicks
-    const hasOpenDialog = actionStates.some((state) => state.dialog)
-
-    if (!hasOpenDialog) {
-      onClose()
-    }
-  }, [actionStates, isOpen, onClose])
-
-  useClickOutside(handleCloseMenu, [popoverElement])
+  const currentAction = actionStates[actionIndex]
 
   return (
-    <Box marginLeft={2}>
-      <Popover
-        id={`${idPrefix}-menu`}
-        open={isOpen}
-        placement="top-end"
-        ref={setPopoverElement}
-        content={
-          <Menu paddingY={1} focusLast>
+    <>
+      <MenuButton
+        id={`${idPrefix}-action-menu`}
+        button={
+          <Button
+            aria-label="Open document actions"
+            disabled={disabled}
+            icon={ChevronDownIcon}
+            mode="ghost"
+            ref={buttonRef}
+          />
+        }
+        menu={
+          <Menu padding={1}>
             {actionStates.map((actionState, idx) => (
               <ActionMenuListItem
                 actionState={actionState}
                 disabled={disabled}
+                index={idx}
                 // eslint-disable-next-line react/no-array-index-key
                 key={idx}
+                onAction={handleAction}
               />
             ))}
           </Menu>
         }
-      >
-        <Button
-          icon={ChevronDownIcon}
-          aria-controls={`${idPrefix}-menu`}
-          aria-haspopup="true"
-          aria-label="Actions"
-          disabled={disabled}
-          id={`${idPrefix}-button`}
-          onClick={isOpen ? onClose : onOpen}
-          mode="ghost"
-        />
-      </Popover>
-    </Box>
+        popover={popoverProps}
+        ref={setReferenceElement}
+      />
+
+      {currentAction && currentAction.dialog && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
+        </LegacyLayerProvider>
+      )}
+    </>
   )
 }
 
-// Note: Should this be necessary?
-// Should @sanity/ui instead expose a mode (bleed, ghost) etc. on the menu items
-// to get the same result? Could potentially use a
-// button inside the MenuItem but then the wrong item gets focus when using keyboards
+interface ActionMenuListItemProps {
+  actionState: any
+  disabled: boolean
+  index: number
+  onAction: (idx: number) => void
+}
 
-const StyledMenuItem = styled(MenuItem)`
-  ${({theme}: {theme: Theme}) => `
+function ActionMenuListItem(props: ActionMenuListItemProps) {
+  const {actionState, disabled, index, onAction} = props
+  const {onHandle} = actionState
 
-   &:not([hidden]) {
-     --card-bg-color: ${theme.sanity.color.card.enabled.bg};
-     --card-fg-color: ${theme.sanity.color.card.enabled.fg};
-     --card-muted-fg-color: ${theme.sanity.color.card.enabled.fg};
-   }
+  const handleClick = useCallback(() => {
+    onAction(index)
+    if (onHandle) onHandle()
+  }, [index, onAction, onHandle])
 
-   &[data-as='button']:not(:disabled):focus  {
-     --card-bg-color: ${theme.sanity.color.muted.default.hovered.bg};
-     --card-fg-color: ${theme.sanity.color.muted.default.hovered.fg};
-     --card-muted-fg-color: ${theme.sanity.color.muted.default.hovered.fg};
-     --card-hairline-hard-color: ${theme.sanity.color.muted.default.enabled.fg};
-     --card-code-fg-color: ${theme.sanity.color.muted.default.enabled.fg};
-   }
- `}
-`
+  const tooltipContent = actionState.title && (
+    <Box padding={2}>
+      <Text size={1} muted>
+        {actionState.title}
+      </Text>
+    </Box>
+  )
 
-function ActionMenuListItem({actionState, disabled}) {
-  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   return (
-    <StyledMenuItem
+    <MenuItem
       disabled={disabled || Boolean(actionState.disabled)}
-      onClick={actionState.onHandle}
-      ref={setButtonElement}
-      paddingY={3}
+      onClick={handleClick}
+      padding={0}
+      tone={actionState.color && LEGACY_BUTTON_COLOR_TO_TONE[actionState.color]}
     >
       <Tooltip
-        disabled={!actionState.title}
-        content={
-          <Box padding={2} style={{maxWidth: 260}}>
-            <Text size={1} muted>
-              {actionState.title}
-            </Text>
-          </Box>
-        }
+        content={tooltipContent}
+        disabled={!tooltipContent}
+        fallbackPlacements={['left', 'bottom']}
+        placement="top"
         portal
-        placement="left"
       >
-        <Flex align="center" justify="flex-start">
-          <Inline space={3}>
-            {actionState.icon && <Text>{React.createElement(actionState.icon)}</Text>}
+        <Flex align="center" paddingX={3}>
+          <Flex flex={1} paddingY={3}>
+            {actionState.icon && (
+              <Box marginRight={3}>
+                <Text>
+                  {isValidElement(actionState.icon) && actionState.icon}
+                  {isValidElementType(actionState.icon) && createElement(actionState.icon)}
+                </Text>
+              </Box>
+            )}
+
             <Text>{actionState.label}</Text>
-            {actionState.shortcut && <Hotkeys keys={String(actionState.shortcut).split('+')} />}
-          </Inline>
+          </Flex>
+
+          {actionState.shortcut && (
+            <Box marginLeft={3}>
+              <Hotkeys
+                keys={String(actionState.shortcut)
+                  .split('+')
+                  .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))}
+              />
+            </Box>
+          )}
         </Flex>
       </Tooltip>
-
-      {actionState.dialog && (
-        <ActionStateDialog dialog={actionState.dialog} referenceElement={buttonElement} />
-      )}
-    </StyledMenuItem>
+    </MenuItem>
   )
 }

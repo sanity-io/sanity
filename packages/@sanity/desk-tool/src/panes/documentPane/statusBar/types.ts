@@ -3,10 +3,7 @@ export interface DocumentStatusBarActionsProps {
   type: string
   states: any[]
   disabled: boolean
-  isMenuOpen: boolean
   showMenu: boolean
-  onMenuOpen: () => void
-  onMenuClose: () => void
 }
 
 export interface HistoryStatusBarActionsProps {
