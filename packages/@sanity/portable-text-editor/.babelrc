@@ -1,0 +1,9 @@
+{
+  "extends": "../../../.babelrc",
+  "presets": ["@babel/preset-react", "@babel/preset-typescript"],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs", "@babel/plugin-proposal-class-properties"]
+    }
+  }
+}

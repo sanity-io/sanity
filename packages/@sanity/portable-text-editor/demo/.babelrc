@@ -1,0 +1,8 @@
+{
+  "presets": [
+    [
+      "next/babel"
+    ]
+  ],
+  "plugins": ["lodash", "@babel/plugin-proposal-class-properties", "babel-plugin-styled-components"]
+}

@@ -28,7 +28,7 @@
     "@sanity/imagetool": "2.15.0",
     "@sanity/initial-value-templates": "2.15.0",
     "@sanity/mutator": "2.15.0",
-    "@sanity/portable-text-editor": "0.1.25",
+    "@sanity/portable-text-editor": "2.15.0",
     "@sanity/schema": "2.15.0",
     "@sanity/types": "2.15.0",
     "@sanity/ui": "^0.36.0",
