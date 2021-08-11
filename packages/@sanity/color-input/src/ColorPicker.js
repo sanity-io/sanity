@@ -16,7 +16,7 @@ const ColorBox = styled(Box)`
 
 const ReadOnlyContainer = styled(Flex)`
   margin-top: 6rem;
-  background-color: ${({theme}) => theme.sanity.color.base.bg};
+  background-color: var(--card-bg-color);
   position: relative;
   width: 100%;
 `
@@ -35,86 +35,91 @@ const ColorPicker = ({
 }) => {
   return (
     <div style={{width}}>
-      <Stack space={2}>
-        {!readOnly && (
-          <>
-            <Card overflow="hidden" style={{position: 'relative', height: '5em'}}>
-              <Saturation is="Saturation" onChange={onChange} hsl={hsl} hsv={hsv} />
-            </Card>
+      <Card padding={1} border radius={1}>
+        <Stack space={2}>
+          {!readOnly && (
+            <>
+              <Card overflow="hidden" style={{position: 'relative', height: '5em'}}>
+                <Saturation is="Saturation" onChange={onChange} hsl={hsl} hsv={hsv} />
+              </Card>
 
-            <Card
-              shadow={1}
-              radius={3}
-              overflow="hidden"
-              style={{position: 'relative', height: '10px'}}
-            >
-              <Hue is="Hue" hsl={hsl} onChange={!readOnly && onChange} />
-            </Card>
-
-            {!disableAlpha && (
               <Card
                 shadow={1}
                 radius={3}
                 overflow="hidden"
                 style={{position: 'relative', height: '10px'}}
               >
-                <Alpha is="Alpha" rgb={rgb} hsl={hsl} renderers={renderers} onChange={onChange} />
+                <Hue is="Hue" hsl={hsl} onChange={!readOnly && onChange} />
               </Card>
-            )}
-          </>
-        )}
-        <Flex>
-          <Card
-            flex={1}
-            overflow="hidden"
-            style={{position: 'relative', minWidth: '4em'}}
-            shadow={1}
-            radius={2}
-          >
-            <Checkboard />
-            <ColorBox style={{backgroundColor: `rgba(${rgb.r},${rgb.g},${rgb.b},${rgb.a})`}} />
 
-            {readOnly && (
-              <ReadOnlyContainer paddingX={2} paddingY={3} sizing="border" justify="space-between">
-                <Stack space={3} marginTop={1}>
-                  <Text size={3} weight="bold">
-                    {hex}
-                  </Text>
-
-                  <Inline space={3}>
-                    <Text size={1}>
-                      <strong>RGB: </strong>
-                      {rgb.r} {rgb.g} {rgb.b}
-                    </Text>
-                    <Text size={1}>
-                      <strong>HSL: </strong> {Math.round(hsl.h)} {Math.round(hsl.s)}%{' '}
-                      {Math.round(hsl.l)}
-                    </Text>
-                  </Inline>
-                </Stack>
-                <Button disabled text="Change" title="This color can not be changed (read only)" />
-              </ReadOnlyContainer>
-            )}
-          </Card>
-
-          {!readOnly && (
-            <Flex align="flex-start" marginLeft={2}>
-              <Box style={{width: 200}}>
-                <ColorPickerFields
-                  rgb={rgb}
-                  hsl={hsl}
-                  hex={hex}
-                  onChange={onChange}
-                  disableAlpha={disableAlpha}
-                />
-              </Box>
-              <Box marginLeft={2}>
-                <Button onClick={onUnset} title="Delete color" icon={TrashIcon} tone="critical" />
-              </Box>
-            </Flex>
+              {!disableAlpha && (
+                <Card
+                  shadow={1}
+                  radius={3}
+                  overflow="hidden"
+                  style={{position: 'relative', height: '10px'}}
+                >
+                  <Alpha is="Alpha" rgb={rgb} hsl={hsl} renderers={renderers} onChange={onChange} />
+                </Card>
+              )}
+            </>
           )}
-        </Flex>
-      </Stack>
+          <Flex>
+            <Card
+              flex={1}
+              radius={2}
+              overflow="hidden"
+              style={{position: 'relative', minWidth: '4em'}}
+            >
+              <Checkboard />
+              <ColorBox style={{backgroundColor: `rgba(${rgb.r},${rgb.g},${rgb.b},${rgb.a})`}} />
+
+              {readOnly && (
+                <ReadOnlyContainer
+                  padding={2}
+                  paddingBottom={1}
+                  sizing="border"
+                  justify="space-between"
+                >
+                  <Stack space={3} marginTop={1}>
+                    <Text size={3} weight="bold">
+                      {hex}
+                    </Text>
+
+                    <Inline space={3}>
+                      <Text size={1}>
+                        <strong>RGB: </strong>
+                        {rgb.r} {rgb.g} {rgb.b}
+                      </Text>
+                      <Text size={1}>
+                        <strong>HSL: </strong> {Math.round(hsl.h)} {Math.round(hsl.s)}%{' '}
+                        {Math.round(hsl.l)}
+                      </Text>
+                    </Inline>
+                  </Stack>
+                </ReadOnlyContainer>
+              )}
+            </Card>
+
+            {!readOnly && (
+              <Flex align="flex-start" marginLeft={2}>
+                <Box style={{width: 200}}>
+                  <ColorPickerFields
+                    rgb={rgb}
+                    hsl={hsl}
+                    hex={hex}
+                    onChange={onChange}
+                    disableAlpha={disableAlpha}
+                  />
+                </Box>
+                <Box marginLeft={2}>
+                  <Button onClick={onUnset} title="Delete color" icon={TrashIcon} tone="critical" />
+                </Box>
+              </Flex>
+            )}
+          </Flex>
+        </Stack>
+      </Card>
     </div>
   )
 }
