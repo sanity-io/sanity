@@ -2,6 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
+import {uniqueId} from 'lodash'
 import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
@@ -58,6 +59,8 @@ interface InputState {
 }
 
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
+  _geopointInputId = uniqueId('GeopointInput')
+
   static defaultProps = {
     markers: [],
   }
@@ -203,7 +206,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
           {modalOpen && (
             <Dialog
-              id="geo"
+              id={`${this._geopointInputId}_dialog`}
               onClose={this.handleCloseModal}
               header="Place the marker on the map"
               width={1}
