@@ -1,4 +1,5 @@
 import * as React from 'react'
+import {TextInput} from '@sanity/ui'
 import styles from './SearchInput.css'
 
 interface Props {
@@ -43,11 +44,11 @@ export class SearchInput extends React.PureComponent<Props> {
   render() {
     return (
       <div className={styles.wrapper}>
-        <input
+        <TextInput
           name="place"
           ref={this.searchInputRef}
           placeholder="Search for place or address"
-          className={styles.input}
+          padding={4}
         />
       </div>
     )
