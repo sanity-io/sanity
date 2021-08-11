@@ -1,14 +1,12 @@
 import React, {forwardRef, useContext, useMemo} from 'react'
 import PropTypes from 'prop-types'
 import {Card, Text} from '@sanity/ui'
-import {ChevronRightIcon} from '@sanity/icons'
+import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
-import folderIcon from 'part:@sanity/base/folder-icon'
-import fileIcon from 'part:@sanity/base/file-icon'
-import DocumentPaneItemPreview from '../../components/DocumentPaneItemPreview'
+import {DocumentPaneItemPreview} from '../../components/DocumentPaneItemPreview'
 import getIconWithFallback from '../../utils/getIconWithFallback'
-import MissingSchemaType from '../../components/MissingSchemaType'
+import {MissingSchemaType} from '../../components/MissingSchemaType'
 import {PaneRouterContext} from '../../contexts/PaneRouterContext'
 
 PaneItem.propTypes = {
@@ -52,7 +50,7 @@ export default function PaneItem(props) {
 
       return (
         <DocumentPaneItemPreview
-          icon={getIconWithFallback(icon, schemaType, fileIcon)}
+          icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
           value={value}
@@ -67,7 +65,7 @@ export default function PaneItem(props) {
             <ChevronRightIcon />
           </Text>
         }
-        icon={getIconWithFallback(icon, schemaType, folderIcon)}
+        icon={getIconWithFallback(icon, schemaType, FolderIcon)}
         layout={layout}
         value={value}
       />
