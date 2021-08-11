@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
+import {EditStateFor} from '@sanity/base/_internal'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
 import styled from 'styled-components'

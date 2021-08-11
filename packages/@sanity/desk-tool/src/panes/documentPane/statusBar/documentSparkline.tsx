@@ -4,7 +4,8 @@
 import {useSyncState} from '@sanity/react-hooks'
 import {DocumentBadgeDescription} from '@sanity/base'
 import {useTimeAgo} from '@sanity/base/hooks'
-import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
+import {EditStateFor} from '@sanity/base/_internal'
+
 import {EditIcon, PlayIcon, PublishIcon, RestoreIcon} from '@sanity/icons'
 import {Box, ElementQuery, Flex, Stack, Text, Button} from '@sanity/ui'
 import SyncIcon from 'part:@sanity/base/sync-icon'
