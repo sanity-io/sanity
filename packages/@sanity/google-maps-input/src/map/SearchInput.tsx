@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {TextInput} from '@sanity/ui'
-import styles from './SearchInput.css'
+import {WrapperContainer} from './SearchInput.styles'
 
 interface Props {
   api: typeof window.google.maps
@@ -43,14 +43,14 @@ export class SearchInput extends React.PureComponent<Props> {
 
   render() {
     return (
-      <div className={styles.wrapper}>
+      <WrapperContainer>
         <TextInput
           name="place"
           ref={this.searchInputRef}
           placeholder="Search for place or address"
           padding={4}
         />
-      </div>
+      </WrapperContainer>
     )
   }
 }

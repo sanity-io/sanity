@@ -1,4 +1,8 @@
-import {TextInput} from '@sanity/ui'
+import styled from 'styled-components'
 
-export const TextInputContainer = styled(TextInput)`
+export const WrapperContainer = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 220px;
 `
