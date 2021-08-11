@@ -25,7 +25,16 @@ export function ConfirmDialog(props: {
 
 function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps}) {
   const {dialog} = props
-  const {color, message, onCancel, onConfirm} = dialog
+  const {
+    cancelButtonIcon,
+    cancelButtonText,
+    confirmButtonIcon,
+    confirmButtonText,
+    color,
+    message,
+    onCancel,
+    onConfirm,
+  } = dialog
   const {isTopLayer} = useLayer()
   const [element, setElement] = useState<HTMLElement | null>(null)
 
@@ -50,10 +59,16 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
       </Box>
       <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
         <Grid columns={2} gap={2}>
-          <Button onClick={onCancel} mode="ghost" text="Cancel" />
           <Button
+            icon={cancelButtonIcon}
+            onClick={onCancel}
+            mode="ghost"
+            text={cancelButtonText || 'Cancel'}
+          />
+          <Button
+            icon={confirmButtonIcon}
             onClick={onConfirm}
-            text="Confirm"
+            text={confirmButtonText || 'Confirm'}
             tone={color ? LEGACY_DIALOG_TO_UI_COLOR[color] : 'primary'}
           />
         </Grid>
