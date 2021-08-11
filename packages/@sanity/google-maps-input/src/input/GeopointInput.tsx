@@ -55,7 +55,6 @@ type Focusable = any
 
 interface InputState {
   modalOpen: boolean
-  hasFocus: boolean
 }
 
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
@@ -72,7 +71,6 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
     this.state = {
       modalOpen: false,
-      hasFocus: false,
     }
   }
 
@@ -87,12 +85,10 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   handleFocus = (event) => {
-    this.setState({hasFocus: true})
     this.props.onFocus(event)
   }
 
   handleBlur = () => {
-    this.setState({hasFocus: false})
     this.props.onBlur()
   }
 
@@ -134,7 +130,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
   render() {
     const {value, compareValue, readOnly, type, markers, level, presence} = this.props
-    const {modalOpen, hasFocus} = this.state
+    const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
       return (
