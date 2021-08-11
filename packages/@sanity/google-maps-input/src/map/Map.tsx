@@ -1,7 +1,7 @@
 import React from 'react'
 import {LatLng} from '../types'
-import styles from './Map.css'
 import {latLngAreEqual} from './util'
+import {MapContainer} from './Map.styles'
 
 interface MapProps {
   api: typeof window.google.maps
@@ -117,7 +117,7 @@ export class GoogleMap extends React.PureComponent<MapProps, MapState> {
     const {map} = this.state
     return (
       <>
-        <div ref={this.setMapElement} className={styles.map} />
+        <MapContainer ref={this.setMapElement} />
         {children && map ? children(map) : null}
       </>
     )
