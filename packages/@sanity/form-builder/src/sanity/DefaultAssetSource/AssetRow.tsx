@@ -140,6 +140,13 @@ const AssetRow = (props: RowProps) => {
     })
   }
 
+  const handleDeleteSuccess = () => {
+    toast.push({
+      status: 'success',
+      title: 'File was deleted',
+    })
+  }
+
   const handleDeleteAsset = () => {
     setIsDeleting(true)
 
@@ -148,6 +155,7 @@ const AssetRow = (props: RowProps) => {
         setIsDeleting(false)
         onDeleteFinished(asset._id)
         setShowDeleteDialog(false)
+        handleDeleteSuccess()
       },
       error: (err: Error) => {
         setIsDeleting(false)

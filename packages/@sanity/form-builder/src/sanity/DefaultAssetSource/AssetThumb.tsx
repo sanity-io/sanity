@@ -1,29 +1,21 @@
 import type {Subscription} from 'rxjs'
-import React from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import styled from 'styled-components'
-import {Button} from '@sanity/ui'
-import {FullscreenSpinner} from '../../components/FullscreenSpinner'
+import {Button, useToast} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
+import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {versionedClient} from '../versionedClient'
 import {Checkerboard} from '../../components/Checkerboard'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
-import {AssetDialogAction, AssetMenuAction} from './types'
-import {DeleteAssetErrorDialog} from './DeleteAssetErrorDialog'
+import {AssetMenuAction} from './types'
 
 interface AssetProps {
-  assetType?: 'image' | 'file'
   asset?: AssetType
   isSelected: boolean
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any
   onDeleteFinished: (...args: any[]) => any
-}
-
-interface State {
-  isDeleting: boolean
-  showUsageDialog: boolean
-  deleteError: Error | null
 }
 
 // Get pixel density of the current device
@@ -67,109 +59,120 @@ const MenuContainer = styled.div`
   }
 `
 
-export default class AssetThumb extends React.PureComponent<AssetProps, State> {
-  state: State = {
-    isDeleting: false,
-    showUsageDialog: false,
-    deleteError: null,
-  }
+const AssetThumb = (props: AssetProps) => {
+  const toast = useToast()
+  const deleteRef$ = useRef<Subscription>()
+  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected} = props
+  const [showUsageDialog, setShowUsageDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  delete$: Subscription
-
-  componentWillUnmount() {
-    if (this.delete$) {
-      this.delete$.unsubscribe()
+  useEffect(() => {
+    return () => {
+      if (deleteRef$.current) {
+        deleteRef$.current.unsubscribe()
+      }
     }
+  }, [])
+
+  const handleConfirmDelete = () => {
+    setShowDeleteDialog(true)
   }
 
-  handleDeleteAsset = () => {
-    const {onDeleteFinished, asset} = this.props
+  const handleDialogClose = () => {
+    setShowUsageDialog(false)
+    setShowDeleteDialog(false)
+  }
 
-    this.setState({isDeleting: true})
+  const handleToggleUsageDialog = () => {
+    setShowUsageDialog(true)
+  }
 
-    this.delete$ = versionedClient.observable.delete(asset._id).subscribe({
+  const handleDeleteError = (error) => {
+    toast.push({
+      closable: true,
+      status: 'error',
+      title: 'Image could not be deleted',
+      description: error.message,
+    })
+  }
+
+  const handleDeleteSuccess = () => {
+    toast.push({
+      status: 'success',
+      title: 'Image was deleted',
+    })
+  }
+
+  const handleDeleteAsset = () => {
+    setIsDeleting(true)
+
+    deleteRef$.current = versionedClient.observable.delete(asset._id).subscribe({
       next: () => {
-        this.setState({isDeleting: false})
+        setIsDeleting(false)
         onDeleteFinished(asset._id)
+        setShowDeleteDialog(false)
+        handleDeleteSuccess()
       },
       error: (err: Error) => {
-        this.setState({isDeleting: false, deleteError: err})
+        setIsDeleting(false)
+        handleDeleteError(err)
         // eslint-disable-next-line no-console
         console.error('Could not delete asset', err)
       },
     })
   }
 
-  handleDialogClose = () => {
-    this.setState({showUsageDialog: false, deleteError: null})
-  }
-
-  handleMenuAction = (action: AssetMenuAction) => {
+  const handleMenuAction = (action: AssetMenuAction) => {
     if (action.type === 'delete') {
-      this.handleDeleteAsset()
+      handleConfirmDelete()
     }
 
     if (action.type === 'showUsage') {
-      this.setState({showUsageDialog: true})
+      handleToggleUsageDialog()
     }
   }
 
-  handleDialogAction = (action: AssetDialogAction) => {
-    if (action.type === 'close') {
-      this.handleDialogClose()
-    }
+  // const {asset, onClick, onKeyPress, isSelected} = props
+  const {originalFilename, _id, url} = asset
+  const imgH = 200 * Math.max(1, DPI)
 
-    if (action.type === 'delete') {
-      this.handleDeleteAsset()
-    }
-  }
-
-  render() {
-    const {asset, onClick, onKeyPress, isSelected} = this.props
-    const {originalFilename, _id, url} = asset
-    const {isDeleting, showUsageDialog, deleteError} = this.state
-    const imgH = 200 * Math.max(1, DPI)
-
-    return (
-      <Root>
-        <Button
-          tone="primary"
-          selected={isSelected}
-          tabIndex={0}
-          data-id={_id}
-          mode="ghost"
-          onKeyPress={onKeyPress}
-          padding={0}
-          style={{padding: 2}}
-        >
-          <Container>
-            <Image
-              alt={originalFilename}
-              src={`${url}?h=${imgH}&fit=max`}
-              onClick={onClick}
-              data-id={_id}
-            />
-            {isDeleting && <FullscreenSpinner />}
-          </Container>
-        </Button>
-        <MenuContainer>
-          <AssetMenu isSelected={isSelected} onAction={this.handleMenuAction} />
-        </MenuContainer>
-        {showUsageDialog && (
-          <AssetUsageDialog
-            asset={asset}
-            onClose={this.handleDialogClose}
-            onDelete={this.handleDeleteAsset}
+  return (
+    <Root>
+      <Button
+        tone="primary"
+        selected={isSelected}
+        tabIndex={0}
+        data-id={_id}
+        mode="ghost"
+        onKeyPress={onKeyPress}
+        padding={0}
+        style={{padding: 2}}
+      >
+        <Container>
+          <Image
+            alt={originalFilename}
+            src={`${url}?h=${imgH}&fit=max`}
+            onClick={onClick}
+            data-id={_id}
           />
-        )}
-        {deleteError && (
-          <DeleteAssetErrorDialog
-            asset={asset}
-            onClose={this.handleDialogClose}
-            error={deleteError}
-          />
-        )}
-      </Root>
-    )
-  }
+          {isDeleting && <FullscreenSpinner />}
+        </Container>
+      </Button>
+      <MenuContainer>
+        <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
+      </MenuContainer>
+      {(showUsageDialog || showDeleteDialog) && (
+        <AssetUsageDialog
+          asset={asset}
+          mode={showDeleteDialog ? 'confirmDelete' : 'listUsage'}
+          onClose={handleDialogClose}
+          onDelete={handleDeleteAsset}
+          isDeleting={isDeleting}
+        />
+      )}
+    </Root>
+  )
 }
+
+export default AssetThumb
