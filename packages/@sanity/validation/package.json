@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib dest"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

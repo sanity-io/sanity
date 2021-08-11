@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tape test/**/*.test.js",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib dest"
   },
   "repository": {
     "type": "git",

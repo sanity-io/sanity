@@ -6,7 +6,7 @@
   "types": "./dist/dts",
   "scripts": {
     "build": "babel src --extensions '.js,.jsx,.ts,.tsx' --copy-files --out-dir lib",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "test": "tap -t120 test/*.test.ts",
     "perf": "node ./perf/run.js",
     "prebuild": "npm run clean"

@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf lib"
+    "clean": "rimraf lib dest"
   },
   "keywords": [
     "sanity",
