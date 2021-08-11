@@ -10,14 +10,13 @@
     "jsx": "react"
   },
   "references": [
-    {
-      "path": "../base"
-    },
-    {
-      "path": "../react-hooks"
-    },
-    {
-      "path": "../field"
-    }
+    {"path": "../base"},
+    {"path": "../diff"},
+    {"path": "../field"},
+    {"path": "../form-builder"},
+    {"path": "../react-hooks"},
+    {"path": "../structure"},
+    {"path": "../types"},
+    {"path": "../util"}
   ]
 }
