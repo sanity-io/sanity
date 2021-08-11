@@ -8,7 +8,7 @@ import JSONInspector from 'react-json-inspector'
 import {withPropsStream} from 'react-props-stream'
 import {combineLatest, Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
-import DocTitle from '../../../components/DocTitle'
+import {DocTitle} from '../../../components/DocTitle'
 import settings from '../../../settings'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
@@ -58,12 +58,16 @@ function InspectDialogComponent(props: InnerInspectDialogProps) {
   return (
     <FullScreenDialog
       title={
-        <span>
-          Inspecting{' '}
-          <em>
-            <DocTitle document={value} />
-          </em>
-        </span>
+        value ? (
+          <span>
+            Inspecting{' '}
+            <em>
+              <DocTitle document={value} />
+            </em>
+          </span>
+        ) : (
+          <em>No value</em>
+        )
       }
       onClose={onClose}
     >

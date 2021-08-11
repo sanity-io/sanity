@@ -1,16 +1,9 @@
+import {SanityDocument} from '@sanity/types'
 import {MutationPayload} from './buffered-doc/types'
 import {DocumentVersionSnapshots} from './document-pair/snapshotPair'
 
 export {SanityClient} from '@sanity/client'
 export {MutationPayload as Mutation}
-
-export interface SanityDocument {
-  _id: string
-  _type: string
-  _rev?: string
-  _updatedAt?: string
-  [field: string]: any
-}
 
 export interface WelcomeEvent {
   type: 'welcome'
@@ -33,6 +26,7 @@ export interface IdPair {
   publishedId: string
 }
 
+// eslint-disable-next-line no-unused-vars
 export interface Operation<Args> {
   disabled: (args: OperationArgs) => false | string
   execute: (args: OperationArgs) => void

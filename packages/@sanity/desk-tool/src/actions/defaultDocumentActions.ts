@@ -1,3 +1,4 @@
+import {DocumentActionComponent} from '@sanity/base'
 import {PublishAction} from './PublishAction'
 import {DiscardChangesAction} from './DiscardChangesAction'
 import {UnpublishAction} from './UnpublishAction'
@@ -10,6 +11,6 @@ export {UnpublishAction}
 export {DuplicateAction}
 export {DeleteAction}
 
-export default function defaultResolveDocumentActions() {
+export default function defaultResolveDocumentActions(): DocumentActionComponent[] {
   return [PublishAction, DiscardChangesAction, UnpublishAction, DuplicateAction, DeleteAction]
 }

@@ -6,9 +6,9 @@ import {
   useEditState,
   useValidationStatus,
 } from '@sanity/react-hooks'
+import {Code} from '@sanity/ui'
 import schema from 'part:@sanity/base/schema'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {CodeBlock} from '../../components/CodeBlock'
 import withInitialValue from '../../utils/withInitialValue'
 import ErrorPane from '../errorPane/ErrorPane'
 import {LoadingPane} from '../loadingPane'
@@ -86,7 +86,7 @@ export const DocumentPaneProvider = withInitialValue(function DocumentPaneProvid
         {__DEV__ && value && (
           <div>
             <h4>Here is the JSON representation of the document:</h4>
-            <CodeBlock>{JSON.stringify(value, null, 2)}</CodeBlock>
+            <Code language="json">{JSON.stringify(value, null, 2)}</Code>
           </div>
         )}
       </ErrorPane>

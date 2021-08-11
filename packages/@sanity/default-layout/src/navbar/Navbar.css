@@ -1,12 +1,13 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background-color: var(--main-navigation-color);
-  color: var(--main-navigation-color--inverted);
+  @nest &.root:not([hidden]) {
+    display: grid;
+  }
+
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   align-items: center;
-  display: grid;
   box-sizing: border-box;
   /* prettier-ignore */
   grid-template-areas:  'hamburger   createButton branding       helpButton  presence    searchButton';

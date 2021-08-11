@@ -1,6 +1,7 @@
+import {SanityDocument} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {map, publishReplay, refCount} from 'rxjs/operators'
-import {IdPair, SanityDocument} from '../types'
+import {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 import {operationArgs} from './operationArgs'
@@ -8,8 +9,8 @@ import {operationArgs} from './operationArgs'
 export interface EditStateFor {
   id: string
   type: string
-  draft: null | SanityDocument
-  published: null | SanityDocument
+  draft: SanityDocument | null
+  published: SanityDocument | null
   liveEdit: boolean
 }
 

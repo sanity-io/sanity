@@ -80,7 +80,10 @@
 
 .documentContainer {
   flex: 3;
-  min-width: 334px;
+
+  @media (--screen-medium) {
+    min-width: 334px;
+  }
 }
 
 .changesContainer {

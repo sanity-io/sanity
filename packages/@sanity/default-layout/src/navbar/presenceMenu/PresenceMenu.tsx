@@ -1,5 +1,6 @@
 import {LegacyLayerProvider, UserAvatar} from '@sanity/base/components'
 import {useGlobalPresence} from '@sanity/base/hooks'
+import {Card} from '@sanity/ui'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import {AvatarStack} from 'part:@sanity/components/avatar'
@@ -24,7 +25,7 @@ export function PresenceMenu() {
   const handleClose = useCallback(() => setOpen(false), [])
 
   const popoverContent = (
-    <div className={styles.popoverContent}>
+    <Card className={styles.popoverContent} scheme="light">
       {presence.length === 0 && (
         <div className={styles.header}>
           <h2 className={styles.title}>No one else is here</h2>
@@ -54,7 +55,7 @@ export function PresenceMenu() {
           <CogIcon />
         </a>
       </div>
-    </div>
+    </Card>
   )
 
   return (

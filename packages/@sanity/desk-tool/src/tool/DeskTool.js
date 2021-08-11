@@ -6,19 +6,19 @@ import {interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 import {
   resolvePanes,
   loadStructure,
   maybeSerialize,
   setStructureResolveError,
 } from '../utils/resolvePanes'
-import DeskToolPanes from './DeskToolPanes'
-import StructureError from '../components/StructureError'
+import {StructureError} from '../components/StructureError'
 import {calculatePanesEquality} from '../utils/calculatePanesEquality'
 import isNarrowScreen from '../utils/isNarrowScreen'
 import windowWidth$ from '../utils/windowWidth'
 import {LOADING_PANE} from '../constants'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
+import DeskToolPanes from './DeskToolPanes'
 
 const EMPTY_PANE_KEYS = []
 
@@ -57,7 +57,12 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired,
     }
 
-    state = {isResolving: true, hasNarrowScreen: isNarrowScreen(), panes: null}
+    state = {
+      // eslint-disable-next-line react/no-unused-state
+      isResolving: true,
+      hasNarrowScreen: isNarrowScreen(),
+      panes: null,
+    }
 
     constructor(props) {
       super(props)
@@ -69,7 +74,11 @@ export default withRouterHOC(
       const router = this.props.router
       const paneSegments = router.state.panes || []
 
-      this.setState({panes, isResolving: false})
+      this.setState({
+        panes,
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: false,
+      })
 
       if (panes.length < paneSegments.length) {
         router.navigate(
@@ -85,7 +94,11 @@ export default withRouterHOC(
       // Log error for proper stacktraces
       console.error(error) // eslint-disable-line no-console
 
-      this.setState({error, isResolving: false})
+      this.setState({
+        error,
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: false,
+      })
     }
 
     derivePanes(props, fromIndex = [0, 0]) {
@@ -93,7 +106,10 @@ export default withRouterHOC(
         this.paneDeriver.unsubscribe()
       }
 
-      this.setState({isResolving: true})
+      this.setState({
+        // eslint-disable-next-line react/no-unused-state
+        isResolving: true,
+      })
       this.paneDeriver = loadStructure()
         .pipe(
           distinctUntilChanged(),

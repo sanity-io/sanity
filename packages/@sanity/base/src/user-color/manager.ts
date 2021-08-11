@@ -22,6 +22,7 @@ const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
 
 const defaultColors = defaultHues.reduce((colors, hue) => {
   colors[hue] = {
+    name: hue,
     background: hues[hue][100].hex,
     border: hues[hue][300].hex,
     text: hues[hue][700].hex,
@@ -31,6 +32,7 @@ const defaultColors = defaultHues.reduce((colors, hue) => {
 }, {} as Record<ColorHueKey, UserColor>)
 
 const defaultAnonymousColor: UserColor = {
+  name: 'gray',
   background: hues.gray[100].hex,
   border: hues.gray[300].hex,
   text: hues.gray[700].hex,

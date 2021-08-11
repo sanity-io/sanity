@@ -1,22 +1,32 @@
+import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import UnpublishIcon from 'part:@sanity/base/unpublish-icon'
-import React, {useCallback, useMemo} from 'react'
+import {UnpublishIcon} from '@sanity/icons'
+import React, {useCallback, useMemo, useState} from 'react'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
   useCurrentUser,
 } from '@sanity/base/hooks'
 import {InsufficientPermissionsMessage} from '@sanity/base/components'
-import ConfirmUnpublish from '../components/ConfirmUnpublish'
+import {ConfirmUnpublish} from '../components/ConfirmUnpublish'
 
 const DISABLED_REASON_TITLE = {
   NOT_PUBLISHED: 'This document is not published',
 }
 
-export function UnpublishAction({id, type, draft, published, onComplete, liveEdit}) {
+export const UnpublishAction: DocumentActionComponent = ({
+  id,
+  type,
+  draft,
+  published,
+  onComplete,
+  liveEdit,
+}) => {
   const {unpublish}: any = useDocumentOperation(id, type)
-  const [error, setError] = React.useState<Error | null>(null)
-  const [didUnpublish, setDidUnpublish] = React.useState(false)
-  const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const [didUnpublish, setDidUnpublish] = useState(false)
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const unpublishPermission = useCheckDocumentPermission(id, type, 'unpublish')
+  const {value: currentUser} = useCurrentUser()
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -29,11 +39,7 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
     onComplete()
   }, [onComplete, unpublish])
 
-  const unpublishPermission = useCheckDocumentPermission(id, type, 'unpublish')
-
-  const {value: currentUser} = useCurrentUser()
-
-  const dialog = useMemo(() => {
+  const dialog: DocumentActionDialogProps | null = useMemo(() => {
     if (error) {
       return {
         type: 'error',
@@ -57,7 +63,6 @@ export function UnpublishAction({id, type, draft, published, onComplete, liveEdi
       return {
         type: 'legacy',
         onClose: onComplete,
-        title: 'Unpublish',
         content: (
           <ConfirmUnpublish
             draft={draft}

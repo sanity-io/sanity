@@ -1,6 +1,10 @@
 {
+  "extends": "../../tsconfig",
+  "include": ["./typings/*.d.ts", "./**/*.tsx", "./**/*.ts"],
   "compilerOptions": {
-    "jsx": "react",
-    "esModuleInterop": true
-  }
+    // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
+    "noImplicitAny": false,
+    "jsx": "react"
+  },
+  "references": [{"path": "../../packages/@sanity/base"}]
 }

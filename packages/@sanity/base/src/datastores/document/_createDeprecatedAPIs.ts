@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import {SanityDocument} from '@sanity/types'
 import {Observable, defer, of as observableOf} from 'rxjs'
 import {concatMap, map, share} from 'rxjs/operators'
 import {createBufferedDocument} from './buffered-doc/createBufferedDocument'
-import {SanityDocument, WelcomeEvent} from './types'
+import {WelcomeEvent} from './types'
 
 function fetchDocumentSnapshot(client, id) {
   return client.observable.getDocument(id).pipe(
@@ -87,7 +88,10 @@ function _createDeprecatedAPIs(client) {
     return client.observable.createOrReplace(document)
   }
 
-  function fetchQuerySnapshot(groqQuery: string, params): Observable<QuerySnapshotEvent> {
+  function fetchQuerySnapshot(
+    groqQuery: string,
+    params: Record<string, unknown>
+  ): Observable<QuerySnapshotEvent> {
     return client.observable.fetch(groqQuery, params).pipe(
       map((documents) => ({
         type: 'snapshot',
@@ -96,7 +100,7 @@ function _createDeprecatedAPIs(client) {
     )
   }
 
-  function query(groqQuery: string, params: {}): Observable<QueryEvent> {
+  function query(groqQuery: string, params: Record<string, unknown>): Observable<QueryEvent> {
     return defer(
       () =>
         client.observable.listen(groqQuery, params || {}, {

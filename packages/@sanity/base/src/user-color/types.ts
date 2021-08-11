@@ -1,4 +1,4 @@
-import {ColorTints} from '@sanity/color'
+import {ColorHueKey, ColorTints} from '@sanity/color'
 import {Observable} from 'rxjs'
 
 // For better readability
@@ -7,6 +7,7 @@ export type UserColorHue = string
 export type UserId = string
 
 export type UserColor = Readonly<{
+  name: ColorHueKey
   background: HexColor
   border: HexColor
   text: HexColor

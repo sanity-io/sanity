@@ -1,27 +1,34 @@
-import React, {useCallback, useState} from 'react'
-import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
+import {DocumentActionDescription} from '@sanity/base'
+import {LegacyLayerProvider} from '@sanity/base/components'
 import {useEditState} from '@sanity/react-hooks'
+import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import isHotkey from 'is-hotkey'
+import React, {useCallback, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
 
-interface ResponderProps extends React.ComponentProps<'div'> {
-  states: any[]
+export interface KeyboardShortcutResponderProps {
+  actionsBoxElement?: HTMLElement | null
   activeIndex: number
   onActionStart: (index: number) => void
-  rootRef: React.MutableRefObject<HTMLDivElement | null>
+  rootRef: React.Ref<HTMLDivElement>
+  states: DocumentActionDescription[]
 }
 
-function KeyboardShortcutResponder({
-  states,
-  children,
-  onKeyDown,
-  activeIndex,
-  onActionStart,
-  rootRef,
-  ...rest
-}: ResponderProps) {
-  const active = states[activeIndex]
+function KeyboardShortcutResponder(
+  props: KeyboardShortcutResponderProps & React.HTMLProps<HTMLDivElement>
+) {
+  const {
+    actionsBoxElement,
+    activeIndex,
+    children,
+    onActionStart,
+    onKeyDown,
+    rootRef,
+    states,
+    ...rest
+  } = props
+  const activeAction = states[activeIndex]
 
   const handleKeyDown = useCallback(
     (event) => {
@@ -31,10 +38,6 @@ function KeyboardShortcutResponder({
 
       const matchingState = matchingStates[0]
 
-      if (matchingState) {
-        event.preventDefault()
-      }
-
       if (matchingStates.length > 1) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -42,9 +45,11 @@ function KeyboardShortcutResponder({
         )
       }
 
-      if (matchingState && !matchingState.disabled) {
+      if (matchingState && !matchingState.disabled && matchingState.onHandle) {
+        event.preventDefault()
         matchingState.onHandle()
         onActionStart(states.indexOf(matchingState))
+        return
       }
 
       if (onKeyDown) {
@@ -57,33 +62,38 @@ function KeyboardShortcutResponder({
   return (
     <div onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
       {children}
-      {active && active.dialog && (
-        <ActionStateDialog dialog={active.dialog} referenceElement={null} />
+
+      {activeAction && activeAction.dialog && (
+        <LegacyLayerProvider zOffset="paneFooter">
+          <ActionStateDialog dialog={activeAction.dialog} referenceElement={actionsBoxElement} />
+        </LegacyLayerProvider>
       )}
     </div>
   )
 }
 
-interface Props {
+export interface DocumentActionShortcutsProps {
+  actionsBoxElement?: HTMLElement | null
   id: string
   type: string
-  rootRef: React.MutableRefObject<HTMLDivElement | null>
+  rootRef: React.Ref<HTMLDivElement>
 }
 
 export const DocumentActionShortcuts = React.memo(
-  (props: Props & React.HTMLProps<HTMLDivElement>) => {
-    const {id, type, children, ...rest} = props
+  (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
+    const {actionsBoxElement, id, type, children, ...rest} = props
     const editState = useEditState(id, type)
     const [activeIndex, setActiveIndex] = useState(-1)
     const actions = editState ? resolveDocumentActions(editState) : null
 
-    const onActionStart = useCallback((idx) => {
+    const onActionStart = useCallback((idx: number) => {
       setActiveIndex(idx)
     }, [])
 
     return actions ? (
       <RenderActionCollectionState
         actions={actions}
+        actionsBoxElement={actionsBoxElement}
         actionProps={editState}
         component={KeyboardShortcutResponder}
         onActionStart={onActionStart}

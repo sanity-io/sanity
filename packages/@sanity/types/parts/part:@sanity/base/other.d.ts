@@ -137,6 +137,16 @@ declare module 'part:@sanity/base/preview' {
 
   export const observeForPreview: previewObserver
   export const observePaths: (id: string, paths: string[]) => Observable<Record<string, string>>
+
+  export const SanityDefaultPreview: React.ComponentType<{
+    icon?: any
+    isPlaceholder?: boolean
+    layout?: 'inline' | 'block' | 'default' | 'card' | 'media'
+    status?: React.ReactNode
+    type?: any
+    value: Record<string, any>
+  }>
+
   export default PreviewBase
   export {PreviewFields} from '@sanity/preview'
 }
