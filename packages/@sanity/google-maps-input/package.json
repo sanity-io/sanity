@@ -22,7 +22,6 @@
     "@sanity/field": "2.14.0",
     "@sanity/types": "2.14.0",
     "@sanity/ui": "^0.34.8",
-    "classnames": "^2.2.5",
     "lodash": "^4.17.15",
     "rxjs": "^6.5.3",
     "styled-components": "^5.2.1"
