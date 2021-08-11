@@ -31,6 +31,10 @@ export interface DocumentActionConfirmDialogProps {
   message: React.ReactNode
   onConfirm: () => void
   onCancel: () => void
+  cancelButtonIcon?: React.ComponentType | React.ReactNode
+  cancelButtonText?: React.ReactNode
+  confirmButtonIcon?: React.ComponentType | React.ReactNode
+  confirmButtonText?: React.ReactNode
 }
 
 export interface DocumentActionModalDialogProps {
