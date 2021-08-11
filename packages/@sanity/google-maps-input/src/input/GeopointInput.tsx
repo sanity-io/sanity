@@ -2,7 +2,7 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import {Grid, Button, Dialog} from '@sanity/ui'
+import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
@@ -176,7 +176,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
           )}
 
           {!readOnly && (
-            <div>
+            <Box marginTop={4}>
               <Grid columns={2} gap={2}>
                 <Button
                   mode="ghost"
@@ -196,7 +196,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                   />
                 )}
               </Grid>
-            </div>
+            </Box>
           )}
 
           {modalOpen && (
