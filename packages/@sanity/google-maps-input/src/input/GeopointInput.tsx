@@ -2,7 +2,6 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import classNames from 'classnames'
 import {Grid, Button, Dialog} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
@@ -14,7 +13,7 @@ import {ChangeIndicatorCompareValueProvider, ChangeIndicator} from '@sanity/base
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
-import styles from './GeopointInput.css'
+import {PreviewImage, DialogInnerContainer} from './GeopointInput.styles'
 
 const getStaticImageUrl = (value) => {
   const loc = `${value.lat},${value.lng}`
@@ -170,25 +169,14 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
         <div>
           {value && (
             <ChangeIndicatorCompareValueProvider value={value} compareValue={compareValue}>
-              <ChangeIndicator
-                className={classNames(
-                  styles.map,
-                  readOnly && styles.readOnly,
-                  hasFocus && styles.focused
-                )}
-                compareDeep
-              >
-                <img
-                  className={styles.previewImage}
-                  src={getStaticImageUrl(value)}
-                  alt="Map location"
-                />
+              <ChangeIndicator compareDeep>
+                <PreviewImage src={getStaticImageUrl(value)} alt="Map location" />
               </ChangeIndicator>
             </ChangeIndicatorCompareValueProvider>
           )}
 
           {!readOnly && (
-            <div className={styles.functions}>
+            <div>
               <Grid columns={2} gap={2}>
                 <Button
                   mode="ghost"
@@ -218,7 +206,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
               header="Place the marker on the map"
               width={1}
             >
-              <div className={styles.dialogInner}>
+              <DialogInnerContainer>
                 <GoogleMapsLoadProxy>
                   {(api) => (
                     <GeopointSelect
@@ -230,7 +218,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                     />
                   )}
                 </GoogleMapsLoadProxy>
-              </div>
+              </DialogInnerContainer>
             </Dialog>
           )}
         </div>
