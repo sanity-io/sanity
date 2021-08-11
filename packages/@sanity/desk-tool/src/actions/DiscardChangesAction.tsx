@@ -5,7 +5,6 @@ import {DocumentActionComponent, DocumentActionDialogProps} from '@sanity/base'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import {
   unstable_useCheckDocumentPermission as useCheckDocumentPermission,
   useCurrentUser,
@@ -57,9 +56,9 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   if (!deleteDraftPermission.granted) {
     return {
       color: 'danger',
-      icon: ContentCopyIcon,
+      icon: ResetIcon,
       disabled: true,
-      label: 'Duplicate',
+      label: 'Discard changes',
       title: (
         <InsufficientPermissionsMessage
           operationLabel="discard changes in this document"
