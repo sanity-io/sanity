@@ -5,7 +5,7 @@
   "main": "./lib/legacy/index.js",
   "types": "./dist/dts/legacy/index.d.ts",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
     "test": "jest",

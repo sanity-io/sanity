@@ -5,7 +5,7 @@
   "main": "./index.js",
   "types": "./dist/dts",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",
     "start": "remon --require babel-core/register ./example/app.js",
     "test": "jest"

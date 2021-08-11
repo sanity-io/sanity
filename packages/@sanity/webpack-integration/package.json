@@ -4,7 +4,7 @@
   "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "test": "jest"
   },
   "repository": {

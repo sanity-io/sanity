@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "types": "./dist/dts",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
     "test": "NODE_ENV=test jest",

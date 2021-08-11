@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run package-yarn && npm run pack",
     "build:lib": "babel src --copy-files --out-dir lib",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib dest",
     "pack": "node scripts/pack.js",
     "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
     "prebuild": "npm run clean",
