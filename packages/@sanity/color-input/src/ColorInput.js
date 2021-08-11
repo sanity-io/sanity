@@ -87,7 +87,7 @@ export default class ColorInput extends PureComponent {
   render() {
     const {type, readOnly, value} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description}>
+      <Fieldset legend={type.title} description={type.description} level={0}>
         {value ? (
           <ColorPicker
             ref={this.focusRef}
