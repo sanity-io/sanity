@@ -1,14 +1,9 @@
-import {CSSProperties} from 'react'
-
 export interface DocumentStatusBarActionsProps {
   id: string
   type: string
   states: any[]
   disabled: boolean
-  isMenuOpen: boolean
   showMenu: boolean
-  onMenuOpen: () => void
-  onMenuClose: () => void
 }
 
 export interface HistoryStatusBarActionsProps {
@@ -24,7 +19,7 @@ export interface DocumentStatusBarProps {
 }
 
 export interface Badge {
-  title: string
+  title?: string
   label?: string | undefined
   color?: string
   icon?: any

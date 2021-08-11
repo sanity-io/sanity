@@ -1,8 +1,14 @@
-export function LiveEditBadge(props) {
-  return props.liveEdit
-    ? {
-        label: 'Live document',
-        color: 'success',
-      }
-    : null
+import {DocumentBadgeComponent} from '@sanity/base'
+
+export const LiveEditBadge: DocumentBadgeComponent = (props) => {
+  const {liveEdit} = props
+
+  if (liveEdit) {
+    return {
+      label: 'Live',
+      color: 'danger',
+    }
+  }
+
+  return null
 }

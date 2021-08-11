@@ -1,31 +1,48 @@
 import React from 'react'
+import {EditStateFor} from '@sanity/base/lib/datastores/document/document-pair/editState'
 import {useEditState} from '@sanity/react-hooks'
 import resolveDocumentBadges from 'part:@sanity/base/document-badges/resolver'
+import styled from 'styled-components'
+import {Box, Card, Flex} from '@sanity/ui'
 import {useDocumentHistory} from '../documentHistory'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './documentStatusBarActions'
 import {DocumentSparkline} from './documentSparkline'
-import {DocumentStatusBarProps} from './types'
-import styles from './documentStatusBar.css'
+
+export interface DocumentStatusBarProps {
+  actionsBoxRef?: React.Ref<HTMLDivElement>
+  id: string
+  type: string
+  lastUpdated?: string | null
+}
+
+const DocumentActionsBox = styled(Box)`
+  min-width: 10em;
+  max-width: 16em;
+`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
+  const {actionsBoxRef, id, lastUpdated, type} = props
   const {historyController} = useDocumentHistory()
-  const editState = useEditState(props.id, props.type)
+  const editState: EditStateFor | null = useEditState(id, type) as any
   const badges = editState ? resolveDocumentBadges(editState) : []
   const showingRevision = historyController.onOlderRevision()
   const revision = historyController.revTime?.id || ''
 
   return (
-    <div className={styles.root}>
-      <DocumentSparkline editState={editState} badges={badges} lastUpdated={props.lastUpdated} />
-      <div className={styles.actions}>
-        <div className={styles.actionsWrapper}>
+    <Card paddingLeft={3} paddingRight={[3, 4]} paddingY={[3, 3]}>
+      <Flex align="center">
+        <Box flex={[1, 2]}>
+          <DocumentSparkline badges={badges} editState={editState} lastUpdated={lastUpdated} />
+        </Box>
+
+        <DocumentActionsBox flex={1} marginLeft={[1, 3]} ref={actionsBoxRef}>
           {showingRevision ? (
-            <HistoryStatusBarActions id={props.id} type={props.type} revision={revision} />
+            <HistoryStatusBarActions id={id} type={type} revision={revision} />
           ) : (
-            <DocumentStatusBarActions id={props.id} type={props.type} />
+            <DocumentStatusBarActions id={id} type={type} />
           )}
-        </div>
-      </div>
-    </div>
+        </DocumentActionsBox>
+      </Flex>
+    </Card>
   )
 }

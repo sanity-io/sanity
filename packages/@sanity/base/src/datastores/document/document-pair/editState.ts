@@ -1,5 +1,5 @@
-import {combineLatest, Observable} from 'rxjs'
-import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
+import {Observable} from 'rxjs'
+import {map, publishReplay, refCount} from 'rxjs/operators'
 import {IdPair, SanityDocument} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
@@ -10,6 +10,7 @@ export interface EditStateFor {
   type: string
   draft: null | SanityDocument
   published: null | SanityDocument
+  liveEdit: boolean
 }
 
 export const editState = memoize(

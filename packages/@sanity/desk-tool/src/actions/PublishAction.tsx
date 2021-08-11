@@ -107,6 +107,7 @@ export function PublishAction(props) {
 
   if (liveEdit) {
     return {
+      color: 'success',
       label: 'Publish',
       title:
         'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
@@ -116,6 +117,7 @@ export function PublishAction(props) {
 
   if (!publishPermission.granted) {
     return {
+      color: 'success',
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage
@@ -129,6 +131,7 @@ export function PublishAction(props) {
 
   return {
     disabled,
+    color: 'success',
     label:
       // eslint-disable-next-line no-nested-ternary
       publishState === 'published'

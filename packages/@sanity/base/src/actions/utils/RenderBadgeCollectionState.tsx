@@ -1,19 +1,13 @@
-/* eslint-disable react/no-multi-comp */
-import * as React from 'react'
+import React from 'react'
+import {DocumentBadgeComponent, DocumentBadgeDescription} from '../../badges/types'
+import {EditStateFor} from '../../datastores/document/document-pair/editState'
 import {GetHookCollectionState} from './GetHookCollectionState'
 
-export interface Badge {
-  label: string
-  title: string
-  color: 'success' | 'failure' | 'warning'
-  icon?: React.ReactNode
-}
-
 interface RenderBadgeCollectionProps {
-  badges: any[]
-  badgeProps: any
+  badges: DocumentBadgeComponent[]
+  badgeProps: EditStateFor
   onActionComplete: () => void
-  component: (args: {states: Badge[]}) => React.ReactNode
+  component: (args: {states: DocumentBadgeDescription[]}) => React.ReactNode
 }
 
 export function RenderBadgeCollectionState(props: RenderBadgeCollectionProps) {
