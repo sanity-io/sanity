@@ -181,6 +181,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                 <Button
                   mode="ghost"
                   icon={value && EditIcon}
+                  padding={3}
                   ref={this.setEditButton}
                   text={value ? 'Edit' : 'Set location'}
                   onClick={this.handleToggleModal}
@@ -190,6 +191,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                   <Button
                     tone="critical"
                     icon={TrashIcon}
+                    padding={3}
                     mode="ghost"
                     text={'Remove'}
                     onClick={this.handleClear}
