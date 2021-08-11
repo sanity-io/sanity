@@ -1,4 +1,4 @@
-import {DocumentBadgeComponent} from '@sanity/base'
+import type {DocumentBadgeComponent} from '@sanity/base'
 
 export const LiveEditBadge: DocumentBadgeComponent = (props) => {
   const {liveEdit} = props
