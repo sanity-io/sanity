@@ -199,6 +199,7 @@ export default class DocumentsListPane extends React.PureComponent {
       icon={this.props.displayOptions.showIcons === false ? false : undefined}
       schemaType={schema.get(item._type)}
       isSelected={this.itemIsSelected(item)}
+      isActive
     />
   )
 

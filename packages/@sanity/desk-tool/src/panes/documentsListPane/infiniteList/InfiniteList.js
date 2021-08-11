@@ -1,8 +1,26 @@
+import {Box, Card, Flex, rem, Text} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import React from 'react'
 import VirtualList from 'react-tiny-virtual-list'
+import styled, {css} from 'styled-components'
 import enhanceWithAvailHeight from './enhanceWithAvailHeight'
-import styles from './InfiniteList.css'
+
+const StyledVirtualList = styled(VirtualList)(({theme}) => {
+  const {space} = theme.sanity
+
+  return css`
+    padding: ${rem(space[1])} ${rem(space[2])} ${rem(space[2])};
+    box-sizing: border-box;
+  `
+})
+
+const ItemBox = styled.div(({theme}) => {
+  const {space} = theme.sanity
+
+  return css`
+    padding-top: ${rem(space[1])};
+  `
+})
 
 export default enhanceWithAvailHeight(
   class InfiniteList extends React.PureComponent {
@@ -62,21 +80,23 @@ export default enhanceWithAvailHeight(
       const {renderItem, getItemKey, items, isLoadingMore} = this.props
       if (index === items.length) {
         return (
-          <div
-            key="more-items"
-            style={{...style, height: style.height - 1, lineHeight: `${style.height - 1}px`}}
-            className={styles.bottomMetaInfo}
-          >
-            {isLoadingMore ? 'Loading…' : 'This list contains more documents'}
-          </div>
+          <ItemBox key="more-items">
+            <Card borderTop style={{...style, height: style.height - 1}}>
+              <Flex align="center" height="fill" justify="center">
+                <Text align="center" muted size={1}>
+                  {isLoadingMore ? 'Loading…' : 'This list contains more documents'}
+                </Text>
+              </Flex>
+            </Card>
+          </ItemBox>
         )
       }
 
       const item = items[index]
       return (
-        <div key={getItemKey(item)} style={style}>
+        <ItemBox key={getItemKey(item)} style={style}>
           {renderItem(item, index)}
-        </div>
+        </ItemBox>
       )
     }
 
@@ -98,11 +118,15 @@ export default enhanceWithAvailHeight(
       }
 
       if (!itemSize && items) {
-        return <div ref={this.setMeasureElement}>{renderItem(items[0], 0)}</div>
+        return (
+          <Box padding={2} paddingTop={1}>
+            <ItemBox ref={this.setMeasureElement}>{renderItem(items[0], 0)}</ItemBox>
+          </Box>
+        )
       }
 
       return (
-        <VirtualList
+        <StyledVirtualList
           key={layout} // forcefully re-render the whole list when layout changes
           data-trigger-update-hack={triggerUpdate} // see componentWillReceiveProps above
           onScroll={this.handleScroll}

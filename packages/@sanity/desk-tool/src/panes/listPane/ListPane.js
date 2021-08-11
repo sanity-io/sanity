@@ -1,4 +1,5 @@
 import React from 'react'
+import {Box, Stack} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import listStyles from 'part:@sanity/components/lists/default-style'
@@ -40,6 +41,7 @@ export default class ListPane extends React.PureComponent {
       showIcons: PropTypes.bool,
     }),
     isSelected: PropTypes.bool.isRequired,
+    isActive: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
@@ -88,6 +90,7 @@ export default class ListPane extends React.PureComponent {
       isCollapsed,
       onCollapse,
       onExpand,
+      isActive,
     } = this.props
 
     return (
@@ -105,22 +108,28 @@ export default class ListPane extends React.PureComponent {
         menuItemGroups={menuItemGroups}
       >
         <ListView layout={defaultLayout}>
-          {items.map((item) =>
-            item.type === 'divider' ? (
-              <hr key={item.id} className={listStyles.divider} />
-            ) : (
-              <PaneItem
-                key={item.id}
-                id={item.id}
-                index={index}
-                value={item}
-                icon={this.shouldShowIconForItem(item)}
-                layout={defaultLayout}
-                isSelected={this.itemIsSelected(item)}
-                schemaType={item.schemaType}
-              />
-            )
-          )}
+          <Stack overflow="auto" paddingY={2} space={1}>
+            {items.map((item) =>
+              item.type === 'divider' ? (
+                <Box paddingY={1} key={item.id}>
+                  <hr className={listStyles.divider} />
+                </Box>
+              ) : (
+                <Box key={item.id} paddingX={2}>
+                  <PaneItem
+                    id={item.id}
+                    index={index}
+                    value={item}
+                    icon={this.shouldShowIconForItem(item)}
+                    layout={defaultLayout}
+                    isSelected={this.itemIsSelected(item)}
+                    isActive={isActive}
+                    schemaType={item.schemaType}
+                  />
+                </Box>
+              )
+            )}
+          </Stack>
         </ListView>
       </DefaultPane>
     )
