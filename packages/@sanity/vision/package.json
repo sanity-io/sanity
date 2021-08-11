@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "2.13.1",
+  "version": "2.14.0",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",

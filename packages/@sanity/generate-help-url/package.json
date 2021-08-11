@@ -1,6 +1,6 @@
 {
   "name": "@sanity/generate-help-url",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "Generates URLs to specific sections of the Sanity documentation",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "tape": "^4.8.0",
-    "eslint-plugin-es5": "^1.4.1"
+    "eslint-plugin-es5": "^1.4.1",
+    "tape": "^4.8.0"
   }
 }

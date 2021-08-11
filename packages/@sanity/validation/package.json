@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "lib/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
     "directory": "packages/@sanity/validation"
   },
   "devDependencies": {
-    "@sanity/schema": "^2.13.0",
+    "@sanity/schema": "2.14.0",
     "jest": "^26.6.3"
   },
   "dependencies": {

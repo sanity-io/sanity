@@ -1,6 +1,6 @@
 {
   "name": "@sanity/client",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "Client for retrieving data from Sanity",
   "main": "lib/sanityClient.js",
   "umd": "umd/sanityClient.min.js",
@@ -22,8 +22,8 @@
     "./lib/http/nodeMiddleware.js": "./lib/http/browserMiddleware.js"
   },
   "dependencies": {
-    "@sanity/eventsource": "^2.13.0",
-    "@sanity/generate-help-url": "^2.13.0",
+    "@sanity/eventsource": "2.14.0",
+    "@sanity/generate-help-url": "2.14.0",
     "@sanity/observable": "2.0.9",
     "deep-assign": "^2.0.0",
     "get-it": "^5.0.3",
@@ -45,12 +45,12 @@
     "nyc": "^11.0.3",
     "pretty-bytes": "^4.0.2",
     "rimraf": "^2.7.1",
+    "rxjs": "^6.5.3",
     "sse-channel": "^2.0.6",
     "tape": "^4.8.0",
     "terser": "4.6.7",
-    "xtend": "4.0.2",
-    "rxjs": "^6.5.3",
-    "uglifyify": "^5.0.1"
+    "uglifyify": "^5.0.1",
+    "xtend": "4.0.2"
   },
   "repository": {
     "type": "git",
