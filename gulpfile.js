@@ -14,7 +14,8 @@ const through = require('through2')
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
 
 const SRC_DIR = 'src'
-const DEST_DIR = 'lib'
+const LEGACY_DEST_DIR = 'lib'
+const DEST_DIR = 'dist'
 
 // Regexes/names of packages that doesn't follow the src/lib convention
 // or packages that does their own build (e.g. studios)
@@ -54,31 +55,34 @@ const compileTaskName = (taskType, packagePath, extra = '') => {
   }`
 }
 
-function buildJavaScript(packageDir) {
-  return withDisplayName(compileTaskName('babel', packageDir), () =>
+function buildJavaScript(packageDir, destDir) {
+  return withDisplayName(compileTaskName('babel', packageDir, 'cjs'), () =>
     src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
       .pipe(
-        changed(DEST_DIR, {
+        changed(destDir, {
           cwd: packageDir,
           transformPath: (orgPath) => orgPath.replace(/\.tsx?$/, '.js'),
         })
       )
       .pipe(babel())
-      .pipe(dest(DEST_DIR, {cwd: packageDir}))
+      .pipe(dest(destDir, {cwd: packageDir}))
   )
 }
 
-function copyAssets(packageDir) {
+function copyAssets(packageDir, destDir) {
   return withDisplayName(compileTaskName('assets', packageDir), () =>
     src(`${SRC_DIR}/**/*`, {cwd: packageDir})
       .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts', '!**/*.tsx']))
-      .pipe(changed(DEST_DIR, {cwd: packageDir}))
-      .pipe(dest(DEST_DIR, {cwd: packageDir}))
+      .pipe(changed(destDir, {cwd: packageDir}))
+      .pipe(dest(destDir, {cwd: packageDir}))
   )
 }
 
 function buildPackage(packageDir) {
-  return parallel(buildJavaScript(packageDir), copyAssets(packageDir))
+  return parallel(
+    buildJavaScript(packageDir, LEGACY_DEST_DIR),
+    copyAssets(packageDir, LEGACY_DEST_DIR)
+  )
 }
 
 function watchPackage(name, packageDir, task) {
@@ -119,4 +123,5 @@ exports.watchTS = series(buildTS, watchTS)
 exports.watchJS = series(buildJSAndAssets, watchJSAndAssets)
 exports.build = series(buildJSAndAssets, buildTS)
 exports.watch = series(buildJSAndAssets, parallel(watchJSAndAssets, watchTS))
-exports.clean = () => del(PACKAGE_PATHS.map((pth) => path.join(pth, DEST_DIR)))
+exports.clean = () =>
+  del(PACKAGE_PATHS.flatMap((pth) => [path.join(pth, LEGACY_DEST_DIR), path.join(pth, DEST_DIR)]))
