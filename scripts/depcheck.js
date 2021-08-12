@@ -131,7 +131,7 @@ function sanityJSONParser(filePath, deps, dir) {
     return deps
       .concat(allPlugins.filter(isLocalPlugin(filePath)))
       .filter((dep) =>
-        sanityConfig.plugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`)
+        allPlugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`)
       )
   }
   return []
