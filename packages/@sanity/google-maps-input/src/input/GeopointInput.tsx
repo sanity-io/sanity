@@ -6,7 +6,8 @@ import {uniqueId} from 'lodash'
 import {Box, Grid, Button, Dialog} from '@sanity/ui'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {FormFieldSet} from '@sanity/base/components'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
@@ -44,7 +45,7 @@ interface InputProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   onChange: (patchEvent: unknown) => void
-  presence: unknown[]
+  presence: FormFieldPresence[]
 }
 
 // @todo
@@ -155,15 +156,15 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
 
     return (
-      <Fieldset
+      <FormFieldSet
         level={level}
-        legend={type.title}
+        title={type.title}
         description={type.description}
-        markers={markers}
-        presence={presence}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        changeIndicator={false}
+        __unstable_presence={presence}
+        __unstable_changeIndicator={false}
+        __unstable_markers={markers}
       >
         <div>
           {value && (
@@ -223,7 +224,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
             </Dialog>
           )}
         </div>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 }
