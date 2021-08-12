@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import {Box, Card, Flex} from '@sanity/ui'
 import {useDocumentHistory} from '../documentHistory'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './documentStatusBarActions'
-import {DocumentSparkline} from './documentSparkline'
+import {DocumentSparkline} from './sparkline/documentSparkline'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: React.Ref<HTMLDivElement>

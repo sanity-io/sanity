@@ -51,7 +51,7 @@ export const DefaultPreview = (props: PreviewProps<'default'>) => {
     <Root align="center">
       {isPlaceholder && (
         <>
-          <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={3} animated />
+          <Skeleton style={{width: 35, height: 35}} radius={2} marginRight={2} animated />
           <Stack space={2} flex={1}>
             <TextSkeleton style={{maxWidth: 320}} radius={1} animated />
             <TextSkeleton style={{maxWidth: 200}} radius={1} size={1} animated />

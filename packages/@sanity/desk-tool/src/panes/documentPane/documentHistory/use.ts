@@ -1,7 +1,7 @@
 import {useContext} from 'react'
-import {DocumentHistoryContext} from './context'
+import {DocumentHistoryContext, HistoryContextInstance} from './context'
 
-export function useDocumentHistory() {
+export function useDocumentHistory(): HistoryContextInstance {
   const instance = useContext(DocumentHistoryContext)
 
   if (!instance) {

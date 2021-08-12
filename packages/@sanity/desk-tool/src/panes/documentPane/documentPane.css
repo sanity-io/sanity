@@ -20,6 +20,9 @@
 }
 
 .footerContainer {
+  /* This is the smallest screen size we support */
+  min-width: 320px;
+
   /*
     NOTE: The reason for the double selector here, is to be able to override
     `@sanity/ui`’s CSS for the `Layer` component. Since `styled-components`
@@ -80,6 +83,9 @@
 
 .documentContainer {
   flex: 3;
+
+  /* This is the smallest screen size we support */
+  min-width: 320px;
 
   @media (--screen-medium) {
     min-width: 334px;

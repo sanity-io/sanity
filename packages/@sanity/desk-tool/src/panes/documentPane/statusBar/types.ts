@@ -17,10 +17,3 @@ export interface DocumentStatusBarProps {
   type: string
   lastUpdated?: string | null
 }
-
-export interface Badge {
-  title?: string
-  label?: string | undefined
-  color?: string
-  icon?: any
-}
