@@ -199,7 +199,7 @@ export default class DocumentsListPane extends React.PureComponent {
       icon={this.props.displayOptions.showIcons === false ? false : undefined}
       schemaType={schema.get(item._type)}
       isSelected={this.itemIsSelected(item)}
-      isActive
+      isActive={this.props.isActive}
     />
   )
 
@@ -395,6 +395,7 @@ export default class DocumentsListPane extends React.PureComponent {
       menuItems,
       menuItemGroups,
       initialValueTemplates,
+      isActive,
     } = this.props
 
     return (
@@ -408,6 +409,7 @@ export default class DocumentsListPane extends React.PureComponent {
         initialValueTemplates={initialValueTemplates}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
+        isActive={isActive}
         onCollapse={onCollapse}
         onAction={this.handleAction}
         onExpand={onExpand}
