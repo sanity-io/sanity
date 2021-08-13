@@ -29,6 +29,7 @@ export interface MenuItem {
   params?: Record<string, string>
   showAsAction?: boolean | ShowAsAction
   url?: string
+  shortcut?: string
 }
 
 export interface MenuItemGroup {
