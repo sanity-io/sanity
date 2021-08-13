@@ -5,7 +5,7 @@ export const RootContainer = styled.div`
   min-height: 200px;
 
   &:empty {
-    background-color: ${({theme}) => theme.sanity.color.base.skeleton.from};
+    background-color: var(--card-skeleton-color-from);
     display: table;
     width: 100%;
   }

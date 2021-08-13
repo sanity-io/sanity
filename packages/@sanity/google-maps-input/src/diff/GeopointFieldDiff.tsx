@@ -15,13 +15,7 @@ import {RootContainer} from './GeopointFieldDiff.styles'
 export type DiffProps = GenericDiffProps<ObjectDiff<Geopoint>>
 
 export const GeopointFieldDiff: DiffComponent<ObjectDiff<Geopoint>> = ({diff, schemaType}) => {
-  return (
-    <RootContainer>
-      <GoogleMapsLoadProxy>
-        {(api) => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
-      </GoogleMapsLoadProxy>
-    </RootContainer>
-  )
+  return <RootContainer />
 }
 
 function GeopointDiff({api, diff}: DiffProps & {api: typeof window.google.maps}) {
