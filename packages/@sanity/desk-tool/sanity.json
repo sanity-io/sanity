@@ -9,7 +9,7 @@
   "parts": [
     {
       "implements": "part:@sanity/base/tool",
-      "path": "tool/index"
+      "path": "tool"
     },
     {
       "implements": "part:@sanity/base/document-actions",
