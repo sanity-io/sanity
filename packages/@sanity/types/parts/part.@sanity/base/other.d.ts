@@ -247,6 +247,9 @@ declare module 'part:@sanity/base/util/document-action-utils' {
   export const isActionEnabled: (schema: Schema, actionName: string) => boolean
 }
 declare module 'part:@sanity/base/util/draft-utils' {
+  export declare const collate: (
+    documents: SanityDocument[]
+  ) => {id: string; draft?: SanityDocument; published?: SanityDocument}[]
   export declare const getPublishedId: (str: string) => string
   export declare const getDraftId: (str: string) => string
   export declare const isDraftId: (str: string) => boolean
