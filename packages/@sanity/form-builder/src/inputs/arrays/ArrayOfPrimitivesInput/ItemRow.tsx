@@ -1,8 +1,7 @@
-import {FieldPresence} from '@sanity/base/presence'
+import {FieldPresence, FormFieldPresence} from '@sanity/base/presence'
 import React, {useCallback} from 'react'
 import {Box, Card, Flex} from '@sanity/ui'
 import {FormFieldValidationStatus} from '@sanity/base/components'
-import {FormFieldPresence} from '@sanity/base/presence'
 import {Marker, Path, SchemaType} from '@sanity/types'
 import {DragHandle} from '../common/DragHandle'
 import PatchEvent, {set} from '../../../PatchEvent'
@@ -34,7 +33,7 @@ type Props = {
 
 export const ItemRow = React.forwardRef(function ItemRow(
   props: Props,
-  ref: React.ForwardedRef<HTMLElement>
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const focusRef = React.useRef<FormBuilderInput>(null)
   const {

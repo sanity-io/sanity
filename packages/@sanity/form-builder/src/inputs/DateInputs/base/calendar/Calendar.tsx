@@ -35,7 +35,7 @@ const PRESERVE_FOCUS_ELEMENT = (
 
 export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
-  forwardedRef: React.ForwardedRef<HTMLElement>
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
     selectTime,

@@ -45,7 +45,7 @@
     "@sanity/image-url": "^0.140.19",
     "@sanity/react-hooks": "2.14.0",
     "@sanity/types": "2.14.0",
-    "@sanity/ui": "^0.35.0",
+    "@sanity/ui": "^0.36.0",
     "@sanity/util": "2.14.0",
     "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.15",

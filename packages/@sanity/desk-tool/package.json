@@ -34,7 +34,7 @@
     "@sanity/react-hooks": "2.14.0",
     "@sanity/structure": "2.14.0",
     "@sanity/types": "2.14.0",
-    "@sanity/ui": "^0.35.0",
+    "@sanity/ui": "^0.36.0",
     "@sanity/util": "2.14.0",
     "@sanity/uuid": "^3.0.1",
     "classnames": "^2.2.5",

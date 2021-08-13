@@ -29,7 +29,7 @@ export interface HistoryStatusBarActionsProps {
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsProps) {
   const {disabled, showMenu, states} = props
   const [firstActionState, ...menuActionStates] = states
-  const [buttonElement, setButtonElement] = useState<HTMLDivElement | null>(null)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
   const tooltipContent = useMemo(() => {
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null

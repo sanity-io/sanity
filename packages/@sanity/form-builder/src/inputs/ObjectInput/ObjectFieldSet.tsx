@@ -21,7 +21,7 @@ interface Props extends Omit<FormFieldSetProps, 'onFocus'> {
  */
 export const ObjectFieldSet = forwardRef(function ObjectFieldSet(
   props: Props,
-  forwardedRef: ForwardedRef<HTMLElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const {fieldset, focusPath, children, level, presence, markers, onFocus, ...rest} = props
   const columns = fieldset.options && fieldset.options.columns

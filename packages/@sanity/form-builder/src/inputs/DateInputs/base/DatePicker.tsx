@@ -8,7 +8,7 @@ export const DatePicker = React.forwardRef(function DatePicker(
     selectTime?: boolean
     timeStep?: number
   },
-  ref: React.ForwardedRef<HTMLElement>
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {value = new Date(), onChange, ...rest} = props
   const [focusedDate, setFocusedDay] = React.useState<Date>()

@@ -18,9 +18,10 @@ const Root = styled(Card)`
     border-color: var(--card-focus-ring-color);
   }
 `
+
 export const ItemRow = React.forwardRef(function RegularItem(
   props: ItemLayoutProps,
-  ref: React.ForwardedRef<HTMLElement>
+  ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const focusRef = React.useRef()
   const {

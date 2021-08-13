@@ -83,7 +83,7 @@ const EMPTY_ARRAY = []
 export const FormFieldSet = forwardRef(
   (
     props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-    ref
+    ref: React.ForwardedRef<HTMLDivElement>
   ) => {
     const {
       __unstable_changeIndicator: changeIndicator = false,
