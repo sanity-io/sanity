@@ -1,7 +1,8 @@
 import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from '@sanity/ui'
 import React, {useState} from 'react'
 import {User} from '../datastores/user/types'
-import {useUser, useUserColor} from '../hooks'
+import {useUserColor} from '../user-color'
+import {useUser} from '../datastores/user/hooks'
 
 type LegacyAvatarSize = 'small' | 'medium' | 'large'
 

@@ -2,7 +2,7 @@
   "name": "@sanity/base",
   "version": "2.14.0",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
-  "main": "./lib/index.js",
+  "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
   "//": "the typesVersion config below is a workaround for TypeScript's lack of support for package exports",
   "typesVersions": {

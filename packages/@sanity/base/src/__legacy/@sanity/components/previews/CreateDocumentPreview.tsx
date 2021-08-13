@@ -4,13 +4,12 @@
 import {IntentLink} from 'part:@sanity/base/router'
 import React from 'react'
 import {Box, Tooltip} from '@sanity/ui'
-import {
-  unstable_useCheckDocumentPermission as useCheckDocumentPermission,
-  useCurrentUser,
-} from '../../../../hooks'
 import {MediaDimensions} from '../types'
 import {InsufficientPermissionsMessage} from '../../../../components'
 
+import {useCurrentUser} from '../../../../datastores/user/hooks'
+// eslint-disable-next-line camelcase
+import {unstable_useCheckDocumentPermission} from '../../../../datastores/grants/hooks'
 import styles from './CreateDocumentPreview.css'
 
 interface CreateDocumentPreviewProps {
@@ -51,7 +50,7 @@ export default function CreateDocumentPreview(props: CreateDocumentPreviewProps)
 
   const {value: currentUser} = useCurrentUser()
 
-  const createPermission = useCheckDocumentPermission('dummy-id', params.type, 'create')
+  const createPermission = unstable_useCheckDocumentPermission('dummy-id', params.type, 'create')
 
   if (isPlaceholder || !params) {
     return (
