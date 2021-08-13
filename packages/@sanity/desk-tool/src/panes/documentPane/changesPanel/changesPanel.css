@@ -2,14 +2,11 @@
 
 .root {
   height: 100%;
-  &:not([hidden]) {
-    display: flex;
-  }
-  flex-direction: column;
 }
 
 .header {
   position: relative;
+  z-index: 10;
 
   @nest &::after {
     content: '';

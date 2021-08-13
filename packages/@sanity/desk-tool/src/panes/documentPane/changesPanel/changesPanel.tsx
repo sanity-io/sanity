@@ -16,7 +16,7 @@ import {
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {UserAvatar, ScrollContainer} from '@sanity/base/components'
 import {SelectIcon} from '@sanity/icons'
-import {AvatarStack, BoundaryElementProvider, Button, Card} from '@sanity/ui'
+import {AvatarStack, BoundaryElementProvider, Button, Flex, Card} from '@sanity/ui'
 import React, {useCallback, useRef} from 'react'
 import {useDocumentHistory} from '../documentHistory'
 import {formatTimelineEventLabel} from '../timeline'
@@ -77,71 +77,73 @@ export function ChangesPanel({
 
   return (
     <Card className={styles.root}>
-      <header className={styles.header}>
-        <div className={styles.mainNav}>
-          <h2 className={styles.title}>Changes</h2>
-          <div className={styles.closeButtonContainer}>
-            <Button
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={closeHistory}
-              padding={2}
-              title="Hide changes panel"
-            />
-          </div>
-        </div>
-
-        <div className={styles.versionSelectContainer}>
-          <div className={styles.changesSinceSelectContainer}>
-            <div ref={changesSinceSelectRef}>
+      <Flex direction="column" height="fill">
+        <header className={styles.header}>
+          <div className={styles.mainNav}>
+            <h2 className={styles.title}>Changes</h2>
+            <div className={styles.closeButtonContainer}>
               <Button
-                fontSize={1}
-                iconRight={SelectIcon}
+                icon={CloseIcon}
                 mode="bleed"
-                onClick={onTimelineOpen}
-                onMouseUp={ignoreClickOutside}
+                onClick={closeHistory}
                 padding={2}
-                selected={isTimelineOpen && timelineMode === 'since'}
-                text={
-                  // eslint-disable-next-line no-nested-ternary
-                  menuOpen ? (
-                    <>Review changes since</>
-                  ) : since ? (
-                    <SinceText since={since} />
-                  ) : (
-                    <>Since unknown version</>
-                  )
-                }
+                title="Hide changes panel"
               />
             </div>
           </div>
 
-          {changeAnnotations.length > 0 && (
-            <DiffTooltip
-              annotations={changeAnnotations}
-              description="Changes by"
-              placement="bottom-end"
-              fallbackPlacements={['top-end', 'bottom-end']}
-            >
-              <AvatarStack maxLength={4}>
-                {changeAnnotations.map(({author}) => (
-                  <UserAvatar key={author} userId={author} />
-                ))}
-              </AvatarStack>
-            </DiffTooltip>
-          )}
-        </div>
-      </header>
-      <BoundaryElementProvider element={scrollRef.current}>
-        <ScrollContainer className={styles.body} ref={scrollRef}>
-          <Content
-            diff={diff}
-            documentContext={documentContext}
-            loading={loading}
-            schemaType={schemaType}
-          />
-        </ScrollContainer>
-      </BoundaryElementProvider>
+          <div className={styles.versionSelectContainer}>
+            <div className={styles.changesSinceSelectContainer}>
+              <div ref={changesSinceSelectRef}>
+                <Button
+                  fontSize={1}
+                  iconRight={SelectIcon}
+                  mode="bleed"
+                  onClick={onTimelineOpen}
+                  onMouseUp={ignoreClickOutside}
+                  padding={2}
+                  selected={isTimelineOpen && timelineMode === 'since'}
+                  text={
+                    // eslint-disable-next-line no-nested-ternary
+                    menuOpen ? (
+                      <>Review changes since</>
+                    ) : since ? (
+                      <SinceText since={since} />
+                    ) : (
+                      <>Since unknown version</>
+                    )
+                  }
+                />
+              </div>
+            </div>
+
+            {changeAnnotations.length > 0 && (
+              <DiffTooltip
+                annotations={changeAnnotations}
+                description="Changes by"
+                placement="bottom-end"
+                fallbackPlacements={['top-end', 'bottom-end']}
+              >
+                <AvatarStack maxLength={4}>
+                  {changeAnnotations.map(({author}) => (
+                    <UserAvatar key={author} userId={author} />
+                  ))}
+                </AvatarStack>
+              </DiffTooltip>
+            )}
+          </div>
+        </header>
+        <BoundaryElementProvider element={scrollRef.current}>
+          <ScrollContainer className={styles.body} ref={scrollRef}>
+            <Content
+              diff={diff}
+              documentContext={documentContext}
+              loading={loading}
+              schemaType={schemaType}
+            />
+          </ScrollContainer>
+        </BoundaryElementProvider>
+      </Flex>
     </Card>
   )
 }
