@@ -13,7 +13,7 @@ import {
 } from 'slate'
 import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
 import {PortableTextFeatures, PortableTextBlock, PortableTextChild} from '../types/portableText'
-import {Patch, InsertPosition} from '../types/patch'
+import type {Patch, InsertPosition} from '../types/patch'
 import {PatchFunctions} from '../editor/plugins/createWithPatches'
 import {fromSlateValue} from './values'
 import {debugWithName} from './debug'

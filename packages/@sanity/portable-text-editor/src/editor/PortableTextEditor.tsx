@@ -7,7 +7,7 @@ import {compileType} from '../utils/schema'
 import {getPortableTextFeatures} from '../utils/getPortableTextFeatures'
 import {PortableTextBlock, PortableTextFeatures, PortableTextChild} from '../types/portableText'
 import {Type, RawType as RawSchemaType, PortableTextType} from '../types/schema'
-import {Patch} from '../types/patch'
+import type {Patch} from '../types/patch'
 import {
   EditorSelection,
   EditorChange,
