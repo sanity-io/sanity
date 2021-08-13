@@ -1,4 +1,4 @@
-import {GoPuzzle as icon} from 'react-icons/go'
+import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 export const myObject = {
   type: 'object',
