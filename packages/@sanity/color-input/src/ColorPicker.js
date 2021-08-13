@@ -1,10 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Button from 'part:@sanity/components/buttons/default'
 import {ColorWrap, Checkboard, Saturation, Hue, Alpha} from 'react-color/lib/components/common'
-import ColorPickerFields from './ColorPickerFields'
-import TrashIcon from 'part:@sanity/base/trash-icon'
-import styles from './ColorPicker.css'
+import {Box, Card, Flex, Button, Inline, Stack, Text} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons'
+import styled from 'styled-components'
+import {ColorPickerFields} from './ColorPickerFields'
+
+const ColorBox = styled(Box)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`
+
+const ReadOnlyContainer = styled(Flex)`
+  margin-top: 6rem;
+  background-color: var(--card-bg-color);
+  position: relative;
+  width: 100%;
+`
 
 const ColorPicker = ({
   width,
@@ -20,79 +35,91 @@ const ColorPicker = ({
 }) => {
   return (
     <div style={{width}}>
-      {!readOnly && (
-        <React.Fragment>
-          <div className={styles.saturation}>
-            <div className={styles.saturationInner}>
-              <Saturation is="Saturation" onChange={onChange} hsl={hsl} hsv={hsv} />
-            </div>
-          </div>
-          <div className={styles.hue}>
-            <Hue
-              is="Hue"
-              hsl={hsl}
-              onChange={!readOnly && onChange}
-              style={{
-                radius: '2px',
-                shadow: 'inset 0 0 0 1px rgba(0,0,0,.15), inset 0 0 4px rgba(0,0,0,.25)',
-              }}
-            />
-          </div>
-          {!disableAlpha && (
-            <div className={styles.alpha}>
-              <Alpha
-                is="Alpha"
-                rgb={rgb}
-                hsl={hsl}
-                renderers={renderers}
-                onChange={onChange}
-                style={{
-                  radius: '2px',
-                  shadow: 'inset 0 0 0 1px rgba(0,0,0,.15), inset 0 0 4px rgba(0,0,0,.25)',
-                }}
-              />
-            </div>
+      <Card padding={1} border radius={1}>
+        <Stack space={2}>
+          {!readOnly && (
+            <>
+              <Card overflow="hidden" style={{position: 'relative', height: '5em'}}>
+                <Saturation is="Saturation" onChange={onChange} hsl={hsl} hsv={hsv} />
+              </Card>
+
+              <Card
+                shadow={1}
+                radius={3}
+                overflow="hidden"
+                style={{position: 'relative', height: '10px'}}
+              >
+                <Hue is="Hue" hsl={hsl} onChange={!readOnly && onChange} />
+              </Card>
+
+              {!disableAlpha && (
+                <Card
+                  shadow={1}
+                  radius={3}
+                  overflow="hidden"
+                  style={{position: 'relative', height: '10px'}}
+                >
+                  <Alpha is="Alpha" rgb={rgb} hsl={hsl} renderers={renderers} onChange={onChange} />
+                </Card>
+              )}
+            </>
           )}
-        </React.Fragment>
-      )}
-      <div className={styles.controls}>
-        <div className={styles.preview}>
-          <div className={styles.checkboard}>
-            <Checkboard />
-          </div>
-          <div
-            className={styles.color}
-            style={{backgroundColor: `rgba(${rgb.r},${rgb.g},${rgb.b},${rgb.a})`}}
-          />
-          {readOnly && (
-            <div className={styles.readOnly}>
-              <div>
-                <h3>{hex}</h3>
-                <p>
-                  <strong>RGB</strong> {rgb.r} {rgb.g} {rgb.b} &nbsp; &nbsp;
-                  <strong>HSL</strong>: {Math.round(hsl.h)} {Math.round(hsl.s)}% {Math.round(hsl.l)}
-                  %
-                </p>
-              </div>
-              <Button disabled title="This color can not be changed (read only)">
-                Change
-              </Button>
-            </div>
-          )}
-        </div>
-        {!readOnly && (
-          <div className={styles.fields}>
-            <ColorPickerFields
-              rgb={rgb}
-              hsl={hsl}
-              hex={hex}
-              onChange={onChange}
-              disableAlpha={disableAlpha}
-            />
-            <Button onClick={onUnset} title="Delete color" icon={TrashIcon} color="danger" />
-          </div>
-        )}
-      </div>
+          <Flex>
+            <Card
+              flex={1}
+              radius={2}
+              overflow="hidden"
+              style={{position: 'relative', minWidth: '4em'}}
+            >
+              <Checkboard />
+              <ColorBox style={{backgroundColor: `rgba(${rgb.r},${rgb.g},${rgb.b},${rgb.a})`}} />
+
+              {readOnly && (
+                <ReadOnlyContainer
+                  padding={2}
+                  paddingBottom={1}
+                  sizing="border"
+                  justify="space-between"
+                >
+                  <Stack space={3} marginTop={1}>
+                    <Text size={3} weight="bold">
+                      {hex}
+                    </Text>
+
+                    <Inline space={3}>
+                      <Text size={1}>
+                        <strong>RGB: </strong>
+                        {rgb.r} {rgb.g} {rgb.b}
+                      </Text>
+                      <Text size={1}>
+                        <strong>HSL: </strong> {Math.round(hsl.h)} {Math.round(hsl.s)}%{' '}
+                        {Math.round(hsl.l)}
+                      </Text>
+                    </Inline>
+                  </Stack>
+                </ReadOnlyContainer>
+              )}
+            </Card>
+
+            {!readOnly && (
+              <Flex align="flex-start" marginLeft={2}>
+                <Box style={{width: 200}}>
+                  <ColorPickerFields
+                    rgb={rgb}
+                    hsl={hsl}
+                    hex={hex}
+                    onChange={onChange}
+                    disableAlpha={disableAlpha}
+                  />
+                </Box>
+                <Box marginLeft={2}>
+                  <Button onClick={onUnset} title="Delete color" icon={TrashIcon} tone="critical" />
+                </Box>
+              </Flex>
+            )}
+          </Flex>
+        </Stack>
+      </Card>
     </div>
   )
 }

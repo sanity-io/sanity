@@ -2,12 +2,13 @@
 
 /* eslint-disable id-length */
 import React, {PureComponent} from 'react'
-import Button from 'part:@sanity/components/buttons/default'
 import PropTypes from 'prop-types'
 import {PatchEvent, patches} from 'part:@sanity/form-builder'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
-import ColorPicker from './ColorPicker'
 import {debounce} from 'lodash'
+import {Button} from '@sanity/ui'
+import {AddIcon} from '@sanity/icons'
+import {FormField} from '@sanity/base/components'
+import ColorPicker from './ColorPicker'
 
 const {set, unset, setIfMissing} = patches
 
@@ -84,9 +85,9 @@ export default class ColorInput extends PureComponent {
   }
 
   render() {
-    const {type, readOnly, value} = this.props
+    const {type, readOnly, value, level} = this.props
     return (
-      <Fieldset legend={type.title} description={type.description}>
+      <FormField title={type.title} description={type.description} level={level}>
         {value ? (
           <ColorPicker
             ref={this.focusRef}
@@ -98,15 +99,15 @@ export default class ColorInput extends PureComponent {
           />
         ) : (
           <Button
+            icon={AddIcon}
+            mode="ghost"
+            text="Create color"
             ref={this.focusRef}
             disabled={Boolean(readOnly)}
-            inverted
             onClick={this.handleCreateColor}
-          >
-            Create color
-          </Button>
+          />
         )}
-      </Fieldset>
+      </FormField>
     )
   }
 }
