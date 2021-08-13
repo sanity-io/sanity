@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 
 export type JSONValue = number | string | boolean | {[key: string]: JSONValue} | JSONValue[]
 

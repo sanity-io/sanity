@@ -1,8 +1,4 @@
 {
-  "presets": [
-    [
-      "next/babel"
-    ]
-  ],
+  "presets": [["next/babel"], ["@babel/typescript"]],
   "plugins": ["lodash", "@babel/plugin-proposal-class-properties", "babel-plugin-styled-components"]
 }

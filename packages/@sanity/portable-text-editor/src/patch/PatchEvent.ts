@@ -1,7 +1,7 @@
 import {PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
 
-import {Patch} from '../types/patch'
+import type {Patch} from '../types/patch'
 import {prefixPath, set, unset, setIfMissing, insert, diffMatchPatch} from './patches'
 
 type PatchArg = Patch | Array<Patch>

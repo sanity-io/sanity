@@ -1,12 +1,17 @@
 import React, {useState} from 'react'
-import {PortableTextEditor, PortableTextEditable, RenderDecoratorFunction} from '../../lib'
-import {EditorSelection, EditorChange} from '../../lib/types/editor'
-import {ValueContainer, EditorContainer} from '../components/containers'
+import {
+  PortableTextEditor,
+  PortableTextEditable,
+  RenderDecoratorFunction,
+  EditorSelection,
+  EditorChange,
+} from '../../src'
+import {ValueContainer, EditorContainer} from './containers'
 import {applyAll} from '../../src/patch/applyPatch'
 import {keyGenerator} from '../keyGenerator'
 import {createFromPropsValue} from '../fixtures/values'
 import {portableTextType} from '../schema'
-import {Toolbar} from '../components/Toolbar'
+import {Toolbar} from './Toolbar'
 
 const HOTKEYS = {
   marks: {
@@ -75,6 +80,7 @@ export const Standalone = () => {
       setSelection(sel)
     }
   }
+
   return (
     <div>
       <h2>Portable Text Editor Standalone Basic Demo</h2>
@@ -103,7 +109,7 @@ export const Standalone = () => {
       <h3>Editor value:</h3>
       <ValueContainer>{value ? JSON.stringify(value, null, 2) : 'Not set'}</ValueContainer>
       <h3>Editor patches:</h3>
-      <ValueContainer style="small">
+      <ValueContainer>
         {patches ? JSON.stringify(patches, null, 2) : 'None'}
       </ValueContainer>
     </div>

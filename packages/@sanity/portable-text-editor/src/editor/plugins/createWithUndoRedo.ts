@@ -16,7 +16,7 @@ import {
   SelectionOperation,
 } from 'slate'
 import * as DMP from 'diff-match-patch'
-import {Patch} from '../../types/patch'
+import type {Patch} from '../../types/patch'
 import {PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {isPatching} from '../../utils/withoutPatching'

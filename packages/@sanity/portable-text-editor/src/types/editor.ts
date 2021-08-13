@@ -1,7 +1,7 @@
 import {Path} from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
 import {Node as SlateNode, Operation as SlateOperation, Editor as SlateEditor} from 'slate'
-import {Patch} from '../types/patch'
+import type {Patch} from '../types/patch'
 import {Type} from '../types/schema'
 import {PortableTextBlock, PortableTextChild} from '../types/portableText'
 

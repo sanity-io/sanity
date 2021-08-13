@@ -1,5 +1,5 @@
-import {ComponentType} from 'react'
-import {Type as SchemaType} from './schema'
+import type {ComponentType} from 'react'
+import type {Type as SchemaType} from './schema'
 
 export type PortableTextBlock = {
   _type: string

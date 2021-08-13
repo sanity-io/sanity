@@ -1,7 +1,7 @@
 import {Path, PathSegment} from '@sanity/types'
 import * as DMP from 'diff-match-patch'
 
-import {
+import type {
   SetIfMissingPatch,
   InsertPatch,
   InsertPosition,

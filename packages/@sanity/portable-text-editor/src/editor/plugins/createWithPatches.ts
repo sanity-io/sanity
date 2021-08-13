@@ -5,7 +5,7 @@ import {debounce, isEqual} from 'lodash'
 import {Subject} from 'rxjs'
 import {Editor, Operation, Transforms, Path, Node, Range} from 'slate'
 import {setIfMissing, unset} from '../../patch/PatchEvent'
-import {Patch} from '../../types/patch'
+import type {Patch} from '../../types/patch'
 
 import {
   fromSlateValue,

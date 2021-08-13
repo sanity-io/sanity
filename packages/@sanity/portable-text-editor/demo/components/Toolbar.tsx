@@ -1,7 +1,12 @@
 import {stringify} from 'querystring'
+import React from 'react'
 import {useMemo} from 'react'
 import styled from 'styled-components'
-import {PortableTextEditor, usePortableTextEditor, usePortableTextEditorSelection} from '../../lib'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '../../src/index'
 import {ToolbarContainer} from './containers'
 
 export const DecoratorButton = styled.button`
