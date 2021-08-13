@@ -25,7 +25,6 @@ import {
   switchMap,
   switchMapTo,
   takeUntil,
-  tap,
   toArray,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -167,6 +166,7 @@ const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
       map((users) =>
         sessions.map(
           (session): UserSessionPair => ({
+            // eslint-disable-next-line max-nested-callbacks
             user: users.find((res) => res.id === session.userId) as User,
             session: session,
           })
