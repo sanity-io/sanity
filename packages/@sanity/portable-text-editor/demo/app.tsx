@@ -1,11 +1,15 @@
 import React from 'react'
-import {AppContainer} from './components/containers'
+
+import {studioTheme, ThemeProvider} from '@sanity/ui'
+import ReactDOM from 'react-dom'
 import {Standalone} from './components/Standalone'
+
+ReactDOM.render(<App />, document.getElementById('root'))
 
 export function App() {
   return (
-    <AppContainer>
+    <ThemeProvider theme={studioTheme}>
       <Standalone />
-    </AppContainer>
+    </ThemeProvider>
   )
 }
