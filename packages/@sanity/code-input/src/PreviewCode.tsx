@@ -6,27 +6,8 @@ import {Box} from '@sanity/ui'
 import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'
 import {CodeInputType, CodeInputValue} from './types'
-
-/* eslint-disable import/no-unassigned-import */
-import 'brace/mode/batchfile'
-import 'brace/mode/css'
-import 'brace/mode/html'
-import 'brace/mode/javascript'
-import 'brace/mode/json'
-import 'brace/mode/jsx'
-import 'brace/mode/markdown'
-import 'brace/mode/php'
-import 'brace/mode/sass'
-import 'brace/mode/scss'
-import 'brace/mode/python'
-import 'brace/mode/sh'
-import 'brace/mode/text'
-import 'brace/theme/github'
-import 'brace/theme/monokai'
-import 'brace/theme/terminal'
-import 'brace/theme/tomorrow'
-import './groq'
-/* eslint-enable import/no-unassigned-import */
+/* eslint-disable-next-line import/no-unassigned-import */
+import './editorSupport'
 
 const PreviewContainer = styled(Box)`
   position: relative;
