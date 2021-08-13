@@ -31,7 +31,8 @@ import {
 import {flatten, groupBy, omit, uniq} from 'lodash'
 import {nanoid} from 'nanoid'
 
-import userStore, {User} from '../user'
+import {User} from '@sanity/types'
+import userStore from '../user'
 
 import {bifur} from '../../client/bifur'
 import {connectionStatus$} from '../connection-status/connection-status-store'

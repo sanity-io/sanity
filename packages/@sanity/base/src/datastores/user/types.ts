@@ -1,20 +1,5 @@
+import {User, CurrentUser} from '@sanity/types'
 import type {Observable} from 'rxjs'
-
-export interface Role {
-  name: string
-  title: string
-  description?: string
-}
-
-export interface CurrentUser {
-  id: string
-  name: string
-  email: string
-  profileImage?: string
-  /** @deprecated use `roles` instead */
-  role: string
-  roles: Role[]
-}
 
 export interface CurrentUserError {
   type: 'error'
@@ -27,13 +12,6 @@ export interface CurrentUserSnapshot {
 }
 
 export type CurrentUserEvent = CurrentUserError | CurrentUserSnapshot
-
-export interface User {
-  id: string
-  displayName?: string
-  imageUrl?: string
-  email?: string
-}
 
 export interface UserStore {
   actions: {logout: () => void; retry: () => void}

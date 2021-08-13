@@ -1,5 +1,4 @@
-import {Path} from '@sanity/types'
-import {User} from '../user'
+import {Path, User} from '@sanity/types'
 
 export type Status = 'online' | 'editing' | 'inactive'
 
@@ -32,8 +31,6 @@ export interface DocumentPresence {
   path: Path
   lastActiveAt: LastActiveAt
 }
-
-export {User}
 
 export type GlobalPresence = {
   user: User

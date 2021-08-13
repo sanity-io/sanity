@@ -9,9 +9,10 @@ import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
 import {observableCallback} from 'observable-callback'
 import generateHelpUrl from '@sanity/generate-help-url'
 import sanityClient from 'part:@sanity/base/client'
+import {User, CurrentUser} from '@sanity/types'
 import {debugRolesParam$} from '../debugParams'
 import {getDebugRolesByNames} from '../grants/debug'
-import {User, CurrentUser, UserStore, CurrentUserSnapshot} from './types'
+import {UserStore, CurrentUserSnapshot} from './types'
 
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 

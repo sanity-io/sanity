@@ -5,6 +5,7 @@ import {ReferenceOptions} from '../reference'
 import {AssetSource} from '../assets'
 import {SlugOptions} from '../slug'
 import {SanityDocument} from '../documents'
+import {CurrentUser} from '../user'
 
 export interface Schema {
   name: string
@@ -36,6 +37,7 @@ export type SortOrdering = {
 export interface HiddenOptionCallbackContext {
   parent?: Record<string, unknown>
   document: SanityDocument
+  currentUser: Omit<CurrentUser, 'role'>
   value: unknown
 }
 
