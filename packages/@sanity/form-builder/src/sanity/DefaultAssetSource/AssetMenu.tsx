@@ -5,20 +5,32 @@ import {AssetMenuAction} from './types'
 
 export function AssetMenu({
   isSelected,
+  border = true,
   onAction,
 }: {
   isSelected: boolean
+  border?: boolean
   onAction: (action: AssetMenuAction) => void
 }) {
+  const triggerButtonMode = isSelected ? 'default' : 'bleed'
+  const triggerButtonTone = isSelected ? 'primary' : 'default'
+
   return (
     <MenuButton
-      button={<Button mode="ghost" icon={EllipsisVerticalIcon} />}
+      button={
+        <Button
+          padding={2}
+          mode={border ? 'ghost' : triggerButtonMode}
+          icon={EllipsisVerticalIcon}
+          tone={border ? 'default' : triggerButtonTone}
+        />
+      }
       id="asset-menu"
       portal
       menu={
         <Menu>
           <MenuItem
-            text="Find usages"
+            text="Show uses"
             icon={LinkIcon}
             onClick={() => {
               onAction({type: 'showUsage'})
@@ -27,9 +39,7 @@ export function AssetMenu({
           <MenuItem
             text="Delete"
             icon={TrashIcon}
-            tone={isSelected ? undefined : 'critical'}
-            disabled={isSelected}
-            title={isSelected ? 'Cannot delete current image' : undefined}
+            tone="critical"
             onClick={() => {
               onAction({type: 'delete'})
             }}

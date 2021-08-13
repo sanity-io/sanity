@@ -195,7 +195,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
   }
 
-  uploadWith(uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) {
+  uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
     const {type, onChange} = this.props
     const {source} = assetDocumentProps
     const options = {
@@ -411,7 +411,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       onChange,
       type,
       resolveUploader,
-      uploadWith: this.uploadWith.bind(this),
+      uploadWith: this.uploadWith,
     })
     this.setState({selectedAssetSource: null})
   }
