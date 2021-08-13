@@ -1,3 +1,1 @@
-import * as sanityComponents from '../../src/__legacy/@sanity/components'
-
-export = sanityComponents
+export * from '../../src/__legacy/@sanity/components'
