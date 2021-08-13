@@ -33,6 +33,12 @@ export default {
           hidden: ({parent}) => parent?.field1 === 'hide field 2',
         },
         {
+          name: 'roleConditionField',
+          type: 'string',
+          description: 'This will be hidden unless current user has the administrator role',
+          hidden: ({currentUser}) => !currentUser.roles.some((r) => r.name === 'administrator'),
+        },
+        {
           name: 'hiddenIfPublished',
           type: 'string',
           description: 'This will be hidden if the document is published',

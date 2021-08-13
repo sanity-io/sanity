@@ -4,23 +4,35 @@ import {
   HiddenOptionCallbackContext,
   HiddenOptionCallback,
   SanityDocument,
+  CurrentUser,
 } from '@sanity/types'
 
+import {useCurrentUser} from '@sanity/base/hooks'
 import withDocument from '../../utils/withDocument'
 
 function isThenable(value: any) {
   return typeof value?.then === 'function'
 }
 
+function omitDeprecatedRole(user: CurrentUser): Omit<CurrentUser, 'role'> {
+  const {role, ...rest} = user
+  return rest
+}
+
 function useCheckCondition(
   hidden: HiddenOptionCallback,
-  {document, parent, value}: HiddenOptionCallbackContext
+  {document, parent, value, currentUser}: HiddenOptionCallbackContext
 ) {
   const didWarn = useRef(false)
   return useMemo(() => {
     let result = false
     try {
-      result = hidden({document, parent, value})
+      result = hidden({
+        document,
+        parent,
+        value,
+        currentUser,
+      })
     } catch (err) {
       console.error(`An error occurred while checking if field should be hidden: ${err.message}`)
       return false
@@ -32,7 +44,7 @@ function useCheckCondition(
       return false
     }
     return result
-  }, [hidden, document, parent, value])
+  }, [hidden, document, parent, value, currentUser])
 }
 
 interface Props {
@@ -55,7 +67,13 @@ const ConditionalFieldWithDocument = withDocument(function ConditionalFieldWithD
 ) {
   const {document, parent, value, hidden, children} = props
 
-  const shouldHide = useCheckCondition(hidden, {document, parent, value})
+  const {value: currentUser} = useCurrentUser()
+  const shouldHide = useCheckCondition(hidden, {
+    currentUser: omitDeprecatedRole(currentUser),
+    document,
+    parent,
+    value,
+  })
 
   return <>{shouldHide ? null : children}</>
 })
