@@ -1,48 +1,43 @@
-import {stringify} from 'querystring'
-import React from 'react'
-import {useMemo} from 'react'
-import styled from 'styled-components'
+import React, {useMemo} from 'react'
+import {Button, Box, Flex, Grid, Text} from '@sanity/ui'
 import {
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '../../src/index'
-import {ToolbarContainer} from './containers'
-
-export const DecoratorButton = styled.button`
-  background-color: ${(props: {active: boolean}) => (props.active ? '#ccc' : '#fff')};
-  margin-right: 0.1em;
-  border: 1px solid #999;
-`
 
 export function Toolbar() {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
-  const decorators = useMemo(
-    (): {title: string; value: string; active: boolean}[] =>
-      ptFeatures.decorators.map((dec: {title: string; value: string}) => ({
-        ...dec,
-        active: PortableTextEditor.isMarkActive(editor, dec.value),
-      })),
-    [selection]
-  )
-  function toggleMark(mark) {
-    PortableTextEditor.toggleMark(editor, mark)
-  }
-  return (
-    <ToolbarContainer>
-      {decorators.map((dec) => {
-        return (
-          <DecoratorButton
-            active={dec.active}
+  const {decorators} = PortableTextEditor.getPortableTextFeatures(editor)
+  const decoratorButtons = useMemo(
+    () =>
+      decorators
+        .map((dec: {title: string; value: string}) => ({
+          ...dec,
+          active: PortableTextEditor.isMarkActive(editor, dec.value),
+        }))
+        .map((dec) => (
+          <Button
+            selected={!!dec.active}
+            mode={'ghost'}
             key={`toolbar-button-${dec.value}`}
-            onClick={toggleMark.bind(this, dec.value)}
+            data-value={dec.value}
+            onClick={() => PortableTextEditor.toggleMark(editor, dec.value)}
           >
-            {dec.title}
-          </DecoratorButton>
-        )
-      })}
-    </ToolbarContainer>
+            <Text size={1}>{dec.title}</Text>
+          </Button>
+        )),
+    [decorators, editor, selection] // Note: selection is a extra (required) dependency here
+  )
+
+  return (
+    <Box>
+      <Flex>
+        <Grid columns={[2, 3, 4, 6]} gap={[1]} marginBottom={1}>
+          {decoratorButtons}
+        </Grid>
+      </Flex>
+    </Box>
   )
 }
