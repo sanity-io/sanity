@@ -18,7 +18,6 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/base": "2.14.0",
     "@sanity/icons": "^1.1.4",
     "@sanity/ui": "^0.35.0",
     "lodash": "^4.17.15",
@@ -26,10 +25,14 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "rimraf": "^2.7.1",
-    "@sanity/types": "2.14.0"
+    "@sanity/base": "2.14.0",
+    "@sanity/types": "2.14.0",
+    "react": "17.0.1",
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
+    "@sanity/base": "^2.14",
+    "@sanity/types": "^2.14",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17"
   },
