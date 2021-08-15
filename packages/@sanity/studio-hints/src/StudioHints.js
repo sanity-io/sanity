@@ -19,7 +19,14 @@ export const isSidecarEnabled = () => studioHintsConfig && !isMobile()
 
 export const SidecarLayout = () => {
   return (
-    <Root borderLeft borderTop display="flex" overflow="auto" scheme="dark" sizing="border">
+    <Root
+      borderLeft
+      display="flex"
+      overflow="auto"
+      scheme="dark"
+      sizing="border"
+      tone="transparent"
+    >
       <HintsPackage />
     </Root>
   )
