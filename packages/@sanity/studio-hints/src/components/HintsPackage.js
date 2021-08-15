@@ -136,10 +136,12 @@ export default class HintsPackage extends React.PureComponent {
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
       <Flex direction="column">
-        <Card padding={4} borderBottom tone="inherit" sizing="border">
-          <Heading size={1} as="h2">
-            {title}
-          </Heading>
+        <Card padding={2} borderBottom tone="inherit" sizing="border">
+          <Box padding={2}>
+            <Heading size={1} as="h2">
+              {title}
+            </Heading>
+          </Box>
         </Card>
 
         <Box overflow="auto" paddingX={4} paddingY={5} flex={1}>
