@@ -258,18 +258,22 @@ declare module 'part:@sanity/base/search' {
 declare module 'part:@sanity/base/search/weighted'
 
 declare module 'part:@sanity/base/settings' {
-  declare const settings: {
-    forNamespace: (
-      namespaceKey: string
+  export interface SettingsNamespace<ValueType> {
+    forKey: (
+      key: string
     ) => {
-      forKey: (
-        key: string
-      ) => {
-        listen: () => Observable<boolean>
-        set: (val: boolean) => void
-      }
+      listen: (defaultValue?: ValueType) => Observable<ValueType>
+      set: (val: ValueType) => void
     }
+    forNamespace: (namespaceKey: string | null) => SettingsNamespace<ValueType>
   }
+
+  export interface SettingsStore {
+    forNamespace: <ValueType>(namespaceKey: string) => SettingsNamespace<ValueType>
+  }
+
+  declare const settings: SettingsStore
+
   export default settings
 }
 
