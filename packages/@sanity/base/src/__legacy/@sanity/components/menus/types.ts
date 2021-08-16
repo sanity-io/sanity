@@ -18,7 +18,7 @@ type ShowAsAction = {
 }
 
 export interface MenuItem {
-  action?: string | ((params?: Record<string, string>) => void)
+  action?: string | ((params: Record<string, string> | undefined, scope?: any) => void)
   danger?: boolean
   group?: string
   icon?: React.ComponentType<{className?: string}>
