@@ -5,13 +5,12 @@
     "composite": true,
     "rootDir": "./src",
     "outDir": "./dist/dts",
-    // todo: we need to disable strict in a transition phase and should be removed eventually
-    // "noImplicitAny": false,
-    // "strictNullChecks": false,
-    // "strictFunctionTypes": false,
-    // "strictPropertyInitialization": false,
-    // "noImplicitThis": false,
     "jsx": "react"
   },
-  "references": [{"path": "../block-tools"}, {"path": "../types"}, {"path": "../schema"}, {"path": "../util"}]
+  "references": [
+    {"path": "../block-tools"},
+    {"path": "../types"},
+    {"path": "../schema"},
+    {"path": "../util"}
+  ]
 }
