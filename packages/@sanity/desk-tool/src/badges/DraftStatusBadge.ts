@@ -1,4 +1,6 @@
-export function DraftStatusBadge(props) {
+import {DocumentBadgeComponent} from '@sanity/base'
+
+export const DraftStatusBadge: DocumentBadgeComponent = (props) => {
   return props.draft
     ? {
         label: 'Draft',
