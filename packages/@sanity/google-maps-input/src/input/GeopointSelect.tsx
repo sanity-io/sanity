@@ -3,7 +3,6 @@ import {SearchInput} from '../map/SearchInput'
 import {GoogleMap} from '../map/Map'
 import {Marker} from '../map/Marker'
 import {LatLng, Geopoint} from '../types'
-import styles from './GeopointSelect.css'
 
 const fallbackLatLng: LatLng = {lat: 40.7058254, lng: -74.1180863}
 
@@ -54,28 +53,26 @@ export class GeopointSelect extends React.PureComponent<SelectProps> {
   render() {
     const {api, defaultZoom, value, onChange} = this.props
     return (
-      <div className={styles.wrapper}>
-        <GoogleMap
-          api={api}
-          location={this.getCenter()}
-          onClick={this.handleMapClick}
-          defaultZoom={defaultZoom}
-        >
-          {(map) => (
-            <>
-              <SearchInput api={api} map={map} onChange={this.handlePlaceChanged} />
-              {value && (
-                <Marker
-                  api={api}
-                  map={map}
-                  position={value}
-                  onMove={onChange ? this.handleMarkerDragEnd : undefined}
-                />
-              )}
-            </>
-          )}
-        </GoogleMap>
-      </div>
+      <GoogleMap
+        api={api}
+        location={this.getCenter()}
+        onClick={this.handleMapClick}
+        defaultZoom={defaultZoom}
+      >
+        {(map) => (
+          <>
+            <SearchInput api={api} map={map} onChange={this.handlePlaceChanged} />
+            {value && (
+              <Marker
+                api={api}
+                map={map}
+                position={value}
+                onMove={onChange ? this.handleMarkerDragEnd : undefined}
+              />
+            )}
+          </>
+        )}
+      </GoogleMap>
     )
   }
 }

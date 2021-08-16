@@ -21,8 +21,11 @@
   "dependencies": {
     "@sanity/field": "2.14.0",
     "@sanity/types": "2.14.0",
-    "classnames": "^2.2.5",
-    "rxjs": "^6.5.3"
+    "@sanity/ui": "^0.34.8",
+    "@sanity/icons": "^1.1.4",
+    "lodash": "^4.17.15",
+    "rxjs": "^6.5.3",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@sanity/base": "2.14.0",

@@ -2,21 +2,19 @@
 ///<reference types="@sanity/types/parts" />
 
 import React from 'react'
-import classNames from 'classnames'
+import {uniqueId} from 'lodash'
+import {Box, Grid, Button, Dialog} from '@sanity/ui'
+import {TrashIcon, EditIcon} from '@sanity/icons'
 import {Path, Marker} from '@sanity/types'
 import config from 'config:@sanity/google-maps-input'
-import Button from 'part:@sanity/components/buttons/default'
-import DefaultDialog from 'part:@sanity/components/dialogs/default'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {FormFieldSet} from '@sanity/base/components'
+import {FormFieldPresence} from '@sanity/base/presence'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import EditIcon from 'part:@sanity/base/edit-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import {ChangeIndicatorCompareValueProvider, ChangeIndicator} from '@sanity/base/change-indicators'
 import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {Geopoint, GeopointSchemaType} from '../types'
 import {GeopointSelect} from './GeopointSelect'
-import styles from './GeopointInput.css'
+import {PreviewImage, DialogInnerContainer} from './GeopointInput.styles'
 
 const getStaticImageUrl = (value) => {
   const loc = `${value.lat},${value.lng}`
@@ -46,7 +44,7 @@ interface InputProps {
   onFocus: (path: Path) => void
   onBlur: () => void
   onChange: (patchEvent: unknown) => void
-  presence: unknown[]
+  presence: FormFieldPresence[]
 }
 
 // @todo
@@ -57,10 +55,11 @@ type Focusable = any
 
 interface InputState {
   modalOpen: boolean
-  hasFocus: boolean
 }
 
 class GeopointInput extends React.PureComponent<InputProps, InputState> {
+  _geopointInputId = uniqueId('GeopointInput')
+
   static defaultProps = {
     markers: [],
   }
@@ -72,7 +71,6 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
     this.state = {
       modalOpen: false,
-      hasFocus: false,
     }
   }
 
@@ -87,12 +85,10 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
   }
 
   handleFocus = (event) => {
-    this.setState({hasFocus: true})
     this.props.onFocus(event)
   }
 
   handleBlur = () => {
-    this.setState({hasFocus: false})
     this.props.onBlur()
   }
 
@@ -134,7 +130,7 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
 
   render() {
     const {value, compareValue, readOnly, type, markers, level, presence} = this.props
-    const {modalOpen, hasFocus} = this.state
+    const {modalOpen} = this.state
 
     if (!config || !config.apiKey) {
       return (
@@ -159,68 +155,59 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
     }
 
     return (
-      <Fieldset
+      <FormFieldSet
         level={level}
-        legend={type.title}
+        title={type.title}
         description={type.description}
-        markers={markers}
-        presence={presence}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        changeIndicator={false}
+        __unstable_presence={presence}
+        __unstable_changeIndicator={false}
+        __unstable_markers={markers}
       >
         <div>
           {value && (
             <ChangeIndicatorCompareValueProvider value={value} compareValue={compareValue}>
-              <ChangeIndicator
-                className={classNames(
-                  styles.map,
-                  readOnly && styles.readOnly,
-                  hasFocus && styles.focused
-                )}
-                compareDeep
-              >
-                <img
-                  className={styles.previewImage}
-                  src={getStaticImageUrl(value)}
-                  alt="Map location"
-                />
+              <ChangeIndicator compareDeep>
+                <PreviewImage src={getStaticImageUrl(value)} alt="Map location" />
               </ChangeIndicator>
             </ChangeIndicatorCompareValueProvider>
           )}
 
           {!readOnly && (
-            <div className={styles.functions}>
-              <ButtonGrid>
+            <Box marginTop={4}>
+              <Grid columns={2} gap={2}>
                 <Button
-                  inverted
-                  onClick={this.handleToggleModal}
+                  mode="ghost"
                   icon={value && EditIcon}
+                  padding={3}
                   ref={this.setEditButton}
-                >
-                  {value ? 'Edit' : 'Set location'}
-                </Button>
+                  text={value ? 'Edit' : 'Set location'}
+                  onClick={this.handleToggleModal}
+                />
 
                 {value && (
-                  <Button color="danger" icon={TrashIcon} inverted onClick={this.handleClear}>
-                    Remove
-                  </Button>
+                  <Button
+                    tone="critical"
+                    icon={TrashIcon}
+                    padding={3}
+                    mode="ghost"
+                    text={'Remove'}
+                    onClick={this.handleClear}
+                  />
                 )}
-              </ButtonGrid>
-            </div>
+              </Grid>
+            </Box>
           )}
 
           {modalOpen && (
-            <DefaultDialog
-              title="Place the marker on the map"
+            <Dialog
+              id={`${this._geopointInputId}_dialog`}
               onClose={this.handleCloseModal}
-              onCloseClick={this.handleCloseModal}
-              message="Select location by dragging the marker or search for a place"
-              isOpen={modalOpen}
-              padding="none"
-              size="large"
+              header="Place the marker on the map"
+              width={1}
             >
-              <div className={styles.dialogInner}>
+              <DialogInnerContainer>
                 <GoogleMapsLoadProxy>
                   {(api) => (
                     <GeopointSelect
@@ -232,11 +219,11 @@ class GeopointInput extends React.PureComponent<InputProps, InputState> {
                     />
                   )}
                 </GoogleMapsLoadProxy>
-              </div>
-            </DefaultDialog>
+              </DialogInnerContainer>
+            </Dialog>
           )}
         </div>
-      </Fieldset>
+      </FormFieldSet>
     )
   }
 }

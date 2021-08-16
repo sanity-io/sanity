@@ -10,17 +10,17 @@ import {GoogleMapsLoadProxy} from '../loader/GoogleMapsLoadProxy'
 import {GoogleMap} from '../map/Map'
 import {Geopoint} from '../types'
 import {GeopointMove} from './GeopointMove'
-import styles from './GeopointFieldDiff.css'
+import {RootContainer} from './GeopointFieldDiff.styles'
 
 export type DiffProps = GenericDiffProps<ArrayDiff<Geopoint>>
 
 export const GeopointArrayDiff: DiffComponent<ArrayDiff<Geopoint>> = ({diff, schemaType}) => {
   return (
-    <div className={styles.root}>
+    <RootContainer>
       <GoogleMapsLoadProxy>
         {(api) => <GeopointDiff api={api} diff={diff} schemaType={schemaType} />}
       </GoogleMapsLoadProxy>
-    </div>
+    </RootContainer>
   )
 }
 
