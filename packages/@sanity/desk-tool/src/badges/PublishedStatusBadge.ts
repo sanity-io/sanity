@@ -1,4 +1,6 @@
-export function PublishedStatusBadge(props) {
+import {DocumentBadgeComponent} from '@sanity/base'
+
+export const PublishedStatusBadge: DocumentBadgeComponent = (props) => {
   return props.published
     ? {
         label: 'Published',
