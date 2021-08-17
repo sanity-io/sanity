@@ -1,6 +1,6 @@
 {
   "name": "@sanity/color-input",
-  "version": "2.14.0",
+  "version": "2.15.0",
   "description": "Color input",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,8 +25,8 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "@sanity/base": "2.14.0",
-    "@sanity/types": "2.14.0",
+    "@sanity/base": "2.15.0",
+    "@sanity/types": "2.15.0",
     "react": "17.0.1",
     "rimraf": "^2.7.1"
   },
