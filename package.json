@@ -9,7 +9,7 @@
     "build": "gulp clean && gulp build && npm run package",
     "build:cli": "lerna run --scope '@sanity/{cli,client,core,export,import,mutator,resolver,server,util,webpack-loader}' build",
     "build:js": "gulp js",
-    "clean": "gulp clean && lerna clean",
+    "clean": "lerna clean && gulp clean",
     "publish": "npm run build && lerna publish --exact",
     "publish-canary": "RELEASE_TAG=canary npm run publish-tag",
     "publish-current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` npm run publish-tag",
