@@ -11,5 +11,6 @@
     "rootDir": "src",
     "outDir": "./dist/dts",
     "jsx": "react"
-  }
+  },
+  "references": [{"path": "../base"}, {"path": "../util"}]
 }
