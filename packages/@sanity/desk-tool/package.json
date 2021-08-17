@@ -47,7 +47,7 @@
     "classnames": "^2.2.5",
     "element-resize-detector": "^1.1.14",
     "hashlru": "^2.1.0",
-    "is-hotkey": "^0.1.4",
+    "is-hotkey": "^0.1.6",
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "mendoza": "^2.1.1",
