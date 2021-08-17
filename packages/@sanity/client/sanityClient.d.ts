@@ -42,6 +42,7 @@ interface RawRequestOptions {
   query?: {[key: string]: string | string[]}
   headers?: {[key: string]: string}
   timeout?: number
+  proxy?: string
   body?: any
 }
 
@@ -499,6 +500,7 @@ export interface ClientConfig {
   token?: string
   apiHost?: string
   apiVersion?: string
+  proxy?: string
   requestTagPrefix?: string
   ignoreBrowserTokenWarning?: boolean
   withCredentials?: boolean
