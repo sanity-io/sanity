@@ -37,7 +37,7 @@
     "@sanity/ui": "^0.36.0",
     "@sanity/util": "2.15.0",
     "classnames": "^2.2.5",
-    "is-hotkey": "^0.1.4",
+    "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",
     "react-props-stream": "^1.0.0",
