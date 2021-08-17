@@ -1012,18 +1012,6 @@
       "path": "components/icons/Compose"
     },
     {
-      "implements": "part:@sanity/base/publish-icon",
-      "path": "components/icons/Publish"
-    },
-    {
-      "implements": "part:@sanity/base/unpublish-icon",
-      "path": "components/icons/Unpublish"
-    },
-    {
-      "implements": "part:@sanity/base/truncate-icon",
-      "path": "components/icons/Truncate"
-    },
-    {
       "implements": "part:@sanity/base/reset-icon",
       "path": "components/icons/Reset"
     },
@@ -1649,10 +1637,6 @@
     {
       "implements": "part:@sanity/components/selects/style",
       "path": "__legacy/@sanity/components/selects/StyleSelect"
-    },
-    {
-      "implements": "part:@sanity/components/selects/style-style",
-      "path": "__legacy/@sanity/components/selects/StyleSelect.css"
     },
     {
       "implements": "part:@sanity/components/dialogs/default",
