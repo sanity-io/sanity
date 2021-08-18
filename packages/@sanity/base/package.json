@@ -10,9 +10,6 @@
       "__legacy/*": [
         "__legacy/*"
       ],
-      "index.d.ts": [
-        "./dist/dts/_exports/index.d.ts"
-      ],
       "*": [
         "dist/dts/_exports/*"
       ]
