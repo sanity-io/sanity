@@ -395,6 +395,7 @@ export default function PortableTextInput(props: Props) {
         <>
           <ActivateOnFocus
             html={<h3 className={styles.activeOnFocusHeading}>Click to activate</h3>}
+            onActivate={handleActivate}
           >
             <ChangeIndicatorWithProvidedFullPath
               compareDeep

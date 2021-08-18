@@ -10,18 +10,29 @@ import {
 interface Props {
   children: React.ReactNode
   html?: React.ReactNode
+  onActivate?: () => void
 }
 
 export default function ActivateOnFocus(props: Props) {
   const [isActive, setActive] = useState(true)
-  const {children, html} = props
+  const {children, html, onActivate} = props
+
+  function handleClick() {
+    setActive(false)
+
+    if (onActivate) {
+      onActivate()
+    }
+  }
 
   return (
-    <OverlayContainer tabIndex={0}>
-      <FlexContainer align="center" justify="center">
-        <CardContainer />
-        <ContentContainer>{html}</ContentContainer>
-      </FlexContainer>
+    <OverlayContainer tabIndex={0} onClick={handleClick}>
+      {isActive && (
+        <FlexContainer align="center" justify="center">
+          <CardContainer />
+          <ContentContainer>{html}</ContentContainer>
+        </FlexContainer>
+      )}
       {children}
     </OverlayContainer>
   )
