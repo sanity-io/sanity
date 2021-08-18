@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 import {Card, Flex} from '@sanity/ui'
 
+export const OverlayContainer = styled.div`
+  position: relative;
+`
+
 export const ContentContainer = styled.div`
   z-index: 7;
   opacity: 0;
@@ -29,14 +33,6 @@ const showMessage = `
     }
 `
 
-export const OverlayContainer = styled.div`
-  position: relative;
-
-  :focus {
-    ${showMessage}
-  }
-`
-
 export const FlexContainer = styled(Flex)`
   position: absolute;
   top: 0;
@@ -44,7 +40,8 @@ export const FlexContainer = styled(Flex)`
   width: 100%;
   height: 100%;
 
-  :hover {
+  :hover,
+  :focus {
     ${showMessage}
   }
 `

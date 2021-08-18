@@ -30,9 +30,9 @@ export default function ActivateOnFocus(props: Props) {
   }
 
   return (
-    <OverlayContainer tabIndex={0} onClick={handleClick} onBlur={handleBlur}>
+    <OverlayContainer onClick={handleClick} onBlur={handleBlur}>
       {!isActive && (
-        <FlexContainer align="center" justify="center">
+        <FlexContainer tabIndex={0} align="center" justify="center">
           <CardContainer />
           <ContentContainer>{html}</ContentContainer>
         </FlexContainer>
