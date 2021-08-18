@@ -1,10 +1,11 @@
 import {CodeInputLanguage} from './types'
 
+// NOTE: MAKE SURE THESE ALIGN WITH IMPORTS IN ./editorSupport
 export const SUPPORTED_LANGUAGES: CodeInputLanguage[] = [
   {title: 'Batch file', value: 'batchfile'},
   {title: 'C#', value: 'csharp'},
   {title: 'CSS', value: 'css'},
-  {title: 'GoLang', value: 'golang'},
+  {title: 'Go', value: 'golang'},
   {title: 'GROQ', value: 'groq'},
   {title: 'HTML', value: 'html'},
   {title: 'Java', value: 'java'},
