@@ -32,6 +32,7 @@ interface Props {
   markers: Array<{path: any[]}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   focusPath: Path
+  onBlur: () => void
   onFocus: (path: Path) => void
   margins: [number, number, number, number]
 }
@@ -68,10 +69,6 @@ export class FormView extends React.PureComponent<Props> {
     }
   }
 
-  handleBlur = () => {
-    // do nothing
-  }
-
   handleEditAsActualType = () => {
     // TODO
   }
@@ -92,6 +89,7 @@ export class FormView extends React.PureComponent<Props> {
     const {
       id,
       focusPath,
+      onBlur,
       onFocus,
       value,
       initialValue,
@@ -127,7 +125,7 @@ export class FormView extends React.PureComponent<Props> {
             filterField={filterField}
             focusPath={focusPath}
             markers={markers}
-            onBlur={this.handleBlur}
+            onBlur={onBlur}
             onChange={readOnly ? noop : this.props.onChange}
             onFocus={onFocus}
             readOnly={readOnly}

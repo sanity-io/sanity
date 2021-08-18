@@ -36,6 +36,7 @@ interface DocumentPanelProps {
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
   formInputFocusPath: Path
+  onFormInputBlur: () => void
   onFormInputFocus: (focusPath: Path) => void
   onCloseView: () => void
   onCollapse?: () => void
@@ -181,6 +182,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
                   id={props.documentId}
                   initialValue={props.initialValue}
                   focusPath={props.formInputFocusPath}
+                  onBlur={props.onFormInputBlur}
                   onFocus={props.onFormInputFocus}
                   markers={props.markers}
                   onChange={props.onChange}

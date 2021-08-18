@@ -90,6 +90,10 @@ export function DocumentPane(props: DocumentPaneProps) {
   )
   const isInspectOpen = paneRouter.params.inspect === 'on'
 
+  const handleBlur = useCallback(() => {
+    setFocusPath([])
+  }, [])
+
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(PathUtils.pathFor(nextFocusPath))
@@ -199,6 +203,7 @@ export function DocumentPane(props: DocumentPaneProps) {
                 draft={draft}
                 idPrefix={paneKey}
                 formInputFocusPath={formInputFocusPath}
+                onFormInputBlur={handleBlur}
                 onFormInputFocus={handleFocus}
                 initialValue={initialValue}
                 isClosable={isClosable}
