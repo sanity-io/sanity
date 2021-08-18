@@ -24,6 +24,7 @@ export const SUPPORTED_LANGUAGES: CodeInputLanguage[] = [
   {title: 'TSX', value: 'tsx'},
   {title: 'TypeScript', value: 'typescript'},
   {title: 'XML', value: 'xml'},
+  {title: 'YAML', value: 'yaml'},
 ]
 
 export const LANGUAGE_ALIASES: Record<string, string | undefined> = {js: 'javascript'}

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unassigned-import */
-// NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES
+// NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES in ./config
 import './groq'
 import 'brace/mode/batchfile'
 import 'brace/mode/csharp'
@@ -22,6 +22,8 @@ import 'brace/mode/text'
 import 'brace/mode/tsx'
 import 'brace/mode/typescript'
 import 'brace/mode/xml'
+import 'brace/mode/yaml'
+
 // Themes
 import 'brace/theme/github'
 import 'brace/theme/monokai'
