@@ -11,5 +11,5 @@ $ npm run test-e2e
 Or open cypress for interactivity:
 
 ```
-$ cypress open
+$ npm run cypress:open
 ```
