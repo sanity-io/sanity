@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-filename-extension */
 
 import React from 'react'
-import Structure from '../structure-builder'
+import Structure from './structure-builder'
 import {MissingDocumentTypesMessage} from './components/MissingDocumentTypesMessage'
 
 export default () => {

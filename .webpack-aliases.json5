@@ -5,14 +5,14 @@
   "@sanity/base/__legacy/@sanity/components": "./packages/@sanity/base/src/__legacy/@sanity/components",
   '@sanity/base': './packages/@sanity/base/src/_exports',
 
+  '@sanity/desk-tool': './packages/@sanity/desk-tool/src/_exports',
+
   '@sanity/schema/lib': './packages/@sanity/schema/src',
   '@sanity/schema': './packages/@sanity/schema/src/legacy',
 
-  '@sanity/desk-tool/structure-builder': './packages/@sanity/desk-tool/structure-builder',
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
   '@sanity/components': './packages/@sanity/components/src',
   '@sanity/diff': './packages/@sanity/diff/src',
-  '@sanity/desk-tool': './packages/@sanity/desk-tool/src',
   '@sanity/field': './packages/@sanity/field/src',
   '@sanity/form-builder/PatchEvent': './packages/@sanity/form-builder/src/PatchEvent',
   '@sanity/form-builder': './packages/@sanity/form-builder/src',
