@@ -23,16 +23,6 @@ export const CardContainer = styled(Card)`
   opacity: 0;
 `
 
-const showMessage = `
-    & ${CardContainer} {
-      opacity: 0.9;
-    }
-
-    & ${ContentContainer} {
-      opacity: 1;
-    }
-`
-
 export const FlexContainer = styled(Flex)`
   position: absolute;
   top: 0;
@@ -42,6 +32,12 @@ export const FlexContainer = styled(Flex)`
 
   :hover,
   :focus {
-    ${showMessage}
+    & ${CardContainer} {
+      opacity: 0.9;
+    }
+
+    & ${ContentContainer} {
+      opacity: 1;
+    }
   }
 `
