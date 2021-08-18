@@ -93,8 +93,14 @@ export class FormBuilderInput extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
+    // Do not trigger focus when the focus path is empty
+    if (this.props.focusPath.length === 0) {
+      return
+    }
+
     const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
+
     if (!hadFocus && hasFocus) {
       this.focus()
     }
