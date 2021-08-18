@@ -1,5 +1,5 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import React, {useState} from 'react'
+import React from 'react'
 import {
   OverlayContainer,
   FlexContainer,
@@ -11,23 +11,27 @@ interface Props {
   children: React.ReactNode
   html?: React.ReactNode
   onActivate?: () => void
+  isActive: boolean
 }
 
 export default function ActivateOnFocus(props: Props) {
-  const [isActive, setActive] = useState(true)
-  const {children, html, onActivate} = props
+  const {children, html, onActivate, isActive} = props
 
   function handleClick() {
-    setActive(false)
-
     if (onActivate) {
       onActivate()
     }
   }
 
+  function handleBlur() {
+    if (onActivate && !isActive) {
+      onActivate()
+    }
+  }
+
   return (
-    <OverlayContainer tabIndex={0} onClick={handleClick}>
-      {isActive && (
+    <OverlayContainer tabIndex={0} onClick={handleClick} onBlur={handleBlur}>
+      {!isActive && (
         <FlexContainer align="center" justify="center">
           <CardContainer />
           <ContentContainer>{html}</ContentContainer>
