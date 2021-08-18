@@ -6,5 +6,8 @@
     "noImplicitAny": false,
     "jsx": "react"
   },
-  "references": [{"path": "../../packages/@sanity/base"}]
+  "references": [
+    {"path": "../../packages/@sanity/base"},
+    {"path": "../../packages/@sanity/desk-tool"}
+  ]
 }
