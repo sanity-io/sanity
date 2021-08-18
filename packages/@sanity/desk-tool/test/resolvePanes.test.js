@@ -1,7 +1,7 @@
 import {of as observableOf} from 'rxjs'
 import {takeWhile, concatMap, reduce} from 'rxjs/operators'
-import {LOADING_PANE} from '../src'
 import {resolvePanes} from '../src/utils/resolvePanes'
+import {LOADING_PANE} from '../src/constants'
 import singleStatsStructure from './fixtures/structures/singleStatsStructure'
 import singletonStructure from './fixtures/structures/singletonStructure'
 import recursiveStructure from './fixtures/structures/recursiveStructure'
