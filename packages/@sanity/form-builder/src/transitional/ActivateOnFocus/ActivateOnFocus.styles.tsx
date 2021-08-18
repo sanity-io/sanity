@@ -19,10 +19,7 @@ export const CardContainer = styled(Card)`
   opacity: 0;
 `
 
-export const OverlayContainer = styled.div`
-  position: relative;
-
-  :focus {
+const showMessage = `
     & ${CardContainer} {
       opacity: 0.9;
     }
@@ -30,6 +27,13 @@ export const OverlayContainer = styled.div`
     & ${ContentContainer} {
       opacity: 1;
     }
+`
+
+export const OverlayContainer = styled.div`
+  position: relative;
+
+  :focus {
+    ${showMessage}
   }
 `
 
@@ -41,12 +45,6 @@ export const FlexContainer = styled(Flex)`
   height: 100%;
 
   :hover {
-    & ${CardContainer} {
-      opacity: 0.9;
-    }
-
-    & ${ContentContainer} {
-      opacity: 1;
-    }
+    ${showMessage}
   }
 `
