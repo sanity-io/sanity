@@ -65,7 +65,7 @@ export const EditForm = memo((props: Props) => {
         subscriptionRef.current = null
       }
     }
-  }, [])
+  }, [patchChannel, props.id, props.type.name])
 
   return (
     <form onSubmit={preventDefault}>
