@@ -1,5 +1,13 @@
-export interface ResultItem {
+export interface SearchHit {
+  _id: string
+  _type: string
+  resultIndex: number
   hit: {_id: string; _type: string}
-  score: number
-  stories: {path: string; score: number; why: string}[]
+}
+
+export interface SearchState {
+  hits: SearchHit[]
+  loading: boolean
+  error: Error | null
+  searchString: string
 }
