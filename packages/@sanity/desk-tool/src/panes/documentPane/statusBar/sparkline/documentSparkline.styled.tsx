@@ -5,7 +5,6 @@ export const MetadataBox = styled(ElementQuery)`
   /* To be overridden by JS below */
   --session-layout-width: auto;
 
-  transition: transform 200ms;
   display: flex;
   align-items: center;
   flex: 1;
@@ -13,6 +12,10 @@ export const MetadataBox = styled(ElementQuery)`
 
   /* Hide review changes button when not changed */
   transform: translate3d(calc(0px - var(--session-layout-width) - 12px), 0, 0);
+
+  &[data-transition] {
+    transition: transform 200ms;
+  }
 
   /* Transition a fixed distance on smaller screens */
   &[data-eq-max~='0'] {
@@ -26,8 +29,11 @@ export const MetadataBox = styled(ElementQuery)`
 
 export const ReviewChangesBadgeBox = styled.div`
   display: none;
-  transition: opacity 100ms;
   opacity: 1;
+
+  [data-transition] > & {
+    transition: opacity 100ms;
+  }
 
   div:not([data-changed]) > & {
     opacity: 0;
@@ -41,8 +47,11 @@ export const ReviewChangesBadgeBox = styled.div`
 
 export const ReviewChangesButtonBox = styled.div`
   min-width: min-content;
-  transition: opacity 100ms;
   opacity: 1;
+
+  [data-transition] > & {
+    transition: opacity 100ms;
+  }
 
   div:not([data-changed]) > & {
     pointer-events: none;

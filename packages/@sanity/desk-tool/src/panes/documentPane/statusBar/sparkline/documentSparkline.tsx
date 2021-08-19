@@ -25,11 +25,13 @@ interface DocumentSparklineProps {
 
 export function DocumentSparkline(props: DocumentSparklineProps) {
   const {badges, lastUpdated, editState} = props
+  const lastPublished = editState?.published?._updatedAt
   const {historyController} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
   const liveEdit = Boolean(editState?.liveEdit)
   const published = Boolean(editState?.published)
-  const lastPublished = editState?.published?._updatedAt
+  const changed = Boolean(editState?.draft)
+  const loaded = published || changed
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {
     minimal: true,
@@ -37,7 +39,6 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
   })
 
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
-  const changed = Boolean(editState?.draft)
 
   // Keep track of the size of the review changes button
   const [
@@ -53,6 +54,14 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
     () => [reviewChangesButtonWidth || reviewChangesButtonWidthRef.current, 225],
     [reviewChangesButtonWidth]
   )
+
+  // Only transition between subsequent state, not the initial
+  const [transition, setTransition] = useState(false)
+  useEffect(() => {
+    if (!transition && loaded) {
+      requestAnimationFrame(() => requestAnimationFrame(() => setTransition(true)))
+    }
+  }, [loaded, transition])
 
   const metadataBoxStyle = useMemo(
     () =>
@@ -89,6 +98,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
       {/* Changes and badges */}
       <MetadataBox
         data-changed={changed || liveEdit ? '' : undefined}
+        data-transition={transition ? '' : undefined}
         media={metadataBoxBreakpoints}
         style={metadataBoxStyle}
       >
