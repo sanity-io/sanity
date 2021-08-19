@@ -22,8 +22,6 @@ interface Props {
   createMenuIsOpen: boolean
   documentTypes: string[]
   onCreateButtonClick: () => void
-  onSetLoginStatusElement: (element: HTMLDivElement) => void
-  onSwitchTool: () => void
   onToggleMenu: () => void
   onUserLogout: () => void
   router: Router
