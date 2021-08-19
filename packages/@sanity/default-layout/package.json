@@ -34,13 +34,12 @@
     "@sanity/base": "2.20.0",
     "@sanity/client": "2.19.0",
     "@sanity/generate-help-url": "2.18.0",
-    "@sanity/ui": "^0.36.10",
+    "@sanity/ui": "^0.36.8",
+    "@sanity/icons": "^1.1.7",
     "@sanity/util": "2.20.0",
-    "classnames": "^2.2.5",
-    "is-hotkey": "^0.1.6",
     "lodash": "^4.17.15",
-    "react-click-outside": "^3.0.0",
     "react-props-stream": "^1.0.0",
+    "react-rx": "^1.0.0-beta.6",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
@@ -51,7 +50,6 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^2.0.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9 || ^17",
     "react-dom": "^16.9 || ^17",
