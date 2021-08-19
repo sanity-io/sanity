@@ -25,20 +25,13 @@ interface DocumentSparklineProps {
 
 export function DocumentSparkline(props: DocumentSparklineProps) {
   const {badges, lastUpdated, editState} = props
-  const {historyController, timeline} = useDocumentHistory()
+  const lastPublished = editState?.published?._updatedAt
+  const {historyController} = useDocumentHistory()
   const showingRevision = historyController.onOlderRevision()
   const liveEdit = Boolean(editState?.liveEdit)
-
-  // @todo: make this memoizable
-  const timelineSessions = timeline.mapChunks((chunk) => chunk)
-
-  // Find the first unpublish or publish event and use it as the base event if it exists
-  const lastUnpublishOrPublishSession = timelineSessions.find(
-    (chunk) => chunk.type === 'unpublish' || chunk.type === 'publish'
-  )
-
-  const published = lastUnpublishOrPublishSession?.type === 'publish'
-  const lastPublished = lastUnpublishOrPublishSession?.endTimestamp
+  const published = Boolean(editState?.published)
+  const changed = Boolean(editState?.draft)
+  const loaded = published || changed
 
   const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {
     minimal: true,
@@ -46,19 +39,6 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
   })
 
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
-
-  // Make sure we only show editDraft sessions (and count the unpublish as a draft session)
-  const changedSessions = useMemo(() => {
-    if (lastUnpublishOrPublishSession) {
-      return timelineSessions
-        .filter((session) => session.index >= lastUnpublishOrPublishSession.index)
-        .filter((session) => session.type === 'editDraft' || session.type === 'unpublish')
-    }
-
-    return timelineSessions.filter((session) => session.type === 'editDraft')
-  }, [lastUnpublishOrPublishSession, timelineSessions])
-
-  const changed = changedSessions.length > 0
 
   // Keep track of the size of the review changes button
   const [
@@ -74,6 +54,18 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
     () => [reviewChangesButtonWidth || reviewChangesButtonWidthRef.current, 225],
     [reviewChangesButtonWidth]
   )
+
+  // Only transition between subsequent state, not the initial
+  const [transition, setTransition] = useState(false)
+  useEffect(() => {
+    if (!transition && loaded) {
+      // NOTE: the reason for double RAF here is a common "bug" in browsers.
+      // See: https://stackoverflow.com/questions/44145740/how-does-double-requestanimationframe-work
+      // There is no need to cancel this animation,
+      // since calling it again will cause the same result (transition=true).
+      requestAnimationFrame(() => requestAnimationFrame(() => setTransition(true)))
+    }
+  }, [loaded, transition])
 
   const metadataBoxStyle = useMemo(
     () =>
@@ -93,11 +85,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
   }, [reviewChangesButtonWidth])
 
   return (
-    <Flex
-      align="center"
-      // data-disabled={showingRevision}
-      data-ui="DocumentSparkline"
-    >
+    <Flex align="center" data-ui="DocumentSparkline">
       {/* Publish status */}
       {(liveEdit || published) && (
         <Box marginRight={1}>
@@ -114,6 +102,7 @@ export function DocumentSparkline(props: DocumentSparklineProps) {
       {/* Changes and badges */}
       <MetadataBox
         data-changed={changed || liveEdit ? '' : undefined}
+        data-transition={transition ? '' : undefined}
         media={metadataBoxBreakpoints}
         style={metadataBoxStyle}
       >
