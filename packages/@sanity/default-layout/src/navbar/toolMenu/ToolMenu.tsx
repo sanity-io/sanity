@@ -1,80 +1,49 @@
-// @todo: remove the following line when part imports has been removed from this file
-///<reference types="@sanity/types/parts" />
-
-import {LegacyLayerProvider} from '@sanity/base/components'
-import StateButton from 'part:@sanity/components/buttons/state'
-import {Tooltip} from 'part:@sanity/components/tooltip'
+import {StateLink} from '@sanity/base/router'
 import React from 'react'
+import {Button, Stack} from '@sanity/ui'
+import {PlugIcon} from '@sanity/icons'
 import {Router, Tool} from '../../types'
-
-import styles from './ToolMenu.css'
 
 interface Props {
   activeToolName: string
-  direction: 'horizontal' | 'vertical'
   isVisible: boolean
   onSwitchTool: () => void
   router: Router
   tools: Tool[]
-  showLabel?: boolean
-  tone?: 'navbar'
 }
 
-const TOUCH_DEVICE = 'ontouchstart' in document.documentElement
-
-function ToolMenu(props: Props) {
-  const {
-    activeToolName,
-    direction,
-    isVisible,
-    onSwitchTool,
-    router,
-    tools,
-    showLabel: showLabelProp,
-    tone,
-  } = props
-  const isVertical = direction === 'horizontal'
-  const showLabel = (TOUCH_DEVICE && !isVertical) || showLabelProp
+export default function ToolMenu(props: Props) {
+  const {activeToolName, isVisible, onSwitchTool, router, tools} = props
 
   return (
-    <ul className={styles.root} data-direction={direction} data-tone="navbar">
+    <Stack as="ul" space={[1, 2]}>
       {tools.map((tool) => {
         const title = tool.title || tool.name || undefined
-        const tooltipContent = <span className={styles.tooltipContent}>{title}</span>
+
+        const LinkComponent = (linkProps) => {
+          return (
+            <StateLink
+              {...linkProps}
+              tabIndex={isVisible ? 0 : -1}
+              state={{...router.state, tool: tool.name, [tool.name]: undefined}}
+            />
+          )
+        }
 
         return (
-          <li key={tool.name}>
-            <LegacyLayerProvider zOffset="navbarPopover">
-              <Tooltip
-                content={tooltipContent as any}
-                disabled={showLabel}
-                placement="bottom"
-                title={showLabel ? '' : title}
-                tone={tone}
-              >
-                <div>
-                  <StateButton
-                    icon={tool.icon}
-                    key={tool.name}
-                    kind="simple"
-                    onClick={onSwitchTool}
-                    padding={direction === 'horizontal' ? 'small' : 'medium'}
-                    selected={activeToolName === tool.name}
-                    state={{...router.state, tool: tool.name, [tool.name]: undefined}}
-                    title={title}
-                    tabIndex={isVisible ? 0 : -1}
-                    tone={tone}
-                  >
-                    {tool.title}
-                  </StateButton>
-                </div>
-              </Tooltip>
-            </LegacyLayerProvider>
-          </li>
+          <Stack as="li" key={tool.name}>
+            <Button
+              as={LinkComponent}
+              justify="flex-start"
+              text={title}
+              icon={tool.icon || PlugIcon}
+              mode="bleed"
+              onClick={onSwitchTool}
+              selected={activeToolName === tool.name}
+            />
+          </Stack>
         )
       })}
-    </ul>
+    </Stack>
   )
 }
-
-export default ToolMenu
