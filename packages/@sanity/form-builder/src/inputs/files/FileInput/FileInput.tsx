@@ -5,7 +5,17 @@ import PropTypes from 'prop-types'
 import {Observable, Subscription} from 'rxjs'
 import {get, partition, uniqueId} from 'lodash'
 import {FormFieldSet, ImperativeToast} from '@sanity/base/components'
-import {File as BaseFile, FileAsset, FileSchemaType, Marker, Path, SchemaType} from '@sanity/types'
+import {
+  Asset as AssetDocument,
+  AssetFromSource,
+  AssetSource,
+  File as BaseFile,
+  FileAsset,
+  FileSchemaType,
+  Marker,
+  Path,
+  SchemaType,
+} from '@sanity/types'
 import {
   ChangeIndicatorCompareValueProvider,
   ChangeIndicatorWithProvidedFullPath,
@@ -15,13 +25,29 @@ import {
   DownloadIcon,
   EditIcon,
   EyeOpenIcon,
+  ImageIcon,
+  SearchIcon,
   TrashIcon,
   UploadIcon,
 } from '@sanity/icons'
-import {Box, Button, Container, Dialog, Flex, Grid, Stack, Text, ToastParams} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Container,
+  Dialog,
+  Flex,
+  Grid,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Stack,
+  Text,
+  Tooltip,
+  ToastParams,
+} from '@sanity/ui'
 import {PresenceOverlay, FormFieldPresence} from '@sanity/base/presence'
 import WithMaterializedReference from '../../../utils/WithMaterializedReference'
-import {Uploader, UploaderResolver} from '../../../sanity/uploads/types'
+import {Uploader, UploaderResolver, UploadOptions} from '../../../sanity/uploads/types'
 import PatchEvent, {setIfMissing, unset} from '../../../PatchEvent'
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
@@ -30,6 +56,7 @@ import {FileTarget, FileInfo, Overlay} from '../common/styles'
 import {UploadState} from '../types'
 import {UploadProgress} from '../common/UploadProgress'
 import {DropMessage} from '../common/DropMessage'
+import {handleSelectAssetFromSource} from '../common/assetSource'
 import {AssetBackground} from './styles'
 
 type Field = {
@@ -40,7 +67,7 @@ type Field = {
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File
 
-interface File extends Partial<BaseFile> {
+export interface File extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
@@ -56,14 +83,17 @@ export type Props = {
   onFocus: (path: Path) => void
   readOnly: boolean | null
   focusPath: Path
+  directUploads?: boolean
+  assetSources?: AssetSource[]
   markers: Marker[]
   presence: FormFieldPresence[]
 }
 
-const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
+const HIDDEN_FIELDS = ['asset']
 
 type FileInputState = {
   isUploading: boolean
+  selectedAssetSource: AssetSource | null
   isAdvancedEditOpen: boolean
   hoveringFiles: FileInfo[]
 }
@@ -77,6 +107,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     getValuePath: PropTypes.func,
   }
 
+  _inputId = uniqueId('FileInput')
   dialogId = uniqueId('fileinput-dialog')
 
   _focusRef: Focusable | null = null
@@ -85,6 +116,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   state: FileInputState = {
     isUploading: false,
     isAdvancedEditOpen: false,
+    selectedAssetSource: null,
     hoveringFiles: [],
   }
 
@@ -143,6 +175,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     this.uploadFirstAccepted(files)
   }
 
+  handleSelectFileFromAssetSource = (source: AssetSource) => {
+    this.setState({selectedAssetSource: source})
+  }
+
+  handleAssetSourceClosed = () => {
+    this.setState({selectedAssetSource: null})
+  }
+
   uploadFirstAccepted(files: DOMFile[]) {
     const {resolveUploader, type} = this.props
 
@@ -155,11 +195,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     }
   }
 
-  uploadWith(uploader: Uploader, file: DOMFile) {
+  uploadWith = (uploader: Uploader, file: DOMFile, assetDocumentProps: UploadOptions = {}) => {
     const {type, onChange} = this.props
+    const {source} = assetDocumentProps
     const options = {
       metadata: get(type, 'options.metadata'),
       storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
+      source,
     }
     this.cancelUpload()
     this.setState({isUploading: true})
@@ -181,13 +223,13 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         this.clearUploadStatus()
       },
       complete: () => {
-        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
         this.setState({isUploading: false})
       },
     })
   }
 
   renderMaterializedAsset = (assetDocument: FileAsset) => {
+    const showTooltip = (assetDocument?.originalFilename || '').length > 12
     return (
       <Stack space={3}>
         <Flex align="center" justify="center">
@@ -197,9 +239,29 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             </Text>
           </Box>
           <Box marginLeft={3}>
-            <Text textOverflow="ellipsis" weight="medium">
-              {assetDocument.originalFilename}
-            </Text>
+            {showTooltip && (
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text muted size={1}>
+                      {assetDocument.originalFilename}
+                    </Text>
+                  </Box>
+                }
+                fallbackPlacements={['right', 'left']}
+                placement="top"
+                portal
+              >
+                <Text textOverflow="ellipsis" weight="medium">
+                  {assetDocument.originalFilename}
+                </Text>
+              </Tooltip>
+            )}
+            {!showTooltip && (
+              <Text textOverflow="ellipsis" weight="medium">
+                {assetDocument.originalFilename}
+              </Text>
+            )}
           </Box>
         </Flex>
 
@@ -223,6 +285,83 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         uploadState={uploadState}
         onCancel={isUploading ? this.handleCancelUpload : undefined}
         onClearStale={this.handleClearUploadState}
+      />
+    )
+  }
+
+  renderSelectFileButton() {
+    const {assetSources} = this.props
+    if (!assetSources?.length) {
+      return null
+    }
+    // If multiple asset sources render a dropdown
+    if (assetSources.length > 1) {
+      return (
+        <MenuButton
+          id={`${this._inputId}_assetFileButton`}
+          button={<Button mode="ghost" text="Select…" icon={SearchIcon} />}
+          menu={
+            <Menu>
+              {assetSources.map((assetSource) => {
+                return (
+                  <MenuItem
+                    key={assetSource.name}
+                    text={assetSource.title}
+                    onClick={() => this.handleSelectFileFromAssetSource(assetSource)}
+                    icon={assetSource.icon || ImageIcon}
+                  />
+                )
+              })}
+            </Menu>
+          }
+        />
+      )
+    }
+
+    // Single asset source (just a normal button)
+    return (
+      <Button
+        icon={SearchIcon}
+        onClick={() => this.handleSelectFileFromAssetSource(assetSources[0])}
+        mode="ghost"
+        text="Select"
+      />
+    )
+  }
+
+  renderAssetSource() {
+    const {selectedAssetSource} = this.state
+    const {value, materialize} = this.props
+    if (!selectedAssetSource) {
+      return null
+    }
+    const Component = selectedAssetSource.component
+    if (value && value.asset) {
+      return (
+        <WithMaterializedReference materialize={materialize} reference={value.asset}>
+          {(fileAsset) => {
+            return (
+              <Component
+                selectedAssets={[fileAsset as AssetDocument]}
+                selectionType="single"
+                assetType="file"
+                dialogHeaderTitle="Select file"
+                onClose={this.handleAssetSourceClosed}
+                onSelect={this.handleSelectAssetFromSource}
+              />
+            )
+          }}
+        </WithMaterializedReference>
+      )
+    }
+    return (
+      <Component
+        selectedAssets={[]}
+        selectionType="single"
+        assetType="file"
+        dialogHeaderTitle="Select file"
+        onClose={this.handleAssetSourceClosed}
+        onSelect={this.handleSelectAssetFromSource}
       />
     )
   }
@@ -261,15 +400,20 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  renderSelectFileButton() {
-    // Single asset source (just a normal button)
-    // @todo add select handling here
-    return <Button mode="bleed" text="Select" />
-  }
-
   renderFields(fields: Field[]) {
     return fields.map((field) => this.renderField(field))
+  }
+
+  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
+    const {onChange, type, resolveUploader} = this.props
+    handleSelectAssetFromSource({
+      assetFromSource,
+      onChange,
+      type,
+      resolveUploader,
+      uploadWith: this.uploadWith,
+    })
+    this.setState({selectedAssetSource: null})
   }
 
   hasFileTargetFocus() {
@@ -354,6 +498,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
 
   render() {
     const {
+      directUploads,
       type,
       value,
       compareValue,
@@ -363,7 +508,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       readOnly,
       presence,
     } = this.props
-    const {isAdvancedEditOpen, hoveringFiles} = this.state
+    const {isAdvancedEditOpen, hoveringFiles, selectedAssetSource} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter((field) => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -432,7 +577,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
               marginTop={3}
               style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}
             >
-              {!readOnly && (
+              {!readOnly && directUploads && (
                 <FileInputButton
                   onSelect={this.handleSelectFiles}
                   mode="ghost"
@@ -442,8 +587,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 />
               )}
 
-              {/* Enable when selecting already uploaded files is possible */}
-              {/* {!readOnly && this.renderSelectFileButton()} */}
+              {!readOnly && this.renderSelectFileButton()}
+
               {value && otherFields.length > 0 && (
                 <Button
                   icon={readOnly ? EyeOpenIcon : EditIcon}
@@ -466,8 +611,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           </div>
 
           {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
-
           {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          {selectedAssetSource && this.renderAssetSource()}
         </FormFieldSet>
       </>
     )
